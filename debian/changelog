@@ -1,0 +1,5 @@
+vyatta-webgui (0.1) unstable; urgency=low
+
+  * Ported to vyatta-webgui
+
+ -- Marat Nepomnyashy <marat@vyatta.com>  Fri, 01 Feb 2008 13:58:00 -0800

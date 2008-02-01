@@ -1,0 +1,185 @@
+<!--
+/*
+ *  Copyright 2006, Vyatta, Inc.
+ *
+ *  GNU General Public License
+ * 
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License, version 2, 
+ *  as published by the Free Software Foundation.
+ * 
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ *  02110-1301 USA
+ *
+ *  Module:           app.js
+ *
+ *  Original Author:  DHAP Digital, Inc.  Douglas Good & others
+ *  Date:             2006
+ *  Description:      Test module associated with GUI implementation
+ *
+ */
+-->
+
+
+<html>
+<head>
+<title>Vyatta Test Application</title>
+
+<script type="text/javascript" src="/js/xml.js"></script>
+
+<script type="text/javascript" src="/js/server.js"></script>
+<script type="text/javascript" src="/js/ui.js"></script>
+<script type="text/javascript" src="/js/app.js"></script>
+
+<script type="text/javascript">
+
+function sendServerRequest() {
+	var textElement = document.getElementById("xgdRequest1");
+	var xml = textElement.value;
+	appManager.serverManager.sendRequest(xml);
+	showResponse("<i>loading</i>");
+}
+
+function sendXmlRequest(xml) {
+	var activeX = false;
+	var url = "/xgcgi2";
+
+	if (window.XMLHttpRequest) {
+		httpRequest = new XMLHttpRequest();
+	}
+	else {
+		httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+		activeX = true;
+	}
+
+	httpRequest.onreadystatechange = httpResponseListener;
+
+	showResponse("<i>loading</i>");
+
+	httpRequest.open("POST", url, true);
+	httpRequest.setRequestHeader('Content-Type', 'text/xml');
+	httpRequest.send(xml);
+}
+
+function httpResponseListener() {
+	if (httpRequest.readyState == 4) {
+		// "4" indicates a state of "complete"
+		if (httpRequest.status == 200) {
+			// Response is OK
+			handleServerResponse();
+		} else {
+			alert("There was an error during the request : status = " + httpRequest.status + ", text = " + httpRequest.statusText);
+		}
+	}
+}
+
+function handleServerResponse() {
+	showResponse("<xmp>" + httpRequest.responseText + "</xmp>");
+}
+
+function showResponse(html) {
+	responseDisplay().innerHTML = html;
+}
+
+function responseDisplay() {
+	return document.getElementById("responseArea");
+}
+
+var appManager = null;
+
+function init() {
+	appManager = new AppManager();
+	appManager.init();
+}
+
+</script>
+
+</head>
+<body onLoad="init();">
+
+<table border="1">
+<tr>
+	<td><b>Context</b></td>
+	<td><b>Config</b></td>
+	<td><b>Operations</b></td>
+	</tr>
+<tr>
+	<td rowspan="2">
+<div id="contextArea" style="width:200; height:500;"></div>
+<div id="operationMenuArea"></div>
+<div id="toolMenuArea"></div>
+	</td>
+	<td rowspan="2">
+<div id="configArea" style="width:500; height:500;">
+	<p><a href="javascript:appManager.initServer();">Start Server Session</a></p>
+	<p>
+<form name="login" id="loginForm">
+		User Name:<br>
+		<input name="user" type="text"><br>
+		Password:<br>
+		<input name="pwd" type="password"><br>
+		<br>
+		<a href="javascript:appManager.uiManager.clickLogin()">Login</a>
+</form>
+	</p>
+</div>
+	</td>
+	<td>
+<div id="operationMenuArea" style="width:200; height:300; overflow:auto;"></div>
+	</td>
+</tr>
+<tr>
+	<td>
+<div id="operationArgsArea" style="width:200; height:200; overflow:auto;"></div>
+	</td>
+</tr>
+<tr>
+	<td colspan="3">
+<div id="errorArea"></div>
+	</td>
+</tr>
+<tr>
+	<td colspan="3">
+<div id="operationResultsArea"></div>
+	</td>
+</tr>
+</table>
+
+<table border="1">
+<tr><td>Tools</td></tr>
+<tr>
+	<td>
+<div id="toolsArea">
+</div>
+	</td>
+</tr>
+</table>
+
+<p>
+<a href="javascript:appManager.uiManager.clickCommit();">Commit</a>
+</p>
+
+<table border="1">
+<tr>
+	<td>
+<p>Request Debug:</p>
+<div id="requestDebug" style="width:900; height:300; overflow:auto"></div>
+	</td>
+</tr>
+<tr>
+	<td>
+<p>Response Debug:</p>
+<div id="responseDebug" style="width:900; height:300; overflow:auto"></div>
+	</td>
+</tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+Source: vyatta-webgui
+Section: contrib/net
+Priority: extra
+Maintainer: Marat Nepomnyashy <marat@vyatta.com>
+Build-Depends: debhelper (>= 5), autotools-dev
+Standards-Version: 3.7.2
+
+Package: vyatta-webgui
+Architecture: all
+Depends: bash (>= 3.1),
+ procps (>= 1:3.2.7-3),
+ coreutils (>= 5.97-5.3),
+ vyatta-cfg
+ vyatta-op
+Suggests: util-linux (>= 2.13-5)
+Description: Vyatta WebGUI.
+ Vyatta WebGUI.

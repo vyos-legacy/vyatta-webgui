@@ -1,0 +1,15 @@
+ChangeLog
+Makefile
+Makefile.in
+aclocal.m4
+build-stamp
+config.guess
+config.log
+config.status
+config.sub
+debian/vyatta-webgui
+debian/files
+autom4te.cache
+config
+configure
+INSTALL

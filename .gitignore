@@ -14,3 +14,11 @@ autom4te.cache
 config
 configure
 INSTALL
+libtool
+*.o
+*.la
+*.lo
+.deps
+.dirstamp
+.libs
+

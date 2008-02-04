@@ -29,7 +29,7 @@
 #ifndef __INCLUDE_XGCGI_HH__
 #define __INCLUDE_XGCGI_HH__
 
-#include "config.h"
+//#include "config.h"
 #include "cgi_log.hh"
 #include "basic/basic_error_info.hh"
 #include "basic/xml_info.hh"
@@ -55,7 +55,7 @@
 //
 // default config file location.
 //
-#define DEFAULT_CONFIG_FILE		SYSCONFDIR "/xgcgi2.conf"
+#define DEFAULT_CONFIG_FILE		"/opt/vyatta/etc/xgcgi2.conf"
 
 //
 // XML paths to options within config file

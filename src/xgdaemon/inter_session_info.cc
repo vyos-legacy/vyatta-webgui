@@ -65,12 +65,6 @@ EventLoop & InterSessionInfo::getEventLoop() {
 	return m_eventloop;
 }
 
-/*
-OpCommandList & InterSessionInfo::getOpCommandList() {
-	return m_ocl;
-}
-*/
-
 TemplateTree & InterSessionInfo::getTemplateTree() {
 	return m_tt;
 }

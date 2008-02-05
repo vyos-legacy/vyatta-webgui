@@ -382,18 +382,6 @@ bool XGDaemonXorpUtil::loadTemplateTree(TemplateTree & tt, const std::string& st
 		return false;
 	} else {
 		std::cout << "TEMPLATE TREE LOADED SUCCESSFULLY." << std::endl;
-
-/*		std::list<std::string> listDataTypes;
-		fillListWithDataTypes(tt, listDataTypes);
-		listDataTypes.sort();
-		std::list<std::string>::const_iterator i = listDataTypes.begin();
-		const std::list<std::string>::const_iterator iEnd = listDataTypes.end();
-		while (i != iEnd) {
-			std::cout << *i << std::endl;
-			i++;
-		}
-*/
-
 		return true;
 	}
 }

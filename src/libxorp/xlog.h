@@ -271,7 +271,8 @@ int	xlog_remove_default_output(void);
  * @param ... the arguments for @ref format.
  */
 void	xlog_fatal(const char *module_name, const char *where,
-		   const char *format, ...) __printflike(3,4);
+		   const char *format, ...);
+//__printflike(3,4);
 #define XLOG_FATAL(fmt...)	XLOG_FN(fatal, fmt)
 
 /**

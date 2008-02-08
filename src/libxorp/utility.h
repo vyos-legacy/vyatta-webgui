@@ -74,8 +74,8 @@
 //#if defined(WORDS_BIGENDIAN)
 //#  define htonl_literal(x) (x)
 //#elif defined(WORDS_SMALLENDIAN)
-//#  define htonl_literal(x) 						      \
-//		((((x) & 0x000000ffU) << 24) | (((x) & 0x0000ff00U) << 8) |   \
+//#  define htonl_literal(x) 						      
+//		((((x) & 0x000000ffU) << 24) | (((x) & 0x0000ff00U) << 8) |   
 //		 (((x) & 0x00ff0000U) >> 8) | (((x) & 0xff000000U) >> 24))
 //#else
 //#  error "Missing endian definition from config.h"

@@ -23,9 +23,9 @@
 #include "libxorp/debug.h"
 #include "libxorp/utils.hh"
 
-#include "command_tree.hh"
+//#include "command_tree.hh"
 #include "conf_tree_node.hh"
-#include "module_command.hh"
+//#include "module_command.hh"
 #include "template_commands.hh"
 #include "template_tree_node.hh"
 #include "util.hh"

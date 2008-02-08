@@ -27,6 +27,7 @@
 
 class EventLoop;
 
+using namespace std;
 
 /**
  * @short Base virtual class for running an external command.

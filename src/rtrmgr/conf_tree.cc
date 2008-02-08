@@ -14,6 +14,9 @@
 
 #ident "$XORP$"
 
+#include <stdexcept>
+
+
 #include "rtrmgr_module.h"
 
 #include "libxorp/xorp.h"
@@ -64,9 +67,11 @@ ConfigTree::parse(const string& configuration, const string& config_file,
 		  string& error_msg)
 {
     try {
-	init_bootfile_parser(configuration.c_str(), config_file.c_str(), this);
-	parse_bootfile();
-	return true;
+
+throw std::logic_error("NYI");
+//	init_bootfile_parser(configuration.c_str(), config_file.c_str(), this);
+//	parse_bootfile();
+//	return true;
     } catch (const ParseError& pe) {
 	error_msg = pe.why();
     }

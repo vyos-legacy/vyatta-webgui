@@ -28,7 +28,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 
-#include "rl_syslog.h"
+//#include "rl_syslog.h"
 #include "libxorp_module.h"
 #include "config.h"
 #include "xlog.h"
@@ -436,10 +436,10 @@ xlog_##fn (const char *module_name, const char *where, const char *fmt, ...) \
 /*
  * Generate the log functions
  */
-xlog_fn_abort(fatal, 	XLOG_LEVEL_FATAL)
-xlog_fn(error, 		XLOG_LEVEL_ERROR)
-xlog_fn(warning,	XLOG_LEVEL_WARNING)
-xlog_fn(info, 		XLOG_LEVEL_INFO)
+//xlog_fn_abort(fatal, 	XLOG_LEVEL_FATAL)
+//xlog_fn(error, 		XLOG_LEVEL_ERROR)
+//xlog_fn(warning,	XLOG_LEVEL_WARNING)
+//xlog_fn(info, 		XLOG_LEVEL_INFO)
 
 
 /*
@@ -1179,3 +1179,8 @@ x_asprintf(char **ret, const char *format, ...)
     return (ret_size);
 }
 
+
+void xlog_fatal(const char *module_name, const char *where, const char *format, ...) 
+{
+
+}

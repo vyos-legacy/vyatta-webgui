@@ -52,7 +52,7 @@
 #include "xgdaemon_xorp_link.hh"
 #include "xgdaemon_xorp_util.hh"
 
-static const string default_config_boot = SYSCONFDIR "/config/config.boot";
+static const string default_config_boot = "/opt/vyatta/config/config.boot";
 
 XGDaemonXorpLink::~XGDaemonXorpLink() {
 }
@@ -76,7 +76,7 @@ XGDaemonXorpLink::XGDaemonXorpLink(InterSessionInfo & isi, uid_t uid) throw (Xor
 	m_ssi(XorpShellBase::MODE_INITIALIZING, this),
 
 	m_xclient(m_eventloop, m_xrl_router),
-	m_rtrmgr_client(&m_xrl_router),
+//	m_rtrmgr_client(&m_xrl_router),
 	m_interface(&m_xrl_router, *this, isi.getFlagXorpVerbose()),
 
 	m_ocl(isi.getXorpDirInfo().getXorpTemplateDir(), &isi.getTemplateTree(), m_smm),
@@ -92,8 +92,10 @@ XGDaemonXorpLink::XGDaemonXorpLink(InterSessionInfo & isi, uid_t uid) throw (Xor
 
 }
 bool XGDaemonXorpLink::commit_changes(const string& deltas, const string& deletions, GENERIC_CALLBACK cb, CallBack final_cb) {
-	m_commit_callback = final_cb;
-	return m_rtrmgr_client.send_apply_config_change("rtrmgr", m_strAuthToken, m_strIPCname, deltas, deletions, cb);
+//	m_commit_callback = final_cb;
+//	return m_rtrmgr_client.send_apply_config_change("rtrmgr", m_strAuthToken, m_strIPCname, deltas, deletions, cb);
+throw std::logic_error("Not Yet Implemented");
+return false;
 }
 bool XGDaemonXorpLink::determineIfCanCommit() const {
 	if (determineIfConfigInvalid()) return false;
@@ -148,13 +150,19 @@ bool XGDaemonXorpLink::doSave(const std::string & strFilename) {
 	return true;
 }
 bool XGDaemonXorpLink::enter_config_mode(bool exclusive, GENERIC_CALLBACK cb) {
-	return m_rtrmgr_client.send_enter_config_mode("rtrmgr", m_strAuthToken, exclusive, cb);
+//	return m_rtrmgr_client.send_enter_config_mode("rtrmgr", m_strAuthToken, exclusive, cb);
+throw std::logic_error("Not Yet Implemented");
+return false;
 }
 bool XGDaemonXorpLink::get_config_users(GET_USERS_CALLBACK cb) {
-	return m_rtrmgr_client.send_get_config_users("rtrmgr", m_strAuthToken, cb);
+//	return m_rtrmgr_client.send_get_config_users("rtrmgr", m_strAuthToken, cb);
+throw std::logic_error("Not Yet Implemented");
+return false;
 }
 bool XGDaemonXorpLink::get_rtrmgr_pid(PID_CALLBACK cb) {
-	return m_rtrmgr_client.send_get_pid("rtrmgr", cb);
+//	return m_rtrmgr_client.send_get_pid("rtrmgr", cb);
+throw std::logic_error("Not Yet Implemented");
+return false;
 }
 bool XGDaemonXorpLink::isError() const {
 	return m_flagError;
@@ -163,16 +171,22 @@ bool XGDaemonXorpLink::isXrlRouterReady() {
 	return m_xrl_router.ready();
 }
 bool XGDaemonXorpLink::leave_config_mode(GENERIC_CALLBACK cb) {
-	return m_rtrmgr_client.send_leave_config_mode("rtrmgr", m_strAuthToken, cb);
+//	return m_rtrmgr_client.send_leave_config_mode("rtrmgr", m_strAuthToken, cb);
+throw std::logic_error("Not Yet Implemented");
+return false;
 }
 bool XGDaemonXorpLink::load_from_file(const string& filename, GENERIC_CALLBACK cb, CallBack final_cb) {
-	m_commit_callback = final_cb;
-	LOCK_CALLBACK locked_cb = callback(this, &XGDaemonXorpLink::load_lock_achieved, filename, cb);
-	return m_rtrmgr_client.send_lock_config("rtrmgr", m_strAuthToken, 60000, locked_cb);
+//	m_commit_callback = final_cb;
+//	LOCK_CALLBACK locked_cb = callback(this, &XGDaemonXorpLink::load_lock_achieved, filename, cb);
+//	return m_rtrmgr_client.send_lock_config("rtrmgr", m_strAuthToken, 60000, locked_cb);
+throw std::logic_error("Not Yet Implemented");
+return false;
 }
 bool XGDaemonXorpLink::lock_config(LOCK_CALLBACK cb) {
     // Lock for 60 seconds - this should be sufficient
-    return m_rtrmgr_client.send_lock_config("rtrmgr", m_strAuthToken, 60000, cb);
+//    return m_rtrmgr_client.send_lock_config("rtrmgr", m_strAuthToken, 60000, cb);
+throw std::logic_error("Not Yet Implemented");
+return false;
 }
 bool XGDaemonXorpLink::revert(std::string & strResponse) {
 	ConfigTreeNode & ctnRootNode = m_sctEdit.root_node();
@@ -197,14 +211,16 @@ bool XGDaemonXorpLink::run() {
 			if (m_ssi.getMode() == XorpShellBase::MODE_INITIALIZING) {
 				if (m_flag_01_Sent_send_register_client == false) {
 					std::cout << "About to send registration request to xorp_rtrmgr..." << std::endl;
-					bool flagR = m_rtrmgr_client.send_register_client("rtrmgr", m_uid, m_strIPCname, callback(this, &XGDaemonXorpLink::register_done));
-					m_flag_01_Sent_send_register_client = true;
-					if (flagR == false) {
-						m_flagError = true;
-						std::cout << "Encountered error sending registration request to xorp_rtrmgr." << std::endl;
-					} else {
-						std::cout << "Successfully sent registeration request to xorp_rtrmgr." << std::endl;
-					}
+//					bool flagR = m_rtrmgr_client.send_register_client("rtrmgr", m_uid, m_strIPCname, callback(this, &XGDaemonXorpLink::register_done));
+//					m_flag_01_Sent_send_register_client = true;
+//					if (flagR == false) {
+//						m_flagError = true;
+//						std::cout << "Encountered error sending registration request to xorp_rtrmgr." << std::endl;
+//					} else {
+//						std::cout << "Successfully sent registeration request to xorp_rtrmgr." << std::endl;
+//					}
+throw std::logic_error("Not Yet Implemented");
+return false;
 				} else {
 					if (m_flag_02_Here_Ready4FileAuth == true) {
 						if (m_flag_03_Here_ReadAuthFile == false) {
@@ -228,9 +244,11 @@ bool XGDaemonXorpLink::run() {
 		
 						if (m_flagError == false) {
 							if (m_flag_04_Sent_send_authenticate_client == false) {
-								m_flag_05_Here_GenericDone = false;
-								m_rtrmgr_client.send_authenticate_client("rtrmgr", m_uid, m_strIPCname, m_strAuthToken, callback(this, &XGDaemonXorpLink::generic_done));
-								m_flag_04_Sent_send_authenticate_client = true;
+//								m_flag_05_Here_GenericDone = false;
+//								m_rtrmgr_client.send_authenticate_client("rtrmgr", m_uid, m_strIPCname, m_strAuthToken, callback(this, &XGDaemonXorpLink::generic_done));
+//								m_flag_04_Sent_send_authenticate_client = true;
+throw std::logic_error("Not Yet Implemented");
+return false;
 							} else {
 								if (m_flag_05_Here_GenericDone) {
 									if (m_flag_06_Here_AuthSuccess == false) {
@@ -280,12 +298,16 @@ bool XGDaemonXorpLink::run() {
 	return !m_flagError;
 }
 bool XGDaemonXorpLink::save_to_file(const string& filename, GENERIC_CALLBACK cb, CallBack final_cb) {
-	m_config_save_callback = final_cb;
-	LOCK_CALLBACK locked_cb = callback(this, &XGDaemonXorpLink::save_lock_achieved, filename, cb);
-	return m_rtrmgr_client.send_lock_config("rtrmgr", m_strAuthToken, 60000, locked_cb);
+//	m_config_save_callback = final_cb;
+//	LOCK_CALLBACK locked_cb = callback(this, &XGDaemonXorpLink::save_lock_achieved, filename, cb);
+//	return m_rtrmgr_client.send_lock_config("rtrmgr", m_strAuthToken, 60000, locked_cb);
+throw std::logic_error("Not Yet Implemented");
+return false;
 }
 bool XGDaemonXorpLink::unlock_config(GENERIC_CALLBACK cb) {
-	return m_rtrmgr_client.send_unlock_config("rtrmgr", m_strAuthToken, cb);
+//	return m_rtrmgr_client.send_unlock_config("rtrmgr", m_strAuthToken, cb);
+throw std::logic_error("Not Yet Implemented");
+return false;
 }
 
 void XGDaemonXorpLink::commit_done(bool success, const string errmsg) {
@@ -410,15 +432,16 @@ void XGDaemonXorpLink::load_done(bool flagSuccess, std::string strError) {
 	m_ssi.getCurrentTaskInfo().setDone(!flagSuccess, strError);
 }
 void XGDaemonXorpLink::load_lock_achieved(const XrlError& e, const bool* locked, const uint32_t* /* lock_holder */, const string filename, GENERIC_CALLBACK cb) {
-	if (!locked || (e != XrlError::OKAY())) {
-		m_commit_callback->dispatch(false, "Failed to get configuration lock");
-		return;
-	}
-
-	if (m_rtrmgr_client.send_load_config("rtrmgr", m_strAuthToken, m_strIPCname, filename, cb) != true) {
-		m_commit_callback->dispatch(false, "Failed to load the configuration. No Finder?");
-		return;
-	}
+//	if (!locked || (e != XrlError::OKAY())) {
+//		m_commit_callback->dispatch(false, "Failed to get configuration lock");
+//		return;
+//	}
+//
+//	if (m_rtrmgr_client.send_load_config("rtrmgr", m_strAuthToken, m_strIPCname, filename, cb) != true) {
+//		m_commit_callback->dispatch(false, "Failed to load the configuration. No Finder?");
+//		return;
+//	}
+throw std::logic_error("Not Yet Implemented");
 }
 void XGDaemonXorpLink::register_done(const XrlError& e, const string* file, const uint32_t* pid, const uint32_t* clientid) {
 	if (e == XrlError::OKAY()) {
@@ -449,15 +472,16 @@ void XGDaemonXorpLink::save_done(bool flagSuccess, std::string strError) {
 	m_ssi.getCurrentTaskInfo().setDone(!flagSuccess, strError);
 }
 void XGDaemonXorpLink::save_lock_achieved(const XrlError& e, const bool* locked, const uint32_t* /* lock_holder */, const string filename, GENERIC_CALLBACK cb) {
-	if (!locked || (e != XrlError::OKAY())) {
-		m_config_save_callback->dispatch(false, "Failed to get configuration lock");
-		return;
-	}
-
-	if (m_rtrmgr_client.send_save_config("rtrmgr", m_strAuthToken, m_strIPCname, filename, cb) != true) {
-		m_config_save_callback->dispatch(false, "Failed to send configuration. No Finder?");
-		return;
-	}
+//	if (!locked || (e != XrlError::OKAY())) {
+//		m_config_save_callback->dispatch(false, "Failed to get configuration lock");
+//		return;
+//	}
+//
+//	if (m_rtrmgr_client.send_save_config("rtrmgr", m_strAuthToken, m_strIPCname, filename, cb) != true) {
+//		m_config_save_callback->dispatch(false, "Failed to send configuration. No Finder?");
+//		return;
+//	}
+throw std::logic_error("Not Yet Implemented");
 }
 void XGDaemonXorpLink::set_mode(XorpShellBase::Mode mode) {
 	m_ssi.setMode(mode);

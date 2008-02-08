@@ -42,6 +42,8 @@
 
 	//#ident "$XORP$"
 
+#include <stdexcept>
+
 #include "xgdaemon_module.hh"
 
 #include "libxorp/xorp.h"
@@ -58,7 +60,8 @@
 
 
 XrlXGDaemonInterface::XrlXGDaemonInterface(XrlRouter* r, XGDaemonXorpLink& xlink, bool flagVerbose)
-    : XrlRlXgdaemonTargetBase(r),
+    //: XrlRlXgdaemonTargetBase(r),
+    :
       m_xlink(xlink),
       m_verbose(flagVerbose)
 {	
@@ -68,16 +71,19 @@ XrlCmdError
 XrlXGDaemonInterface::common_0_1_get_target_name(// Output values, 
 					       string& name)
 {
-    name = XrlRlXgdaemonTargetBase::name();
-    return XrlCmdError::OKAY();
+//    name = XrlRlXgdaemonTargetBase::name();
+throw std::logic_error("NYI");
+    return XrlCmdError::COMMAND_FAILED();
 }
 
 XrlCmdError 
 XrlXGDaemonInterface::common_0_1_get_version(// Output values, 
 					   string& v)
 {
-    v = string(version());
-    return XrlCmdError::OKAY();
+//    v = string(version());
+//    return XrlCmdError::OKAY();
+throw std::logic_error("NYI");
+return XrlCmdError::COMMAND_FAILED();
 }
 
 XrlCmdError

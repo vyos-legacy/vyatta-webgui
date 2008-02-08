@@ -50,12 +50,12 @@
 #define __XGDAEMON_XRL_XGDAEMON_INTERFACE_HH__
 
 
-#include "xrl/targets/rl_xgdaemon_base.hh"
+//#include "xrl/targets/rl_xgdaemon_base.hh"
 
 
 class XGDaemonXorpLink;
 
-class XrlXGDaemonInterface : public XrlRlXgdaemonTargetBase {
+class XrlXGDaemonInterface { //: public XrlRlXgdaemonTargetBase {
 public:
     XrlXGDaemonInterface(XrlRouter* r, XGDaemonXorpLink& xlink, bool flagVerbose);
 

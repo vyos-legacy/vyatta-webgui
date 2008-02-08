@@ -38,7 +38,7 @@
 
 #include "libxorp/eventloop.hh"
 #include "libxipc/xrl_std_router.hh"
-#include "xrl/interfaces/rtrmgr_xif.hh"
+//#include "xrl/interfaces/rtrmgr_xif.hh"
 
 
 #include "rtrmgr/conf_tree.hh"
@@ -174,7 +174,7 @@ private:
 	CallBack			m_config_save_callback;
 
 	XorpClient			m_xclient;
-	XrlRtrmgrV0p1Client		m_rtrmgr_client;
+//	XrlRtrmgrV0p1Client		m_rtrmgr_client;
 	XrlXGDaemonInterface		m_interface;
 
 	OpCommandList			m_ocl;

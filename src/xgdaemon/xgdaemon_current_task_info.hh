@@ -28,9 +28,9 @@
 #ifndef __INCLUDE_XGDAEMON_CURRENT_TASK_INFO__
 #define __INCLUDE_XGDAEMON_CURRENT_TASK_INFO__
 
-#include "../../rtrmgr/slave_conf_tree.hh"
+#include "rtrmgr/slave_conf_tree.hh"
 
-#include "../common/current_task_info.hh"
+#include "common/current_task_info.hh"
 
 class XGDaemonCurrentTaskInfo : public CurrentTaskInfo {
 public:

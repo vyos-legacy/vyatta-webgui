@@ -30,13 +30,14 @@
 #define __INCLUDE_XGDAEMON_SESSION_STATUS_INFO__
 
 
+#include "xgdaemon_module.hh"
+
 #include "common/common_session_status_info.hh"
 
 #include "libxorp/eventloop.hh"
 #include "libxipc/xrl_std_router.hh"
 #include "server_time_info.hh"
-#include "xrl/interfaces/rtrmgr_xif.hh"
-
+//#include "xrl/interfaces/rtrmgr_xif.hh"
 
 #include "rtrmgr/conf_tree.hh"
 #include "rtrmgr/generic_module_manager.hh"

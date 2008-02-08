@@ -55,6 +55,10 @@
 
 #include "xgdaemon_xorp_util.hh"
 
+
+#define MAXHOSTNAMELEN 256
+
+
 const char * getSignalName(int signal) {
 	static const char * strUnknown   = "unknown";
 //	static const char * strSIGABORT  = "SIGABORT";

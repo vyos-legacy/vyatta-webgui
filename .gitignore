@@ -22,3 +22,10 @@ libtool
 .dirstamp
 .libs
 
+
+src/config.h
+src/stamp-h1
+src/xgcgi/xgcgi
+src/xgcgi/xgcgi_test
+src/xgcgi2/xgcgi2
+

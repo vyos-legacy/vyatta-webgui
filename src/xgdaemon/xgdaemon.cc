@@ -168,9 +168,11 @@ int main(int argc, char ** argv) {	argc=argc;argv=argv;
 			std::cout << "Encountered error starting XGDaemon." << std::endl;
 		}
 	} catch (const XorpReasonedException & e) {
-		XLOG_ERROR("xgdaemon exiting due to an init error: %s", e.why().c_str());
-		errcode = 1;
-		goto cleanup;
+
+throw std::logic_error("NYI");
+//		XLOG_ERROR("xgdaemon exiting due to an init error: %s", e.why().c_str());
+//		errcode = 1;
+//		goto cleanup;
 	}
 
 

@@ -17,6 +17,10 @@
 #ifndef __LIBXIPC_FINDER_CLIENT_OBSERVER_HH__
 #define __LIBXIPC_FINDER_CLIENT_OBSERVER_HH__
 
+
+
+using namespace std;
+
 /**
  * Base class for parties interested in receiving FinderClient event
  * notifications.

@@ -981,22 +981,24 @@ xlog_add_default_output(void)
 #endif	/* Vyatta */
 
     /* Add Vyatta hook for syslog logging. */
-    xlog_add_output_func(rl_syslog_callback, NULL);
-    return 0;
 
-    /*
-     * Attempt to open default output stream, console first in case
-     * we are root, then stderr.
-     */
-#if 0	/* Vyatta */
-    for (i = 0; fp_default == NULL && i < ndefaults; i++) {
-	if ((fp_default = fopen(defaults[i], "w")) != NULL) {
-	    return (xlog_add_output(fp_default));
-	}
-    }
-
-    return -1;
-#endif	/* Vyatta */
+return -1; // NYI
+//    xlog_add_output_func(rl_syslog_callback, NULL);
+//    return 0;
+//
+//    /*
+//     * Attempt to open default output stream, console first in case
+//     * we are root, then stderr.
+//     */
+//#if 0	/* Vyatta */
+//    for (i = 0; fp_default == NULL && i < ndefaults; i++) {
+//	if ((fp_default = fopen(defaults[i], "w")) != NULL) {
+//	    return (xlog_add_output(fp_default));
+//	}
+//    }
+//
+//    return -1;
+//#endif	/* Vyatta */
 }
 
 /**

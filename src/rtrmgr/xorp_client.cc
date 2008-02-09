@@ -112,33 +112,34 @@ XorpClient::fake_return_args(const string& xrl_return_spec)
 	    atom = XrlAtom(iter->substr(0, eq).c_str());
 	}
 
-	switch (atom.type()) {
-	case xrlatom_no_type:
-	    XLOG_UNREACHABLE();
-	case xrlatom_int32:
-	    xargs.add(XrlAtom(atom.name().c_str(), (int32_t)0) );
-	    break;
-	case xrlatom_uint32:
-	    xargs.add(XrlAtom(atom.name().c_str(), (uint32_t)0) );
-	    break;
-	case xrlatom_ipv4:
-	    xargs.add(XrlAtom(atom.name().c_str(), IPv4("0.0.0.0")) );
-	    break;
-	case xrlatom_ipv4net:
-	    xargs.add(XrlAtom(atom.name().c_str(), IPv4Net("0.0.0.0/0")) );
-	    break;
-	case xrlatom_text:
-	    xargs.add(XrlAtom(atom.name().c_str(), string("")) );
-	    break;
-	case xrlatom_ipv6:
-	case xrlatom_ipv6net:
-	case xrlatom_mac:
-	case xrlatom_list:
-	case xrlatom_boolean:
-	case xrlatom_binary:
-	    XLOG_UNFINISHED();
-	    break;
-	}
+throw std::logic_error("NYI");
+//	switch (atom.type()) {
+//	case xrlatom_no_type:
+//	    XLOG_UNREACHABLE();
+//	case xrlatom_int32:
+//	    xargs.add(XrlAtom(atom.name().c_str(), (int32_t)0) );
+//	    break;
+//	case xrlatom_uint32:
+//	    xargs.add(XrlAtom(atom.name().c_str(), (uint32_t)0) );
+//	    break;
+//	case xrlatom_ipv4:
+//	    xargs.add(XrlAtom(atom.name().c_str(), IPv4("0.0.0.0")) );
+//	    break;
+//	case xrlatom_ipv4net:
+//	    xargs.add(XrlAtom(atom.name().c_str(), IPv4Net("0.0.0.0/0")) );
+//	    break;
+//	case xrlatom_text:
+//	    xargs.add(XrlAtom(atom.name().c_str(), string("")) );
+//	    break;
+//	case xrlatom_ipv6:
+//	case xrlatom_ipv6net:
+//	case xrlatom_mac:
+//	case xrlatom_list:
+//	case xrlatom_boolean:
+//	case xrlatom_binary:
+//	    XLOG_UNFINISHED();
+//	    break;
+//	}
     }
     debug_msg("ARGS: %s\n", xargs.str().c_str());
     return xargs;

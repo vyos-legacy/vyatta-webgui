@@ -513,9 +513,11 @@ bool XGDaemonXorpUtil::wait_for_xrlrouter_ready(EventLoop& eventloop, XrlRouter&
 		eventloop.run();
 		std::cout << ',';
 		if (xrl_router.failed()) {
-			XLOG_ERROR("XrlRouter failed.  No Finder?");
-			return false;
-			break;
+
+throw std::logic_error("NYI");
+//			XLOG_ERROR("XrlRouter failed.  No Finder?");
+//			return false;
+//			break;
 		}
 	}
 	return true;

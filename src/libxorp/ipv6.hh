@@ -17,6 +17,9 @@
 #ifndef __LIBXORP_IPV6_HH__
 #define __LIBXORP_IPV6_HH__
 
+#include <stdexcept>
+#include <sys/socket.h>
+
 #include "libxorp/xorp.h"
 #include "libxorp/exceptions.hh"
 #include "libxorp/range.hh"
@@ -595,7 +598,8 @@ IPv6::bits(uint32_t lsb, uint32_t len) const
     if (len >= 32)
 	mask = 0xffffffffU;	// XXX: shifting with >= 32 bits is undefined
 
-    return ntohl((*this >> lsb)._addr[3]) & mask;
+throw std::logic_error("NYI");
+//    return ntohl((*this >> lsb)._addr[3]) & mask;
 }
 
 inline uint32_t
@@ -615,8 +619,10 @@ IPv6::leading_zero_count() const
 
     for (int i = 0; i < 4; i++) {
 	if (_addr[i] != 0) {
-	    r += xorp_leading_zero_count_uint32(ntohl(_addr[i]));
-	    break;
+
+throw std::logic_error("NYI");
+//	    r += xorp_leading_zero_count_uint32(ntohl(_addr[i]));
+//	    break;
 	}
 	r += 32;
     }

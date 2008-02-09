@@ -22,6 +22,9 @@
 #include "libxorp/exceptions.hh"
 
 
+using namespace std;
+
+
 /**
  * @short MAC exceptions.
  *

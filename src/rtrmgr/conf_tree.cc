@@ -16,7 +16,6 @@
 
 #include <stdexcept>
 
-
 #include "rtrmgr_module.h"
 
 #include "libxorp/xorp.h"
@@ -216,7 +215,9 @@ ConfigTree::add_node(const string& segment, int type,
 	if (_current_node->is_leaf_value()) {
 	    terminal_value(segment, _current_node->type(), OP_ASSIGN);
 	} else {
-	    boot_parser_error("Invalid child node");
+
+throw std::logic_error("NYI");
+//	    boot_parser_error("Invalid child node");
 	}
 
 	//
@@ -259,8 +260,10 @@ ConfigTree::add_node(const string& segment, int type,
 	path_segments.push_back(ConfPathSegment(segment, type, node_id));
 	const TemplateTreeNode* ttn = find_template_by_type(path_segments);
 	if (ttn == NULL) {
-	    boot_parser_warning("Unknown config node ignored (no template)");
-            return false;
+
+throw std::logic_error("NYI");
+//	    boot_parser_warning("Unknown config node ignored (no template)");
+//            return false;
 	}
 
 	string path = current_path_as_string();
@@ -364,7 +367,9 @@ ConfigTree::terminal_value(const string& value, int type, ConfigOperator op)
 	    break;
 	case NODE_MACADDR:
 	    try {
-		Mac(svalue.c_str());
+
+throw std::logic_error("NYI");
+//		Mac(svalue.c_str());
 	    } catch (InvalidString) {
 		goto parse_error;
 	    }
@@ -382,32 +387,46 @@ ConfigTree::terminal_value(const string& value, int type, ConfigOperator op)
     } else if (ctn->type() != type) {
 	error_msg = "\"" + path + "\" has type " + ctn->typestr() +
 	    ", and value " + svalue + " is not a valid " + ctn->typestr();
-	boot_parser_error(error_msg.c_str());
+
+throw std::logic_error("NYI");
+//	boot_parser_error(error_msg.c_str());
     }
 
     if (ctn->is_read_only()
 	&& ctn->is_leaf_value()
 	&& (! ctn->is_default_value(svalue))) {
 	error_msg = "\"" + path + "\" is read-only node";
-	boot_parser_error(error_msg.c_str());
+
+throw std::logic_error("NYI");
+//	boot_parser_error(error_msg.c_str());
     }
 
     if (ctn->set_value(svalue, /* userid */ 0, error_msg) != true) {
-	error_msg = c_format("Cannot set the value of \"%s\": %s",
-			     path.c_str(), error_msg.c_str());
-	boot_parser_error(error_msg.c_str());
+
+throw std::logic_error("NYI");
+//	error_msg = c_format("Cannot set the value of \"%s\": %s",
+//			     path.c_str(), error_msg.c_str());
+
+throw std::logic_error("NYI");
+//	boot_parser_error(error_msg.c_str());
     }
     if (ctn->set_operator(op, /* userid */ 0, error_msg) != true) {
-	error_msg = c_format("Cannot set the operator for \"%s\": %s",
-			     path.c_str(), error_msg.c_str());
-	boot_parser_error(error_msg.c_str());
+throw std::logic_error("NYI");
+
+//	error_msg = c_format("Cannot set the operator for \"%s\": %s",
+//			     path.c_str(), error_msg.c_str());
+
+throw std::logic_error("NYI");
+//	boot_parser_error(error_msg.c_str());
     }
     return;
 
  parse_error:
     error_msg = "\"" + path + "\" has type " + ctn->typestr() +
 	", and value " + svalue + " is not a valid " + ctn->typestr();
-    boot_parser_error(error_msg.c_str());
+
+throw std::logic_error("NYI");
+//    boot_parser_error(error_msg.c_str());
 }
 
 const ConfigTreeNode*

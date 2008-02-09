@@ -222,9 +222,11 @@ SlaveConfigTree::commit_phase3(const XrlError& e, CallBack cb,
 	if (xorpsh->unlock_config(callback(this, &SlaveConfigTree::commit_phase5,
 					   false, cb, xorpsh))
 	    != true) {
-	    XLOG_WARNING("Cannot unlock the config tree. No Finder?");
-	    // XXX: need to dispatch the callback to move to phase5
-	    should_dispatch_phase5 = true;
+
+throw std::logic_error("NYI");
+//	    XLOG_WARNING("Cannot unlock the config tree. No Finder?");
+//	    // XXX: need to dispatch the callback to move to phase5
+//	    should_dispatch_phase5 = true;
 	}
 	_commit_status.set_error(_commit_errmsg);
     }
@@ -252,9 +254,12 @@ SlaveConfigTree::commit_phase4(bool success, const string& errmsg, CallBack cb,
     if (xorpsh->unlock_config(callback(this, &SlaveConfigTree::commit_phase5,
 				       success, cb, xorpsh))
 	!= true) {
-	XLOG_WARNING("Cannot unlock the config tree. No Finder?");
-	// XXX: need to dispatch the callback to move to phase5
-	should_dispatch_phase5 = true;
+
+
+throw std::logic_error("NYI");
+//	XLOG_WARNING("Cannot unlock the config tree. No Finder?");
+//	// XXX: need to dispatch the callback to move to phase5
+//	should_dispatch_phase5 = true;
     }
 
     if (should_dispatch_phase5) {

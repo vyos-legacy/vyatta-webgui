@@ -124,27 +124,29 @@ bool
 TemplateTree::parse_file(const string& filename,
 			 const string& config_template_dir, string& error_msg) 
 {
-    if (init_template_parser(filename.c_str(), this) < 0) {
-	complete_template_parser();
-	error_msg = c_format("Failed to open template file: %s",
-			     config_template_dir.c_str());
-	return false;
-    }
-    try {
-	parse_template();
-    } catch (const ParseError& pe) {
-	complete_template_parser();
-	error_msg = pe.why();
-	return false;
-    }
-    if (_path_segments.size() != 0) {
-	complete_template_parser();
-	error_msg = c_format("File %s is not terminated properly", 
-			     filename.c_str());
-	return false;
-    }
-    complete_template_parser();
-    return true;
+
+throw std::logic_error("NYI");
+//    if (init_template_parser(filename.c_str(), this) < 0) {
+//	complete_template_parser();
+//	error_msg = c_format("Failed to open template file: %s",
+//			     config_template_dir.c_str());
+//	return false;
+//    }
+//    try {
+//	parse_template();
+//    } catch (const ParseError& pe) {
+//	complete_template_parser();
+//	error_msg = pe.why();
+//	return false;
+//    }
+//    if (_path_segments.size() != 0) {
+//	complete_template_parser();
+//	error_msg = c_format("File %s is not terminated properly", 
+//			     filename.c_str());
+//	return false;
+//    }
+//    complete_template_parser();
+//    return true;
 }
 
 bool
@@ -406,8 +408,10 @@ TemplateTree::find_node(const list<string>& path_segments) const
 	}
 	if (matches.size() > 1) {
 	    // This shouldn't be possible
-	    XLOG_ERROR("Multiple match at node %s\n", segname.c_str());
-	    XLOG_UNREACHABLE();
+
+throw std::logic_error("NYI");
+//	    XLOG_ERROR("Multiple match at node %s\n", segname.c_str());
+//	    XLOG_UNREACHABLE();
 	}
 
 	// There's no exact name match, so we're probably looking for a
@@ -464,8 +468,10 @@ TemplateTree::find_node_by_type(const list<ConfPathSegment>& path_segments)
 	}
 	if (matches.size() > 1) {
 	    // This shouldn't be possible
-	    XLOG_ERROR("Multiple match at node %s\n", segname.c_str());
-	    XLOG_UNREACHABLE();
+
+throw std::logic_error("NYI");
+//	    XLOG_ERROR("Multiple match at node %s\n", segname.c_str());
+//	    XLOG_UNREACHABLE();
 	}
 
 	//

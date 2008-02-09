@@ -1783,8 +1783,10 @@ ConfigTreeNode::split_up_varname(const string& varname,
 
     if (varname.size() < 4 || varname[0] != '$'
 	|| varname[1] != '(' || varname[varname.size() - 1] != ')') {
-	XLOG_ERROR("Bad variable name: %s", varname.c_str());
-	return false;
+
+throw std::logic_error("NYI");
+//	XLOG_ERROR("Bad variable name: %s", varname.c_str());
+//	return false;
     }
 
     string trimmed = varname.substr(2, varname.size() - 3);
@@ -1901,28 +1903,36 @@ ConfigTreeNode::set_variable(const string& varname, const string& value)
 				  varname.c_str());
 		if (! reason.empty())
 		    errmsg += c_format(": %s", reason.c_str());
-		XLOG_ERROR("%s", errmsg.c_str());
-		return false;
+
+throw std::logic_error("NYI");
+//		XLOG_ERROR("%s", errmsg.c_str());
+//		return false;
 	    }
 	    if (node->set_value(value, _user_id, errmsg) != true) {
 		errmsg = c_format("Error setting the value of node \"%s\": %s",
 				  varname.c_str(), errmsg.c_str());
-		XLOG_ERROR("%s", errmsg.c_str());
-		return false;
+
+throw std::logic_error("NYI");
+//		XLOG_ERROR("%s", errmsg.c_str());
+//		return false;
 	    }
 	    return true;
 	case NODE_OPERATOR: 
 	    errmsg = c_format("Attempt to set variable operator \"%s\" "
 			      "which is the name of a configuration node",
 			      varname.c_str());
-	    XLOG_ERROR("%s", errmsg.c_str());
-	    return false;
+
+throw std::logic_error("NYI");
+//	    XLOG_ERROR("%s", errmsg.c_str());
+//	    return false;
 	case NODE_ID: 
 	    errmsg = c_format("Attempt to set variable node ID \"%s\" "
 			      "which is not user-settable",
 			      varname.c_str());
-	    XLOG_ERROR("%s", errmsg.c_str());
-	    return false;
+
+throw std::logic_error("NYI");
+//	    XLOG_ERROR("%s", errmsg.c_str());
+//	    return false;
 	case NAMED:
 	{
 	    list<string> var_parts;
@@ -1954,8 +1964,10 @@ ConfigTreeNode::set_variable(const string& varname, const string& value)
     if (var_parts.size() < 2) {
 	errmsg = c_format("Attempt to set incomplete variable \"%s\"",
 			  varname.c_str());
-	XLOG_ERROR("%s", errmsg.c_str());
-	return false;
+
+throw std::logic_error("NYI");
+//	XLOG_ERROR("%s", errmsg.c_str());
+//	return false;
     }
     var_parts.pop_back();
     if ((var_parts.front() == "@") || (_parent == NULL)) {
@@ -1982,33 +1994,43 @@ ConfigTreeNode::set_variable(const string& varname, const string& value)
 	    errmsg = c_format("Attempt to set operator \"%s\" "
 			      "which is the child of a named variable",
 			      varname.c_str());
-	    XLOG_ERROR("%s", errmsg.c_str());
-	    return false;
+
+throw std::logic_error("NYI");
+//	    XLOG_ERROR("%s", errmsg.c_str());
+//	    return false;
 	case NODE_ID:
 	    errmsg = c_format("Attempt to set node ID \"%s\" "
 			      "which is not user-settable",
 			      varname.c_str());
-	    XLOG_ERROR("%s", errmsg.c_str());
-	    return false;
+
+throw std::logic_error("NYI");
+//	    XLOG_ERROR("%s", errmsg.c_str());
+//	    return false;
 	case NAMED:
 	    errmsg = c_format("Attempt to set variable \"%s\" "
 			      "which is the child of a named variable",
 			      varname.c_str());
-	    XLOG_ERROR("%s", errmsg.c_str());
-	    return false;
+
+throw std::logic_error("NYI");
+//	    XLOG_ERROR("%s", errmsg.c_str());
+//	    return false;
 	case TEMPLATE_DEFAULT:
 	    errmsg = c_format("Attempt to set variable \"%s\" "
 			      "which is on a non-existent node",
 			      varname.c_str());
-	    XLOG_ERROR("%s", errmsg.c_str());
-	    return false;
+
+throw std::logic_error("NYI");
+//	    XLOG_ERROR("%s", errmsg.c_str());
+//	    return false;
 	}
     }
 
     errmsg = c_format("Attempt to set unknown variable \"%s\"",
 		      varname.c_str());
-    XLOG_ERROR("%s", errmsg.c_str());
-    return false;
+
+throw std::logic_error("NYI");
+//    XLOG_ERROR("%s", errmsg.c_str());
+//    return false;
 }
 
 void

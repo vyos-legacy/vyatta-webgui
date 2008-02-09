@@ -30,6 +30,8 @@ class XrlError;
 class XrlArgs;
 class XrlDispatcher;
 
+using namespace std;
+
 class XrlPFConstructorError : public XorpReasonedException
 {
 public:

@@ -72,7 +72,7 @@
  * compiler front-end for literal values.
  */
 //#if defined(WORDS_BIGENDIAN)
-//#  define htonl_literal(x) (x)
+#  define htonl_literal(x) (x)
 //#elif defined(WORDS_SMALLENDIAN)
 //#  define htonl_literal(x) 						      
 //		((((x) & 0x000000ffU) << 24) | (((x) & 0x0000ff00U) << 8) |   

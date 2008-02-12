@@ -220,31 +220,7 @@ src_xgdaemon_xgdaemon_LDADD	         = src/basic/libbasic.la
 src_xgdaemon_xgdaemon_LDADD	        += src/common/libxgcommon.la
 src_xgdaemon_xgdaemon_LDADD           += src/common/data/libxgdata.la
 src_xgdaemon_xgdaemon_LDADD           += src/common/textparse/libxgtextparse.la
-##
-## FIXME! We shouldn't link objects like this but these aren't yet
-##	  coalesed in a shared library
-##
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/command_tree.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/config_operators.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/conf_tree.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/conf_tree_node.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/generic_module_manager.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/op_commands.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/randomness.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/slave_conf_tree.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/slave_conf_tree_node.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/slave_module_manager.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/template_base_command.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/template_tree.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/template_tree_node.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/xorp_client.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/util.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/boot_parser.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/opcmd_parser.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/tplt_parser.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/boot_scanner.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/opcmd_scanner.o
-# src_xgdaemon_xgdaemon_LDADD	+= src/rtrmgr/tplt_scanner.o
+
 src_xgdaemon_xgdaemon_LDADD	+= -luuid
 src_xgdaemon_xgdaemon_LDADD	+= -lpam
 src_xgdaemon_xgdaemon_LDADD	+= -lpam_misc
@@ -263,8 +239,6 @@ src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/generic_module_manager.cc
 src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/generic_module_manager.hh
 src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/op_commands.cc
 src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/op_commands.hh
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/randomness.cc
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/randomness.hh
 src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/slave_conf_tree.cc
 src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/slave_conf_tree.hh
 src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/slave_conf_tree_node.cc
@@ -281,16 +255,6 @@ src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/xorp_client.cc
 src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/xorp_client.hh
 src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/util.cc
 src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/util.hh
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/boot_parser.cc
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/boot_parser.hh
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/opcmd_parser.cc
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/opcmd_parser.hh
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/tplt_parser.cc
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/tplt_parser.hh
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/boot_scanner.cc
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/boot_scanner.hh
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/opcmd_scanner.cc
-# src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/opcmd_scanner.hh
 
 src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/xlog.c
 src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/xlog.h

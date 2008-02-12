@@ -18,40 +18,40 @@ sysconf_DATA =
 clean : clean_cgi clean_basic clean_basic_client clean_common clean_xgcgi clean_xgcgi2 clean_xgdaemon
 
 clean_cgi:
-	rm src/cgi/*.la;
-	rm src/cgi/*.lo;
+	rm -f src/cgi/*.la;
+	rm -f src/cgi/*.lo;
 
 clean_basic:
-	rm src/basic/*.la;
-	rm src/basic/*.lo;
+	rm -f src/basic/*.la;
+	rm -f src/basic/*.lo;
 
 clean_basic_client:
-	rm src/basic_client/*.la;
-	rm src/basic_client/*.lo;
+	rm -f src/basic_client/*.la;
+	rm -f src/basic_client/*.lo;
 
 clean_common :
-	rm src/common/*.o;
-	rm src/common/*.la;
-	rm src/common/*.lo;
-	rm src/common/data/*.la;
-	rm src/common/data/*.lo;
-	rm src/common/textparse/*.la;
-	rm src/common/textparse/*.lo;
+	rm -f src/common/*.o;
+	rm -f src/common/*.la;
+	rm -f src/common/*.lo;
+	rm -f src/common/data/*.la;
+	rm -f src/common/data/*.lo;
+	rm -f src/common/textparse/*.la;
+	rm -f src/common/textparse/*.lo;
 
 clean_xgcgi :
-	rm src/xgcgi/*.o;
-	rm src/xgcgi/*.la;
-	rm src/xgcgi/*.lo;
-	rm src/xgcgi/xgcgi;
-	rm src/xgcgi/xgcgi_test;
+	rm -f src/xgcgi/*.o;
+	rm -f src/xgcgi/*.la;
+	rm -f src/xgcgi/*.lo;
+	rm -f src/xgcgi/xgcgi;
+	rm -f src/xgcgi/xgcgi_test;
 
 clean_xgcgi2 :
-	rm src/xgcgi2/*.o;
-	rm src/xgcgi2/xgcgi2;
+	rm -f src/xgcgi2/*.o;
+	rm -f src/xgcgi2/xgcgi2;
 
 clean_xgdaemon :
-	rm src/xgdaemon/*.o;
-	rm src/xgdaemon/xgdaemon;
+	rm -f src/xgdaemon/*.o;
+	rm -f src/xgdaemon/xgdaemon;
 
 
 sbin_PROGRAMS	+= src/xgdaemon/xgdaemon

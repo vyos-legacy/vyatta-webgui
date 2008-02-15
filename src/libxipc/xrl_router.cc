@@ -361,10 +361,10 @@ bool
 XrlRouter::failed() const
 {
     if (_fac != 0)
-NYIEXCEPT;
+NYIEXCEPT
 //	return _fac->enabled() == false && ready() == false;
     else if (_fac_ux)
-NYIEXCEPT;
+NYIEXCEPT
 //	return _fac_ux->enabled() == false && ready() == false;
 
     return true;
@@ -668,10 +668,10 @@ string
 XrlRouter::finder_path() const
 {
     if (_fac != 0)
-NYIEXCEPT;
+NYIEXCEPT
 //	return string(c_format("%s/%u", _fac->finder_address().str().c_str(), _fac->finder_port()));
     else if (_fac_ux)
-NYIEXCEPT;
+NYIEXCEPT
 //	return _fac_ux->finder_path();
 
     return FinderConstants::FINDER_DEFAULT_PATH();
@@ -681,7 +681,7 @@ IPv4
 XrlRouter::finder_address() const
 {
     if (_fac != 0)
-NYIEXCEPT;
+NYIEXCEPT
 //	return _fac->finder_address();
 
     return IPv4::LOOPBACK();
@@ -691,7 +691,7 @@ uint16_t
 XrlRouter::finder_port() const
 {
     if (_fac != 0)
-NYIEXCEPT;
+NYIEXCEPT
 //	return _fac->finder_port();
 
     return FinderConstants::FINDER_DEFAULT_PORT();

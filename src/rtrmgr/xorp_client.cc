@@ -112,7 +112,7 @@ XorpClient::fake_return_args(const string& xrl_return_spec)
 	    atom = XrlAtom(iter->substr(0, eq).c_str());
 	}
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	switch (atom.type()) {
 //	case xrlatom_no_type:
 //	    XLOG_UNREACHABLE();

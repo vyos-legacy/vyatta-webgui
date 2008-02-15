@@ -14,6 +14,7 @@
 
 #ident "$XORP$"
 
+#include "nyiexcept.hh"
 #include "ipc_module.h"
 
 #include "libxorp/debug.h"
@@ -52,13 +53,13 @@ XrlDispatcher::dispatch_xrl(const string&  method_name,
     const XrlCmdEntry* c = get_handler(method_name.c_str());
     if (c == 0) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	trace_xrl_dispatch("dispatch_xrl (invalid) ", method_name);
 //	debug_msg("No handler for %s\n", method_name.c_str());
 //	return XrlError::NO_SUCH_METHOD();
     }
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    trace_xrl_dispatch("dispatch_xrl (valid) ", method_name);
 //    return c->dispatch(inputs, &outputs);
 }

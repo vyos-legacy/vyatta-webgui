@@ -14,6 +14,7 @@
 
 #ident "$XORP$"
 
+#include "nyiexcept.hh"
 #include "xrl_module.h"
 
 #include "libxorp/xorp.h"
@@ -115,7 +116,7 @@ XrlAtom::data_from_c_str(const char* c_str)
     if (_type == xrlatom_binary) {
 	_binary = new vector<uint8_t>();
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	ssize_t bad_pos = xrlatom_decode_value(c_str, strlen(c_str), *_binary);
 //	if (bad_pos >= 0) {
 //	    delete _binary;
@@ -127,7 +128,7 @@ throw std::logic_error("NYI");
 
     string decoded;
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    ssize_t bad_pos = xrlatom_decode_value(c_str, strlen(c_str), decoded);
 //    if (bad_pos >= 0) {
 //	xorp_throw0(InvalidString);
@@ -479,7 +480,7 @@ XrlAtom::XrlAtom(const char* name, XrlAtomType t,
 const string
 XrlAtom::value() const
 {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    char tmp[32];
 //    tmp[0] = '\0';
 //
@@ -490,14 +491,14 @@ throw std::logic_error("NYI");
 //	snprintf(tmp, sizeof(tmp) / sizeof(tmp[0]),
 //		 _boolean ? "true" : "false");
 //
-//throw std::logic_error("NYI");
+//NYIEXCEPT;
 ////	return xrlatom_encode_value(tmp, strlen(tmp));
 ////	break;
 //    case xrlatom_int32:
 //	snprintf(tmp, sizeof(tmp) / sizeof(tmp[0]), "%d",
 //		 XORP_INT_CAST(_i32val));
 //
-//throw std::logic_error("NYI");
+//NYIEXCEPT;
 ////	return xrlatom_encode_value(tmp, strlen(tmp));
 ////	break;
 //    case xrlatom_uint32:
@@ -665,7 +666,7 @@ XrlAtom::packed_bytes() const
 	bytes += 4;
 	for (size_t i = 0; i < _list->size(); i++)
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    bytes += _list->get(i).packed_bytes();
 //	break;
     case xrlatom_binary:

@@ -14,7 +14,7 @@
 
 #ident "$XORP$"
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "rtrmgr_module.h"
 
@@ -67,7 +67,7 @@ ConfigTree::parse(const string& configuration, const string& config_file,
 {
     try {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	init_bootfile_parser(configuration.c_str(), config_file.c_str(), this);
 //	parse_bootfile();
 //	return true;
@@ -216,7 +216,7 @@ ConfigTree::add_node(const string& segment, int type,
 	    terminal_value(segment, _current_node->type(), OP_ASSIGN);
 	} else {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    boot_parser_error("Invalid child node");
 	}
 
@@ -261,7 +261,7 @@ throw std::logic_error("NYI");
 	const TemplateTreeNode* ttn = find_template_by_type(path_segments);
 	if (ttn == NULL) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    boot_parser_warning("Unknown config node ignored (no template)");
 //            return false;
 	}
@@ -368,7 +368,7 @@ ConfigTree::terminal_value(const string& value, int type, ConfigOperator op)
 	case NODE_MACADDR:
 	    try {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //		Mac(svalue.c_str());
 	    } catch (InvalidString) {
 		goto parse_error;
@@ -388,7 +388,7 @@ throw std::logic_error("NYI");
 	error_msg = "\"" + path + "\" has type " + ctn->typestr() +
 	    ", and value " + svalue + " is not a valid " + ctn->typestr();
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	boot_parser_error(error_msg.c_str());
     }
 
@@ -397,26 +397,26 @@ throw std::logic_error("NYI");
 	&& (! ctn->is_default_value(svalue))) {
 	error_msg = "\"" + path + "\" is read-only node";
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	boot_parser_error(error_msg.c_str());
     }
 
     if (ctn->set_value(svalue, /* userid */ 0, error_msg) != true) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	error_msg = c_format("Cannot set the value of \"%s\": %s",
 //			     path.c_str(), error_msg.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	boot_parser_error(error_msg.c_str());
     }
     if (ctn->set_operator(op, /* userid */ 0, error_msg) != true) {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 
 //	error_msg = c_format("Cannot set the operator for \"%s\": %s",
 //			     path.c_str(), error_msg.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	boot_parser_error(error_msg.c_str());
     }
     return;
@@ -425,7 +425,7 @@ throw std::logic_error("NYI");
     error_msg = "\"" + path + "\" has type " + ctn->typestr() +
 	", and value " + svalue + " is not a valid " + ctn->typestr();
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    boot_parser_error(error_msg.c_str());
 }
 

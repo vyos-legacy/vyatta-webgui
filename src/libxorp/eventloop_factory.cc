@@ -16,7 +16,7 @@
 #ident "$XORP$"
 
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "eventloop_factory.hh"
 //#include "eventloop_st.hh"
@@ -42,7 +42,7 @@ EventLoopFactory::create(EventLoopType type)
     switch (type) {
     case eventloop_st: {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	if (!_est)
 //	    _est = new EventLoopST();
 //        return _est;

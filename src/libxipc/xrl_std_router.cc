@@ -14,6 +14,7 @@
 
 #ident "$XORP$"
 
+#include "nyiexcept.hh"
 #include "xrl_std_router.hh"
 //#include "xrl_pf_inproc.hh"
 //#include "xrl_pf_stcp.hh"
@@ -30,22 +31,22 @@ create_listener(EventLoop& e, XrlDispatcher* d)
     if (pf != NULL) {
 	if (pf[0] == 'i') {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    return new XrlPFInProcListener(e, d);
 	}
 	if (pf[0] == 'u') {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    return new XrlPFSUDPListener(e, d);
 	}
 	if (pf[0] == 'x') {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    return new XrlPFSUnixListener(e, d);
 	}
     }
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    return new XrlPFSTCPListener(e, d);
 }
 

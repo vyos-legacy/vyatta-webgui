@@ -223,7 +223,7 @@ SlaveConfigTree::commit_phase3(const XrlError& e, CallBack cb,
 					   false, cb, xorpsh))
 	    != true) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_WARNING("Cannot unlock the config tree. No Finder?");
 //	    // XXX: need to dispatch the callback to move to phase5
 //	    should_dispatch_phase5 = true;
@@ -256,7 +256,7 @@ SlaveConfigTree::commit_phase4(bool success, const string& errmsg, CallBack cb,
 	!= true) {
 
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	XLOG_WARNING("Cannot unlock the config tree. No Finder?");
 //	// XXX: need to dispatch the callback to move to phase5
 //	should_dispatch_phase5 = true;

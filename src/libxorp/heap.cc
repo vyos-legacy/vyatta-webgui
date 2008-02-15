@@ -27,7 +27,7 @@
 #include "heap.hh"
 
 #include <strings.h>
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #ifdef _TEST_HEAP_CODE
 #define DBG(x)	x
@@ -69,7 +69,7 @@ Heap::resize(int new_size)
 
     if (_size >= new_size) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //        XLOG_ERROR("Bogus call inside heap::resize: have %d want %d",
 //		   _size, new_size);
 //        return 0;
@@ -78,7 +78,7 @@ throw std::logic_error("NYI");
     p = new struct heap_entry[new_size];
     if (p == NULL) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //        XLOG_ERROR("Heap resize %d failed", new_size); 
 //        return 1;	// Error
     } 
@@ -160,7 +160,7 @@ Heap::pop_obj(HeapBase *obj)
 
     if (max_entry < 0) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //        XLOG_ERROR("Extract from empty heap 0x%p", this);
 //        return;
     }
@@ -169,7 +169,7 @@ throw std::logic_error("NYI");
 	// Extract specific element, index is at offset
         if (!_intrude) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //            XLOG_FATAL("*** heap_extract from middle "
 //		       "not supported on this heap!!!");
 	}
@@ -177,13 +177,13 @@ throw std::logic_error("NYI");
         father = obj->_pos_in_heap;
         if (father < 0 || father >= _elements) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //            XLOG_FATAL("-- heap_extract, father %d out of bound 0..%d",
 //		       father, _elements);
         }
 	if (_p[father].object != obj) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_FATAL("-- bad obj 0x%p instead of 0x%p at %d",
 //		       _p[father].object, obj, father);
 	}
@@ -225,7 +225,7 @@ Heap::move(Heap_Key new_key, HeapBase *object)
 
     if (!_intrude)
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //        XLOG_FATAL("cannot move items on this heap");
 //
 //    i = object->_pos_in_heap;
@@ -287,7 +287,7 @@ Heap::verify()
     int i;
     for (i = 1; i < _elements; i++) {
 	if ( _p[i].key < _p[(i - 1) / 2 ].key) {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_WARNING("+++ heap violated at %d", (i - 1) / 2);
 //#ifdef _TEST_HEAP_CODE
 //	    print_all((i - 1) / 2);

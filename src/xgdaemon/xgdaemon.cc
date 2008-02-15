@@ -36,6 +36,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+#include "nyiexcept.hh"
 
 #include "xgdaemon_module.hh"
 #include "xgdaemon.hh"
@@ -169,7 +170,7 @@ int main(int argc, char ** argv) {	argc=argc;argv=argv;
 		}
 	} catch (const XorpReasonedException & e) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //		XLOG_ERROR("xgdaemon exiting due to an init error: %s", e.why().c_str());
 //		errcode = 1;
 //		goto cleanup;

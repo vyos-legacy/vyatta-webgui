@@ -30,7 +30,7 @@
 #include <stdio.h>
 
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "librl_common_module.h"
 #include "libxorp/xlog.h"
@@ -73,7 +73,7 @@ XrlCmdError RLSystemNodeUtil::set_system_login_user(
 	  cmd += " " + user;
 	}
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	if (rl_command::execute(cmd, false, false) == false) {
 //	  XLOG_ERROR("RLSystemNode: failed to execute command: %s", cmd.c_str());
 //	  return XrlCmdError::COMMAND_FAILED();

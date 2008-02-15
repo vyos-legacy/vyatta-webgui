@@ -29,6 +29,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "xgdaemon_module.hh"
 
@@ -514,7 +515,7 @@ bool XGDaemonXorpUtil::wait_for_xrlrouter_ready(EventLoop& eventloop, XrlRouter&
 		std::cout << ',';
 		if (xrl_router.failed()) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //			XLOG_ERROR("XrlRouter failed.  No Finder?");
 //			return false;
 //			break;

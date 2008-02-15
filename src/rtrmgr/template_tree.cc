@@ -14,7 +14,7 @@
 
 #ident "$XORP$"
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "rtrmgr_module.h"
 
@@ -84,7 +84,7 @@ TemplateTree::load_template_tree(const string& config_template_dir,
     // TODO: file suffix is hardcoded here!
     string globname = config_template_dir + "/*.tp";
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    glob_t pglob;
 //    if (glob(globname.c_str(), 0, 0, &pglob) != 0) {
 //	globfree(&pglob);
@@ -125,7 +125,7 @@ TemplateTree::parse_file(const string& filename,
 			 const string& config_template_dir, string& error_msg) 
 {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    if (init_template_parser(filename.c_str(), this) < 0) {
 //	complete_template_parser();
 //	error_msg = c_format("Failed to open template file: %s",
@@ -409,7 +409,7 @@ TemplateTree::find_node(const list<string>& path_segments) const
 	if (matches.size() > 1) {
 	    // This shouldn't be possible
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("Multiple match at node %s\n", segname.c_str());
 //	    XLOG_UNREACHABLE();
 	}
@@ -469,7 +469,7 @@ TemplateTree::find_node_by_type(const list<ConfPathSegment>& path_segments)
 	if (matches.size() > 1) {
 	    // This shouldn't be possible
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("Multiple match at node %s\n", segname.c_str());
 //	    XLOG_UNREACHABLE();
 	}

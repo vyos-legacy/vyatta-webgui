@@ -14,7 +14,7 @@
 
 #ident "$XORP$"
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "rtrmgr_module.h"
 
@@ -44,35 +44,35 @@
 const string&
 xorp_binary_root_dir()
 {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    return s_bin_root;
 }
 
 const string&
 xorp_config_root_dir()
 {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    return s_cfg_root;
 }
 
 const string&
 xorp_template_dir()
 {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    return s_template_dir;
 }
 
 void
 xorp_set_template_dir(const char* arg_t)
 {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    s_template_dir = arg_t;
 }
 
 const string&
 xorp_boot_file()
 {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    return s_boot_file;
 }
 
@@ -82,7 +82,7 @@ xorp_set_boot_file(const char* arg_b)
     if (arg_b != NULL) {
 	string::size_type idx = 0;
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	s_boot_file = arg_b;
 //	idx = s_boot_file.rfind(PATH_DELIMITER_STRING);
 //	if (idx != string::npos) {
@@ -95,14 +95,14 @@ throw std::logic_error("NYI");
 const string&
 xorp_xrl_targets_dir()
 {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    return s_xrl_targets_dir;
 }
 
 void
 xorp_set_xrl_targets_dir(const char* arg_x)
 {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    s_xrl_targets_dir = arg_x;
 }
 
@@ -142,7 +142,7 @@ find_executable_filename(const string& program_filename)
 {
     string executable_filename;
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    struct stat statbuf;
 //
 //    if (program_filename.size() == 0) {

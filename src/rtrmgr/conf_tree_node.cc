@@ -1784,7 +1784,7 @@ ConfigTreeNode::split_up_varname(const string& varname,
     if (varname.size() < 4 || varname[0] != '$'
 	|| varname[1] != '(' || varname[varname.size() - 1] != ')') {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	XLOG_ERROR("Bad variable name: %s", varname.c_str());
 //	return false;
     }
@@ -1904,7 +1904,7 @@ ConfigTreeNode::set_variable(const string& varname, const string& value)
 		if (! reason.empty())
 		    errmsg += c_format(": %s", reason.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //		XLOG_ERROR("%s", errmsg.c_str());
 //		return false;
 	    }
@@ -1912,7 +1912,7 @@ throw std::logic_error("NYI");
 		errmsg = c_format("Error setting the value of node \"%s\": %s",
 				  varname.c_str(), errmsg.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //		XLOG_ERROR("%s", errmsg.c_str());
 //		return false;
 	    }
@@ -1922,7 +1922,7 @@ throw std::logic_error("NYI");
 			      "which is the name of a configuration node",
 			      varname.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("%s", errmsg.c_str());
 //	    return false;
 	case NODE_ID: 
@@ -1930,7 +1930,7 @@ throw std::logic_error("NYI");
 			      "which is not user-settable",
 			      varname.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("%s", errmsg.c_str());
 //	    return false;
 	case NAMED:
@@ -1965,7 +1965,7 @@ throw std::logic_error("NYI");
 	errmsg = c_format("Attempt to set incomplete variable \"%s\"",
 			  varname.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	XLOG_ERROR("%s", errmsg.c_str());
 //	return false;
     }
@@ -1995,7 +1995,7 @@ throw std::logic_error("NYI");
 			      "which is the child of a named variable",
 			      varname.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("%s", errmsg.c_str());
 //	    return false;
 	case NODE_ID:
@@ -2003,7 +2003,7 @@ throw std::logic_error("NYI");
 			      "which is not user-settable",
 			      varname.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("%s", errmsg.c_str());
 //	    return false;
 	case NAMED:
@@ -2011,7 +2011,7 @@ throw std::logic_error("NYI");
 			      "which is the child of a named variable",
 			      varname.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("%s", errmsg.c_str());
 //	    return false;
 	case TEMPLATE_DEFAULT:
@@ -2019,7 +2019,7 @@ throw std::logic_error("NYI");
 			      "which is on a non-existent node",
 			      varname.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("%s", errmsg.c_str());
 //	    return false;
 	}
@@ -2028,7 +2028,7 @@ throw std::logic_error("NYI");
     errmsg = c_format("Attempt to set unknown variable \"%s\"",
 		      varname.c_str());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    XLOG_ERROR("%s", errmsg.c_str());
 //    return false;
 }

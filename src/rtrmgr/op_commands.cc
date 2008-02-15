@@ -17,7 +17,7 @@
 // #define DEBUG_LOGGING
 // #define DEBUG_PRINT_FUNCTION_NAME
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "rtrmgr_module.h"
 
@@ -628,7 +628,7 @@ OpCommandList::read_templates(const string& config_template_dir,
 
     // TODO: file suffix is hardcoded here!
     string globname = config_template_dir + "/*.cmds";
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    glob_t pglob;
 //    if (glob(globname.c_str(), 0, 0, &pglob) != 0) {
 //	globfree(&pglob);

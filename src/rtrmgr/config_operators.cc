@@ -15,7 +15,7 @@
 
 #ident "$XORP$"
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "rtrmgr_module.h"
 #include "libxorp/xorp.h"
@@ -114,7 +114,7 @@ lookup_operator(const string& s) throw (ParseError)
     // Invalid operator string
     //
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    string error_msg = c_format("Bad operator: %s", s.c_str());
 //    xorp_throw(ParseError, error_msg);
 }

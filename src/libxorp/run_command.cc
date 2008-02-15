@@ -13,7 +13,7 @@
 // notice is a summary of the XORP LICENSE file; the license in that file is
 // legally binding.
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "libxorp_module.h"
 
@@ -81,7 +81,7 @@ child_handler(int signo)
 	int wait_status = 0;
 	map<pid_t, RunCommandBase *>::iterator iter;
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	pid = waitpid(-1, &wait_status, WUNTRACED | WNOHANG);
 //	debug_msg("pid=%d, wait status=%d\n", XORP_INT_CAST(pid), wait_status);
 //	if (pid <= 0)
@@ -231,7 +231,7 @@ RunCommandBase::block_child_signals()
 
     if (sigprocmask(SIG_BLOCK, &sigchld_sigset, NULL) < 0) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	XLOG_ERROR("Failed to block SIGCHLD in current signal mask: %s",
 //		   strerror(errno));
 //	return (XORP_ERROR);
@@ -258,7 +258,7 @@ RunCommandBase::unblock_child_signals()
 
     if (sigprocmask(SIG_UNBLOCK, &sigchld_sigset, NULL) < 0) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	XLOG_ERROR("Failed to unblock SIGCHLD in current signal mask: %s",
 //		   strerror(errno));
 //	return (XORP_ERROR);
@@ -294,7 +294,7 @@ RunCommandBase::execute()
     _exec_id.save_current_exec_id();
     if (_exec_id.set_effective_exec_id(error_msg) != XORP_OK) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	XLOG_ERROR("Failed to set effective execution ID: %s",
 //		   error_msg.c_str());
 //	_exec_id.restore_saved_exec_id(error_msg);
@@ -318,7 +318,7 @@ throw std::logic_error("NYI");
     failed_pid_command = 0;
     failed_pid_wait_status = 0;
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    _pid = popen2(_command, _argument_list, _stdout_stream, _stderr_stream,
 //		  redirect_stderr_to_stdout());
 //    //    XLOG_TRACE(true, "RunCommandBase::execute() Executing program: 6");
@@ -468,7 +468,7 @@ RunCommandBase::wait_status_changed(int wait_status)
 	errno = 0;
 	_done_timer.schedule_now();
     } catch(...) {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	XLOG_ERROR("Error scheduling RunCommand::_done_timer: %d", errno);
 //	xorp_catch_standard_exceptions();
     }
@@ -511,7 +511,7 @@ RunCommandBase::close_stdout_output()
 
 #else // ! HOST_OS_WINDOWS
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	pclose2(_stdout_stream, true);
 //	_stdout_stream = NULL;
 #endif // ! HOST_OS_WINDOWS
@@ -558,7 +558,7 @@ RunCommandBase::set_command_status(int status)
 	if (_command_is_signal_terminated) {
 	    _command_term_signal = WTERMSIG(status);
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    _command_is_coredumped = WCOREDUMP(status);
 	}
 	if (_command_is_stopped) {
@@ -632,7 +632,7 @@ RunCommandBase::append_data(AsyncFileOperator::Event	event,
 	if (is_stdout) {
 	    memset(_stdout_buffer, 0, BUF_SIZE);
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    _stdout_file_reader->add_buffer(
 //		_stdout_buffer,
 //		BUF_SIZE,
@@ -641,7 +641,7 @@ throw std::logic_error("NYI");
 	} else {
 	    memset(_stderr_buffer, 0, BUF_SIZE);
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    _stderr_file_reader->add_buffer(
 //		_stderr_buffer,
 //		BUF_SIZE,
@@ -758,7 +758,7 @@ RunCommandBase::done(XorpTimer& done_timer)
     _error_msg += suffix;
 
     if (_is_error) {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	XLOG_ERROR("%s", _error_msg.c_str());
 //	_is_error = false;
 //	_error_msg = "";

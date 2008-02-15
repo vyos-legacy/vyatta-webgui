@@ -14,6 +14,7 @@
 
 #ident "$XORP$"
 
+#include "nyiexcept.hh"
 #include "xrl_module.h"
 #include "libxorp/debug.h"
 #include "libxorp/callback.hh"
@@ -93,7 +94,7 @@ finder_host(const char* host)
 {
     in_addr ia;
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    if (address_lookup(host, ia) == false) {
 //	xorp_throw(InvalidAddress,
 //		   c_format("Could resolve finder host %s\n", host));
@@ -106,7 +107,7 @@ mk_instance_name(EventLoop& e, const char* classname)
 {
     static uint32_t sp = (uint32_t)getpid();
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    static uint32_t sa = get_preferred_ipv4_addr().s_addr;
 //    static uint32_t sc;
 //
@@ -161,14 +162,14 @@ XrlRouter::initialize(const char* class_name,
 	    IPv4 ipv4(value);
 	    ipv4.copy_out(addr);
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    if (set_preferred_ipv4_addr(addr) != true) {
 //		XLOG_ERROR("Failed to change the Finder client address to %s",
 //			   ipv4.str().c_str());
 //	    }
 	} catch (const InvalidString& e) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("Invalid \"XORP_FINDER_CLIENT_ADDRESS\": %s",
 //		       e.str().c_str());
 	}
@@ -181,7 +182,7 @@ throw std::logic_error("NYI");
 	    IPv4 ipv4(value);
 	    if (! ipv4.is_unicast()) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //		XLOG_ERROR("Failed to change the Finder server address to %s",
 //			   ipv4.str().c_str());
 	    } else {
@@ -189,7 +190,7 @@ throw std::logic_error("NYI");
 	    }
 	} catch (const InvalidString& e) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("Invalid \"XORP_FINDER_SERVER_ADDRESS\": %s",
 //		       e.str().c_str());
 	}
@@ -201,7 +202,7 @@ throw std::logic_error("NYI");
 	int port = atoi(value);
 	if (port <= 0 || port > 65535) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("Invalid \"XORP_FINDER_SERVER_PORT\": %s", value);
 	} else {
 	    finder_port = port;
@@ -217,13 +218,13 @@ throw std::logic_error("NYI");
 	if ( !(*value != '\0' && *ep == '\0') &&
 	      (timeout_ms <= 0 || timeout_ms > 6000)) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    XLOG_ERROR("Invalid \"XORP_FINDER_CONNECT_TIMEOUT_MS\": %s", value);
 //	    timeout_ms = DEFAULT_FINDER_CONNECT_TIMEOUT_MS;
 	}
     }
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    _fc = new FinderClient();
 //
 //    _fxt = new FinderClientXrlTarget(_fc, &_fc->commands());
@@ -311,7 +312,7 @@ XrlRouter::XrlRouter(EventLoop&  e,
 XrlRouter::~XrlRouter()
 {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    _fc->detach_observer(this);
 //    if (_fac != 0)
 //	_fac->set_enabled(false);
@@ -344,7 +345,7 @@ throw std::logic_error("NYI");
 bool
 XrlRouter::connected() const
 {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    return _fc && _fc->connected();
 }
 
@@ -352,7 +353,7 @@ bool
 XrlRouter::ready() const
 {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    return _fc && _fc->ready();
 }
 
@@ -360,10 +361,10 @@ bool
 XrlRouter::failed() const
 {
     if (_fac != 0)
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	return _fac->enabled() == false && ready() == false;
     else if (_fac_ux)
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	return _fac_ux->enabled() == false && ready() == false;
 
     return true;
@@ -404,7 +405,7 @@ XrlRouter::finalize()
 	    debug_msg("adding handler for %s protocol %s address %s\n",
 		      x.str().c_str(), l->protocol(), l->address());
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	    _fc->register_xrl(instance_name(), x.str(),
 //			      l->protocol(), l->address());
 //	    ++ci;
@@ -412,7 +413,7 @@ throw std::logic_error("NYI");
 	++li;
     }
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    _fc->enable_xrls(instance_name());
 //    _finalized = true;
 }
@@ -421,7 +422,7 @@ bool
 XrlRouter::add_handler(const string& cmd, const XrlRecvCallback& rcb)
 {
     if (finalized()) {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	XLOG_ERROR("Attempting to add handler after XrlRouter finalized.  Handler = \"%s\"", cmd.c_str());
 //	return false;
     }
@@ -446,7 +447,7 @@ XrlRouter::send_resolved(const Xrl&		xrl,
 {
     try {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	Xrl x(dbe->values().front().c_str());
 //
 //	XrlPFSender* s = 0;
@@ -576,7 +577,7 @@ protected:
 bool
 XrlRouter::send(const Xrl& xrl, const XrlCallback& user_cb)
 {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 
 //  trace_xrl("Resolving xrl:", xrl);
 //
@@ -655,7 +656,7 @@ XrlRouter::dispatch_xrl(const string&	method_name,
 {
     string resolved_method;
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    if (_fc->query_self(method_name, resolved_method) == true) {
 //	return XrlDispatcher::dispatch_xrl(resolved_method, inputs, outputs);
 //    }
@@ -667,10 +668,10 @@ string
 XrlRouter::finder_path() const
 {
     if (_fac != 0)
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	return string(c_format("%s/%u", _fac->finder_address().str().c_str(), _fac->finder_port()));
     else if (_fac_ux)
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	return _fac_ux->finder_path();
 
     return FinderConstants::FINDER_DEFAULT_PATH();
@@ -680,7 +681,7 @@ IPv4
 XrlRouter::finder_address() const
 {
     if (_fac != 0)
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	return _fac->finder_address();
 
     return IPv4::LOOPBACK();
@@ -690,7 +691,7 @@ uint16_t
 XrlRouter::finder_port() const
 {
     if (_fac != 0)
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	return _fac->finder_port();
 
     return FinderConstants::FINDER_DEFAULT_PORT();
@@ -732,7 +733,7 @@ wait_until_xrl_router_is_ready(EventLoop& eventloop, XrlRouter& xrl_router)
     static const char* msg = "XrlRouter failed.  No Finder?";
     if (xlog_is_running()) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	XLOG_ERROR("%s", msg);
 //	xlog_stop();
 //	xlog_exit();

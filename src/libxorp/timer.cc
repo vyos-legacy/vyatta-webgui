@@ -30,7 +30,7 @@
 
 #ident "$XORP$"
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 
 #include "libxorp_module.h"
@@ -255,7 +255,7 @@ TimerList::current_time(TimeVal& now) const
 void
 TimerList::advance_time()
 {
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    _clock->advance_time();
 }
 
@@ -265,7 +265,7 @@ TimerList::system_gettimeofday(TimeVal* tv)
     TimerList* instance = TimerList::instance();
     if (!instance) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	SystemClock s;
 //	TimerList timer = TimerList(&s);
 //	timer.system_gettimeofday(tv);
@@ -311,7 +311,7 @@ TimerList::find_heap(int priority)
     map<int, Heap*>::iterator hi = _heaplist.find(priority);
     if (hi == _heaplist.end()) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	Heap* h = new Heap(true);
 //	_heaplist[priority] = h;
 //	return h;
@@ -479,7 +479,7 @@ TimerList::expire_one(int worst_priority)
 	    TimeVal tardiness = now - n->key;
 	    if (tardiness > WAY_BACK_GAP) {
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //		XLOG_WARNING("Timer Expiry *much* later than scheduled: "
 //			     "behind by %s seconds",
 //			     tardiness.str().c_str());

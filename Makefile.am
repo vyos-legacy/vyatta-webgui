@@ -357,6 +357,7 @@ src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_opcmd_info.hh
 src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xrl_xgdaemon_interface.cc
 src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xrl_xgdaemon_interface.hh
 
+src_xgdaemon_xgdaemon_SOURCES   += src/nyiexcept.hh
 
 
 css_DATA	+= src/html/css/main.css

@@ -42,7 +42,7 @@
 
 	//#ident "$XORP$"
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "xgdaemon_module.hh"
 
@@ -72,7 +72,7 @@ XrlXGDaemonInterface::common_0_1_get_target_name(// Output values,
 					       string& name)
 {
 //    name = XrlRlXgdaemonTargetBase::name();
-throw std::logic_error("NYI");
+NYIEXCEPT;
     return XrlCmdError::COMMAND_FAILED();
 }
 
@@ -82,7 +82,7 @@ XrlXGDaemonInterface::common_0_1_get_version(// Output values,
 {
 //    v = string(version());
 //    return XrlCmdError::OKAY();
-throw std::logic_error("NYI");
+NYIEXCEPT;
 return XrlCmdError::COMMAND_FAILED();
 }
 

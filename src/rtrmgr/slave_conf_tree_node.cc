@@ -15,7 +15,7 @@
 #ident "$XORP$"
 
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "rtrmgr_module.h"
 
@@ -140,7 +140,7 @@ SlaveConfigTreeNode::build_command_tree(CommandTree& cmd_tree,
     if (depth > 0) {
 	XLOG_ASSERT(_template_tree_node != NULL);
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	cmd_tree.push(_segname);
 //
 //	//
@@ -255,7 +255,7 @@ throw std::logic_error("NYI");
 
 		    XLOG_TRACE(_verbose, "***done == true\n");
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //		    cmd_tree.push((*ttn_iter)->segname());
 //		    cmd_tree.instantiate(NULL, (*ttn_iter),
 //					 true /* has_command */);
@@ -269,7 +269,7 @@ throw std::logic_error("NYI");
     }
     
     if (depth > 0)
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //	cmd_tree.pop();
 
     XLOG_TRACE(_verbose, "leaving build_command_tree\n");

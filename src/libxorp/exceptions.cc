@@ -21,7 +21,7 @@
 #include <typeinfo>
 #include <iostream>
 
-#include <stdexcept>
+#include "nyiexcept.hh"
 
 #include "exceptions.hh"
 
@@ -34,7 +34,7 @@ void
 xorp_catch_standard_exceptions() {
     xorp_print_standard_exceptions();
 
-throw std::logic_error("NYI");
+NYIEXCEPT;
 //    terminate();
 }
 

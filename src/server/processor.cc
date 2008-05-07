@@ -7,6 +7,8 @@
 #include <string>
 #include <iostream>
 #include <regex.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include "processor.hh"
 
 using namespace std;
@@ -56,6 +58,8 @@ Processor::init()
   if (status != 0) {
     cerr << "Processor::init(), error in compiling regex" << endl;
   }
+
+  _msg._request = (char*)malloc(2049);
 }
 
 /**
@@ -93,12 +97,19 @@ Processor::parse()
 void
 Processor::set_request(vector<uint8_t> &buf)
 {
-  _msg._request = (char*)realloc(_msg._request, buf.size()+1);
-  memcpy(_msg._request, &buf[0], buf.size());
-  *(_msg._request + buf.size()) = '\0';
+  int size = buf.size();
+  if (size < 1) {
+    buf.push_back(' ');
+  }
+  if (size > 2048) {
+    size = 2048;
+  }
+
+  memcpy(_msg._request, &buf[0], size);
+  *(_msg._request + size) = '\0';
   if (_debug) {
     cout << "Processor::set_request(): ";
-    for (int i = 0; i < buf.size(); ++i) {
+    for (int i = 0; i < size; ++i) {
       cout << _msg._request[i];
     }
     cout << endl;
@@ -109,13 +120,20 @@ Processor::set_request(vector<uint8_t> &buf)
 void
 Processor::set_request(string &buf)
 {
-  _msg._request = (char*)realloc(_msg._request, buf.size()+1);
-  for (int i = 0; i < buf.size(); ++i) {
+  int size = buf.size();
+  if (size < 1) {
+    buf = " ";
+  }
+  if (size > 2048) {
+    size = 2048;
+  }
+
+  for (int i = 0; i < size; ++i) {
     _msg._request[i] = buf[i];
   }
   if (_debug) {
     cout << "Processor::set_request(): ";
-    for (int i = 0; i < buf.size(); ++i) {
+    for (int i = 0; i < size; ++i) {
       cout << _msg._request[i];
     }
     cout << endl;
@@ -139,7 +157,45 @@ Processor::get_response()
     _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>0123456789</id><error><code>code</code><desc>string</desc></error></vyatta>";
   }
   else if (_msg._type == WebGUI::GETCONFIG) {
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><node name='firewall'><node name='broadcast-ping'><type name='text'><enum><match>enable</match><match>disable</match></enum></type></node></vyatta>";
+    _msg._response = get_configuration();
   }
   return _msg._response;
+}
+
+
+string
+Processor::get_configuration()
+{
+  //  return "<?xml version='1.0' encoding='utf-8'?><vyatta><node name='firewall'><node name='broadcast-ping'><type name='text'><enum><match>enable</match><match>disable</match></enum></type></node></vyatta>";
+
+  string root("/opt/vyatta/config/active");
+  
+  //recurse directory structure here to grab configuration
+  string out;
+  parse_configuration(root,out);
+
+  return out;
+}
+
+
+void
+Processor::parse_configuration(string &root, string &out)
+{
+  DIR *dp;
+  struct dirent *dirp;
+
+  if ((dp = opendir(root.c_str())) == NULL) {
+    cout << "handle_default: opendir: " << root << endl;
+    return;
+  }
+  while ((dirp = readdir(dp)) != NULL) {
+    if (dirp->d_name[0] != '.') {
+      string new_root = root + "/" + dirp->d_name;
+      out += string("<node name='") + string(dirp->d_name) + "'>";
+      parse_configuration(new_root, out);
+      out += "</node>";
+    }
+  }
+  closedir(dp);
+  return;
 }

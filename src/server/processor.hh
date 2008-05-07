@@ -85,6 +85,12 @@ public:
   void
   clear_message() {_msg = Message();}
 
+  std::string
+  get_configuration();
+
+  void
+  parse_configuration(std::string &root, std::string &out);
+
 private:
   Message _msg;
   regex_t _auth_regex;

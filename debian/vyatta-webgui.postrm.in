@@ -1,0 +1,3 @@
+#!/bin/bash
+which /opt/vyatta/sbin/vyatta-wanloadbalance.init >/dev/null && /opt/vyatta/sbin/vyatta-wanloadbalance.init stop
+exit 0

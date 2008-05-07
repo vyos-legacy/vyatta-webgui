@@ -1,0 +1,16 @@
+#!/bin/bash
+
+LOADBALANCE_DIR=/var/load-balance
+
+
+prefix=/opt/vyatta
+
+mkdir -p $LOADBALANCE_DIR
+chmod 0755 $LOADBALANCE_DIR
+
+touch ${LOADBALANCE_DIR}/wlb.conf
+
+#now move op cmds to correct location
+rm -fr /opt/vyatta/share/vyatta-op/templates/show/wan-load-balance/*
+mv /opt/vyatta/share/vyatta-cfg/templates/show/wan-load-balance /opt/vyatta/share/vyatta-op/templates/show/. 2>/dev/null
+exit 0

@@ -26,7 +26,7 @@ configure	+= --prefix=/opt/vyatta
 configure	+= --mandir=\$${prefix}/share/man
 configure	+= --infodir=\$${prefix}/share/info
 configure	+= CFLAGS="$(CFLAGS)"
-configure	+= LDFLAGS="-Wl,-z,defs"
+#configure	+= LDFLAGS="-Wl,-z,defs"
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0

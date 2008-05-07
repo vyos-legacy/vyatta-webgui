@@ -1,41 +1,57 @@
+wwwdir          = /srv/www
+pagesdir        = $(wwwdir)/pages
+cssdir          = $(pagesdir)/css
+imagesdir       = $(pagesdir)/images
+jsdir           = $(pagesdir)/js
 
-clean_rl_xg : clean_rl_xg_cgi clean_rl_xg_basic clean_rl_xg_basic_client clean_rl_xg_common clean_rl_xg_xgcgi clean_rl_xg_xgcgi2 clean_rl_xg_xgdaemon
+AM_CFLAGS = -I src -Wall
+sbin_PROGRAMS =
+pages_PROGRAMS =
+noinst_PROGRAMS =
+pkglib_LTLIBRARIES =
+css_DATA =
+images_DATA =
+js_DATA =
+pages_DATA =
+sysconf_DATA =
 
-clean_rl_xg_cgi:
-	rm src/cgi/*.la;
-	rm src/cgi/*.lo;
+clean : clean_cgi clean_basic clean_basic_client clean_common clean_xgcgi clean_xgcgi2 clean_xgdaemon
 
-clean_rl_xg_basic:
-	rm src/basic/*.la;
-	rm src/basic/*.lo;
+clean_cgi:
+	rm -f src/cgi/*.la;
+	rm -f src/cgi/*.lo;
 
-clean_rl_xg_basic_client:
-	rm src/basic_client/*.la;
-	rm src/basic_client/*.lo;
+clean_basic:
+	rm -f src/basic/*.la;
+	rm -f src/basic/*.lo;
 
-clean_rl_xg_common :
-	rm src/common/*.o;
-	rm src/common/*.la;
-	rm src/common/*.lo;
-	rm src/common/data/*.la;
-	rm src/common/data/*.lo;
-	rm src/common/textparse/*.la;
-	rm src/common/textparse/*.lo;
+clean_basic_client:
+	rm -f src/basic_client/*.la;
+	rm -f src/basic_client/*.lo;
 
-clean_rl_xg_xgcgi :
-	rm src/xgcgi/*.o;
-	rm src/xgcgi/*.la;
-	rm src/xgcgi/*.lo;
-	rm src/xgcgi/xgcgi;
-	rm src/xgcgi/xgcgi_test;
+clean_common :
+	rm -f src/common/*.o;
+	rm -f src/common/*.la;
+	rm -f src/common/*.lo;
+	rm -f src/common/data/*.la;
+	rm -f src/common/data/*.lo;
+	rm -f src/common/textparse/*.la;
+	rm -f src/common/textparse/*.lo;
 
-clean_rl_xg_xgcgi2 :
-	rm src/xgcgi2/*.o;
-	rm src/xgcgi2/xgcgi2;
+clean_xgcgi :
+	rm -f src/xgcgi/*.o;
+	rm -f src/xgcgi/*.la;
+	rm -f src/xgcgi/*.lo;
+	rm -f src/xgcgi/xgcgi;
+	rm -f src/xgcgi/xgcgi_test;
 
-clean_rl_xg_xgdaemon :
-	rm src/xgdaemon/*.o;
-	rm src/xgdaemon/xgdaemon;
+clean_xgcgi2 :
+	rm -f src/xgcgi2/*.o;
+	rm -f src/xgcgi2/xgcgi2;
+
+clean_xgdaemon :
+	rm -f src/xgdaemon/*.o;
+	rm -f src/xgdaemon/xgdaemon;
 
 
 sbin_PROGRAMS	+= src/xgdaemon/xgdaemon
@@ -57,230 +73,291 @@ pkglib_LTLIBRARIES      += src/xgcgi/libxgcgi.la
 
 
 
-rl_xg_basic_libbasic_la_CPPFLAGS  = -I$(srcdir)/src
-rl_xg_basic_libbasic_la_SOURCES	  = src/basic/basic_error_info.cc
-rl_xg_basic_libbasic_la_SOURCES	 += src/basic/basic_error_info.hh
-rl_xg_basic_libbasic_la_SOURCES  += src/basic/common_xml.cc
-rl_xg_basic_libbasic_la_SOURCES  += src/basic/common_xml.hh
-rl_xg_basic_libbasic_la_SOURCES  += src/basic/xgdaemon_socket.cc
-rl_xg_basic_libbasic_la_SOURCES  += src/basic/xgdaemon_socket.hh
-rl_xg_basic_libbasic_la_SOURCES  += src/basic/xgdaemon_util.cc
-rl_xg_basic_libbasic_la_SOURCES	 += src/basic/xgdaemon_util.hh
-rl_xg_basic_libbasic_la_SOURCES  += src/basic/xml_info.cc
-rl_xg_basic_libbasic_la_SOURCES  += src/basic/xml_info.hh
+src_basic_libbasic_la_CPPFLAGS  = -I$(srcdir)/src
+src_basic_libbasic_la_SOURCES	  = src/basic/basic_error_info.cc
+src_basic_libbasic_la_SOURCES	 += src/basic/basic_error_info.hh
+src_basic_libbasic_la_SOURCES  += src/basic/common_xml.cc
+src_basic_libbasic_la_SOURCES  += src/basic/common_xml.hh
+src_basic_libbasic_la_SOURCES  += src/basic/xgdaemon_socket.cc
+src_basic_libbasic_la_SOURCES  += src/basic/xgdaemon_socket.hh
+src_basic_libbasic_la_SOURCES  += src/basic/xgdaemon_util.cc
+src_basic_libbasic_la_SOURCES	 += src/basic/xgdaemon_util.hh
+src_basic_libbasic_la_SOURCES  += src/basic/xml_info.cc
+src_basic_libbasic_la_SOURCES  += src/basic/xml_info.hh
 
 
 
-rl_xg_basic_client_libbasicclient_la_CPPFLAGS  = -I$(srcdir)/rl_xg
-rl_xg_basic_client_libbasicclient_la_SOURCES   = src/basic_client/basic_xgdaemon_client.cc
-rl_xg_basic_client_libbasicclient_la_SOURCES  += src/basic_client/basic_xgdaemon_client.hh
+src_basic_client_libbasicclient_la_CPPFLAGS  = -I$(srcdir)/src
+src_basic_client_libbasicclient_la_SOURCES   = src/basic_client/basic_xgdaemon_client.cc
+src_basic_client_libbasicclient_la_SOURCES  += src/basic_client/basic_xgdaemon_client.hh
 
 
 
-rl_xg_cgi_libcgi_la_CPPFLAGS     = -I$(srcdir)/rl_xg
-rl_xg_cgi_libcgi_la_SOURCES	 = src/cgi/cgi_util.cc
-rl_xg_cgi_libcgi_la_SOURCES	+= src/cgi/cgi_util.hh
+src_cgi_libcgi_la_CPPFLAGS     = -I$(srcdir)/src
+src_cgi_libcgi_la_SOURCES	 = src/cgi/cgi_util.cc
+src_cgi_libcgi_la_SOURCES	+= src/cgi/cgi_util.hh
 
 
 
-rl_xg_common_libxgcommon_la_CPPFLAGS	 = -I$(srcdir)/rl_xg
-rl_xg_common_libxgcommon_la_SOURCES	 = src/common/common_session_status_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/common_session_status_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/context_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/context_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/current_task_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/current_task_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/error_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/error_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/exec_status_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/exec_status_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/executions_status_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/executions_status_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/mod_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/mod_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/net_data_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/net_data_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/nstat_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/nstat_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/opcmd_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/opcmd_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/session_id.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/session_id.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/stat_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/stat_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/sub_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/sub_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/system_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/system_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/time_info.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/time_info.hh
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/xgdaemon_common_xml.cc
-rl_xg_common_libxgcommon_la_SOURCES	+= src/common/xgdaemon_common_xml.hh
+src_common_libxgcommon_la_CPPFLAGS	 = -I$(srcdir)/src
+src_common_libxgcommon_la_SOURCES	 = src/common/common_session_status_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/common_session_status_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/context_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/context_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/current_task_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/current_task_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/error_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/error_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/exec_status_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/exec_status_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/executions_status_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/executions_status_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/mod_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/mod_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/net_data_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/net_data_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/nstat_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/nstat_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/opcmd_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/opcmd_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/session_id.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/session_id.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/stat_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/stat_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/sub_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/sub_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/system_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/system_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/time_info.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/time_info.hh
+src_common_libxgcommon_la_SOURCES	+= src/common/xgdaemon_common_xml.cc
+src_common_libxgcommon_la_SOURCES	+= src/common/xgdaemon_common_xml.hh
 
 
 
-rl_xg_common_data_libxgdata_la_CPPFLAGS	 = -I$(srcdir)/rl_xg
-rl_xg_common_data_libxgdata_la_SOURCES	 = rl_xg/common/data/data_matrix.cc
-rl_xg_common_data_libxgdata_la_SOURCES	+= src/common/data/data_matrix.hh
-rl_xg_common_data_libxgdata_la_SOURCES	+= src/common/data/static_route_4u_data.cc
-rl_xg_common_data_libxgdata_la_SOURCES	+= src/common/data/static_route_4u_data.hh
+src_common_data_libxgdata_la_CPPFLAGS	 = -I$(srcdir)/src
+src_common_data_libxgdata_la_SOURCES	 = src/common/data/data_matrix.cc
+src_common_data_libxgdata_la_SOURCES	+= src/common/data/data_matrix.hh
+src_common_data_libxgdata_la_SOURCES	+= src/common/data/static_route_4u_data.cc
+src_common_data_libxgdata_la_SOURCES	+= src/common/data/static_route_4u_data.hh
 
 
 
-rl_xg_common_textparse_libxgtextparse_la_CPPFLAGS	 = -I$(srcdir)/rl_xg
-rl_xg_common_textparse_libxgtextparse_la_SOURCES	 = rl_xg/common/textparse/text_parse_util.cc
-rl_xg_common_textparse_libxgtextparse_la_SOURCES	+= src/common/textparse/text_parse_util.hh
+src_common_textparse_libxgtextparse_la_CPPFLAGS	 = -I$(srcdir)/src
+src_common_textparse_libxgtextparse_la_SOURCES	 = src/common/textparse/text_parse_util.cc
+src_common_textparse_libxgtextparse_la_SOURCES	+= src/common/textparse/text_parse_util.hh
 
 
 
-rl_xg_xgcgi_libxgcgi_la_CPPFLAGS	 = -I$(srcdir)/rl_xg
-rl_xg_xgcgi_libxgcgi_la_SOURCES	 = rl_xg/xgcgi/client_current_task_info.cc
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_current_task_info.hh
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_exec_status_info.cc
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_exec_status_info.hh
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_executions_status_info.cc
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_executions_status_info.hh
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_mod_info.cc
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_mod_info.hh
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_opcmd_info.cc
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_opcmd_info.hh
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_session_info.cc
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_session_info.hh
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_session_status_info.cc
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_session_status_info.hh
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_system_info.cc
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_system_info.hh
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_time_info.cc
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_time_info.hh
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/html_util.hh
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/xgdaemon_client.cc
-rl_xg_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/xgdaemon_client.hh
+src_xgcgi_libxgcgi_la_CPPFLAGS	 = -I$(srcdir)/src
+src_xgcgi_libxgcgi_la_SOURCES	 = src/xgcgi/client_current_task_info.cc
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_current_task_info.hh
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_exec_status_info.cc
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_exec_status_info.hh
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_executions_status_info.cc
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_executions_status_info.hh
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_mod_info.cc
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_mod_info.hh
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_opcmd_info.cc
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_opcmd_info.hh
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_session_info.cc
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_session_info.hh
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_session_status_info.cc
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_session_status_info.hh
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_system_info.cc
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_system_info.hh
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_time_info.cc
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/client_time_info.hh
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/html_util.hh
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/xgdaemon_client.cc
+src_xgcgi_libxgcgi_la_SOURCES	+= src/xgcgi/xgdaemon_client.hh
 
 
 
-rl_xg_xgcgi_xgcgi_test_CPPFLAGS	         = -I$(srcdir)/rl_xg
-rl_xg_xgcgi_xgcgi_test_LDADD             = rl_xg/basic/libbasic.la
-rl_xg_xgcgi_xgcgi_test_LDADD		+= src/basic_client/libbasicclient.la
-rl_xg_xgcgi_xgcgi_test_LDADD		+= src/cgi/libcgi.la
-rl_xg_xgcgi_xgcgi_test_LDADD		+= src/common/libxgcommon.la
-rl_xg_xgcgi_xgcgi_test_LDADD		+= src/xgcgi/libxgcgi.la
-rl_xg_xgcgi_xgcgi_test_LDADD		+= librlxorp.la
-rl_xg_xgcgi_xgcgi_test_LDADD		+= -luuid
-rl_xg_xgcgi_xgcgi_test_LDADD		+= -lexpat
-rl_xg_xgcgi_xgcgi_test_SOURCES	         = rl_xg/xgcgi/test_client.cc
-rl_xg_xgcgi_xgcgi_test_SOURCES	        += src/xgcgi/test_client.hh
-rl_xg_xgcgi_xgcgi_test_SOURCES	        += src/common/misc_util.cc
-rl_xg_xgcgi_xgcgi_test_SOURCES	        += src/common/misc_util.hh
+src_xgcgi_xgcgi_test_CPPFLAGS	         = -I$(srcdir)/src
+src_xgcgi_xgcgi_test_LDADD             = src/basic/libbasic.la
+src_xgcgi_xgcgi_test_LDADD		+= src/basic_client/libbasicclient.la
+src_xgcgi_xgcgi_test_LDADD		+= src/cgi/libcgi.la
+src_xgcgi_xgcgi_test_LDADD		+= src/common/libxgcommon.la
+src_xgcgi_xgcgi_test_LDADD		+= src/xgcgi/libxgcgi.la
+src_xgcgi_xgcgi_test_LDADD		+= -luuid
+src_xgcgi_xgcgi_test_LDADD		+= -lexpat
+src_xgcgi_xgcgi_test_SOURCES	         = src/xgcgi/test_client.cc
+src_xgcgi_xgcgi_test_SOURCES	        += src/xgcgi/test_client.hh
+src_xgcgi_xgcgi_test_SOURCES	        += src/common/misc_util.cc
+src_xgcgi_xgcgi_test_SOURCES	        += src/common/misc_util.hh
 
 
 
-rl_xg_xgcgi_xgcgi_CPPFLAGS		 = -I$(srcdir)/rl_xg
-rl_xg_xgcgi_xgcgi_LDADD                  = rl_xg/basic/libbasic.la
-rl_xg_xgcgi_xgcgi_LDADD                 += src/basic_client/libbasicclient.la
-rl_xg_xgcgi_xgcgi_LDADD	                += src/cgi/libcgi.la
-rl_xg_xgcgi_xgcgi_LDADD	                += src/xgcgi/libxgcgi.la
-rl_xg_xgcgi_xgcgi_LDADD	                += src/common/libxgcommon.la
-rl_xg_xgcgi_xgcgi_LDADD	                += librlxorp.la
-rl_xg_xgcgi_xgcgi_LDADD	                += -luuid
-rl_xg_xgcgi_xgcgi_LDADD	                += -lexpat
-rl_xg_xgcgi_xgcgi_SOURCES		 = rl_xg/xgcgi/xgcgi.cc
-rl_xg_xgcgi_xgcgi_SOURCES		+= src/xgcgi/xgcgi.hh
+src_xgcgi_xgcgi_CPPFLAGS		 = -I$(srcdir)/src
+src_xgcgi_xgcgi_LDADD                  = src/basic/libbasic.la
+src_xgcgi_xgcgi_LDADD                 += src/basic_client/libbasicclient.la
+src_xgcgi_xgcgi_LDADD	                += src/cgi/libcgi.la
+src_xgcgi_xgcgi_LDADD	                += src/xgcgi/libxgcgi.la
+src_xgcgi_xgcgi_LDADD	                += src/common/libxgcommon.la
+src_xgcgi_xgcgi_LDADD	                += -luuid
+src_xgcgi_xgcgi_LDADD	                += -lexpat
+src_xgcgi_xgcgi_SOURCES		 = src/xgcgi/xgcgi.cc
+src_xgcgi_xgcgi_SOURCES		+= src/xgcgi/xgcgi.hh
 
 
 
-rl_xg_xgcgi2_xgcgi2_CPPFLAGS		 = -I$(srcdir)/rl_xg
-rl_xg_xgcgi2_xgcgi2_LDADD                = rl_xg/basic/libbasic.la
-rl_xg_xgcgi2_xgcgi2_LDADD               += src/basic_client/libbasicclient.la
-rl_xg_xgcgi2_xgcgi2_LDADD		+= src/cgi/libcgi.la
-rl_xg_xgcgi2_xgcgi2_LDADD		+= librlxorp.la
-rl_xg_xgcgi2_xgcgi2_LDADD		+= -luuid
-rl_xg_xgcgi2_xgcgi2_LDADD		+= -lexpat
-rl_xg_xgcgi2_xgcgi2_SOURCES		 = rl_xg/xgcgi2/xgcgi2.cc
-rl_xg_xgcgi2_xgcgi2_SOURCES		+= src/xgcgi2/xgcgi2.hh
-rl_xg_xgcgi2_xgcgi2_SOURCES		+= src/xgcgi2/cgi_log.cc
-rl_xg_xgcgi2_xgcgi2_SOURCES		+= src/xgcgi2/cgi_log.hh
+src_xgcgi2_xgcgi2_CPPFLAGS		 = -I$(srcdir)/src
+src_xgcgi2_xgcgi2_LDADD                = src/basic/libbasic.la
+src_xgcgi2_xgcgi2_LDADD               += src/basic_client/libbasicclient.la
+src_xgcgi2_xgcgi2_LDADD		+= src/cgi/libcgi.la
+src_xgcgi2_xgcgi2_LDADD		+= -luuid
+src_xgcgi2_xgcgi2_LDADD		+= -lexpat
+src_xgcgi2_xgcgi2_SOURCES		 = src/xgcgi2/xgcgi2.cc
+src_xgcgi2_xgcgi2_SOURCES		+= src/xgcgi2/xgcgi2.hh
+src_xgcgi2_xgcgi2_SOURCES		+= src/xgcgi2/cgi_log.cc
+src_xgcgi2_xgcgi2_SOURCES		+= src/xgcgi2/cgi_log.hh
 
 
 
-rl_xg_xgdaemon_xgdaemon_CPPFLAGS 	 = -I$(srcdir)/rl_xg
-rl_xg_xgdaemon_xgdaemon_LDADD	         = rl_xg/basic/libbasic.la
-rl_xg_xgdaemon_xgdaemon_LDADD	        += src/common/libxgcommon.la
-rl_xg_xgdaemon_xgdaemon_LDADD           += src/common/data/libxgdata.la
-rl_xg_xgdaemon_xgdaemon_LDADD           += src/common/textparse/libxgtextparse.la
-##
-## FIXME! We shouldn't link objects like this but these aren't yet
-##	  coalesed in a shared library
-##
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/command_tree.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/config_operators.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/conf_tree.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/conf_tree_node.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/generic_module_manager.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/op_commands.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/randomness.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/slave_conf_tree.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/slave_conf_tree_node.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/slave_module_manager.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/template_base_command.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/template_tree.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/template_tree_node.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/xorp_client.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/util.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/boot_parser.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/opcmd_parser.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/tplt_parser.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/boot_scanner.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/opcmd_scanner.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= rtrmgr/tplt_scanner.o
-rl_xg_xgdaemon_xgdaemon_LDADD	+= librlxorp.la
-rl_xg_xgdaemon_xgdaemon_LDADD	+= -luuid
-rl_xg_xgdaemon_xgdaemon_LDADD	+= -lpam
-rl_xg_xgdaemon_xgdaemon_LDADD	+= -lpam_misc
-rl_xg_xgdaemon_xgdaemon_LDADD	+= -lexpat
-rl_xg_xgdaemon_xgdaemon_LDADD	+= -lcrypt
-rl_xg_xgdaemon_xgdaemon_SOURCES	 = rl_xg/xgdaemon/xgdaemon.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_current_task_info.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_current_task_info.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/generic_xorp_link.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/generic_xorp_link.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/inter_session_info.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/inter_session_info.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_misc_util.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_misc_util.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_net_data_info.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_net_data_info.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_session_info.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_session_info.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_session_status_info.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_session_status_info.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_stat_info.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_stat_info.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_system_info.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_system_info.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_time_info.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_time_info.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_pam_util.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_pam_util.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_proc_util.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_proc_util.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_server.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_server.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_server_socket.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_server_socket.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_xorp_link.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_xorp_link.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_xorp_util.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_xorp_util.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_dir_info.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_dir_info.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_mod_info.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_mod_info.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_opcmd_info.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_opcmd_info.hh
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xrl_xgdaemon_interface.cc
-rl_xg_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xrl_xgdaemon_interface.hh
+src_xgdaemon_xgdaemon_CPPFLAGS 	 = -I$(srcdir)/src
+src_xgdaemon_xgdaemon_LDADD	         = src/basic/libbasic.la
+src_xgdaemon_xgdaemon_LDADD	        += src/common/libxgcommon.la
+src_xgdaemon_xgdaemon_LDADD           += src/common/data/libxgdata.la
+src_xgdaemon_xgdaemon_LDADD           += src/common/textparse/libxgtextparse.la
 
+src_xgdaemon_xgdaemon_LDADD	+= -luuid
+src_xgdaemon_xgdaemon_LDADD	+= -lpam
+src_xgdaemon_xgdaemon_LDADD	+= -lpam_misc
+src_xgdaemon_xgdaemon_LDADD	+= -lexpat
+src_xgdaemon_xgdaemon_LDADD	+= -lcrypt
+
+
+src_xgdaemon_xgdaemon_SOURCES	 =
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/config_operators.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/config_operators.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/conf_tree.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/conf_tree.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/conf_tree_node.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/conf_tree_node.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/generic_module_manager.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/generic_module_manager.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/op_commands.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/op_commands.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/slave_conf_tree.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/slave_conf_tree.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/slave_conf_tree_node.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/slave_conf_tree_node.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/slave_module_manager.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/slave_module_manager.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/template_base_command.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/template_base_command.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/template_tree.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/template_tree.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/template_tree_node.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/template_tree_node.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/xorp_client.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/xorp_client.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/util.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/rtrmgr/util.hh
+
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/xlog.c
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/xlog.h
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/ipv4.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/ipv4.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/ipv6.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/ipv6.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/utils.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/utils.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/timer.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/timer.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/c_format.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/c_format.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/ref_ptr.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/ref_ptr.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/run_command.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/run_command.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_error.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_error.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/mac.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/mac.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_atom.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_atom.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/utility.c
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/utility.h
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_router.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_router.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/heap.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/heap.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_atom_list.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_atom_list.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_tokens.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_tokens.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/ipvx.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/ipvx.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_pf.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_pf.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_cmd_map.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_cmd_map.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/finder_client_observer.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/finder_client_observer.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_dispatcher.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_dispatcher.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_args.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_args.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_std_router.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxipc/xrl_std_router.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/exceptions.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/exceptions.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/eventloop_factory.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/libxorp/eventloop_factory.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/librl_common/rl_encrypt_util.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/librl_common/rl_encrypt_util.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/librl_common/rl_system_node_util.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/librl_common/rl_system_node_util.hh
+
+
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_current_task_info.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_current_task_info.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/generic_xorp_link.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/generic_xorp_link.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/inter_session_info.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/inter_session_info.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_misc_util.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_misc_util.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_net_data_info.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_net_data_info.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_session_info.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_session_info.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_session_status_info.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_session_status_info.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_stat_info.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_stat_info.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_system_info.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_system_info.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_time_info.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/server_time_info.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_pam_util.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_pam_util.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_proc_util.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_proc_util.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_server.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_server.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_server_socket.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_server_socket.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_xorp_link.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_xorp_link.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_xorp_util.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xgdaemon_xorp_util.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_dir_info.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_dir_info.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_mod_info.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_mod_info.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_opcmd_info.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xorp_opcmd_info.hh
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xrl_xgdaemon_interface.cc
+src_xgdaemon_xgdaemon_SOURCES	+= src/xgdaemon/xrl_xgdaemon_interface.hh
+
+src_xgdaemon_xgdaemon_SOURCES   += src/nyiexcept.hh
 
 
 css_DATA	+= src/html/css/main.css

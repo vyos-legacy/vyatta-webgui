@@ -1,5 +1,0 @@
-#!/bin/sh
-
-cp xgcgi /var/www/cgi-bin/
-cp xgcgi /srv/www/lighttpd/
-

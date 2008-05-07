@@ -4,7 +4,6 @@
 #include <iostream>
 #include "session.hh"
 #include "processor.hh"
-#include "message.hh"
 #include "manager.hh"
 
 using namespace std;

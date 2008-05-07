@@ -7,18 +7,16 @@ AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
 CLEANFILES = src/main.o src/manager.o src/session.o src/processor.o src/sessionexchange.o src/sessionexchangefile.o src/sessionexchangesocket.o sessionexchangestdio.o test.o
 
-sbin_SCRIPTS = scripts/vyatta-webgui.init
+src_server_test_SOURCES = src/server/test.cc
 
-src_test_SOURCES = src/server/test.cc
-
-src_webgui_SOURCES = src/server/main.cc
-src_webgui_SOURCES += src/server/manager.cc
-src_webgui_SOURCES += src/server/session.cc
-src_webgui_SOURCES += src/server/sessionexchange.cc
-src_webgui_SOURCES += src/server/sessionexchangefile.cc
-src_webgui_SOURCES += src/server/sessionexchangesocket.cc
-src_webgui_SOURCES += src/server/sessionexchangestdio.cc
-src_webgui_SOURCES += src/server/processor.cc
+src_server_webgui_SOURCES = src/server/main.cc
+src_server_webgui_SOURCES += src/server/manager.cc
+src_server_webgui_SOURCES += src/server/session.cc
+src_server_webgui_SOURCES += src/server/sessionexchange.cc
+src_server_webgui_SOURCES += src/server/sessionexchangefile.cc
+src_server_webgui_SOURCES += src/server/sessionexchangesocket.cc
+src_server_webgui_SOURCES += src/server/sessionexchangestdio.cc
+src_server_webgui_SOURCES += src/server/processor.cc
 
 sbin_PROGRAMS = src/server/webgui
 sbin_PROGRAMS += src/server/test

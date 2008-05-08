@@ -234,8 +234,8 @@ Processor::parse_configuration(string &root, string &out)
     return;
   }
   while ((dirp = readdir(dp)) != NULL) {
-    if (dirp->d_name[0] != '.') {
-      if (strcmp(dirp->d_name,"node.def") != 0) {
+    if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
+      if (strcmp(dirp->d_name,"node.val") != 0) {
 	string new_root = root + "/" + dirp->d_name;
 	out += string("<node name='") + string(dirp->d_name) + "'>";
 	out += "<configured>active</configured>";

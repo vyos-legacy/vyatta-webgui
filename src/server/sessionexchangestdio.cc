@@ -55,11 +55,9 @@ SessionExchangeStdIO::read(Session &session)
   string req;
   //read from stdin here
   char buf[1025];
-  cout << "starting to read input" << endl;
   while (fgets(buf, 1024, stdin) != 0) {
     string tmp(buf);
     req += tmp.substr(0,tmp.length()-1);
-    cout << "buf: " << req << endl;
   }
   session.set_message(req);
   return true;

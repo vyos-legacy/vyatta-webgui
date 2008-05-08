@@ -46,9 +46,6 @@ Session::set_message(string &str)
 bool
 Session::process_message()
 {
-  //hack
-  _debug = true;
-
   //parse the message, and compute the response back
   if (_processor->parse() == true) {
     if (_debug) {
@@ -98,11 +95,13 @@ Session::process_message()
     }
   }
   else {
-    cerr << "Session::process_message(): message is unknown" << endl;
+    if (_debug) {
+      cerr << "Session::process_message(): message is unknown" << endl;
+    }
     return false;
   }
   //  _processor->set_session_id(_id);
-
+  
   return true;
 }
 

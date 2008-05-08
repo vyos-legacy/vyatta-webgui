@@ -78,19 +78,19 @@ Processor::parse()
   int status = regexec(&_auth_regex, (const char *)_msg._request, 0, 0, 0);
   if (status == 0) {
     _msg._type = WebGUI::NEWSESSION;
-    cout << "match newsession" << endl;
+    //    cout << "match newsession" << endl;
     return true;
   }
   status = regexec(&_command_regex, (const char*)_msg._request, 0,0,0);
   if (status == 0) {
     _msg._type = WebGUI::CLICMD;
-    cout << "match clicmd" << endl;
+    //    cout << "match clicmd" << endl;
     return true;
   }
   status = regexec(&_configuration_regex, (const char*)_msg._request, 0,0,0);
   if (status == 0) {
     _msg._type = WebGUI::GETCONFIG;
-    cout << "match getconfig" << endl;
+    //    cout << "match getconfig" << endl;
     return true;
   }
   return false;
@@ -173,6 +173,9 @@ Processor::get_response()
   else if (_msg._type == WebGUI::GETCONFIG) {
     _msg._response = get_configuration();
   }
+  else if (_msg._type == WebGUI::CLICMD) {
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>0</code></error></vyatta>";
+  }
   return _msg._response;
 }
 
@@ -232,12 +235,40 @@ Processor::parse_configuration(string &root, string &out)
   }
   while ((dirp = readdir(dp)) != NULL) {
     if (dirp->d_name[0] != '.') {
-      string new_root = root + "/" + dirp->d_name;
-      out += string("<node name='") + string(dirp->d_name) + "'>";
-      parse_configuration(new_root, out);
-      out += "</node>";
+      if (strcmp(dirp->d_name,"node.def") != 0) {
+	string new_root = root + "/" + dirp->d_name;
+	out += string("<node name='") + string(dirp->d_name) + "'>";
+	out += "<configured>active</configured>";
+	parse_configuration(new_root, out);
+	out += "</node>";
+      }
+      else {
+	parse_value(root, out);
+      }
     }
   }
   closedir(dp);
+  return;
+}
+
+
+/**
+ *
+ **/
+void
+Processor::parse_value(string &root, string &out)
+{
+  string value;
+  string file = root + "/node.def";
+  FILE *fp = fopen(file.c_str(), "r");
+  if (fp) {
+    char buf[1025];
+    //read value in here....
+    while (fgets(buf, 1024, fp) != 0) {
+      value += buf;
+    }
+    out += "<node>" + value.substr(0,value.length()-1) + "<configured>active</configured></node>";
+    fclose(fp);
+  }
   return;
 }

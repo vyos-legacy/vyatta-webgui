@@ -91,6 +91,9 @@ public:
   void
   parse_configuration(std::string &root, std::string &out);
 
+  void
+  parse_value(std::string &root, std::string &out);
+
 private:
   static int _REQ_BUFFER_SIZE;
   Message _msg;

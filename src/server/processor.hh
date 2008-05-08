@@ -92,6 +92,7 @@ public:
   parse_configuration(std::string &root, std::string &out);
 
 private:
+  static int _REQ_BUFFER_SIZE;
   Message _msg;
   regex_t _auth_regex;
   regex_t _command_regex;

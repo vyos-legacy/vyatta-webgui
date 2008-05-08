@@ -13,6 +13,8 @@
 
 using namespace std;
 
+int Processor::_REQ_BUFFER_SIZE = 2048;
+
 /**
  *
  **/
@@ -59,7 +61,7 @@ Processor::init()
     cerr << "Processor::init(), error in compiling regex" << endl;
   }
 
-  _msg._request = (char*)malloc(2049);
+  _msg._request = (char*)malloc(_REQ_BUFFER_SIZE+1);
 }
 
 /**
@@ -94,6 +96,9 @@ Processor::parse()
   return false;
 }
 
+/**
+ *
+ **/
 void
 Processor::set_request(vector<uint8_t> &buf)
 {
@@ -101,8 +106,8 @@ Processor::set_request(vector<uint8_t> &buf)
   if (size < 1) {
     buf.push_back(' ');
   }
-  if (size > 2048) {
-    size = 2048;
+  if (size > _REQ_BUFFER_SIZE) {
+    size = _REQ_BUFFER_SIZE;
   }
 
   memcpy(_msg._request, &buf[0], size);
@@ -117,6 +122,9 @@ Processor::set_request(vector<uint8_t> &buf)
 }
 
 
+/**
+ *
+ **/
 void
 Processor::set_request(string &buf)
 {
@@ -124,8 +132,8 @@ Processor::set_request(string &buf)
   if (size < 1) {
     buf = " ";
   }
-  if (size > 2048) {
-    size = 2048;
+  if (size > _REQ_BUFFER_SIZE) {
+    size = _REQ_BUFFER_SIZE;
   }
 
   for (int i = 0; i < size; ++i) {
@@ -141,6 +149,9 @@ Processor::set_request(string &buf)
 }
 
 
+/**
+ *
+ **/
 void
 Processor::set_response(CmdData &cmd_data)
 {
@@ -148,6 +159,9 @@ Processor::set_response(CmdData &cmd_data)
 
 }
 
+/**
+ *
+ **/
 string
 Processor::get_response()
 {
@@ -163,21 +177,49 @@ Processor::get_response()
 }
 
 
+/**
+ *
+ **/
 string
 Processor::get_configuration()
 {
   //  return "<?xml version='1.0' encoding='utf-8'?><vyatta><node name='firewall'><node name='broadcast-ping'><type name='text'><enum><match>enable</match><match>disable</match></enum></type></node></vyatta>";
 
+  //now parse the request to form: attribute: mode, attribute: depth, value: root
+  string req(_msg._request);
+  /*
+  int depth = 1;
+  int pos = string::npos;
+  if ((pos = req.find("depth")) != string::npos) {
+    depth = 
+  }
+  */
+
+  //skip attributes until I get a proper xml processor 
+  string rel_root;
+  int pos = req.find(">");
+  if (pos != string::npos) {
+    int endpos = req.substr(pos).find("<");
+    rel_root = req.substr(pos+1,endpos-1);
+  }
+  
   string root("/opt/vyatta/config/active");
+
+  if (!rel_root.empty()) {
+    root += "/" + rel_root;
+  }
   
   //recurse directory structure here to grab configuration
-  string out;
+  string out = "<?xml version='1.0' encoding='utf-8'?><vyatta>";
   parse_configuration(root,out);
-
+  out += "</vyatta>";
   return out;
 }
 
 
+/**
+ *
+ **/
 void
 Processor::parse_configuration(string &root, string &out)
 {

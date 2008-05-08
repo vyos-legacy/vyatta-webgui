@@ -112,9 +112,13 @@ int main(int argc, char* argv[])
   }
 
   //application logic right here
+  /*
   while (g_manager->process()) {
     usleep(1000*1000); //for one second
   }
+  */
+  //set up for single shot right now--will fix later
+  g_manager->process();
 
   if (debug) {
     cout << "main(): Shutting down" << endl;

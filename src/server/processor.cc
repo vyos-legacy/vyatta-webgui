@@ -16,7 +16,19 @@ using namespace std;
 
 int Processor::_REQ_BUFFER_SIZE = 2048;
 
-int Eventcnt = 0;
+extern "C" void
+data_hndl(void *data, const XML_Char *s, int len) {
+  Message *m = (Message*)data;
+  if (m->_type == WebGUI::GETCONFIG) {
+    char* buf = (char*)malloc( len + sizeof( char ) );
+    memset( buf, '\0', len + sizeof( char ) );
+    strncpy( buf, s, len );
+    m->_root_node = string(buf);
+    //    cout << "data_hndl: " << m->_root_node << ", " << buf << ", " << len << endl;
+    free(buf);
+  }
+}
+
 extern "C" void
 start_hndl(void *data, const XML_Char *el, const XML_Char **attr) {
 
@@ -30,9 +42,29 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr) {
   else if (strcmp(el, "auth") == 0) {
     m->_type = WebGUI::NEWSESSION; 
   }
-}  
-
-
+  
+  if (m->_type == WebGUI::GETCONFIG) {
+    if (strcmp(el,"node") == 0) {
+      //set root search node here
+      //      _root_node = 
+      for (int i = 0; attr[i]; i += 2) {
+	if (strcmp(attr[i],"mode") == 0) {
+	  if (strcmp(attr[i+1],"all") == 0) {
+	    m->_mode_all = true;
+	  }
+	}
+	else if (strcmp(attr[i],"depth") == 0) {
+	  long val = strtol(attr[i+1],NULL,10);
+	  if (val > 64 || val < 0) {
+	    val = 0;
+	  }
+	  m->_depth = val;
+	}
+      }
+    }  
+  }
+}    
+    
 extern "C" void
 end_hndl(void *data, const XML_Char *el) {
 }  
@@ -53,6 +85,7 @@ Processor::Processor(bool debug) :
   XML_SetUserData(_xml_parser, foo);
 
   XML_SetElementHandler(_xml_parser, start_hndl, end_hndl);
+  XML_SetCharacterDataHandler(_xml_parser, data_hndl);
 }
 
 /**
@@ -183,35 +216,18 @@ Processor::get_response()
 string
 Processor::get_configuration()
 {
-  //  return "<?xml version='1.0' encoding='utf-8'?><vyatta><node name='firewall'><node name='broadcast-ping'><type name='text'><enum><match>enable</match><match>disable</match></enum></type></node></vyatta>";
-
   //now parse the request to form: attribute: mode, attribute: depth, value: root
   string req(_msg._request);
-  /*
-  int depth = 1;
-  int pos = string::npos;
-  if ((pos = req.find("depth")) != string::npos) {
-    depth = 
-  }
-  */
-
-  //skip attributes until I get a proper xml processor 
-  string rel_root;
-  int pos = req.find(">");
-  if (pos != string::npos) {
-    int endpos = req.substr(pos).find("<");
-    rel_root = req.substr(pos+1,endpos-1);
-  }
-  
   string root("/opt/vyatta/config/active");
 
-  if (!rel_root.empty()) {
-    root += "/" + rel_root;
+  if (!_msg._root_node.empty()) {
+    root += "/" + _msg._root_node;
   }
   
   //recurse directory structure here to grab configuration
+  long depth = _msg._depth;
   string out = "<?xml version='1.0' encoding='utf-8'?><vyatta>";
-  parse_configuration(root,out);
+  parse_configuration(root,depth,out);
   out += "</vyatta>";
   return out;
 }
@@ -221,21 +237,28 @@ Processor::get_configuration()
  *
  **/
 void
-Processor::parse_configuration(string &root, string &out)
+Processor::parse_configuration(string &root, long &depth, string &out)
 {
   DIR *dp;
   struct dirent *dirp;
 
+  --depth;
+  if (depth == 0) {
+    return;
+  }
+
   if ((dp = opendir(root.c_str())) == NULL) {
     return;
   }
+
   while ((dirp = readdir(dp)) != NULL) {
     if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
       if (strcmp(dirp->d_name,"node.val") != 0) {
 	string new_root = root + "/" + dirp->d_name;
 	out += string("<node name='") + string(dirp->d_name) + "'>";
 	out += "<configured>active</configured>";
-	parse_configuration(new_root, out);
+	long new_depth = depth;
+	parse_configuration(new_root, new_depth, out);
 	out += "</node>";
       }
       else {

@@ -37,6 +37,9 @@ public:
   char *_request;
   std::string _response;
   WebGUI::MsgType _type;
+  std::string _root_node; //will want to wrap this in a type specific container
+  long _depth;
+  bool _mode_all;
   unsigned long _id;
 };
 
@@ -89,7 +92,7 @@ public:
   get_configuration();
 
   void
-  parse_configuration(std::string &root, std::string &out);
+  parse_configuration(std::string &root, long &depth, std::string &out);
 
   void
   parse_value(std::string &root, std::string &out);

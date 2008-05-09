@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <utility>
-//#include <sablot.h>
+#include <expat.h>
 #include <regex.h>
 #include "common.hh"
 
@@ -94,9 +94,11 @@ public:
   void
   parse_value(std::string &root, std::string &out);
 
+public:
+  Message _msg;
 private:
   static int _REQ_BUFFER_SIZE;
-  Message _msg;
+  XML_Parser _xml_parser;
   regex_t _auth_regex;
   regex_t _command_regex;
   regex_t _configuration_regex;

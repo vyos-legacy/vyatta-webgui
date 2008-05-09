@@ -18,6 +18,8 @@ src_server_webgui_SOURCES += src/server/sessionexchangesocket.cc
 src_server_webgui_SOURCES += src/server/sessionexchangestdio.cc
 src_server_webgui_SOURCES += src/server/processor.cc
 
+src_server_webgui_LDADD = -lexpat
+
 sbin_PROGRAMS = src/server/webgui
 sbin_PROGRAMS += src/server/test
 

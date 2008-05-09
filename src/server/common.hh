@@ -12,7 +12,7 @@ public:
 		      FAILED_LOGIN,
 		      CONFIGURATION_CHANGE};
 
-  typedef enum MsgType {NEWSESSION,
+  typedef enum MsgType {NEWSESSION = 0,
 			CLICMD,
 			GETCONFIG,
 			CLOSESESSION,

@@ -9,11 +9,34 @@
 #include <regex.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <expat.h>
 #include "processor.hh"
 
 using namespace std;
 
 int Processor::_REQ_BUFFER_SIZE = 2048;
+
+int Eventcnt = 0;
+extern "C" void
+start_hndl(void *data, const XML_Char *el, const XML_Char **attr) {
+
+  Message *m = (Message*)data;
+  if (strcmp(el,"configuration") == 0) {
+    m->_type = WebGUI::GETCONFIG; 
+  }
+  else if (strcmp(el, "command") == 0) {
+    m->_type = WebGUI::CLICMD; 
+  }
+  else if (strcmp(el, "auth") == 0) {
+    m->_type = WebGUI::NEWSESSION; 
+  }
+}  
+
+
+extern "C" void
+end_hndl(void *data, const XML_Char *el) {
+}  
+
 
 /**
  *
@@ -21,7 +44,15 @@ int Processor::_REQ_BUFFER_SIZE = 2048;
 Processor::Processor(bool debug) : 
   _debug(debug)
 {
+  _xml_parser = XML_ParserCreate(NULL);
+  if (!_xml_parser) {
+    cerr << "error setting up xml parser()" << endl;
+  }
 
+  void *foo = (void*)&(this->_msg);
+  XML_SetUserData(_xml_parser, foo);
+
+  XML_SetElementHandler(_xml_parser, start_hndl, end_hndl);
 }
 
 /**
@@ -32,9 +63,6 @@ Processor::~Processor()
   if (_debug) {
     cout << "Processor::~Processor(), shutting down processor" << endl;
   }
-  regfree(&_auth_regex);
-  regfree(&_command_regex);
-  regfree(&_configuration_regex);
 }
 
 /**
@@ -43,24 +71,6 @@ Processor::~Processor()
 void
 Processor::init()
 {
-  string match = "<auth>";
-  int status = regcomp(&_auth_regex, match.c_str(), REG_EXTENDED | REG_ICASE);
-  if (status != 0) {
-    cerr << "Processor::init(), error in compiling regex" << endl;
-  }
-  
-  match = "<command>";
-  status = regcomp(&_command_regex, match.c_str(), REG_EXTENDED | REG_ICASE);
-  if (status != 0) {
-    cerr << "Processor::init(), error in compiling regex" << endl;
-  }
-  
-  match = "<configuration>";
-  status = regcomp(&_configuration_regex, match.c_str(), REG_EXTENDED | REG_ICASE);
-  if (status != 0) {
-    cerr << "Processor::init(), error in compiling regex" << endl;
-  }
-
   _msg._request = (char*)malloc(_REQ_BUFFER_SIZE+1);
 }
 
@@ -74,26 +84,13 @@ Processor::parse()
     cout << "Processor::parse(), processing message: " <<  endl;
   }
 
-  //we'll cheat right now and just regex out the 3 different request types
-  int status = regexec(&_auth_regex, (const char *)_msg._request, 0, 0, 0);
-  if (status == 0) {
-    _msg._type = WebGUI::NEWSESSION;
-    //    cout << "match newsession" << endl;
-    return true;
+  //use expat to parse request.
+  if (!XML_Parse(_xml_parser, _msg._request, strlen(_msg._request), true)) {
+    //    cerr << "Processor::parse(), error in parsing request" << endl;
+    return false;
   }
-  status = regexec(&_command_regex, (const char*)_msg._request, 0,0,0);
-  if (status == 0) {
-    _msg._type = WebGUI::CLICMD;
-    //    cout << "match clicmd" << endl;
-    return true;
-  }
-  status = regexec(&_configuration_regex, (const char*)_msg._request, 0,0,0);
-  if (status == 0) {
-    _msg._type = WebGUI::GETCONFIG;
-    //    cout << "match getconfig" << endl;
-    return true;
-  }
-  return false;
+
+  return true;
 }
 
 /**
@@ -230,7 +227,6 @@ Processor::parse_configuration(string &root, string &out)
   struct dirent *dirp;
 
   if ((dp = opendir(root.c_str())) == NULL) {
-    cout << "handle_default: opendir: " << root << endl;
     return;
   }
   while ((dirp = readdir(dp)) != NULL) {
@@ -263,7 +259,7 @@ Processor::parse_value(string &root, string &out)
   FILE *fp = fopen(file.c_str(), "r");
   if (fp) {
     char buf[1025];
-    //read value in here....
+    //read value in her....
     while (fgets(buf, 1024, fp) != 0) {
       value += buf;
     }

@@ -18,6 +18,11 @@ public:
 			CLOSESESSION,
 			NOTIFICATION};
 
+  typedef enum NodeType {NONE,
+			 TEXT,
+			 IPV4,
+			 IPV4NET,
+			 U32};
 };
 
 

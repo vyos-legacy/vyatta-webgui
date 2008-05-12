@@ -46,6 +46,10 @@ Session::set_message(string &str)
 bool
 Session::process_message()
 {
+  if (_debug) {
+    cout << "Session::process_message(), entering" << endl;
+  }
+
   //parse the message, and compute the response back
   if (_processor->parse() == true) {
     if (_debug) {

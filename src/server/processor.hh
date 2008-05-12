@@ -31,9 +31,24 @@ public:
   int _err;
 };
 
+class TemplateParams
+{
+public:
+  TemplateParams() : _multi(false), _type(WebGUI::NONE) {}
+  bool _multi;
+  WebGUI::NodeType _type;
+  std::string _help;
+  //enumeration goes here
+
+  std::string
+  get_xml();
+};
+
 class Message
 {
 public:
+  Message() : _depth(2),_mode_all(false),_id(0) {}
+
   char *_request;
   std::string _response;
   WebGUI::MsgType _type;
@@ -57,9 +72,6 @@ public:
 
   std::string
   get_command();
-
-  ConfigData
-  get_config_request();
 
   void
   create_response();
@@ -89,10 +101,16 @@ public:
   clear_message() {_msg = Message();}
 
   std::string
+  get_template();
+
+  void
+  get_template_node(const std::string &path, TemplateParams &params);
+
+  std::string
   get_configuration();
 
   void
-  parse_configuration(std::string &root, long &depth, std::string &out);
+  parse_configuration(std::string &rel_config, std::string &rel_template, long &depth, std::string &out);
 
   void
   parse_value(std::string &root, std::string &out);

@@ -10,6 +10,7 @@ public:
 		      RELOAD_CONFIGURATION,
 		      COMMAND_ERROR,
 		      FAILED_LOGIN,
+		      COMMIT_IN_PROGRESS,
 		      CONFIGURATION_CHANGE};
 
   typedef enum MsgType {NEWSESSION = 0,
@@ -17,6 +18,9 @@ public:
 			GETCONFIG,
 			CLOSESESSION,
 			NOTIFICATION};
+
+  typedef enum ParseNode {NEWSESSION_USER = 0,
+			  NEWSESSION_PSWD};
 
   typedef enum NodeType {NONE,
 			 TEXT,

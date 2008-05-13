@@ -5,7 +5,7 @@ etcdir           = /etc
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
-CLEANFILES = src/main.o src/manager.o src/session.o src/processor.o src/sessionexchange.o src/sessionexchangefile.o src/sessionexchangesocket.o sessionexchangestdio.o test.o
+CLEANFILES = src/server/main.o src/server/manager.o src/server/session.o src/server/processor.o src/server/sessionexchange.o src/server/sessionexchangefile.o src/server/sessionexchangesocket.o src/server/sessionexchangestdio.o src/server/test.o src/server/authenticate.o
 
 src_server_test_SOURCES = src/server/test.cc
 
@@ -17,8 +17,11 @@ src_server_webgui_SOURCES += src/server/sessionexchangefile.cc
 src_server_webgui_SOURCES += src/server/sessionexchangesocket.cc
 src_server_webgui_SOURCES += src/server/sessionexchangestdio.cc
 src_server_webgui_SOURCES += src/server/processor.cc
+src_server_webgui_SOURCES += src/server/authenticate.cc
 
 src_server_webgui_LDADD = -lexpat
+src_server_webgui_LDADD += -lpam
+
 
 sbin_PROGRAMS = src/server/webgui
 sbin_PROGRAMS += src/server/test

@@ -52,9 +52,12 @@ public:
   char *_request;
   std::string _response;
   WebGUI::MsgType _type;
+  WebGUI::ParseNode _node;
   std::string _root_node; //will want to wrap this in a type specific container
   long _depth;
   bool _mode_template;
+  std::string _user;
+  std::string _pswd;
   unsigned long _id;
 };
 

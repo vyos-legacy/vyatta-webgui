@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <expat.h>
+#include "authenticate.hh"
 #include "processor.hh"
 
 using namespace std;
@@ -67,6 +68,20 @@ data_hndl(void *data, const XML_Char *s, int len) {
     m->_root_node = string(buf);
     free(buf);
   }
+  else if (m->_type == WebGUI::NEWSESSION) {
+    char* buf = (char*)malloc( len + sizeof( char ) );
+    memset( buf, '\0', len + sizeof( char ) );
+    strncpy( buf, s, len );
+    if (m->_node == WebGUI::NEWSESSION_USER) {
+      m->_user = string(buf);
+    }
+    else if (m->_node == WebGUI::NEWSESSION_PSWD) {
+      m->_pswd = string(buf);
+    }
+
+    m->_root_node = string(buf);
+    free(buf);
+  }
 }
 
 extern "C" void
@@ -98,6 +113,14 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
 	}
 	m->_depth = val;
       }
+    }
+  }
+  else if (m->_type == WebGUI::NEWSESSION) {
+    if (strcmp(el, "user") == 0) {
+      m->_node = WebGUI::NEWSESSION_USER;
+    }
+    else if (strcmp(el, "pswd") == 0) {
+      m->_node = WebGUI::NEWSESSION_PSWD;
     }
   }
 }    
@@ -239,7 +262,19 @@ Processor::get_response()
   //dummy here for now
   string response;
   if (_msg._type == WebGUI::NEWSESSION) {
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>0123456789</id><error><code>code</code><desc>string</desc></error></vyatta>";
+    Authenticate auth;
+    uid_t id = auth.test_auth(_msg._user,_msg._pswd);
+
+    cout << "processing new session: " << _msg._user << ", " << _msg._pswd << ", " << id << endl;
+
+    if (id > 0) {
+      char buf[20];
+      sprintf(buf, "%d", id);
+      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>"+string(buf)+"</id><error><code>code</code><desc>string</desc></error></vyatta>";
+    }
+    else {
+      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>-1</code><error>login failed</error></vyatta>";
+    }
   }
   else if (_msg._type == WebGUI::GETCONFIG) {
     if (_msg._mode_template == true) {

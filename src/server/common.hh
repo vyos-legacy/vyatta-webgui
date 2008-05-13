@@ -22,7 +22,11 @@ public:
 			 TEXT,
 			 IPV4,
 			 IPV4NET,
-			 U32};
+			 IPV6,
+			 IPV6NET,
+			 U32,
+			 BOOL,
+			 MACADDR};
 };
 
 

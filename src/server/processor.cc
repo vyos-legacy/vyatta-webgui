@@ -33,8 +33,20 @@ TemplateParams::get_xml()
   else if (_type == WebGUI::IPV4NET) {
     out += "<type name='ivp4net'/>";    
   }
+  else if (_type == WebGUI::IPV6) {
+    out += "<type name='ivp4'/>";    
+  }
+  else if (_type == WebGUI::IPV6NET) {
+    out += "<type name='ivp4net'/>";    
+  }
   else if (_type == WebGUI::U32) {
     out += "<type name='u32'/>";    
+  }
+  else if (_type == WebGUI::BOOL) {
+    out += "<type name='bool'/>";    
+  }
+  else if (_type == WebGUI::MACADDR) {
+    out += "<type name='macaddr'/>";    
   }
 
   if (_help.empty() == false) {
@@ -306,11 +318,26 @@ Processor::get_template_node(const string &path, TemplateParams &params)
 	if (line.find("txt") != string::npos) {
 	  params._type = WebGUI::TEXT;
 	}
+	else if (line.find("ipv4net") != string::npos) {
+	  params._type = WebGUI::IPV4NET;
+	}
 	else if (line.find("ipv4") != string::npos) {
+	  params._type = WebGUI::IPV4;
+	}
+	else if (line.find("ipv6net") != string::npos) {
+	  params._type = WebGUI::IPV4NET;
+	}
+	else if (line.find("ipv6") != string::npos) {
 	  params._type = WebGUI::IPV4;
 	}
 	else if (line.find("u32") != string::npos) {
 	  params._type = WebGUI::U32;
+	}
+	else if (line.find("bool") != string::npos) {
+	  params._type = WebGUI::BOOL;
+	}
+	else if (line.find("macaddr") != string::npos) {
+	  params._type = WebGUI::MACADDR;
 	}
 
       }

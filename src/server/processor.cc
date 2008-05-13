@@ -75,8 +75,8 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
     //set root search node here
     for (int i = 0; attr[i]; i += 2) {
       if (strcmp(attr[i],"mode") == 0) {
-	if (strcmp(attr[i+1],"all") == 0) {
-	  m->_mode_all = true;
+	if (strcmp(attr[i+1],"template") == 0) {
+	  m->_mode_template = true;
 	}
       }
       else if (strcmp(attr[i],"depth") == 0) {
@@ -230,7 +230,7 @@ Processor::get_response()
     _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>0123456789</id><error><code>code</code><desc>string</desc></error></vyatta>";
   }
   else if (_msg._type == WebGUI::GETCONFIG) {
-    if (_msg._mode_all == true) {
+    if (_msg._mode_template == true) {
       _msg._response = get_template();
     }
     else {
@@ -271,11 +271,14 @@ Processor::get_template()
 {
   //now parse the request to form: attribute: mode, attribute: depth, value: root
   string req(_msg._request);
+  
+  //parses all template nodes (or until depth to provide full template tree
+
 
   //recurse directory structure here to grab configuration
   long depth = _msg._depth;
   string out = "<?xml version='1.0' encoding='utf-8'?><vyatta>";
-  //  parse_configuration(_msg._root_node,depth,out);
+  parse_template(_msg._root_node,depth,out);
   out += "</vyatta>";
   return out;
 }
@@ -312,7 +315,11 @@ Processor::get_template_node(const string &path, TemplateParams &params)
 
       }
       else if (line.find("help:") != string::npos) {
+	//need to escape out '<' and '>'
 	params._help = line.substr(5,line.length()-6);
+	string help = mass_replace(params._help, "<", "&#60;");
+	help = mass_replace(help, ">", "&#62;");
+	params._help = help;
       }
     }
 
@@ -392,6 +399,60 @@ Processor::parse_configuration(string &rel_config_path, string &rel_tmpl_path, l
  *
  **/
 void
+Processor::parse_template(string &rel_tmpl_path, long &depth, string &out)
+{
+  static string root_template("/opt/vyatta/share/vyatta-cfg/templates");
+  DIR *dp;
+  struct dirent *dirp;
+
+  --depth;
+  if (depth == 0) {
+    return;
+  }
+
+  string full_template_path = root_template + "/" + rel_tmpl_path;
+
+  if ((dp = opendir(full_template_path.c_str())) == NULL) {
+    return;
+  }
+
+  //  cout << "Processor::parse_template: " << full_template_path << endl << endl;
+
+  while ((dirp = readdir(dp)) != NULL) {
+    if (dirp->d_name[0] != '.') {
+      string new_rel_tmpl_path = rel_tmpl_path + "/" + dirp->d_name;
+      if (strcmp(dirp->d_name,"node.def") != 0) {
+	out += string("<node name='") + string(dirp->d_name) + "'>";
+
+	///only if this node is configured does this show up.
+	long new_depth = depth;
+	
+	//at this point reach out to the template directory and retreive data on this node
+	TemplateParams tmpl_params;
+	string new_rel_tmpl_path = rel_tmpl_path;
+	get_template_node(new_rel_tmpl_path, tmpl_params);
+	if (tmpl_params._multi == true) {
+	  new_rel_tmpl_path += "/node.tag";
+	}
+	else {
+	  new_rel_tmpl_path += "/" + string(dirp->d_name);
+	}
+	out += tmpl_params.get_xml();
+
+	parse_template(new_rel_tmpl_path, new_depth, out);
+	out += "</node>";
+      }
+    }
+  }
+  closedir(dp);
+  return;
+}
+
+
+/**
+ *
+ **/
+void
 Processor::parse_value(string &rel_path, string &out)
 {
   string value;
@@ -411,4 +472,15 @@ Processor::parse_value(string &rel_path, string &out)
     fclose(fp);
   }
   return;
+}
+
+std::string // replace all instances of victim with replacement
+Processor::mass_replace(const std::string &source, const std::string &victim, const
+	     std::string &replacement)
+{
+  std::string answer = source;
+  std::string::size_type j = 0;
+  while ((j = answer.find(victim, j)) != std::string::npos )
+    answer.replace(j, victim.length(), replacement);
+  return answer;
 }

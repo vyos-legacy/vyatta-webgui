@@ -47,14 +47,14 @@ public:
 class Message
 {
 public:
-  Message() : _depth(2),_mode_all(false),_id(0) {}
+  Message() : _depth(2),_mode_template(false),_id(0) {}
 
   char *_request;
   std::string _response;
   WebGUI::MsgType _type;
   std::string _root_node; //will want to wrap this in a type specific container
   long _depth;
-  bool _mode_all;
+  bool _mode_template;
   unsigned long _id;
 };
 
@@ -113,7 +113,13 @@ public:
   parse_configuration(std::string &rel_config, std::string &rel_template, long &depth, std::string &out);
 
   void
+  parse_template(std::string &rel_template, long &depth, std::string &out);
+
+  void
   parse_value(std::string &root, std::string &out);
+
+  std::string
+  mass_replace(const std::string &source, const std::string &victim, const std::string &replacement);
 
 public:
   Message _msg;

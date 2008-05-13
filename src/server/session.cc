@@ -8,6 +8,9 @@
 
 using namespace std;
 
+/**
+ *
+ **/
 Session::Session(int sock, bool debug) : 
   _valid(false),
   _debug(debug), 
@@ -16,12 +19,18 @@ Session::Session(int sock, bool debug) :
   _processor = NULL;
 }
 
+/**
+ *
+ **/
 void
 Session::init(Processor *proc)
 {
   _processor = proc;
 }
 
+/**
+ *
+ **/
 void
 Session::set_sock(int sock) 
 {
@@ -31,18 +40,27 @@ Session::set_sock(int sock)
   }
 }
 
+/**
+ *
+ **/
 void
 Session::set_message(vector<uint8_t> &buf)
 {
   _processor->set_request(buf);
 }
 
+/**
+ *
+ **/
 void
 Session::set_message(string &str)
 {
   _processor->set_request(str);
 }
 
+/**
+ *
+ **/
 bool
 Session::process_message()
 {
@@ -109,6 +127,9 @@ Session::process_message()
   return true;
 }
 
+/**
+ *
+ **/
 CmdData
 Session::execute_command(const string &cmd)
 {
@@ -127,12 +148,18 @@ Session::execute_command(const string &cmd)
   return cmd_data;
 }
 
+/**
+ *
+ **/
 int
 Session::create_new_cli_session()
 {
 
 }
 
+/**
+ *
+ **/
 void
 Session::clear_message()
 {

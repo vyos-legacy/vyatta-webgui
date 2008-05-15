@@ -155,7 +155,9 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
     }
   }
   else if (m->_type == WebGUI::CLICMD) {
-    m->_node = WebGUI::CLICMD_ID;
+    if (strcmp(el, "id") == 0) {
+      m->_node = WebGUI::CLICMD_ID;
+    }
   }
 }    
     
@@ -164,6 +166,8 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
  **/
 extern "C" void
 end_hndl(void *data, const XML_Char *el) {
+  Message *m = (Message*)data;
+  m->_node = WebGUI::EMPTY;
 }  
 
 

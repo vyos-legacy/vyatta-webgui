@@ -64,9 +64,12 @@ Authenticate::create_new_session()
 
     cmd = "grep -q union=aufs /proc/cmdline || grep -q aufs /proc/filesystems";
     string unionfs = "unionfs";
+    //CRAJ@--ADD SUPPORT FOR AUSF
+    /*
     if (WebGUI::execute(cmd, true)) {
       unionfs = "aufs";
     }
+    */
 
     cmd = "sudo mount -t "+unionfs+" -o dirs=/tmp/changes_only_"+string(buf)+"=rw:/opt/vyatta/config/active=ro "+unionfs+" /opt/vyatta/config/tmp/new_config_" + string(buf);
 

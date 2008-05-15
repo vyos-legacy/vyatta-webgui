@@ -13,5 +13,10 @@ public:
   void
   execute_command();
 
+
+private:
+  bool
+  validate_session(unsigned long id);
+
 };
 #endif //__COMMAND_HH__

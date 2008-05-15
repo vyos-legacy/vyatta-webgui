@@ -17,7 +17,7 @@ char const* WebGUI::ErrorDesc[8] = {"n/a",
 				    "configuration has changed"};
 
 
-bool
+string
 WebGUI::execute(std::string &cmd, bool read)
 {
   string dir = "w";
@@ -25,16 +25,24 @@ WebGUI::execute(std::string &cmd, bool read)
     dir = "r";
   }
 
+
+  char buf[1025];
+  buf[0] = '\0';
+
+  int i = 0;
   FILE *f = popen(cmd.c_str(), dir.c_str());
   if (f) {
+    //    cout << "out: " << endl;
+    if (read == true) {
+      
+      fgets(buf, 1024, f);
+    }
     if (pclose(f) != 0) {
-      //      syslog(LOG_ERR, "Error executing system command: %s", cmd.c_str());
     }
   }
   else {
-    //    syslog(LOG_ERR, "Error executing system command: %s", cmd.c_str());
   }
-  return false;
+  return string(buf);
 }
 
 /**

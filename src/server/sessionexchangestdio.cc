@@ -66,9 +66,9 @@ SessionExchangeStdIO::read(Session &session)
 bool
 SessionExchangeStdIO::write(Session &session)
 {
+  string msg = session._processor->_msg._response;
   //write to std out here
-  if (session.get_message().empty() == false) {
-    string msg = session.get_message();
+  if (msg.empty() == false) {
     fputs(msg.c_str(), stdout);
     return true;
   }

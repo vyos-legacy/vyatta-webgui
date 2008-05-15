@@ -84,4 +84,5 @@ Manager::register_session(Session &session)
   iter = _session_coll.find(session.get_id());
   iter->second._authenticate._proc = session._authenticate._proc;
   iter->second._configuration._proc = session._configuration._proc;
+  iter->second._command._proc = session._command._proc;
 }

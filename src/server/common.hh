@@ -25,7 +25,8 @@ public:
 			CLOSESESSION,
 			NOTIFICATION};
 
-  typedef enum ParseNode {NEWSESSION_USER = 0,
+  typedef enum ParseNode {EMPTY = 0,
+			  NEWSESSION_USER,
 			  NEWSESSION_PSWD,
 			  GETCONFIG_ID,
 			  CLICMD_ID};
@@ -45,7 +46,7 @@ public:
    *
    *
    **/
-  bool static 
+  std::string static 
   execute(std::string &cmd, bool read = false);
 
 

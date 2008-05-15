@@ -93,7 +93,6 @@ data_hndl(void *data, const XML_Char *s, int len) {
     else if (m->_node == WebGUI::NEWSESSION_PSWD) {
       m->_pswd = string(buf);
     }
-
     m->_root_node = string(buf);
     free(buf);
   }
@@ -105,7 +104,7 @@ data_hndl(void *data, const XML_Char *s, int len) {
       char val[40];
       m->_id = strtoul(buf, NULL, 10);
     }
-    m->_root_node = string(buf);
+    m->_command = string(buf);
     free(buf);
   }
 }

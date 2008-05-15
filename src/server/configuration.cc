@@ -30,7 +30,6 @@ Configuration::~Configuration()
 void
 Configuration::get_config()
 {
-  cout << "A" << endl;
   //now check for directory
   if (!validate_session(_proc->get_msg()._id)) {
     char buf[40];
@@ -41,12 +40,10 @@ Configuration::get_config()
   }
 
   if (_proc->get_msg()._mode_template == true) {
-  cout << "B" << endl;
     string foo = get_template();
     _proc->set_response(foo);
   }
   else {
-  cout << "C" << endl;
     string bar = get_configuration();
     _proc->set_response(bar);
   }
@@ -163,8 +160,6 @@ Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_pat
   DIR *dp;
   struct dirent *dirp;
 
-  cout << "D: " << depth << endl;
-
   --depth;
   if (depth == 0) {
     return;
@@ -173,8 +168,8 @@ Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_pat
   string full_config_path = root_config + "/" + rel_config_path;
   string full_template_path = root_template + "/" + rel_tmpl_path;
 
-  cout << "Configuration::parse_configuation: " << full_config_path << endl;
-  cout << "Configuration::parse_configuation: " << full_template_path << endl << endl;
+  //  cout << "Configuration::parse_configuation: " << full_config_path << endl;
+  //  cout << "Configuration::parse_configuation: " << full_template_path << endl << endl;
   
   if ((dp = opendir(full_config_path.c_str())) == NULL) {
     return;

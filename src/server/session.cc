@@ -26,6 +26,10 @@ void
 Session::init(Processor *proc)
 {
   _processor = proc;
+
+  _authenticate.init(_processor);
+  _configuration.init(_processor);
+  _command.init(_processor);
 }
 
 /**
@@ -58,6 +62,12 @@ Session::set_message(string &str)
   _processor->set_request(str);
 }
 
+std::string
+Session::get_message() 
+{
+  return _processor->get_response();
+}
+
 /**
  *
  **/
@@ -74,34 +84,27 @@ Session::process_message()
       cout << "Session::process_message(), session received valid request" << endl;
     }
 
-    CmdData data;
-    ConfigData config_data;
     Message msg = _processor->get_msg();
     switch (msg._type) {
     case WebGUI::NEWSESSION:
       if (_debug) {
 	cout << "Session::process_message(): NEWSESSION" << endl;
       }
-      create_new_cli_session();
+      _authenticate.create_new_session();
       break;
 
     case WebGUI::CLICMD:
       if (_debug) {
 	cout << "Session::process_message(): CLICMD" << endl;
       }
-      //      data = execute_command(_processor.get_command());
-      //      _processor.set_response(data);
+      _command.execute_command();
       break;
 
     case WebGUI::GETCONFIG:
       if (_debug) {
 	cout << "Session::process_message(): GETCONFIG" << endl;
       }
-      //      config_data = _processor.get_config_request();
-
-      //parses the trees????
-      //      get_config(config_data);
-      //      _processor.set_response(config_data);
+      _configuration.get_config();
       break;
 
     case WebGUI::CLOSESESSION:
@@ -122,39 +125,7 @@ Session::process_message()
     }
     return false;
   }
-  //  _processor->set_session_id(_id);
-  
   return true;
-}
-
-/**
- *
- **/
-CmdData
-Session::execute_command(const string &cmd)
-{
-  //execute this command in the remote session now
-
-  //make sure to strip off any unexpected characters here
-
-  //make sure that the shell environment is set up correctly
-  int err = execl(cmd.c_str(),"");
-
-  
-
-  //capture the response, stdout, stderr, errcode and return
-  CmdData cmd_data;
-  cmd_data._err = err;
-  return cmd_data;
-}
-
-/**
- *
- **/
-int
-Session::create_new_cli_session()
-{
-
 }
 
 /**

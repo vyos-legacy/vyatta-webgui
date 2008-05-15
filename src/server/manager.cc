@@ -36,6 +36,7 @@ Manager::process()
 {
   Session new_session = _se->check_for_new_connection();
   if (new_session.is_valid()) {
+    new_session.init(&_processor);
     if (_debug) {
       cout << "Manager::process(), received new valid connection" << endl;
     }
@@ -75,7 +76,12 @@ Manager::register_session(Session &session)
     _session_coll.erase(iter);
     iter->second.close_session();
   }
-  session.init(&_processor);
+
   _session_coll.insert(pair<unsigned long,Session>(session.get_id(),session));
 
+  //NEED TO FIX THIS BELOW--MAP ISN'T CALL COPY CONSTRUCTOR.
+  //hack debug code here
+  iter = _session_coll.find(session.get_id());
+  iter->second._authenticate._proc = session._authenticate._proc;
+  iter->second._configuration._proc = session._configuration._proc;
 }

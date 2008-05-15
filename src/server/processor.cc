@@ -6,10 +6,10 @@
  */
 #include <string>
 #include <iostream>
-#include <regex.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <expat.h>
+#include <assert.h>
 #include "authenticate.hh"
 #include "processor.hh"
 
@@ -17,6 +17,9 @@ using namespace std;
 
 int Processor::_REQ_BUFFER_SIZE = 2048;
 
+/**
+ *
+ **/
 std::string
 TemplateParams::get_xml() 
 {
@@ -25,29 +28,31 @@ TemplateParams::get_xml()
     out += "<multi/>";
   }
 
-  if (_type == WebGUI::TEXT) {
+  switch (_type) {
+  case WebGUI::TEXT:
     out += "<type name='text'/>";
-  }
-  else if (_type == WebGUI::IPV4) {
+    break;
+  case WebGUI::IPV4:
     out += "<type name='ivp4'/>";    
-  }
-  else if (_type == WebGUI::IPV4NET) {
+    break;
+  case WebGUI::IPV4NET:
     out += "<type name='ivp4net'/>";    
-  }
-  else if (_type == WebGUI::IPV6) {
-    out += "<type name='ivp4'/>";    
-  }
-  else if (_type == WebGUI::IPV6NET) {
-    out += "<type name='ivp4net'/>";    
-  }
-  else if (_type == WebGUI::U32) {
+    break;
+  case WebGUI::IPV6:
+    out += "<type name='ivp6'/>";    
+    break;
+  case WebGUI::IPV6NET:
+    out += "<type name='ivp6net'/>";    
+    break;
+  case WebGUI::U32:
     out += "<type name='u32'/>";    
-  }
-  else if (_type == WebGUI::BOOL) {
+    break;
+  case WebGUI::BOOL:
     out += "<type name='bool'/>";    
-  }
-  else if (_type == WebGUI::MACADDR) {
+    break;
+  case WebGUI::MACADDR:
     out += "<type name='macaddr'/>";    
+    break;
   }
 
   if (_help.empty() == false) {
@@ -58,6 +63,9 @@ TemplateParams::get_xml()
 }
 
 
+/**
+ *
+ **/
 extern "C" void
 data_hndl(void *data, const XML_Char *s, int len) {
   Message *m = (Message*)data;
@@ -65,7 +73,14 @@ data_hndl(void *data, const XML_Char *s, int len) {
     char* buf = (char*)malloc( len + sizeof( char ) );
     memset( buf, '\0', len + sizeof( char ) );
     strncpy( buf, s, len );
-    m->_root_node = string(buf);
+    if (m->_node == WebGUI::GETCONFIG_ID) {
+      char val[40];
+      m->_id = strtoul(buf, NULL, 10);
+    }
+    else {
+      //value between configuration tags
+      m->_root_node = string(buf);
+    }
     free(buf);
   }
   else if (m->_type == WebGUI::NEWSESSION) {
@@ -82,8 +97,22 @@ data_hndl(void *data, const XML_Char *s, int len) {
     m->_root_node = string(buf);
     free(buf);
   }
+  else if (m->_type == WebGUI::CLICMD) {
+    char* buf = (char*)malloc( len + sizeof( char ) );
+    memset( buf, '\0', len + sizeof( char ) );
+    strncpy( buf, s, len );
+    if (m->_node == WebGUI::CLICMD_ID) {
+      char val[40];
+      m->_id = strtoul(buf, NULL, 10);
+    }
+    m->_root_node = string(buf);
+    free(buf);
+  }
 }
 
+/**
+ *
+ **/
 extern "C" void
 start_hndl(void *data, const XML_Char *el, const XML_Char **attr) 
 {
@@ -99,6 +128,9 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   }
   
   if (m->_type == WebGUI::GETCONFIG) {
+    if (strcmp(el, "id") == 0) {
+      m->_node = WebGUI::GETCONFIG_ID;
+    }
     //set root search node here
     for (int i = 0; attr[i]; i += 2) {
       if (strcmp(attr[i],"mode") == 0) {
@@ -123,8 +155,14 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
       m->_node = WebGUI::NEWSESSION_PSWD;
     }
   }
+  else if (m->_type == WebGUI::CLICMD) {
+    m->_node = WebGUI::CLICMD_ID;
+  }
 }    
     
+/**
+ *
+ **/
 extern "C" void
 end_hndl(void *data, const XML_Char *el) {
 }  
@@ -179,7 +217,9 @@ Processor::parse()
 
   //use expat to parse request.
   if (!XML_Parse(_xml_parser, _msg._request, strlen(_msg._request), true)) {
-    cerr << "Processor::parse(), error in parsing request" << endl;
+    char buf[20];
+    sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</error></vyatta>";
     return false;
   }
 
@@ -247,10 +287,9 @@ Processor::set_request(string &buf)
  *
  **/
 void
-Processor::set_response(CmdData &cmd_data)
+Processor::set_response(string &resp)
 {
-  //right now return dummy confirmation;
-
+  _msg._response = resp;
 }
 
 /**
@@ -262,27 +301,22 @@ Processor::get_response()
   //dummy here for now
   string response;
   if (_msg._type == WebGUI::NEWSESSION) {
-    Authenticate auth;
-    uid_t id = auth.test_auth(_msg._user,_msg._pswd);
+    uid_t id = _msg._id;
 
-    cout << "processing new session: " << _msg._user << ", " << _msg._pswd << ", " << id << endl;
-
-    if (id > 0) {
-      char buf[20];
-      sprintf(buf, "%d", id);
-      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>"+string(buf)+"</id><error><code>code</code><desc>string</desc></error></vyatta>";
+    char buf[20];
+    if (id == 0) {
+      sprintf(buf, "%d", WebGUI::AUTHENTICATION_FAILURE);
+      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error>"+string(buf)+"</error><code>code</code><desc>"+string(WebGUI::ErrorDesc[WebGUI::AUTHENTICATION_FAILURE])+"</desc></error></vyatta>";
     }
     else {
-      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>-1</code><error>login failed</error></vyatta>";
+      //now at this point generate the new configuration tree and environment settings
+      sprintf(buf, "%d", _msg._id);
+      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><id>"+string(buf)+"</id><code>0</code><error></error></vyatta>";
     }
   }
   else if (_msg._type == WebGUI::GETCONFIG) {
-    if (_msg._mode_template == true) {
-      _msg._response = get_template();
-    }
-    else {
-      _msg._response = get_configuration();
-    }
+    //build out response here
+    //    assert(false);
   }
   else if (_msg._type == WebGUI::CLICMD) {
     _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>0</code></error></vyatta>";
@@ -291,258 +325,3 @@ Processor::get_response()
 }
 
 
-/**
- *
- **/
-string
-Processor::get_configuration()
-{
-  //now parse the request to form: attribute: mode, attribute: depth, value: root
-  string req(_msg._request);
-
-  //recurse directory structure here to grab configuration
-  long depth = _msg._depth;
-  string out = "<?xml version='1.0' encoding='utf-8'?><vyatta>";
-  //note that this will need to replace template directory path with a back-check of multi-nodes
-  parse_configuration(_msg._root_node,_msg._root_node, depth,out);
-  out += "</vyatta>";
-  return out;
-}
-
-
-/**
- *
- **/
-string
-Processor::get_template()
-{
-  //now parse the request to form: attribute: mode, attribute: depth, value: root
-  string req(_msg._request);
-  
-  //parses all template nodes (or until depth to provide full template tree
-
-
-  //recurse directory structure here to grab configuration
-  long depth = _msg._depth;
-  string out = "<?xml version='1.0' encoding='utf-8'?><vyatta>";
-  parse_template(_msg._root_node,depth,out);
-  out += "</vyatta>";
-  return out;
-}
-
-/**
- *
- **/
-void
-Processor::get_template_node(const string &path, TemplateParams &params)
-{
-  string root_template("/opt/vyatta/share/vyatta-cfg/templates");
-  string tmpl_file = root_template + "/" + path + "/node.def";
-  
-  //open the file here and parse
-  FILE *fp = fopen(tmpl_file.c_str(), "r");
-  if (fp) {
-    char buf[1025];
-    //read value in her....
-    while (fgets(buf, 1024, fp) != 0) {
-      string line = string(buf);
-      if (line.find("tag:") != string::npos) {
-	params._multi = true;
-      }
-      else if (line.find("type:") != string::npos) {
-	if (line.find("txt") != string::npos) {
-	  params._type = WebGUI::TEXT;
-	}
-	else if (line.find("ipv4net") != string::npos) {
-	  params._type = WebGUI::IPV4NET;
-	}
-	else if (line.find("ipv4") != string::npos) {
-	  params._type = WebGUI::IPV4;
-	}
-	else if (line.find("ipv6net") != string::npos) {
-	  params._type = WebGUI::IPV4NET;
-	}
-	else if (line.find("ipv6") != string::npos) {
-	  params._type = WebGUI::IPV4;
-	}
-	else if (line.find("u32") != string::npos) {
-	  params._type = WebGUI::U32;
-	}
-	else if (line.find("bool") != string::npos) {
-	  params._type = WebGUI::BOOL;
-	}
-	else if (line.find("macaddr") != string::npos) {
-	  params._type = WebGUI::MACADDR;
-	}
-
-      }
-      else if (line.find("help:") != string::npos) {
-	//need to escape out '<' and '>'
-	params._help = line.substr(5,line.length()-6);
-	string help = mass_replace(params._help, "<", "&#60;");
-	help = mass_replace(help, ">", "&#62;");
-	params._help = help;
-      }
-    }
-
-    fclose(fp);
-  }
-}
-
-
-
-/**
- *
- **/
-void
-Processor::parse_configuration(string &rel_config_path, string &rel_tmpl_path, long &depth, string &out)
-{
-  static string root_config("/opt/vyatta/config/active");
-  static string root_template("/opt/vyatta/share/vyatta-cfg/templates");
-  DIR *dp;
-  struct dirent *dirp;
-
-  --depth;
-  if (depth == 0) {
-    return;
-  }
-
-  string full_config_path = root_config + "/" + rel_config_path;
-  string full_template_path = root_template + "/" + rel_tmpl_path;
-
-  if ((dp = opendir(full_config_path.c_str())) == NULL) {
-    return;
-  }
-
-  //  cout << "Processor::parse_configuation: " << full_config_path << endl;
-  //  cout << "Processor::parse_configuation: " << full_template_path << endl << endl;
-  
-
-  while ((dirp = readdir(dp)) != NULL) {
-    if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
-      string new_rel_config_path = rel_config_path + "/" + dirp->d_name;
-      if (strcmp(dirp->d_name,"node.val") != 0) {
-	out += string("<node name='") + string(dirp->d_name) + "'>";
-	out += "<configured>active</configured>";
-	long new_depth = depth;
-	
-	//at this point reach out to the template directory and retreive data on this node
-	TemplateParams tmpl_params;
-	string new_rel_tmpl_path = rel_tmpl_path;
-	get_template_node(new_rel_tmpl_path, tmpl_params);
-	if (tmpl_params._multi == true) {
-	  new_rel_tmpl_path += "/node.tag";
-	}
-	else {
-	  new_rel_tmpl_path += "/" + string(dirp->d_name);
-	}
-	out += tmpl_params.get_xml();
-
-
-	parse_configuration(new_rel_config_path, new_rel_tmpl_path, new_depth, out);
-	out += "</node>";
-      }
-      else {
-	out += "<node>";
-	parse_value(new_rel_config_path, out);
-	TemplateParams tmpl_params;
-	get_template_node(rel_tmpl_path, tmpl_params);
-	out += tmpl_params.get_xml();
-	out += "</node>";
-      }
-    }
-  }
-  closedir(dp);
-  return;
-}
-
-
-/**
- *
- **/
-void
-Processor::parse_template(string &rel_tmpl_path, long &depth, string &out)
-{
-  static string root_template("/opt/vyatta/share/vyatta-cfg/templates");
-  DIR *dp;
-  struct dirent *dirp;
-
-  --depth;
-  if (depth == 0) {
-    return;
-  }
-
-  string full_template_path = root_template + "/" + rel_tmpl_path;
-
-  if ((dp = opendir(full_template_path.c_str())) == NULL) {
-    return;
-  }
-
-  //  cout << "Processor::parse_template: " << full_template_path << endl << endl;
-
-  while ((dirp = readdir(dp)) != NULL) {
-    if (dirp->d_name[0] != '.') {
-      string new_rel_tmpl_path = rel_tmpl_path + "/" + dirp->d_name;
-      if (strcmp(dirp->d_name,"node.def") != 0) {
-	out += string("<node name='") + string(dirp->d_name) + "'>";
-
-	///only if this node is configured does this show up.
-	long new_depth = depth;
-	
-	//at this point reach out to the template directory and retreive data on this node
-	TemplateParams tmpl_params;
-	string new_rel_tmpl_path = rel_tmpl_path;
-	get_template_node(new_rel_tmpl_path, tmpl_params);
-	if (tmpl_params._multi == true) {
-	  new_rel_tmpl_path += "/node.tag";
-	}
-	else {
-	  new_rel_tmpl_path += "/" + string(dirp->d_name);
-	}
-	out += tmpl_params.get_xml();
-
-	parse_template(new_rel_tmpl_path, new_depth, out);
-	out += "</node>";
-      }
-    }
-  }
-  closedir(dp);
-  return;
-}
-
-
-/**
- *
- **/
-void
-Processor::parse_value(string &rel_path, string &out)
-{
-  string value;
-  string root_config("/opt/vyatta/config/active");
-  string file = root_config + "/" + rel_path;
-
-  //  cout << "opening node.val file at: " << file << endl;  
-
-  FILE *fp = fopen(file.c_str(), "r");
-  if (fp) {
-    char buf[1025];
-    //read value in her....
-    while (fgets(buf, 1024, fp) != 0) {
-      value += buf;
-    }
-    out += value.substr(0,value.length()-1) + "<configured>active</configured>";
-    fclose(fp);
-  }
-  return;
-}
-
-std::string // replace all instances of victim with replacement
-Processor::mass_replace(const std::string &source, const std::string &victim, const
-	     std::string &replacement)
-{
-  std::string answer = source;
-  std::string::size_type j = 0;
-  while ((j = answer.find(victim, j)) != std::string::npos )
-    answer.replace(j, victim.length(), replacement);
-  return answer;
-}

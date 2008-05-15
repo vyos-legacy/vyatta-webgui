@@ -3,6 +3,9 @@
 
 #include <string>
 #include <vector>
+#include "authenticate.hh"
+#include "configuration.hh"
+#include "command.hh"
 #include "processor.hh"
 
 class Session
@@ -32,7 +35,7 @@ public:
   set_message(std::string &str);
 
   std::string
-  get_message() {return _processor->get_response();}
+  get_message();
 
   bool
   process_message();
@@ -42,12 +45,6 @@ public:
 
   int
   get_sock() const {return _sock;}
-
-  CmdData
-  execute_command(const std::string &cmd);
-
-  int
-  create_new_cli_session();
 
   unsigned long
   get_id() const {return 0;}
@@ -61,10 +58,13 @@ public:
   void
   clear_message();
 
-private:
+public://private:
   int _sock;
   unsigned long _time_since_last_message;
   Processor *_processor;
+  Configuration _configuration;
+  Authenticate _authenticate;
+  Command _command;
   unsigned long _id;
   bool _valid;
   bool _debug;

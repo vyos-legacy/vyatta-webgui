@@ -12,7 +12,6 @@
 #include <vector>
 #include <utility>
 #include <expat.h>
-#include <regex.h>
 #include "common.hh"
 
 class ConfigData
@@ -86,7 +85,7 @@ public:
   set_request(std::string &buf);
 
   void
-  set_response(CmdData &cmd_data);
+  set_response(std::string &resp);
 
   void
   set_response(ConfigData &config_data);
@@ -103,35 +102,11 @@ public:
   void
   clear_message() {_msg = Message();}
 
-  std::string
-  get_template();
-
-  void
-  get_template_node(const std::string &path, TemplateParams &params);
-
-  std::string
-  get_configuration();
-
-  void
-  parse_configuration(std::string &rel_config, std::string &rel_template, long &depth, std::string &out);
-
-  void
-  parse_template(std::string &rel_template, long &depth, std::string &out);
-
-  void
-  parse_value(std::string &root, std::string &out);
-
-  std::string
-  mass_replace(const std::string &source, const std::string &victim, const std::string &replacement);
-
 public:
   Message _msg;
 private:
   static int _REQ_BUFFER_SIZE;
   XML_Parser _xml_parser;
-  regex_t _auth_regex;
-  regex_t _command_regex;
-  regex_t _configuration_regex;
   bool _debug;
 };
 

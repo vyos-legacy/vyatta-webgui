@@ -37,39 +37,87 @@
 		<script type="text/javascript" src="yui/build/animation/animation-min.js"></script>
 		<script type="text/javascript" src="yui/build/layout/layout-beta-min.js"></script>
 		<script type="text/javascript" src="yui/build/container/container-min.js"></script>
+		<script type="text/javascript" src="yui/build/connection/connection-min.js"></script>
 
 
 
-		<script>
+		<script type="text/javascript">
+			//set up namespace object
+			YAHOO.namespace("vyatta.webgui");
+
+
+
 			(function() {
 				var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event;
 
 				Event.onDOMReady(function() {
 
-					var leftpane = { position: 'left', width: 300, resize: true, body: 'left1', gutter: '0px', scroll: true, animate: true };
+					YAHOO.vyatta.webgui.leftpane = { position: 'left', width: 300, resize: true, body: 'left1', gutter: '0px', scroll: true, animate: true };
 
-					var layout = new YAHOO.widget.Layout({
+					YAHOO.vyatta.webgui.layout = new YAHOO.widget.Layout({
 					units: [
 						{ position: 'top', height: 71, body: 'top1', gutter: '0px' },
 						{ position: 'center', body: 'center1' },
-						leftpane
+						YAHOO.vyatta.webgui.leftpane
 						]
 					});
 
 
-					layout.on('render', function() {
+					YAHOO.vyatta.webgui.layout.on('render', function() {
 					});
-					layout.render();
+					YAHOO.vyatta.webgui.layout.render();
 
-					layout.getUnitByPosition('left').close();
-//					layout.addUnit(leftpane);
+					YAHOO.vyatta.webgui.layout.getUnitByPosition('left').close();
+//					YAHOO.vyatta.webgui.layout.addUnit(YAHOO.vyatta.webgui.leftpane);
 
 
-					var loginPanel = new YAHOO.widget.Panel("loginPanel", {constraintoviewport: true, close: false, draggable: false, fixedcenter: true, underlay: "shadow", width: "320px"});
-					loginPanel.render();
-					var yuiLogin = new YAHOO.widget.Button("btLogin", {disabled:false});
+					YAHOO.vyatta.webgui.loginPanel = new YAHOO.widget.Panel("loginPanel", {constraintoviewport: true, close: false, draggable: false, fixedcenter: true, underlay: "shadow", width: "320px"});
+					YAHOO.vyatta.webgui.loginPanel.render();
+
+
+					var yuiLogin = new YAHOO.widget.Button("btLogin", {
+						disabled:false,
+						onclick: {
+							fn: YAHOO.vyatta.webgui.doLogin
+						}
+					});
+
 				});
 			})();
+
+			YAHOO.vyatta.webgui.doLogin = function() {
+				var successHandler = function(o) {
+					if (o.responseXML != null && o.responseXML.documentElement != null && o.responseXML.documentElement.childNodes != null) {
+						for (var i = 0; i < o.responseXML.documentElement.childNodes.length; i++) {
+							if (o.responseXML.documentElement.childNodes[i].nodeName == "id") {
+								if (o.responseXML.documentElement.childNodes[i].childNodes != null && o.responseXML.documentElement.childNodes[i].childNodes.length == 1) {
+
+									if (o.responseXML.documentElement.childNodes[i].childNodes[0].nodeValue != null) {
+										YAHOO.vyatta.webgui.session_id = o.responseXML.documentElement.childNodes[i].childNodes[0].nodeValue;
+									}
+								}
+							}
+						}
+					}
+
+					if (YAHOO.vyatta.webgui.session_id != null) {
+						YAHOO.vyatta.webgui.loginPanel.hide();
+						YAHOO.vyatta.webgui.layout.addUnit(YAHOO.vyatta.webgui.leftpane);
+					}
+				}
+				var failureHandler = function(o) {
+					alert("Server communication error.  Error code: " + o.status + "  Description: " + o.statusText);
+				}
+				var callback = {
+					success: successHandler,
+					failure: failureHandler
+				};
+
+				var user = document.getElementById("user").value;
+				var pswd = document.getElementById("pswd").value;
+				var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><auth><user>" + user + "</user><pswd>" + pswd + "</pswd></auth></vyatta>\n");
+			}
+
 		</script>
 
 	</head>
@@ -86,11 +134,11 @@
 				<div class="bd">
 					<div class="formdiv">
 						<label>Username:&nbsp;</label>
-						<input class="field" type="text" name="user" />
+						<input class="field" type="text" id="user" name="user" />
 					</div>
 					<div class="formdiv">
 						<label>Password:&nbsp;</label>
-						<input class="field" type="password" name="pswd" />
+						<input class="field" type="password" id="pswd" name="pswd" />
 					</div>
 					<div id="buttons">
 						<button type="submit" id="btLogin" name="btLogin">Login</button>

@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+		<title>Vyatta WebGUI</title>
+		<style type="text/css">
+			body {
+				margin:0;
+				padding:0;
+			}
+			#toggle {
+			    text-align: center;
+			    padding: 1em;
+			}
+			#toggle a {
+			    padding: 0 5px;
+			    border-left: 1px solid black;
+			}
+		</style>
+
+		<link rel="stylesheet" type="text/css" href="yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+		<link rel="stylesheet" type="text/css" href="yui/build/resize/assets/skins/sam/resize.css" />
+		<link rel="stylesheet" type="text/css" href="yui/build/layout/assets/skins/sam/layout.css" />
+		<link rel="stylesheet" type="text/css" href="yui/build/button/assets/skins/sam/button.css" />
+		<link rel="stylesheet" type="text/css" href="yui/build/container/assets/skins/sam/container.css">
+
+		<link rel="stylesheet" type="text/css" href="loginform.css">
+
+
+		<script type="text/javascript" src="yui/build/yahoo/yahoo-min.js"></script>
+		<script type="text/javascript" src="yui/build/event/event-min.js"></script>
+		<script type="text/javascript" src="yui/build/dom/dom-min.js"></script>
+		<script type="text/javascript" src="yui/build/element/element-beta-min.js"></script>
+		<script type="text/javascript" src="yui/build/button/button-min.js"></script>
+		<script type="text/javascript" src="yui/build/dragdrop/dragdrop-min.js"></script>
+		<script type="text/javascript" src="yui/build/resize/resize-beta-min.js"></script>
+		<script type="text/javascript" src="yui/build/animation/animation-min.js"></script>
+		<script type="text/javascript" src="yui/build/layout/layout-beta-min.js"></script>
+		<script type="text/javascript" src="yui/build/container/container-min.js"></script>
+
+
+
+		<script>
+			(function() {
+				var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event;
+
+				Event.onDOMReady(function() {
+
+					var leftpane = { position: 'left', width: 300, resize: true, body: 'left1', gutter: '0px', scroll: true, animate: true };
+
+					var layout = new YAHOO.widget.Layout({
+					units: [
+						{ position: 'top', height: 71, body: 'top1', gutter: '0px' },
+						{ position: 'center', body: 'center1' },
+						leftpane
+						]
+					});
+
+
+					layout.on('render', function() {
+					});
+					layout.render();
+
+					layout.getUnitByPosition('left').close();
+//					layout.addUnit(leftpane);
+
+
+					var loginPanel = new YAHOO.widget.Panel("loginPanel", {constraintoviewport: true, close: false, draggable: false, fixedcenter: true, underlay: "shadow", width: "320px"});
+					loginPanel.render();
+					var yuiLogin = new YAHOO.widget.Button("btLogin", {disabled:false});
+				});
+			})();
+		</script>
+
+	</head>
+
+	<body class="yui-skin-sam">
+		<div id="top1" style="background-color: #6294c7; border: 0px; padding: 0px; margin: 0px; height: 71px;">
+			<img src="/masthead.jpg" style="border: 0px; padding: 0px;" alt="">
+		</div>
+		<div id="left1">
+		</div>
+		<div id="center1">
+			<div id="loginPanel">
+				<div class="hd">Please login</div>
+				<div class="bd">
+					<div class="formdiv">
+						<label>Username:&nbsp;</label>
+						<input class="field" type="text" name="user" />
+					</div>
+					<div class="formdiv">
+						<label>Password:&nbsp;</label>
+						<input class="field" type="password" name="pswd" />
+					</div>
+					<div id="buttons">
+						<button type="submit" id="btLogin" name="btLogin">Login</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>
+

@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Using ARIA Roles and States with YUI Menu</title>
+
+        <!-- Standard reset and fonts -->
+
+        <link rel="stylesheet" type="text/css" href="../../build/reset/reset.css">
+        <link rel="stylesheet" type="text/css" href="../../build/fonts/fonts.css">
+
+
+        <!-- CSS for Menu -->
+
+        <link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css"> 
+		
+
+        <!-- Dependency source files -->
+
+        <script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+        <script type="text/javascript" src="../../build/container/container_core.js"></script>
+
+        <!-- Menu source file -->
+
+        <script type="text/javascript" src="../../build/menu/menu.js"></script>
+
+		<script type="text/javascript">
+
+			/*
+				 Initialize and render the MenuBar when the page's DOM is ready 
+				 to be scripted.
+			*/
+
+			YAHOO.util.Event.onDOMReady(function () {
+
+				/*
+					 Define an array of object literals, each containing 
+					 the data necessary to create the items for a MenuBar.
+				*/
+			
+				var aItemData = [
+			
+					{ text: "File", submenu: {  id: "filemenu", itemdata: [
+			
+							{ text: "New File", helptext: "Ctrl + N" },
+							"New Folder",
+							{ text: "Open", helptext: "Ctrl + O" },
+							{ text: "Open With...", submenu: { id: "applications", itemdata: [
+									"Application 1", 
+									"Application 2", 
+									"Application 3", 
+									"Application 4"
+								] } 
+							},
+							{ text: "Print", helptext: "Ctrl + P" }
+			
+						] }
+					
+					},
+					
+					{ text: "Edit", submenu: { id: "editmenu", itemdata: [
+			
+							[ 
+								{ text: "Undo", helptext: "Ctrl + Z" },
+								{ text: "Redo", helptext: "Ctrl + Y" }
+							],
+							
+							[
+								{ text: "Cut", helptext: "Ctrl + X" },
+								{ text: "Copy", helptext: "Ctrl + C" },
+								{ text: "Paste", helptext: "Ctrl + V" },
+								{ text: "Delete", helptext: "Del" }
+							],
+							
+							[ { text: "Select All", helptext: "Ctrl + A" } ],
+			
+							[
+								{ text: "Find", helptext: "Ctrl + F" },
+								{ text: "Find Again", helptext: "Ctrl + G" }
+							]
+					
+						] }
+			
+					}
+			
+				];
+			
+			
+				/*
+					 Instantiate a MenuBar:  The first argument passed to the constructor is the id 
+					 of the HTML to be created that will represent the MenuBar; the second is an 
+					 object literal of configuration properties.
+				*/
+			
+                var oMenuBar = new YAHOO.widget.MenuBar("mymenubar", { 
+																		lazyload: true, 
+																		itemdata: aItemData 
+																		});
+
+
+				/*
+					Add a "show" event listener that keeps the left-most
+					submenu against the left edge of the browser viewport.
+				*/
+				
+				function onSubmenuShow() {
+				
+					if (this.id == "yahoo") {
+				
+						this.cfg.setProperty("x", 0);
+					
+					}
+				
+				}
+				
+
+				// Subscribe to the "show" event for each submenu
+				
+				oMenuBar.subscribe("show", onSubmenuShow);
+
+
+				/*
+					Add the WAI-ARIA Roles and States to the MenuBar's DOM elements once it 
+					is rendered.
+				*/
+
+				oMenuBar.subscribe("render", function () {
+
+					/*
+						 Apply the "role" attribute of "menu" or "menubar" depending on the type of 
+						 the Menu control being rendered.
+					*/
+
+					this.element.setAttribute("role", 
+									(this instanceof YAHOO.widget.MenuBar ? "menubar" : "menu"));
+
+
+					/*
+						 Apply the appropriate "role" and "aria-[state]" attributes to the label of
+						 each MenuItem instance.
+					*/
+
+					var aMenuItems = this.getItems(),
+						i = aMenuItems.length - 1,
+						oMenuItem,
+						oMenuItemLabel;
+					
+
+					do {
+
+						oMenuItem = aMenuItems[i];
+
+
+						/*
+							Retrieve a reference to the anchor element that serves as the label for 
+							each MenuItem.
+						*/
+
+						oMenuItemLabel = oMenuItem.element.firstChild;
+
+
+						// Set the "role" attribute of the label to "menuitem"
+
+						oMenuItemLabel.setAttribute("role", "menuitem");
+
+
+						// Remove the label from the browser's default tab order
+
+						oMenuItemLabel.setAttribute("tabindex", -1);
+
+
+						/*
+							Optional: JAWS announces the value of each anchor element's "href"
+							attribute when it recieves focus.  If the MenuItem instance's "url" 
+							attribute is set to the default, remove the attribute so that JAWS 
+							does announce its value.
+						*/
+
+						if (oMenuItem.cfg.getProperty("url") == "#") {
+
+							oMenuItemLabel.removeAttribute("href");
+						
+						}
+
+
+						/*
+							If the MenuItem has a submenu, set the "aria-haspopup" attribute to 
+							true so that the screen reader can announce 
+						*/
+
+						if (oMenuItem.cfg.getProperty("submenu")) {
+						
+							oMenuItemLabel.setAttribute("aria-haspopup", true);
+						
+						}
+
+					}
+					while (i--);
+					
+
+					/*
+						 Set the "tabindex" of the first MenuItem's label to 0 so the user can 
+						 easily tab into and out of the control.
+					*/
+
+					if (this.getRoot() == this) {
+					
+						this.getItem(0).element.firstChild.setAttribute("tabindex", 0);
+					
+					}
+				
+				});
+			
+			
+				/*
+					 Since this MenuBar instance is built completely from 
+					 script, call the "render" method passing in a node 
+					 reference for the DOM element that its should be 
+					 appended to.
+				*/
+				
+				oMenuBar.render(document.body);
+				
+			});
+		
+		</script>
+
+	</head>
+	<body class="yui-skin-sam">
+	</body>
+</html>

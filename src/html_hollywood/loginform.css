@@ -1,0 +1,19 @@
+.formdiv {
+  position:relative;
+  width:280px;
+  margin-top:10px;
+  margin-bottom:10px;
+}
+.field {
+  position:absolute;
+  right:0px;
+  margin-right:4px;
+  width:183px;
+}
+#buttons {
+  width:280px;
+  margin-top:20px;
+  padding-top:10px;
+  text-align: center;
+}
+

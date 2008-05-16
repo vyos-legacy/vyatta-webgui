@@ -85,7 +85,7 @@ Authenticate::create_new_session()
     _proc->set_response(tmpstr);
     
     //need to verify that system is set up correctly here to provide proper return code.
-    _proc->_msg._id = id;
+    _proc->_msg.set_id(id);
   }
 }
 

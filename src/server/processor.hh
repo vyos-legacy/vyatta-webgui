@@ -47,7 +47,17 @@ class Message
 {
 public:
   Message() : _depth(2),_mode_template(false),_id(0) {}
+  
+  void
+  set_id(unsigned long id);
 
+  std::string
+  id();
+
+  unsigned long
+  id_by_val();
+
+public:
   char *_request;
   std::string _response;
   WebGUI::MsgType _type;
@@ -57,8 +67,10 @@ public:
   bool _mode_template;
   std::string _user;
   std::string _pswd;
-  unsigned long _id;
   std::string _command;
+
+private:
+  unsigned long _id;
 };
 
 class Processor
@@ -98,7 +110,7 @@ public:
   get_msg() {return _msg;}
 
   void
-  set_session_id(unsigned long id) {_msg._id = id;}
+  set_session_id(unsigned long id) {_msg.set_id(id);}
 
   void
   clear_message() {_msg = Message();}

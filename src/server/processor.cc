@@ -20,6 +20,32 @@ int Processor::_REQ_BUFFER_SIZE = 2048;
 /**
  *
  **/
+void
+Message::set_id(unsigned long id)
+{
+  _id = id;
+}
+
+/**
+ *
+ **/
+string
+Message::id()
+{
+  char buf[40];
+  sprintf(buf, "%ul", _id);
+  return string(buf);
+}
+
+unsigned long
+Message::id_by_val()
+{
+  return _id;
+}
+
+/**
+ *
+ **/
 std::string
 TemplateParams::get_xml() 
 {
@@ -75,7 +101,7 @@ data_hndl(void *data, const XML_Char *s, int len) {
     strncpy( buf, s, len );
     if (m->_node == WebGUI::GETCONFIG_ID) {
       char val[40];
-      m->_id = strtoul(buf, NULL, 10);
+      m->set_id(strtoul(buf, NULL, 10));
     }
     else {
       //value between configuration tags
@@ -102,7 +128,7 @@ data_hndl(void *data, const XML_Char *s, int len) {
     strncpy( buf, s, len );
     if (m->_node == WebGUI::CLICMD_ID) {
       char val[40];
-      m->_id = strtoul(buf, NULL, 10);
+      m->set_id(strtoul(buf, NULL, 10));
     }
     m->_command = string(buf);
     free(buf);
@@ -304,7 +330,7 @@ Processor::get_response()
   //dummy here for now
   string response;
   if (_msg._type == WebGUI::NEWSESSION) {
-    uid_t id = _msg._id;
+    uid_t id = _msg.id_by_val();
 
     char buf[20];
     if (id == 0) {
@@ -313,8 +339,7 @@ Processor::get_response()
     }
     else {
       //now at this point generate the new configuration tree and environment settings
-      sprintf(buf, "%d", _msg._id);
-      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><id>"+string(buf)+"</id><code>0</code><error></error></vyatta>";
+      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><id>"+_msg.id()+"</id><code>0</code><error></error></vyatta>";
     }
   }
   else if (_msg._type == WebGUI::GETCONFIG) {

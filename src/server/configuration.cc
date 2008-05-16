@@ -94,7 +94,7 @@ Configuration::get_template()
 void
 Configuration::get_template_node(const string &path, TemplateParams &params)
 {
-  string root_template("/opt/vyatta/share/vyatta-cfg/templates");
+  string root_template(WebGUI::CFG_TEMPLATE_DIR);
   string tmpl_file = root_template + "/" + path + "/node.def";
   
   //open the file here and parse
@@ -155,8 +155,8 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 void
 Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_path, long &depth, string &out)
 {
-  static string root_config("/opt/vyatta/config/active");
-  static string root_template("/opt/vyatta/share/vyatta-cfg/templates");
+  static string root_config(WebGUI::ACTIVE_CONFIG_DIR);
+  static string root_template(WebGUI::CFG_TEMPLATE_DIR);
   DIR *dp;
   struct dirent *dirp;
 
@@ -221,7 +221,7 @@ Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_pat
 void
 Configuration::parse_template(string &rel_tmpl_path, long &depth, string &out)
 {
-  static string root_template("/opt/vyatta/share/vyatta-cfg/templates");
+  static string root_template(WebGUI::CFG_TEMPLATE_DIR);
   DIR *dp;
   struct dirent *dirp;
 
@@ -277,7 +277,7 @@ void
 Configuration::parse_value(string &rel_path, string &out)
 {
   string value;
-  string root_config("/opt/vyatta/config/active");
+  string root_config(WebGUI::ACTIVE_CONFIG_DIR);
   string file = root_config + "/" + rel_path;
 
   //  cout << "opening node.val file at: " << file << endl;  
@@ -305,7 +305,7 @@ Configuration::validate_session(unsigned long id)
   //then add a directory check here for valid configuration
   char buf[40];
   sprintf(buf, "%d", id);
-  string directory = "/opt/vyatta/config/tmp/new_config_" + string(buf);
+  string directory = WebGUI::LOCAL_CONFIG_DIR + string(buf);
   DIR *dp = opendir(directory.c_str());
   if (dp == NULL) {
     return false;

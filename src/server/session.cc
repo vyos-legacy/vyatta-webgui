@@ -115,7 +115,9 @@ Session::process_message()
       break;
 
     default:
-      cerr << "Session::process_message(): message type is unknown: " << endl;
+      if (_debug) {
+	cerr << "Session::process_message(): message type is unknown: " << endl;
+      }
       return false;
     }
   }

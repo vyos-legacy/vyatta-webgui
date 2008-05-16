@@ -7,6 +7,13 @@ using namespace std;
 
 const unsigned long WebGUI::ID_START = 2147483648;
 
+const string WebGUI::ACTIVE_CONFIG_DIR = "/opt/vyatta/config/active";
+const string WebGUI::LOCAL_CHANGES_ONLY = "/tmp/changes_only_";
+const string WebGUI::LOCAL_CONFIG_DIR = "/opt/vyatta/config/tmp/new_config_";
+const string WebGUI::CFG_TEMPLATE_DIR = "/opt/vyatta/share/vyatta-cfg/templates";
+
+
+
 char const* WebGUI::ErrorDesc[8] = {"n/a",
 				    "request cannot be parsed",
 				    "username/password are not valid",

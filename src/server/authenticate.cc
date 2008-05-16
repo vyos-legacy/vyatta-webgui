@@ -51,18 +51,18 @@ Authenticate::create_new_session()
     char buf[20];
     sprintf(buf, "%d", id);
 
-    cmd = "mkdir -p /opt/vyatta/config/active";
+    cmd = "mkdir -p " + WebGUI::ACTIVE_CONFIG_DIR;
     WebGUI::execute(cmd);
 
-    cmd = "mkdir -p /tmp/changes_only_" + string(buf);
-    WebGUI::execute(cmd);
-    //exec
-
-    cmd = "mkdir -p /opt/vyatta/config/tmp/new_config_" + string(buf);
+    cmd = "mkdir -p " + WebGUI::LOCAL_CHANGES_ONLY + string(buf);
     WebGUI::execute(cmd);
     //exec
 
-    cmd = "grep -q union=aufs /proc/cmdline || grep -q aufs /proc/filesystems";
+    cmd = "mkdir -p " + WebGUI::LOCAL_CONFIG_DIR + string(buf);
+    WebGUI::execute(cmd);
+    //exec
+
+    //    cmd = "grep -q union=aufs /proc/cmdline || grep -q aufs /proc/filesystems";
     string unionfs = "unionfs";
     //CRAJ@--ADD SUPPORT FOR AUSF
     /*
@@ -71,12 +71,18 @@ Authenticate::create_new_session()
     }
     */
 
-    cmd = "sudo mount -t "+unionfs+" -o dirs=/tmp/changes_only_"+string(buf)+"=rw:/opt/vyatta/config/active=ro "+unionfs+" /opt/vyatta/config/tmp/new_config_" + string(buf);
+    cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+string(buf)+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ string(buf);
 
     WebGUI::execute(cmd);
 
-    cmd = "mkdir -p /opt/vyatta/config/tmp/new_config_" + string(buf);
+    cmd = "mkdir -p " +WebGUI::LOCAL_CONFIG_DIR+ string(buf);
     WebGUI::execute(cmd);
+
+    sprintf(buf, "%d", WebGUI::SUCCESS);
+    char buf1[40];
+    sprintf(buf1, "%d", id);
+    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code></error></vyatta>";
+    _proc->set_response(tmpstr);
     
     //need to verify that system is set up correctly here to provide proper return code.
     _proc->_msg._id = id;

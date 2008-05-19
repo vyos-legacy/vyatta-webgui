@@ -46,6 +46,10 @@ public:
 			 BOOL,
 			 MACADDR};
 
+  typedef enum NodeState {ACTIVE,
+			  DELETE,
+			  SET};
+
 
   /**
    *

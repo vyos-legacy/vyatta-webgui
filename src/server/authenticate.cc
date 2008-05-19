@@ -49,7 +49,7 @@ Authenticate::create_new_session()
     //these commands are from vyatta-cfg-cmd-wrapper script when entering config mode
     string cmd;
     char buf[20];
-    sprintf(buf, "%d", id);
+    sprintf(buf, "%u", id);
 
     cmd = "mkdir -p " + WebGUI::ACTIVE_CONFIG_DIR;
     WebGUI::execute(cmd);
@@ -80,7 +80,7 @@ Authenticate::create_new_session()
 
     sprintf(buf, "%d", WebGUI::SUCCESS);
     char buf1[40];
-    sprintf(buf1, "%d", id);
+    sprintf(buf1, "%u", id);
     string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code></error></vyatta>";
     _proc->set_response(tmpstr);
     

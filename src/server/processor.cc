@@ -33,7 +33,7 @@ string
 Message::id()
 {
   char buf[40];
-  sprintf(buf, "%ul", _id);
+  sprintf(buf, "%u", _id);
   return string(buf);
 }
 

@@ -1,6 +1,8 @@
 #ifndef __CONFIGURATION_HH__
 #define __CONFIGURATION_HH__
 
+#include <map>
+#include <string>
 #include "systembase.hh"
 #include "processor.hh"
 
@@ -22,6 +24,9 @@ private:
 
   std::string
   get_configuration();
+
+  std::map<std::string,WebGUI::NodeState>
+  get_conf_dir(const std::string &root);
 
   void
   parse_configuration(std::string &rel_config, std::string &rel_template, long &depth, std::string &out);

@@ -75,7 +75,7 @@ Authenticate::create_new_session()
 
     WebGUI::execute(cmd);
 
-    cmd = "mkdir -p " +WebGUI::LOCAL_CONFIG_DIR+ string(buf);
+    cmd = "mkdir -p " +WebGUI::CONFIG_TMP_DIR+ string(buf);
     WebGUI::execute(cmd);
 
     sprintf(buf, "%d", WebGUI::SUCCESS);

@@ -408,7 +408,7 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
   DIR *dp;
   struct dirent *dirp;
   if ((dp = opendir(active_config.c_str())) == NULL) {
-    cerr << "Configuration::get_conf_dir(), cannot open: " << active_config << endl;
+    //    cerr << "Configuration::get_conf_dir(), cannot open: " << active_config << endl;
     return coll;
   }
 
@@ -424,8 +424,9 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
   //iterate over changes only dir and identify set/delete states
   //iterate over temporary configuration
   if ((dp = opendir(local_config.c_str())) == NULL) {
-    cerr << "Configuration::get_conf_dir(), cannot open: " << local_config << endl;
-    return map<string,WebGUI::NodeState>();
+    //    cerr << "Configuration::get_conf_dir(), cannot open: " << local_config << endl;
+    return coll;
+    //    return map<string,WebGUI::NodeState>();
   }
 
   while ((dirp = readdir(dp)) != NULL) {

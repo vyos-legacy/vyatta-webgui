@@ -48,6 +48,7 @@ Command::execute_command()
   string command = "export VYATTA_ACTIVE_CONFIGURATION_DIR="+WebGUI::ACTIVE_CONFIG_DIR+"; \
 export VYATTA_CONFIG_TMP=/opt/vyatta/config/tmp/tmp_" + _proc->get_msg().id() + "; \
 export VYATTA_TEMPLATE_LEVEL=/; \
+export VYATTA_MOD_NAME=.modified; \
 export vyatta_datadir=/opt/vyatta/share; \
 export vyatta_sysconfdir=/opt/vyatta/etc; \
 export vyatta_sharedstatedir=/opt/vyatta/com; \
@@ -58,8 +59,10 @@ export vyatta_cfg_templates="+WebGUI::CFG_TEMPLATE_DIR+"; \
 export VYATTA_CFG_GROUP_NAME=vyattacfg; \
 export vyatta_bindir=/opt/vyatta/bin; \
 export vyatta_libdir=/opt/vyatta/lib; \
+export VYATTA_EDIT_LEVEL=/; \
 export VYATTA_CONFIG_TEMPLATE="+WebGUI::CFG_TEMPLATE_DIR+"; \
 export vyatta_libexecdir=/opt/vyatta/libexec; \
+export vyatta_localstatedir=/opt/vyatta/var; \
 export vyatta_prefix=/opt/vyatta; \
 export vyatta_datarootdir=/opt/vyatta/share; \
 export vyatta_configdir=/opt/vyatta/config; \
@@ -76,7 +79,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 
   string stdout = WebGUI::execute(command,true);
   sprintf(buf, "%d", WebGUI::SUCCESS);
-  string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+_proc->get_msg().id()+"</code><desc>"+stdout+"</desc></error></vyatta>";
+  string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><desc>"+stdout+"</desc></error></vyatta>";
   _proc->set_response(tmpstr);
   return;
 }

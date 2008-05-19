@@ -74,6 +74,12 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   if (strncmp(tmp.c_str(),"set",3) == 0 || strncmp(tmp.c_str(),"delete",6) == 0 || strncmp(tmp.c_str(),"commit",6) == 0) {
     tmp = "/opt/vyatta/sbin/my_" + msg._command;
   }
+  else if (strncmp(tmp.c_str(),"load",4) == 0) {
+    tmp = "/opt/vyatta/sbin/vyatta-load-config.pl";
+  }
+  else if (strncmp(tmp.c_str(),"save",4) == 0) {
+    tmp = "/opt/vyatta/sbin/vyatta-save-config.pl";
+  }
 
   command += ";" + tmp;
 

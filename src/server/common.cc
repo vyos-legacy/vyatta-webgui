@@ -25,14 +25,15 @@ char const* WebGUI::ErrorDesc[8] = {"n/a",
 				    "configuration has changed"};
 
 
-string
-WebGUI::execute(std::string &cmd, bool read)
+int
+WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
 {
+  int err = 0;
+
   string dir = "w";
   if (read == true) {
     dir = "r";
   }
-
 
   char buf[1025];
   buf[0] = '\0';
@@ -42,15 +43,13 @@ WebGUI::execute(std::string &cmd, bool read)
   if (f) {
     //    cout << "out: " << endl;
     if (read == true) {
-      
       fgets(buf, 1024, f);
     }
-    if (pclose(f) != 0) {
-    }
+    err = pclose(f);
   }
-  else {
-  }
-  return string(buf);
+
+  stdout = string(buf);
+  return err;
 }
 
 /**

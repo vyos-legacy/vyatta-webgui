@@ -176,13 +176,19 @@ Session::update_session()
     //have to clean up session at this point!!!!!!!!
     cerr << "clean up session here" << endl;
 
+    char buf[40];
+    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</error></vyatta>";
+    _processor->set_response(err);
+
     return false;
   }
 
   string update_file = "touch " + file;
 
-  //now touch session time mark file
-  WebGUI::execute(update_file);
+  //now touch session time mark file'
+  string stdout;
+  WebGUI::execute(update_file, stdout);
   return true;
 }
 
@@ -197,6 +203,7 @@ Session::start_session()
 
   string update_file = "touch " + file;
   //now touch session time mark file
-  WebGUI::execute(update_file);
+  string stdout;
+  WebGUI::execute(update_file,stdout);
 }
 

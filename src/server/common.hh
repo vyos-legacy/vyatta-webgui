@@ -56,8 +56,8 @@ public:
    *
    *
    **/
-  std::string static 
-  execute(std::string &cmd, bool read = false);
+  int static 
+  execute(std::string &cmd, std::string &stdout, bool read = false);
 
 
   static std::string

@@ -83,10 +83,18 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 
   command += ";" + tmp;
 
-  string stdout = WebGUI::execute(command,true);
-  sprintf(buf, "%d", WebGUI::SUCCESS);
-  string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><desc>"+stdout+"</desc></error></vyatta>";
-  _proc->set_response(tmpstr);
+  string stdout;
+  int err = WebGUI::execute(command,stdout,true);
+  if (err == 0) {
+    sprintf(buf, "%d", WebGUI::SUCCESS);
+    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><desc>"+stdout+"</desc></error></vyatta>";
+    _proc->set_response(tmpstr);
+  }
+  else {
+    sprintf(buf, "%d", WebGUI::COMMAND_ERROR);
+    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><desc>"+stdout+"</desc></error></vyatta>";
+    _proc->set_response(tmpstr);
+  }
   return;
 }
 

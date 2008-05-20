@@ -49,17 +49,23 @@ Authenticate::create_new_session()
     //these commands are from vyatta-cfg-cmd-wrapper script when entering config mode
     string cmd;
     char buf[20];
+    string stdout;
     sprintf(buf, "%u", id);
 
     cmd = "mkdir -p " + WebGUI::ACTIVE_CONFIG_DIR;
-    WebGUI::execute(cmd);
+    if (WebGUI::execute(cmd, stdout) != 0) {
+      //syslog here
+    }
 
     cmd = "mkdir -p " + WebGUI::LOCAL_CHANGES_ONLY + string(buf);
-    WebGUI::execute(cmd);
+    if (WebGUI::execute(cmd, stdout) != 0) {
+      //syslog here
+    }
     //exec
 
     cmd = "mkdir -p " + WebGUI::LOCAL_CONFIG_DIR + string(buf);
-    WebGUI::execute(cmd);
+    if (WebGUI::execute(cmd, stdout) != 0) {
+    }
     //exec
 
     //    cmd = "grep -q union=aufs /proc/cmdline || grep -q aufs /proc/filesystems";
@@ -73,10 +79,14 @@ Authenticate::create_new_session()
 
     cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+string(buf)+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ string(buf);
 
-    WebGUI::execute(cmd);
+    if (WebGUI::execute(cmd, stdout) != 0) {
+      //syslog here
+    }
 
     cmd = "mkdir -p " +WebGUI::CONFIG_TMP_DIR+ string(buf);
-    WebGUI::execute(cmd);
+    if (WebGUI::execute(cmd, stdout) != 0) {
+      //syslog here
+    }
 
     sprintf(buf, "%d", WebGUI::SUCCESS);
     char buf1[40];

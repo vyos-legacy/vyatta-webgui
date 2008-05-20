@@ -63,6 +63,8 @@ public:
   static std::string
   mass_replace(const std::string &source, const std::string &victim, const std::string &replacement);
 
+  static std::string
+  trim_whitespace(const std::string &src);
 
 };
 

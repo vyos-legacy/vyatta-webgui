@@ -99,13 +99,17 @@ data_hndl(void *data, const XML_Char *s, int len) {
     char* buf = (char*)malloc( len + sizeof( char ) );
     memset( buf, '\0', len + sizeof( char ) );
     strncpy( buf, s, len );
+
+    string str = string(buf);
+    str = WebGUI::trim_whitespace(str);
+
     if (m->_node == WebGUI::GETCONFIG_ID) {
       char val[40];
-      m->set_id(strtoul(buf, NULL, 10));
+      m->set_id(strtoul(str.c_str(), NULL, 10));
     }
     else {
       //value between configuration tags
-      m->_root_node = string(buf);
+      m->_root_node = str;
     }
     free(buf);
   }
@@ -113,24 +117,32 @@ data_hndl(void *data, const XML_Char *s, int len) {
     char* buf = (char*)malloc( len + sizeof( char ) );
     memset( buf, '\0', len + sizeof( char ) );
     strncpy( buf, s, len );
+
+    string str = string(buf);
+    str = WebGUI::trim_whitespace(str);
+
     if (m->_node == WebGUI::NEWSESSION_USER) {
-      m->_user = string(buf);
+      m->_user = str;
     }
     else if (m->_node == WebGUI::NEWSESSION_PSWD) {
-      m->_pswd = string(buf);
+      m->_pswd = str;
     }
-    m->_root_node = string(buf);
+    m->_root_node = str;
     free(buf);
   }
   else if (m->_type == WebGUI::CLICMD) {
     char* buf = (char*)malloc( len + sizeof( char ) );
     memset( buf, '\0', len + sizeof( char ) );
     strncpy( buf, s, len );
+
+    string str = string(buf);
+    str = WebGUI::trim_whitespace(str);
+
     if (m->_node == WebGUI::CLICMD_ID) {
       char val[40];
-      m->set_id(strtoul(buf, NULL, 10));
+      m->set_id(strtoul(str.c_str(), NULL, 10));
     }
-    m->_command = string(buf);
+    m->_command = str;
     free(buf);
   }
 }

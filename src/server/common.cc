@@ -66,3 +66,17 @@ WebGUI::mass_replace(const std::string &source, const std::string &victim, const
   return answer;
 }
 
+std::string
+WebGUI::trim_whitespace(const std::string &src)
+{
+  string str(src);
+  size_t startpos = str.find_first_not_of(" \t"); 
+  size_t endpos = str.find_last_not_of(" \t"); 
+  if(( string::npos == startpos ) || ( string::npos == endpos)) {
+    str = "";
+  }
+  else {
+    str = str.substr( startpos, endpos-startpos+1 );
+  }
+  return str;
+}

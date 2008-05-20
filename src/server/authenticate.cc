@@ -39,7 +39,7 @@ Authenticate::~Authenticate()
 /**
  *
  **/
-void
+bool
 Authenticate::create_new_session()
 {
   Message msg = _proc->get_msg();
@@ -86,7 +86,9 @@ Authenticate::create_new_session()
     
     //need to verify that system is set up correctly here to provide proper return code.
     _proc->_msg.set_id(id);
+    return true;
   }
+  return false;
 }
 
 /**

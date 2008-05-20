@@ -12,7 +12,7 @@ public:
   Authenticate();
   ~Authenticate();
   
-  void
+  bool
   create_new_session();
 
 private:

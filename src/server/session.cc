@@ -1,3 +1,7 @@
+#include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <iostream>
 #include <unistd.h>
 #include <vector>
@@ -14,7 +18,8 @@ using namespace std;
 Session::Session(int sock, bool debug) : 
   _valid(false),
   _debug(debug), 
-  _sock(sock)
+  _sock(sock),
+  _session_timeout(30 * 60)
 {
   _processor = NULL;
 }
@@ -90,12 +95,18 @@ Session::process_message()
       if (_debug) {
 	cout << "Session::process_message(): NEWSESSION" << endl;
       }
-      _authenticate.create_new_session();
+      if (_authenticate.create_new_session() == true) {
+	start_session();
+      }
       break;
 
     case WebGUI::CLICMD:
       if (_debug) {
 	cout << "Session::process_message(): CLICMD" << endl;
+      }
+
+      if (!update_session()) {
+	return false;
       }
       _command.execute_command();
       break;
@@ -103,6 +114,10 @@ Session::process_message()
     case WebGUI::GETCONFIG:
       if (_debug) {
 	cout << "Session::process_message(): GETCONFIG" << endl;
+      }
+
+      if (!update_session()) {
+	return false;
       }
       _configuration.get_config();
       break;
@@ -137,5 +152,51 @@ void
 Session::clear_message()
 {
   _processor->clear_message();
+}
+
+
+/**
+ *
+ **/
+bool
+Session::update_session()
+{
+  //get timestamp from file
+  string file = WebGUI::LOCAL_CONFIG_DIR + _processor->get_msg().id() + "/.vyattamodify";
+
+  struct stat buf;
+
+  if (stat(file.c_str(), &buf) != 0) {
+    return false;
+  }
+
+  time_t t = time(NULL);
+
+  if ((buf.st_mtime + _session_timeout) > t) {
+    //have to clean up session at this point!!!!!!!!
+    cerr << "clean up session here" << endl;
+
+    return false;
+  }
+
+  string update_file = "touch " + file;
+
+  //now touch session time mark file
+  WebGUI::execute(update_file);
+  return true;
+}
+
+/**
+ *
+ **/
+void
+Session::start_session()
+{
+  //get timestamp from file
+  string file = WebGUI::LOCAL_CONFIG_DIR + _processor->get_msg().id() + "/.vyattamodify";
+
+  string update_file = "touch " + file;
+  //now touch session time mark file
+  WebGUI::execute(update_file);
 }
 

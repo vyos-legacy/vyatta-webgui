@@ -58,6 +58,13 @@ public:
   void
   clear_message();
 
+private:
+  bool
+  update_session();
+
+  void
+  start_session();
+
 public://private:
   int _sock;
   unsigned long _time_since_last_message;
@@ -67,6 +74,7 @@ public://private:
   Command _command;
   unsigned long _id;
   bool _valid;
+  unsigned long _session_timeout;
   bool _debug;
 };
 

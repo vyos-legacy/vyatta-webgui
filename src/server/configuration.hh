@@ -39,9 +39,6 @@ private:
 
   bool
   validate_session(unsigned long id);
-
-public://private:
-  Processor *_proc;
 };
 
 #endif //__CONFIGURATION_HH__

@@ -23,7 +23,7 @@
 		<link rel="stylesheet" type="text/css" href="yui/build/layout/assets/skins/sam/layout.css" />
 		<link rel="stylesheet" type="text/css" href="yui/build/button/assets/skins/sam/button.css" />
 		<link rel="stylesheet" type="text/css" href="yui/build/container/assets/skins/sam/container.css">
-
+		<link rel="stylesheet" type="text/css" href="yui/build/treeview/assets/skins/sam/treeview.css">
 		<link rel="stylesheet" type="text/css" href="loginform.css">
 
 
@@ -38,6 +38,7 @@
 		<script type="text/javascript" src="yui/build/layout/layout-beta-min.js"></script>
 		<script type="text/javascript" src="yui/build/container/container-min.js"></script>
 		<script type="text/javascript" src="yui/build/connection/connection-min.js"></script>
+		<script type="text/javascript" src="yui/build/treeview/treeview-min.js"></script>
 
 
 
@@ -98,11 +99,20 @@
 								}
 							}
 						}
+					} else {
+						alert("Server communication error.  Did not receive an XML response.");
 					}
 
 					if (YAHOO.vyatta.webgui.session_id != null) {
 						YAHOO.vyatta.webgui.loginPanel.hide();
 						YAHOO.vyatta.webgui.layout.addUnit(YAHOO.vyatta.webgui.leftpane);
+
+						YAHOO.vyatta.webgui.tree = new YAHOO.widget.TreeView("treeDiv");
+						var root = YAHOO.vyatta.webgui.tree.getRoot();
+						var cfg = new YAHOO.widget.TextNode("Configure", root);
+						YAHOO.vyatta.webgui.setDynamicLoad(cfg);
+						root.expand();
+						YAHOO.vyatta.webgui.tree.draw();
 					}
 				}
 				var failureHandler = function(o) {
@@ -118,6 +128,53 @@
 				var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><auth><user>" + user + "</user><pswd>" + pswd + "</pswd></auth></vyatta>\n");
 			}
 
+			YAHOO.vyatta.webgui.setDynamicLoad = function(node) {
+				function loadData(node, onCompleteCallback) {
+					var successHandler = function(o) {
+						if (o.responseXML != null && o.responseXML.documentElement != null && o.responseXML.documentElement.childNodes != null) {
+							for (var i = 0; i < o.responseXML.documentElement.childNodes.length; i++) {
+								if (o.responseXML.documentElement.childNodes[i].nodeName == "node") {
+									if (o.responseXML.documentElement.childNodes[i].attributes != null) {
+										var nameAttr = o.responseXML.documentElement.childNodes[i].attributes.getNamedItem("name");
+										if (nameAttr != null) {
+											var nn = new YAHOO.widget.TextNode(nameAttr.value, node);
+											YAHOO.vyatta.webgui.setDynamicLoad(nn);
+											YAHOO.vyatta.webgui.tree.draw();
+										}
+									}
+								}
+							}
+						} else {
+							alert("Server communication error.  Did not receive an XML response.");
+						}
+					}
+					var failureHandler = function(o) {
+						alert("Server communication error.  Error code: " + o.status + "  Description: " + o.statusText);
+					}
+					var callback = {
+						success: successHandler,
+						failure: failureHandler
+					};
+
+					var node_path = YAHOO.vyatta.webgui.getNodePath(node);
+					var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><configuration><id>" + YAHOO.vyatta.webgui.session_id + "</id><node>" + node_path + "</node></configuration></vyatta>\n");
+
+					onCompleteCallback();
+				}
+
+				node.setDynamicLoad(loadData);
+			}
+
+			YAHOO.vyatta.webgui.getNodePath = function(node) {
+				var nodePath = "";
+				while (node != null && !node.isRoot()) {
+					if (node.parent != null && node.parent.isRoot()) break;
+
+					nodePath = node.label + '/' + nodePath;
+					node = node.parent;
+				}
+				return nodePath;
+			}
 		</script>
 
 	</head>
@@ -127,6 +184,7 @@
 			<img src="/masthead.jpg" style="border: 0px; padding: 0px;" alt="">
 		</div>
 		<div id="left1">
+			<div id="treeDiv"></div>
 		</div>
 		<div id="center1">
 			<div id="loginPanel">

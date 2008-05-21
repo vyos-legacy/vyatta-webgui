@@ -54,6 +54,16 @@ TemplateParams::get_xml()
     out += "<multi/>";
   }
 
+  if (_enum.empty() == false) {
+    out += "<enum>";
+    vector<string>::iterator iter = _enum.begin();
+    while (iter != _enum.end()) {
+      out += "<match>" + *iter + "</match>";
+      ++iter;
+    }
+    out += "</enum>";
+  }
+
   switch (_type) {
   case WebGUI::TEXT:
     out += "<type name='text'/>";

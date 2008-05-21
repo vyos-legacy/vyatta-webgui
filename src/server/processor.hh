@@ -37,6 +37,7 @@ public:
   bool _multi;
   WebGUI::NodeType _type;
   std::string _help;
+  std::vector<std::string> _enum;
   //enumeration goes here
 
   std::string

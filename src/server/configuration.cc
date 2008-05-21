@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sys/types.h>
 #include <dirent.h>
+#include "rl_str_proc.hh"
 #include "processor.hh"
 #include "systembase.hh"
 #include "configuration.hh"
@@ -143,6 +144,29 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	string help = WebGUI::mass_replace(params._help, "<", "&#60;");
 	help = WebGUI::mass_replace(help, ">", "&#62;");
 	params._help = help;
+      }
+      else if (line.find("syntax:") != string::npos) {
+	//need to escape out '<' and '>'
+	string tmp = line.substr(7,line.length()-8);
+	StrProc str_proc(tmp, " ");
+	if (str_proc.size() > 3 && str_proc.get(2) == "in") {
+	  vector<string> orig_coll = str_proc.get();
+	  vector<string>::iterator begin = orig_coll.begin();
+	  ++begin;
+	  ++begin;
+	  ++begin;
+	  while (begin != orig_coll.end()) {
+	    string tmp = *begin;
+	    if (tmp[tmp.length()-1] == ';') {
+	      break;
+	    }
+	    if (tmp[tmp.length()-1] == ',') {
+	      tmp = tmp.substr(0,tmp.length()-1);
+	    }
+	    params._enum.push_back(tmp);
+	    ++begin;
+	  }
+	}
       }
     }
 

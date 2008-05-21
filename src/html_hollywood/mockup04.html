@@ -110,7 +110,7 @@
 						YAHOO.vyatta.webgui.tree = new YAHOO.widget.TreeView("treeDiv");
 						var root = YAHOO.vyatta.webgui.tree.getRoot();
 						var cfg = new YAHOO.widget.TextNode("Configure", root);
-						YAHOO.vyatta.webgui.doLoadNode(cfg);
+						YAHOO.vyatta.webgui.setDynamicLoad(cfg);
 						root.expand();
 						YAHOO.vyatta.webgui.tree.draw();
 					}
@@ -128,7 +128,7 @@
 				var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><auth><user>" + user + "</user><pswd>" + pswd + "</pswd></auth></vyatta>\n");
 			}
 
-			YAHOO.vyatta.webgui.doLoadNode = function(node) {
+			YAHOO.vyatta.webgui.setDynamicLoad = function(node) {
 				function loadData(node, onCompleteCallback) {
 					var successHandler = function(o) {
 						if (o.responseXML != null && o.responseXML.documentElement != null && o.responseXML.documentElement.childNodes != null) {
@@ -138,7 +138,7 @@
 										var nameAttr = o.responseXML.documentElement.childNodes[i].attributes.getNamedItem("name");
 										if (nameAttr != null) {
 											var nn = new YAHOO.widget.TextNode(nameAttr.value, node);
-											YAHOO.vyatta.webgui.doLoadNode(nn);
+											YAHOO.vyatta.webgui.setDynamicLoad(nn);
 											YAHOO.vyatta.webgui.tree.draw();
 										}
 									}

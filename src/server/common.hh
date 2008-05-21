@@ -35,6 +35,7 @@ public:
 			  NEWSESSION_USER,
 			  NEWSESSION_PSWD,
 			  GETCONFIG_ID,
+			  GETCONFIG_NODE,
 			  CLICMD_ID};
 
   typedef enum NodeType {NONE,

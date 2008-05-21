@@ -110,14 +110,18 @@ data_hndl(void *data, const XML_Char *s, int len) {
     memset( buf, '\0', len + sizeof( char ) );
     strncpy( buf, s, len );
 
+
     string str = string(buf);
+    if (str.empty()) {
+      return;
+    }
+
     str = WebGUI::trim_whitespace(str);
 
     if (m->_node == WebGUI::GETCONFIG_ID) {
-      char val[40];
       m->set_id(strtoul(str.c_str(), NULL, 10));
     }
-    else {
+    else if (m->_node == WebGUI::GETCONFIG_NODE) {
       //value between configuration tags
       m->_root_node = str;
     }
@@ -149,7 +153,6 @@ data_hndl(void *data, const XML_Char *s, int len) {
     str = WebGUI::trim_whitespace(str);
 
     if (m->_node == WebGUI::CLICMD_ID) {
-      char val[40];
       m->set_id(strtoul(str.c_str(), NULL, 10));
     }
     m->_command = str;
@@ -177,6 +180,9 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   if (m->_type == WebGUI::GETCONFIG) {
     if (strcmp(el, "id") == 0) {
       m->_node = WebGUI::GETCONFIG_ID;
+    }
+    else if (strcmp(el, "node") == 0) {
+      m->_node = WebGUI::GETCONFIG_NODE;
     }
     //set root search node here
     for (int i = 0; attr[i]; i += 2) {

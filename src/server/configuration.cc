@@ -109,9 +109,13 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
     //read value in here....
     while (fgets(buf, 1024, fp) != 0) {
       string line = string(buf);
+      //first strip off the whitespace
+      line = WebGUI::trim_whitespace(line);
+
       if (line.find("default:") != string::npos || 
 	       line.find("delete:") != string::npos || 
 	       line.find("commit:") != string::npos || 
+	       line.find("create:") != string::npos || 
 	       line.find("update:") != string::npos || 
 	       line.find("activate:") != string::npos ||
 	       line.find("begin:") != string::npos ||
@@ -125,11 +129,11 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	mode = "";
       }
 
-      if (line.find("tag:") != string::npos) {
+      if (strncmp(line.c_str(),"tag:",4) == 0) {
 	mode = "tag:";
 	params._multi = true;
       }
-      else if (line.find("type:") != string::npos || mode == "type:") {
+      else if (strncmp(line.c_str(),"type:",5) == 0 || mode == "type:") {
 	mode = "type:";
 	if (line.find("txt") != string::npos) {
 	  params._type = WebGUI::TEXT;
@@ -157,7 +161,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	}
 
       }
-      else if (line.find("help:") != string::npos || mode == "help:") {
+      else if (strncmp(line.c_str(),"help:",5) == 0 || mode == "help:") {
 	//need to escape out '<' and '>'
 	string help;
 	if (mode.empty()) {
@@ -169,9 +173,10 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	mode = "help:";
 	help = WebGUI::mass_replace(help, "<", "&#60;");
 	help = WebGUI::mass_replace(help, ">", "&#62;");
+	help = WebGUI::mass_replace(help, " & ", " &#38; ");
 	params._help += help;
       }
-      else if (line.find("syntax:") != string::npos || mode == "syntax:") {
+      else if (strncmp(line.c_str(),"syntax:",7) == 0 || mode == "syntax:") {
 	//need to escape out '<' and '>'
 	string tmp;
 	if (mode.empty()) {
@@ -201,7 +206,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  }
 	}
       }
-      else if (line.find("allowed:") != string::npos || mode == "allowed:") {
+      else if (strncmp(line.c_str(),"allowed:",8) == 0 || mode == "allowed:") {
 	//note, will need to support multi-line entry
 	//we'll need to execute this statement and scrape the results
 	if (mode.empty()) {

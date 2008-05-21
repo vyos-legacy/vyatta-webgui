@@ -194,14 +194,22 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  ++begin;
 	  ++begin;
 	  while (begin != orig_coll.end()) {
+	    bool end = false;
 	    string tmp = *begin;
-	    if (tmp[tmp.length()-1] == ';') {
-	      break;
-	    }
 	    if (tmp[tmp.length()-1] == ',') {
 	      tmp = tmp.substr(0,tmp.length()-1);
 	    }
+	    else if ( tmp[tmp.length()-1] == ';') {
+	      tmp = tmp.substr(0,tmp.length()-1);
+	      end = true;
+	    }
+	    else {
+	      break;
+	    }
 	    params._enum.push_back(tmp);
+	    if (end) {
+	      break;
+	    }
 	    ++begin;
 	  }
 	}

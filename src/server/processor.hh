@@ -38,6 +38,7 @@ public:
   WebGUI::NodeType _type;
   std::string _help;
   std::vector<std::string> _enum;
+  std::string _allowed; //matches the allowed in node.def
   //enumeration goes here
 
   std::string

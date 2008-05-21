@@ -98,8 +98,9 @@ Configuration::get_template()
 void
 Configuration::get_template_node(const string &path, TemplateParams &params)
 {
+  string allowed, mode;
   string root_template(WebGUI::CFG_TEMPLATE_DIR);
-  string tmpl_file = root_template + "/" + path + "/node.def";
+  string tmpl_file = root_template + path + "/node.def";
   
   //open the file here and parse
   FILE *fp = fopen(tmpl_file.c_str(), "r");
@@ -108,10 +109,28 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
     //read value in here....
     while (fgets(buf, 1024, fp) != 0) {
       string line = string(buf);
+      if (line.find("default:") != string::npos || 
+	       line.find("delete:") != string::npos || 
+	       line.find("commit:") != string::npos || 
+	       line.find("update:") != string::npos || 
+	       line.find("activate:") != string::npos ||
+	       line.find("begin:") != string::npos ||
+	       line.find("end:") != string::npos ||
+	       line.find("tag:") != string::npos ||
+	       line.find("type:") != string::npos ||
+	       line.find("help:") != string::npos ||
+	       line.find("syntax:") != string::npos ||
+	       line.find("allowed:") != string::npos ||
+	       line.find("comp_help:") != string::npos) {
+	mode = "";
+      }
+
       if (line.find("tag:") != string::npos) {
+	mode = "tag:";
 	params._multi = true;
       }
-      else if (line.find("type:") != string::npos) {
+      else if (line.find("type:") != string::npos || mode == "type:") {
+	mode = "type:";
 	if (line.find("txt") != string::npos) {
 	  params._type = WebGUI::TEXT;
 	}
@@ -138,16 +157,30 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	}
 
       }
-      else if (line.find("help:") != string::npos) {
+      else if (line.find("help:") != string::npos || mode == "help:") {
 	//need to escape out '<' and '>'
-	params._help = line.substr(5,line.length()-6);
-	string help = WebGUI::mass_replace(params._help, "<", "&#60;");
+	string help;
+	if (mode.empty()) {
+	  help = line.substr(5,line.length()-6);
+	}
+	else {
+	  help = line;
+	}
+	mode = "help:";
+	help = WebGUI::mass_replace(help, "<", "&#60;");
 	help = WebGUI::mass_replace(help, ">", "&#62;");
-	params._help = help;
+	params._help += help;
       }
-      else if (line.find("syntax:") != string::npos) {
+      else if (line.find("syntax:") != string::npos || mode == "syntax:") {
 	//need to escape out '<' and '>'
-	string tmp = line.substr(7,line.length()-8);
+	string tmp;
+	if (mode.empty()) {
+	  tmp = line.substr(7,line.length()-8);
+	}
+	else {
+	  tmp = line;
+	}
+	mode = "syntax:";
 	StrProc str_proc(tmp, " ");
 	if (str_proc.size() > 3 && str_proc.get(2) == "in") {
 	  vector<string> orig_coll = str_proc.get();
@@ -168,9 +201,28 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  }
 	}
       }
-    }
+      else if (line.find("allowed:") != string::npos || mode == "allowed:") {
+	//note, will need to support multi-line entry
+	//we'll need to execute this statement and scrape the results
+	if (mode.empty()) {
+	  allowed += line.substr(8,line.length()-9);
+	}
+	else {
+	  allowed += line;
+	}
+	mode = "allowed:";
 
+      }
+    }
     fclose(fp);
+  }
+
+  //now let's process the allowed statement here
+  if (allowed.empty() == false) {
+    //    cout << "allowed: " << allowed << endl;
+    string stdout;
+    //    int err = WebGUI::execute(allowed, stdout, true);
+    //    cout << "allowed--stdout: " << stdout << ", " << err << endl;
   }
 }
 
@@ -346,14 +398,12 @@ Configuration::parse_template(string &rel_tmpl_path, long &depth, string &out)
 	
 	//at this point reach out to the template directory and retreive data on this node
 	TemplateParams tmpl_params;
-	string new_rel_tmpl_path = rel_tmpl_path;
+	string new_rel_tmpl_path = rel_tmpl_path + "/" + string(dirp->d_name);
 	get_template_node(new_rel_tmpl_path, tmpl_params);
 	if (tmpl_params._multi == true) {
 	  new_rel_tmpl_path += "/node.tag";
 	}
-	else {
-	  new_rel_tmpl_path += "/" + string(dirp->d_name);
-	}
+
 	out += tmpl_params.get_xml();
 
 

@@ -101,7 +101,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
   string allowed, mode;
   string root_template(WebGUI::CFG_TEMPLATE_DIR);
   string tmpl_file = root_template + path + "/node.def";
-  
+
   //open the file here and parse
   FILE *fp = fopen(tmpl_file.c_str(), "r");
   if (fp) {

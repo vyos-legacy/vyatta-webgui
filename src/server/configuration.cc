@@ -125,6 +125,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	       line.find("begin:") != string::npos ||
 	       line.find("end:") != string::npos ||
 	       line.find("tag:") != string::npos ||
+	       line.find("multi:") != string::npos ||
 	       line.find("type:") != string::npos ||
 	       line.find("help:") != string::npos ||
 	       line.find("syntax:") != string::npos ||
@@ -133,7 +134,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	mode = "";
       }
 
-      if (strncmp(line.c_str(),"tag:",4) == 0) {
+      if ((strncmp(line.c_str(),"tag:",4) == 0) || (strncmp(line.c_str(),"multi:",6) == 0)) {
 	mode = "tag:";
 	params._multi = true;
       }

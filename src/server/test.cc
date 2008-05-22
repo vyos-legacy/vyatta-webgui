@@ -50,7 +50,6 @@ int main(int argc, char* argv[])
 {
   int ch;
   bool debug = false;
-  bool config_debug_mode = false, daemon = false;
   string pid_path = "/var/run";
   string file; 
   string server = "127.0.0.1";
@@ -210,5 +209,5 @@ get_config(int sock, int id)
 bool
 send_cmd(int sock)
 {
-
+  return true;
 }

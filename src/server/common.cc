@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const unsigned long WebGUI::ID_START = 2147483648;
+const unsigned long WebGUI::ID_START = (unsigned long)2147483648;
 
 const string WebGUI::ACTIVE_CONFIG_DIR = "/opt/vyatta/config/active";
 const string WebGUI::CONFIG_TMP_DIR = "/opt/vyatta/config/tmp/tmp_";
@@ -38,7 +38,6 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
   char buf[1025];
   buf[0] = '\0';
 
-  int i = 0;
   FILE *f = popen(cmd.c_str(), dir.c_str());
   if (f) {
     //    cout << "out: " << endl;

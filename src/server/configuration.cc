@@ -471,7 +471,7 @@ Configuration::validate_session(unsigned long id)
   }
   //then add a directory check here for valid configuration
   char buf[40];
-  sprintf(buf, "%u", id);
+  sprintf(buf, "%lu", id);
   string directory = WebGUI::LOCAL_CONFIG_DIR + string(buf);
   DIR *dp = opendir(directory.c_str());
   if (dp == NULL) {

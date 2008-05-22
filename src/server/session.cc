@@ -16,10 +16,10 @@ using namespace std;
  *
  **/
 Session::Session(int sock, bool debug) : 
-  _valid(false),
-  _debug(debug), 
   _sock(sock),
-  _session_timeout(30 * 60)
+  _valid(false),
+  _session_timeout(30 * 60),
+  _debug(debug)
 {
   _processor = NULL;
 }
@@ -172,7 +172,7 @@ Session::update_session()
 
   time_t t = time(NULL);
 
-  if ((buf.st_mtime + _session_timeout) > t) {
+  if ((buf.st_mtime + _session_timeout) > (unsigned)t) {
     //have to clean up session at this point!!!!!!!!
     cerr << "clean up session here" << endl;
 

@@ -112,7 +112,6 @@ SessionExchangeSocket::read(Session &session)
 {
   vector<uint8_t> message;
   vector<uint8_t> buffer(2048);
-  size_t last_mh_off = 0;
   size_t off = 0;
   ssize_t got = -1;
 
@@ -172,7 +171,7 @@ SessionExchangeSocket::write(Session &session)
   int ret = 1;
   string msg = session.get_message();
  
-  while (ret > 0 && index != msg.length() && tries < 5) {
+  while (ret > 0 && index != (int)msg.length() && tries < 5) {
     ret = send(session.get_sock(), msg.c_str(), msg.length(), 0);
     if (ret > 0) {
       index += ret;

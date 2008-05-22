@@ -41,6 +41,7 @@ SessionExchangeFile::init()
 Session
 SessionExchangeFile::check_for_new_connection()
 {
+  return Session(0,_debug);
 }
 
 bool

@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 {
   int ch;
   bool debug = false;
-  bool config_debug_mode = false, daemon = false;
+  bool daemon = false;
   string pid_path = "/var/run";
   string file; 
   unsigned long port = 0;
@@ -92,6 +92,9 @@ int main(int argc, char* argv[])
     pid_output(pid_path.c_str());
   }
 
+  signal(SIGINT, sig_end);
+  signal(SIGTERM, sig_end);
+  signal(SIGUSR1, sig_user);
   
   SessionExchange *se;
   if (port > 0) {

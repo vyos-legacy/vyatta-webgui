@@ -33,7 +33,7 @@ string
 Message::id()
 {
   char buf[40];
-  sprintf(buf, "%u", _id);
+  sprintf(buf, "%lu", _id);
   return string(buf);
 }
 
@@ -88,6 +88,8 @@ TemplateParams::get_xml()
     break;
   case WebGUI::MACADDR:
     out += "<type name='macaddr'/>";    
+    break;
+  case WebGUI::NONE:
     break;
   }
 

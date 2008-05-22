@@ -112,6 +112,10 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       //first strip off the whitespace
       line = WebGUI::trim_whitespace(line);
 
+      //now strip everything past the hash
+      int pos = line.find("#");
+      line = line.substr(0,pos);
+
       if (line.find("default:") != string::npos || 
 	       line.find("delete:") != string::npos || 
 	       line.find("commit:") != string::npos || 

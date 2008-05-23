@@ -108,13 +108,12 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
     char buf[1025];
     //read value in here....
     while (fgets(buf, 1024, fp) != 0) {
+      if (buf[0] == '#') {
+	continue;
+      }
       string line = string(buf);
       //first strip off the whitespace
       line = WebGUI::trim_whitespace(line);
-
-      //now strip everything past the hash
-      int pos = line.find("#");
-      line = line.substr(0,pos);
 
       if (line.find("default:") != string::npos || 
 	       line.find("delete:") != string::npos || 
@@ -208,10 +207,10 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	      tmp = tmp.substr(0,tmp.length()-1);
 	      end = true;
 	    }
-	    else {
-	      break;
+
+	    if (!tmp.empty()) {
+	      params._enum.push_back(tmp);
 	    }
-	    params._enum.push_back(tmp);
 	    if (end) {
 	      break;
 	    }
@@ -222,11 +221,13 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       else if (strncmp(line.c_str(),"allowed:",8) == 0 || mode == "allowed:") {
 	//note, will need to support multi-line entry
 	//we'll need to execute this statement and scrape the results
-	if (mode.empty()) {
-	  allowed += line.substr(8,line.length()-9);
-	}
-	else {
-	  allowed += line;
+	if (!line.empty()) {
+	  if (mode.empty()) {
+	    allowed += line.substr(8,line.length()-9) + "\n";
+	  }
+	  else {
+	    allowed += line + "\n";
+	  }
 	}
 	mode = "allowed:";
 
@@ -237,10 +238,39 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 
   //now let's process the allowed statement here
   if (allowed.empty() == false) {
-    //    cout << "allowed: " << allowed << endl;
     string stdout;
-    //    int err = WebGUI::execute(allowed, stdout, true);
-    //    cout << "allowed--stdout: " << stdout << ", " << err << endl;
+    string cmd;
+    if (allowed.find("local ") != string::npos) {
+      cmd = "function foo () { " + allowed + " } ; foo;";
+    }
+    else {
+      cmd = allowed;
+    }
+
+    //    cout << "INPUT COMMAND: %>" << cmd << "<%" << endl;
+
+    int err = WebGUI::execute(cmd, stdout, true);
+    if (err == 0) {
+      //      cout << "allowed(OUT): '" << stdout.substr(0,stdout.length()-1) << "', ERROR CODE: " << err << endl;
+      //now fill out enumeration now
+      StrProc str_proc(stdout, " ");
+      vector<string> orig_coll = str_proc.get();
+      vector<string>::iterator iter = orig_coll.begin();
+      while (iter != orig_coll.end()) {
+	if (iter->empty() == false) {
+	  string tmp = WebGUI::mass_replace(*iter, "<", "&#60;");
+	  tmp = WebGUI::mass_replace(tmp, ">", "&#62;");
+	  tmp = WebGUI::mass_replace(tmp, " & ", " &#38; ");
+
+	  //	  cout << "A: " << tmp << endl;
+
+	  params._enum.push_back(tmp);
+	}
+	++iter;
+      }
+      //      cout << endl;
+    }
+    //    cout << endl;
   }
 }
 

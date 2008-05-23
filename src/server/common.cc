@@ -34,20 +34,29 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
   if (read == true) {
     dir = "r";
   }
-
-  char buf[1025];
-  buf[0] = '\0';
-
+  //  cout << "WebGUI::execute(A): '" << cmd << "'" << endl;
   FILE *f = popen(cmd.c_str(), dir.c_str());
   if (f) {
-    //    cout << "out: " << endl;
     if (read == true) {
-      fgets(buf, 1024, f);
+      fflush(f);
+      char *buf = NULL;
+      size_t len = 0;
+      size_t read_len = 0;
+      while ((read_len = getline(&buf, &len, f)) != -1) {
+	//	cout << "WebGUI::execute(): " << string(buf) << ", " << len << ", " << read_len << endl;
+
+	stdout += string(buf) + " ";
+      }
+
+      if (buf) {
+	free(buf);
+      }
     }
     err = pclose(f);
+    if (err != 0) {
+      stdout = string("");
+    }
   }
-
-  stdout = string(buf);
   return err;
 }
 

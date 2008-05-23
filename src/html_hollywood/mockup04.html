@@ -127,10 +127,9 @@
 			}
 
 			YAHOO.vyatta.webgui.setDynamicLoad = function(node) {
-				function loadData(node, onCompleteCallback) {
-					var vn = new YAHOO.vyatta.webgui.VyattaNodes();
-					vn.loadNodes(node);
-					onCompleteCallback();
+				function loadData(n, onCompleteCallback) {
+					var vn = new YAHOO.vyatta.webgui.VyattaNodes(n);
+					vn.createChildrenTreeNodes(onCompleteCallback);
 				}
 
 				node.setDynamicLoad(loadData);

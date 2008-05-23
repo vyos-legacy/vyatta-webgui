@@ -53,17 +53,27 @@ public:
 			  SET};
 
 
+  static std::string
+  generate_response(Error err);
+
   /**
    *
    *
    **/
-  int static 
+  static int
   execute(std::string &cmd, std::string &stdout, bool read = false);
 
-
+  /**
+   *
+   *
+   **/
   static std::string
   mass_replace(const std::string &source, const std::string &victim, const std::string &replacement);
 
+  /**
+   *
+   *
+   **/
   static std::string
   trim_whitespace(const std::string &src);
 

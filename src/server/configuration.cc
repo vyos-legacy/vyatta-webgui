@@ -108,13 +108,12 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
     char buf[1025];
     //read value in here....
     while (fgets(buf, 1024, fp) != 0) {
+      if (buf[0] == '#') {
+	continue;
+      }
       string line = string(buf);
       //first strip off the whitespace
       line = WebGUI::trim_whitespace(line);
-
-      //now strip everything past the hash
-      int pos = line.find("#");
-      line = line.substr(0,pos);
 
       if (line.find("default:") != string::npos || 
 	       line.find("delete:") != string::npos || 
@@ -193,40 +192,46 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	mode = "syntax:";
 	StrProc str_proc(tmp, " ");
 	if (str_proc.size() > 3 && str_proc.get(2) == "in") {
-	  vector<string> orig_coll = str_proc.get();
-	  vector<string>::iterator begin = orig_coll.begin();
-	  ++begin;
-	  ++begin;
-	  ++begin;
-	  while (begin != orig_coll.end()) {
+	  string meat_str = str_proc.get(3,str_proc.size());
+	  
+	  //now delimit on ","
+	  StrProc meat_str_proc(meat_str, ",");
+	  vector<string> meat_coll = meat_str_proc.get();
+	  vector<string>::iterator b = meat_coll.begin();
+	  while (b != meat_coll.end()) {
 	    bool end = false;
-	    string tmp = *begin;
-	    if (tmp[tmp.length()-1] == ',') {
-	      tmp = tmp.substr(0,tmp.length()-1);
-	    }
-	    else if ( tmp[tmp.length()-1] == ';') {
-	      tmp = tmp.substr(0,tmp.length()-1);
+	    string tmp = *b;
+
+	    tmp = WebGUI::trim_whitespace(tmp);
+
+	    int pos;
+	    if ((pos = tmp.find(";")) != string::npos) {
+	      tmp = tmp.substr(0,pos);
 	      end = true;
 	    }
-	    else {
-	      break;
+
+	    //	    cout << "push_back static: " << tmp << endl;
+
+	    if (!tmp.empty()) {
+	      params._enum.push_back(tmp);
 	    }
-	    params._enum.push_back(tmp);
 	    if (end) {
 	      break;
 	    }
-	    ++begin;
+	    ++b;
 	  }
 	}
       }
       else if (strncmp(line.c_str(),"allowed:",8) == 0 || mode == "allowed:") {
 	//note, will need to support multi-line entry
 	//we'll need to execute this statement and scrape the results
-	if (mode.empty()) {
-	  allowed += line.substr(8,line.length()-9);
-	}
-	else {
-	  allowed += line;
+	if (!line.empty()) {
+	  if (mode.empty()) {
+	    allowed += line.substr(8,line.length()-9) + "\n";
+	  }
+	  else {
+	    allowed += line + "\n";
+	  }
 	}
 	mode = "allowed:";
 
@@ -237,82 +242,46 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 
   //now let's process the allowed statement here
   if (allowed.empty() == false) {
-    //    cout << "allowed: " << allowed << endl;
     string stdout;
-    //    int err = WebGUI::execute(allowed, stdout, true);
-    //    cout << "allowed--stdout: " << stdout << ", " << err << endl;
+    string cmd;
+    if (allowed.find("local ") != string::npos) {
+      cmd = "function foo () { " + allowed + " } ; foo;";
+    }
+    else {
+      cmd = allowed;
+    }
+
+    //    cout << "INPUT COMMAND: %>" << cmd << "<%" << endl;
+
+    int err = WebGUI::execute(cmd, stdout, true);
+    if (err == 0) {
+      //      cout << "allowed(OUT): '" << stdout.substr(0,stdout.length()-1) << "', ERROR CODE: " << err << endl;
+      //now fill out enumeration now
+      StrProc str_proc(stdout, " ");
+      vector<string> orig_coll = str_proc.get();
+      vector<string>::iterator iter = orig_coll.begin();
+      while (iter != orig_coll.end()) {
+	if (iter->empty() == false) {
+	  string tmp = WebGUI::mass_replace(*iter, "<", "&#60;");
+	  tmp = WebGUI::mass_replace(tmp, ">", "&#62;");
+	  tmp = WebGUI::mass_replace(tmp, " & ", " &#38; ");
+
+	  //	  cout << "A: " << tmp << endl;
+
+	  params._enum.push_back(tmp);
+	}
+	++iter;
+      }
+      //      cout << endl;
+    }
+    //    cout << endl;
   }
 }
-
 
 
 /**
  *
  **/
-/*
-void
-Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_path, long &depth, string &out)
-{
-  static string root_config(WebGUI::ACTIVE_CONFIG_DIR);
-  static string root_template(WebGUI::CFG_TEMPLATE_DIR);
-  DIR *dp;
-  struct dirent *dirp;
-
-  --depth;
-  if (depth == 0) {
-    return;
-  }
-
-  string full_config_path = root_config + "/" + rel_config_path;
-  string full_template_path = root_template + "/" + rel_tmpl_path;
-
-  //  cout << "Configuration::parse_configuation: " << full_config_path << endl;
-  //  cout << "Configuration::parse_configuation: " << full_template_path << endl << endl;
-
-  if ((dp = opendir(full_config_path.c_str())) == NULL) {
-    return;
-  }
-
-  while ((dirp = readdir(dp)) != NULL) {
-    if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
-      string new_rel_config_path = rel_config_path + "/" + dirp->d_name;
-      if (strcmp(dirp->d_name,"node.val") != 0) {
-	out += string("<node name='") + string(dirp->d_name) + "'>";
-	
-	//check if node is deleted
-	out += "<configured>active</configured>";
-	long new_depth = depth;
-	
-	//at this point reach out to the template directory and retreive data on this node
-	TemplateParams tmpl_params;
-	string new_rel_tmpl_path = rel_tmpl_path;
-	get_template_node(new_rel_tmpl_path, tmpl_params);
-	if (tmpl_params._multi == true) {
-	  new_rel_tmpl_path += "/node.tag";
-	}
-	else {
-	  new_rel_tmpl_path += "/" + string(dirp->d_name);
-	}
-	out += tmpl_params.get_xml();
-
-
-	parse_configuration(new_rel_config_path, new_rel_tmpl_path, new_depth, out);
-	out += "</node>";
-      }
-      else {
-	out += "<node>";
-	parse_value(new_rel_config_path, out);
-	TemplateParams tmpl_params;
-	get_template_node(rel_tmpl_path, tmpl_params);
-	out += tmpl_params.get_xml();
-	out += "</node>";
-      }
-    }
-  }
-  closedir(dp);
-  return;
-}
-*/
 void
 Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_path, long &depth, string &out)
 {

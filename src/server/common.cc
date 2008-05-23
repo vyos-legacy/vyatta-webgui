@@ -13,8 +13,6 @@ const string WebGUI::LOCAL_CHANGES_ONLY = "/tmp/changes_only_";
 const string WebGUI::LOCAL_CONFIG_DIR = "/opt/vyatta/config/tmp/new_config_";
 const string WebGUI::CFG_TEMPLATE_DIR = "/opt/vyatta/share/vyatta-cfg/templates";
 
-
-
 char const* WebGUI::ErrorDesc[8] = {"n/a",
 				    "request cannot be parsed",
 				    "username/password are not valid",
@@ -24,7 +22,20 @@ char const* WebGUI::ErrorDesc[8] = {"n/a",
 				    "commit is in progress",
 				    "configuration has changed"};
 
+/**
+ *
+ **/
+std::string
+WebGUI::generate_response(Error err)
+{
+    char buf[40];
+    sprintf(buf, "%d", err);
+    return ("<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[err])+"</error></vyatta>");
+}
 
+/**
+ *
+ **/
 int
 WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
 {
@@ -34,20 +45,28 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
   if (read == true) {
     dir = "r";
   }
-
-  char buf[1025];
-  buf[0] = '\0';
-
+  //  cout << "WebGUI::execute(A): '" << cmd << "'" << endl;
   FILE *f = popen(cmd.c_str(), dir.c_str());
   if (f) {
-    //    cout << "out: " << endl;
     if (read == true) {
-      fgets(buf, 1024, f);
+      fflush(f);
+      char *buf = NULL;
+      size_t len = 0;
+      size_t read_len = 0;
+      while ((read_len = getline(&buf, &len, f)) != -1) {
+	//	cout << "WebGUI::execute(): " << string(buf) << ", " << len << ", " << read_len << endl;
+	stdout += string(buf) + " ";
+      }
+
+      if (buf) {
+	free(buf);
+      }
     }
     err = pclose(f);
+    if (err != 0) {
+      stdout = string("");
+    }
   }
-
-  stdout = string(buf);
   return err;
 }
 
@@ -65,6 +84,9 @@ WebGUI::mass_replace(const std::string &source, const std::string &victim, const
   return answer;
 }
 
+/**
+ *
+ **/
 std::string
 WebGUI::trim_whitespace(const std::string &src)
 {

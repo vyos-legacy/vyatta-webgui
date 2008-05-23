@@ -275,74 +275,9 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 }
 
 
-
 /**
  *
  **/
-/*
-void
-Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_path, long &depth, string &out)
-{
-  static string root_config(WebGUI::ACTIVE_CONFIG_DIR);
-  static string root_template(WebGUI::CFG_TEMPLATE_DIR);
-  DIR *dp;
-  struct dirent *dirp;
-
-  --depth;
-  if (depth == 0) {
-    return;
-  }
-
-  string full_config_path = root_config + "/" + rel_config_path;
-  string full_template_path = root_template + "/" + rel_tmpl_path;
-
-  //  cout << "Configuration::parse_configuation: " << full_config_path << endl;
-  //  cout << "Configuration::parse_configuation: " << full_template_path << endl << endl;
-
-  if ((dp = opendir(full_config_path.c_str())) == NULL) {
-    return;
-  }
-
-  while ((dirp = readdir(dp)) != NULL) {
-    if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
-      string new_rel_config_path = rel_config_path + "/" + dirp->d_name;
-      if (strcmp(dirp->d_name,"node.val") != 0) {
-	out += string("<node name='") + string(dirp->d_name) + "'>";
-	
-	//check if node is deleted
-	out += "<configured>active</configured>";
-	long new_depth = depth;
-	
-	//at this point reach out to the template directory and retreive data on this node
-	TemplateParams tmpl_params;
-	string new_rel_tmpl_path = rel_tmpl_path;
-	get_template_node(new_rel_tmpl_path, tmpl_params);
-	if (tmpl_params._multi == true) {
-	  new_rel_tmpl_path += "/node.tag";
-	}
-	else {
-	  new_rel_tmpl_path += "/" + string(dirp->d_name);
-	}
-	out += tmpl_params.get_xml();
-
-
-	parse_configuration(new_rel_config_path, new_rel_tmpl_path, new_depth, out);
-	out += "</node>";
-      }
-      else {
-	out += "<node>";
-	parse_value(new_rel_config_path, out);
-	TemplateParams tmpl_params;
-	get_template_node(rel_tmpl_path, tmpl_params);
-	out += tmpl_params.get_xml();
-	out += "</node>";
-      }
-    }
-  }
-  closedir(dp);
-  return;
-}
-*/
 void
 Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_path, long &depth, string &out)
 {

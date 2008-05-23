@@ -192,21 +192,25 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	mode = "syntax:";
 	StrProc str_proc(tmp, " ");
 	if (str_proc.size() > 3 && str_proc.get(2) == "in") {
-	  vector<string> orig_coll = str_proc.get();
-	  vector<string>::iterator begin = orig_coll.begin();
-	  ++begin;
-	  ++begin;
-	  ++begin;
-	  while (begin != orig_coll.end()) {
+	  string meat_str = str_proc.get(3,str_proc.size());
+	  
+	  //now delimit on ","
+	  StrProc meat_str_proc(meat_str, ",");
+	  vector<string> meat_coll = meat_str_proc.get();
+	  vector<string>::iterator b = meat_coll.begin();
+	  while (b != meat_coll.end()) {
 	    bool end = false;
-	    string tmp = *begin;
-	    if (tmp[tmp.length()-1] == ',') {
-	      tmp = tmp.substr(0,tmp.length()-1);
-	    }
-	    else if ( tmp[tmp.length()-1] == ';') {
-	      tmp = tmp.substr(0,tmp.length()-1);
+	    string tmp = *b;
+
+	    tmp = WebGUI::trim_whitespace(tmp);
+
+	    int pos;
+	    if ((pos = tmp.find(";")) != string::npos) {
+	      tmp = tmp.substr(0,pos);
 	      end = true;
 	    }
+
+	    //	    cout << "push_back static: " << tmp << endl;
 
 	    if (!tmp.empty()) {
 	      params._enum.push_back(tmp);
@@ -214,7 +218,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	    if (end) {
 	      break;
 	    }
-	    ++begin;
+	    ++b;
 	  }
 	}
       }

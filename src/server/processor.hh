@@ -33,8 +33,9 @@ public:
 class TemplateParams
 {
 public:
-  TemplateParams() : _multi(false), _type(WebGUI::NONE) {}
+  TemplateParams() : _multi(false), _end(false), _type(WebGUI::NONE) {}
   bool _multi;
+  bool _end;
   WebGUI::NodeType _type;
   std::string _help;
   std::vector<std::string> _enum;

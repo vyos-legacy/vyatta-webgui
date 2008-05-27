@@ -133,9 +133,14 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	mode = "";
       }
 
-      if ((strncmp(line.c_str(),"tag:",4) == 0) || (strncmp(line.c_str(),"multi:",6) == 0)) {
+      if ((strncmp(line.c_str(),"tag:",4) == 0)) {
 	mode = "tag:";
 	params._multi = true;
+      }
+      else if ((strncmp(line.c_str(),"multi:",6) == 0)) {
+	mode = "tag:";
+	params._multi = true;
+	params._end = true;
       }
       else if (strncmp(line.c_str(),"type:",5) == 0 || mode == "type:") {
 	mode = "type:";
@@ -238,6 +243,12 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       }
     }
     fclose(fp);
+  }
+
+
+  //infer end node from leaf
+  if (params._type != WebGUI::NONE && params._multi == false) {
+    params._end = true;
   }
 
   //now let's process the allowed statement here

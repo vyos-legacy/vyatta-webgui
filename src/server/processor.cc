@@ -54,6 +54,10 @@ TemplateParams::get_xml()
     out += "<multi/>";
   }
 
+  if (_end) {
+    out += "<terminal/>";
+  }
+
   if (_enum.empty() == false) {
     out += "<enum>";
     vector<string>::iterator iter = _enum.begin();

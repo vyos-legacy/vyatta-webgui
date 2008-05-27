@@ -134,17 +134,6 @@
 
 				node.setDynamicLoad(loadData);
 			}
-
-			YAHOO.vyatta.webgui.getNodePath = function(node) {
-				var nodePath = "";
-				while (node != null && !node.isRoot()) {
-					if (node.parent != null && node.parent.isRoot()) break;
-
-					nodePath = node.label + '/' + nodePath;
-					node = node.parent;
-				}
-				return nodePath;
-			}
 		</script>
 
 	</head>

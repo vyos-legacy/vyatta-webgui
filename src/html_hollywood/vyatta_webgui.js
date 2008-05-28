@@ -103,7 +103,6 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 					item.label = "<b>" + cn.name + "</b>";
 					var nn = new YAHOO.widget.TextNode(item, this.node);
 					nn.multi = true;
-					YAHOO.vyatta.webgui.setDynamicLoad(nn);	
 				}
 			} else {
 				var cnMatched = null;
@@ -123,7 +122,6 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 					item.label = "<b>" + cn.name + "</b>";
 				}
 				var nn = new YAHOO.widget.TextNode(item, this.node);
-				YAHOO.vyatta.webgui.setDynamicLoad(nn);
 			}
 			YAHOO.vyatta.webgui.tree.draw();
 		}

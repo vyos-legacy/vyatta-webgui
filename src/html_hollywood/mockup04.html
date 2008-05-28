@@ -24,12 +24,16 @@
 		<link rel="stylesheet" type="text/css" href="yui/build/button/assets/skins/sam/button.css" />
 		<link rel="stylesheet" type="text/css" href="yui/build/container/assets/skins/sam/container.css">
 		<link rel="stylesheet" type="text/css" href="yui/build/treeview/assets/skins/sam/treeview.css">
+		<link rel="stylesheet" type="text/css" href="yui/build/logger/assets/skins/sam/logger.css" />
 		<link rel="stylesheet" type="text/css" href="loginform.css">
 
 
 		<script type="text/javascript" src="yui/build/yahoo/yahoo-min.js"></script>
 		<script type="text/javascript" src="yui/build/event/event-min.js"></script>
 		<script type="text/javascript" src="yui/build/dom/dom-min.js"></script>
+
+		<script type="text/javascript" src="yui/build/logger/logger-min.js"></script>
+
 		<script type="text/javascript" src="yui/build/element/element-beta-min.js"></script>
 		<script type="text/javascript" src="yui/build/button/button-min.js"></script>
 		<script type="text/javascript" src="yui/build/dragdrop/dragdrop-min.js"></script>
@@ -38,7 +42,7 @@
 		<script type="text/javascript" src="yui/build/layout/layout-beta-min.js"></script>
 		<script type="text/javascript" src="yui/build/container/container-min.js"></script>
 		<script type="text/javascript" src="yui/build/connection/connection-min.js"></script>
-		<script type="text/javascript" src="yui/build/treeview/treeview-min.js"></script>
+		<script type="text/javascript" src="yui/build/treeview/treeview-debug.js"></script>
 
 
 		<script type="text/javascript" src="vyatta_webgui.js"></script>
@@ -54,10 +58,10 @@
 					YAHOO.vyatta.webgui.leftpane = { position: 'left', width: 300, resize: true, body: 'left1', gutter: '0px', scroll: true, animate: true };
 
 					YAHOO.vyatta.webgui.layout = new YAHOO.widget.Layout({
-					units: [
-						{ position: 'top', height: 71, body: 'top1', gutter: '0px' },
-						{ position: 'center', body: 'center1' },
-						YAHOO.vyatta.webgui.leftpane
+						units: [
+							{ position: 'top', height: 71, body: 'top1', gutter: '0px' },
+							{ position: 'center', body: 'center1'},
+							YAHOO.vyatta.webgui.leftpane
 						]
 					});
 
@@ -80,6 +84,8 @@
 							fn: YAHOO.vyatta.webgui.doLogin
 						}
 					});
+
+//					var logger = new YAHOO.widget.LogReader();
 
 				});
 			})();
@@ -106,11 +112,23 @@
 						YAHOO.vyatta.webgui.layout.addUnit(YAHOO.vyatta.webgui.leftpane);
 
 						YAHOO.vyatta.webgui.tree = new YAHOO.widget.TreeView("treeDiv");
+						function loadData(n, onCompleteCallback) {
+							var vn = new YAHOO.vyatta.webgui.VyattaNodes(n);
+							vn.createChildrenTreeNodes(onCompleteCallback);
+						}
+						YAHOO.vyatta.webgui.tree.setDynamicLoad(loadData);
+
 						var root = YAHOO.vyatta.webgui.tree.getRoot();
 						var cfg = new YAHOO.widget.TextNode("Configure", root);
-						YAHOO.vyatta.webgui.setDynamicLoad(cfg);
-						root.expand();
+
+						var loadData = function(n, onCompleteCallback) {
+							var vn = new YAHOO.vyatta.webgui.VyattaNodes(n);
+							vn.createChildrenTreeNodes(onCompleteCallback);
+						}
+						YAHOO.vyatta.webgui.tree.setDynamicLoad(loadData);
+
 						YAHOO.vyatta.webgui.tree.draw();
+//						cfg.expand();
 					}
 				}
 				var failureHandler = function(o) {
@@ -124,15 +142,6 @@
 				var user = document.getElementById("user").value;
 				var pswd = document.getElementById("pswd").value;
 				var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><auth><user>" + user + "</user><pswd>" + pswd + "</pswd></auth></vyatta>\n");
-			}
-
-			YAHOO.vyatta.webgui.setDynamicLoad = function(node) {
-				function loadData(n, onCompleteCallback) {
-					var vn = new YAHOO.vyatta.webgui.VyattaNodes(n);
-					vn.createChildrenTreeNodes(onCompleteCallback);
-				}
-
-				node.setDynamicLoad(loadData);
 			}
 		</script>
 
@@ -163,7 +172,6 @@
 				</div>
 			</div>
 		</div>
-
 	</body>
 </html>
 

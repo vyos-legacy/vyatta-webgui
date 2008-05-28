@@ -42,6 +42,7 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 			config_path = n.title + '/' + config_path;
 			n = n.parent;
 		}
+		config_path = '/' + config_path;
 		return config_path;
 	},
 	getTemplatePath: function() {
@@ -56,6 +57,7 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 			}
 			n = n.parent;
 		}
+		template_path = '/' + template_path;
 		return template_path;
 	},
 
@@ -92,6 +94,7 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 	loadConfigNodesCB: function(createChildrenTreeNodesCB) {
 		for (var i in this.templ) {
 			var tn = this.templ[i];
+			if (tn.terminal) continue;
 			if (tn.name == "node.tag") {
 				for (var j in this.config) {
 					var cn = this.config[j];
@@ -143,6 +146,11 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 							var nameAttr = o.responseXML.documentElement.childNodes[i].attributes.getNamedItem("name");
 							if (nameAttr != null) {
 								nn = new YAHOO.vyatta.webgui.TemplateNode(nameAttr.value);
+								if (o.responseXML.documentElement.childNodes[i].childNodes != null) {
+									for (var j = 0; j < o.responseXML.documentElement.childNodes[i].childNodes.length; j++) {
+										if (o.responseXML.documentElement.childNodes[i].childNodes[j].nodeName == "terminal") nn.terminal = true;
+									}
+								}
 							}
 						}
 					}

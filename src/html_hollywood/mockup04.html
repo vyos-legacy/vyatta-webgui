@@ -120,14 +120,11 @@
 
 						var root = YAHOO.vyatta.webgui.tree.getRoot();
 						var cfg = new YAHOO.widget.TextNode("Configure", root);
-
-						var loadData = function(n, onCompleteCallback) {
-							var vn = new YAHOO.vyatta.webgui.VyattaNodes(n);
-							vn.createChildrenTreeNodes(onCompleteCallback);
-						}
-						YAHOO.vyatta.webgui.tree.setDynamicLoad(loadData);
-
 						YAHOO.vyatta.webgui.tree.draw();
+
+						YAHOO.vyatta.webgui.tree.subscribe("collapseComplete", function(node) {
+							YAHOO.vyatta.webgui.tree.removeChildren(node);
+						});
 //						cfg.expand();
 					}
 				}

@@ -61,7 +61,7 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 			success: successHandler,
 			failure: failureHandler
 		};
-		var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><configuration><id>" + YAHOO.vyatta.webgui.session_id + "</id><node depth='" + (this.node.depth + 3) + "'>" + config_path + "</node></configuration></vyatta>\n");
+		var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><configuration><id>" + YAHOO.vyatta.webgui.session_id + "</id><node mode='config' depth='" + (this.node.depth + 3) + "'>" + config_path + "</node></configuration></vyatta>\n");
 	},
 	loadConfigNodesCB: function(createChildrenTreeNodesCB) {
 		for (var i in this.templ) {

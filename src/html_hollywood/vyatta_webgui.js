@@ -34,31 +34,12 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 		this.loadTemplateNodes2(createChildrenTreeNodesCB);
 	},
 
+
 	getConfigPath: function() {
-		var config_path = "";
-		var n = this.node;
-		while (n != null && !n.isRoot()) {
-			if (n.parent != null && n.parent.isRoot()) break;
-			config_path = n.title + '/' + config_path;
-			n = n.parent;
-		}
-		config_path = '/' + config_path;
-		return config_path;
+		return YAHOO.vyatta.webgui.VyattaUtil.getConfigPath(this.node);
 	},
 	getTemplatePath: function() {
-		var template_path = "";
-		var n = this.node;
-		while (n != null && !n.isRoot()) {
-			if (n.parent != null && n.parent.isRoot()) break;
-			if (n.multi) {
-				template_path = 'node.tag/' + template_path;
-			} else {
-				template_path = n.title + '/' + template_path;
-			}
-			n = n.parent;
-		}
-		template_path = '/' + template_path;
-		return template_path;
+		return YAHOO.vyatta.webgui.VyattaUtil.getTemplatePath(this.node);
 	},
 
 	loadConfigNodes: function(createChildrenTreeNodesCB) {
@@ -67,16 +48,7 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 		var me = this;
 		var successHandler = function(o) {
 			if (o.responseXML != null && o.responseXML.documentElement != null && o.responseXML.documentElement.childNodes != null) {
-				for (var i = 0; i < o.responseXML.documentElement.childNodes.length; i++) {
-					if (o.responseXML.documentElement.childNodes[i].nodeName == "node") {
-						if (o.responseXML.documentElement.childNodes[i].attributes != null) {
-							var nameAttr = o.responseXML.documentElement.childNodes[i].attributes.getNamedItem("name");
-							if (nameAttr != null) {
-								me.config.push(new YAHOO.vyatta.webgui.ConfigNode(nameAttr.value));
-							}
-						}
-					}
-				}
+				YAHOO.vyatta.webgui.VyattaUtil.processConfigNodes(o.responseXML.documentElement.childNodes, me.config);
 			} else {
 				alert("Server communication error.  Did not receive an XML response.");
 			}
@@ -89,7 +61,7 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 			success: successHandler,
 			failure: failureHandler
 		};
-		var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><configuration><id>" + YAHOO.vyatta.webgui.session_id + "</id><node>" + config_path + "</node></configuration></vyatta>\n");
+		var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><configuration><id>" + YAHOO.vyatta.webgui.session_id + "</id><node depth='" + (this.node.depth + 3) + "'>" + config_path + "</node></configuration></vyatta>\n");
 	},
 	loadConfigNodesCB: function(createChildrenTreeNodesCB) {
 		for (var i in this.templ) {
@@ -102,6 +74,8 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 					item.title = cn.name;
 					item.label = "<b>" + cn.name + "</b>";
 					var nn = new YAHOO.widget.TextNode(item, this.node);
+					nn.tn = tn;
+					nn.cn = cn;
 					nn.multi = true;
 				}
 			} else {
@@ -122,38 +96,21 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 					item.label = "<b>" + cn.name + "</b>";
 				}
 				var nn = new YAHOO.widget.TextNode(item, this.node);
+				nn.tn = tn;
+				nn.cn = cn;
 			}
 			YAHOO.vyatta.webgui.tree.draw();
 		}
-		createChildrenTreeNodesCB();
+		if (createChildrenTreeNodesCB != null) createChildrenTreeNodesCB();
 	},
 
 	loadTemplateNodes2: function(createChildrenTreeNodesCB) {
 		var template_path = this.getTemplatePath();
 		var me = this;
 		var successHandler = function(o) {
+
 			if (o.responseXML != null && o.responseXML.documentElement != null && o.responseXML.documentElement.childNodes != null) {
-				var nn = null;
-				for (var i = 0; i < o.responseXML.documentElement.childNodes.length; i++) {
-					if (o.responseXML.documentElement.childNodes[i].nodeName == "node") {
-						if (nn != null) {
-							me.templ.push(nn);
-							nn = null;
-						}
-						if (o.responseXML.documentElement.childNodes[i].attributes != null) {
-							var nameAttr = o.responseXML.documentElement.childNodes[i].attributes.getNamedItem("name");
-							if (nameAttr != null) {
-								nn = new YAHOO.vyatta.webgui.TemplateNode(nameAttr.value);
-								if (o.responseXML.documentElement.childNodes[i].childNodes != null) {
-									for (var j = 0; j < o.responseXML.documentElement.childNodes[i].childNodes.length; j++) {
-										if (o.responseXML.documentElement.childNodes[i].childNodes[j].nodeName == "terminal") nn.terminal = true;
-									}
-								}
-							}
-						}
-					}
-				}
-				if (nn != null) me.templ.push(nn);
+				YAHOO.vyatta.webgui.VyattaUtil.processTemplateNodes(o.responseXML.documentElement.childNodes, me.templ);
 			} else {
 				alert("Server communication error.  Did not receive an XML response.");
 			}
@@ -166,10 +123,129 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 			success: successHandler,
 			failure: failureHandler
 		};
-		var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><configuration><id>" + YAHOO.vyatta.webgui.session_id + "</id><node mode='template'>" + template_path + "</node></configuration></vyatta>\n");
+		var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><configuration><id>" + YAHOO.vyatta.webgui.session_id + "</id><node mode='template' depth='" + (this.node.depth + 2) + "'>" + template_path + "</node></configuration></vyatta>\n");
 	},
 	loadTemplateNodesCB: function(createChildrenTreeNodesCB) {
 		this.loadConfigNodes(createChildrenTreeNodesCB);
 	}
+}
+
+YAHOO.vyatta.webgui.VyattaUtil = function() {
+}
+YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs = function(node) {
+	if (node == null) return null;
+	if (node.tn == null) return null;
+	if (node.tn.multi) return null;
+	if (node.tn.children == null) return null;
+
+	var html = '';
+	for (var i in node.tn.children) {
+		var tnChild = node.tn.children[i];
+
+		var cnChild = null;
+		if (node.cn != null) {
+			if (node.cn.children != null) {
+				for (var i in node.cn.children) {
+					if (node.cn.children[i].name == tnChild.name) {
+						cnChild = node.cn.children[i];
+						break;
+					}
+				}
+			}
+		}
+
+		if (tnChild.terminal) {
+			html += '<div class=\'cfgformdiv\'>';
+			html += '<label>';
+			html += tnChild.name;
+			html += '</label>';
+			html += "<input class='field' type='text' length='10'";
+			if (cnChild != null) {
+				if (cnChild.children != null) {
+					var val = cnChild.children[0].name;
+					html += " value='" + val + "'";
+				}
+			}
+			html += " />";
+			html += '</div>\n';
+		}
+	}
+	return html;
+},
+YAHOO.vyatta.webgui.VyattaUtil.getConfigPath = function(node) {
+	var config_path = "";
+	while (node != null && !node.isRoot()) {
+		if (node.parent != null && node.parent.isRoot()) break;
+		config_path = node.title + '/' + config_path;
+		node = node.parent;
+	}
+	config_path = '/' + config_path;
+	return config_path;
+}
+YAHOO.vyatta.webgui.VyattaUtil.getTemplatePath = function(node) {
+	var template_path = "";
+	while (node != null && !node.isRoot()) {
+		if (node.parent != null && node.parent.isRoot()) break;
+		if (node.multi) {
+			template_path = 'node.tag/' + template_path;
+		} else {
+			template_path = node.title + '/' + template_path;
+		}
+		node = node.parent;
+	}
+	template_path = '/' + template_path;
+	return template_path;
+}
+YAHOO.vyatta.webgui.VyattaUtil.processConfigNodes = function(childNodes, array) {
+	if (childNodes == null || array == null) return;
+	var nn = null;
+	for (var i = 0; i < childNodes.length; i++) {
+		if (childNodes[i].nodeName == "node") {
+			if (nn != null) {
+				array.push(nn);
+				nn = null;
+			}
+			if (childNodes[i].attributes != null) {
+				var nameAttr = childNodes[i].attributes.getNamedItem("name");
+				if (nameAttr != null) {
+					nn = new YAHOO.vyatta.webgui.ConfigNode(nameAttr.value);
+				}
+			}
+			if (nn != null && childNodes[i].childNodes != null) {
+				nn.children = new Array();
+				YAHOO.vyatta.webgui.VyattaUtil.processConfigNodes(childNodes[i].childNodes, nn.children);
+			}
+		}
+	}
+	if (nn != null) array.push(nn);
+}
+YAHOO.vyatta.webgui.VyattaUtil.processTemplateNodes = function(childNodes, array) {
+	if (childNodes == null || array == null) return;
+	var nn = null;
+	for (var i = 0; i < childNodes.length; i++) {
+		if (childNodes[i].nodeName == "node") {
+			if (nn != null) {
+				array.push(nn);
+				nn = null;
+			}
+			if (childNodes[i].attributes != null) {
+				var nameAttr = childNodes[i].attributes.getNamedItem("name");
+				if (nameAttr != null) {
+					nn = new YAHOO.vyatta.webgui.TemplateNode(nameAttr.value);
+					if (childNodes[i].childNodes != null) {
+						for (var j = 0; j < childNodes[i].childNodes.length; j++) {
+							if (childNodes[i].childNodes[j].nodeName == "terminal") nn.terminal = true;
+							if (childNodes[i].childNodes[j].nodeName == "multi") nn.multi = true;
+						}
+					}
+				}
+			}
+			if (nn != null && childNodes[i].childNodes != null) {
+				nn.children = new Array();
+				YAHOO.vyatta.webgui.VyattaUtil.processTemplateNodes(childNodes[i].childNodes, nn.children);
+			}
+		}
+	}
+	if (nn != null) array.push(nn);
 }
 

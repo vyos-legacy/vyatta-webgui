@@ -48,16 +48,7 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 		var me = this;
 		var successHandler = function(o) {
 			if (o.responseXML != null && o.responseXML.documentElement != null && o.responseXML.documentElement.childNodes != null) {
-				for (var i = 0; i < o.responseXML.documentElement.childNodes.length; i++) {
-					if (o.responseXML.documentElement.childNodes[i].nodeName == "node") {
-						if (o.responseXML.documentElement.childNodes[i].attributes != null) {
-							var nameAttr = o.responseXML.documentElement.childNodes[i].attributes.getNamedItem("name");
-							if (nameAttr != null) {
-								me.config.push(new YAHOO.vyatta.webgui.ConfigNode(nameAttr.value));
-							}
-						}
-					}
-				}
+				YAHOO.vyatta.webgui.VyattaUtil.processConfigNodes(o.responseXML.documentElement.childNodes, me.config);
 			} else {
 				alert("Server communication error.  Did not receive an XML response.");
 			}
@@ -70,7 +61,7 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 			success: successHandler,
 			failure: failureHandler
 		};
-		var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><configuration><id>" + YAHOO.vyatta.webgui.session_id + "</id><node>" + config_path + "</node></configuration></vyatta>\n");
+		var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><configuration><id>" + YAHOO.vyatta.webgui.session_id + "</id><node depth='" + (this.node.depth + 3) + "'>" + config_path + "</node></configuration></vyatta>\n");
 	},
 	loadConfigNodesCB: function(createChildrenTreeNodesCB) {
 		for (var i in this.templ) {
@@ -149,13 +140,33 @@ YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs = function(node) {
 
 	var html = '';
 	for (var i in node.tn.children) {
-		var child = node.tn.children[i];
-		if (child.terminal) {
+		var tnChild = node.tn.children[i];
+
+		var cnChild = null;
+		if (node.cn != null) {
+			if (node.cn.children != null) {
+				for (var i in node.cn.children) {
+					if (node.cn.children[i].name == tnChild.name) {
+						cnChild = node.cn.children[i];
+						break;
+					}
+				}
+			}
+		}
+
+		if (tnChild.terminal) {
 			html += '<div class=\'cfgformdiv\'>';
 			html += '<label>';
-			html += child.name;
+			html += tnChild.name;
 			html += '</label>';
-			html += '<input class=\'field\' type=\'text\' length=\'10\' />';
+			html += "<input class='field' type='text' length='10'";
+			if (cnChild != null) {
+				if (cnChild.children != null) {
+					var val = cnChild.children[0].name;
+					html += " value='" + val + "'";
+				}
+			}
+			html += " />";
 			html += '</div>\n';
 		}
 	}
@@ -184,6 +195,29 @@ YAHOO.vyatta.webgui.VyattaUtil.getTemplatePath = function(node) {
 	}
 	template_path = '/' + template_path;
 	return template_path;
+}
+YAHOO.vyatta.webgui.VyattaUtil.processConfigNodes = function(childNodes, array) {
+	if (childNodes == null || array == null) return;
+	var nn = null;
+	for (var i = 0; i < childNodes.length; i++) {
+		if (childNodes[i].nodeName == "node") {
+			if (nn != null) {
+				array.push(nn);
+				nn = null;
+			}
+			if (childNodes[i].attributes != null) {
+				var nameAttr = childNodes[i].attributes.getNamedItem("name");
+				if (nameAttr != null) {
+					nn = new YAHOO.vyatta.webgui.ConfigNode(nameAttr.value);
+				}
+			}
+			if (nn != null && childNodes[i].childNodes != null) {
+				nn.children = new Array();
+				YAHOO.vyatta.webgui.VyattaUtil.processConfigNodes(childNodes[i].childNodes, nn.children);
+			}
+		}
+	}
+	if (nn != null) array.push(nn);
 }
 YAHOO.vyatta.webgui.VyattaUtil.processTemplateNodes = function(childNodes, array) {
 	if (childNodes == null || array == null) return;

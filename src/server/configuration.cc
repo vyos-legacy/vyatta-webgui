@@ -428,7 +428,6 @@ Configuration::parse_value(string &rel_path, WebGUI::NodeState action, std::stri
   else {
     path = WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id() + "/" + rel_path;
   }
-  string value;
   FILE *fp = fopen(path.c_str(), "r");
   if (fp) {
     char buf[1025];
@@ -436,7 +435,7 @@ Configuration::parse_value(string &rel_path, WebGUI::NodeState action, std::stri
     while (fgets(buf, 1024, fp) != 0) {
       string tmp(buf);
       if (!tmp.empty()) {
-	tmp = tmp.substr(0,value.length()-1);
+	tmp = tmp.substr(0,tmp.length()-1);
 	out += "<node name='" + tmp + "'>";
 	switch (action) {
 	case WebGUI::ACTIVE:

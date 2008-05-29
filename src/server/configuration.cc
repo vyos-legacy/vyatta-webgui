@@ -315,6 +315,8 @@ Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_pat
   while (iter != coll.end()) {
     if (iter->first[0] != '.' && strcmp(iter->first.c_str(),"def") != 0) {
       string new_rel_config_path = rel_config_path + "/" + iter->first;
+
+      //NEED TO CHANGE THE BELOW TO TEST FOR A PARTIAL MATCH AND IF TRUE, THEN RETREIVE VALUE BELOW USING FULL PATH
       if (strcmp(iter->first.c_str(),"node.val") != 0) {
 	out += string("<node name='") + string(iter->first) + "'>";
 	
@@ -347,13 +349,11 @@ Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_pat
 	parse_configuration(new_rel_config_path, new_rel_tmpl_path, new_depth, out);
 	out += "</node>";
       }
-      else {
-	out += "<node>";
-	parse_value(new_rel_config_path, out);
+      else { //parse node.val
+	parse_value(new_rel_config_path, iter->second, out);
 	TemplateParams tmpl_params;
 	get_template_node(rel_tmpl_path, tmpl_params);
 	out += tmpl_params.get_xml();
-	out += "</node>";
       }
     }
     ++iter;
@@ -419,6 +419,49 @@ Configuration::parse_template(string &rel_tmpl_path, long &depth, string &out)
  *
  **/
 void
+Configuration::parse_value(string &rel_path, WebGUI::NodeState action, std::string &out)
+{
+  string path;
+  if (action == WebGUI::ACTIVE) {
+    path = WebGUI::ACTIVE_CONFIG_DIR + "/" + rel_path;
+  }
+  else {
+    path = WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id() + "/" + rel_path;
+  }
+  string value;
+  FILE *fp = fopen(path.c_str(), "r");
+  if (fp) {
+    char buf[1025];
+    //read value in her....
+    while (fgets(buf, 1024, fp) != 0) {
+      string tmp(buf);
+      if (!tmp.empty()) {
+	tmp = tmp.substr(0,value.length()-1);
+	out += "<node name='" + tmp + "'>";
+	switch (action) {
+	case WebGUI::ACTIVE:
+	  out += "<configured>active</configured>";
+	  break;
+	case WebGUI::SET:
+	  out += "<configured>set</configured>";
+	  break;
+	case WebGUI::DELETE:
+	  out += "<configured>delete</configured>";
+	  break;
+	}
+	out += "</node>";
+      }
+    }
+    fclose(fp);
+  }
+  return;
+}
+
+/**
+ *
+ **/
+/*
+void
 Configuration::parse_value(string &rel_path, string &out)
 {
   string value;
@@ -434,12 +477,13 @@ Configuration::parse_value(string &rel_path, string &out)
     while (fgets(buf, 1024, fp) != 0) {
       value += buf;
     }
-    out += value.substr(0,value.length()-1) + "<configured>active</configured>";
+    value = value.substr(0,value.length()-1);
     fclose(fp);
   }
+  out += "<node name='"+value+"'><configured>active</configured></node>";
   return;
 }
-
+*/
 /**
  *
  **/
@@ -501,13 +545,24 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
     //    return map<string,WebGUI::NodeState>();
   }
 
+
+  //
+  //
+  // NOTE: NEED TO HANDLE MULTIPLE VALUES IN THE NODE.VAL FILE HERE!!!
+  //
+  //
   while ((dirp = readdir(dp)) != NULL) {
     if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
       map<string,WebGUI::NodeState>::iterator iter = coll.find(dirp->d_name);
       if (iter != coll.end()) {
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//need to still check whether this is a set/delete--the set could be a change of value at this point
-	iter->second = WebGUI::DELETE;
+	if (strcmp(dirp->d_name, "node.val") == 0) {
+	  iter->second = WebGUI::SET;
+	}
+	else {
+	  iter->second = WebGUI::DELETE;
+	}
       }
       else {
 	//this means this is a new node

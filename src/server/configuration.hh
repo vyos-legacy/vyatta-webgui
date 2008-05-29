@@ -35,7 +35,7 @@ private:
   parse_template(std::string &rel_template, long &depth, std::string &out);
 
   void
-  parse_value(std::string &root, std::string &out);
+  parse_value(std::string &rel_path, WebGUI::NodeState action, std::string &out);
 
   bool
   validate_session(unsigned long id);

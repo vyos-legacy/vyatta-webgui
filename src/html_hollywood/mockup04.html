@@ -34,7 +34,7 @@
 
 		<script type="text/javascript" src="yui/build/logger/logger-min.js"></script>
 
-		<script type="text/javascript" src="yui/build/element/element-beta-min.js"></script>
+		<script type="text/javascript" src="yui/build/element/element-beta-debug.js"></script>
 		<script type="text/javascript" src="yui/build/button/button-min.js"></script>
 		<script type="text/javascript" src="yui/build/dragdrop/dragdrop-min.js"></script>
 		<script type="text/javascript" src="yui/build/resize/resize-beta-min.js"></script>
@@ -115,6 +115,7 @@
 						function loadData(n, onCompleteCallback) {
 							var vn = new YAHOO.vyatta.webgui.VyattaNodes(n);
 							vn.createChildrenTreeNodes(onCompleteCallback);
+							n.vn = vn;
 						}
 						YAHOO.vyatta.webgui.tree.setDynamicLoad(loadData);
 
@@ -125,7 +126,11 @@
 						YAHOO.vyatta.webgui.tree.subscribe("collapseComplete", function(node) {
 							YAHOO.vyatta.webgui.tree.removeChildren(node);
 						});
-//						cfg.expand();
+						YAHOO.vyatta.webgui.tree.subscribe("labelClick", function(node) {
+							document.getElementById("addressLabel").innerHTML = YAHOO.vyatta.webgui.VyattaUtil.getConfigPath(node);
+							document.getElementById("configFields").innerHTML = YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs(node);
+						});
+						cfg.expand();
 					}
 				}
 				var failureHandler = function(o) {
@@ -155,11 +160,11 @@
 			<div id="loginPanel">
 				<div class="hd">Please login</div>
 				<div class="bd">
-					<div class="formdiv">
+					<div class="loginformdiv">
 						<label>Username:&nbsp;</label>
 						<input class="field" type="text" id="user" name="user" />
 					</div>
-					<div class="formdiv">
+					<div class="loginformdiv">
 						<label>Password:&nbsp;</label>
 						<input class="field" type="password" id="pswd" name="pswd" />
 					</div>
@@ -167,6 +172,10 @@
 						<button type="submit" id="btLogin" name="btLogin">Login</button>
 					</div>
 				</div>
+			</div>
+			<div id="configPanel">
+				<label id="addressLabel" style="margin: 20px; color: blue;" />
+				<div id="configFields" style="margin: 20px; color: blue;" />
 			</div>
 		</div>
 	</body>

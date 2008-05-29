@@ -1,9 +1,14 @@
-.formdiv {
+.cfgformdiv, .loginformdiv {
   position:relative;
   width:280px;
   margin-top:10px;
   margin-bottom:10px;
 }
+
+.cfgformdiv {
+  width: 320px;
+}
+
 .field {
   position:absolute;
   right:0px;

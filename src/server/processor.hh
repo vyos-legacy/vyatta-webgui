@@ -49,7 +49,7 @@ public:
 class Message
 {
 public:
-  Message() : _depth(2),_mode_template(false),_id(0) {}
+  Message() : _depth(2),_mode(0),_id(0) {}
   
   void
   set_id(unsigned long id);
@@ -67,7 +67,7 @@ public:
   WebGUI::ParseNode _node;
   std::string _root_node; //will want to wrap this in a type specific container
   long _depth;
-  bool _mode_template;
+  int _mode;
   std::string _user;
   std::string _pswd;
   std::string _command;

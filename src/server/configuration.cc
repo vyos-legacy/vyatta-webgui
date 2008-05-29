@@ -41,13 +41,19 @@ Configuration::get_config()
     return;
   }
 
-  if (_proc->get_msg()._mode_template == true) {
+  if (_proc->get_msg()._mode == 2) {
     string foo = get_template();
     _proc->set_response(foo);
   }
-  else {
+  else if (_proc->get_msg()._mode == 1) {
     string bar = get_configuration();
     _proc->set_response(bar);
+  }
+  else {
+    //new combined mode here
+    _proc->get_msg()._depth=2;
+    string foobar = get_template();
+    _proc->set_response(foobar);
   }
 }
 
@@ -382,7 +388,6 @@ Configuration::parse_template(string &rel_tmpl_path, long &depth, string &out)
   if ((dp = opendir(full_template_path.c_str())) == NULL) {
     return;
   }
-
   //  cout << "Configuration::parse_template: " << full_template_path << endl << endl;
 
   while ((dirp = readdir(dp)) != NULL) {
@@ -404,7 +409,6 @@ Configuration::parse_template(string &rel_tmpl_path, long &depth, string &out)
 
 	out += tmpl_params.get_xml();
 
-
 	parse_template(new_rel_tmpl_path, new_depth, out);
 	out += "</node>";
       }
@@ -421,68 +425,65 @@ Configuration::parse_template(string &rel_tmpl_path, long &depth, string &out)
 void
 Configuration::parse_value(string &rel_path, WebGUI::NodeState action, std::string &out)
 {
-  string path;
-  if (action == WebGUI::ACTIVE) {
-    path = WebGUI::ACTIVE_CONFIG_DIR + "/" + rel_path;
-  }
-  else {
-    path = WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id() + "/" + rel_path;
-  }
-  FILE *fp = fopen(path.c_str(), "r");
+  //now need to upgrade this to compare the contents of the two files. needs to work for multinode
+  string active_path = WebGUI::ACTIVE_CONFIG_DIR + "/" + rel_path;
+  string local_path = WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id() + "/" + rel_path;
+
+  //get map of each file and compare contents
+  map<string,WebGUI::NodeState> coll;
+
+  FILE *fp = fopen(active_path.c_str(), "r");
   if (fp) {
     char buf[1025];
     //read value in her....
     while (fgets(buf, 1024, fp) != 0) {
       string tmp(buf);
-      if (!tmp.empty()) {
-	tmp = tmp.substr(0,tmp.length()-1);
-	out += "<node name='" + tmp + "'>";
-	switch (action) {
-	case WebGUI::ACTIVE:
-	  out += "<configured>active</configured>";
-	  break;
-	case WebGUI::SET:
-	  out += "<configured>set</configured>";
-	  break;
-	case WebGUI::DELETE:
-	  out += "<configured>delete</configured>";
-	  break;
-	}
-	out += "</node>";
-      }
+      tmp = tmp.substr(0,tmp.length()-1);
+      coll.insert(pair<string,WebGUI::NodeState>(tmp,WebGUI::DELETE));
     }
     fclose(fp);
   }
-  return;
-}
 
-/**
- *
- **/
-/*
-void
-Configuration::parse_value(string &rel_path, string &out)
-{
-  string value;
-  string root_config(WebGUI::ACTIVE_CONFIG_DIR);
-  string file = root_config + "/" + rel_path;
-
-  //  cout << "opening node.val file at: " << file << endl;  
-
-  FILE *fp = fopen(file.c_str(), "r");
+  //now compare
+  fp = fopen(local_path.c_str(), "r");
   if (fp) {
     char buf[1025];
     //read value in her....
     while (fgets(buf, 1024, fp) != 0) {
-      value += buf;
+      string tmp(buf);
+      tmp = tmp.substr(0,tmp.length()-1);
+      map<string,WebGUI::NodeState>::iterator iter = coll.find(tmp);
+      if (iter != coll.end()) {
+	iter->second = WebGUI::ACTIVE;
+      }
+      else {
+	coll.insert(pair<string,WebGUI::NodeState>(tmp,WebGUI::SET));
+      }
     }
-    value = value.substr(0,value.length()-1);
     fclose(fp);
   }
-  out += "<node name='"+value+"'><configured>active</configured></node>";
+
+
+  map<string,WebGUI::NodeState>::iterator iter = coll.begin();
+  while (iter != coll.end()) {
+    out += "<node name='" + iter->first + "'>";
+    switch (iter->second) {
+    case WebGUI::ACTIVE:
+      out += "<configured>active</configured>";
+      break;
+    case WebGUI::SET:
+      out += "<configured>set</configured>";
+      break;
+    case WebGUI::DELETE:
+      out += "<configured>delete</configured>";
+      break;
+    }
+    out += "</node>";
+    ++iter;
+  }
   return;
 }
-*/
+
 /**
  *
  **/
@@ -502,7 +503,6 @@ Configuration::validate_session(unsigned long id)
   }
   closedir(dp);
 
-
   //finally, we'll want to support a timeout value here
 
   return true;
@@ -515,7 +515,7 @@ std::map<string,WebGUI::NodeState>
 Configuration::get_conf_dir(const std::string &rel_config_path)
 {
   string active_config = WebGUI::ACTIVE_CONFIG_DIR + "/" + rel_config_path;
-  string local_config = WebGUI::LOCAL_CHANGES_ONLY + _proc->get_msg().id() + "/" + rel_config_path;
+  string local_config = WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id() + "/" + rel_config_path;
   map<string,WebGUI::NodeState> coll;
   
 
@@ -529,7 +529,7 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
 
   while ((dirp = readdir(dp)) != NULL) {
     if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
-      coll.insert(pair<string,WebGUI::NodeState>(dirp->d_name,WebGUI::ACTIVE));
+      coll.insert(pair<string,WebGUI::NodeState>(dirp->d_name,WebGUI::DELETE));
     }
   }
   closedir(dp);
@@ -543,25 +543,18 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
     return coll;
     //    return map<string,WebGUI::NodeState>();
   }
-
-
   //
   //
   // NOTE: NEED TO HANDLE MULTIPLE VALUES IN THE NODE.VAL FILE HERE!!!
   //
   //
+
   while ((dirp = readdir(dp)) != NULL) {
     if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
       map<string,WebGUI::NodeState>::iterator iter = coll.find(dirp->d_name);
       if (iter != coll.end()) {
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//need to still check whether this is a set/delete--the set could be a change of value at this point
-	if (strcmp(dirp->d_name, "node.val") == 0) {
-	  iter->second = WebGUI::SET;
-	}
-	else {
-	  iter->second = WebGUI::DELETE;
-	}
+	//correct handling of delete is if it is only present in the active config
+	iter->second = WebGUI::ACTIVE;
       }
       else {
 	//this means this is a new node
@@ -569,6 +562,9 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
       }
     }
   }
+
+  
+
   closedir(dp);
   //  cout << "Configruation::get_conf_dir(): " << local_config << ", " << coll.size() << endl;
 

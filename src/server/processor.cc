@@ -194,7 +194,10 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
     for (int i = 0; attr[i]; i += 2) {
       if (strcmp(attr[i],"mode") == 0) {
 	if (strcmp(attr[i+1],"template") == 0) {
-	  m->_mode_template = true;
+	  m->_mode = 2;
+	}
+	else if (strcmp(attr[i+1],"config") == 0) {
+	  m->_mode = 1;
 	}
       }
       else if (strcmp(attr[i],"depth") == 0) {

@@ -235,13 +235,14 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	    bool end = false;
 	    string tmp = *b;
 
-	    tmp = WebGUI::trim_whitespace(tmp);
 
 	    int pos;
 	    if ((pos = tmp.find(";")) != string::npos) {
 	      tmp = tmp.substr(0,pos);
 	      end = true;
 	    }
+
+	    tmp = WebGUI::trim_whitespace(tmp);
 
 	    if (!tmp.empty()) {
 	      //now remove leading, trailing quote
@@ -307,6 +308,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  tmp = WebGUI::mass_replace(tmp, ">", "&#62;");
 	  tmp = WebGUI::mass_replace(tmp, " & ", " &#38; ");
 
+	  tmp = WebGUI::trim_whitespace(tmp);
 	  //now remove leading, trailing quote
 	  if (tmp[0] == '"') {
 	    tmp = tmp.substr(1,tmp.length()-2);

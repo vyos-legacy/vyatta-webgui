@@ -117,7 +117,9 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       if (buf[0] == '#') {
 	continue;
       }
+
       string line = string(buf);
+
       //first strip off the whitespace
       line = WebGUI::trim_whitespace(line);
 
@@ -147,6 +149,26 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	mode = "tag:";
 	params._multi = true;
 	params._end = true;
+      }
+      else if (strncmp(line.c_str(),"default:",8) == 0 || mode == "default:") {
+	string def;
+
+	if (mode.empty()) {
+	  def = line.substr(8,line.length()-9);
+	}
+	else {
+	  def = line;
+	}
+	mode = "default:";
+
+	def = WebGUI::trim_whitespace(def);
+	if (def[0] == '"') {
+	  def = def.substr(1,def.length()-2);
+	}
+	
+	if (params._default.empty()) {
+	  params._default = def; //assumes default does not span a line
+	}
       }
       else if (strncmp(line.c_str(),"type:",5) == 0 || mode == "type:") {
 	mode = "type:";
@@ -221,9 +243,11 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	      end = true;
 	    }
 
-	    //	    cout << "push_back static: " << tmp << endl;
-
 	    if (!tmp.empty()) {
+	      //now remove leading, trailing quote
+	      if (tmp[0] == '"') {
+		tmp = tmp.substr(1,tmp.length()-2);
+	      }
 	      params._enum.push_back(tmp);
 	    }
 	    if (end) {
@@ -283,7 +307,10 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  tmp = WebGUI::mass_replace(tmp, ">", "&#62;");
 	  tmp = WebGUI::mass_replace(tmp, " & ", " &#38; ");
 
-	  //	  cout << "A: " << tmp << endl;
+	  //now remove leading, trailing quote
+	  if (tmp[0] == '"') {
+	    tmp = tmp.substr(1,tmp.length()-2);
+	  }
 
 	  params._enum.push_back(tmp);
 	}

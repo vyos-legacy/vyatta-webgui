@@ -101,6 +101,9 @@ TemplateParams::get_xml()
     out += "<help>" + _help + "</help>";
   }
 
+  if (_default.empty() == false) {
+    out += "<default>" + _default + "</default>";
+  }
   return out;
 }
 

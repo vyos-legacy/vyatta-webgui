@@ -72,11 +72,11 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 					var cn = this.config[j];
 					var item = {};
 					item.title = cn.name;
-					item.label = "<b>" + cn.name + "</b>";
 					var nn = new YAHOO.widget.TextNode(item, this.node);
 					nn.tn = tn;
 					nn.cn = cn;
 					nn.multi = true;
+					YAHOO.vyatta.webgui.VyattaUtil.setLabel(nn, false);
 				}
 			} else {
 				var cnMatched = null;
@@ -90,16 +90,14 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 				var item = {};
 				if (cnMatched == null) {
 					item.title = tn.name;
-					item.label = tn.name;
 				} else {
 					item.title = cn.name;
-					item.label = "<b>" + cn.name + "</b>";
 				}
 				var nn = new YAHOO.widget.TextNode(item, this.node);
 				nn.tn = tn;
-				nn.cn = cn;
+				nn.cn = cnMatched;
+				YAHOO.vyatta.webgui.VyattaUtil.setLabel(nn, false);
 			}
-			YAHOO.vyatta.webgui.tree.draw();
 		}
 		if (createChildrenTreeNodesCB != null) createChildrenTreeNodesCB();
 	},
@@ -270,5 +268,30 @@ YAHOO.vyatta.webgui.VyattaUtil.processTemplateNodes = function(childNodes, array
 		}
 	}
 	if (nn != null) array.push(nn);
+}
+YAHOO.vyatta.webgui.VyattaUtil.setLabel = function(node, selected) {
+	if (node.data == null) return;
+	var lbl = '';
+	lbl += "<span style='";
+	if (node.cn != null) {
+		lbl += " font-weight: bold;";
+	}
+	if (selected) {
+		lbl += "background-color: blue; color: #f2f2f2";
+	} else {
+		lbl += "background-color: #f2f2f2;";
+	}
+	lbl += "'>&nbsp;";
+	lbl += node.data.title;
+	lbl += "&nbsp;</span>";
+
+	node.label = lbl;
+	YAHOO.vyatta.webgui.tree.draw();
+	if (selected) {
+		if (YAHOO.vyatta.webgui.lastSelectedItem != null) {
+			YAHOO.vyatta.webgui.VyattaUtil.setLabel(YAHOO.vyatta.webgui.lastSelectedItem, false);
+		}
+		YAHOO.vyatta.webgui.lastSelectedItem = node;
+	}
 }
 

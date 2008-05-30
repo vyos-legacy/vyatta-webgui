@@ -120,13 +120,14 @@
 						YAHOO.vyatta.webgui.tree.setDynamicLoad(loadData);
 
 						var root = YAHOO.vyatta.webgui.tree.getRoot();
-						var cfg = new YAHOO.widget.TextNode("Configure", root);
-						YAHOO.vyatta.webgui.tree.draw();
+						var cfg = new YAHOO.widget.TextNode({title: "Configure"}, root);
+						YAHOO.vyatta.webgui.VyattaUtil.setLabel(cfg);
 
 						YAHOO.vyatta.webgui.tree.subscribe("collapseComplete", function(node) {
 							YAHOO.vyatta.webgui.tree.removeChildren(node);
 						});
 						YAHOO.vyatta.webgui.tree.subscribe("labelClick", function(node) {
+							YAHOO.vyatta.webgui.VyattaUtil.setLabel(node, true);
 							document.getElementById("addressLabel").innerHTML = YAHOO.vyatta.webgui.VyattaUtil.getConfigPath(node);
 							document.getElementById("configFields").innerHTML = YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs(node);
 						});

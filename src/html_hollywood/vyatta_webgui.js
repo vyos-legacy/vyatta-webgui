@@ -139,6 +139,7 @@ YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs = function(node) {
 	if (node.tn.children == null) return null;
 
 	var html = '';
+	html += "<div style='display: table;'>";
 	for (var i in node.tn.children) {
 		var tnChild = node.tn.children[i];
 
@@ -155,11 +156,12 @@ YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs = function(node) {
 		}
 
 		if (tnChild.terminal) {
-			html += '<div class=\'cfgformdiv\'>';
-			html += '<label>';
+			html += "<div style='display: table-row;'>";
+			html += "<div style='display: table-cell; width: 140px; padding: 10px;'>";
 			html += tnChild.name;
-			html += '</label>';
-			html += "<input class='field' type='text' length='10'";
+			html += "</div>";
+			html += "<div style='display: table-cell;'>";
+			html += "<input type='text' length='10' ";
 			if (cnChild != null) {
 				if (cnChild.children != null) {
 					var val = cnChild.children[0].name;
@@ -167,9 +169,14 @@ YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs = function(node) {
 				}
 			}
 			html += " />";
+			html += "</div>";
+			html += "<div style='display: table-cell; padding-left: 15px;'>";
+			html += tnChild.help;
+			html += "</div>";
 			html += '</div>\n';
 		}
 	}
+	html += '</div>\n';
 	return html;
 },
 YAHOO.vyatta.webgui.VyattaUtil.getConfigPath = function(node) {
@@ -236,6 +243,7 @@ YAHOO.vyatta.webgui.VyattaUtil.processTemplateNodes = function(childNodes, array
 						for (var j = 0; j < childNodes[i].childNodes.length; j++) {
 							if (childNodes[i].childNodes[j].nodeName == "terminal") nn.terminal = true;
 							if (childNodes[i].childNodes[j].nodeName == "multi") nn.multi = true;
+							if (childNodes[i].childNodes[j].nodeName == "help") nn.help = childNodes[i].childNodes[j].textContent;
 						}
 					}
 				}

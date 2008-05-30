@@ -108,7 +108,6 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 		var template_path = this.getTemplatePath();
 		var me = this;
 		var successHandler = function(o) {
-
 			if (o.responseXML != null && o.responseXML.documentElement != null && o.responseXML.documentElement.childNodes != null) {
 				YAHOO.vyatta.webgui.VyattaUtil.processTemplateNodes(o.responseXML.documentElement.childNodes, me.templ);
 			} else {
@@ -161,14 +160,22 @@ YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs = function(node) {
 			html += tnChild.name;
 			html += "</div>";
 			html += "<div style='display: table-cell;'>";
-			html += "<input type='text' length='10' ";
-			if (cnChild != null) {
-				if (cnChild.children != null) {
-					var val = cnChild.children[0].name;
-					html += " value='" + val + "'";
+			if (tnChild.enums == null) {
+				html += "<input type='text' style='width: 150px;'";
+				if (cnChild != null) {
+					if (cnChild.children != null) {
+						var val = cnChild.children[0].name;
+						html += " value='" + val + "'";
+					}
 				}
+				html += " />";
+			} else {
+				html += "<select style='width: 154px;'>";
+				for (var j in tnChild.enums) {
+					html += "<option>" + tnChild.enums[j];
+				}
+				html += "</select>";
 			}
-			html += " />";
 			html += "</div>";
 			html += "<div style='display: table-cell; padding-left: 15px;'>";
 			html += tnChild.help;
@@ -244,6 +251,14 @@ YAHOO.vyatta.webgui.VyattaUtil.processTemplateNodes = function(childNodes, array
 							if (childNodes[i].childNodes[j].nodeName == "terminal") nn.terminal = true;
 							if (childNodes[i].childNodes[j].nodeName == "multi") nn.multi = true;
 							if (childNodes[i].childNodes[j].nodeName == "help") nn.help = childNodes[i].childNodes[j].textContent;
+							if (childNodes[i].childNodes[j].nodeName == "enum") {
+								for (var k in childNodes[i].childNodes[j].childNodes) {
+									if (childNodes[i].childNodes[j].childNodes[k].nodeName == "match") {
+										if (nn.enums == null) nn.enums = new Array();
+										nn.enums.push(childNodes[i].childNodes[j].childNodes[k].textContent);
+									}
+								}
+							}
 						}
 					}
 				}

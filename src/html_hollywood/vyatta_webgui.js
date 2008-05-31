@@ -64,39 +64,51 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 		var transaction = YAHOO.util.Connect.asyncRequest("POST", "/cgi-bin/webgui_wrapper.cgi", callback, "<vyatta><configuration><id>" + YAHOO.vyatta.webgui.session_id + "</id><node mode='config' depth='" + (this.node.depth + 3) + "'>" + config_path + "</node></configuration></vyatta>\n");
 	},
 	loadConfigNodesCB: function(createChildrenTreeNodesCB) {
-		for (var i in this.templ) {
-			var tn = this.templ[i];
-			if (tn.terminal) continue;
-			if (tn.name == "node.tag") {
-				for (var j in this.config) {
-					var cn = this.config[j];
+		if (this.templ == null || this.templ.length == 0) {
+			for (var i in this.config) {
+				var cn = this.config[i];
+				var item = {};
+				item.title = cn.name;
+				var nn = new YAHOO.widget.TextNode(item, this.node);
+				nn.cn = cn;
+				nn.tn = {name: 'node.tag'};
+				YAHOO.vyatta.webgui.VyattaUtil.setLabel(nn, false);
+			}
+		} else {
+			for (var i in this.templ) {
+				var tn = this.templ[i];
+				if (tn.terminal && tn.multi == null) continue;
+				if (tn.name == "node.tag") {
+					for (var j in this.config) {
+						var cn = this.config[j];
+						var item = {};
+						item.title = cn.name;
+						var nn = new YAHOO.widget.TextNode(item, this.node);
+						nn.tn = tn;
+						nn.cn = cn;
+						nn.multi = true;
+						YAHOO.vyatta.webgui.VyattaUtil.setLabel(nn, false);
+					}
+				} else {
+					var cnMatched = null;
+					for (var j in this.config) {
+						var cn = this.config[j];
+						if (tn.name == cn.name) {
+							cnMatched = cn;
+							break;
+						}
+					}
 					var item = {};
-					item.title = cn.name;
+					if (cnMatched == null) {
+						item.title = tn.name;
+					} else {
+						item.title = cn.name;
+					}
 					var nn = new YAHOO.widget.TextNode(item, this.node);
 					nn.tn = tn;
-					nn.cn = cn;
-					nn.multi = true;
+					nn.cn = cnMatched;
 					YAHOO.vyatta.webgui.VyattaUtil.setLabel(nn, false);
 				}
-			} else {
-				var cnMatched = null;
-				for (var j in this.config) {
-					var cn = this.config[j];
-					if (tn.name == cn.name) {
-						cnMatched = cn;
-						break;
-					}
-				}
-				var item = {};
-				if (cnMatched == null) {
-					item.title = tn.name;
-				} else {
-					item.title = cn.name;
-				}
-				var nn = new YAHOO.widget.TextNode(item, this.node);
-				nn.tn = tn;
-				nn.cn = cnMatched;
-				YAHOO.vyatta.webgui.VyattaUtil.setLabel(nn, false);
 			}
 		}
 		if (createChildrenTreeNodesCB != null) createChildrenTreeNodesCB();
@@ -139,6 +151,7 @@ YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs = function(node) {
 	html += "<div style='display: table;'>";
 	for (var i in node.tn.children) {
 		var tnChild = node.tn.children[i];
+		if (tnChild.multi) continue;
 
 		var cnChild = null;
 		if (node.cn != null) {

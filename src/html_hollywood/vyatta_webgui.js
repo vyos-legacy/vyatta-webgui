@@ -165,12 +165,19 @@ YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs = function(node) {
 						var val = cnChild.children[0].name;
 						html += " value='" + val + "'";
 					}
+				} else if (tnChild.default != null) {
+					html += " value='" + tnChild.default + "'";
 				}
 				html += " />";
 			} else {
 				html += "<select style='width: 154px;'>";
 				for (var j in tnChild.enums) {
-					html += "<option>" + tnChild.enums[j];
+					html += "<option value='";
+					html += tnChild.enums[j]
+					html += "'";
+					if (tnChild.enums[j] == tnChild.default) html += " selected";
+					html += ">";
+					html += tnChild.enums[j];
 				}
 				html += "</select>";
 			}
@@ -249,6 +256,7 @@ YAHOO.vyatta.webgui.VyattaUtil.processTemplateNodes = function(childNodes, array
 							if (childNodes[i].childNodes[j].nodeName == "terminal") nn.terminal = true;
 							if (childNodes[i].childNodes[j].nodeName == "multi") nn.multi = true;
 							if (childNodes[i].childNodes[j].nodeName == "help") nn.help = childNodes[i].childNodes[j].textContent;
+							if (childNodes[i].childNodes[j].nodeName == "default") nn.default = childNodes[i].childNodes[j].textContent;
 							if (childNodes[i].childNodes[j].nodeName == "enum") {
 								for (var k in childNodes[i].childNodes[j].childNodes) {
 									if (childNodes[i].childNodes[j].childNodes[k].nodeName == "match") {

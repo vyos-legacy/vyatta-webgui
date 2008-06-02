@@ -25,7 +25,7 @@ Command::execute_command()
   string req(msg._request);
 
 
-  if (msg._command.empty()) {
+  if (msg._command_coll.empty()) {
     sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
     string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</error></vyatta>";
     _proc->set_response(err);
@@ -41,7 +41,32 @@ Command::execute_command()
   }
 
   //strip off additional commands
+  vector<string> coll = _proc->get_msg()._command_coll;
+  vector<string>::iterator iter = coll.begin();
+  while (iter != coll.end()) {
+    string err = execute_single_command(*iter);
+    if (!err.empty()) {
+      //generate error response for this command and exit
+      sprintf(buf, "%d", WebGUI::COMMAND_ERROR);
+      string rtn_str = "<?xml version='1.0' encoding='utf-8'?><vyatta><desc>"+*iter+"</desc><error><code>"+string(buf)+"</code><error>"+err+"</error></vyatta>";
+      _proc->set_response(rtn_str);
+      return;
+    }
+    ++iter;
+  }
+  sprintf(buf, "%d", WebGUI::SUCCESS);
+  string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><desc>"+string(WebGUI::ErrorDesc[WebGUI::SUCCESS])+"</desc></error></vyatta>";
+  _proc->set_response(tmpstr);
+  return;
+}
 
+
+string
+Command::execute_single_command(string &cmd)
+{
+  if (cmd.empty()) {
+    return string();
+  }
 
   //need to set up environment variables
   //  string command = "export VYATTA_ACTIVE_CONFIGURATION_DIR=/opt/vyatta/config/active;export VYATTA_CONFIG_TMP=/opt/vyatta/config/tmp/tmp_" + string(buf) + ";export VYATTA_TEMPLATE_LEVEL=/;export vyatta_datadir=/opt/vyatta/share;export vyatta_sysconfdir=/opt/vyatta/etc;export vyatta_sharedstatedir=/opt/vyatta/com;export VYATTA_TAG_NAME=node.tag;export vyatta_sbindir=/opt/vyatta/sbin;export VYATTA_CHANGES_ONLY_DIR=/tmp/changes_only_" + string(buf) + ";export vyatta_cfg_templates=/opt/vyatta/share/vyatta-cfg/templates;export VYATTA_CFG_GROUP_NAME=vyattacfg;export vyatta_bindir=/opt/vyatta/bin;export vyatta_libdir=/opt/vyatta/lib;export VYATTA_CONFIG_TEMPLATE=/opt/vyatta/share/vyatta-cfg/templates;export vyatta_libexecdir=/opt/vyatta/libexec;export vyatta_prefix=/opt/vyatta;export vyatta_datarootdir=/opt/vyatta/share;export vyatta_configdir=/opt/vyatta/config;export vyatta_infodir=/opt/vyatta/share/info;export VYATTA_TEMP_CONFIG_DIR=/opt/vyatta/config/tmp/new_config_"+string(buf)+";export vyatta_localedir=/opt/vyatta/share/locale";  
@@ -70,9 +95,9 @@ export vyatta_infodir=/opt/vyatta/share/info; \
 export VYATTA_TEMP_CONFIG_DIR="+WebGUI::LOCAL_CONFIG_DIR+_proc->get_msg().id()+"; \
 export vyatta_localedir=/opt/vyatta/share/locale";
 
-  string tmp = msg._command;
+  string tmp = cmd;
   if (strncmp(tmp.c_str(),"set",3) == 0 || strncmp(tmp.c_str(),"delete",6) == 0 || strncmp(tmp.c_str(),"commit",6) == 0) {
-    tmp = "/opt/vyatta/sbin/my_" + msg._command;
+    tmp = "/opt/vyatta/sbin/my_" + cmd;
   }
   else if (strncmp(tmp.c_str(),"load",4) == 0) {
     tmp = "/opt/vyatta/sbin/vyatta-load-config.pl";
@@ -84,20 +109,13 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   command += ";" + tmp;
 
   string stdout;
-  int err = WebGUI::execute(command,stdout,true);
-  if (err == 0) {
-    sprintf(buf, "%d", WebGUI::SUCCESS);
-    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><desc>"+stdout+"</desc></error></vyatta>";
-    _proc->set_response(tmpstr);
-  }
-  else {
-    sprintf(buf, "%d", WebGUI::COMMAND_ERROR);
-    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><desc>"+stdout+"</desc></error></vyatta>";
-    _proc->set_response(tmpstr);
-  }
-  return;
+  WebGUI::execute(command,stdout,true);
+  return stdout;
 }
 
+/**
+ *
+ **/
 bool
 Command::validate_session(unsigned long id)
 {

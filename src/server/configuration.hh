@@ -25,6 +25,9 @@ private:
   std::string
   get_configuration();
 
+  std::string
+  get_full_level();
+
   std::map<std::string,WebGUI::NodeState>
   get_conf_dir(const std::string &root);
 

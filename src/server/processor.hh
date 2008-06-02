@@ -71,7 +71,7 @@ public:
   int _mode;
   std::string _user;
   std::string _pswd;
-  std::string _command;
+  std::vector<std::string> _command_coll;
 
 private:
   unsigned long _id;

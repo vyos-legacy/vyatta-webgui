@@ -63,9 +63,6 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
       }
     }
     err = pclose(f);
-    if (err != 0) {
-      stdout = string("");
-    }
   }
   return err;
 }

@@ -18,5 +18,8 @@ private:
   bool
   validate_session(unsigned long id);
 
+  std::string
+  execute_single_command(std::string &cmd);
+
 };
 #endif //__COMMAND_HH__

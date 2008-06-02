@@ -51,10 +51,36 @@ Configuration::get_config()
   }
   else {
     //new combined mode here
-    _proc->get_msg()._depth=2;
-    string foobar = get_template();
+    string foobar = get_full_level();
     _proc->set_response(foobar);
   }
+}
+
+/**
+ *
+ **/
+string
+Configuration::get_full_level()
+{
+  /*
+  string full_tmpl_path(WebGUI::CFG_TEMPLATE_DIR);
+  //first convert root request into template path
+  StrProc str_proc(_msg._root, "/");
+  coll = str_proc.get();
+  vector<string>::iterator iter = coll.begin();
+  while (iter != coll.end()) {
+    string tmp = full_tmpl_path + "/" + *iter;
+    
+
+    ++iter;
+  }
+  */
+  //create template map with data
+
+  //add configuration data
+
+  //return
+  return string();
 }
 
 /**

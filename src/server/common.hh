@@ -5,6 +5,7 @@ class WebGUI
 {
 public:
   const static unsigned long ID_START;
+  const static unsigned long ID_RANGE;
 
   const static std::string ACTIVE_CONFIG_DIR;
   const static std::string CONFIG_TMP_DIR;

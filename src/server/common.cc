@@ -6,6 +6,7 @@
 using namespace std;
 
 const unsigned long WebGUI::ID_START = (unsigned long)2147483648;
+const unsigned long WebGUI::ID_RANGE = (unsigned long)2147483647;
 
 const string WebGUI::ACTIVE_CONFIG_DIR = "/opt/vyatta/config/active";
 const string WebGUI::CONFIG_TMP_DIR = "/opt/vyatta/config/tmp/tmp_";

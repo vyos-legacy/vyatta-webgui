@@ -104,7 +104,7 @@ Authenticate::create_new_session()
 /**
  *
  **/
-uid_t Authenticate::test_auth(const std::string & username, const std::string & password) 
+unsigned long Authenticate::test_auth(const std::string & username, const std::string & password) 
 {
   passwd * passwd = getpwnam(username.c_str());
   if (passwd == NULL) {
@@ -138,6 +138,20 @@ uid_t Authenticate::test_auth(const std::string & username, const std::string & 
     cerr << "pam_end" << endl;
     return 0;
   }
-  return WebGUI::ID_START + 1;//passwd->pw_uid;
+
+  struct stat tmp;
+  unsigned long id = 0;
+  string file;
+  do {
+    id = WebGUI::ID_START + (float(rand()) / float(RAND_MAX)) * WebGUI::ID_RANGE;
+    
+    //now check for collision
+    char buf[40];
+    sprintf(buf, "%lu", id);
+    file = WebGUI::LOCAL_CONFIG_DIR + string(buf) + "/.vyattamodify";
+  }
+  while (stat(file.c_str(), &tmp) == 0);
+
+  return id;  
 }
 

@@ -65,6 +65,9 @@ private:
   void
   start_session();
 
+  bool
+  commit();
+
 public://private:
   int _sock;
   unsigned long _time_since_last_message;

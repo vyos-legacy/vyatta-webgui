@@ -12,6 +12,7 @@ public:
   const static std::string LOCAL_CHANGES_ONLY;
   const static std::string LOCAL_CONFIG_DIR;
   const static std::string CFG_TEMPLATE_DIR;
+  const static std::string COMMIT_LOCK_FILE;
 
   typedef enum Error {SUCCESS = 0,
 		      MALFORMED_REQUEST,

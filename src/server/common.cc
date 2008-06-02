@@ -13,6 +13,7 @@ const string WebGUI::CONFIG_TMP_DIR = "/opt/vyatta/config/tmp/tmp_";
 const string WebGUI::LOCAL_CHANGES_ONLY = "/tmp/changes_only_";
 const string WebGUI::LOCAL_CONFIG_DIR = "/opt/vyatta/config/tmp/new_config_";
 const string WebGUI::CFG_TEMPLATE_DIR = "/opt/vyatta/share/vyatta-cfg/templates";
+const string WebGUI::COMMIT_LOCK_FILE = "/opt/vyatta/config/.lock";
 
 char const* WebGUI::ErrorDesc[8] = {"n/a",
 				    "request cannot be parsed",

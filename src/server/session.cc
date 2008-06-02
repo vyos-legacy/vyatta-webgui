@@ -105,6 +105,10 @@ Session::process_message()
 	cout << "Session::process_message(): CLICMD" << endl;
       }
 
+      if (!commit()) {
+	return false;
+      }
+
       if (!update_session()) {
 	return false;
       }
@@ -114,6 +118,10 @@ Session::process_message()
     case WebGUI::GETCONFIG:
       if (_debug) {
 	cout << "Session::process_message(): GETCONFIG" << endl;
+      }
+
+      if (!commit()) {
+	return false;
       }
 
       if (!update_session()) {
@@ -154,6 +162,25 @@ Session::clear_message()
   _processor->clear_message();
 }
 
+/**
+ *
+ **/
+bool
+Session::commit()
+{
+  string file(WebGUI::COMMIT_LOCK_FILE);
+  struct stat tmp;
+  if (stat(file.c_str(), &tmp) == 0) {
+
+    char buf[40];
+    sprintf(buf, "%d", WebGUI::COMMIT_IN_PROGRESS);
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::COMMIT_IN_PROGRESS])+"</error></vyatta>";
+    _processor->set_response(err);
+
+    return false;
+  }
+  return true;
+}
 
 /**
  *

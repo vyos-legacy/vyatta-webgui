@@ -141,6 +141,10 @@ Session::process_message()
       if (_debug) {
 	cerr << "Session::process_message(): message type is unknown: " << endl;
       }
+      char buf[40];
+      sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
+      string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</error></vyatta>";
+      _processor->set_response(err);
       return false;
     }
   }
@@ -148,6 +152,10 @@ Session::process_message()
     if (_debug) {
       cerr << "Session::process_message(): message is unknown" << endl;
     }
+    char buf[40];
+    sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</error></vyatta>";
+    _processor->set_response(err);
     return false;
   }
   return true;
@@ -188,12 +196,17 @@ Session::commit()
 bool
 Session::update_session()
 {
+  string stdout;
   //get timestamp from file
   string file = WebGUI::LOCAL_CONFIG_DIR + _processor->get_msg().id() + "/.vyattamodify";
 
   struct stat buf;
 
   if (stat(file.c_str(), &buf) != 0) {
+    char buf[40];
+    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</error></vyatta>";
+    _processor->set_response(err);
     return false;
   }
 
@@ -208,13 +221,23 @@ Session::update_session()
     string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</error></vyatta>";
     _processor->set_response(err);
 
+    //let's ask the system to clean up at this point..
+
+    //execute exit discard;
+
+    //command pulled from exit discard
+
+    string cmd("sudo umount " + WebGUI::LOCAL_CONFIG_DIR + _processor->get_msg().id());
+    WebGUI::execute(cmd, stdout);
+    cmd = "sudo rm -rf " + WebGUI::LOCAL_CONFIG_DIR + _processor->get_msg().id() + " " + WebGUI::LOCAL_CHANGES_ONLY + _processor->get_msg().id() + " " + WebGUI::CONFIG_TMP_DIR + _processor->get_msg().id();
+    WebGUI::execute(cmd, stdout);
+
     return false;
   }
 
   string update_file = "touch " + file;
 
   //now touch session time mark file'
-  string stdout;
   WebGUI::execute(update_file, stdout);
   return true;
 }

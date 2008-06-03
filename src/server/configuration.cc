@@ -132,7 +132,8 @@ Configuration::get_full_level()
       string value;
       if (tmpl_params._end == true) {
 	tmp = rel_config_path + "/" + dirp->d_name + "/node.val";
-	parse_value(tmp, value);
+	string node_name("value");
+	parse_value(tmp, node_name, value);
       }
       out += tmpl_params.get_xml(value);
       out += "</node>";
@@ -168,7 +169,8 @@ Configuration::get_full_level()
     string value;
     if (multi_params._end == true) {
       string tmp = rel_config_path + "/" + m_iter->first + "/node.val";
-      parse_value(tmp, value);
+      string node_name("value");
+      parse_value(tmp, node_name, value);
     }
     out += multi_params.get_xml(value);
     out += "</node>";
@@ -507,7 +509,8 @@ Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_pat
 	out += "</node>";
       }
       else { //parse node.val
-	parse_value(new_rel_config_path, out);
+	string node_name("node");
+	parse_value(new_rel_config_path, node_name, out);
 	TemplateParams tmpl_params;
 	get_template_node(rel_tmpl_path, tmpl_params);
 	out += tmpl_params.get_xml();
@@ -574,7 +577,7 @@ Configuration::parse_template(string &rel_tmpl_path, long &depth, string &out)
  *
  **/
 void
-Configuration::parse_value(string &rel_path, std::string &out)
+Configuration::parse_value(string &rel_path, string &node, string &out)
 {
   //now need to upgrade this to compare the contents of the two files. needs to work for multinode
   string active_path = WebGUI::ACTIVE_CONFIG_DIR + "/" + rel_path;
@@ -617,7 +620,7 @@ Configuration::parse_value(string &rel_path, std::string &out)
 
   map<string,WebGUI::NodeState>::iterator iter = coll.begin();
   while (iter != coll.end()) {
-    out += "<node name='" + iter->first + "'>";
+    out += "<"+node+" name='" + iter->first + "'>";
     switch (iter->second) {
     case WebGUI::ACTIVE:
       out += "<configured>active</configured>";
@@ -629,7 +632,7 @@ Configuration::parse_value(string &rel_path, std::string &out)
       out += "<configured>delete</configured>";
       break;
     }
-    out += "</node>";
+    out += "</"+node+">";
     ++iter;
   }
   return;

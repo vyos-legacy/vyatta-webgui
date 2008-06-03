@@ -44,6 +44,8 @@ public:
   //enumeration goes here
 
   std::string
+  get_xml(const std::string &value);
+  std::string
   get_xml();
 };
 

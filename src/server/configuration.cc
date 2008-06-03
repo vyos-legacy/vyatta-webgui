@@ -129,7 +129,12 @@ Configuration::get_full_level()
       TemplateParams tmpl_params;
       string tmp = "/" + rel_tmpl_path + "/" + dirp->d_name;
       get_template_node(tmp, tmpl_params);
-      out += tmpl_params.get_xml();
+      string value;
+      if (tmpl_params._end == true) {
+	tmp = rel_config_path + "/" + dirp->d_name + "/node.val";
+	parse_value(tmp, value);
+      }
+      out += tmpl_params.get_xml(value);
       out += "</node>";
     }  
   }    
@@ -159,10 +164,16 @@ Configuration::get_full_level()
       break;
     }
     out += multi_params.get_xml();
+
+    string value;
+    if (multi_params._end == true) {
+      string tmp = rel_config_path + "/" + m_iter->first + "/node.val";
+      parse_value(tmp, value);
+    }
+    out += multi_params.get_xml(value);
     out += "</node>";
     ++m_iter;
   }
-
 
   out += "</vyatta>";
   return out;
@@ -496,7 +507,7 @@ Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_pat
 	out += "</node>";
       }
       else { //parse node.val
-	parse_value(new_rel_config_path, iter->second, out);
+	parse_value(new_rel_config_path, out);
 	TemplateParams tmpl_params;
 	get_template_node(rel_tmpl_path, tmpl_params);
 	out += tmpl_params.get_xml();
@@ -563,7 +574,7 @@ Configuration::parse_template(string &rel_tmpl_path, long &depth, string &out)
  *
  **/
 void
-Configuration::parse_value(string &rel_path, WebGUI::NodeState action, std::string &out)
+Configuration::parse_value(string &rel_path, std::string &out)
 {
   //now need to upgrade this to compare the contents of the two files. needs to work for multinode
   string active_path = WebGUI::ACTIVE_CONFIG_DIR + "/" + rel_path;

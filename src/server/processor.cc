@@ -47,7 +47,17 @@ Message::id_by_val()
  *
  **/
 std::string
-TemplateParams::get_xml() 
+TemplateParams::get_xml()
+{
+  string empty;
+  return get_xml(empty);
+}
+
+/**
+ *
+ **/
+std::string
+TemplateParams::get_xml(const string &value) 
 {
   string out;
   if (_multi) {
@@ -55,7 +65,12 @@ TemplateParams::get_xml()
   }
 
   if (_end) {
-    out += "<terminal/>";
+    if (value.empty()) {
+      out += "<terminal/>";
+    }
+    else {
+      out += "<terminal>" + value + "</terminal>";
+    }
   }
 
   if (_enum.empty() == false) {

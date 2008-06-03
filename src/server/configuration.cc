@@ -64,8 +64,11 @@ Configuration::get_config()
 string
 Configuration::get_full_level()
 {
-  string out;
   string rel_tmpl_path;
+  DIR *dp;
+  struct dirent *dirp;
+  string out = "<?xml version='1.0' encoding='utf-8'?><vyatta>";
+
   //first convert root request into template path
   StrProc str_proc(_proc->get_msg()._root_node, "/");
   vector<string> coll = str_proc.get();
@@ -84,18 +87,32 @@ Configuration::get_full_level()
 
   string rel_config_path = _proc->get_msg()._root_node;
 
-  map<string,WebGUI::NodeState> dir_coll = get_conf_dir(rel_config_path);
-  map<string,WebGUI::NodeState>::iterator dir_iter = dir_coll.begin();
-  while (dir_iter != dir_coll.end()) {
-    if (dir_iter->first[0] != '.' && strcmp(dir_iter->first.c_str(),"def") != 0) {
-      string new_rel_config_path = rel_config_path + "/" + dir_iter->first;
 
-      //NEED TO CHANGE THE BELOW TO TEST FOR A PARTIAL MATCH AND IF TRUE, THEN RETREIVE VALUE BELOW USING FULL PATH
-      if (strcmp(dir_iter->first.c_str(),"node.val") != 0) {
-	out += string("<node name='") + string(dir_iter->first) + "'>";
-	
+  //rework get_conf_dir to work off of get_templ_dir...
+
+  //get_conf_dir collection
+  //iterate over template directory
+  //call get_template_node on each node
+  //build out response...
+
+  /* HANDLES ALL BUG NODE.TAG */
+
+  map<string,WebGUI::NodeState> dir_coll = get_conf_dir(rel_config_path);
+  string tmpl_path = WebGUI::CFG_TEMPLATE_DIR + "/" + rel_tmpl_path;
+  if ((dp = opendir(tmpl_path.c_str())) == NULL) {
+    out += "</vyatta>";
+    return out;
+  }
+  while ((dirp = readdir(dp)) != NULL) {
+    if (dirp->d_name[0] != '.' && 
+	strcmp(dirp->d_name,"node.def") != 0 &&
+	strcmp(dirp->d_name,"node.tag") != 0) {
+      //now build out response...
+      out += string("<node name='") + string(dirp->d_name) + string("'>");
+      map<string,WebGUI::NodeState>::iterator iter = dir_coll.find(dirp->d_name);
+      if (iter != dir_coll.end()) {
 	//check if node is deleted
-	switch (dir_iter->second) {
+	switch (iter->second) {
 	case WebGUI::ACTIVE:
 	  out += "<configured>active</configured>";
 	  break;
@@ -106,25 +123,48 @@ Configuration::get_full_level()
 	  out += "<configured>delete</configured>";
 	  break;
 	}
-	
-	//at this point reach out to the template directory and retreive data on this node
-	TemplateParams tmpl_params;
+	dir_coll.erase(iter);
+      }	
+      //now add template parameters
+      TemplateParams tmpl_params;
+      string tmp = "/" + rel_tmpl_path + "/" + dirp->d_name;
+      get_template_node(tmp, tmpl_params);
+      out += tmpl_params.get_xml();
+      out += "</node>";
+    }  
+  }    
+  closedir(dp);
 
-	get_template_node(rel_tmpl_path, tmpl_params);
-	out += tmpl_params.get_xml();
-
-	out += "</node>";
-      }
-      else { //parse node.val
-	parse_value(new_rel_config_path, dir_iter->second, out);
-	TemplateParams tmpl_params;
-	get_template_node(rel_tmpl_path, tmpl_params);
-	out += tmpl_params.get_xml();
-      }
+  //now handle multinodes here!
+  TemplateParams multi_params;
+  map<string,WebGUI::NodeState>::iterator m_iter = dir_coll.begin();
+  if (m_iter != dir_coll.end()) {
+    //only do this once!!!
+    string tmp = "/" + rel_tmpl_path + "/node.tag";
+    get_template_node(tmp, multi_params);
+  }
+  
+  while (m_iter != dir_coll.end()) {
+    out += string("<node name='") + m_iter->first + string("'>");
+    
+    switch (m_iter->second) {
+    case WebGUI::ACTIVE:
+      out += "<configured>active</configured>";
+      break;
+    case WebGUI::SET:
+      out += "<configured>set</configured>";
+      break;
+    case WebGUI::DELETE:
+      out += "<configured>delete</configured>";
+      break;
     }
-    ++dir_iter;
+    out += multi_params.get_xml();
+    out += "</node>";
+    ++m_iter;
   }
 
+
+  out += "</vyatta>";
   return out;
 }
 

@@ -2,6 +2,8 @@
 #include <map>
 #include <iostream>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <dirent.h>
 #include "rl_str_proc.hh"
 #include "processor.hh"
@@ -62,25 +64,68 @@ Configuration::get_config()
 string
 Configuration::get_full_level()
 {
-  /*
-  string full_tmpl_path(WebGUI::CFG_TEMPLATE_DIR);
+  string out;
+  string rel_tmpl_path;
   //first convert root request into template path
-  StrProc str_proc(_msg._root, "/");
-  coll = str_proc.get();
+  StrProc str_proc(_proc->get_msg()._root_node, "/");
+  vector<string> coll = str_proc.get();
   vector<string>::iterator iter = coll.begin();
   while (iter != coll.end()) {
-    string tmp = full_tmpl_path + "/" + *iter;
-    
-
+    string tmp = WebGUI::CFG_TEMPLATE_DIR + "/" + rel_tmpl_path + "/" + *iter;
+    struct stat stmp;
+    if (stat(tmp.c_str(), &stmp) != 0) {
+      rel_tmpl_path += "/node.tag";
+    }
+    else {
+      rel_tmpl_path += "/" + *iter;
+    }
     ++iter;
   }
-  */
-  //create template map with data
 
-  //add configuration data
+  string rel_config_path = _proc->get_msg()._root_node;
 
-  //return
-  return string();
+  map<string,WebGUI::NodeState> dir_coll = get_conf_dir(rel_config_path);
+  map<string,WebGUI::NodeState>::iterator dir_iter = dir_coll.begin();
+  while (dir_iter != dir_coll.end()) {
+    if (dir_iter->first[0] != '.' && strcmp(dir_iter->first.c_str(),"def") != 0) {
+      string new_rel_config_path = rel_config_path + "/" + dir_iter->first;
+
+      //NEED TO CHANGE THE BELOW TO TEST FOR A PARTIAL MATCH AND IF TRUE, THEN RETREIVE VALUE BELOW USING FULL PATH
+      if (strcmp(dir_iter->first.c_str(),"node.val") != 0) {
+	out += string("<node name='") + string(dir_iter->first) + "'>";
+	
+	//check if node is deleted
+	switch (dir_iter->second) {
+	case WebGUI::ACTIVE:
+	  out += "<configured>active</configured>";
+	  break;
+	case WebGUI::SET:
+	  out += "<configured>set</configured>";
+	  break;
+	case WebGUI::DELETE:
+	  out += "<configured>delete</configured>";
+	  break;
+	}
+	
+	//at this point reach out to the template directory and retreive data on this node
+	TemplateParams tmpl_params;
+
+	get_template_node(rel_tmpl_path, tmpl_params);
+	out += tmpl_params.get_xml();
+
+	out += "</node>";
+      }
+      else { //parse node.val
+	parse_value(new_rel_config_path, dir_iter->second, out);
+	TemplateParams tmpl_params;
+	get_template_node(rel_tmpl_path, tmpl_params);
+	out += tmpl_params.get_xml();
+      }
+    }
+    ++dir_iter;
+  }
+
+  return out;
 }
 
 /**

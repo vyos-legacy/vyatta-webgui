@@ -95,14 +95,13 @@ Configuration::get_full_level()
   //call get_template_node on each node
   //build out response...
 
-  /* HANDLES ALL BUG NODE.TAG */
-
   map<string,WebGUI::NodeState> dir_coll = get_conf_dir(rel_config_path);
   string tmpl_path = WebGUI::CFG_TEMPLATE_DIR + "/" + rel_tmpl_path;
   if ((dp = opendir(tmpl_path.c_str())) == NULL) {
     out += "</vyatta>";
     return out;
   }
+
   while ((dirp = readdir(dp)) != NULL) {
     if (dirp->d_name[0] != '.' && 
 	strcmp(dirp->d_name,"node.def") != 0 &&
@@ -147,6 +146,7 @@ Configuration::get_full_level()
   if (m_iter != dir_coll.end()) {
     //only do this once!!!
     string tmp = "/" + rel_tmpl_path + "/node.tag";
+
     get_template_node(tmp, multi_params);
   }
   
@@ -678,18 +678,16 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
   //iterate over active configuration
   DIR *dp;
   struct dirent *dirp;
-  if ((dp = opendir(active_config.c_str())) == NULL) {
+
+  if ((dp = opendir(active_config.c_str())) != NULL) {
     //    cerr << "Configuration::get_conf_dir(), cannot open: " << active_config << endl;
-    return coll;
-  }
-
-  while ((dirp = readdir(dp)) != NULL) {
-    if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
-      coll.insert(pair<string,WebGUI::NodeState>(dirp->d_name,WebGUI::DELETE));
+    while ((dirp = readdir(dp)) != NULL) {
+      if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
+	coll.insert(pair<string,WebGUI::NodeState>(dirp->d_name,WebGUI::DELETE));
+      }
     }
+    closedir(dp);
   }
-  closedir(dp);
-
   //  cout << "Configruation::get_conf_dir(): " << active_config << ", " << coll.size() << endl;
 
   //iterate over changes only dir and identify set/delete states

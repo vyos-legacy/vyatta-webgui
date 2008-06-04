@@ -45,6 +45,11 @@ Authenticate::create_new_session()
   Message msg = _proc->get_msg();
   uid_t id = test_auth(msg._user, msg._pswd);
 
+  char buf[40];
+  sprintf(buf, "%d", WebGUI::AUTHENTICATION_FAILURE);
+  string err_resp = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::AUTHENTICATION_FAILURE])+"</error></vyatta>";
+  
+
   if (id > 0) {
     //these commands are from vyatta-cfg-cmd-wrapper script when entering config mode
     string cmd;
@@ -55,16 +60,22 @@ Authenticate::create_new_session()
     cmd = "mkdir -p " + WebGUI::ACTIVE_CONFIG_DIR;
     if (WebGUI::execute(cmd, stdout) != 0) {
       //syslog here
+      _proc->set_response(err_resp);
+      return false;
     }
 
     cmd = "mkdir -p " + WebGUI::LOCAL_CHANGES_ONLY + string(buf);
     if (WebGUI::execute(cmd, stdout) != 0) {
       //syslog here
+      _proc->set_response(err_resp);
+      return false;
     }
     //exec
 
     cmd = "mkdir -p " + WebGUI::LOCAL_CONFIG_DIR + string(buf);
     if (WebGUI::execute(cmd, stdout) != 0) {
+      _proc->set_response(err_resp);
+      return false;
     }
     //exec
 
@@ -81,11 +92,15 @@ Authenticate::create_new_session()
 
     if (WebGUI::execute(cmd, stdout) != 0) {
       //syslog here
+      _proc->set_response(err_resp);
+      return false;
     }
 
     cmd = "mkdir -p " +WebGUI::CONFIG_TMP_DIR+ string(buf);
     if (WebGUI::execute(cmd, stdout) != 0) {
       //syslog here
+      _proc->set_response(err_resp);
+      return false;
     }
 
     sprintf(buf, "%d", WebGUI::SUCCESS);
@@ -98,6 +113,7 @@ Authenticate::create_new_session()
     _proc->_msg.set_id(id);
     return true;
   }
+  _proc->set_response(err_resp);
   return false;
 }
 

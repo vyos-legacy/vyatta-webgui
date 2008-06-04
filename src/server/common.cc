@@ -17,7 +17,7 @@ const string WebGUI::COMMIT_LOCK_FILE = "/opt/vyatta/config/.lock";
 
 char const* WebGUI::ErrorDesc[8] = {"n/a",
 				    "request cannot be parsed",
-				    "username/password are not valid",
+				    "authentication error",
 				    "session is not valid",
 				    "general server failure",
 				    "command failed",

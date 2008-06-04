@@ -55,7 +55,7 @@ Command::execute_command()
     ++iter;
   }
   sprintf(buf, "%d", WebGUI::SUCCESS);
-  string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><desc>"+string(WebGUI::ErrorDesc[WebGUI::SUCCESS])+"</desc></error></vyatta>";
+  string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><desc/></error></vyatta>";
   _proc->set_response(tmpstr);
   return;
 }

@@ -18,14 +18,14 @@
 			}
 		</style>
 
-		<link rel="stylesheet" type="text/css" href="yui/build/reset-fonts-grids/reset-fonts-grids.css" />
-		<link rel="stylesheet" type="text/css" href="yui/build/resize/assets/skins/sam/resize.css" />
-		<link rel="stylesheet" type="text/css" href="yui/build/layout/assets/skins/sam/layout.css" />
-		<link rel="stylesheet" type="text/css" href="yui/build/button/assets/skins/sam/button.css" />
-		<link rel="stylesheet" type="text/css" href="yui/build/container/assets/skins/sam/container.css">
-		<link rel="stylesheet" type="text/css" href="yui/build/treeview/assets/skins/sam/treeview.css">
-		<link rel="stylesheet" type="text/css" href="yui/build/logger/assets/skins/sam/logger.css" />
-		<link rel="stylesheet" type="text/css" href="loginform.css">
+		<link rel="stylesheet" type="text/css" href="yui/build/reset-fonts-grids/reset-fonts-grids.css"></link>
+		<link rel="stylesheet" type="text/css" href="yui/build/resize/assets/skins/sam/resize.css"></link>
+		<link rel="stylesheet" type="text/css" href="yui/build/layout/assets/skins/sam/layout.css"></link>
+		<link rel="stylesheet" type="text/css" href="yui/build/button/assets/skins/sam/button.css"></link>
+		<link rel="stylesheet" type="text/css" href="yui/build/container/assets/skins/sam/container.css"></link>
+		<link rel="stylesheet" type="text/css" href="yui/build/treeview/assets/skins/sam/treeview.css"></link>
+		<link rel="stylesheet" type="text/css" href="yui/build/logger/assets/skins/sam/logger.css"></link>
+		<link rel="stylesheet" type="text/css" href="loginform.css"></link>
 
 
 		<script type="text/javascript" src="yui/build/yahoo/yahoo-min.js"></script>
@@ -34,7 +34,7 @@
 
 		<script type="text/javascript" src="yui/build/logger/logger-min.js"></script>
 
-		<script type="text/javascript" src="yui/build/element/element-beta-debug.js"></script>
+		<script type="text/javascript" src="yui/build/element/element-beta-min.js"></script>
 		<script type="text/javascript" src="yui/build/button/button-min.js"></script>
 		<script type="text/javascript" src="yui/build/dragdrop/dragdrop-min.js"></script>
 		<script type="text/javascript" src="yui/build/resize/resize-beta-min.js"></script>
@@ -42,7 +42,7 @@
 		<script type="text/javascript" src="yui/build/layout/layout-beta-min.js"></script>
 		<script type="text/javascript" src="yui/build/container/container-min.js"></script>
 		<script type="text/javascript" src="yui/build/connection/connection-min.js"></script>
-		<script type="text/javascript" src="yui/build/treeview/treeview-debug.js"></script>
+		<script type="text/javascript" src="yui/build/treeview/treeview-min.js"></script>
 
 
 		<script type="text/javascript" src="vyatta_webgui.js"></script>
@@ -60,7 +60,7 @@
 					YAHOO.vyatta.webgui.layout = new YAHOO.widget.Layout({
 						units: [
 							{ position: 'top', height: 71, body: 'top1', gutter: '0px' },
-							{ position: 'center', body: 'center1'},
+							{ position: 'center', body: 'center1', scroll: 'true'},
 							YAHOO.vyatta.webgui.leftpane
 						]
 					});
@@ -86,7 +86,6 @@
 					});
 
 //					var logger = new YAHOO.widget.LogReader();
-
 				});
 			})();
 
@@ -129,7 +128,8 @@
 						YAHOO.vyatta.webgui.tree.subscribe("labelClick", function(node) {
 							YAHOO.vyatta.webgui.VyattaUtil.setLabel(node, true);
 							document.getElementById("addressLabel").innerHTML = YAHOO.vyatta.webgui.VyattaUtil.getConfigPath(node);
-							document.getElementById("configFields").innerHTML = YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs(node);
+							var html = YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs(node);
+							if (html != null) document.getElementById("configFields").innerHTML = html;
 						});
 						cfg.expand();
 					}
@@ -175,8 +175,8 @@
 				</div>
 			</div>
 			<div id="configPanel">
-				<label id="addressLabel" style="margin: 20px; color: blue;" />
-				<div id="configFields" style="margin: 20px; color: blue;" />
+				<div id="addressLabel" style="margin: 20px; color: blue;"></div>
+				<div id="configFields" style="margin: 20px; color: blue;"></div>
 			</div>
 		</div>
 	</body>

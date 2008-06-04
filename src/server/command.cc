@@ -110,6 +110,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 
   string stdout;
   WebGUI::execute(command,stdout,true);
+  stdout = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
   return stdout;
 }
 

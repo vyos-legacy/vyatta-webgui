@@ -198,7 +198,7 @@ Session::update_session()
 {
   string stdout;
   //get timestamp from file
-  string file = WebGUI::LOCAL_CONFIG_DIR + _processor->get_msg().id() + "/.vyattamodify";
+  string file = WebGUI::VYATTA_MODIFY_FILE + _processor->get_msg().id();
 
   struct stat buf;
 
@@ -249,7 +249,7 @@ void
 Session::start_session()
 {
   //get timestamp from file
-  string file = WebGUI::LOCAL_CONFIG_DIR + _processor->get_msg().id() + "/.vyattamodify";
+  string file = WebGUI::VYATTA_MODIFY_FILE + _processor->get_msg().id();
 
   string update_file = "touch " + file;
   //now touch session time mark file

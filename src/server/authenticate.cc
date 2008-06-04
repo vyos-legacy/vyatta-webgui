@@ -164,7 +164,7 @@ unsigned long Authenticate::test_auth(const std::string & username, const std::s
     //now check for collision
     char buf[40];
     sprintf(buf, "%lu", id);
-    file = WebGUI::LOCAL_CONFIG_DIR + string(buf) + "/.vyattamodify";
+    file = WebGUI::VYATTA_MODIFY_FILE + string(buf);
   }
   while (stat(file.c_str(), &tmp) == 0);
 

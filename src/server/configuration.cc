@@ -335,6 +335,8 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	help = WebGUI::mass_replace(help, "<", "&#60;");
 	help = WebGUI::mass_replace(help, ">", "&#62;");
 	help = WebGUI::mass_replace(help, " & ", " &#38; ");
+	help = WebGUI::mass_replace(help, "\n", "");
+
 	params._help += help;
       }
       else if (strncmp(line.c_str(),"syntax:",7) == 0 || mode == "syntax:") {

@@ -47,7 +47,7 @@ Authenticate::create_new_session()
 
   char buf[40];
   sprintf(buf, "%d", WebGUI::AUTHENTICATION_FAILURE);
-  string err_resp = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::AUTHENTICATION_FAILURE])+"</error></vyatta>";
+  string err_resp = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::AUTHENTICATION_FAILURE])+"</msg></error></vyatta>";
   
 
   if (id > 0) {
@@ -106,7 +106,7 @@ Authenticate::create_new_session()
     sprintf(buf, "%d", WebGUI::SUCCESS);
     char buf1[40];
     sprintf(buf1, "%u", id);
-    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code></error></vyatta>";
+    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code><msg/></error></vyatta>";
     _proc->set_response(tmpstr);
     
     //need to verify that system is set up correctly here to provide proper return code.

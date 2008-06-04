@@ -143,7 +143,7 @@ Session::process_message()
       }
       char buf[40];
       sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
-      string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</error></vyatta>";
+      string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</msg></error></vyatta>";
       _processor->set_response(err);
       return false;
     }
@@ -154,7 +154,7 @@ Session::process_message()
     }
     char buf[40];
     sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</error></vyatta>";
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</msg></error></vyatta>";
     _processor->set_response(err);
     return false;
   }
@@ -182,7 +182,7 @@ Session::commit()
 
     char buf[40];
     sprintf(buf, "%d", WebGUI::COMMIT_IN_PROGRESS);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::COMMIT_IN_PROGRESS])+"</error></vyatta>";
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::COMMIT_IN_PROGRESS])+"</msg></error></vyatta>";
     _processor->set_response(err);
 
     return false;
@@ -205,7 +205,7 @@ Session::update_session()
   if (stat(file.c_str(), &buf) != 0) {
     char buf[40];
     sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</error></vyatta>";
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
     _processor->set_response(err);
     return false;
   }
@@ -218,7 +218,7 @@ Session::update_session()
 
     char buf[40];
     sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</error></vyatta>";
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
     _processor->set_response(err);
 
     //let's ask the system to clean up at this point..

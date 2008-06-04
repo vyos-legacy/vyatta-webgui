@@ -27,7 +27,7 @@ Command::execute_command()
 
   if (msg._command_coll.empty()) {
     sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</error></vyatta>";
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</msg></error></vyatta>";
     _proc->set_response(err);
     return;
   }
@@ -35,7 +35,7 @@ Command::execute_command()
   //validate session id
   if (!validate_session(_proc->get_msg().id_by_val())) {
     sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</error></vyatta>";
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
     _proc->set_response(err);
     return;
   }
@@ -48,14 +48,14 @@ Command::execute_command()
     if (!err.empty()) {
       //generate error response for this command and exit
       sprintf(buf, "%d", WebGUI::COMMAND_ERROR);
-      string rtn_str = "<?xml version='1.0' encoding='utf-8'?><vyatta><desc>"+*iter+"</desc><error><code>"+string(buf)+"</code><error>"+err+"</error></vyatta>";
+      string rtn_str = "<?xml version='1.0' encoding='utf-8'?><vyatta><desc>"+*iter+"</desc><error><code>"+string(buf)+"</code><msg>"+err+"</msg></error></vyatta>";
       _proc->set_response(rtn_str);
       return;
     }
     ++iter;
   }
   sprintf(buf, "%d", WebGUI::SUCCESS);
-  string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><desc/></error></vyatta>";
+  string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg/></error></vyatta>";
   _proc->set_response(tmpstr);
   return;
 }

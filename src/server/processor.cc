@@ -305,7 +305,7 @@ Processor::parse()
   if (!XML_Parse(_xml_parser, _msg._request, strlen(_msg._request), true)) {
     char buf[20];
     sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><error>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</error></vyatta>";
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</msg></error></vyatta>";
     return false;
   }
 
@@ -392,11 +392,11 @@ Processor::get_response()
     char buf[20];
     if (id == 0) {
       sprintf(buf, "%d", WebGUI::AUTHENTICATION_FAILURE);
-      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error>"+string(buf)+"</error><code>code</code><desc>"+string(WebGUI::ErrorDesc[WebGUI::AUTHENTICATION_FAILURE])+"</desc></error></vyatta>";
+      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::AUTHENTICATION_FAILURE])+"</msg></error></vyatta>";
     }
     else {
       //now at this point generate the new configuration tree and environment settings
-      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><id>"+_msg.id()+"</id><code>0</code><error></error></vyatta>";
+      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>"+_msg.id()+"</id><error><code>0</code><msg/></error></vyatta>";
     }
   }
   else if (_msg._type == WebGUI::GETCONFIG) {
@@ -404,7 +404,7 @@ Processor::get_response()
     //    assert(false);
   }
   else if (_msg._type == WebGUI::CLICMD) {
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>0</code></error></vyatta>";
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>0</code><msg/></error></vyatta>";
   }
   return _msg._response;
 }

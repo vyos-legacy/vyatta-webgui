@@ -107,6 +107,7 @@ Configuration::get_full_level()
 	strcmp(dirp->d_name,"node.def") != 0 &&
 	strcmp(dirp->d_name,"node.tag") != 0) {
       //now build out response...
+
       out += string("<node name='") + string(dirp->d_name) + string("'>");
       map<string,WebGUI::NodeState>::iterator iter = dir_coll.find(dirp->d_name);
       if (iter != dir_coll.end()) {
@@ -151,7 +152,11 @@ Configuration::get_full_level()
   }
   
   while (m_iter != dir_coll.end()) {
-    out += string("<node name='") + m_iter->first + string("'>");
+    //escape out "%2F" here for non-terminal multi-nodes
+    string str = string(m_iter->first);
+    str = WebGUI::mass_replace(str, "%2F", "/");
+    
+    out += string("<node name='") + str + string("'>");
     
     switch (m_iter->second) {
     case WebGUI::ACTIVE:

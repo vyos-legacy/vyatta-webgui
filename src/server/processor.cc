@@ -147,6 +147,10 @@ data_hndl(void *data, const XML_Char *s, int len) {
     }
     else if (m->_node == WebGUI::GETCONFIG_NODE) {
       //value between configuration tags
+
+      str = WebGUI::mass_replace(str, "/", "%2F");
+      str = WebGUI::mass_replace(str, " ", "/");
+
       m->_root_node = str;
     }
     free(buf);

@@ -45,7 +45,7 @@
 		<script type="text/javascript" src="yui/build/treeview/treeview-min.js"></script>
 
 
-		<script type="text/javascript" src="vyatta_webgui.js"></script>
+		<script type="text/javascript" src="vyatta_webgui_util.js"></script>
 
 
 		<script type="text/javascript">
@@ -103,7 +103,7 @@
 							}
 						}
 					} else {
-						alert("Server communication error.  Did not receive an XML response.");
+						alert("Server communication error.  Did not recognize an XML response.");
 					}
 
 					if (YAHOO.vyatta.webgui.session_id != null) {
@@ -112,24 +112,28 @@
 
 						YAHOO.vyatta.webgui.tree = new YAHOO.widget.TreeView("treeDiv");
 						function loadData(n, onCompleteCallback) {
-							var vn = new YAHOO.vyatta.webgui.VyattaNodes(n);
-							vn.createChildrenTreeNodes(onCompleteCallback);
-							n.vn = vn;
+							n.vn.createChildrenTreeNodes(onCompleteCallback);
 						}
 						YAHOO.vyatta.webgui.tree.setDynamicLoad(loadData);
 
 						var root = YAHOO.vyatta.webgui.tree.getRoot();
 						var cfg = new YAHOO.widget.TextNode({title: "Configure"}, root);
+						new YAHOO.vyatta.webgui.VyattaNode(cfg);
 						YAHOO.vyatta.webgui.VyattaUtil.setLabel(cfg);
 
 						YAHOO.vyatta.webgui.tree.subscribe("collapseComplete", function(node) {
 							YAHOO.vyatta.webgui.tree.removeChildren(node);
 						});
+						YAHOO.vyatta.webgui.tree.subscribe("expandComplete", function(node) {
+							if (YAHOO.vyatta.webgui.lastSelectedItem == node) {
+								var html = YAHOO.vyatta.webgui.VyattaUtil.generateHtmlChildren(node.vn);
+								document.getElementById("configFields").innerHTML = html;
+							}
+						});
 						YAHOO.vyatta.webgui.tree.subscribe("labelClick", function(node) {
-							YAHOO.vyatta.webgui.VyattaUtil.setLabel(node, true);
 							document.getElementById("addressLabel").innerHTML = YAHOO.vyatta.webgui.VyattaUtil.getConfigPath(node);
-							var html = YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs(node);
-							if (html != null) document.getElementById("configFields").innerHTML = html;
+							YAHOO.vyatta.webgui.VyattaUtil.setLabel(node, true);
+							node.expand();
 						});
 						cfg.expand();
 					}

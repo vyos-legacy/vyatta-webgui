@@ -65,37 +65,43 @@ YAHOO.vyatta.webgui.VyattaNodes.prototype = {
 	},
 	loadConfigNodesCB: function(createChildrenTreeNodesCB) {
 		if (this.templ == null || this.templ.length == 0) {
-			for (var i in this.config) {
-				var cn = this.config[i];
-				var item = {};
-				item.title = cn.name;
-				var nn = new YAHOO.widget.TextNode(item, this.node);
-				nn.cn = cn;
-				nn.tn = {name: 'node.tag'};
-				YAHOO.vyatta.webgui.VyattaUtil.setLabel(nn, false);
+			if (this.config != null) {
+				for (var i = 0; i < this.config.length; i++) {
+					var cn = this.config[i];
+					var item = {};
+					item.title = cn.name;
+					var nn = new YAHOO.widget.TextNode(item, this.node);
+					nn.cn = cn;
+					nn.tn = {name: 'node.tag'};
+					YAHOO.vyatta.webgui.VyattaUtil.setLabel(nn, false);
+				}
 			}
 		} else {
-			for (var i in this.templ) {
+			for (var i = 0; i < this.templ.length; i++) {
 				var tn = this.templ[i];
 				if (tn.terminal && tn.multi == null) continue;
 				if (tn.name == "node.tag") {
-					for (var j in this.config) {
-						var cn = this.config[j];
-						var item = {};
-						item.title = cn.name;
-						var nn = new YAHOO.widget.TextNode(item, this.node);
-						nn.tn = tn;
-						nn.cn = cn;
-						nn.multi = true;
-						YAHOO.vyatta.webgui.VyattaUtil.setLabel(nn, false);
+					if (this.config != null) {
+						for (var j = 0; j < this.config.length; j++) {
+							var cn = this.config[j];
+							var item = {};
+							item.title = cn.name;
+							var nn = new YAHOO.widget.TextNode(item, this.node);
+							nn.tn = tn;
+							nn.cn = cn;
+							nn.multi = true;
+							YAHOO.vyatta.webgui.VyattaUtil.setLabel(nn, false);
+						}
 					}
 				} else {
 					var cnMatched = null;
-					for (var j in this.config) {
-						var cn = this.config[j];
-						if (tn.name == cn.name) {
-							cnMatched = cn;
-							break;
+					if (this.config != null) {
+						for (var j = 0; j < this.config.length; j++) {
+							var cn = this.config[j];
+							if (tn.name == cn.name) {
+								cnMatched = cn;
+								break;
+							}
 						}
 					}
 					var item = {};
@@ -148,29 +154,29 @@ YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs = function(node) {
 	if (node.tn.children == null) return null;
 
 	var html = '';
-	html += "<div style='display: table;'>";
-	for (var i in node.tn.children) {
+	html += "<table style='display: table;'>";
+	for (var i = 0; i < node.tn.children.length; i++) {
 		var tnChild = node.tn.children[i];
 		if (tnChild.multi) continue;
 
 		var cnChild = null;
 		if (node.cn != null) {
 			if (node.cn.children != null) {
-				for (var i in node.cn.children) {
-					if (node.cn.children[i].name == tnChild.name) {
-						cnChild = node.cn.children[i];
+				for (var j = 0; j < node.cn.children.length; j++) {
+					if (node.cn.children[j].name == tnChild.name) {
+						cnChild = node.cn.children[j];
 						break;
 					}
 				}
 			}
 		}
 
+		html += "<tr style='display: table-row;'>";
+		html += "<td style='display: table-cell; width: 140px; padding: 10px;'>";
+		html += tnChild.name;
+		html += "</td>";
+		html += "<td style='display: table-cell;'>";
 		if (tnChild.terminal) {
-			html += "<div style='display: table-row;'>";
-			html += "<div style='display: table-cell; width: 140px; padding: 10px;'>";
-			html += tnChild.name;
-			html += "</div>";
-			html += "<div style='display: table-cell;'>";
 			if (tnChild.enums == null) {
 				html += "<input type='text' style='width: 150px;'";
 				if (cnChild != null) {
@@ -184,7 +190,7 @@ YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs = function(node) {
 				html += " />";
 			} else {
 				html += "<select style='width: 154px;'>";
-				for (var j in tnChild.enums) {
+				for (var j = 0; j < tnChild.enums.length; j++) {
 					html += "<option value='";
 					html += tnChild.enums[j]
 					html += "'";
@@ -194,14 +200,14 @@ YAHOO.vyatta.webgui.VyattaUtil.generateHtmlLeafs = function(node) {
 				}
 				html += "</select>";
 			}
-			html += "</div>";
-			html += "<div style='display: table-cell; padding-left: 15px;'>";
-			html += tnChild.help;
-			html += "</div>";
-			html += '</div>\n';
 		}
+		html += "</td>";
+		html += "<td style='display: table-cell; padding-left: 15px;'>";
+		html += tnChild.help;
+		html += "</td>";
+		html += '</tr>\n';
 	}
-	html += '</div>\n';
+	html += '</table>\n';
 	return html;
 },
 YAHOO.vyatta.webgui.VyattaUtil.getConfigPath = function(node) {
@@ -251,6 +257,10 @@ YAHOO.vyatta.webgui.VyattaUtil.processConfigNodes = function(childNodes, array) 
 	}
 	if (nn != null) array.push(nn);
 }
+YAHOO.vyatta.webgui.VyattaUtil.getNodeValue = function(node) {
+	if (node.firstChild) return node.firstChild.nodeValue;
+	return null;
+}
 YAHOO.vyatta.webgui.VyattaUtil.processTemplateNodes = function(childNodes, array) {
 	if (childNodes == null || array == null) return;
 	var nn = null;
@@ -268,13 +278,13 @@ YAHOO.vyatta.webgui.VyattaUtil.processTemplateNodes = function(childNodes, array
 						for (var j = 0; j < childNodes[i].childNodes.length; j++) {
 							if (childNodes[i].childNodes[j].nodeName == "terminal") nn.terminal = true;
 							if (childNodes[i].childNodes[j].nodeName == "multi") nn.multi = true;
-							if (childNodes[i].childNodes[j].nodeName == "help") nn.help = childNodes[i].childNodes[j].textContent;
-							if (childNodes[i].childNodes[j].nodeName == "default") nn.def = childNodes[i].childNodes[j].textContent;
+							if (childNodes[i].childNodes[j].nodeName == "help") nn.help = YAHOO.vyatta.webgui.VyattaUtil.getNodeValue(childNodes[i].childNodes[j]);
+							if (childNodes[i].childNodes[j].nodeName == "default") nn.def = YAHOO.vyatta.webgui.VyattaUtil.getNodeValue(childNodes[i].childNodes[j]);
 							if (childNodes[i].childNodes[j].nodeName == "enum") {
-								for (var k in childNodes[i].childNodes[j].childNodes) {
+								for (var k = 0; k < childNodes[i].childNodes[j].childNodes.length; k++) {
 									if (childNodes[i].childNodes[j].childNodes[k].nodeName == "match") {
 										if (nn.enums == null) nn.enums = new Array();
-										nn.enums.push(childNodes[i].childNodes[j].childNodes[k].textContent);
+										nn.enums.push(YAHOO.vyatta.webgui.VyattaUtil.getNodeValue(childNodes[i].childNodes[j].childNodes[k]));
 									}
 								}
 							}

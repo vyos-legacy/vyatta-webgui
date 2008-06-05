@@ -430,7 +430,8 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       vector<string>::iterator iter = orig_coll.begin();
       while (iter != orig_coll.end()) {
 	if (iter->empty() == false) {
-	  string tmp = WebGUI::mass_replace(*iter, "<", "&#60;");
+	  string tmp = WebGUI::mass_replace(*iter, "<>", "*"); //handle special case for wildcard
+	  tmp = WebGUI::mass_replace(tmp, "<", "&#60;");
 	  tmp = WebGUI::mass_replace(tmp, ">", "&#62;");
 	  tmp = WebGUI::mass_replace(tmp, " & ", " &#38; ");
 
@@ -439,7 +440,6 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  if (tmp[0] == '"') {
 	    tmp = tmp.substr(1,tmp.length()-2);
 	  }
-
 	  params._enum.push_back(tmp);
 	}
 	++iter;

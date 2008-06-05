@@ -18,9 +18,9 @@ StrProc::StrProc(const string &in_str, const string &token)
     pos += tabtospace.length();
   }
   
-  //remove the cr
+  //remove the cr if there is only one!
   pos = tmp.find("\n");
-  if (pos != string::npos) {
+  if ((pos != string::npos) &&(pos == tmp.rfind("\n"))) {
     tmp.replace(pos, 1, "");
   }
 

@@ -425,10 +425,21 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
     if (err == 0) {
       //      cout << "allowed(OUT): '" << stdout.substr(0,stdout.length()-1) << "', ERROR CODE: " << err << endl;
       //now fill out enumeration now
-      StrProc str_proc(stdout, " ");
+      
+      //if stdout is multiline use '\n' delimiter otherwise use space
+      string delimit = " ";
+      
+      int pos = stdout.find('\n');
+
+      if (pos != stdout.rfind('\n')) {
+	delimit = '\n';
+      }
+
+      StrProc str_proc(stdout, delimit);
       vector<string> orig_coll = str_proc.get();
       vector<string>::iterator iter = orig_coll.begin();
       while (iter != orig_coll.end()) {
+
 	if (iter->empty() == false) {
 	  string tmp = WebGUI::mass_replace(*iter, "<>", "*"); //handle special case for wildcard
 	  tmp = WebGUI::mass_replace(tmp, "<", "&#60;");
@@ -440,6 +451,8 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  if (tmp[0] == '"') {
 	    tmp = tmp.substr(1,tmp.length()-2);
 	  }
+
+
 	  params._enum.push_back(tmp);
 	}
 	++iter;

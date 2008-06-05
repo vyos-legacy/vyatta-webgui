@@ -94,6 +94,7 @@ export vyatta_configdir=/opt/vyatta/config; \
 export vyatta_infodir=/opt/vyatta/share/info; \
 export VYATTA_TEMP_CONFIG_DIR="+WebGUI::LOCAL_CONFIG_DIR+_proc->get_msg().id()+"; \
 export UNIONFS=unionfs; \
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; \
 export vyatta_localedir=/opt/vyatta/share/locale";
 
   string tmp = cmd;

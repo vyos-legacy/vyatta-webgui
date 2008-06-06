@@ -158,15 +158,27 @@ unsigned long Authenticate::test_auth(const std::string & username, const std::s
   struct stat tmp;
   unsigned long id = 0;
   string file;
-  do {
-    id = WebGUI::ID_START + (float(rand()) / float(RAND_MAX)) * WebGUI::ID_RANGE;
-    
-    //now check for collision
-    char buf[40];
-    sprintf(buf, "%lu", id);
-    file = WebGUI::VYATTA_MODIFY_FILE + string(buf);
+  unsigned long val;
+
+  FILE *fp = fopen("/dev/random", "r");
+  if (fp) {
+    char *ptr = (char*)&val;
+
+    do {
+      *ptr = fgetc(fp); if (*ptr == EOF) return 0;
+      *(ptr+1) = fgetc(fp); if (*(ptr+1) == EOF) return 0;
+      *(ptr+2) = fgetc(fp); if (*(ptr+2) == EOF) return 0;
+      *(ptr+3) = fgetc(fp); if (*(ptr+3) == EOF) return 0;
+      
+      id = WebGUI::ID_START + (float(val) / float(4294967296.)) * WebGUI::ID_RANGE;
+      
+      //now check for collision
+      char buf[40];
+      sprintf(buf, "%lu", id);
+      file = WebGUI::VYATTA_MODIFY_FILE + string(buf);
+    }
+    while (stat(file.c_str(), &tmp) == 0);
   }
-  while (stat(file.c_str(), &tmp) == 0);
 
   return id;  
 }

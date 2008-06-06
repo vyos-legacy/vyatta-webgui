@@ -29,3 +29,6 @@ src/xgcgi/xgcgi
 src/xgcgi/xgcgi_test
 src/xgcgi2/xgcgi2
 src/xgdaemon/xgdaemon
+src/server/test
+src/server/webgui
+

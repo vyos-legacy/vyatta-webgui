@@ -107,6 +107,13 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   else if (strncmp(tmp.c_str(),"save",4) == 0) {
     tmp = "/opt/vyatta/sbin/vyatta-save-config.pl";
   }
+  else if (strncmp(tmp.c_str(),"discard",7) == 0) {
+    //umount, rm -fr changes_only, mount
+    tmp = "sudo umount " + WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id();
+    tmp += ";rm -fr " + WebGUI::LOCAL_CHANGES_ONLY + _proc->get_msg().id();
+    tmp += ";mkdir -p " + WebGUI::LOCAL_CHANGES_ONLY + _proc->get_msg().id();
+    tmp += ";sudo mount -t unionfs -o dirs=" + WebGUI::LOCAL_CHANGES_ONLY+_proc->get_msg().id()+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro unionfs " +WebGUI::LOCAL_CONFIG_DIR+_proc->get_msg().id();
+  }
 
   command += ";" + tmp;
 

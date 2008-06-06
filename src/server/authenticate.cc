@@ -160,7 +160,7 @@ unsigned long Authenticate::test_auth(const std::string & username, const std::s
   string file;
   unsigned long val;
 
-  FILE *fp = fopen("/dev/random", "r");
+  FILE *fp = fopen("/dev/urandom", "r");
   if (fp) {
     char *ptr = (char*)&val;
 

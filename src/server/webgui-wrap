@@ -1,0 +1,8 @@
+#!/bin/sh
+
+umask 002
+
+echo -en "Content-Type: text/xml\r\n\r\n"
+
+sg vyattacfg -c /usr/lib/cgi-bin/webgui
+

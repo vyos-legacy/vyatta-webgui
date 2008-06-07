@@ -1,16 +1,17 @@
 #!/bin/bash
 
-LOADBALANCE_DIR=/var/load-balance
-
-
 prefix=/opt/vyatta
 
-mkdir -p $LOADBALANCE_DIR
-chmod 0755 $LOADBALANCE_DIR
+# enable CGI for lighttpd
+ln -sf /etc/lighttpd/conf-available/10-cgi.conf /etc/lighttpd/conf-enabled/
 
-touch ${LOADBALANCE_DIR}/wlb.conf
+# XXX webgui needs suid for now
+chmod u+s /usr/lib/cgi-bin/webgui
 
-#now move op cmds to correct location
-rm -fr /opt/vyatta/share/vyatta-op/templates/show/wan-load-balance/*
-mv /opt/vyatta/share/vyatta-cfg/templates/show/wan-load-balance /opt/vyatta/share/vyatta-op/templates/show/. 2>/dev/null
+# XXX www-data user needs to be in these groups for now
+for g in adm sudo users quaggavty vyattacfg; do
+  adduser www-data $g
+done
+
 exit 0
+

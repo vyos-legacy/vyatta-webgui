@@ -1,3 +1,11 @@
+*.o
+*.la
+*.lo
+.deps
+.dirstamp
+.libs
+.*.swp
+
 ChangeLog
 Makefile
 Makefile.in
@@ -9,19 +17,14 @@ config.log
 config.status
 config.sub
 debian/vyatta-webgui
+debian/vyatta-webgui.postinst
+debian/vyatta-webgui.postrm
 debian/files
 autom4te.cache
 config
 configure
 INSTALL
 libtool
-*.o
-*.la
-*.lo
-.deps
-.dirstamp
-.libs
-
 
 src/config.h
 src/stamp-h1

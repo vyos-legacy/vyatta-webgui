@@ -1,7 +1,5 @@
-cfgdir = $(datadir)/vyatta-cfg/templates
-
-initddir	 = /etc/init.d
-etcdir           = /etc
+wwwdir = /var/www
+cgidir = /usr/lib/cgi-bin
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
@@ -26,14 +24,19 @@ src_server_webgui_SOURCES += src/server/rl_str_proc.cc
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
 
+cgi_PROGRAMS = src/server/webgui
+cgi_SCRIPTS = src/server/webgui-wrap
+sbin_PROGRAMS = src/server/test
 
-sbin_PROGRAMS = src/server/webgui
-sbin_PROGRAMS += src/server/test
-
-cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
-	cpio -0pd
-
+# XXX get Ext here for now
 install-exec-hook:
-	mkdir -p $(DESTDIR)$(cfgdir)
-	cd templates; $(cpiop) $(DESTDIR)$(cfgdir)
-	find etc ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 |  cpio -0pd $(DESTDIR)
+	mkdir -p $(DESTDIR)/var/www
+	rm -f /tmp/ext-2.1.zip
+	wget -q -O /tmp/ext-2.1.zip \
+			http://packages.vyatta.com/vyatta-dev/tmp/ext-2.1.zip
+	cd $(DESTDIR)/var/www \
+	&& unzip -qq /tmp/ext-2.1.zip
+	cd $(DESTDIR)/var/www/ext-2.1 \
+	&& rm -rf air build docs examples ext-all-debug.js ext-core-debug.js source
+	rm -f /tmp/ext-2.1.zip
+

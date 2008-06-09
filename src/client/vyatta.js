@@ -26,10 +26,9 @@ Ext.onReady(function(){
 
     var editor = new Ext.Panel({
       title: 'Edit',
-      height: 580,
-      width: 435,
-      x: 455,
-      y: 10,
+      region: 'center',
+      split: true,
+      margins: '5 5 5 0',
       bodyStyle: 'padding:10px',
       border: true,
       collapsible: false,
@@ -151,10 +150,12 @@ Ext.onReady(function(){
     });
 
     var tree = new Ext.tree.TreePanel({
-        height: 580,
-        width: 435,
-        x: 10,
-        y: 10,
+        region: 'west',
+        split: true,
+        margins: '5 0 5 5',
+        width: 300,
+        minSize: 200,
+        maxSize: 400,
         border: true,
         autoScroll: true,
         title: 'Browse',
@@ -1007,14 +1008,14 @@ Ext.onReady(function(){
     tree.on('click', nodeClickHandler);
 
     var topPanel = new Ext.Panel({
-      el: 'config',
       title: 'Vyatta Web GUI',
-      width: 900,
-      height: 630,
       collapsible: false,
-      layout: 'absolute',
+      layout: 'border',
       items: [ tree, editor ]
     });
 
-    topPanel.render();
+    var vp = new Ext.Viewport({
+      layout: 'fit',
+      items: [ topPanel ]
+    });
 });

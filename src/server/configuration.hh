@@ -32,12 +32,6 @@ private:
   get_conf_dir(const std::string &root);
 
   void
-  parse_configuration(std::string &rel_config, std::string &rel_template, long &depth, std::string &out);
-
-  void
-  parse_template(std::string &rel_template, long &depth, std::string &out);
-
-  void
   parse_value(std::string &rel_path, std::string &node_name, std::string &out);
 
   bool

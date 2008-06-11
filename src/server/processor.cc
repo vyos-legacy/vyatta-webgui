@@ -214,24 +214,6 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
     else if (strcmp(el, "node") == 0) {
       m->_node = WebGUI::GETCONFIG_NODE;
     }
-    //set root search node here
-    for (int i = 0; attr[i]; i += 2) {
-      if (strcmp(attr[i],"mode") == 0) {
-	if (strcmp(attr[i+1],"template") == 0) {
-	  m->_mode = 2;
-	}
-	else if (strcmp(attr[i+1],"config") == 0) {
-	  m->_mode = 1;
-	}
-      }
-      else if (strcmp(attr[i],"depth") == 0) {
-	long val = strtol(attr[i+1],NULL,10);
-	if (val > 64 || val < 0) {
-	  val = 0;
-	}
-	m->_depth = val;
-      }
-    }
   }
   else if (m->_type == WebGUI::NEWSESSION) {
     if (strcmp(el, "user") == 0) {

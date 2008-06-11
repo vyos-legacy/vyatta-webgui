@@ -246,8 +246,6 @@ Ext.onReady(function(){
           editor.remove(editor.items.itemAt(0));
         }
       }
-      editor.getValFunc = null;
-      editor.getValsFunc = null;
     }
     
     var leafSingleTxtHandler = function(node) {
@@ -268,7 +266,7 @@ Ext.onReady(function(){
       });
       editor.add(fieldP);
 
-      editor.getValFunc = function() {
+      node.getValFunc = function() {
         return field.getValue();
       }
     }
@@ -295,7 +293,7 @@ Ext.onReady(function(){
       });
       editor.add(fieldP);
 
-      editor.getValFunc = function() {
+      node.getValFunc = function() {
         return field.getValue();
       }
     }
@@ -348,7 +346,7 @@ Ext.onReady(function(){
       });
       editor.add(fieldP);
 
-      editor.getValFunc = function() {
+      node.getValFunc = function() {
         return field.getValue();
       }
     }
@@ -526,9 +524,9 @@ Ext.onReady(function(){
               // typeless
               sendCommandCli([ 'set ' + getConfigPathStr(node) ], node,
                              true);
-            } else if (editor.getValFunc != undefined) {
+            } else if (node.getValFunc != undefined) {
               sendCommandCli([ 'set ' + getConfigPathStr(node)
-                               + " '" + editor.getValFunc() + "'"
+                               + " '" + node.getValFunc() + "'"
                              ], node, true);
             }
           }
@@ -543,9 +541,9 @@ Ext.onReady(function(){
               if (node.attributes.type == undefined) {
                 // typeless
                 sendCommandCli([ 'set ' + getConfigPathStr(node) ], node);
-              } else if (editor.getValFunc != undefined) {
+              } else if (node.getValFunc != undefined) {
                 sendCommandCli([ 'set ' + getConfigPathStr(node)
-                                 + " '" + editor.getValFunc() + "'"
+                                 + " '" + node.getValFunc() + "'"
                                ], node);
               }
             }
@@ -623,7 +621,7 @@ Ext.onReady(function(){
       }
       editor.add(grid);
       
-      editor.getValsFunc = function() {
+      node.getValsFunc = function() {
         var ret = [ ];
         for (var i = 0; i < gridStore.getCount(); i++) {
           ret[i] = gridStore.getAt(i).get('value');
@@ -699,7 +697,7 @@ Ext.onReady(function(){
       }
       editor.add(grid);
       
-      editor.getValsFunc = function() {
+      node.getValsFunc = function() {
         var ret = [ ];
         for (var i = 0; i < gridStore.getCount(); i++) {
           ret[i] = gridStore.getAt(i).get('value');
@@ -854,7 +852,7 @@ Ext.onReady(function(){
       editor.add(grid);
       */
 
-      editor.getValsFunc = function() {
+      node.getValsFunc = function() {
         var ret = [ ];
         for (var i = 0; i < gridStore.getCount(); i++) {
           ret[i] = gridStore.getAt(i).get('value');
@@ -893,9 +891,9 @@ Ext.onReady(function(){
         editor.add(new Ext.Button({
           text: 'Create',
           handler: function() {
-            if (editor.getValsFunc != undefined) {
+            if (node.getValsFunc != undefined) {
               var varr = [ ];
-              var values = editor.getValsFunc();
+              var values = node.getValsFunc();
               for (var i = 0; i < values.length; i++) {
                 varr[i + 1] = 'set ' + getConfigPathStr(node)
                               + " '" + values[i] + "'";
@@ -909,9 +907,9 @@ Ext.onReady(function(){
         editor.add(new Ext.Button({
           text: 'Update',
           handler: function() {
-            if (editor.getValsFunc != undefined) {
+            if (node.getValsFunc != undefined) {
               var varr = [ 'delete ' + getConfigPathStr(node) ];
-              var values = editor.getValsFunc();
+              var values = node.getValsFunc();
               for (var i = 0; i < values.length; i++) {
                 varr[i + 1] = 'set ' + getConfigPathStr(node)
                               + " '" + values[i] + "'";

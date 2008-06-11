@@ -94,6 +94,7 @@ Ext.onReady(function(){
       margins: '5 5 5 0',
       bodyStyle: 'padding:10px',
       border: true,
+      autoScroll: true,
       collapsible: false,
       tbar: [
         new Ext.Button({
@@ -444,9 +445,10 @@ Ext.onReady(function(){
             }
             var p = node.parentNode;
             var handler = function(narg){
-              tree.selectPath(selPath, 'text');
-              var nnode = narg.findChild('text', selText);
-              nodeClickHandler(nnode, null);
+              tree.selectPath(selPath, 'text', function(success,sel){
+                var nnode = tree.getSelectionModel().getSelectedNode();
+                nodeClickHandler(nnode, null);
+              });
               narg.un('expand', handler); 
             }
             p.on('expand', handler);
@@ -952,7 +954,14 @@ Ext.onReady(function(){
         return;
       }
       
-      // TODO: allow configuring all children in edit panel
+      // allow configuring all children in edit panel
+      var cnodes = node.childNodes;
+      for (var i = 0; i < cnodes.length; i++) {
+        var cnode = cnodes[i];
+        if (cnode.leaf) {
+          nodeClickHandler(cnode, null, true);
+        }
+      }
  
       // help string
       if (node.attributes.help != undefined) {
@@ -1036,8 +1045,10 @@ Ext.onReady(function(){
       editor.doLayout();
     }
 
-    var nodeClickHandler = function(node, e) {
-      clearEditor();
+    var nodeClickHandler = function(node, e, dontClear) {
+      if (dontClear == undefined || dontClear == false) {
+        clearEditor();
+      }
       if (node.leaf) {
         if (node.attributes.multi == undefined || !node.attributes.multi) {
           leafSingleHandler(node);
@@ -1046,12 +1057,13 @@ Ext.onReady(function(){
         }
       } else {
         // non-leaf
-        node.expand();
-        if (node.attributes.multi == undefined || !node.attributes.multi) {
-          interHandler(node);
-        } else {
-          interMultiHandler(node);
-        }
+        node.expand(false, true, function(n){
+          if (n.attributes.multi == undefined || !n.attributes.multi) {
+            interHandler(n);
+          } else {
+            interMultiHandler(n);
+          }
+        });
       }
     }
 

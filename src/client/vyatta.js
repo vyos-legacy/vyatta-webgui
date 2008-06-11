@@ -247,7 +247,6 @@ Ext.onReady(function(){
         }
       }
       editor.getValFunc = null;
-      editor.setValFunc = null;
       editor.getValsFunc = null;
     }
     
@@ -271,9 +270,6 @@ Ext.onReady(function(){
 
       editor.getValFunc = function() {
         return field.getValue();
-      }
-      editor.setValFunc = function(val) {
-        return field.setValue(val);
       }
     }
 
@@ -301,9 +297,6 @@ Ext.onReady(function(){
 
       editor.getValFunc = function() {
         return field.getValue();
-      }
-      editor.setValFunc = function(val) {
-        return field.setValue(val);
       }
     }
 
@@ -357,9 +350,6 @@ Ext.onReady(function(){
 
       editor.getValFunc = function() {
         return field.getValue();
-      }
-      editor.setValFunc = function(val) {
-        return field.setValue(val);
       }
     }
 

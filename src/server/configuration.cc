@@ -43,19 +43,9 @@ Configuration::get_config()
     return;
   }
 
-  if (_proc->get_msg()._mode == 2) {
-    string foo = get_template();
-    _proc->set_response(foo);
-  }
-  else if (_proc->get_msg()._mode == 1) {
-    string bar = get_configuration();
-    _proc->set_response(bar);
-  }
-  else {
-    //new combined mode here
-    string foobar = get_full_level();
-    _proc->set_response(foobar);
-  }
+  //new combined mode here
+  string foobar = get_full_level();
+  _proc->set_response(foobar);
 }
 
 /**
@@ -182,47 +172,6 @@ Configuration::get_full_level()
     ++m_iter;
   }
 
-  out += "</vyatta>";
-  return out;
-}
-
-/**
- *
- **/
-string
-Configuration::get_configuration()
-{
-  //note, we'll also need to capture the temporary session changes
-
-  //now parse the request to form: attribute: mode, attribute: depth, value: root
-  Message msg = _proc->get_msg();
-  string req(msg._request);
-
-  //recurse directory structure here to grab configuration
-  long depth = msg._depth;
-  string out = "<?xml version='1.0' encoding='utf-8'?><vyatta>";
-  //note that this will need to replace template directory path with a back-check of multi-nodes
-  parse_configuration(msg._root_node,msg._root_node, depth,out);
-  out += "</vyatta>";
-  return out;
-}
-
-
-/**
- *
- **/
-string
-Configuration::get_template()
-{
-  Message msg = _proc->get_msg();
-  //parses all template nodes (or until depth to provide full template tree
-  //now parse the request to form: attribute: mode, attribute: depth, value: root
-  string req(msg._request);
-
-  //recurse directory structure here to grab configuration
-  long depth = msg._depth;
-  string out = "<?xml version='1.0' encoding='utf-8'?><vyatta>";
-  parse_template(msg._root_node,depth,out);
   out += "</vyatta>";
   return out;
 }
@@ -466,130 +415,6 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
     }
     //    cout << endl;
   }
-}
-
-
-/**
- *
- **/
-void
-Configuration::parse_configuration(string &rel_config_path, string &rel_tmpl_path, long &depth, string &out)
-{
-  static string root_config(WebGUI::ACTIVE_CONFIG_DIR);
-  static string root_template(WebGUI::CFG_TEMPLATE_DIR);
-
-  --depth;
-  if (depth == 0) {
-    return;
-  }
-
-  string full_config_path = root_config + "/" + rel_config_path;
-  string full_template_path = root_template + "/" + rel_tmpl_path;
-
-  //  cout << "Configuration::parse_configuation: " << full_config_path << endl;
-  //  cout << "Configuration::parse_configuation: " << full_template_path << endl << endl;
-
-  map<string,WebGUI::NodeState> coll = get_conf_dir(rel_config_path);
-  map<string,WebGUI::NodeState>::iterator iter = coll.begin();
-  while (iter != coll.end()) {
-    if (iter->first[0] != '.' && strcmp(iter->first.c_str(),"def") != 0) {
-      string new_rel_config_path = rel_config_path + "/" + iter->first;
-
-      //NEED TO CHANGE THE BELOW TO TEST FOR A PARTIAL MATCH AND IF TRUE, THEN RETREIVE VALUE BELOW USING FULL PATH
-      if (strcmp(iter->first.c_str(),"node.val") != 0) {
-	out += string("<node name='") + string(iter->first) + "'>";
-	
-	//check if node is deleted
-	switch (iter->second) {
-	case WebGUI::ACTIVE:
-	  out += "<configured>active</configured>";
-	  break;
-	case WebGUI::SET:
-	  out += "<configured>set</configured>";
-	  break;
-	case WebGUI::DELETE:
-	  out += "<configured>delete</configured>";
-	  break;
-	}
-	long new_depth = depth;
-	
-	//at this point reach out to the template directory and retreive data on this node
-	TemplateParams tmpl_params;
-	string new_rel_tmpl_path = rel_tmpl_path;
-	get_template_node(new_rel_tmpl_path, tmpl_params);
-	if (tmpl_params._multi == true) {
-	  new_rel_tmpl_path += "/node.tag";
-	}
-	else {
-	  new_rel_tmpl_path += "/" + string(iter->first);
-	}
-	out += tmpl_params.get_xml();
-
-	parse_configuration(new_rel_config_path, new_rel_tmpl_path, new_depth, out);
-	out += "</node>";
-      }
-      else { //parse node.val
-	string node_name("node");
-	parse_value(new_rel_config_path, node_name, out);
-	TemplateParams tmpl_params;
-	get_template_node(rel_tmpl_path, tmpl_params);
-	out += tmpl_params.get_xml();
-      }
-    }
-    ++iter;
-  }
-  return;
-}
-
-
-/**
- *
- **/
-void
-Configuration::parse_template(string &rel_tmpl_path, long &depth, string &out)
-{
-  static string root_template(WebGUI::CFG_TEMPLATE_DIR);
-  DIR *dp;
-  struct dirent *dirp;
-
-  --depth;
-  if (depth == 0) {
-    return;
-  }
-
-  string full_template_path = root_template + "/" + rel_tmpl_path;
-
-  if ((dp = opendir(full_template_path.c_str())) == NULL) {
-    return;
-  }
-  //  cout << "Configuration::parse_template: " << full_template_path << endl << endl;
-
-  while ((dirp = readdir(dp)) != NULL) {
-    if (dirp->d_name[0] != '.') {
-      string new_rel_tmpl_path = rel_tmpl_path + "/" + dirp->d_name;
-      if (strcmp(dirp->d_name,"node.def") != 0) {
-	out += string("<node name='") + string(dirp->d_name) + "'>";
-
-	///only if this node is configured does this show up.
-	long new_depth = depth;
-	
-	//at this point reach out to the template directory and retreive data on this node
-	TemplateParams tmpl_params;
-	string new_rel_tmpl_path = rel_tmpl_path + "/" + string(dirp->d_name);
-	get_template_node(new_rel_tmpl_path, tmpl_params);
-	if (tmpl_params._multi == true) {
-	  new_rel_tmpl_path += "/node.tag";
-	}
-
-	out += tmpl_params.get_xml();
-
-	parse_template(new_rel_tmpl_path, new_depth, out);
-	out += "</node>";
-      }
-    }
-  }
-  closedir(dp);
-  return;
 }
 
 

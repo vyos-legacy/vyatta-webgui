@@ -66,19 +66,37 @@ Ext.onReady(function(){
       expires: new Date(new Date().getTime() + (15 * 60 * 1000))
     });
     Ext.state.Manager.setProvider(cookieP);
-      
-    var sid = cookieP.get('id', 'NOTFOUND');
-    var authCb = function(options, success, response) {
-      var xmlRoot = response.responseXML.documentElement;
-      var q = Ext.DomQuery;
-      var id = q.selectValue('id', xmlRoot, 'NOTFOUND');
-      cookieP.set('id', id);
-      sid = id;
-    }
-    if (sid == 'NOTFOUND') {
+
+    var userField = new Ext.form.TextField({
+      fieldLabel: 'User name',
+      labelSeparator: '',
+      width: 200,
+      inputType: 'text'
+    });
+    var passField = new Ext.form.TextField({
+      fieldLabel: 'Password',
+      labelSeparator: '',
+      width: 200,
+      inputType: 'password'
+    });
+    var loginHandler = function() {
+      var authCb = function(options, success, response) {
+        var xmlRoot = response.responseXML.documentElement;
+        var q = Ext.DomQuery;
+        var id = q.selectValue('id', xmlRoot, 'NOTFOUND');
+        cookieP.set('id', id);
+        loginWin.hide();
+        if (id == 'NOTFOUND') {
+          Ext.MessageBox.alert('Login', 'Login failed');
+        }
+      }
       var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                   + "<vyatta><auth><user>vyatta</user>\n"
-                   + "<pswd>vyatta</pswd></auth></vyatta>\n";
+                   + '<vyatta><auth><user>'
+                   + userField.getValue()
+                   + "</user>\n"
+                   + '<pswd>'
+                   + passField.getValue()
+                   + "</pswd></auth></vyatta>\n";
       var conn = new Ext.data.Connection({});
       conn.request({
         url: '/cgi-bin/webgui-wrap', method: 'POST',
@@ -86,6 +104,40 @@ Ext.onReady(function(){
         callback: authCb
       });
     }
+    var loginWin = new Ext.Window({
+      buttons: [
+        new Ext.Button({
+          text: 'Login',
+          handler: loginHandler
+        })
+      ],
+      bodyStyle: 'padding:10px',
+      layout: 'form',
+      layoutConfig: { },
+      items: [ userField, passField ],
+      closeAction: 'hide',
+      constrain: 'true',
+      height: 150,
+      width: 350,
+      modal: true,
+      resizable: false,
+      title: 'Please login'
+    });
+
+    var getSessionId = function() {
+      var sid = cookieP.get('id', 'NOTFOUND');
+      if (sid == 'NOTFOUND') {
+        if (tree != undefined) {
+          tree.root.collapse();
+        }
+        if (editor != undefined) {
+          clearEditor();
+        }
+        loginWin.show();
+      }
+      return sid;
+    }
+    getSessionId();
 
     var editor = new Ext.Panel({
       title: 'Edit',
@@ -168,6 +220,14 @@ Ext.onReady(function(){
 
     MyTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
       requestData: function(node, callback) {
+        var sid = getSessionId();
+        if (sid == 'NOTFOUND') {
+          // no sid. do nothing.
+          if (typeof callback == "function") {
+              callback();
+          }
+          return;
+        }
         if(this.fireEvent("beforeload", this, node, callback) !== false){
             var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                          + "<vyatta><configuration><id>" + sid + "</id>\n"
@@ -371,6 +431,12 @@ Ext.onReady(function(){
     var sendCommandWait = null;
 
     var sendCommandCli = function(cmds, node, isCreate) {
+      var sid = getSessionId();
+      if (sid == 'NOTFOUND') {
+        // no sid. do nothing.
+        return;
+      }
+
       sendCommandWait = Ext.MessageBox.wait('Changing configuration...',
                                             'Configuration');
       

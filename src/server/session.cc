@@ -1,6 +1,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <pwd.h>
 #include <unistd.h>
 #include <iostream>
 #include <unistd.h>
@@ -203,6 +204,55 @@ Session::update_session()
   struct stat buf;
 
   if (stat(file.c_str(), &buf) != 0) {
+    char buf[40];
+    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
+    _processor->set_response(err);
+    return false;
+  }
+
+  FILE *fp = fopen(file.c_str(), "r");
+  if (!fp) {
+    char buf[40];
+    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
+    _processor->set_response(err);
+    return false;
+  }
+
+  char name_buf[1025];
+  if (fgets(name_buf, 1024, fp) == NULL) {
+    char buf[40];
+    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
+    _processor->set_response(err);
+    fclose(fp);
+    return false;
+  }
+
+  fclose(fp);
+
+  struct passwd *pw;
+  pw = getpwnam(name_buf);
+  if (pw == NULL) {
+    char buf[40];
+    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
+    _processor->set_response(err);
+    return false;
+  }
+  
+  //move this up the timeline in the future, but this is where we will initially set the uid/gid
+  //retreive username, then use getpwnam() from here to populate below
+  if (setgid(pw->pw_gid) != 0) {
+    char buf[40];
+    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
+    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
+    _processor->set_response(err);
+    return false;
+  }
+
+  if (setuid(pw->pw_uid) != 0) {
     char buf[40];
     sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
     string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";

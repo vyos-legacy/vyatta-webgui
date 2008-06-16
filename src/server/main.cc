@@ -92,10 +92,18 @@ int main(int argc, char* argv[])
     pid_output(pid_path.c_str());
   }
 
+  //fork
+  //crack open sessionid, match and get guid/uid
+  //child sets guid/uid
+  //parent dies
+  if (fork() != 0) {
+    exit(0); //always fork and kill parent
+  }
+
   signal(SIGINT, sig_end);
   signal(SIGTERM, sig_end);
   signal(SIGUSR1, sig_user);
-  
+
   SessionExchange *se;
   if (port > 0) {
     se = new SessionExchangeSocket(port, debug);

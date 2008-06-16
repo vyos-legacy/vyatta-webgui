@@ -98,6 +98,13 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; \
 export vyatta_localedir=/opt/vyatta/share/locale";
 
   string tmp = cmd;
+
+  //as a security precaution, lop off everything past the ";"
+  int pos = tmp.find(";");
+  if (pos != string::npos) {
+    tmp = tmp.substr(0,pos);
+  }
+
   if (strncmp(tmp.c_str(),"set",3) == 0 || strncmp(tmp.c_str(),"delete",6) == 0 || strncmp(tmp.c_str(),"commit",6) == 0) {
     tmp = "/opt/vyatta/sbin/my_" + cmd;
   }

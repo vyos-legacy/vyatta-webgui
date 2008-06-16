@@ -4,6 +4,7 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <stdio.h>
+#include <grp.h>
 #include "authenticate.hh"
 
 using namespace std;
@@ -103,6 +104,18 @@ Authenticate::create_new_session()
       return false;
     }
 
+    //write the username here to modify file
+    string file = WebGUI::VYATTA_MODIFY_FILE + buf;
+    FILE *fp = fopen(file.c_str(), "w");
+    if (!fp) {
+      _proc->set_response(err_resp);
+      return false;
+    }
+    fputs(msg._user.c_str(), fp);
+    fclose(fp);
+
+
+    //now generate successful response
     sprintf(buf, "%d", WebGUI::SUCCESS);
     char buf1[40];
     sprintf(buf1, "%u", id);
@@ -128,6 +141,26 @@ unsigned long Authenticate::test_auth(const std::string & username, const std::s
     return 0;
   }
   
+
+  ////////////////////////////////////////////////////
+  //without support for op cmds fail any non vyattacfg group member
+  bool found = false;
+  struct group *g = getgrnam("vyattacfg");
+  if (g != NULL) {
+    char **m;
+    for (m = g->gr_mem; *m != (char *)0; m++) {
+      if (strcmp(*m, username.c_str()) == 0) {
+	found = true;
+	break;
+      }
+    }
+  }
+  if (found == false) {
+    return 0; //rejecting as failed check or non vyattacfg member
+  }
+  ////////////////////////////////////////////////////
+
+
   pam_conv conv = { conv_fun, const_cast<void*>((const void*)&password) };
   
   pam_handle_t *pam = NULL;

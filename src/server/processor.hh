@@ -73,6 +73,9 @@ public:
   std::string _user;
   std::string _pswd;
   std::vector<std::string> _command_coll;
+  WebGUI::Error _error_code;
+  std::string _custom_error_msg;
+  std::string _custom_response;
 
 private:
   unsigned long _id;
@@ -103,10 +106,13 @@ public:
   set_request(std::string &buf);
 
   void
-  set_response(std::string &resp);
+  set_response(WebGUI::Error err, std::string &msg);
 
   void
-  set_response(ConfigData &config_data);
+  set_response(WebGUI::Error err);
+
+  void
+  set_response(std::string &resp);
 
   std::string
   get_response();

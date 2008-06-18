@@ -13,7 +13,7 @@ public:
   typedef std::map<unsigned long,Session> SessionColl;
   typedef std::map<unsigned long,Session>::iterator SessionIter;
 
-  Manager(SessionExchange *se, bool debug);
+  Manager(SessionExchange *se, bool strip_error_message, bool debug);
   ~Manager();
   
   bool 
@@ -31,6 +31,7 @@ private:
 
 private:
   bool _debug;
+  bool _strip_err_msg;
   SessionColl _session_coll;
   SessionExchange *_se;
   Processor _processor;

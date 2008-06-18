@@ -11,8 +11,9 @@ using namespace std;
 /**
  *
  **/
-Manager::Manager(SessionExchange *se, bool debug) : 
+Manager::Manager(SessionExchange *se, bool strip_error_message, bool debug) : 
   _debug(debug),
+  _strip_err_msg(strip_error_message),
   _se(se),
   _processor(debug)
 {
@@ -48,6 +49,10 @@ Manager::process()
     if (iter->second.is_valid()) {
       if (_se->read(iter->second)) {
 	iter->second.process_message();
+	if (_strip_err_msg) {
+	  //strip this out, but leave error message, only for debugging purposes
+	  iter->second._processor->_msg._custom_error_msg = string("");
+	}
 	_se->write(iter->second);
 	iter->second.clear_message();
       }

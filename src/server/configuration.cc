@@ -36,10 +36,7 @@ Configuration::get_config()
 {
   //now check for directory
   if (!validate_session(_proc->get_msg().id_by_val())) {
-    char buf[40];
-    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
-    _proc->set_response(err);
+    _proc->set_response(WebGUI::SESSION_FAILURE);
     return;
   }
 

@@ -16,7 +16,7 @@ const string WebGUI::CFG_TEMPLATE_DIR = "/opt/vyatta/share/vyatta-cfg/templates"
 const string WebGUI::COMMIT_LOCK_FILE = "/opt/vyatta/config/.lock";
 const string WebGUI::VYATTA_MODIFY_FILE = "/opt/vyatta/config/tmp/.vyattamodify_";
 
-char const* WebGUI::ErrorDesc[8] = {"n/a",
+char const* WebGUI::ErrorDesc[8] = {" ",
 				    "request cannot be parsed",
 				    "authentication error",
 				    "session is not valid",

@@ -142,10 +142,7 @@ Session::process_message()
       if (_debug) {
 	cerr << "Session::process_message(): message type is unknown: " << endl;
       }
-      char buf[40];
-      sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
-      string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</msg></error></vyatta>";
-      _processor->set_response(err);
+      _processor->set_response(WebGUI::MALFORMED_REQUEST);
       return false;
     }
   }
@@ -153,10 +150,7 @@ Session::process_message()
     if (_debug) {
       cerr << "Session::process_message(): message is unknown" << endl;
     }
-    char buf[40];
-    sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</msg></error></vyatta>";
-    _processor->set_response(err);
+    _processor->set_response(WebGUI::MALFORMED_REQUEST);
     return false;
   }
   return true;
@@ -180,12 +174,7 @@ Session::commit()
   string file(WebGUI::COMMIT_LOCK_FILE);
   struct stat tmp;
   if (stat(file.c_str(), &tmp) == 0) {
-
-    char buf[40];
-    sprintf(buf, "%d", WebGUI::COMMIT_IN_PROGRESS);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::COMMIT_IN_PROGRESS])+"</msg></error></vyatta>";
-    _processor->set_response(err);
-
+    _processor->set_response(WebGUI::COMMIT_IN_PROGRESS);
     return false;
   }
   return true;
@@ -204,28 +193,19 @@ Session::update_session()
   struct stat buf;
 
   if (stat(file.c_str(), &buf) != 0) {
-    char buf[40];
-    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
-    _processor->set_response(err);
+    _processor->set_response(WebGUI::SESSION_FAILURE);
     return false;
   }
 
   FILE *fp = fopen(file.c_str(), "r");
   if (!fp) {
-    char buf[40];
-    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
-    _processor->set_response(err);
+    _processor->set_response(WebGUI::SESSION_FAILURE);
     return false;
   }
 
   char name_buf[1025];
   if (fgets(name_buf, 1024, fp) == NULL) {
-    char buf[40];
-    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
-    _processor->set_response(err);
+    _processor->set_response(WebGUI::SESSION_FAILURE);
     fclose(fp);
     return false;
   }
@@ -235,28 +215,19 @@ Session::update_session()
   struct passwd *pw;
   pw = getpwnam(name_buf);
   if (pw == NULL) {
-    char buf[40];
-    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
-    _processor->set_response(err);
+    _processor->set_response(WebGUI::SESSION_FAILURE);
     return false;
   }
   
   //move this up the timeline in the future, but this is where we will initially set the uid/gid
   //retreive username, then use getpwnam() from here to populate below
   if (setgid(pw->pw_gid) != 0) {
-    char buf[40];
-    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
-    _processor->set_response(err);
+    _processor->set_response(WebGUI::SESSION_FAILURE);
     return false;
   }
 
   if (setuid(pw->pw_uid) != 0) {
-    char buf[40];
-    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
-    _processor->set_response(err);
+    _processor->set_response(WebGUI::SESSION_FAILURE);
     return false;
   }
 
@@ -265,11 +236,7 @@ Session::update_session()
   if ((buf.st_mtime + _session_timeout) > (unsigned)t) {
     //have to clean up session at this point!!!!!!!!
     cerr << "clean up session here" << endl;
-
-    char buf[40];
-    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
-    _processor->set_response(err);
+    _processor->set_response(WebGUI::SESSION_FAILURE);
 
     //let's ask the system to clean up at this point..
 

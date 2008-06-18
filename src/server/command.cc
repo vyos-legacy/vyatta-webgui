@@ -26,17 +26,13 @@ Command::execute_command()
 
 
   if (msg._command_coll.empty()) {
-    sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</msg></error></vyatta>";
-    _proc->set_response(err);
+    _proc->set_response(WebGUI::MALFORMED_REQUEST);
     return;
   }
 
   //validate session id
   if (!validate_session(_proc->get_msg().id_by_val())) {
-    sprintf(buf, "%d", WebGUI::SESSION_FAILURE);
-    string err = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::SESSION_FAILURE])+"</msg></error></vyatta>";
-    _proc->set_response(err);
+    _proc->set_response(WebGUI::SESSION_FAILURE);
     return;
   }
 
@@ -47,16 +43,12 @@ Command::execute_command()
     string err = execute_single_command(*iter);
     if (!err.empty()) {
       //generate error response for this command and exit
-      sprintf(buf, "%d", WebGUI::COMMAND_ERROR);
-      string rtn_str = "<?xml version='1.0' encoding='utf-8'?><vyatta><desc>"+*iter+"</desc><error><code>"+string(buf)+"</code><msg>"+err+"</msg></error></vyatta>";
-      _proc->set_response(rtn_str);
+      _proc->set_response(WebGUI::COMMAND_ERROR, err);
       return;
     }
     ++iter;
   }
-  sprintf(buf, "%d", WebGUI::SUCCESS);
-  string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg/></error></vyatta>";
-  _proc->set_response(tmpstr);
+  _proc->set_response(WebGUI::SUCCESS);
   return;
 }
 

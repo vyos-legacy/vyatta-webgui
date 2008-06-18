@@ -359,9 +359,28 @@ Processor::set_request(string &buf)
  *
  **/
 void
-Processor::set_response(string &resp)
+Processor::set_response(WebGUI::Error err)
 {
-  _msg._response = resp;
+  _msg._error_code = err;
+}
+
+/**
+ *
+ **/
+void
+Processor::set_response(WebGUI::Error err, std::string &msg)
+{
+  _msg._error_code = err;
+  _msg._custom_error_msg = msg;
+}
+
+/**
+ *
+ **/
+void
+Processor::set_response(std::string &resp)
+{
+  _msg._custom_response = resp;
 }
 
 /**
@@ -370,27 +389,19 @@ Processor::set_response(string &resp)
 string
 Processor::get_response()
 {
-  //dummy here for now
-  string response;
-  if (_msg._type == WebGUI::NEWSESSION) {
-    uid_t id = _msg.id_by_val();
-
+  if (_msg._custom_response.empty() == false) {
+    _msg._response = _msg._custom_response;
+  }
+  else if (_msg._custom_error_msg.empty() == false) {
     char buf[20];
-    if (id == 0) {
-      sprintf(buf, "%d", WebGUI::AUTHENTICATION_FAILURE);
-      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::AUTHENTICATION_FAILURE])+"</msg></error></vyatta>";
-    }
-    else {
-      //now at this point generate the new configuration tree and environment settings
-      _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>"+_msg.id()+"</id><error><code>0</code><msg/></error></vyatta>";
-    }
+    sprintf(buf, "%d", _msg._error_code);
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+_msg._custom_error_msg+"</msg></error></vyatta>";
+    return _msg._response;
   }
-  else if (_msg._type == WebGUI::GETCONFIG) {
-    //build out response here
-    //    assert(false);
-  }
-  else if (_msg._type == WebGUI::CLICMD) {
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>0</code><msg/></error></vyatta>";
+  else {
+    char buf[20];
+    sprintf(buf, "%d", _msg._error_code);
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[_msg._error_code])+"</msg></error></vyatta>";
   }
   return _msg._response;
 }

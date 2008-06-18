@@ -30,6 +30,7 @@ static void usage()
   cout << "-v print debug output" << endl;
   cout << "-i specify location of pid directory" << endl;
   cout << "-d run as daemon" << endl;
+  cout << "-s strip error messages" << endl;
   cout << "-h help" << endl;
 
 }
@@ -53,13 +54,14 @@ int main(int argc, char* argv[])
 {
   int ch;
   bool debug = false;
+  bool strip_err_msg = false;
   bool daemon = false;
   string pid_path = "/var/run";
   string file; 
   unsigned long port = 0;
 
   //grab inputs
-  while ((ch = getopt(argc, argv, "p:vi:df:h")) != -1) {
+  while ((ch = getopt(argc, argv, "p:vi:df:hs")) != -1) {
     switch (ch) {
     case 'p':
       port = strtoul(optarg,NULL,10);
@@ -75,6 +77,8 @@ int main(int argc, char* argv[])
       break;
     case 'f':
       file = optarg;
+    case 's':
+      strip_err_msg = true;
     case 'h':
     default:
       usage();
@@ -115,7 +119,7 @@ int main(int argc, char* argv[])
     se = new SessionExchangeStdIO(debug);
   }
   se->init();
-  g_manager = new Manager(se, debug);
+  g_manager = new Manager(se, strip_err_msg, debug);
 
 
   if (debug) {

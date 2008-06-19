@@ -67,6 +67,9 @@ private:
 
   bool
   commit();
+  
+  void
+  clean_up_old_sessions();
 
 public://private:
   int _sock;
@@ -77,7 +80,6 @@ public://private:
   Command _command;
   unsigned long _id;
   bool _valid;
-  unsigned long _session_timeout;
   bool _debug;
 };
 

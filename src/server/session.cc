@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <pwd.h>
 #include <unistd.h>
+#include <dirent.h>
 #include <iostream>
 #include <unistd.h>
 #include <vector>
@@ -19,7 +20,6 @@ using namespace std;
 Session::Session(int sock, bool debug) : 
   _sock(sock),
   _valid(false),
-  _session_timeout(30 * 60),
   _debug(debug)
 {
   _processor = NULL;
@@ -96,6 +96,15 @@ Session::process_message()
       if (_debug) {
 	cout << "Session::process_message(): NEWSESSION" << endl;
       }
+
+      /* 
+	 Clean up any dangling sessions here. Makes sense to check 
+	 here and nowhere else, as this is the only command that
+	 creates new sessions.
+      */
+      clean_up_old_sessions();
+
+      //also handles the case where the session is already active
       if (_authenticate.create_new_session() == true) {
 	start_session();
       }
@@ -233,7 +242,7 @@ Session::update_session()
 
   time_t t = time(NULL);
 
-  if ((buf.st_mtime + _session_timeout) > (unsigned)t) {
+  if ((buf.st_mtime + WebGUI::SESSION_TIMEOUT_WINDOW) < (unsigned)t) {
     //have to clean up session at this point!!!!!!!!
     cerr << "clean up session here" << endl;
     _processor->set_response(WebGUI::SESSION_FAILURE);
@@ -243,12 +252,7 @@ Session::update_session()
     //execute exit discard;
 
     //command pulled from exit discard
-
-    string cmd("sudo umount " + WebGUI::LOCAL_CONFIG_DIR + _processor->get_msg().id());
-    WebGUI::execute(cmd, stdout);
-    cmd = "sudo rm -rf " + WebGUI::LOCAL_CONFIG_DIR + _processor->get_msg().id() + " " + WebGUI::LOCAL_CHANGES_ONLY + _processor->get_msg().id() + " " + WebGUI::CONFIG_TMP_DIR + _processor->get_msg().id();
-    WebGUI::execute(cmd, stdout);
-
+    WebGUI::remove_session(_processor->get_msg().id_by_val());
     return false;
   }
 
@@ -272,5 +276,45 @@ Session::start_session()
   //now touch session time mark file
   string stdout;
   WebGUI::execute(update_file,stdout);
+}
+
+
+
+/**
+ *
+ **/
+void
+Session::clean_up_old_sessions()
+{
+  /*
+    iterate through .vyattamodify_* files and check timestamp.
+    if timestamp is old then parse id and discard session.
+  */
+
+  DIR *dp;
+  struct dirent *dirp;
+
+  if ((dp = opendir(WebGUI::VYATTA_MODIFY_DIR.c_str())) == NULL) {
+    return;
+  }
+
+  while ((dirp = readdir(dp)) != NULL) {
+    if (strncmp(dirp->d_name, ".vyattamodify_", 14) == 0) {
+      struct stat tmp;
+      if (stat((WebGUI::VYATTA_MODIFY_DIR + string(dirp->d_name)).c_str(), &tmp) == 0) {
+	time_t t = time(NULL);
+	string id_str = string(dirp->d_name).substr(14,24);
+	char buf[80];
+	sprintf(buf,"%lu",tmp.st_mtime);
+	sprintf(buf,"%lu",WebGUI::SESSION_TIMEOUT_WINDOW);
+	sprintf(buf, "%lu",t);
+	if ((tmp.st_mtime + WebGUI::SESSION_TIMEOUT_WINDOW) < (unsigned)t) {
+	  WebGUI::remove_session(id_str);
+	  //have to clean up session at this point!!!!!!!!
+	}
+      }
+    }
+  }
+  closedir(dp);
 }
 

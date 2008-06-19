@@ -8,13 +8,16 @@ using namespace std;
 const unsigned long WebGUI::ID_START = (unsigned long)2147483648;
 const unsigned long WebGUI::ID_RANGE = (unsigned long)2147483647;
 
+const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = (unsigned long)1800;
+
 const string WebGUI::ACTIVE_CONFIG_DIR = "/opt/vyatta/config/active";
 const string WebGUI::CONFIG_TMP_DIR = "/opt/vyatta/config/tmp/tmp_";
 const string WebGUI::LOCAL_CHANGES_ONLY = "/tmp/changes_only_";
 const string WebGUI::LOCAL_CONFIG_DIR = "/opt/vyatta/config/tmp/new_config_";
 const string WebGUI::CFG_TEMPLATE_DIR = "/opt/vyatta/share/vyatta-cfg/templates";
 const string WebGUI::COMMIT_LOCK_FILE = "/opt/vyatta/config/.lock";
-const string WebGUI::VYATTA_MODIFY_FILE = "/opt/vyatta/config/tmp/.vyattamodify_";
+const string WebGUI::VYATTA_MODIFY_DIR = "/opt/vyatta/config/tmp/";
+const string WebGUI::VYATTA_MODIFY_FILE = WebGUI::VYATTA_MODIFY_DIR + ".vyattamodify_";
 
 char const* WebGUI::ErrorDesc[8] = {" ",
 				    "request cannot be parsed",
@@ -101,3 +104,46 @@ WebGUI::trim_whitespace(const std::string &src)
   }
   return str;
 }
+
+/**
+ *
+ **/
+void
+WebGUI::remove_session(unsigned long id)
+{
+  char buf[40];
+  sprintf(buf, "%lu", id);
+  string val(buf);
+  remove_session(val);
+}
+
+/**
+ *
+ **/
+void
+WebGUI::discard_session(string &id)
+{
+  string cmd,stdout;
+  cmd = "sudo umount " + WebGUI::LOCAL_CONFIG_DIR + id;
+  cmd += ";rm -fr " + WebGUI::LOCAL_CHANGES_ONLY + id;
+  cmd += ";mkdir -p " + WebGUI::LOCAL_CHANGES_ONLY + id;
+  execute(cmd,stdout);
+
+}
+
+/**
+ *
+ **/
+void
+WebGUI::remove_session(string &id)
+{
+  string cmd,stdout;
+  cmd = "sudo umount " + WebGUI::LOCAL_CONFIG_DIR + id;
+  execute(cmd, stdout);
+  cmd = "rm -fr " + WebGUI::LOCAL_CHANGES_ONLY + id + " 2>/dev/null";
+  cmd += ";rm -fr " + WebGUI::CONFIG_TMP_DIR + id + " 2>/dev/null";
+  cmd += ";rm -fr " + WebGUI::LOCAL_CONFIG_DIR + id + " 2>/dev/null";
+  cmd += ";rm -f " + WebGUI::VYATTA_MODIFY_FILE + id + " 2>/dev/null";
+  execute(cmd, stdout);
+}
+

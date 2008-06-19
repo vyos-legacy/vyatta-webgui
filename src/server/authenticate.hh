@@ -16,7 +16,14 @@ public:
   create_new_session();
 
 private:
-  unsigned long test_auth(const std::string &username, const std::string &password);
+  bool
+  test_auth(const std::string &username, const std::string &password);
+
+  unsigned long
+  reuse_session();
+
+  unsigned long
+  create_new_id();
 };
 
 #endif //__AUTHENTICATE_HH__

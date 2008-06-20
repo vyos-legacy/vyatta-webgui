@@ -309,21 +309,24 @@ Ext.onReady(function(){
       }
     }
     
-    var leafSingleTxtHandler = function(node) {
+    var leafSingleTxtHandler = function(node, hlabel, buttons) {
       var ival = undefined;
       if (node.attributes.values != undefined) {
         ival = node.attributes.values[0];
       }
       var field = new Ext.form.TextField({
-        labelSeparator: '',
         width: 300,
-        value: ival,
-        fieldLabel: node.text
+        value: ival
       });
+      var ia = [ field ];
+      if (hlabel != undefined) {
+        ia[ia.length] = hlabel;
+      }
       var fieldP = new Ext.Panel({
-        layout: 'form',
-        border: false,
-        items: [ field ]
+        frame: true,
+        title: node.text,
+        items: ia,
+        buttons: buttons
       });
       editor.add(fieldP);
 
@@ -332,25 +335,28 @@ Ext.onReady(function(){
       }
     }
 
-    var leafSingleU32Handler = function(node) {
+    var leafSingleU32Handler = function(node, hlabel, buttons) {
       var ival = undefined;
       if (node.attributes.values != undefined) {
         ival = node.attributes.values[0];
       }
       var field = new Ext.form.NumberField({
-        labelSeparator: '',
         width: 300,
         allowNegative: false,
         allowDecimals: false,
         maxValue: (Math.pow(2, 32) - 1),
         maskRe: /^\d+$/,
-        value: ival,
-        fieldLabel: node.text
+        value: ival
       });
+      var ia = [ field ];
+      if (hlabel != undefined) {
+        ia[ia.length] = hlabel;
+      }
       var fieldP = new Ext.Panel({
-        layout: 'form',
-        border: false,
-        items: [ field ]
+        title: node.text,
+        frame: true,
+        items: ia,
+        buttons: buttons
       });
       editor.add(fieldP);
 
@@ -376,7 +382,7 @@ Ext.onReady(function(){
       }
     }
 
-    var leafSingleEnumHandler = function(node, values) {
+    var leafSingleEnumHandler = function(node, values, hlabel, buttons) {
       var ival = undefined;
       if (node.attributes.values != undefined) {
         ival = node.attributes.values[0];
@@ -397,13 +403,17 @@ Ext.onReady(function(){
         triggerAction: 'all',
         selectOnFocus: true,
         width: 300,
-        value: ival,
-        fieldLabel: node.text
+        value: ival
       });
+      var ia = [ field ];
+      if (hlabel != undefined) {
+        ia[ia.length] = hlabel;
+      }
       var fieldP = new Ext.Panel({
-        layout: 'form',
-        border: false,
-        items: [ field ]
+        title: node.text,
+        frame: true,
+        items: ia,
+        buttons: buttons
       });
       editor.add(fieldP);
 
@@ -412,8 +422,8 @@ Ext.onReady(function(){
       }
     }
 
-    var leafSingleBoolHandler = function(node) {
-      leafSingleEnumHandler(node, [ 'true', 'false' ]);
+    var leafSingleBoolHandler = function(node, hlabel, buttons) {
+      leafSingleEnumHandler(node, [ 'true', 'false' ], hlabel, buttons);
     }
 
     var getNodePathStr = function(node) {
@@ -542,27 +552,16 @@ Ext.onReady(function(){
     }
     
     var leafSingleHandler = function(node) {
-      if (node.attributes.enums != undefined) {
-        leafSingleEnumHandler(node, node.attributes.enums);
-      } else if (node.attributes.type == undefined) {
-        // type-less node
-      } else if (node.attributes.type == 'bool') {
-        leafSingleBoolHandler(node);
-      } else if (node.attributes.type == 'u32') {
-        leafSingleU32Handler(node);
-      } else { //if (node.attributes.type == 'text') {
-        // XXX treat everything else as text for now
-        leafSingleTxtHandler(node);
-      }
-     
       // help string
+      var hlabel = null;
       if (node.attributes.help != undefined) {
-        var label = new Ext.form.Label({
+        hlabel = new Ext.form.Label({
           text: node.attributes.help
         });
-        editor.add(label);
       }
 
+      // buttons
+      var buttons = [ ];
       /*
        * buttons:
        *   create:
@@ -585,7 +584,7 @@ Ext.onReady(function(){
       if (node.attributes.configured == undefined
           || node.attributes.configured == 'delete') {
         // not configured or deleted
-        editor.add(new Ext.Button({
+        buttons[buttons.length] = new Ext.Button({
           text: 'Create',
           handler: function() {
             if (node.attributes.type == undefined) {
@@ -598,12 +597,12 @@ Ext.onReady(function(){
                              ], node, true);
             }
           }
-        }));
+        });
       } else {
         // active or set
         if (node.attributes.type != undefined) {
           // only add Update button if typed
-          editor.add(new Ext.Button({
+          buttons[buttons.length] = new Ext.Button({
             text: 'Update',
             handler: function() {
               if (node.attributes.type == undefined) {
@@ -615,19 +614,34 @@ Ext.onReady(function(){
                                ], node);
               }
             }
-          }));
+          });
         }
-        editor.add(new Ext.Button({
+        buttons[buttons.length] = new Ext.Button({
           text: 'Delete',
           handler: function() {
             sendCommandCli([ 'delete ' + getConfigPathStr(node) ], node);
           }
-        }));
+        });
       }
+      
+      if (node.attributes.enums != undefined) {
+        leafSingleEnumHandler(node, node.attributes.enums, hlabel, buttons);
+      } else if (node.attributes.type == undefined) {
+        // type-less node
+        // XXX needs a handler
+      } else if (node.attributes.type == 'bool') {
+        leafSingleBoolHandler(node, hlabel, buttons);
+      } else if (node.attributes.type == 'u32') {
+        leafSingleU32Handler(node, hlabel, buttons);
+      } else { //if (node.attributes.type == 'text') {
+        // XXX treat everything else as text for now
+        leafSingleTxtHandler(node, hlabel, buttons);
+      }
+     
       editor.doLayout();
     }
 
-    var leafMultiTxtHandler = function(node) {
+    var leafMultiTxtHandler = function(node, hlabel, buttons) {
       var vala = [ ];
       var gridStore = new Ext.data.SimpleStore({
         fields: [
@@ -680,14 +694,24 @@ Ext.onReady(function(){
               gridStore.remove(smod.getSelected());
             }
           })
-        ],
-        title: node.text
+        ]
       });
       for (var i = 0; i < vala.length; i++) {
         var v = new GridT({ value: vala[i] });
         gridStore.add(v);
       }
-      editor.add(grid);
+
+      var ia = [ grid ];
+      if (hlabel != undefined) {
+        ia[ia.length] = hlabel;
+      }
+      var fieldP = new Ext.Panel({
+        title: node.text,
+        frame: true,
+        items: ia,
+        buttons: buttons
+      });
+      editor.add(fieldP);
       
       node.getValsFunc = function() {
         var ret = [ ];
@@ -698,7 +722,7 @@ Ext.onReady(function(){
       }
     }
 
-    var leafMultiU32Handler = function(node) {
+    var leafMultiU32Handler = function(node, hlabel, buttons) {
       var vala = [ ];
       var gridStore = new Ext.data.SimpleStore({
         fields: [
@@ -756,14 +780,24 @@ Ext.onReady(function(){
               gridStore.remove(smod.getSelected());
             }
           })
-        ],
-        title: node.text
+        ]
       });
       for (var i = 0; i < vala.length; i++) {
         var v = new GridT({ value: vala[i] });
         gridStore.add(v);
       }
-      editor.add(grid);
+      
+      var ia = [ grid ];
+      if (hlabel != undefined) {
+        ia[ia.length] = hlabel;
+      }
+      var fieldP = new Ext.Panel({
+        title: node.text,
+        frame: true,
+        items: ia,
+        buttons: buttons
+      });
+      editor.add(fieldP);
       
       node.getValsFunc = function() {
         var ret = [ ];
@@ -774,7 +808,7 @@ Ext.onReady(function(){
       }
     }
 
-    var leafMultiEnumHandler = function(node, values) {
+    var leafMultiEnumHandler = function(node, values, hlabel, buttons) {
       var vala = [ ];
       var gridStore = new Ext.data.SimpleStore({
         fields: [
@@ -846,15 +880,25 @@ Ext.onReady(function(){
               gridStore.remove(smod.getSelected());
             }
           })
-        ],
-        title: node.text
+        ]
       });
       for (var i = 0; i < vala.length; i++) {
         var v = new GridT({ value: vala[i] });
         gridStore.add(v);
       }
-      editor.add(grid);
-
+      
+      var ia = [ grid ];
+      if (hlabel != undefined) {
+        ia[ia.length] = hlabel;
+      }
+      var fieldP = new Ext.Panel({
+        title: node.text,
+        frame: true,
+        items: ia,
+        buttons: buttons
+      });
+      editor.add(fieldP);
+      
       /* XXX combo */
       /*
       var vala = [ ];
@@ -930,23 +974,16 @@ Ext.onReady(function(){
     }
 
     var leafMultiHandler = function(node) {
-      if (node.attributes.enums != undefined) {
-        leafMultiEnumHandler(node, node.attributes.enums);
-      } else if (node.attributes.type == 'u32') {
-        leafMultiU32Handler(node);
-      } else { //if (node.attributes.type == 'text') {
-        // XXX treat everything else as text for now
-        leafMultiTxtHandler(node);
-      }
-     
       // help string
+      var hlabel = null;
       if (node.attributes.help != undefined) {
-        var label = new Ext.form.Label({
+        hlabel = new Ext.form.Label({
           text: node.attributes.help
         });
-        editor.add(label);
       }
 
+      // buttons
+      var buttons = [ ];
       /*
        *   ! configured: "create"
        *   configured-active: "delete", "update" (multi must be typed)
@@ -956,7 +993,7 @@ Ext.onReady(function(){
       if (node.attributes.configured == undefined
           || node.attributes.configured == 'delete') {
         // not configured or deleted
-        editor.add(new Ext.Button({
+        buttons[buttons.length] = new Ext.Button({
           text: 'Create',
           handler: function() {
             if (node.getValsFunc != undefined) {
@@ -969,10 +1006,10 @@ Ext.onReady(function(){
               sendCommandCli(varr, node, true);
             }
           }
-        }));
+        });
       } else {
         // active or set
-        editor.add(new Ext.Button({
+        buttons[buttons.length] = new Ext.Button({
           text: 'Update',
           handler: function() {
             if (node.getValsFunc != undefined) {
@@ -985,14 +1022,24 @@ Ext.onReady(function(){
               sendCommandCli(varr, node);
             }
           }
-        }));
-        editor.add(new Ext.Button({
+        });
+        buttons[buttons.length] = new Ext.Button({
           text: 'Delete',
           handler: function() {
             sendCommandCli([ 'delete ' + getConfigPathStr(node) ], node);
           }
-        }));
+        });
       }
+
+      if (node.attributes.enums != undefined) {
+        leafMultiEnumHandler(node, node.attributes.enums, hlabel, buttons);
+      } else if (node.attributes.type == 'u32') {
+        leafMultiU32Handler(node, hlabel, buttons);
+      } else { //if (node.attributes.type == 'text') {
+        // XXX treat everything else as text for now
+        leafMultiTxtHandler(node, hlabel, buttons);
+      }
+     
       editor.doLayout();
     }
 

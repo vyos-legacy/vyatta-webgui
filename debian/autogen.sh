@@ -24,7 +24,9 @@ if [ -d .git ] ; then
     test "x$sha" = "x" && sha=00000000
 
     echo "$url#$branch-$sha" >> ChangeLog
-
+else
+	#TODO: debian/changelog should actually be converted in format to debian ChangeLog
+	ln -s debian/changelog ChangeLog
 fi
 
 rm -rf config

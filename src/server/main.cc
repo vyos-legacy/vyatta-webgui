@@ -7,6 +7,7 @@
  */
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <signal.h>
 #include <syslog.h>
 #include <stdio.h>
@@ -85,9 +86,10 @@ int main(int argc, char* argv[])
       exit(0);
     }
   }
-
   if (daemon) {
+    int s(0);
     if (fork() != 0) {
+      wait(&s);
       exit(0);
     }
   }
@@ -100,7 +102,9 @@ int main(int argc, char* argv[])
   //crack open sessionid, match and get guid/uid
   //child sets guid/uid
   //parent dies
+  int s(0);
   if (fork() != 0) {
+    wait(&s);
     exit(0); //always fork and kill parent
   }
 

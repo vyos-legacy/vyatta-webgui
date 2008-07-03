@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <dirent.h>
+#include <string.h>
 
 #include <string>
 #include "systembase.hh"
@@ -18,7 +19,6 @@ Command::~Command()
 void
 Command::execute_command()
 {
-  char buf[80];
   Message msg = _proc->get_msg();
   //parses all template nodes (or until depth to provide full template tree
   //now parse the request to form: attribute: mode, attribute: depth, value: root
@@ -92,7 +92,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   string tmp = cmd;
 
   //as a security precaution, lop off everything past the ";"
-  int pos = tmp.find(";");
+  size_t pos = tmp.find(";");
   if (pos != string::npos) {
     tmp = tmp.substr(0,pos);
   }

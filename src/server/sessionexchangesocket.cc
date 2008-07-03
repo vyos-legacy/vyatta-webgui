@@ -3,6 +3,7 @@
 #include <netinet/in.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
+#include <string.h>
 #include <syslog.h>
 #include <errno.h>
 #include <iostream>

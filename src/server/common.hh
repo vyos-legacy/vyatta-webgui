@@ -18,7 +18,7 @@ public:
   const static std::string VYATTA_MODIFY_DIR;
   const static std::string VYATTA_MODIFY_FILE;
 
-  typedef enum Error {SUCCESS = 0,
+  enum Error {SUCCESS = 0,
 		      MALFORMED_REQUEST,
 		      AUTHENTICATION_FAILURE,
 		      SESSION_FAILURE,
@@ -31,20 +31,20 @@ public:
   static char const *ErrorDesc[];
 
 
-  typedef enum MsgType {NEWSESSION = 0,
+  enum MsgType {NEWSESSION = 0,
 			CLICMD,
 			GETCONFIG,
 			CLOSESESSION,
 			NOTIFICATION};
 
-  typedef enum ParseNode {EMPTY = 0,
+  enum ParseNode {EMPTY = 0,
 			  NEWSESSION_USER,
 			  NEWSESSION_PSWD,
 			  GETCONFIG_ID,
 			  GETCONFIG_NODE,
 			  CLICMD_ID};
 
-  typedef enum NodeType {NONE,
+  enum NodeType {NONE,
 			 TEXT,
 			 IPV4,
 			 IPV4NET,
@@ -54,7 +54,7 @@ public:
 			 BOOL,
 			 MACADDR};
 
-  typedef enum NodeState {ACTIVE,
+  enum NodeState {ACTIVE,
 			  DELETE,
 			  SET};
 

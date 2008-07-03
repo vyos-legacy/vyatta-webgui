@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <string>
 #include "common.hh"
@@ -59,7 +60,7 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
       char *buf = NULL;
       size_t len = 0;
       size_t read_len = 0;
-      while ((read_len = getline(&buf, &len, f)) != -1) {
+      while ((read_len = getline(&buf, &len, f)) != (unsigned)-1) {
 	//	cout << "WebGUI::execute(): " << string(buf) << ", " << len << ", " << read_len << endl;
 	stdout += string(buf) + " ";
       }

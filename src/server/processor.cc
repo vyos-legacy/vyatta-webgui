@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <sys/types.h>
+#include <string.h>
 #include <dirent.h>
 #include <expat.h>
 #include <assert.h>

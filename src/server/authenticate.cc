@@ -65,7 +65,7 @@ Authenticate::create_new_session()
     string cmd;
     char buf[20];
     string stdout;
-    sprintf(buf, "%u", id);
+    sprintf(buf, "%lu", id);
 
     cmd = "mkdir -p " + WebGUI::ACTIVE_CONFIG_DIR;
     if (WebGUI::execute(cmd, stdout) != 0) {
@@ -127,7 +127,7 @@ Authenticate::create_new_session()
     //now generate successful response
     sprintf(buf, "%d", WebGUI::SUCCESS);
     char buf1[40];
-    sprintf(buf1, "%u", id);
+    sprintf(buf1, "%lu", id);
     string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code><msg/></error></vyatta>";
     _proc->set_response(tmpstr);
     

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
 #include <unistd.h>
 #include <dirent.h>
 #include "rl_str_proc.hh"
@@ -313,7 +314,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	    string tmp = *b;
 
 
-	    int pos;
+	    size_t pos;
 	    if ((pos = tmp.find(";")) != string::npos) {
 	      tmp = tmp.substr(0,pos);
 	      end = true;
@@ -380,7 +381,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       //if stdout is multiline use '\n' delimiter otherwise use space
       string delimit = " ";
       
-      int pos = stdout.find('\n');
+      size_t pos = stdout.find('\n');
 
       if (pos != stdout.rfind('\n')) {
 	delimit = '\n';

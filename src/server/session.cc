@@ -1,6 +1,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
 #include <pwd.h>
 #include <unistd.h>
 #include <dirent.h>

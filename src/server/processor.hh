@@ -76,6 +76,7 @@ public:
   WebGUI::Error _error_code;
   std::string _custom_error_msg;
   std::string _custom_response;
+  std::string _token;
 
 private:
   unsigned long _id;

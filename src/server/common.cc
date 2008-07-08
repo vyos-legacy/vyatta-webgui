@@ -33,11 +33,11 @@ char const* WebGUI::ErrorDesc[8] = {" ",
  *
  **/
 std::string
-WebGUI::generate_response(Error err)
+WebGUI::generate_response(string &token, Error err)
 {
     char buf[40];
     sprintf(buf, "%d", err);
-    return ("<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[err])+"</msg></error></vyatta>");
+    return ("<?xml version='1.0' encoding='utf-8'?><vyatta><error><token>"+token+"</token><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[err])+"</msg></error></vyatta>");
 }
 
 /**

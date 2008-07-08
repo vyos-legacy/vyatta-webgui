@@ -189,6 +189,16 @@ data_hndl(void *data, const XML_Char *s, int len) {
     }
     free(buf);
   }
+  else if (m->_type == WebGUI::TOKEN) {
+    char* buf = (char*)malloc( len + sizeof( char ) );
+    memset( buf, '\0', len + sizeof( char ) );
+    strncpy( buf, s, len );
+
+    string str = string(buf);
+    str = WebGUI::trim_whitespace(str);
+    m->_token = str;
+    free(buf);
+  }
 }
 
 /**
@@ -206,6 +216,9 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   }
   else if (strcmp(el, "auth") == 0) {
     m->_type = WebGUI::NEWSESSION; 
+  }
+  else if (strcmp(el, "token") == 0) {
+    m->_type = WebGUI::TOKEN;
   }
   
   if (m->_type == WebGUI::GETCONFIG) {
@@ -292,7 +305,7 @@ Processor::parse()
   if (!XML_Parse(_xml_parser, _msg._request, strlen(_msg._request), true)) {
     char buf[20];
     sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</msg></error></vyatta>";
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_msg._token+"</token><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</msg></error></vyatta>";
     return false;
   }
 
@@ -396,13 +409,13 @@ Processor::get_response()
   else if (_msg._custom_error_msg.empty() == false) {
     char buf[20];
     sprintf(buf, "%d", _msg._error_code);
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+_msg._custom_error_msg+"</msg></error></vyatta>";
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><token>"+_msg._token+"</token><vyatta><error><code>"+string(buf)+"</code><msg>"+_msg._custom_error_msg+"</msg></error></vyatta>";
     return _msg._response;
   }
   else {
     char buf[20];
     sprintf(buf, "%d", _msg._error_code);
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[_msg._error_code])+"</msg></error></vyatta>";
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_msg._token+"</token><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[_msg._error_code])+"</msg></error></vyatta>";
   }
   return _msg._response;
 }

@@ -55,7 +55,7 @@ Configuration::get_full_level()
   string rel_tmpl_path;
   DIR *dp;
   struct dirent *dirp;
-  string out = "<?xml version='1.0' encoding='utf-8'?><vyatta>";
+  string out = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->get_msg()._token+"</token>";
 
   //first convert root request into template path
   StrProc str_proc(_proc->get_msg()._root_node, "/");

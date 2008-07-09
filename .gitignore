@@ -21,6 +21,7 @@ debian/vyatta-webgui.postinst
 debian/vyatta-webgui.postrm
 debian/vyatta-webgui.debhelper.log
 debian/files
+debian/vyatta-webgui.debhelper.log
 autom4te.cache
 config
 configure

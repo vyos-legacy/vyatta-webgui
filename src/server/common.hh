@@ -32,10 +32,11 @@ public:
 
 
   enum MsgType {NEWSESSION = 0,
-			CLICMD,
-			GETCONFIG,
-			CLOSESESSION,
-			NOTIFICATION};
+		CLICMD,
+		GETCONFIG,
+		CLOSESESSION,
+		NOTIFICATION,
+		TOKEN};
 
   enum ParseNode {EMPTY = 0,
 			  NEWSESSION_USER,
@@ -60,7 +61,7 @@ public:
 
 
   static std::string
-  generate_response(Error err);
+  generate_response(std::string &token, Error err);
 
   /**
    *

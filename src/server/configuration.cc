@@ -90,7 +90,6 @@ Configuration::get_full_op_level()
   //call get_template_node on each node
   //build out response...
 
-  map<string,WebGUI::NodeState> dir_coll = get_conf_dir(rel_config_path);
   string tmpl_path = WebGUI::OP_TEMPLATE_DIR + "/" + rel_tmpl_path;
   if ((dp = opendir(tmpl_path.c_str())) == NULL) {
     out += "</vyatta>";
@@ -117,10 +116,40 @@ Configuration::get_full_op_level()
       }
       out += tmpl_params.get_xml(value);
       out += "</node>";
-
-
     }
+
   }
+
+  //now handle multinodes here!
+  TemplateParams multi_params;
+  //only do this once!!!
+  string tmp = WebGUI::OP_TEMPLATE_DIR + "/" + rel_tmpl_path + "/node.tag";
+  get_template_node(tmp, multi_params);
+  string tag_node_str = multi_params.get_xml();
+  if (tag_node_str.empty() == false) {
+    //escape out "%2F" here for non-terminal multi-nodes
+    /*
+    string str = string(m_iter->first);
+    str = WebGUI::mass_replace(str, "%2F", "/");
+    out += string("<node name='") + str + string("'>");
+    */
+    out += string("<node name='multi'>");
+    out += tag_node_str;
+    /*
+    string value;
+    if (multi_params._end == true) {
+      string tmp = rel_config_path + "/" + m_iter->first + "/node.val";
+      string node_name("value");
+      parse_value(tmp, node_name, value);
+      }*/
+    out += "</node>";
+  }
+
+
+
+
+
+
   closedir(dp);
 
   out += "</vyatta>";

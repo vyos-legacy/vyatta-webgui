@@ -257,7 +257,7 @@ Session::update_session()
     return false;
   }
 
-  string update_file = "touch " + file;
+  string update_file = "sudo touch " + file;
 
   //now touch session time mark file'
   WebGUI::execute(update_file, stdout);
@@ -273,7 +273,7 @@ Session::start_session()
   //get timestamp from file
   string file = WebGUI::VYATTA_MODIFY_FILE + _processor->get_msg().id();
 
-  string update_file = "touch " + file;
+  string update_file = "sudo touch " + file;
   //now touch session time mark file
   string stdout;
   WebGUI::execute(update_file,stdout);

@@ -33,10 +33,15 @@ public:
 class TemplateParams
 {
 public:
-  TemplateParams() : _multi(false), _end(false), _type(WebGUI::NONE) {}
+  TemplateParams() : 
+    _multi(false), 
+    _end(false), 
+    _type(WebGUI::NONE), 
+    _conf_mode(WebGUI::NOATTR) {}
   bool _multi;
   bool _end;
   WebGUI::NodeType _type;
+  WebGUI::Attributes _conf_mode;
   std::string _help;
   std::string _default;
   std::vector<std::string> _enum;
@@ -67,6 +72,7 @@ public:
   char *_request;
   std::string _response;
   WebGUI::MsgType _type;
+  WebGUI::Attributes _conf_mode;
   WebGUI::ParseNode _node;
   std::string _root_node; //will want to wrap this in a type specific container
   int _mode;

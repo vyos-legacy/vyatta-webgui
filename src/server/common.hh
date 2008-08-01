@@ -14,6 +14,7 @@ public:
   const static std::string LOCAL_CHANGES_ONLY;
   const static std::string LOCAL_CONFIG_DIR;
   const static std::string CFG_TEMPLATE_DIR;
+  const static std::string OP_TEMPLATE_DIR;
   const static std::string COMMIT_LOCK_FILE;
   const static std::string VYATTA_MODIFY_DIR;
   const static std::string VYATTA_MODIFY_FILE;
@@ -39,11 +40,14 @@ public:
 		TOKEN};
 
   enum ParseNode {EMPTY = 0,
-			  NEWSESSION_USER,
-			  NEWSESSION_PSWD,
-			  GETCONFIG_ID,
-			  GETCONFIG_NODE,
-			  CLICMD_ID};
+		  NEWSESSION_USER,
+		  NEWSESSION_PSWD,
+		  GETCONFIG_ID,
+		  GETCONFIG_NODE,
+		  CLICMD_ID};
+
+  enum Attributes {NOATTR = 0,
+		   OP};
 
   enum NodeType {NONE,
 			 TEXT,

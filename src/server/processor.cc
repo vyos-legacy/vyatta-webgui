@@ -210,6 +210,14 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   Message *m = (Message*)data;
   if (strcmp(el,"configuration") == 0) {
     m->_type = WebGUI::GETCONFIG; 
+
+    //looking for op mode attribute
+    for (int i=0;attr[i];i+=2) {
+      if (strcmp(attr[i],"mode") == 0 &&
+	  strcmp(attr[i+1],"op") == 0) {
+	m->_conf_mode = WebGUI::OP;
+      }
+    }
   }
   else if (strcmp(el, "command") == 0) {
     m->_type = WebGUI::CLICMD; 

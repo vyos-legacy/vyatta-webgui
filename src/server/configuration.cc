@@ -133,7 +133,7 @@ Configuration::get_full_op_level()
     str = WebGUI::mass_replace(str, "%2F", "/");
     out += string("<node name='") + str + string("'>");
     */
-    out += string("<node name='multi'>");
+    out += string("<node name='node.tag'>");
     out += tag_node_str;
     /*
     string value;

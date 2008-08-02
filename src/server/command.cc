@@ -111,6 +111,14 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     WebGUI::discard_session(tmp);
     return string("");
   }
+  else {
+    //treat this as an op mode command
+    string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
+    string stdout;
+    WebGUI::execute(opmodecmd,stdout,true);
+    stdout = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
+    return stdout;
+  }
 
   command += ";" + tmp;
 

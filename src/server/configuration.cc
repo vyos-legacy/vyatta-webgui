@@ -464,7 +464,6 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
     fclose(fp);
   }
 
-
   //infer end node from leaf
   if (params._type != WebGUI::NONE && params._multi == false) {
     params._end = true;

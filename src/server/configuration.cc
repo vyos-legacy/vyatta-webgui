@@ -43,7 +43,7 @@ Configuration::get_config()
 
   //new combined mode here
   string foobar;
-  if (_proc->get_msg()._conf_mode != WebGUI::NOATTR) {
+  if (_proc->get_msg()._conf_mode == WebGUI::OP) {
     foobar = get_full_op_level();
   }
   else {

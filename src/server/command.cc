@@ -116,7 +116,8 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
     string stdout;
     WebGUI::execute(opmodecmd,stdout,true);
-    stdout = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
+    stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
+    stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
     return stdout;
   }
 

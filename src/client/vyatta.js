@@ -165,6 +165,9 @@ Ext.onReady(function(){
     });
 
     var jsonGenNode = function(node, nn) {
+      if (nn == 'node.tag') {
+        nn = '&lt;value&gt;';
+      }
       var str = "{text:'" + nn + "',uiProvider:'node'";
       var q = Ext.DomQuery;
       var nLeaf = q.selectNode('terminal', node);
@@ -229,8 +232,12 @@ Ext.onReady(function(){
           return;
         }
         if(this.fireEvent("beforeload", this, node, callback) !== false){
+            var cstr = "<vyatta><configuration><id>";
+            if (this.isOpMode) {
+              cstr = "<vyatta><configuration mode='op'><id>";
+            }
             var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                         + "<vyatta><configuration><id>" + sid + "</id>\n"
+                         + cstr + sid + "</id>\n"
                          + "<node>" + this.baseParams.nodepath + "</node>\n"
                          + "</configuration></vyatta>\n";
             this.transId = Ext.Ajax.request({
@@ -274,15 +281,9 @@ Ext.onReady(function(){
     });
 
     var tree = new Ext.tree.TreePanel({
-        region: 'west',
-        split: true,
-        margins: '5 0 5 5',
-        width: 300,
-        minSize: 200,
-        maxSize: 400,
         border: true,
         autoScroll: true,
-        title: 'Browse',
+        title: 'Configuration',
         pathSeparator: ' ',
        
         loader: new MyTreeLoader({
@@ -294,6 +295,7 @@ Ext.onReady(function(){
             }
         }),
 
+        rootVisible: false,
         root: new Ext.tree.AsyncTreeNode({
           id: 'root',
           cls: 'v-node-active',
@@ -301,7 +303,31 @@ Ext.onReady(function(){
         })
     });
 
+    var otree = new Ext.tree.TreePanel({
+        border: true,
+        autoScroll: true,
+        title: 'Operation',
+        pathSeparator: ' ',
+       
+        loader: new MyTreeLoader({
+            clearOnLoad: true,
+            requestMethod: 'POST',
+            dataUrl: '/cgi-bin/webgui-wrap',
+            uiProviders:{
+                'node': VyattaNodeUI
+            }
+        }),
+
+        rootVisible: false,
+        root: new Ext.tree.AsyncTreeNode({
+          id: 'root',
+          cls: 'v-node-active',
+          text: 'Operation'
+        })
+    });
+
     var clearEditor = function() {
+      editor.opVal = undefined;
       if (editor.items != undefined) {
         while (editor.items.getCount() > 0) {
           editor.remove(editor.items.itemAt(0));
@@ -1060,6 +1086,16 @@ Ext.onReady(function(){
         node.collapseChildNodes(true);
       }
     );
+    
+    otree.getLoader().on('beforeload',
+      function(loader, node) {
+        var str = node.getPath('text');
+        var path = str.replace(/^ Operation/, '');
+        path = path.replace('&lt;value&gt;', 'node.tag', 'g');
+        loader.baseParams.nodepath = path;
+      }
+    );
+    otree.getLoader().isOpMode = true;
 
     var interHandler = function(node) {
       // do nothing for root
@@ -1182,11 +1218,198 @@ Ext.onReady(function(){
 
     tree.on('click', nodeClickHandler);
 
+    var opClickHandler = function(node, e) {
+      clearEditor();
+      var str = node.getPath('text');
+      var path = str.replace(/^ Operation/, '');
+      path = path.replace('&lt;value&gt;', '<value>', 'g');
+      var label = new Ext.form.Label({
+        text: path
+      });
+      editor.add(label);
+
+      var narr = [ ];
+      var n = node;
+      while (n.text != 'Operation') {
+        if (n.text == '&lt;value&gt;') {
+          narr.push(n);
+        }
+        n = n.parentNode;
+      }
+
+      while (narr.length > 0) {
+        n = narr.pop();
+        var hlabel = undefined;
+        if (n.attributes.help != undefined) {
+          hlabel = new Ext.form.Label({
+            text: n.attributes.help
+          });
+        }
+        if (n.attributes.enums != undefined) {
+          var values = n.attributes.enums;
+          /* TODO: backend needs to return proper enums */
+          /*var wild = filterWildcard(values);
+          var isEditable = false;
+          if (wild != undefined) {
+            isEditable = true;
+            values = wild;
+          }*/
+          var field = new Ext.form.ComboBox({
+            mode: 'local',
+            store: values,
+            displayField: 'value',
+            emptyText: 'Select a valid value...',
+            labelSeparator: '',
+            //editable: isEditable,
+            editable: true,
+            triggerAction: 'all',
+            selectOnFocus: true,
+            width: 300
+          });
+          var ia = [ field ];
+          if (hlabel != undefined) {
+            ia[ia.length] = hlabel;
+          }
+          var fieldP = new Ext.Panel({
+            frame: true,
+            items: ia
+          });
+          editor.add(fieldP);
+
+          n.getValFunc = function() {
+            return field.getValue();
+          }
+        } else {
+          var field = new Ext.form.TextField({
+            width: 300
+          });
+          var ia = [ field ];
+          if (hlabel != undefined) {
+            ia[ia.length] = hlabel;
+          }
+          var fieldP = new Ext.Panel({
+            frame: true,
+            items: ia
+          });
+          editor.add(fieldP);
+
+          n.getValFunc = function() {
+            return field.getValue();
+          }
+        }
+      }
+
+      var opCmdWait = null;
+
+      var rbut = new Ext.Button({
+        text: 'Run',
+        handler: function() {
+          var narr = [ ];
+          var n = node;
+          while (n.text != 'Operation') {
+            if (n.text == '&lt;value&gt;') {
+              narr.push(n.getValFunc());
+            } else {
+              narr.push(n.text);
+            }
+            n = n.parentNode;
+          }
+
+          var str = '';
+          while (narr.length > 0) {
+            var c = narr.pop();
+            str += (c + ' ');
+          }
+
+          var sid = getSessionId();
+          if (sid == 'NOTFOUND') {
+            // no sid. do nothing.
+            return;
+          }
+
+          opCmdWait = Ext.MessageBox.wait('Running operational command...',
+                                          'Operation');
+          
+          var opCmdCb = function(options, success, response) {
+            var xmlRoot = response.responseXML.documentElement;
+            var q = Ext.DomQuery;
+            var errmsg = 'Unknown error';
+            var success = true;
+            var err = q.selectNode('error', xmlRoot);
+            if (err == undefined) {
+              success = false;
+            } else {
+              var code = q.selectValue('code', err, 'UNKNOWN');
+              if (code == 'UNKNOWN') {
+                success = false;
+              } else { //if (code != 0) {
+                // TODO: backend doesn't return correct code yet
+                success = true;
+                var msg = q.selectValue('msg', err, 'UNKNOWN');
+                if (msg != 'UNKNOWN') {
+                  errmsg = msg;
+                }
+              }
+            }
+
+            if (opCmdWait != null) {
+              opCmdWait.hide();
+            }
+
+            if (success) {
+              var mlbl =  new Ext.form.TextArea({
+                width: 600,
+                height: 500,
+                style: 'font-family:monospace',
+                value: errmsg
+              });
+              if (editor.opVal != undefined) {
+                editor.remove(editor.opVal);
+              }
+              editor.opVal = mlbl;
+              editor.add(mlbl);
+              editor.doLayout();
+            } else {
+              Ext.MessageBox.alert('Operation',
+                                   "Operational command failed:\n"
+                                   + errmsg);
+            }
+          }
+
+          /* send request */
+          var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<vyatta><command><id>" + sid + "</id>\n"
+                       + "<statement>" + str + "</statement>\n"
+                       + "</command></vyatta>\n";
+          var conn = new Ext.data.Connection({});
+          conn.request({
+            url: '/cgi-bin/webgui-wrap', method: 'POST',
+            xmlData: xmlstr,
+            callback: opCmdCb
+          });
+        }
+      });
+      editor.add(rbut);
+      editor.doLayout();
+    }
+    otree.on('click', opClickHandler);
+
+    var leftPanel = new Ext.Panel({
+        region: 'west',
+        split: true,
+        margins: '5 0 5 5',
+        width: 300,
+        minSize: 200,
+        maxSize: 400,
+        layout: 'accordion',
+        items: [ tree, otree ]
+    });
+
     var topPanel = new Ext.Panel({
       title: 'Vyatta Web GUI',
       collapsible: false,
       layout: 'border',
-      items: [ tree, editor ]
+      items: [ leftPanel, editor ]
     });
 
     var vp = new Ext.Viewport({

@@ -417,7 +417,7 @@ Processor::get_response()
   else if (_msg._custom_error_msg.empty() == false) {
     char buf[20];
     sprintf(buf, "%d", _msg._error_code);
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><token>"+_msg._token+"</token><vyatta><error><code>"+string(buf)+"</code><msg>"+_msg._custom_error_msg+"</msg></error></vyatta>";
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_msg._token+"</token><error><code>"+string(buf)+"</code><msg>"+_msg._custom_error_msg+"</msg></error></vyatta>";
     return _msg._response;
   }
   else {

@@ -13,8 +13,8 @@ public:
   void
   execute_command();
 
-  std::string
-  execute_single_command(std::string &cmd);
+  void
+  execute_single_command(std::string &cmd, std::string &resp, int &err);
 
 private:
   bool

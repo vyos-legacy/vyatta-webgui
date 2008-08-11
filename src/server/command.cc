@@ -40,24 +40,31 @@ Command::execute_command()
   vector<string> coll = _proc->get_msg()._command_coll;
   vector<string>::iterator iter = coll.begin();
   while (iter != coll.end()) {
-    string err = execute_single_command(*iter);
-    if (!err.empty()) {
+    string err;
+    int err_code;
+    execute_single_command(*iter, err, err_code);
+    if (err_code != 0) {
       //generate error response for this command and exit
       _proc->set_response(WebGUI::COMMAND_ERROR, err);
       return;
     }
+    else {
+      _proc->set_response(WebGUI::SUCCESS, err);
+    }
     ++iter;
   }
-  _proc->set_response(WebGUI::SUCCESS);
+
   return;
 }
 
 
-string
-Command::execute_single_command(string &cmd)
+void
+Command::execute_single_command(string &cmd, string &resp, int &err)
 {
   if (cmd.empty()) {
-    return string();
+    resp = "";
+    err = 1;
+    return;
   }
 
   //need to set up environment variables
@@ -109,24 +116,27 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   else if (strncmp(tmp.c_str(),"discard",7) == 0) {
     string tmp = _proc->get_msg().id();
     WebGUI::discard_session(tmp);
-    return string("");
+    resp = "";
+    err = 1;
+    return;
   }
   else {
     //treat this as an op mode command
     string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
     string stdout;
-    WebGUI::execute(opmodecmd,stdout,true);
+    err = WebGUI::execute(opmodecmd,stdout,true);
     stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
     stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
-    return stdout;
+    resp = stdout;
+    return;
   }
 
   command += ";" + tmp;
 
   string stdout;
-  WebGUI::execute(command,stdout,true);
+  err = WebGUI::execute(command,stdout,true);
   stdout = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
-  return stdout;
+  resp = stdout;
 }
 
 /**

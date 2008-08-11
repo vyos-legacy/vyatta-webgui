@@ -36,10 +36,12 @@ public:
   TemplateParams() : 
     _multi(false), 
     _end(false), 
+    _action(false),
     _type(WebGUI::NONE), 
     _conf_mode(WebGUI::NOATTR) {}
   bool _multi;
   bool _end;
+  bool _action;
   WebGUI::NodeType _type;
   WebGUI::Attributes _conf_mode;
   std::string _help;

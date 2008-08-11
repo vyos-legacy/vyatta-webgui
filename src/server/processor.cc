@@ -65,6 +65,11 @@ TemplateParams::get_xml(const string &value)
     out += "<multi/>";
   }
 
+  //currently only enabled for op mode, but can be used in a configuration context to denote an "active" node
+  if (_action) {
+    out += "<action/>";
+  }
+
   if (_end) {
     if (value.empty()) {
       out += "<terminal/>";

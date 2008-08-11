@@ -382,7 +382,6 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	else if (line.find("macaddr") != string::npos) {
 	  params._type = WebGUI::MACADDR;
 	}
-
       }
       else if (strncmp(line.c_str(),"help:",5) == 0 || mode == "help:") {
 	//need to escape out '<' and '>'
@@ -459,6 +458,10 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	}
 	mode = "allowed:";
 
+      }
+      //at some point expand this to conf mode to denote a node with an action associated with it.
+      else if (strncmp(line.c_str(),"run:",4) == 0) {
+	params._action = true;
       }
     }
     fclose(fp);

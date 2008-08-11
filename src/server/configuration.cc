@@ -506,6 +506,14 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 
 	if (iter->empty() == false) {
 	  string tmp = WebGUI::mass_replace(*iter, "<>", "*"); //handle special case for wildcard
+
+	  //strip out all values enclosed in <*>
+	  unsigned start_pos = 0;
+	  while ((start_pos = tmp.find("<")) != string::npos) {
+	    int end_pos = tmp.find(">");
+	    tmp = tmp.substr(0,start_pos) + tmp.substr(end_pos+1,tmp.length());
+	  }
+
 	  tmp = WebGUI::mass_replace(tmp, "<", "&#60;");
 	  tmp = WebGUI::mass_replace(tmp, ">", "&#62;");
 	  tmp = WebGUI::mass_replace(tmp, " & ", " &#38; ");
@@ -515,9 +523,10 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  if (tmp[0] == '"') {
 	    tmp = tmp.substr(1,tmp.length()-2);
 	  }
-
-
-	  params._enum.push_back(tmp);
+	  
+	  if (tmp.empty() == false) {
+	    params._enum.push_back(tmp);
+	  }
 	}
 	++iter;
       }

@@ -1,3 +1,271 @@
+vyatta-webgui (0.2) unstable; urgency=low
+
+	  3.1.3
+  [ Mark O'Brien ]
+
+
+  [ rbalocca ]
+  * Ignore a log file
+
+  [ Michael Larson ]
+  * added support for client defined token. this allows client side to
+    easily match responses to requests when generating async requests
+    from
+
+  [ rbalocca ]
+  * Syntax fixes to remove compiler warning and error messages
+
+  [ An-Cheng Huang ]
+  * change editor layout for leaf nodes
+
+  [ rbalocca ]
+  * Ignore more derived files
+  * Fix the debuil
+
+  [ Michael Larson ]
+  * need to wait for child process to complete.
+  * fixed cleanup of sessions after session timeout. Also reassign
+    current session if auth for same user is sent
+  * reworked response object. simplified and localized response
+    generation. also added main switch to remove response strings from
+    error codes to help
+  * process now forks to subprocess and sets uid/gid of user account.
+    since there is no op mode support
+
+  [ An-Cheng Huang ]
+  * add user authentication
+
+  [ Michael Larson ]
+  * cleanup on unused code.o
+
+  [ An-Cheng Huang ]
+  * allow configuring all leaf child nodes of a "folder node" on one
+    page.
+  * associate getters with node
+  * remove unused function
+  * provide visual indications to differentiate active, set, delete, and
+  * * use viewport at top level.
+  * initial implementation of Ext-based front-end
+  * add web gui packaging and clean up the build
+  * update .gitignore
+
+  [ Michael Larson ]
+  * changed /dev/random to /dev/urandom for generation of session id.
+  * added support for discard command. command should look like:
+    <statement>discard</statement>
+  * implement improved non-repeatable random value using /dev/random for
+    session id.
+  * convert configuration request path from being delimited by "/" to "
+    ". "/" can be used in representing
+  * fixed enum string representation for values delimited by line feeds
+    (i.e. time zones)
+  * added path env var to command
+  * convert <> in enum to *
+
+  [ Marat Nepomnyashy ]
+  * mockup05
+  * Multi-browser support.
+
+  [ Michael Larson ]
+  * added UNIONFS=unionfs to env variables on command.
+  * fixed error response packets--no dangling <error> node and structure
+    now contains:
+  * fix for commit failure--moved location of .vyattamodify out of
+    unionfs share structure.
+  * fixed missing configuration elements when parent node doesn't exist
+    in active configuration.
+
+  [ root ]
+  * fixed line feed cr in command response.xx
+
+  [ Michael Larson ]
+  * remove success string from command on success--unneeded.
+  * remove line feed from help strings
+  * modify authenticate command to return error response under all
+    failure modes.
+  * changed terminal node value from from "node" to "value" for flat
+    config request mode only.
+  * modified flat output to support nested terminal values along with
+    configuration state.
+  * support for session cleanup on timeout is now added. additional
+    error responses for unexpected requests.
+  * added full support config+template to single node request. this is
+    the default behavior is can be executed by
+  * config checking of full single node data pull--adding template
+    values next.
+
+  [ Marat Nepomnyashy ]
+  * Use 'def' rather than 'default' to be compatible with non-Firefox
+    browsers.
+
+  [ Michael Larson ]
+  * return error while commit is in progress. error is returned for
+    configuration and command requests.
+  * added support unique session ids--a new id will be generated on each
+    authentication request. collision
+
+  [ root ]
+  * now support stacks of commands, each dilimited by <statement> tags.
+    On error return offending command plus stdout.
+
+  [ Marat Nepomnyashy ]
+  * Display multi-nodes in hierarchial view.
+  * Process default values.
+  * Highlight selected item in configuration tree.
+
+  [ Michael Larson ]
+  * fixed spurious character on some fixed enum values.
+  * added <default> tag to template retrieval, removed quotes from enums
+    in node.def files. other small bugs squashed.
+
+  [ Marat Nepomnyashy ]
+  * Basic enumeration support.
+  * Show help text to the right of config fields.
+  * Specify the 'config' mode.
+
+  [ Michael Larson ]
+  * modified get_config modes:
+
+  [ Marat Nepomnyashy ]
+  * Display actual field values.
+  * Basic config field display.
+
+  [ Michael Larson ]
+  * each space in configuration values.
+  * Now all node names/values are attributes of the <node> node.
+
+  [ Marat Nepomnyashy ]
+  * Clear out children on collapse to dynamically load on expand.
+  * Set dynamic load on the whole tree, and use the debug tree.
+  * Do not display 'terminal' nodes in the configuration tree.
+
+  [ Michael Larson ]
+  * added <terminal/> keyword to response to help identify the last node
+    in a tree (i.e. leaf node or leaf
+
+  [ Marat Nepomnyashy ]
+  * Display both existent and non-existent items in hierarchy tree.
+  * Load config nodes into an array before adding to tree.
+
+  [ Michael Larson ]
+  * improved handling of static enum values. fixed delimiter when
+    missing space in parsing string.
+  * clean up and simplification.
+  * initial support for dynamic enumeration values. cleaned up a couple
+    bugs in static enumeration values.
+
+  [ Marat Nepomnyashy ]
+  * Moved off node loading into a separate class 'VyattaNodes'.
+
+  [ Michael Larson ]
+  * source clean up.
+  * remove debug output
+  * added support for 'multi' tag--which btw should be deprecated as a
+    bad idea.
+  * strip out hash comments on help strings
+  * fix static enumeration so last value is not dropped from template
+    resp.
+  * further bugfix on help string parsing.
+  * fixed template parser so that params are now assigned correct node
+  * handle empty nodes with whitespace correctly. should provide
+    consistent results independent of the embedded spacing.
+
+  [ Marat Nepomnyashy ]
+  * Renamed 'YAHOO.vyatta.webgui.doLoadNode' to
+    'YAHOO.vyatta.webgui.setDynamicLoad'.
+  * Display configured nodes in tree hierarchy.
+
+  [ Michael Larson ]
+  * support added for enumeration values plucked from node.def files--
+    only scans for fixed enum values at this point.
+  * now trim white leading/trailing whitespace embedded in node values.
+    default of recursion depth is 2.
+  * fix for segfault on configuration request.
+  * commands how identify command failures and format proper response
+    based on command errors.
+  * added support for session timeout.
+  * load/save now supported.
+  * bug fixes. confirmed set,commit work via command, as well as state
+    of configuration retreival.
+  * support added for local configured node values (deletes/sets prior
+    to commit within a session).
+
+  [ Marat Nepomnyashy ]
+  * Authenticate with the server to obtain session id.
+
+  [ Mike Larson ]
+  * reworked id access to common function and formatting routines.
+  * localized command strings to common location and directory
+    references, bugfixes.
+
+  [ Marat Nepomnyashy ]
+  * Initial Hollywood WebGUI layout commit.
+
+  [ Michael Larson ]
+  * more fixes. added support for session configuration. added support
+    for cli command execution and returns back stdout via response
+  * remove debug output, work on support cli commands.
+  * added proper session support. Now validate configuration request on
+    correct session id as provided by auth.
+  * adding files for authentication.
+  * added support for pam authentication and user/pw validation for
+    session. returns back session key to be used in session
+  * added support for all template data types.
+  * added support for full template tree retrieval. fixed some bugs.
+  * supports template information on a getconfig command. Template
+    information supported now is multinode, datatype, and help string.
+    This
+  * added attribute handling for configuration request. now retrieves
+    config based on depth specified and as
+  * Use real xml parser for processing of requests.
+  * exit after processing single request/response.
+  * skip def values and point to correct value files. configuration
+    tested
+  * added response for cli command (executation not yet implemented).
+    added
+  * now minimally supports configuration spec and parses config from
+  * parse active configuration tree on request and generate response.
+    does
+  * adding new files needed for build.
+  * additional changes to get this to minimally compile.
+  * update makefile
+  * more repository changes.
+  * more repository changes.
+  * initial cleanup of webgui project for hollywood
+
+  [ Marat Nepomnyashy ]
+  * Added '__LINE__' to NYI exception info.
+  * Consolidated NYI exceptions into one macro.
+  * Generated new 'configure.ac' with 'autoconf'.
+  * Do not use LDFLAGS '-Wl,-z,defs'.  Prevents linker error when
+    building with 'debuild -i -uc -us -b -nc'.
+  * Added 'libexpat1' to dependencies and 'libexpat1-dev' to build
+    dependencies.
+  * Removed stale comments
+  * Use the '-f' option with 'rm' so that clean continues if some of the
+    files have not been built.
+  * Added 'xgdaemon' to '.gitignore'.
+  * Code compiles & links.
+  * Added more generated files to '.gitignore'.
+  * Preliminary commit -- code compiles but does not yet link.
+  * Added 'xconfig.h' to satisfy current compilation dependencies.
+  * Intermediate commit, does not yet compile.
+  * Removed stale pre-migration comments.
+  * Removed stale comments.
+  * Removed stale comment.
+  * Do not use 'SYSCONFDIR' macro.
+  * Do not link to 'librlxorp.la'.
+  * Added intermediate compilation files to '.gitignore'.
+  * Added 'uuid-dev' to build dependencies.
+  * Added 'config.h.in' to '.gitignore'.
+  * Updated 'Makefile.am' and 'configure.ac' so that 'autoreconf -i'
+    works.
+  * Added '.gitignore'.
+
+  [ Mark O'Brien ]
+
+ -- Mark O'Brien <mobrien@firebolt.vyatta.com>  Tue, 19 Aug 2008 17:49:17 -0700
+
 vyatta-webgui (0.1) unstable; urgency=low
 
   * Ported to vyatta-webgui

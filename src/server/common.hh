@@ -98,7 +98,9 @@ public:
   remove_session(std::string &id);
   static void
   discard_session(std::string &id);
-
+  
+  static int 
+  mkdir_p(const char *path);
 };
 
 

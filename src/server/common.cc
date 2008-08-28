@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include <string.h>
+#include <sys/stat.h>
+#include <errno.h>
 #include "common.hh"
 
 using namespace std;
@@ -150,3 +153,35 @@ WebGUI::remove_session(string &id)
   execute(cmd, stdout);
 }
 
+
+/**
+ * adapted from cli_new.c in vyatta-cfg
+ **/
+int 
+WebGUI::mkdir_p(const char *path)
+{
+  if (mkdir(path, 0777) == 0)
+    return 0;
+
+  if (errno != ENOENT)
+    return -1;
+
+  char *tmp = strdup(path);
+  if (tmp == NULL) {
+    errno = ENOMEM;
+    return -1;
+  }
+
+  char *slash = strrchr(tmp, '/');
+  if (slash == NULL)
+    return -1;
+  *slash = '\0';
+
+  /* recurse to make missing piece of path */
+  int ret = mkdir_p(tmp);
+  if (ret == 0)
+    ret = mkdir(path, 0777);
+
+  free(tmp);
+  return ret;
+}

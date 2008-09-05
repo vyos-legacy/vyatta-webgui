@@ -185,3 +185,34 @@ WebGUI::mkdir_p(const char *path)
   free(tmp);
   return ret;
 }
+
+// see if using unionfs or aufs
+std::string 
+WebGUI::unionfs(void)
+{
+    static const char *fs = NULL;
+    FILE *f = fopen("/proc/cmdline", "r");
+    char buf[1024];
+
+    if (fs)
+	return fs;
+
+    if (f) {
+	if (fgets(buf, sizeof buf, f) != NULL &&
+	    strstr(buf, "union=aufs") != NULL)
+	    fs = "aufs";
+	fclose(f);
+    }
+
+    if (!fs && (f = fopen("/proc/filesystems", "r"))) {
+	if (fgets(buf, sizeof buf, f) != NULL &&
+	    strstr(buf, "\taufs\n") != NULL)
+	    fs = "aufs\n";
+	fclose(f);
+    }
+    if (!fs)
+	fs = "unionfs";
+
+    return fs;
+}
+

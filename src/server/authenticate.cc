@@ -70,16 +70,8 @@ Authenticate::create_new_session()
     WebGUI::mkdir_p(WebGUI::ACTIVE_CONFIG_DIR.c_str());
     WebGUI::mkdir_p((WebGUI::LOCAL_CHANGES_ONLY + string(buf)).c_str());
     WebGUI::mkdir_p((WebGUI::LOCAL_CONFIG_DIR + string(buf)).c_str());
-    //exec
 
-    //    cmd = "grep -q union=aufs /proc/cmdline || grep -q aufs /proc/filesystems";
-    string unionfs = "unionfs";
-    //CRAJ@--ADD SUPPORT FOR AUSF
-    /*
-    if (WebGUI::execute(cmd, true)) {
-      unionfs = "aufs";
-    }
-    */
+    string unionfs = WebGUI::unionfs();
 
     cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+string(buf)+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ string(buf);
 

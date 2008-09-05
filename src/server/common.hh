@@ -101,6 +101,10 @@ public:
   
   static int 
   mkdir_p(const char *path);
+
+  static std::string
+  unionfs(void);
+
 };
 
 

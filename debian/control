@@ -12,6 +12,7 @@ Depends: libexpat1 (>= 1.95.8-4),
  lighttpd,
  libc6,
  adduser,
+ libnet-snmp-perl,
  vyatta-cfg,
  vyatta-op
 Description: Vyatta WebGUI

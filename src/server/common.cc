@@ -49,7 +49,7 @@ WebGUI::generate_response(string &token, Error err)
  *
  **/
 int
-WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
+WebGUI::execute(std::string &cmd, std::string &stdout, bool read, bool raw)
 {
   int err = 0;
 
@@ -67,7 +67,11 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
       size_t read_len = 0;
       while ((read_len = getline(&buf, &len, f)) != (unsigned)-1) {
 	//	cout << "WebGUI::execute(): " << string(buf) << ", " << len << ", " << read_len << endl;
-	stdout += string(buf) + " ";
+        if (raw) {
+          stdout += string(buf);
+        } else {
+          stdout += string(buf) + " ";
+        }
       }
 
       if (buf) {

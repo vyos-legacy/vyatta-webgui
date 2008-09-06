@@ -204,6 +204,19 @@ data_hndl(void *data, const XML_Char *s, int len) {
     m->_token = str;
     free(buf);
   }
+  else if (m->_type == WebGUI::VMSTATUS) {
+    char* buf = (char*)malloc( len + sizeof( char ) );
+    memset( buf, '\0', len + sizeof( char ) );
+    strncpy( buf, s, len );
+
+    string str = string(buf);
+    str = WebGUI::trim_whitespace(str);
+
+    if (m->_node == WebGUI::VMSTATUS_ID) {
+      m->set_id(strtoul(str.c_str(), NULL, 10));
+    }
+    free(buf);
+  }
 }
 
 /**
@@ -233,6 +246,9 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   else if (strcmp(el, "token") == 0) {
     m->_type = WebGUI::TOKEN;
   }
+  else if (strcmp(el, "vmstatus") == 0) {
+    m->_type = WebGUI::VMSTATUS;
+  }
   
   if (m->_type == WebGUI::GETCONFIG) {
     if (strcmp(el, "id") == 0) {
@@ -253,6 +269,11 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   else if (m->_type == WebGUI::CLICMD) {
     if (strcmp(el, "id") == 0) {
       m->_node = WebGUI::CLICMD_ID;
+    }
+  }
+  else if (m->_type == WebGUI::VMSTATUS) {
+    if (strcmp(el, "id") == 0) {
+      m->_node = WebGUI::VMSTATUS_ID;
     }
   }
 }    

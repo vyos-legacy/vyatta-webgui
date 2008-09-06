@@ -148,6 +148,26 @@ Session::process_message()
       close_session();
       break;
 
+    case WebGUI::VMSTATUS:
+      if (_debug) {
+	cout << "Session::process_message(): VMSTATUS" << endl;
+      }
+      
+      if (!update_session()) {
+	return false;
+      }
+      {
+        string cmd = "/opt/vyatta/sbin/vyatta-vmstatus.pl";
+        string ret;
+        int err = WebGUI::execute(cmd, ret, true, true);
+        if (err) {
+          _processor->set_response(WebGUI::COMMAND_ERROR, ret);
+        } else {
+          _processor->set_response(ret);
+        }
+      }
+      break;
+
     default:
       if (_debug) {
 	cerr << "Session::process_message(): message type is unknown: " << endl;

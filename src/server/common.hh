@@ -37,14 +37,16 @@ public:
 		GETCONFIG,
 		CLOSESESSION,
 		NOTIFICATION,
-		TOKEN};
+		TOKEN,
+		VMSTATUS};
 
   enum ParseNode {EMPTY = 0,
 		  NEWSESSION_USER,
 		  NEWSESSION_PSWD,
 		  GETCONFIG_ID,
 		  GETCONFIG_NODE,
-		  CLICMD_ID};
+		  CLICMD_ID,
+		  VMSTATUS_ID};
 
   enum Attributes {NOATTR = 0,
 		   OP};
@@ -72,7 +74,8 @@ public:
    *
    **/
   static int
-  execute(std::string &cmd, std::string &stdout, bool read = false);
+  execute(std::string &cmd, std::string &stdout, bool read = false,
+          bool raw = false);
 
   /**
    *

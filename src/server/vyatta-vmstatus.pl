@@ -137,6 +137,13 @@ sub getVmStatus {
   my ($status, $cpu_util, $mem_total, $mem_free, $disk_total, $disk_free)
     = ('unknown', 0, 0, 0, 0, 0);
 
+  # check libvirt status
+  system("sudo virsh -c xen:/// domstate $name");
+  if ($? >> 8) {
+    # vm doesn't exist
+    $status = 'down';
+  }
+
   # TODO: domU "version" stuff
   my $ver = <<'EOS';
     <version>
@@ -145,7 +152,7 @@ sub getVmStatus {
     </version>
 EOS
 
-  while (1) {
+  while ($status eq 'unknown') {
     my ($s, $err) = Net::SNMP->session(-hostname => "$ip",
                                        -community => 'vyatta',
                                        -timeout => 1,

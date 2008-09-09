@@ -30,7 +30,9 @@ www_DATA += src/client/vyatta.js
 cgi_PROGRAMS = src/server/webgui
 cgi_SCRIPTS = src/server/webgui-wrap
 sbin_PROGRAMS = src/server/test
+
 sbin_SCRIPTS = src/server/vyatta-vmstatus.pl
+sbin_SCRIPTS += src/server/vyatta-vmop.pl
 
 # XXX get Ext here for now
 install-exec-hook:

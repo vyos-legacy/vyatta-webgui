@@ -138,7 +138,7 @@ sub getVmStatus {
     = ('unknown', 0, 0, 0, 0, 0);
 
   # check libvirt status
-  system("sudo virsh -c xen:/// domstate $name");
+  system("sudo virsh -c xen:/// domstate $name >&/dev/null");
   if ($? >> 8) {
     # vm doesn't exist
     $status = 'down';

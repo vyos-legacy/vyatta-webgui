@@ -9,10 +9,10 @@
 
 using namespace std;
 
-const unsigned long WebGUI::ID_START = (unsigned long)2147483648;
-const unsigned long WebGUI::ID_RANGE = (unsigned long)2147483647;
+const unsigned long WebGUI::ID_START = 2147483648UL;
+const unsigned long WebGUI::ID_RANGE = 2147483647UL;
 
-const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = (unsigned long)1800;
+const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = 1800UL;
 //const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = (unsigned long)99999999;
 
 const string WebGUI::ACTIVE_CONFIG_DIR = "/opt/vyatta/config/active";

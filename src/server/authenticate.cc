@@ -113,6 +113,27 @@ Authenticate::create_new_session()
  *
  **/
 bool
+Authenticate::test_grp_membership(const std::string &username,
+                                  const char *gname)
+{
+  bool found = false;
+  struct group *g = getgrnam(gname);
+  if (g != NULL) {
+    char **m;
+    for (m = g->gr_mem; *m != (char *)0; m++) {
+      if (strcmp(*m, username.c_str()) == 0) {
+	found = true;
+	break;
+      }
+    }
+  }
+  return found;
+}
+
+/**
+ *
+ **/
+bool
 Authenticate::test_auth(const std::string & username, const std::string & password) 
 {
   passwd * passwd = getpwnam(username.c_str());
@@ -123,21 +144,17 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
 
   ////////////////////////////////////////////////////
   //without support for op cmds fail any non vyattacfg group member
-  bool found = false;
-  struct group *g = getgrnam("vyattacfg");
-  if (g != NULL) {
-    char **m;
-    for (m = g->gr_mem; *m != (char *)0; m++) {
-      if (strcmp(*m, username.c_str()) == 0) {
-	found = true;
-	break;
-      }
-    }
-  }
-  if (found == false) {
+  if (!test_grp_membership(username, "vyattacfg")) {
     return false; //rejecting as failed check or non vyattacfg member
   }
-  ////////////////////////////////////////////////////
+ 
+  // open appliance: group requirement
+  char *be_type = getenv("VYATTA_BACKEND_TYPE");
+  if (be_type && strcmp(be_type, "OA") == 0) {
+    if (!test_grp_membership(username, "vmadmin")) {
+      return false;
+    }
+  }
 
   pam_conv conv = { conv_fun, const_cast<void*>((const void*)&password) };
   

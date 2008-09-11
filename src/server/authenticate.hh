@@ -17,6 +17,9 @@ public:
 
 private:
   bool
+  test_grp_membership(const std::string &username, const char *gname);
+
+  bool
   test_auth(const std::string &username, const std::string &password);
 
   unsigned long

@@ -28,7 +28,10 @@ www_DATA = src/client/index.html
 www_DATA += src/client/vyatta.js
 
 cgi_PROGRAMS = src/server/webgui
+
 cgi_SCRIPTS = src/server/webgui-wrap
+cgi_SCRIPTS += src/server/webgui-oa
+
 sbin_PROGRAMS = src/server/test
 
 sbin_SCRIPTS = src/server/vyatta-vmstatus.pl

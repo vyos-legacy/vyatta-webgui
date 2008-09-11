@@ -217,6 +217,18 @@ data_hndl(void *data, const XML_Char *s, int len) {
     }
     free(buf);
   }
+  else if (m->_type == WebGUI::VMUSER) {
+    char* buf = (char*)malloc( len + sizeof( char ) );
+    memset( buf, '\0', len + sizeof( char ) );
+    strncpy( buf, s, len );
+
+    string str = string(buf);
+
+    if (m->_node == WebGUI::VMUSER_ID) {
+      m->set_id(strtoul(str.c_str(), NULL, 10));
+    }
+    free(buf);
+  }
 }
 
 /**
@@ -249,6 +261,30 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   else if (strcmp(el, "vmstatus") == 0) {
     m->_type = WebGUI::VMSTATUS;
   }
+  else if (strcmp(el, "vmuser") == 0) {
+    m->_type = WebGUI::VMUSER;
+    
+    m->_vmuser_op = "";
+    m->_vmuser_user = "";
+    m->_vmuser_last = "";
+    m->_vmuser_first = "";
+    m->_vmuser_password = "";
+      
+    // parse attributes
+    for (int i=0;attr[i];i+=2) {
+      if (strcmp(attr[i],"op") == 0) {
+	m->_vmuser_op = attr[i + 1];
+      } else if (strcmp(attr[i],"user") == 0) {
+	m->_vmuser_user = attr[i + 1];
+      } else if (strcmp(attr[i],"last") == 0) {
+	m->_vmuser_last = attr[i + 1];
+      } else if (strcmp(attr[i],"first") == 0) {
+	m->_vmuser_first = attr[i + 1];
+      } else if (strcmp(attr[i],"password") == 0) {
+	m->_vmuser_password = attr[i + 1];
+      }
+    }
+  }
   
   if (m->_type == WebGUI::GETCONFIG) {
     if (strcmp(el, "id") == 0) {
@@ -274,6 +310,11 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   else if (m->_type == WebGUI::VMSTATUS) {
     if (strcmp(el, "id") == 0) {
       m->_node = WebGUI::VMSTATUS_ID;
+    }
+  }
+  else if (m->_type == WebGUI::VMUSER) {
+    if (strcmp(el, "id") == 0) {
+      m->_node = WebGUI::VMUSER_ID;
     }
   }
 }    

@@ -168,6 +168,59 @@ Session::process_message()
       }
       break;
 
+    case WebGUI::VMUSER:
+      if (_debug) {
+	cout << "Session::process_message(): VMSTATUS" << endl;
+      }
+      
+      if (!update_session()) {
+	return false;
+      }
+      if (strcmp(msg._vmuser_op.c_str(), "list") == 0) {
+        string cmd = "/opt/vyatta/sbin/vyatta-vmuser.pl --list";
+        string ret;
+        int err = WebGUI::execute(cmd, ret, true, true);
+        if (err) {
+          _processor->set_response(WebGUI::COMMAND_ERROR, ret);
+        } else {
+          _processor->set_response(ret);
+        }
+      } else {
+        FILE *v = popen("/opt/vyatta/sbin/vyatta-vmuser.pl", "w");
+        string opstr = msg._vmuser_op + "," + msg._vmuser_user + ","
+                       + msg._vmuser_last + "," + msg._vmuser_first + ","
+                       + msg._vmuser_password;
+        if (!v || fputs(opstr.c_str(), v) == EOF || fputs("\n", v) == EOF) {
+          return false;
+        }
+        int err = pclose(v);
+        WebGUI::Error rc = WebGUI::COMMAND_ERROR;
+        string ret = "";
+        switch (err) {
+        case 0:
+          rc = WebGUI::SUCCESS;
+          break;
+
+        case 1:
+          ret = "Invalid operation";
+          break;
+        
+        case 2:
+          ret = "Permission denied";
+          break;
+
+        case 3:
+          ret = "Operation failed";
+          break;
+
+        default:
+          ret = "Unknown failure";
+          break;
+        }
+        _processor->set_response(rc, ret);
+      }
+      break;
+
     default:
       if (_debug) {
 	cerr << "Session::process_message(): message type is unknown: " << endl;

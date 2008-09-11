@@ -33,6 +33,7 @@ sbin_PROGRAMS = src/server/test
 
 sbin_SCRIPTS = src/server/vyatta-vmstatus.pl
 sbin_SCRIPTS += src/server/vyatta-vmop.pl
+sbin_SCRIPTS += src/server/vyatta-vmuser.pl
 
 # XXX get Ext here for now
 install-exec-hook:

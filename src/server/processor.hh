@@ -85,6 +85,11 @@ public:
   std::string _custom_error_msg;
   std::string _custom_response;
   std::string _token;
+  std::string _vmuser_op;
+  std::string _vmuser_user;
+  std::string _vmuser_last;
+  std::string _vmuser_first;
+  std::string _vmuser_password;
 
 private:
   unsigned long _id;

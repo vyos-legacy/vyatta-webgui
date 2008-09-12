@@ -10,6 +10,123 @@ sub exitError {
   exit 1;
 }
 
+sub getHw1Nic {
+  my $dev = shift;
+  my $out;
+  return 'unknown' if (!open($out, '-|', "/sbin/ip link show $dev"));
+  my @res = grep { /^\d+:\s+$dev:/ } <$out>;
+  return 'unknown' if (scalar(@res) != 1);
+  return ($res[0] =~ /,UP,/) ? 'good' : 'bad';
+}
+
+sub getHwNic {
+  # assume 'ethX'
+  my $ndir;
+  return 'unknown' if (!opendir($ndir, '/sys/class/net'));
+  my @nics = grep { /^eth\d+$/ } readdir($ndir);
+  closedir($ndir);
+  return 'unknown' if (scalar(@nics) < 1);
+
+  my $ret = 'good';
+  foreach (@nics) {
+    my $nret = getHw1Nic($_);
+    if ($nret ne 'good') {
+      $ret = $nret;
+      last;
+    }
+  }
+  return $ret;
+}
+
+sub getHw1Disk {
+  my $dev = shift;
+  my $out;
+  return 'unknown' if (!open($out, '-|', "sudo /usr/sbin/smartctl -H $dev"));
+  my @res = grep { /(self-assessment|Status)/ } <$out>;
+  return 'unknown' if (scalar(@res) != 1);
+  return ($res[0] =~ /(PASSED|OK)/) ? 'good' : 'bad';
+}
+
+sub getHwDisk {
+  # assume 'sdX' or 'hdX'
+  my $ddir;
+  return 'unknown' if (!opendir($ddir, '/dev'));
+  my @disks = grep { /^[sh]d[a-z]$/ } readdir($ddir);
+  closedir($ddir);
+  return 'unknown' if (scalar(@disks) < 1);
+
+  my $ret = 'good';
+  foreach (@disks) {
+    my $dret = getHw1Disk("/dev/$_");
+    if ($dret ne 'good') {
+      $ret = $dret;
+      last;
+    }
+  }
+  return $ret;
+}
+
+sub getHw1Cpu {
+  my $path = shift;
+  return 'unknown' if (! -d $path);
+ 
+  # current temperature
+  my $f;
+  return 'unknown' if (!open($f, '<', "$path/temp1_input"));
+  my $temp = <$f>;
+  close($f);
+ 
+  # max threshold
+  return 'unknown' if (!open($f, '<', "$path/temp1_crit"));
+  my $max = <$f>;
+  close($f);
+  
+  chomp $temp;
+  chomp $max;
+  return ($temp < $max) ? 'good' : 'bad';
+}
+
+sub getHwCpu {
+  # assume recent Intel CPU (coretemp)
+  # TODO: support AMD (k8temp)
+  my $sdir;
+  return 'unknown' if (!opendir($sdir, '/sys/devices/platform'));
+  my @cores = grep { /^coretemp\.\d+$/ } readdir($sdir);
+  closedir($sdir);
+  return 'unknown' if (scalar(@cores) < 1);
+
+  my $ret = 'good';
+  foreach (@cores) {
+    my $cret = getHw1Cpu("/sys/devices/platform/$_");
+    if ($cret ne 'good') {
+      $ret = $cret;
+      last;
+    }
+  }
+  return $ret;
+}
+
+sub getHwFan {
+  # TODO: actually get fan info (if sensor available)
+  return 'unknown';
+}
+
+sub getHwStatus {
+  my $nic = getHwNic();
+  my $disk = getHwDisk();
+  my $cpu = getHwCpu();
+  my $fan = getHwFan();
+
+  my $ret =<<EOS;
+  <hw>
+    <nic>$nic</nic>
+    <disk>$disk</disk>
+    <cpu>$cpu</cpu>
+    <fan>$fan</fan>
+  </hw>
+EOS
+}
+
 sub getDom0Status {
   # TODO: dom0 "name"
   my $name = 'OpenAppliance';
@@ -184,6 +301,9 @@ my $outstr = <<'EOS';
 <?xml version='1.0' encoding='utf-8'?>
 <vyatta>
 EOS
+
+# hw status
+$outstr .= getHwStatus();
 
 # Dom0
 $outstr .= getDom0Status();

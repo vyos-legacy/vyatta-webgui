@@ -14,7 +14,7 @@ EOS
   # output user listing
   my ($name, $passwd, $gid, $members) = getgrnam($VMUSER_GRP);
   if (defined($members)) {
-    my @users = split /,/, $members;
+    my @users = split /[,\s]/, $members;
     foreach (@users) {
       my ($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir,
           $shell, $expire) = getpwnam($_);

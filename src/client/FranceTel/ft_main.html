@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE>Open Appliance Configuration</TITLE>
+  <link rel="stylesheet" type="text/css" href="/ext-2.1/resources/css/ext-all.css" />
+  <link href="css/style.css" rel="stylesheet" type="text/css" />
+  <link href="css/oaStyle.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="/ext-2.1/adapter/ext/ext-base.js"></script>
+  <script type="text/javascript" src="/ext-2.1/ext-all.js"></script>
+  <script type="text/javascript" src="/ext-2.1/custom.js"></script>
+
+  <style type="text/css">
+    .vHeaderLabel
+    {
+        font-size:20px;
+        font-weight: bold;
+        color: #FF6600;
+    }
+    .vHeaderLogLabel
+    {
+        font-size:15px;
+        font-weight: bold;
+        padding-bottom: 10px;
+        color: #FF6600;
+    }
+  </style>
+
+  <!-- javascript start here... -->
+  <script type="text/javascript" src="../vyatta-constant-values.js"></script>
+  <script type="text/javascript" src="js/vyatta-utils.js"></script>
+  <script type="text/javascript" src="js/vyatta_grid_checkColumn.js"></script>
+  <script type="text/javascript" src="js/ft_dataStructures.js"></script>
+  <script type="text/javascript" src="js/panelsManager.js"></script>
+  <script type="text/javascript" src="js/panel.js"></script>
+  <script type="text/javascript" src="js/loginPanel.js"></script>
+  <script type="text/javascript" src="js/ft_opPanel.js"></script>
+  <script type="text/javascript" src="js/ft_main.js"></script>
+
+ </HEAD>
+<body>
+
+<!-- ------------------------- main header --------------------------------- -->
+<div id="id_header">
+    <nobr>
+        <div id="logo"><img src="images/Logo_OBS-Web.gif" alt="logo Orange Business Services" border="0"></div>
+
+        <div id="toolbar">
+          <select id="language" name="language" size="1" STYLE="width: 87px" onChange="changeLangue();">
+                  <option value="en" selected="selected">English</option>
+                  <option value="fr">Fran�ais</option>
+          </select>
+        </div>
+    </nobr>
+
+
+    <div id="barre_etat">
+      <span>welcome admin you are connected to the Open Appliance admin service</span>
+      <a href="#" onclick="logOff()" class="dec" onfocus="this.blur();">log out</a>
+   </div> 
+
+    <div id="nav_primaire">
+        <table id="nav_primaire1">
+            <tr>
+                <td><a href="#" onClick="f_handleOnTabClick('name')" onfocus="this.blur();">
+                        <img src="images/tabnav_blb_off.png"></a></td>
+                <td><a href="#" onClick="f_handleOnTabClick('op')" onfocus="this.blur();">
+                        <img src="images/tabnav_oa_on.png"></a></td>
+                <td><a href="#" onfocus="this.blur();">
+                        <img src="images/tabnav_utm_off.png"></a></td>
+                <td><a href="#" onfocus="this.blur();">
+                        <img src="images/tabnav_pbx_off.png"></a></td>
+                <td><a href="#" onfocus="this.blur();">
+                        <img src="images/tabnav_3pa_off.png"></a></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="id_header_nav">
+
+    </div>
+
+  </div> <!-- fin header-->
+
+<!-- --------------------------- configuration ----------------------------- -->
+
+
+<!-- ------------------------ left menu ------------------------- -->
+<div id="id_leftMenu">
+
+</div>
+
+
+<!--------------- Content -------------------------->
+
+<div id="id_center_panel">
+  <div id="id_config_content"></div>
+<!-- DO NOT MODIFY -->
+</div>
+
+
+<!-- -------------------------- footer -------------------------------------- -->
+<div id="id_footer">
+    <div id="footer">
+    <div id="footer_left">
+        <ul>
+            <li><a href="#" onclick="loadContact();return false;">contact</a></li>
+            <li><a href="#" onclick="popup();return false;">site map</a></li>
+        </ul>
+    </div>
+
+	<div id="footer_center">
+	    copyright France Telecom &copy; 2008
+	</div>
+
+<!--		<div id="footer_wait">
+				<img src="../../globalPBX/images/pleaseWait.gif" alt="*" />
+		</div>
+		<div id="footer_right">
+		 <script>
+			var versionWebA = getCookie("versionWebA");
+			var versionOS = getCookie("versionOS");
+			document.write(versionWebA+" OS: "+versionOS);
+		</script>
+
+
+		</div> -->
+              </div>
+            </div>
+</body>
+</HTML>

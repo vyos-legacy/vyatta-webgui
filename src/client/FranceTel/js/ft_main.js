@@ -9,8 +9,8 @@
 function f_showLoginPanel()
 {
     //////////////////////////////////////////////////
-    // get system main frame center panel
-    var cPanel = g_ftBaseSystem.f_getCenterPanel();
+    // get system main frame body panel
+    var bodyPanel = g_ftBaseSystem.f_getBodyPanel();
 
     /////////////////////////////////////////////////////
     //
@@ -27,25 +27,25 @@ function f_showLoginPanel()
 
     /////////////////////////////////////////////
     // do initlize then add it into the main
-    // frame center panel
+    // frame body panel
     var loginPanel = loginObject.f_initLoginPanel();
-    cPanel.add(loginPanel);
+    bodyPanel.add(loginPanel);
 
     ////////////////////////////////////////////
     // register the panel resize listener
-    cPanel.on( {'resize': {fn: function(){loginObject.f_resizePanels(cPanel) }}});
+    bodyPanel.on( {'resize': {fn: function(){loginObject.f_resizePanels(bodyPanel) }}});
 
     //////////////////////////////////////////////
     // let update the layout
-    loginObject.f_resizePanels(cPanel);
-    g_ftBaseSystem.f_getCenterPanel().doLayout();
+    loginObject.f_resizePanels(bodyPanel);
+    g_ftBaseSystem.f_getBodyPanel().doLayout();
 }
 
 function f_showOpenAppliancePanel()
 {
     //////////////////////////////////////////////////
-    // get system main frame center panel
-    var cPanel = g_ftBaseSystem.f_getCenterPanel();
+    // get system main frame body panel
+    var bodyPanel = g_ftBaseSystem.f_getBodyPanel();
 
     var el = document.getElementById('barre_etat');
     el.innerHTML = "<span>&nbsp;&nbsp;Welcome <font color=#FF6600><b>" + f_getUserLoginName() +
@@ -54,18 +54,20 @@ function f_showOpenAppliancePanel()
 
     /////////////////////////////////////////////////
     // create a op object and add it to manager
-    var opObject = new v_opPanelObject(cPanel, 'Open Appliance settings');
+    var opObject = new v_opPanelObject(bodyPanel, 'Open Appliance settings');
     g_panelsMgr.f_manageThisPanel(opObject);
-      cPanel.add(opObject.f_getMainPanel());
+
+
+    bodyPanel.add(opObject.f_getMainPanel());
 
     ////////////////////////////////////////////
     // register the panel resize listener
-    cPanel.on( {'resize': {fn: function(){opObject.f_resizePanels(cPanel) }}});
+    bodyPanel.on( {'resize': {fn: function(){opObject.f_resizePanels(bodyPanel) }}});
 
     //////////////////////////////////////////////
     // let update the layout
-    opObject.f_resizePanels(cPanel);
-    g_ftBaseSystem.f_getCenterPanel().doLayout();
+    opObject.f_resizePanels(bodyPanel);
+    g_ftBaseSystem.f_getBodyPanel().doLayout();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,18 +101,18 @@ function f_createFooterPanel()
     
     return footer;
 }
-function f_createCenterPanel()
+function f_createBodyPanel()
 {
-    var centerPanel = new Ext.Panel(
+    var bodyPanel = new Ext.Panel(
     {
         region: 'center'
-        ,layout: 'fit'
-        ,split: false
+        //,layout: 'fit'
+        ,split: true
         ,border: false
         ,bodyBorder: false
     });
 
-    return centerPanel;
+    return bodyPanel;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -120,7 +122,7 @@ function f_startMainFrame()
 {
     g_ftBaseSystem.f_setHeaderPanel(f_createHeaderPanel());
     g_ftBaseSystem.m_footerPanel = f_createFooterPanel();
-    g_ftBaseSystem.f_setCenterPanel(f_createCenterPanel());
+    g_ftBaseSystem.f_setBodyPanel(f_createBodyPanel());
 
     var m_vp = new Ext.Viewport(
     {
@@ -129,7 +131,7 @@ function f_startMainFrame()
       ,bodyBorder: false
       ,bodyStyle: 'padding: 8px 10px 0px 10px'
       ,items: [ g_ftBaseSystem.f_getHeaderPanel(),
-                g_ftBaseSystem.f_getCenterPanel(),
+                g_ftBaseSystem.f_getBodyPanel(),
                 g_ftBaseSystem.m_footerPanel ]
     });
 }
@@ -155,14 +157,6 @@ Ext.onReady(function()
     // init system base object and data members
     f_initSystemObjects();
 
-    /////////////////////////////////////////////////
-    // init open appliance data structure
-    /*
-    g_oAppliance = new DATA_OpenAppliance();
-    g_oAppliance.f_initDataType();
-    g_oAppliance.f_setSelectedOApplianceAnchor(
-                    g_oAppliance.f_getSelectedOApplianceAnchor());
-*/
 
     /////////////////////////////////////////
     // start up the main frame

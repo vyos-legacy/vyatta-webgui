@@ -8,6 +8,7 @@ v_panelObject = Ext.extend(Ext.util.Observable,
 {
     ////////////////////////////////////////////////////////////////////////////
     // local data memeber
+    // m_bodyPanel    -- the body panel
     // m_mainPanel
     // m_topPanel
     // m_leftPanel
@@ -37,7 +38,6 @@ v_panelObject = Ext.extend(Ext.util.Observable,
               this.m_leftPanel.remove(this.m_leftPanel.items.itemAt(0));
 
         this.m_leftPanel.add(newDataPanel);
-        //newDataPanel.doLayout();
         this.m_leftPanel.doLayout();
     },
 
@@ -57,6 +57,7 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             for(var i=0; i<panels.length; i++)
                 this.m_centerPanel.dataPanel.add(panels[i]);
 
+            this.f_resizePanels(this.m_bodyPanel);
             this.m_centerPanel.dataPanel.doLayout();
         }
     },
@@ -78,13 +79,14 @@ v_panelObject = Ext.extend(Ext.util.Observable,
     {
         if(panel != undefined)
         {
+            this.m_bodyPanel = panel;
             var h = panel.getInnerHeight();
             var w = panel.getInnerWidth();
 
             this.m_mainPanel.setSize(w, h);
             this.m_leftPanel.parentPanel.setSize(w-2, h-this.m_topHeight-2);
             this.m_leftPanel.setSize(this.m_leftWidth, h-this.m_topHeight-5);
-            this.m_centerPanel.setSize(w-this.m_leftWidth-10, h-this.m_topHeight);
+            this.m_centerPanel.setSize(w-this.m_leftWidth-5, h-this.m_topHeight);
             this.m_centerPanel.dataPanel.setSize(w-this.m_leftWidth-70, h-this.m_topHeight-40);
             this.f_resizeGridPanel(w);
         }
@@ -96,10 +98,9 @@ v_panelObject = Ext.extend(Ext.util.Observable,
                 this.m_centerPanel.dataPanel.items.getCount() > 0)
         {
             var p = this.m_centerPanel.dataPanel.items.itemAt(0);
+
             if(p != undefined && p.isGrid != undefined)
-            {
                 p.setSize(w-this.m_leftWidth-70-20, 220);
-            }
         }
     },
 
@@ -111,9 +112,9 @@ v_panelObject = Ext.extend(Ext.util.Observable,
     {
         /////////////////////////////////////////////
         // create open appliance panel
-        var hPanel = this.f_createSubTopPanel(panelName);
-        var vPanel = this.f_createSubLeftPanel(panelName);
-        var cPanel = this.f_createSubCenterPanel(panelName);
+        var hPanel = this.f_createTopPanel(panelName);
+        var vPanel = this.f_createLeftPanel(panelName);
+        var cPanel = this.f_createCenterPanel(panelName);
 
         ///////////////////////////////////////////////
         // this panel contain the vpanel and wPanel
@@ -124,18 +125,16 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             ,width: 600
             ,height: 200
             ,split: true
-            //,defaults: {autoScroll: true}
             ,items: [vPanel, cPanel]
         });
 
         var panel = new Ext.Panel(
         {
-            id: 'id_main_' + panelName
-            ,border: false
+            border: false
             ,split: true
             ,height: 300
             ,width: 800
-            ,bodyStyle: 'padding: 0px 15px 10px 10px'
+            ,bodyStyle: 'padding: 0px 15px 5px 5px'
             ,items: [ hPanel, ipanel ]
         });
         
@@ -170,32 +169,30 @@ v_panelObject = Ext.extend(Ext.util.Observable,
     },
 
     ////////////////////////////////////////////////////////////////////////////
-    f_createSubTopPanel: function(panelName)
+    f_createTopPanel: function(panelName)
     {
         this.m_topHeight = 45;
 
         var panel = new Ext.Panel(
         {
-            id: 'id_subTop' + panelName
-            ,autoWidth: true
+            autoWidth: true
             ,height: this.m_topHeight
             ,boder: false
             ,bodyBorder: false
-            ,bodyStyle: 'padding: 10px'
+            ,bodyStyle: 'padding: 2px'
         });
 
         return panel;
     },
 
     ////////////////////////////////////////////////////////////////////////////
-    f_createSubLeftPanel: function(panelName)
+    f_createLeftPanel: function(panelName)
     {
         this.m_leftWidth = 200;
 
         var vertPanel = new Ext.Panel(
         {
-            id: 'id_subLeft' + panelName
-            ,border: false
+            border: false
             ,width: this.m_leftWidth
             ,height: 100
             ,autoScroll: false
@@ -205,19 +202,27 @@ v_panelObject = Ext.extend(Ext.util.Observable,
     },
 
     ////////////////////////////////////////////////////////////////////////////
-    f_createSubCenterPanel: function(panelName)
+    f_createCenterPanel: function(panelName)
     {
         var title = panelName == undefined ? ' ' : panelName;
 
         var lable = new MyLabel(
         {
-            id: 'label_id_' + panelName
-            ,border: false
-            ,bodyStyle: 'padding: 10px 0px 15px 0px'
-            ,height: 40
+            border: false
+            ,bodyStyle: 'padding: 10px 0px 0px 0px'
+            ,height: 33
             ,width: 500
             ,cls: 'vHeaderLabel'
             ,html: title
+        });
+
+        var lablePanel = new Ext.Panel(
+        {
+            border: false
+            ,autoWidth: true
+            ,height: 35
+            ,bodyStyle: 'padding: 0px 0px 0px 0px'
+            ,items: lable
         });
 
         var dummy = new Ext.Panel(
@@ -227,11 +232,10 @@ v_panelObject = Ext.extend(Ext.util.Observable,
 
         var dataPanel = new Ext.Panel(
         {
-            id: 'dPanel_' + title
-            ,border: false
+            border: false
             ,split: true
             ,defaults: {autoScroll: true}
-            ,bodyStyle: 'padding: 10px 0px 0px 0px'
+            ,bodyStyle: 'padding: 0px 0px 0px 0px'
             ,width: 500
             ,height: 250
             ,items: [dummy]
@@ -241,11 +245,11 @@ v_panelObject = Ext.extend(Ext.util.Observable,
         var cpanel = new Ext.Panel(
         {
             id: Ext.id()
-            ,layout: 'ux.row'
+            //,layout: 'ux.row'
             ,border: true
-            ,bodyStyle: 'padding: 0px 0px 0px 15px'
+            ,bodyStyle: 'padding: 3px 0px 0px 15px'
             ,defaults: {autoScroll: true}
-            ,items: [ lable, dataPanel ]
+            ,items: [ lablePanel, dataPanel ]
         });
         cpanel.dataPanel = dataPanel;
         cpanel.lable = lable;
@@ -262,8 +266,7 @@ v_panelObject = Ext.extend(Ext.util.Observable,
 
         var label = new MyLabel(
         {
-            id: 'label_id_node_msg'
-            ,border: false
+            border: false
             ,height: 32
             ,width: 400
             ,html: msg

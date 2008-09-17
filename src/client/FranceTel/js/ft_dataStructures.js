@@ -17,7 +17,7 @@ DATA_FTBaseSystem = Ext.extend(Ext.util.Observable,
         //
         m_headerPanel = undefined;
         m_footerPanel = undefined;
-        m_centerPanel = undefined;
+        m_bodyPanel = undefined;
         tabNames = [ 'Business LiveBox settings',
                     'Open Appliance settings', 'UTM configuration',
                     'PBX configuration', '3rd Parties Applications'];
@@ -49,13 +49,13 @@ DATA_FTBaseSystem = Ext.extend(Ext.util.Observable,
     {
         m_headerPanel = hp;
     },
-    f_getCenterPanel: function()
+    f_getBodyPanel: function()
     {
-        return m_centerPanel;
+        return m_bodyPanel;
     },
-    f_setCenterPanel: function(cp)
+    f_setBodyPanel: function(cp)
     {
-        m_centerPanel = cp;
+        m_bodyPanel = cp;
     },
     f_getSystemTabNames: function()
     {

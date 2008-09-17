@@ -210,7 +210,7 @@ textarea {
 	float:left;
 }
 
-/* barre de langue en haut à droite */
+/* barre de langue en haut ï¿½ droite */
 #toolbar{
 	margin-top:20px;
 	float:right;
@@ -334,8 +334,8 @@ textarea {
 /**************************************************/
 
 #leftMenu {  
-	margin:0px 8px 0px 20px;
-	width:165px;
+	margin:0px 8px 0px 15px;
+	width:170px;
 	height:500px;
 
 }
@@ -431,107 +431,6 @@ textarea {
 
 /*############ TABLEAU ##############*/
 
-table {
-	font-family:arial;
-	font-size: 11px; 
-	border:1px;
-	border-collapse:collapse;
-	width:80%;
-	margin-left:0px;
-}
-
-
-.bordure{
-	border:1px solid #CCC;
-}
-
-table.noborder, table.noborder tr, table.noborder td{
-	border-width:0px;
-	margin-left:0px;
-	padding-left:0px;	
-}
-
-table.align_center td{
-	text-align:center;
-}
-
-.nobordertop{
-	border-top: 1px solid #FFF;
-}
-th {
-	text-align:center;
-	border:1px solid #CCC;
-	color: black;
-}
-
-tr {
-	height:22px;
-}
-
-td, #table3 td {
-	/*border:0px;*/
-	border-top:1px solid #CCC;
-	border-bottom:1px solid #CCC;
-	padding-left:8px;
-	height:22px;
-}
-
-td a {
-   color:#ff6600;
-}
-
-td select {
-   text-align: left;
-   width:127px;
-}
-
-td.td_top{
-	vertical-align:top;
-	padding-top: 2px;
-}
-
-
-table.tab_2col td,table.tab_2col th {
-	width:50%;
-	/*border:0px;*/
-}
-/*
-table.tab_2col th {
-	text-align:left;
-	border:1px solid #CCC;
-	padding-left:8px;	
-	color: black;
-}
-*/
-
-table.tab_3col td , table.tab_3col th {
-	width:33%;
-	/*border:0px;*/
-	
-}	
-
-table.tab_4col td , table.tab_4col th {
-	width:25%;
-	/*border:0px;*/
-}
-
-table.tab_5col td , table.tab_5col th{
-	width:20%;
-	text-align: center;
-/*border:0px;*/
-}
-
-
-tr.grise_desac {
-	background-color:#DDD;
-	font-style:italic;
-
-}
-
-tr.grise {
-	background-color:#F8ECDF;
-
-}
 
 /** placement boutons apres tableaux... pas formulaires */
 
@@ -563,7 +462,7 @@ a.button_conf img{
 	border-top:  2px solid #DEDEDE;
 	background: url(../images/esperluette-20.gif) top left no-repeat ;
 	margin-bottom:0px;
-	width:980px;
+	width:96%;
 
 }
 
@@ -805,7 +704,7 @@ width: 650px;
 #dialogPing {
 border: 1px solid #CCC;
 position: absolute;
-/* régler la position de la pup up ping */
+/* rï¿½gler la position de la pup up ping */
 top: 250px;
 left: 250px;
 background-color:#ffffff;

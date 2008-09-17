@@ -1,6 +1,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <string.h>
 #include <pwd.h>
 #include <unistd.h>
@@ -194,9 +195,10 @@ Session::process_message()
           return false;
         }
         int err = pclose(v);
+        int status = (WIFEXITED(err)) ? (WEXITSTATUS(err)) : err;
         WebGUI::Error rc = WebGUI::COMMAND_ERROR;
         string ret = "";
-        switch (err) {
+        switch (status) {
         case 0:
           rc = WebGUI::SUCCESS;
           break;

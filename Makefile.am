@@ -24,9 +24,6 @@ src_server_webgui_SOURCES += src/server/rl_str_proc.cc
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
 
-www_DATA = src/client/index.html
-www_DATA += src/client/vyatta.js
-
 cgi_PROGRAMS = src/server/webgui
 
 cgi_SCRIPTS = src/server/webgui-wrap
@@ -37,6 +34,9 @@ sbin_PROGRAMS = src/server/test
 sbin_SCRIPTS = src/server/vyatta-vmstatus.pl
 sbin_SCRIPTS += src/server/vyatta-vmop.pl
 sbin_SCRIPTS += src/server/vyatta-vmuser.pl
+
+cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
+	cpio -0pd
 
 # XXX get Ext here for now
 install-exec-hook:
@@ -49,4 +49,6 @@ install-exec-hook:
 	cd $(DESTDIR)/var/www/ext-2.1 \
 	&& rm -rf air build docs examples ext-all-debug.js ext-core-debug.js source
 	rm -f /tmp/ext-2.1.zip
+	mkdir -p $(DESTDIR)$(wwwdir)
+	cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
 

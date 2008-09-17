@@ -850,7 +850,7 @@ function f_populateUserPanel(opObject)
                                   "' last='" + record.get('last') +
                                   "' first='" + record.get('first') +
                                   "' password='" + record.get('password') +
-                                  "'> <id>" + sid + "</id>"  +
+                                  "'><id>" + sid + "</id>"  +
                                   "</vmuser>";
 
                     deleteRecs.push(xmlstr);
@@ -880,29 +880,31 @@ function f_populateUserPanel(opObject)
     };
     thisObject.deleteCallback = deleteCallback;
 
+    var sendUserXMLString = function(record, op, callback)
+    {
+        var sid = f_getUserLoginedID();
+        var xmlstr = "<vmuser op=" + op + " user='" +
+                      record.get('user') +
+                      "' last='" + record.get('last') +
+                      "' first='" + record.get('first') +
+                      "' password='" + record.get('password') +
+                      "'><id>" + sid + "</id>"  +
+                      "</vmuser>";
+
+        f_sendServerCommand(true, xmlstr, callback, false);
+    }
+
     var saveCallback = function()
     {
         grid.store.each(function(record)
         {
-            if(record.get('action') == 'add')
+            var op = record.get('action') == 'add' ? 'add' : 'change';
+            var serverCommandCb = function(options, success, response)
             {
-                var serverCommandCb = function(options, success, response)
-                {
-                    f_onClickAnchor('User');
-                }
-
-                var sid = f_getUserLoginedID();
-                var xmlstr = "<vmuser op='add' user='" +
-                              record.get('user') +
-                              "' last='" + record.get('last') +
-                              "' first='" + record.get('first') +
-                              "' password='" + record.get('password') +
-                              "'> <id>" + sid + "</id>"  +
-                              "</vmuser>";
-
-                f_sendServerCommand(true, xmlstr, serverCommandCb, false);
-                return;
+                f_onClickAnchor('User');
             }
+
+            sendUserXMLString(record, op, serverCommandCb);
         });
     }
     thisObject.saveCallback = saveCallback;

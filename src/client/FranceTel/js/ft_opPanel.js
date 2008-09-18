@@ -20,7 +20,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
         this.m_name = name;
         this.m_tabName = 'OpenAppliance';
         this.m_parentContainer = parentContainer;
-        this.m_dashboardData = [ ' ', 'op', 'up', '10', '10', '1.2', '1.3'];
+        this.m_dashboardData = new Array();
         this.m_restartData = new Array();
         this.m_userDBData = new Array();
         this.m_monitorHwDBData = new Array();
@@ -224,10 +224,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
         if(this.m_mainPanel == undefined)
             this.m_mainPanel = this.f_createMainPanel(this.m_tabName);
 
-        this.f_processDataPanel(anchorId);
-        this.f_updateTopPanel(this.f_getOpTopPanelData());
-        this.f_updateLeftPanel(this.f_getVMLeftPanelData());
-
+        this.f_processOnAnchorInvoke(anchorId);
         this.m_mainPanel.doLayout();
     },
 
@@ -238,14 +235,20 @@ v_opPanelObject = Ext.extend(v_panelObject,
         return this.m_mainPanel;
     },
 
-    f_processDataPanel: function(anchorId)
+    f_processOnAnchorInvoke: function(anchorId)
     {
         /////////////////////////////////////////////
         // find out if the anchor is horz anchor or
         // vert anchor
-        var workingPanelTitle = null;
         var isHorzAnchor = false;
-        this.m_selTopAnchorName = 'VM';
+        if(anchorId == undefined)
+        {
+            this.m_selTopAnchorName = 'VM';
+            anchorId = 'VM';
+        }
+
+        ///////////////////////////////////////////////////////////
+        // let find out the anchor is from top or left panel
         for(var i=0; i<this.f_getOApplianceAnchorData().length; i++)
         {
             ///////////////////////////////////////////
@@ -259,87 +262,108 @@ v_opPanelObject = Ext.extend(v_panelObject,
         }
 
         if(isHorzAnchor)
-        {
-            workingPanelTitle = anchorId;
-
-            switch(this.m_selTopAnchorName)
-            {
-                case 'VM':
-                default:
-                    workingPanelTitle = 'VM > VM Dashboard';
-                    this.m_isDashboard = true;
-                    this.m_selLeftAnchorName = this.f_getVMAnchorData()[0];
-                    f_getVMDashboard_RestartDataFromServer(this);
-                    this.f_updateLeftPanel(this.f_getVMLeftPanelData());
-                    break;
-                case 'User':
-                    workingPanelTitle = 'Users';
-                    f_getUserDataFromServer(this);
-                    this.m_selLeftAnchorName = this.f_getUserAnchorData()[0];
-                    this.f_updateLeftPanel(this.f_getVMLeftPanelData(
-                                            this.f_getUserAnchorData()));
-                    break;
-                case 'Monitoring':
-                    workingPanelTitle = 'Monitoring > Hardware';
-                    f_getMonitoringHardwareDataFromServer(this);
-                    this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[0];
-                    this.f_updateLeftPanel(this.f_getVMLeftPanelData(
-                                              this.f_getMonitoringAnchorData()));
-                    break;
-                case 'Backup':
-                    this.m_selLeftAnchorName = 'empty';
-                    this.f_updateLeftPanel(this.f_getVMLeftPanelData('empty'));
-                    break;
-            }
-
-            this.f_updateDataPanelLabel(workingPanelTitle);
-        }
+            this.f_processDataPanelForTopAnchor(anchorId);
         else  // user select anchor on left panel
+            this.f_processDataPanelForLeftAnchor(anchorId);
+
+        this.f_updateTopPanel(this.f_getOpTopPanelData());
+    },
+
+    f_processDataPanelForTopAnchor: function(anchorId)
+    {
+        var workingPanelTitle = anchorId;
+
+        switch(this.m_selTopAnchorName)
         {
-            workingPanelTitle = this.m_selTopAnchorName + ' > ';
-
-            switch(anchorId)
-            {
-                case 'VM_Dashboard':
-                    this.m_isDashboard = true;
-                    this.m_selLeftAnchorName = this.f_getVMAnchorData()[0];
-                    f_getVMDashboard_RestartDataFromServer(this);
-                    workingPanelTitle += 'VM Dashboard';
-                    break;
-                case 'Deploy_VM_Software':
-                    this.m_selLeftAnchorName = this.f_getVMAnchorData()[1];
-                    f_populateVMDeploySoftwarePanel(this);
-                    workingPanelTitle += 'Deploy VM Software';
-                    break;
-                case 'Restart':
-                    workingPanelTitle += 'Restart';
-                    this.m_isDashboard = false;
-                    this.m_selLeftAnchorName = this.f_getVMAnchorData()[2];
-                    f_getVMDashboard_RestartDataFromServer(this);
-                    break;
-                case 'Hardware':
-                    f_getMonitoringHardwareDataFromServer(this);
-                    workingPanelTitle += 'Hardware';
-                    break;
-                case 'Network':
-                    workingPanelTitle += 'Network';
-                    break;
-                case 'Software':
-                    workingPanelTitle += 'Software';
-                    break;
-                case 'User':
-                    workingPanelTitle = 'Users';
-                    f_getUserDataFromServer(this);
-                    this.m_selLeftAnchorName = this.f_getUserAnchorData()[0];
-                    this.f_updateLeftPanel(this.f_getVMLeftPanelData(
-                                            this.f_getUserAnchorData()));
-                    break;
-            }
-
-            this.f_updateDataPanelLabel(workingPanelTitle);
+            case 'VM':
+            default:
+                workingPanelTitle = 'VM > VM Dashboard';
+                this.m_isDashboard = true;
+                this.m_selLeftAnchorName = this.f_getVMAnchorData()[0];
+                f_getVMDashboard_RestartDataFromServer(this);
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData());
+                break;
+            case 'User':
+                workingPanelTitle = 'Users';
+                f_getUserDataFromServer(this);
+                this.m_selLeftAnchorName = this.f_getUserAnchorData()[0];
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
+                                        this.f_getUserAnchorData()));
+                break;
+            case 'Monitoring':
+                workingPanelTitle = 'Monitoring > Hardware';
+                f_getMonitoringHardwareDataFromServer(this);
+                this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[0];
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
+                                          this.f_getMonitoringAnchorData()));
+                break;
+            case 'Backup':
+                this.m_selLeftAnchorName = 'empty';
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData('empty'));
+                break;
         }
-    }
 
+        this.f_updateDataPanelLabel(workingPanelTitle);
+    },
+
+    f_processDataPanelForLeftAnchor: function(anchorId)
+    {
+        var workingPanelTitle = this.m_selTopAnchorName + ' > ';
+
+        switch(anchorId)
+        {
+            case 'VM_Dashboard':
+                this.m_isDashboard = true;
+                this.m_selLeftAnchorName = this.f_getVMAnchorData()[0];
+                f_getVMDashboard_RestartDataFromServer(this);
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData());
+                workingPanelTitle += 'VM Dashboard';
+                break;
+            case 'Deploy_VM_Software':
+                this.m_selLeftAnchorName = this.f_getVMAnchorData()[1];
+                f_populateVMDeploySoftwarePanel(this);
+                workingPanelTitle += 'Deploy VM Software';
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData());
+                break;
+            case 'Restart':
+                workingPanelTitle += 'Restart';
+                f_getVMDashboard_RestartDataFromServer(this);
+                this.m_isDashboard = false;
+                this.m_selLeftAnchorName = this.f_getVMAnchorData()[2];
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData());
+                break;
+            case 'Hardware':
+                f_getMonitoringHardwareDataFromServer(this);
+                this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[0];
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
+                                          this.f_getMonitoringAnchorData()));
+                workingPanelTitle += 'Hardware';
+                break;
+            case 'Network':
+                f_getMonitoringNetworkDataFromServer(this);
+                this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[1];
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
+                                          this.f_getMonitoringAnchorData()));
+                workingPanelTitle += 'Network';
+                break;
+            case 'Software':
+                f_getMonitoringSoftwareDataFromServer(this);
+                this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[2];
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
+                                          this.f_getMonitoringAnchorData()));
+                workingPanelTitle += 'Software';
+                break;
+            case 'User':
+                workingPanelTitle = 'Users';
+                f_getUserDataFromServer(this);
+                this.m_selLeftAnchorName = this.f_getUserAnchorData()[0];
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
+                                        this.f_getUserAnchorData()));
+                break;
+        }
+
+        this.f_updateDataPanelLabel(workingPanelTitle);
+    }
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
@@ -754,25 +778,33 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
         ]
     });
 
+    //////////////////////////////////////////////////////
+    // load data
     var data = [
         [ true, 'O. Appliance', 'status', '1.2', '1.5', 'now', 'now']
         ,[ false, 'Telephony', 'status', '1.2', '1.5', 'now', 'now']
         ,[ true, 'Security', 'status', '1.2', '1.5', 'now', 'now']
         ,[ false, '3rd Parties', 'status', '1.2', '1.5', 'now', 'now']
     ];
-
     store.loadData(data);
+
+    //////////////////////////////////////////////////////////
+    // create grid panel
     var gPanel = f_createEditorGridPanel(thisObject, store, cm, checkColumn, 'vm');
     var bPanel = f_createDeployButtonPanel(thisObject);
     gPanel[gPanel.length] = bPanel;
-
     var grid = gPanel[0];
-var gv = grid.getView();
-
     grid.on({"cellclick":{fn: f_onGridCellClick }});
 
+    ///////////////////////////////////////////////
+    // add WM deployment log into working panel
+    var lPanel = f_createLogPanel('VM Software Deployment Log',
+          'The status of VM Deployment will display here....');
+    gPanel[gPanel.length] = lPanel;
     thisObject.f_updateDataPanel(gPanel);
 
+    ///////////////////////////////////////////////////////
+    // enhance grid header
     var header = thisObject.f_getVMDeploySoftwareColHeader(true);
     for(var i=1; i<header.length; i++)
         grid.getView().getHeaderCell(i).innerHTML = header[i];
@@ -861,6 +893,16 @@ function f_populateUserPanel(opObject)
             var numOfSent = deleteRecs.length;
             var serverCommandCb = function(options, success, response)
             {
+                var xmlRoot = response.responseXML.documentElement;
+                var q = Ext.DomQuery;
+
+                var isSuccess = f_parseResponseError(xmlRoot);
+                if(!isSuccess[0])
+                {
+                    f_promptErrorMessage('Load Monitoring Hardware', isSuccess[1]);
+                    f_hideSendWaitMessage();
+                }
+
                 numOfSent--;
 
                 /////////////////////////////////////////////
@@ -1010,6 +1052,19 @@ function f_populateUserPanel(opObject)
     thisObject.f_updateDataPanel(panels);
 }
 
+function f_getMonitoringNetworkDataFromServer(opObject)
+{
+    var thisObject = opObject;
+
+    f_populateMonitoringNetworkPanel(thisObject);
+}
+
+function f_getMonitoringSoftwareDataFromServer(opObject)
+{
+    var thisObject = opObject;
+
+    f_populateMonitoringSoftwarePanel(thisObject);
+}
 
 function f_getMonitoringHardwareDataFromServer(opObject)
 {
@@ -1044,6 +1099,26 @@ function f_getMonitoringHardwareDataFromServer(opObject)
     + "</vmstatus>";
 
     f_sendServerCommand(false, xmlstr, serverCommandCb);
+}
+
+function f_populateMonitoringNetworkPanel(opObject)
+{
+    var empty = new Ext.Panel(
+    {
+        border: false
+    });
+
+    opObject.f_updateDataPanel(new Array(empty));
+}
+
+function f_populateMonitoringSoftwarePanel(opObject)
+{
+    var empty = new Ext.Panel(
+    {
+        border: false
+    });
+
+    opObject.f_updateDataPanel(new Array(empty));
 }
 
 function f_populateMonitoringHardwarePanel(opObject)
@@ -1238,7 +1313,7 @@ function f_createEditorGridPanel(opObject, store, columns, plugins, expandColNam
         ,defaults: { autoScroll: true }
     });
     opObject.grid = grid;
-    //grid.gridView = gridView;
+    grid.gridView = gridView;
     grid.isGrid = true;
 
     grid.on(
@@ -1284,11 +1359,9 @@ function f_createDataPanelNoteMessage()
 
 function f_createLogPanel(title, logText)
 {
-
     var label = new MyLabel(
     {
-        id: 'label_id_' + title
-        ,border: false
+        border: false
         ,height: 32
         ,width: 400
         ,cls: 'vHeaderLogLabel'
@@ -1301,8 +1374,7 @@ function f_createLogPanel(title, logText)
 
     var textArea = new Ext.form.TextArea(
     {
-        id: 'textArea_id_' + title
-        ,height: 78
+        height: 78
         ,scroll: true
         ,width: (w-30)  //560
         ,value: logText
@@ -1311,9 +1383,8 @@ function f_createLogPanel(title, logText)
 
     var panel = new Ext.Panel(
     {
-        id: 'logPanel_id' + title
-        ,layout: 'ux.row'
-        ,border: false
+        //layout: 'ux.row'
+        border: false
         ,bodyStyle: 'padding: 20px 10px 10px 0px'
         ,items: [ label, textArea ]
     });
@@ -1388,7 +1459,7 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
             return;
         }
 
-        f_onClickAnchor(g_opPanelObject.f_getVMAnchorData()[3])
+        f_onClickAnchor(g_opPanelObject.f_getVMAnchorData()[2])
         f_hideSendWaitMessage();
     }
 

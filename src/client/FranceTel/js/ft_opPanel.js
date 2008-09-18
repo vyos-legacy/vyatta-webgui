@@ -925,7 +925,7 @@ function f_populateUserPanel(opObject)
     var sendUserXMLString = function(record, op, callback)
     {
         var sid = f_getUserLoginedID();
-        var xmlstr = "<vmuser op=" + op + " user='" +
+        var xmlstr = "<vmuser op='" + op + "' user='" +
                       record.get('user') +
                       "' last='" + record.get('last') +
                       "' first='" + record.get('first') +

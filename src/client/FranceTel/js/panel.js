@@ -1,4 +1,4 @@
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -12,7 +12,7 @@ v_panelObject = Ext.extend(Ext.util.Observable,
     // m_mainPanel
     // m_topPanel
     // m_leftPanel
-    // m_centerPanel
+    // m_dataPanel
     // m_objName
     // m_frameHeight
     // m_frameWidth
@@ -43,34 +43,31 @@ v_panelObject = Ext.extend(Ext.util.Observable,
 
     f_updateDataPanel: function(panels)
     {
-        if(this.m_centerPanel != undefined &&
-            this.m_centerPanel.dataPanel != undefined)
+        if(this.m_dataPanel != undefined && this.m_dataPanel.innerPanel != undefined)
         {
-            while(this.m_centerPanel.dataPanel.items &&
-                this.m_centerPanel.dataPanel.items.getCount() > 0)
-                this.m_centerPanel.dataPanel.remove(
-                    this.m_centerPanel.dataPanel.items.itemAt(0));
-
-            if(this.m_centerPanel.dataPanel.el != undefined)
-                this.f_resizeGridPanel(this.m_centerPanel.dataPanel.getInnerWidth());
+            var iPanel = this.m_dataPanel.innerPanel;
+            while(iPanel.items != undefined && iPanel.items.getCount() > 0)
+                iPanel.remove(iPanel.items.itemAt(0));
 
             for(var i=0; i<panels.length; i++)
-                this.m_centerPanel.dataPanel.add(panels[i]);
+                iPanel.add(panels[i]);
 
             this.f_resizePanels(this.m_bodyPanel);
-            this.m_centerPanel.dataPanel.doLayout();
+            iPanel.doLayout();
         }
     },
-    f_updateDataPanelLabel: function(topLabelString, leftLeftString)
+    f_updateDataPanelLabel: function(topLabelString)
     {
-        var str = String.format(topLabelString);
-        this.m_centerPanel.lable.setText(str);
+        var str = "<div class='vHeaderLabel'>" + topLabelString + "</div>";
+        var el = document.getElementById('v_label');
 
+        if(el != undefined)
+            el.innerHTML = str;
     },
 
     f_getDataPanel: function()
     {
-        return this.m_centerPanel.dataPanel;
+        return this.m_dataPanel.innerPanel;
     },
 
     ////////////////////////////////////////////////////////////////////////////
@@ -86,21 +83,29 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             this.m_mainPanel.setSize(w, h);
             this.m_leftPanel.parentPanel.setSize(w-2, h-this.m_topHeight-2);
             this.m_leftPanel.setSize(this.m_leftWidth, h-this.m_topHeight-5);
-            this.m_centerPanel.setSize(w-this.m_leftWidth-5, h-this.m_topHeight);
-            this.m_centerPanel.dataPanel.setSize(w-this.m_leftWidth-70, h-this.m_topHeight-40);
-            this.f_resizeGridPanel(w);
+            this.m_dataPanel.setSize(w-this.m_leftWidth-3, h-this.m_topHeight);
+            this.m_dataPanel.innerPanel.setSize(w-this.m_leftWidth-25, h-this.m_topHeight);
+            this.f_resizeDataPanelChildren(w);
         }
     },
 
-    f_resizeGridPanel: function(w)
+    f_resizeDataPanelChildren: function(w)
     {
-        if(this.m_centerPanel.dataPanel.items != undefined &&
-                this.m_centerPanel.dataPanel.items.getCount() > 0)
+        var inner = this.m_dataPanel.innerPanel;
+        if(inner.items != undefined)
         {
-            var p = this.m_centerPanel.dataPanel.items.itemAt(0);
+            for(var i=0; i<inner.items.getCount(); i++)
+            {
+                var child = inner.items.itemAt(i);
 
-            if(p != undefined && p.isGrid != undefined)
-                p.setSize(w-this.m_leftWidth-70-20, 220);
+                if(child != undefined)
+                {
+                    if(child.fixHeight == undefined)
+                        child.setSize(w-this.m_leftWidth-43, 220);
+                    else
+                        child.setSize(w-this.m_leftWidth-43, child.fixHeight);
+                }
+            }
         }
     },
 
@@ -108,13 +113,24 @@ v_panelObject = Ext.extend(Ext.util.Observable,
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
-    f_createMainPanel: function(panelName)
+    f_createMainPanel: function(panelName, forLoginPanel)
     {
+        if(forLoginPanel != undefined && forLoginPanel)
+        {
+            this.m_leftWidth = 0;
+            this.m_topHeight = 0;
+        }
+        else
+        {
+            this.m_leftWidth = 200;
+            this.m_topHeight = 45;
+        }
+
         /////////////////////////////////////////////
         // create open appliance panel
-        var hPanel = this.f_createTopPanel(panelName);
-        var vPanel = this.f_createLeftPanel(panelName);
-        var cPanel = this.f_createCenterPanel(panelName);
+        var tPanel = this.f_createTopPanel(panelName);
+        var lPanel = this.f_createLeftPanel(panelName);
+        var dPanel = this.f_createDataPanel(panelName);
 
         ///////////////////////////////////////////////
         // this panel contain the vpanel and wPanel
@@ -125,7 +141,7 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             ,width: 600
             ,height: 200
             ,split: true
-            ,items: [vPanel, cPanel]
+            ,items: [lPanel, dPanel]
         });
 
         var panel = new Ext.Panel(
@@ -135,17 +151,17 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             ,height: 300
             ,width: 800
             ,bodyStyle: 'padding: 0px 15px 5px 5px'
-            ,items: [ hPanel, ipanel ]
+            ,items: [ tPanel, ipanel ]
         });
-        
 
-        vPanel.parentPanel = ipanel;
-        cPanel.parentPanel = ipanel;
+
+        lPanel.parentPanel = ipanel;
+        dPanel.parentPanel = ipanel;
 
         this.m_mainPanel = panel;
-        this.m_topPanel = hPanel;
-        this.m_leftPanel = vPanel;
-        this.m_centerPanel = cPanel;
+        this.m_topPanel = tPanel;
+        this.m_leftPanel = lPanel;
+        this.m_dataPanel = dPanel;
 
         var f_resizeChildPanels = function()
         {
@@ -171,8 +187,6 @@ v_panelObject = Ext.extend(Ext.util.Observable,
     ////////////////////////////////////////////////////////////////////////////
     f_createTopPanel: function(panelName)
     {
-        this.m_topHeight = 45;
-
         var panel = new Ext.Panel(
         {
             autoWidth: true
@@ -188,49 +202,22 @@ v_panelObject = Ext.extend(Ext.util.Observable,
     ////////////////////////////////////////////////////////////////////////////
     f_createLeftPanel: function(panelName)
     {
-        this.m_leftWidth = 200;
-
         var vertPanel = new Ext.Panel(
         {
             border: false
             ,width: this.m_leftWidth
             ,height: 100
             ,autoScroll: false
+            ,defaults: { autoScroll: false }
         });
 
         return vertPanel;
     },
 
     ////////////////////////////////////////////////////////////////////////////
-    f_createCenterPanel: function(panelName)
+    f_createDataPanel: function(panelName)
     {
-        var title = panelName == undefined ? ' ' : panelName;
-
-        var lable = new MyLabel(
-        {
-            border: false
-            ,bodyStyle: 'padding: 10px 0px 0px 0px'
-            ,height: 33
-            ,width: 500
-            ,cls: 'vHeaderLabel'
-            ,html: title
-        });
-
-        var lablePanel = new Ext.Panel(
-        {
-            border: false
-            ,autoWidth: true
-            ,height: 35
-            ,bodyStyle: 'padding: 0px 0px 0px 0px'
-            ,items: lable
-        });
-
-        var dummy = new Ext.Panel(
-        {
-            id: Ext.id()
-        });
-
-        var dataPanel = new Ext.Panel(
+        var innerPanel = new Ext.Panel(
         {
             border: false
             ,split: true
@@ -238,24 +225,22 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             ,bodyStyle: 'padding: 0px 0px 0px 0px'
             ,width: 500
             ,height: 250
-            ,items: [dummy]
         });
-        dataPanel.setSize(500, 250);
+        innerPanel.setSize(500, 250);
 
-        var cpanel = new Ext.Panel(
+        var showBorder = (panelName == 'login') ? undefined : 'v-panel-body';
+        var datapanel = new Ext.Panel(
         {
             id: Ext.id()
-            //,layout: 'ux.row'
-            ,border: true
+            ,border: false
             ,bodyStyle: 'padding: 3px 0px 0px 15px'
+            ,cls: showBorder
             ,defaults: {autoScroll: true}
-            ,items: [ lablePanel, dataPanel ]
+            ,items: [innerPanel ]
         });
-        cpanel.dataPanel = dataPanel;
-        cpanel.lable = lable;
+        datapanel.innerPanel = innerPanel;
 
-        dataPanel.grace = 'Grace is my future wife';
-        return cpanel;
+        return datapanel;
     },
 
     f_createDataPanelNoteMessage: function()
@@ -274,5 +259,115 @@ v_panelObject = Ext.extend(Ext.util.Observable,
         });
 
         return label
+    },
+
+    f_createEditorGridPanel: function(opObject, store, columns, plugins, 
+                        expandColName, headerTitle)
+    {
+        var gridView = new Ext.grid.GridView(
+        {
+            id: Ext.id()
+            ,enableRowBody: false
+            ,forceFit: true
+            ,borderWidth: 0
+        });
+        //gridView.scrollOffset = 0;
+
+        var grid = new Ext.grid.EditorGridPanel(
+        {
+            store: store
+            ,title: headerTitle
+            //,columns: columns
+            ,cm: columns
+            ,stripeRows: false
+            ,autoExpandColumn:expandColName
+            //,autoHeight: true
+            ,height: 200
+            //,autoWidth: true
+            ,width: 600
+            ,border: true
+            ,bodyBorder: true
+    //        ,bodyStyle: 'padding: 0px 10px 8px 0px'
+            ,viewConfig: { forceFit: true, borderWidth: 0 }
+            ,view: gridView
+            ,plugins: plugins
+            ,clicksToEdit:1
+            ,defaults: { autoScroll: true }
+        });
+        opObject.grid = grid;
+        grid.gridView = gridView;
+        grid.isGrid = true;
+
+        grid.on(
+        {
+            "cellclick":
+            {
+                fn: function(grid, rowIndex, columnIndex, e)
+                {
+                    opObject.m_selGridRow = rowIndex;
+                    opObject.m_selGridCol = columnIndex;
+
+                    if(store.getCount() > 6)
+                        gridView.scrollOffset = 15;
+                    else
+                        gridView.scrollOffset = 0;
+
+                    grid.doLayout();
+                }
+            }
+        });
+
+        return [ grid, f_createDataPanelNoteMessage() ];
+    },
+
+    f_createGridPanel: function(store, columns, plugins, expandColName,
+                      buttons, headerTitle)
+    {
+        var gridView = new Ext.grid.GridView(
+        {
+            id: Ext.id()
+            ,enableRowBody: false
+            ,forceFit: true
+            ,borderWidth: 0
+        });
+        //gridView.scrollOffset = 0;
+
+        var grid = new Ext.grid.GridPanel(
+        {
+            store: store
+            ,title: headerTitle
+            ,cm: columns
+            ,stripeRows: false
+            ,autoExpandColumn: expandColName
+            ,border: true
+            ,height: 200
+            ,maxHeight: 200
+            //,autoHeight: true
+            //,minWidth: 400
+            //,width: 600
+            ,autoWidth: true
+            ,bodyBorder: true
+            //,bodyStyle: 'padding: 0px 10px 10px 0px'
+            ,viewConfig: { forceFit: true, enableRowBody: false }
+            ,view: gridView
+            ,plugins: plugins
+            //,frame: true
+            ,enableColumnHide: true
+            ,enableHdMenu: false
+            ,defaults: { autoScroll: true }
+
+            // inline buttons
+            ,buttons: buttons
+            ,buttonAlign: 'right'
+        });
+        grid.isGrid = true;
+
+
+        return grid;
+    },
+    ABC: function()
+    {
+
     }
 });
+

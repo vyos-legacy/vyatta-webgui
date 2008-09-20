@@ -43,6 +43,19 @@ v_opPanelObject = Ext.extend(v_panelObject,
         return [ 'VM Dashboard', 'Deploy VM Software',
                   'Restart'];
     },
+    f_getMonitoringAnchorData: function()
+    {
+        return [ 'Hardware', 'Network', 'Software' ];
+    },
+    f_getUserAnchorData: function()
+    {
+        return [ 'User' ];
+    },
+    f_getBackupAnchorData: function()
+    {
+        return [ 'Configuration Backup', 'Configuration Restore' ];
+    },
+
     f_getVMDashboardColHeader: function(htmlBase)
     {
         if(htmlBase == undefined || !htmlBase)
@@ -99,14 +112,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
     },
 
     ////////////////////////////////////////////////////////////////////////////
-    f_getMonitoringAnchorData: function()
-    {
-        return [ 'Hardware', 'Network', 'Software' ];
-    },
-    f_getUserAnchorData: function()
-    {
-        return [ 'User' ];
-    },
+    
 
     ////////////////////////////////////////////////////////////////////////////
     f_getOpTopPanelData: function()
@@ -269,100 +275,117 @@ v_opPanelObject = Ext.extend(v_panelObject,
         this.f_updateTopPanel(this.f_getOpTopPanelData());
     },
 
+    f_invokeVMDashboardAnchor: function()
+    {
+        this.m_isDashboard = true;
+        this.m_selLeftAnchorName = this.f_getVMAnchorData()[0];
+        f_getVMDashboard_RestartDataFromServer(this);
+        this.f_updateLeftPanel(this.f_getVMLeftPanelData());
+    },
+
+    f_invokeMonitorHardwareAnchor: function()
+    {
+        f_getMonitoringHardwareDataFromServer(this);
+        this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[0];
+        this.f_updateLeftPanel(this.f_getVMLeftPanelData(
+                                  this.f_getMonitoringAnchorData()));
+    },
+    f_invokeUserAnchor: function()
+    {
+        f_getUserDataFromServer(this);
+        this.m_selLeftAnchorName = this.f_getUserAnchorData()[0];
+        this.f_updateLeftPanel(this.f_getVMLeftPanelData(
+                                this.f_getUserAnchorData()));
+    },
+
+    f_invokeBackupAnchor: function()
+    {
+        f_getBackupDataFromServer(this);
+        this.m_selLeftAnchorName = this.f_getBackupAnchorData()[0];
+        this.f_updateLeftPanel(this.f_getVMLeftPanelData(
+                                this.f_getBackupAnchorData()));
+    },
+
     f_processDataPanelForTopAnchor: function(anchorId)
     {
-        var workingPanelTitle = anchorId;
+        g_opPanelObject.m_dataPanelTitle = anchorId;
 
         switch(this.m_selTopAnchorName)
         {
             case 'VM':
             default:
-                workingPanelTitle = 'VM > VM Dashboard';
-                this.m_isDashboard = true;
-                this.m_selLeftAnchorName = this.f_getVMAnchorData()[0];
-                f_getVMDashboard_RestartDataFromServer(this);
-                this.f_updateLeftPanel(this.f_getVMLeftPanelData());
+                g_opPanelObject.m_dataPanelTitle = 'VM &rArr; VM Dashboard';
+                this.f_invokeVMDashboardAnchor();
                 break;
             case 'User':
-                workingPanelTitle = 'Users';
-                f_getUserDataFromServer(this);
-                this.m_selLeftAnchorName = this.f_getUserAnchorData()[0];
-                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
-                                        this.f_getUserAnchorData()));
+                g_opPanelObject.m_dataPanelTitle = 'Users';
+                this.f_invokeUserAnchor();
                 break;
             case 'Monitoring':
-                workingPanelTitle = 'Monitoring > Hardware';
-                f_getMonitoringHardwareDataFromServer(this);
-                this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[0];
-                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
-                                          this.f_getMonitoringAnchorData()));
+                g_opPanelObject.m_dataPanelTitle = 'Monitoring &rArr; Hardware';
+                this.f_invokeMonitorHardwareAnchor();
                 break;
             case 'Backup':
-                this.m_selLeftAnchorName = 'empty';
-                this.f_updateLeftPanel(this.f_getVMLeftPanelData('empty'));
+                g_opPanelObject.m_dataPanelTitle = 'Backup';
+                this.f_invokeBackupAnchor();
                 break;
         }
-
-        this.f_updateDataPanelLabel(workingPanelTitle);
     },
 
     f_processDataPanelForLeftAnchor: function(anchorId)
     {
-        var workingPanelTitle = this.m_selTopAnchorName + ' > ';
+        g_opPanelObject.m_dataPanelTitle = this.m_selTopAnchorName + ' &rArr; ';
 
         switch(anchorId)
         {
             case 'VM_Dashboard':
-                this.m_isDashboard = true;
-                this.m_selLeftAnchorName = this.f_getVMAnchorData()[0];
-                f_getVMDashboard_RestartDataFromServer(this);
-                this.f_updateLeftPanel(this.f_getVMLeftPanelData());
-                workingPanelTitle += 'VM Dashboard';
+                g_opPanelObject.m_dataPanelTitle += 'VM Dashboard';
+                this.f_invokeVMDashboardAnchor();
                 break;
             case 'Deploy_VM_Software':
+                g_opPanelObject.m_dataPanelTitle += 'Deploy VM Software';
                 this.m_selLeftAnchorName = this.f_getVMAnchorData()[1];
                 f_populateVMDeploySoftwarePanel(this);
-                workingPanelTitle += 'Deploy VM Software';
                 this.f_updateLeftPanel(this.f_getVMLeftPanelData());
                 break;
             case 'Restart':
-                workingPanelTitle += 'Restart';
+                g_opPanelObject.m_dataPanelTitle += 'Restart';
                 f_getVMDashboard_RestartDataFromServer(this);
                 this.m_isDashboard = false;
                 this.m_selLeftAnchorName = this.f_getVMAnchorData()[2];
                 this.f_updateLeftPanel(this.f_getVMLeftPanelData());
                 break;
             case 'Hardware':
-                f_getMonitoringHardwareDataFromServer(this);
-                this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[0];
-                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
-                                          this.f_getMonitoringAnchorData()));
-                workingPanelTitle += 'Hardware';
+                g_opPanelObject.m_dataPanelTitle += 'Hardware';
+                this.f_invokeMonitorHardwareAnchor();
                 break;
             case 'Network':
+                g_opPanelObject.m_dataPanelTitle += 'Network';
                 f_getMonitoringNetworkDataFromServer(this);
                 this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[1];
                 this.f_updateLeftPanel(this.f_getVMLeftPanelData(
                                           this.f_getMonitoringAnchorData()));
-                workingPanelTitle += 'Network';
                 break;
             case 'Software':
+                g_opPanelObject.m_dataPanelTitle += 'Software';
                 f_getMonitoringSoftwareDataFromServer(this);
                 this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[2];
                 this.f_updateLeftPanel(this.f_getVMLeftPanelData(
                                           this.f_getMonitoringAnchorData()));
-                workingPanelTitle += 'Software';
                 break;
             case 'User':
-                workingPanelTitle = 'Users';
-                f_getUserDataFromServer(this);
-                this.m_selLeftAnchorName = this.f_getUserAnchorData()[0];
-                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
-                                        this.f_getUserAnchorData()));
+                g_opPanelObject.m_dataPanelTitle = 'Users';
+                this.f_invokeUserAnchor();
+                break;
+            case 'Configuration_Backup':
+                g_opPanelObject.m_dataPanelTitle += 'Configuration Backup';
+                this.f_invokeBackupAnchor();
+                break;
+            case 'Configuration_Restore':
+                g_opPanelObject.m_dataPanelTitle += 'Configuration Restore';
+                this.f_invokeBackupAnchor();
                 break;
         }
-
-        this.f_updateDataPanelLabel(workingPanelTitle);
     }
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
@@ -389,8 +412,11 @@ function f_sendServerCommand(checkLogin, xmlSend, callback, showWait)
                xmlSend + "</vyatta>\n";
 
     if(showWait == undefined || showWait == true)
-        g_sendCommandWait = Ext.MessageBox.wait('Wait for Server Response ...',
-                                              'Post Request to Server');
+        g_sendCommandWait = f_promptWaitMessage('Wait for Server Response ...',
+                                              'Post Request to Server')
+
+        //Ext.MessageBox.wait('Wait for Server Response ...',
+        //                                      'Post Request to Server');
 
     /* send request */
     var conn = new Ext.data.Connection({});
@@ -469,13 +495,17 @@ function f_populateVMRestartPanel(opObject)
 
     ////////////////////////////////////////////////////
     // add main grid into working panel
-    var gPanels = f_createEditorGridPanel(opObject, store, cm, undefined, 'vm');
-    
+    var gPanels = opObject.f_createEditorGridPanel(opObject, store, cm, undefined, 'vm',
+                    g_opPanelObject.m_dataPanelTitle);
+
+    gPanels[gPanels.length] = f_createEmptyPanel();
+
     ///////////////////////////////////////////////
     // add WM System log into working panel
     var lPanel = f_createLogPanel('VM System Log',
           'The status of VM Restart will display here....');
     gPanels[gPanels.length] = lPanel;
+
     opObject.f_updateDataPanel(gPanels);
 
     //////////////////////////////////////////////
@@ -543,8 +573,6 @@ function f_getVMDashboard_RestartDataFromServer(opObject)
         if(!isSuccess[0])
         {
             f_promptErrorMessage('Load VM Dashboard', isSuccess[1]);
-            f_hideSendWaitMessage();
-
             return;
         }
 
@@ -571,7 +599,7 @@ function f_getVMDashboard_RestartDataFromServer(opObject)
     var xmlstr = "<vmstatus><id>" + sid + "</id>\n"
                + "</vmstatus>";
 
-    f_sendServerCommand(false, xmlstr, serverCommandCb);
+    f_sendServerCommand(true, xmlstr, serverCommandCb);
 }
 
 function f_populateVMDashboardPanel(opObject)
@@ -634,15 +662,9 @@ function f_populateVMDashboardPanel(opObject)
 
     ///////////////////////////////////////////////////////
     // add grid into working panel
-    var grid = f_createGridPanel(store, cm, undefined, 'vm', buttons);
-    var gPanel = new Ext.Panel(
-    {
-        border: false
-        ,autoWidth: true
-        ,autoHeight: true
-        ,items: [grid]
-    });
-    var panels = [gPanel];
+    var grid = opObject.f_createGridPanel(store, cm, undefined, 'vm', buttons,
+                g_opPanelObject.m_dataPanelTitle);
+    var panels = [grid];
     opObject.f_updateDataPanel(panels);
 
     //////////////////////////////////////////////
@@ -666,7 +688,6 @@ function f_getUserDataFromServer(opObject)
         if(!isSuccess[0])
         {
             f_promptErrorMessage('Load User', isSuccess[1]);
-            f_hideSendWaitMessage();
             return;
         }
 
@@ -681,24 +702,63 @@ function f_getUserDataFromServer(opObject)
         f_hideSendWaitMessage();
     }
 
+    var sid = f_getUserLoginedID();
+    var xmlstr = "<vmuser op='list'><id>" + sid + "</id>\n"
+    + "</vmuser>";
+
+    f_sendServerCommand(true, xmlstr, serverCommandCb);
+}
+function f_getBackupDataFromServer(opObject)
+{
+    var dbData = new Array();
+    var thisObject =  opObject;
+
+    var serverCommandCb = function(options, success, response)
+    {
+        var xmlRoot = response.responseXML.documentElement;
+        var q = Ext.DomQuery;
+
+        var isSuccess = f_parseResponseError(xmlRoot);
+        if(!isSuccess[0])
+        {
+            f_promptErrorMessage('Load Backup', isSuccess[1]);
+            return;
+        }
+
+        var vmUserNodes = q.select('vmuser', xmlRoot);
+
+        for(var i=0; i<vmUserNodes.length; i++)
+            dbData[i] = f_parseBackupData(vmUserNodes[i]);
+
+        thisObject.m_userDBData = dbData;
+        f_populateBackupPanel(thisObject);
+
+        f_hideSendWaitMessage();
+    }
 
     var sid = f_getUserLoginedID();
     var xmlstr = "<vmuser op='list'><id>" + sid + "</id>\n"
     + "</vmuser>";
 
-    f_sendServerCommand(false, xmlstr, serverCommandCb);
+    f_sendServerCommand(true, xmlstr, serverCommandCb);
 }
+function f_populateBackupPanel(opObject)
+{
+    var thisObject = opObject;
+    var fm = Ext.form;
+}
+
 function f_populateVMDeploySoftwarePanel(opObject)
 {
     var thisObject = opObject;
     var fm = Ext.form;
 
-    var checkColumn = new Vyatta_grid_CheckColumn(
+    var CheckColumnOnMousePress = function()
     {
-        header: " ",
-        dataIndex: 'checker',
-        width: 20
-    });
+        //enableDisableUserButtons(thisObject);
+    }
+
+    var checkColumn = f_createGridCheckColumn(CheckColumnOnMousePress);
 
     var userStore = new Ext.data.SimpleStore( {
 fields: [ 'userId', 'userName' ],
@@ -726,9 +786,9 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
 
     var cm = new Ext.grid.ColumnModel([
         checkColumn,
-        {header: 'VM', width: 60, menuDisabled: true, fixed: true,
+        {header: 'VM', width: 120, menuDisabled: true, fixed: true,
             sortable: false, dataIndex: 'vm', align:'left'},
-        {header: 'Deployment Status', width: 110, sortable: false, fixed: true,
+        {header: 'Deployment Status', width: 100, sortable: false, fixed: true,
             menuDisabled: true, dataIndex: 'status', align:'center'},
         {header: 'Current Version', width: 80, sortable: false, fixed: true,
             menuDisabled: true, dataIndex: 'currentVersion', align:'center'},
@@ -742,11 +802,12 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
             align:'center',
             type: 'date',
             dateFormat: 'd/m/y',
-            renderer: f_renderGridDataField,
+            renderer: f_renderGridDateField,//Ext.util.Format.dateRenderer('d/m/Y'),
             editor: new fm.DateField(
             {
                 format: 'd/m/y'
                 ,minValue: '01/01/06'
+                ,tooltip: 'click fu'
                 //disabledDays: [0, 6 ],
                 //disabledDaysText: 'Plants are not available on the weekends'
             })
@@ -756,7 +817,7 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
             align:'center',
             type: 'date',
             dateFormat: 'm/d/y',
-            renderer: f_renderGridDataField,
+            renderer: f_renderGridTimeField,
             editor: new fm.TimeField(
             {
                 increment: 15
@@ -773,7 +834,7 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
             { name: 'status' },
             { name: 'currentVersion' },
             { name: 'availableVersion' },
-            { name: 'deployScheduleDate' },
+            { name: 'deployScheduleDate', type: 'date', dateFormat: 'n/j h:ai' },
             { name: 'deployScheduleTime' }
         ]
     });
@@ -790,11 +851,14 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
 
     //////////////////////////////////////////////////////////
     // create grid panel
-    var gPanel = f_createEditorGridPanel(thisObject, store, cm, checkColumn, 'vm');
+    var gPanel = thisObject.f_createEditorGridPanel(thisObject, store, cm, checkColumn,
+                      'vm', thisObject.m_dataPanelTitle);
     var bPanel = f_createDeployButtonPanel(thisObject);
     gPanel[gPanel.length] = bPanel;
     var grid = gPanel[0];
     grid.on({"cellclick":{fn: f_onGridCellClick }});
+
+    gPanel[gPanel.length] = f_createEmptyPanel();
 
     ///////////////////////////////////////////////
     // add WM deployment log into working panel
@@ -900,7 +964,6 @@ function f_populateUserPanel(opObject)
                 if(!isSuccess[0])
                 {
                     f_promptErrorMessage('Load Monitoring Hardware', isSuccess[1]);
-                    f_hideSendWaitMessage();
                 }
 
                 numOfSent--;
@@ -951,16 +1014,8 @@ function f_populateUserPanel(opObject)
     }
     thisObject.saveCallback = saveCallback;
 
-
-    var checkColumn = new Vyatta_grid_CheckColumn(
-    {
-        header: " "
-        ,dataIndex: 'checker'
-        ,width: 25
-        ,fixed: true
-        ,sortable: false
-        ,callback: CheckColumnOnMousePress
-    });
+    var checkColumn = f_createGridCheckColumn(CheckColumnOnMousePress);
+    
 
 /*/
     var comboBox = new Ext.form.ComboBox(
@@ -1033,7 +1088,8 @@ function f_populateUserPanel(opObject)
 
     ///////////////////////////////////////////////////////
     // add user panel grid into working panel
-    var panels = f_createEditorGridPanel(thisObject, store, cm, checkColumn, 'user');
+    var panels = thisObject.f_createEditorGridPanel(thisObject, store, cm, checkColumn,
+                    'user', thisObject.m_dataPanelTitle);
     thisObject.store = store;
     var buttonPanel = f_createUserButtonsPanel(thisObject);
     thisObject.buttonPanel = buttonPanel;
@@ -1080,7 +1136,6 @@ function f_getMonitoringHardwareDataFromServer(opObject)
         if(!isSuccess[0])
         {
             f_promptErrorMessage('Load Monitoring Hardware', isSuccess[1]);
-            f_hideSendWaitMessage();
             return;
         }
 
@@ -1098,7 +1153,7 @@ function f_getMonitoringHardwareDataFromServer(opObject)
     var xmlstr = "<vmstatus><id>" + sid + "</id>\n"
     + "</vmstatus>";
 
-    f_sendServerCommand(false, xmlstr, serverCommandCb);
+    f_sendServerCommand(true, xmlstr, serverCommandCb);
 }
 
 function f_populateMonitoringNetworkPanel(opObject)
@@ -1156,10 +1211,10 @@ function f_populateMonitoringHardwarePanel(opObject)
     });
     store.loadData(opObject.m_monitorHwDBData);
 
-
     ////////////////////////////////////////////////////
     // add grid into working panel
-    var grid = f_createGridPanel(store, cm, undefined, 'component');
+    var grid = opObject.f_createGridPanel(store, cm, undefined, 'component',
+                        undefined, g_opPanelObject.m_dataPanelTitle);
     opObject.f_updateDataPanel(new Array(grid));
 
     //////////////////////////////////////////////
@@ -1179,25 +1234,25 @@ function f_renderGridImage(val, metaData, record, rIndex, cIndex)
     switch(val)
     {
         case 'updateAval_yes':
-            str = String.format("<span align='center'><img src='images/statusUp.ico' /></span>");
+            str = String.format("<span align='center'><img src='images/statusUp.gif' /></span>");
             tip = '"<font color=green>Update version is available</font>"';
             title = 'Update&nbsp;Version:'
             break;
         case 'updateAval_no':
-            str = String.format("<span align='center'><img src='images/statusDown.ico' /></span>");
+            str = String.format("<span align='center'><img src='images/statusDown.gif' /></span>");
             tip = '"<font color=red>Update version is not available</font>"';
             title = 'Update&nbsp;Version:'
             break;
         case 'up':
-            str = String.format("<span align='center'><img src='images/statusUp.ico' /></span>");
+            str = String.format("<span align='center'><img src='images/statusUp.gif' /></span>");
             tip = '"The value is <font color=green><b>Up</b></font>"';
             break;
         case 'down':
-            str = String.format("<span align='center'><img src='images/statusDown.ico' /></span>");
+            str = String.format("<span align='center'><img src='images/statusDown.gif' /></span>");
             tip = '"The value is <font color=red><b>Down</b></font>"';
             break;
         default:
-            str = String.format("<span align='center'><img src='images/statusUnknown.ico' /></span>");
+            str = String.format("<span align='center'><img src='images/statusUnknown.gif' /></span>");
             tip = '"The value is <font color=yellow><b>Unknow</b></font>"';
     }
 
@@ -1238,105 +1293,48 @@ function f_renderProgressBarChange(val, metaData, record, rowIndex, colIndex)
 
     return String.format("<span align='center' id=" + contentId + "></span>");
 }
-
-function f_createGridPanel(store, columns, plugins, expandColName, buttons)
+function f_createGridProgressBar(val, contentId, metaData, record, rowIndex, colIndex)
 {
-    var gridView = new Ext.grid.GridView(
+    var tTitle = "";
+    var tTip = "tips";
+    switch(colIndex)
     {
-        enableRowBody: false
-        ,forceFit: true
-    });
-    gridView.scrollOffset = 0;
+        case 3:
+            tTitle = "<u>RAM&nbsp;Usaged:</u>";
+            break;
+    }
 
-    var grid = new Ext.grid.GridPanel(
+    metaData.attr = 'ext:qtitle=' + tTitle + ' ext:qtip=' + tTip;
+
+    var cls = (Number(val) > 80) ? 'custom_red' : 'custom_green';
+    var pBar = new Ext.ProgressBar(
     {
-        store: store
-        ,cm: columns
-        ,stripeRows: false
-        ,autoExpandColumn: expandColName
-        ,border: true
-        //,height: 220
-        ,maxHeight: 220
-        ,autoHeight: true
-        //,minWidth: 400
-        //,width: 600
-        ,autoWidth: true
-        ,bodyBorder: true
-        //,bodyStyle: 'padding: 0px 10px 10px 0px'
-        //,viewConfig: { forceFit: true, enableRowBody: false }
-        ,view: gridView
-        ,plugins: plugins
-        //,frame: true
-        ,enableColumnHide: true
-        ,enableHdMenu: false
-        ,defaults: { autoScroll: true }
-
-        // inline buttons
-        ,buttons: buttons
-        ,buttonAlign: 'right'
+        width: 80
+        ,text: val + "%"
+        ,value: (val/100)
+        ,cls: cls
     });
-    grid.isGrid = true;
 
-
-    return grid;
+    pBar.render(document.body, contentId);
 }
 
-function f_createEditorGridPanel(opObject, store, columns, plugins, expandColName)
+function f_createGridCheckColumn(callback)
 {
-    var gridView = new Ext.grid.GridView(
+    var cl = new Vyatta_grid_CheckColumn(
     {
-        id: Ext.id()
-        ,enableRowBody: false
-        ,forceFit: true
-        ,borderWidth: 0
-    });
-    gridView.scrollOffset = 0;
-
-    var grid = new Ext.grid.EditorGridPanel(
-    {
-        store: store
-        //,columns: columns
-        ,cm: columns
-        ,stripeRows: false
-        ,autoExpandColumn:expandColName
-        ,autoHeight: true
-        ,maxHeight: 220
-        //,autoWidth: true
-        ,width: 600
-        ,border: true
-        ,bodyBorder: true
-//        ,bodyStyle: 'padding: 0px 10px 8px 0px'
-        ,viewConfig: { forceFit: true, borderWidth: 0 }
-        ,view: gridView
-        ,plugins: plugins
-        ,clicksToEdit:1
-        ,defaults: { autoScroll: true }
-    });
-    opObject.grid = grid;
-    grid.gridView = gridView;
-    grid.isGrid = true;
-
-    grid.on(
-    {
-        "cellclick":
-        {
-            fn: function(grid, rowIndex, columnIndex, e)
-            {
-                opObject.m_selGridRow = rowIndex;
-                opObject.m_selGridCol = columnIndex;
-
-                if(store.getCount() > 6)
-                    gridView.scrollOffset = 15;
-                else
-                    gridView.scrollOffset = 0;
-
-                grid.doLayout();
-            }
-        }
+        header: " "
+        ,dataIndex: 'checker'
+        ,width: 25
+        ,fixed: true
+        ,sortable: false
+        ,callback: callback
     });
 
-    return [ grid, f_createDataPanelNoteMessage() ];
+    return cl;
 }
+
+
+
 
 function f_createDataPanelNoteMessage()
 {
@@ -1359,62 +1357,35 @@ function f_createDataPanelNoteMessage()
 
 function f_createLogPanel(title, logText)
 {
-    var label = new MyLabel(
-    {
-        border: false
-        ,height: 32
-        ,width: 400
-        ,cls: 'vHeaderLogLabel'
-        ,html: title
-        ,bodyStyle: 'padding: 10px 10px 10px 0px'
-    });
-
     var dataPanel = g_opPanelObject.f_getDataPanel();
     var w = dataPanel.getInnerWidth();
 
     var textArea = new Ext.form.TextArea(
     {
         height: 78
+        ,width: 200
         ,scroll: true
-        ,width: (w-30)  //560
         ,value: logText
-        ,bodyStyle: 'padding: 10px 10px 10px 0px'
+        ,border: true
+        ,bodyStyle: 'padding: 0px 10px 10px 0px'
     });
 
     var panel = new Ext.Panel(
     {
-        //layout: 'ux.row'
         border: false
-        ,bodyStyle: 'padding: 20px 10px 10px 0px'
-        ,items: [ label, textArea ]
+        ,title: title
+        ,bodyStyle: 'padding: 0px 0px 10px 0px'
+        ,items: [ textArea ]
     });
+
+    panel.on({'resize': { fn: function()
+    {
+        textArea.setSize(panel.getSize().width, 78);
+    } }});
 
     return panel;
 }
 
-function f_createGridProgressBar(val, contentId, metaData, record, rowIndex, colIndex)
-{
-    var tTitle = "";
-    var tTip = "tips";
-    switch(colIndex)
-    {
-        case 3:
-            tTitle = "<u>RAM&nbsp;Usaged:</u>";
-                //"<p><b><u>RAM&nbsp;Usaged:</u></b></p>";
-            break;
-    }
-
-    metaData.attr = 'ext:qtitle=' + tTitle + ' ext:qtip=' + tTip;
-
-    var pBar = new Ext.ProgressBar(
-    {
-        width: 70
-        ,text: val + "%"
-        ,value: (val/100)
-    });
-
-    pBar.render(document.body, contentId);
-}
 
 
 function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
@@ -1454,8 +1425,6 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
         if(!isSuccess[0])
         {
             f_promptErrorMessage('Load Restart', isSuccess[1]);
-            f_hideSendWaitMessage();
-
             return;
         }
 
@@ -1477,7 +1446,7 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
             "</id><statement>/opt/vyatta/sbin/vyatta-vmop.pl " +
             xmlStatement + "</statement></command>";
 
-            f_sendServerCommand(false, xmlstr, serverCommandCb);
+            f_sendServerCommand(true, xmlstr, serverCommandCb);
         }
     });
 
@@ -1498,12 +1467,71 @@ function f_renderGridButton(val, p, record, rowIndex, colIndex)
     return "";
 }
 
-function f_renderGridDataField(val, metadata, record, rowIndex, colIndex)
+function f_renderGridDateField(val, metadata, record, rowIndex, colIndex)
 {
-    metadata = 'ext:qtitle="Date" ext:qtip=' +
-      '"Click on this <font color=#FF6600><b>cell</b></font> to select new date"';
+    var sDate = f_compareDateTime(val, record.get('deployScheduleTime'));
 
-    return val;
+    var tt = '"Click on this <font color=#FF6600><b>cell</b></font>' +
+              ' to select date.<br>'+
+              'To deploy NOW, select past date from calender."';
+    metadata.attr = 'ext:qtitle="Date: " ext:qtip=' + tt;
+
+    if(sDate == 'now')
+        return 'now';
+    else
+        return Ext.util.Format.date(sDate, 'd/m/y');
+}
+
+function f_renderGridTimeField(val, metadata, record, rowIndex, colIndex)
+{
+    var sDate = f_compareDateTime(record.get('deployScheduleDate'), val);
+
+    var tt = '"Click on this <font color=#FF6600><b>cell</b></font>' +
+              ' to select time.<br>'+
+              'To deploy NOW, select past date from calender."';
+
+    metadata.attr = 'ext:qtitle="Date" ext:qtip=' + tt;
+
+    if(sDate == 'now')
+        return 'now';
+    else
+        return val;
+}
+
+function f_compareDateTime(vDate, vTime)
+{
+    var curDate = new Date();
+    var givenDate = vDate;
+    var givenTime = vTime;
+
+    if(givenDate == undefined || givenDate.length < 5 || givenDate == 'now')
+    {
+        givenDate = curDate;
+    }
+
+    /////////////////////////////////////////////////////
+    if(givenTime == undefined || givenTime.length < 1 || givenTime == 'now')
+    {
+        givenTime = new Date();
+        givenTime = new Date(givenDate.getFullYear(), givenDate.getMonth(), 
+                        givenDate.getDate(), givenTime.getHours(),
+                        givenTime.getMinutes(), 0, 0);
+    }
+    else
+    {
+        var h = givenTime.split(':');
+        var m = 0;
+        if(h[1] != undefined) m = h[1].split(' ');
+        if(m[1] != undefined && m[1] == 'PM') h[0] = Number(h[0])+12;
+
+        givenTime = new Date(givenDate.getFullYear(), givenDate.getMonth(), givenDate.getDate(),
+                              h[0], m[0], 0, 0);
+    }
+
+    if(curDate > givenTime)
+        return 'now'
+    else
+        return givenTime;
 }
 
 function f_renderGridComboBox(val, metaData, record, rowIndex, colIndex)
@@ -1585,8 +1613,11 @@ function f_createDeployButtonPanel(opObject)
     var panel = new Ext.Panel(
     {
         border: false
+        ,height: 10
+        ,html: ' '
         ,buttons: [dButton, cButton]
     });
+    panel.fixHeight = 10;
 
     return panel;
 }
@@ -1623,14 +1654,29 @@ function f_createUserButtonsPanel(opObject)
     {
         border: false
         ,bodyBorder: false
-        ,bodyStyle: 'padding: 0px 50px 0px 10px'
-        //,layout: 'column'
+        ,maxHeight:10
+        ,bodyStyle: 'padding: 0px 0px 0px 20px'
+        ,html: ' '
         ,buttons: [ addUser, deleteSelected, saveChanged ]
     });
+    bPanel.fixHeight = 10;
 
     return bPanel;
 }
 
+function f_createEmptyPanel()
+{
+    var bPanel = new Ext.Panel(
+    {
+        border: false
+        ,bodyBorder: false
+        ,html: ' '
+        ,height: 38
+    });
+    bPanel.fixHeight = 38;
+
+    return bPanel
+}
 function f_onGridCellClick(grid, rowIndex, columnIndex, e)
 {
     //var cb = grid.getColumnModel().getCellEditor(columnIndex, rowIndex);

@@ -2,25 +2,166 @@
 <HTML>
  <HEAD>
   <TITLE>Open Appliance Configuration</TITLE>
-  <link rel="stylesheet" type="text/css" href="/ext-2.1/resources/css/ext-all.css" />
+  <link rel="stylesheet" type="text/css" href="/ext-2.2/resources/css/ext-all.css" />
   <link href="css/style.css" rel="stylesheet" type="text/css" />
   <link href="css/oaStyle.css" rel="stylesheet" type="text/css" />
-  <script type="text/javascript" src="/ext-2.1/adapter/ext/ext-base.js"></script>
-  <script type="text/javascript" src="/ext-2.1/ext-all.js"></script>
+  <script type="text/javascript" src="/ext-2.2/adapter/ext/ext-base.js"></script>
+  <script type="text/javascript" src="/ext-2.2/ext-all.js"></script>
 
   <style type="text/css">
-    .vHeaderLabel
+    .x-panel-header
     {
-        font-size:20px;
-        font-weight: bold;
-        color: #FF6600;
+        overflow:hidden;
+        zoom:1;
+        font:bold 14px arial;
+	color:#FFF;
+        padding:5px;
+        border:1px solid #efefef;
+        line-height: 15px;
+        background: #ff6600
     }
-    .vHeaderLogLabel
+    .v-panel-body
     {
-        font-size:15px;
-        font-weight: bold;
-        padding-bottom: 10px;
-        color: #FF6600;
+        border:1px solid #efefef;
+        /*border-top:0 none;*/
+        overflow:hidden;
+        background: white;
+        position: relative; /* added for item scroll positioning */
+    }
+
+    .vProgressPanel_css
+    {
+      border: #000000 1px solid;
+    }
+
+    .status
+    {
+        color:#555;
+    }
+    .x-progress-wrap.left-align .x-progress-text
+    {
+        text-align:left;
+    }
+    .x-progress-wrap.custom
+    {
+        height:15px;
+        border:1px solid #000;
+        overflow:hidden;
+        padding:0 2px;
+    }
+    .ext-ie .x-progress-wrap.custom
+    {
+        height:19px;
+    }
+    .custom_red .x-progress-inner
+    {
+        height:15px;
+        background: white;
+    }
+    .custom_red .x-progress-bar {
+        height:15px;
+        background: #D60000;
+        border:1px solid #FFFFFF;
+    }
+    .x-progress-wrap
+    {
+        border: 1px solid #000000;
+        overflow: hidden;
+    }
+    .custom_green .x-progress-inner {
+        height:15px;
+        background: white;
+    }
+    .custom_green .x-progress-bar {
+        height:15px;
+        background: #009933;
+        border:1px solid #FFFFFF;
+    }
+    .x-progress-text
+    {
+        font-size:11px;
+        font-weight:bold;
+        color:#fff;
+        padding:1px 5px;
+        overflow:hidden;
+        position:absolute;
+        left:0;
+        text-align:center;
+    }
+
+    .x-progress-text-back
+    {
+        color:#000;
+        line-height:16px;
+    }
+    .ext-ie .x-progress-text-back
+    {
+        line-height:15px;
+    }
+
+    .x-grid-panel .x-panel-body
+    {
+        overflow:hidden !important;
+        border: 1px solid #efefef
+    }
+
+    #messageContactServiceCustomer
+    {
+	clear:both;
+	color:#FF6600;
+	height:50px;
+	margin-top: 30px;
+	margin-bottom: 20px;
+    }
+    .tf_wait_message
+    {
+        background: #ff6600;
+        color: #ff6600;
+    }
+
+    /**************************************************************************
+     FT
+    ***************************************************************************/
+    #logon_content
+    {
+	width: 760px;
+	padding-top:30px;
+	padding-bottom:20px;
+	text-align:center;
+    }
+
+    #logon_content td
+    {
+            width:50%;
+            line-height:25px;
+            border:0px;
+            padding:10px;
+    }
+
+    #logon_content td.alignRight
+    {
+            text-align:right;
+    }
+
+    #logon_content td.alignLeft
+    {
+            text-align:left;
+    }
+
+    #logon_content input
+    {
+            background:#FFF;
+            font-size:11px;
+    }
+
+    #ft_table
+    {
+	font-family:arial;
+	font-size: 11px;
+	border:1px;
+	border-collapse:collapse;
+	width:100%;
+	margin-left:0px;
     }
   </style>
 
@@ -28,6 +169,7 @@
   <script type="text/javascript" src="js/vyatta-constant-values.js"></script>
   <script type="text/javascript" src="js/vyatta-utils.js"></script>
   <script type="text/javascript" src="js/vyatta_grid_checkColumn.js"></script>
+  <script type="text/javascript" src="js/vyatta_rowLayout.js"></script>
   <script type="text/javascript" src="js/ft_dataStructures.js"></script>
   <script type="text/javascript" src="js/panelsManager.js"></script>
   <script type="text/javascript" src="js/panel.js"></script>
@@ -37,7 +179,6 @@
 
  </HEAD>
 <body>
-
 <!-- ------------------------- main header --------------------------------- -->
 <div id="id_header">
     <nobr>
@@ -55,7 +196,7 @@
     <div id="barre_etat">
       <span>welcome admin you are connected to the Open Appliance admin service</span>
       <a href="#" onclick="logOff()" class="dec" onfocus="this.blur();">log out</a>
-   </div> 
+   </div>
 
     <div id="nav_primaire">
         <table id="nav_primaire1">
@@ -75,12 +216,8 @@
     </div>
 
     <div id="id_header_nav">
-
     </div>
-
-  </div> <!-- fin header-->
-
-<!-- --------------------------- configuration ----------------------------- -->
+</div> <!-- fin header-->
 
 
 <!-- ------------------------ left menu ------------------------- -->
@@ -90,9 +227,7 @@
 
 
 <!--------------- Content -------------------------->
-
 <div id="id_center_panel">
-  <div id="id_config_content"></div>
 <!-- DO NOT MODIFY -->
 </div>
 
@@ -100,15 +235,15 @@
 <!-- -------------------------- footer -------------------------------------- -->
 <div id="id_footer">
     <div id="footer">
-    <div id="footer_left">
-        <ul>
-            <li><a href="#" onclick="loadContact();return false;">contact</a></li>
-            <li><a href="#" onclick="popup();return false;">site map</a></li>
-        </ul>
-    </div>
+        <div id="footer_left">
+            <ul>
+                <li><a href="#" onclick="loadContact();return false;">contact</a></li>
+                <li><a href="#" onclick="popup();return false;">site map</a></li>
+            </ul>
+        </div>
 
 	<div id="footer_center">
-	    copyright France Telecom &copy; 2008
+	    Copyright France Telecom &copy; 2008
 	</div>
 
 <!--		<div id="footer_wait">
@@ -123,7 +258,8 @@
 
 
 		</div> -->
-              </div>
-            </div>
+    </div>
+ </div>
+
 </body>
 </HTML>

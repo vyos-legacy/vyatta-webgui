@@ -40,7 +40,7 @@ function f_getCookieProvider()
  *******************************************************************************/
 function f_resetLoginTimer()
 {
-    var timer = new Date(new Date().getTime() + (35 * 60 * 1000));
+    var timer = new Date(new Date().getTime() + (15 * 60 * 1000));
     var cookie = f_getCookieProvider();
     cookie.set(V_COOKIES_LOGIN_TIMER, timer);
 
@@ -220,12 +220,14 @@ function f_createHelpTipsButton(callback)
     return helpButton;
 }
 
-function f_createLoginUserNameField()
+function f_createLoginUserNameField(username)
 {
+    var fl = username != undefined ? username : 'User name:';
+
     var userField = new Ext.form.TextField(
     {
       id: 'id_userField'
-      ,fieldLabel: 'User name:'
+      ,fieldLabel: fl
       ,labelAlign: 'left'
       ,name: 'userName'
       ,labelSeparator: ''
@@ -240,11 +242,12 @@ function f_createLoginUserNameField()
     return userField;
 }
 
-function f_createLoginPasswordField()
+function f_createLoginPasswordField(pw)
 {
+    var fl = pw != undefined ? pw : 'Password:'
     passField = new Ext.form.TextField(
     {
-      fieldLabel: 'Password:'
+      fieldLabel: fl
       ,labelAlign: 'left'
       ,name: 'password'
       ,labelSeparator: ''
@@ -365,10 +368,22 @@ function f_promptErrorMessage(title, msgText)
       title: title
       ,msg: msgText
       ,buttons: Ext.Msg.OK
+      ,handler: function() { f_hideSendWaitMessage();}
       ,icon: Ext.MessageBox.ERROR
     });
 }
 
+function f_promptWaitMessage(msgText, title)
+{
+    var cls = 'tf_wait_message';
+
+    return Ext.MessageBox.wait(msgText, title,
+    {
+        text: 'processing...'
+        ,frame: false
+        ,cls: cls
+    });
+}
 ////////////////////////////////////////////////////////////////////////////////
 //
 function f_promptUserNotLoginMessage(callbackFn)
@@ -428,16 +443,12 @@ function f_hideSendWaitMessage()
 
 function f_parseResponseError(xmlRoot)
 {
-    var success = false;
+    var success = true;
     var errmsg = '';
     var q = Ext.DomQuery;
     var err = q.selectNode('error', xmlRoot);
 
-    if(err == undefined)
-    {
-        success = true;
-    }
-    else
+    if(err != undefined)
     {
         var code = q.selectValue('code', err, 'UNKNOWN');
 

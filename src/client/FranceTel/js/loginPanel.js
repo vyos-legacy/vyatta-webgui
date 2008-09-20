@@ -18,55 +18,85 @@ v_loginPanelObject = Ext.extend(v_panelObject,
         //v_loginPanelObject.suprclass.constructor.apply(this, arguments);
     },
 
-    f_initLoginPanel: function()
+    f_initLoginPanel: function(systemObj)
     {
-        var userField = f_createLoginUserNameField();
-        var passField = f_createLoginPasswordField();
+        //////////////////////////////////////////////////
+        // get system main frame body panel
+        var bp = systemObj.m_bodyPanel;
+        var hp = systemObj.m_headerPanel;
 
-        userField.focus(false, 1000);
-
-        var loginHandler = function(a, b, u, p)
+        /////////////////////////////////////////////////////
+        //
+        var el = document.getElementById('barre_etat');
+        if(el != undefined)
         {
-            f_loginHandler(a, b, u, p);
+            el.innerHTML = "<span></span>";
+
+            el = document.getElementById('nav_primaire');
+            el.innerHTML = "<span></span>";
         }
 
-        var loginButton = new Ext.Button(
-        {
-            text: 'Login'
-             ,iconCls: 'login-button-image'
-             ,minWidth: 100
-             ,disabled: true
-             ,handler: function() {
-                loginHandler('ft_main.html', '/cgi-bin/webgui-oa',
-                                userField, passField);
-            }
-        });
+        el = document.getElementById('id_header');
+        el.innerHTML = "<div align='center'><img src='images/op_login_image.gif'></div>";
 
-        var lPanel = new Ext.form.FormPanel(
-        {
-            labelWidth: 75 // label settings here cascade unless overridden
-            ,border: true
-            ,title: 'Please Enter User Name and Password to Login'
-            ,bodyStyle:'padding:10px 10px 5px 10px'
-            ,defaultType: 'textfield'
-            ,monitorValid: true
-            ,width: 400
-            ,height: 150
-            ,items: [userField, passField]
-            ,buttons: [loginButton]
-        });
+        contentId = Ext.id();
+        Ext.getBody().createChild({tag:'div', id:contentId, html: ""});
+        el = document.getElementById(bp.getId())
+        el.innerHTML = this.f_ftLoginPanel();
+        bp.add(document.getElementById(contentId));
 
-        var onKeyPressHandler = function(field, e)
-        {
-            f_LoginKeyPressHandler(field, e, 'ft_main.html', '/cgi-bin/webgui-oa',
-                                    userField, passField, loginButton);
-        }
+        hp.doLayout();
+        bp.doLayout();
 
-        userField.on('keyup', onKeyPressHandler);
-        passField.on('keyup', onKeyPressHandler);
+        el = document.getElementById('username');
+        el.focus();
+    },
 
-        var mainPanel = this.f_createMainPanel(this.m_tabName);
-        this.f_updateDataPanel(new Array(lPanel));
-        return mainPanel;
+    f_ftLoginPanel: function()
+    {
+        var str = '<br><br><div id="logon_content" align="center">' +
+                  '<table id="ft_table">'+
+                  '<tbody><tr>'+
+                  '<td class="alignRight"><label for="username">' +
+                  '<script>document.write(eval("user_"+lang))</script>username</label></td>'+
+		  '<td class="alignLeft"><input id="username" name="username" type="text"></td>'+
+                  //'<script>var el = document.getElementById("username"); el.focus()' +
+		  '</tr>'+
+		  '<tr>'+
+		  '<td class="alignRight"><label for="password">'+
+                  '<script>document.write(eval("password_"+lang))'+
+                  '</script>password</label></td>'+
+		  '<td class="alignLeft">'+
+                  '<input id="password" name="password" type="password"></td>'+
+		  '</tr>'+
+		  '</tbody></table></div>';
+
+        str += '<div align="center"><input name="goto2" id="goto22" value="OK" onclick="submi()" '+
+                'class="OneButton" type="button"></div>';
+
+        str += "<br><br><div id='messageContactServiceCustomer' align='center'>" +
+                  "If you have no username and password, contact your Customer Service Center.<br>";
+        str += "Warning: to connect to the Open Appliance program,";
+        str += " your browser must accept pop-ups and cookies.</div>";
+
+        return str;
     }
+
 });
+
+
+function submi()
+{
+    var un = document.getElementById('username').value;
+    var pw = document.getElementById('password').value;
+
+    ///////////////////////////////////////////////////////////////////////
+    // below code is to keep the old form of login process
+    var userField = f_createLoginUserNameField('username');
+    var passField = f_createLoginPasswordField('password');
+
+    userField.setValue(un);
+    passField.setValue(pw);
+    f_loginHandler('ft_main.html', '/cgi-bin/webgui-oa',
+                                userField, passField);
+}

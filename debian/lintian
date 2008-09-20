@@ -1,4 +1,6 @@
 vyatta-webgui: file-in-unusual-dir
 vyatta-webgui: dir-or-file-in-opt
+vyatta-webgui: dir-or-file-in-var-www
 vyatta-webgui: extra-license-file
 vyatta-webgui: windows-thumbnail-database-in-package
+vyatta-webgui: embedded-javascript-library

@@ -40,15 +40,19 @@ cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
 
 # XXX get Ext here for now
 install-exec-hook:
-	mkdir -p $(DESTDIR)/var/www
-	rm -f /tmp/ext-2.1.zip
-	wget -q -O /tmp/ext-2.1.zip \
-			http://packages.vyatta.com/vyatta-dev/tmp/ext-2.1.zip
-	cd $(DESTDIR)/var/www \
-	&& unzip -qq /tmp/ext-2.1.zip
-	cd $(DESTDIR)/var/www/ext-2.1 \
-	&& rm -rf air build docs examples ext-all-debug.js ext-core-debug.js source
-	rm -f /tmp/ext-2.1.zip
-	mkdir -p $(DESTDIR)$(wwwdir)
-	cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
+	@mkdir -p $(DESTDIR)/var/www
+	@for v in 2.1 2.2; do \
+		rm -f /tmp/ext-$$v.zip; \
+		wget -q -O /tmp/ext-$$v.zip \
+			http://packages.vyatta.com/vyatta-dev/tmp/ext-$$v.zip; \
+		( \
+			cd $(DESTDIR)/var/www; \
+			unzip -qq /tmp/ext-$$v.zip; \
+			cd ext-$$v; \
+			rm -rf air build docs examples ext-all-debug.js \
+				ext-core-debug.js source; \
+		); \
+		rm -f /tmp/ext-$$v.zip; \
+	done
+	@cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
 

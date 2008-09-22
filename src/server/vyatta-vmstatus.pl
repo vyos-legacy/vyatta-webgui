@@ -278,6 +278,9 @@ EOS
     last if (!defined($s));
     
     $status = vmStatus($s);
+    # if no status, don't try the others
+    last if ($status eq 'unknown');
+
     $cpu_util = vmCpuUtil($s);
     ($mem_total, $mem_free) = vmMem($s);
     ($disk_total, $disk_free) = vmDisk($s);

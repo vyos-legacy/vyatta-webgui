@@ -67,10 +67,12 @@ sub shutdownVm {
 
 if ($action eq 'start') {
   system("sudo virsh -c xen:/// create $LIBVIRT_CFG_DIR/$xml");
-  exit 1 if ($? >> 8);
+  # this always returns -1
+  exit 0;
 } elsif ($action eq 'stop') {
   if (fork()) {
-    # parent: return success
+    # parent: return success after delay
+    sleep 5;
     exit 0;
   } else {
     # child: shutdown
@@ -80,7 +82,8 @@ if ($action eq 'start') {
   }
 } elsif ($action eq 'restart') {
   if (fork()) {
-    # parent: return success
+    # parent: return success after delay
+    sleep 5;
     exit 0;
   } else {
     # child: restart

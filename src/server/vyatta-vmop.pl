@@ -70,28 +70,12 @@ if ($action eq 'start') {
   # this always returns -1
   exit 0;
 } elsif ($action eq 'stop') {
-  if (fork()) {
-    # parent: return success after delay
-    sleep 5;
-    exit 0;
-  } else {
-    # child: shutdown
-    fdRedirect();
-    shutdownVm($vmname);
-    exit 0;
-  }
+  shutdownVm($vmname);
+  exit 0;
 } elsif ($action eq 'restart') {
-  if (fork()) {
-    # parent: return success after delay
-    sleep 5;
-    exit 0;
-  } else {
-    # child: restart
-    fdRedirect();
-    shutdownVm($vmname);
-    system("sudo virsh -c xen:/// create $LIBVIRT_CFG_DIR/$xml");
-    exit 0;
-  }
+  shutdownVm($vmname);
+  system("sudo virsh -c xen:/// create $LIBVIRT_CFG_DIR/$xml");
+  exit 0;
 }
 
 exit 0;

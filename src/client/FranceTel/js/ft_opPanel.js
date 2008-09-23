@@ -24,6 +24,8 @@ v_opPanelObject = Ext.extend(v_panelObject,
         this.m_restartData = new Array();
         this.m_userDBData = new Array();
         this.m_monitorHwDBData = new Array();
+        this.m_bkBackupDBData = new Array();
+        this.m_bkRestoreDBData = new Array();
         g_opPanelObject = this;
 
         //v_loginPanelObject.suprclass.constructor.apply(this, arguments);
@@ -74,7 +76,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
     f_getVMDeploySoftwareColHeader: function(htmlBase)
     {
         if(htmlBase == undefined || !htmlBase)
-            return [' ', 'VM', 'Status', 'Current Version',
+            return ['checker', 'VM', 'Status', 'Current Version',
                     'Available Version', 'Deployment Schedule Date',
                     'Deployment Schedule Time'];
         else
@@ -98,21 +100,30 @@ v_opPanelObject = Ext.extend(v_panelObject,
                     "<p align='center'><b><br>&nbsp;</b></p>",
                     "<p align='center'><b><br>&nbsp;</b></p>"];
     },
+    f_getMonitorHWColHeader: function(htmlBase)
+    {
+        if(htmlBase == undefined || !htmlBase)
+            return ['Component', 'Status'];
+        else
+            return ["<p align='center'><b>Component<br></b>&nbsp;</p>",
+                    "<p align='center'><b>Status<br>&nbsp;</b></p>"];
+    },
     f_getUserColHeaderNames: function(htmlBase)
     {
         if(htmlBase == undefined || !htmlBase)
-            return [' ', 'Firstname', 'Lastname', 'Username', 'Password'];
+            return ['checker', 'Firstname', 'Lastname', 'Username', 'Password',
+                    'Action'];
         else
-            return [ "<p align='center'><b>&nbsp;<br>&nbsp;</b></p>",
-                    "<p align='center'><b>Firstname<br></b></p>",
-                    "<p align='center'><b>Lastname<br></b></p>",
-                    "<p align='center'><b>Username<br></b></p>",
-                    "<p align='center'><b>Password<br></b></p>"
-                    ];
+            return ["<p align='center'><b>Firstname<br></b>&nbsp;</p>",
+                    "<p align='center'><b>Lastname<br>&nbsp;</b></p>",
+                    "<p align='center'><b>Username<br>&nbsp;</b></p>",
+                    "<p align='center'><b>Password<br>&nbsp;</b></p>",
+                    "<p align='center'><b>Action<br>&nbsp;</b></p>"];
     },
 
+
     ////////////////////////////////////////////////////////////////////////////
-    
+
 
     ////////////////////////////////////////////////////////////////////////////
     f_getOpTopPanelData: function()
@@ -124,7 +135,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
         for(var i=0; i<links.length; i++)
         {
             var myId = this.m_tabName + links[i];
-            
+
             if(this.m_selTopAnchorName == links[i])
             {
                 str += "<a class='on' id='id_" + myId + "_link' href='#top' onclick=" +
@@ -141,7 +152,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
                     "<img src='images/carre.gif'/>&nbsp;&nbsp;" + links[i] +
                     "</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             }
-            
+
         }
         str += "</div></nobr>";
 
@@ -383,7 +394,10 @@ v_opPanelObject = Ext.extend(v_panelObject,
                 break;
             case 'Configuration_Restore':
                 g_opPanelObject.m_dataPanelTitle += 'Configuration Restore';
-                this.f_invokeBackupAnchor();
+                f_getResotreDataFromServer(this);
+                this.m_selLeftAnchorName = this.f_getBackupAnchorData()[1];
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
+                                          this.f_getBackupAnchorData()));
                 break;
         }
     }
@@ -471,7 +485,8 @@ function f_populateVMRestartPanel(opObject)
 {
     var cm = new Ext.grid.ColumnModel(
     [
-        {id: 'vm', header: 'VM', width: 120, sortable: true, dataIndex: 'vm'},
+        {id: 'vm', header: 'VM', width: 120, sortable: true, dataIndex: 'vm',
+              renderer: f_renderGridText},
         {header: 'Status', width: 55, sortable: false, renderer: f_renderGridImage,
                 dataIndex: 'status', fixed: true},
         {header: ' ', width: 110, sortable: false, renderer: f_renderGridButton,
@@ -492,6 +507,7 @@ function f_populateVMRestartPanel(opObject)
         ]
     });
     store.loadData(opObject.m_restartData);
+    store.colHeaders = opObject.f_getVMRestartColHeader(false);
 
     ////////////////////////////////////////////////////
     // add main grid into working panel
@@ -526,6 +542,16 @@ function f_parseVMRestartData(vm)
     status = status == undefined ? 'unknown' : status;
 
     return [ vmName, status, 'Restart', 'Stop', 'Start' ];
+}
+
+function f_parseBackupData(vm)
+{
+    return [ 'none', 'none' ];
+}
+
+function f_parseRestoreData(vm)
+{
+    return [ 'none', 'none' ];
 }
 
 function f_parseUserData(vm)
@@ -607,7 +633,7 @@ function f_populateVMDashboardPanel(opObject)
     var cm = new Ext.grid.ColumnModel(
     [
         {header: 'VM', width: 120, sortable: true, dataIndex: 'vm',
-                style: 'padding:10px 0px 0px 5px'},
+                style: 'padding:10px 0px 0px 5px', renderer: f_renderGridText},
         {header: 'Status', width: 50, sortable: false, renderer: f_renderGridImage,
                 dataIndex: 'status', fixed: false, align: 'center'},
         {header: 'CPU', width: 100, sortable: false, renderer: f_renderProgressBarChange,
@@ -628,6 +654,7 @@ function f_populateVMDashboardPanel(opObject)
         {header: 'diskTotal', hidden:true, dataIndex:'diskTotal'},
         {header: 'diskFree', hidden:true, dataIndex:'diskFree'}
     ]);
+
     var store = new Ext.data.SimpleStore(
     {
         fields: [
@@ -642,10 +669,10 @@ function f_populateVMDashboardPanel(opObject)
             { name: 'memTotal' },
             { name: 'memFree' },
             { name: 'diskTotal' },
-            { name: 'diskFree'}
-        ]
+            { name: 'diskFree'}]
     });
     store.loadData(opObject.m_dashboardData);
+    store.colHeaders = opObject.f_getVMDashboardColHeader(false);
 
     var addVM = new Ext.Button(
     {
@@ -708,6 +735,41 @@ function f_getUserDataFromServer(opObject)
 
     f_sendServerCommand(true, xmlstr, serverCommandCb);
 }
+
+function f_getResotreDataFromServer(opObject)
+{
+    var dbData = new Array();
+    var thisObject =  opObject;
+
+    var serverCommandCb = function(options, success, response)
+    {
+        var xmlRoot = response.responseXML.documentElement;
+        var q = Ext.DomQuery;
+
+        var isSuccess = f_parseResponseError(xmlRoot);
+        if(!isSuccess[0])
+        {
+            f_promptErrorMessage('Load Restore', isSuccess[1]);
+            return;
+        }
+
+        var vmUserNodes = q.select('vmuser', xmlRoot);
+
+        for(var i=0; i<vmUserNodes.length; i++)
+            dbData[i] = f_parseRestoreData(vmUserNodes[i]);
+
+        thisObject.m_bkRestoreDBData = dbData;
+        f_populateRestorePanel(thisObject);
+
+        f_hideSendWaitMessage();
+    }
+
+    var sid = f_getUserLoginedID();
+    var xmlstr = "<vmuser op='list'><id>" + sid + "</id>\n"
+    + "</vmuser>";
+
+    f_sendServerCommand(true, xmlstr, serverCommandCb);
+}
 function f_getBackupDataFromServer(opObject)
 {
     var dbData = new Array();
@@ -730,7 +792,7 @@ function f_getBackupDataFromServer(opObject)
         for(var i=0; i<vmUserNodes.length; i++)
             dbData[i] = f_parseBackupData(vmUserNodes[i]);
 
-        thisObject.m_userDBData = dbData;
+        thisObject.m_bkBackupDBData = dbData;
         f_populateBackupPanel(thisObject);
 
         f_hideSendWaitMessage();
@@ -745,7 +807,21 @@ function f_getBackupDataFromServer(opObject)
 function f_populateBackupPanel(opObject)
 {
     var thisObject = opObject;
-    var fm = Ext.form;
+
+    var lPanel = f_createLogPanel('Backup &rArr; Configuration Backup',
+          'This page is under construction...');
+
+    thisObject.f_updateDataPanel(new Array(lPanel));
+}
+
+function f_populateRestorePanel(opObject)
+{
+    var thisObject = opObject;
+
+    var lPanel = f_createLogPanel('Backup &rArr; Configuration Restore',
+          'This page is under construction...');
+
+    thisObject.f_updateDataPanel(new Array(lPanel));
 }
 
 function f_populateVMDeploySoftwarePanel(opObject)
@@ -784,21 +860,25 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
         return value ? value.dateFormat('M d, Y') : '';
     }
 
+    var hd = opObject.f_getVMDeploySoftwareColHeader(false);
     var cm = new Ext.grid.ColumnModel([
         checkColumn,
         {header: 'VM', width: 120, menuDisabled: true, fixed: true,
-            sortable: false, dataIndex: 'vm', align:'left'},
+            sortable: false, dataIndex: hd[1].toLowerCase().replace(' ', ''),
+            align:'left'},
         {header: 'Deployment Status', width: 100, sortable: false, fixed: true,
-            menuDisabled: true, dataIndex: 'status', align:'center'},
+            menuDisabled: true, dataIndex: hd[2].toLowerCase().replace(' ', ''),
+            align:'center'},
         {header: 'Current Version', width: 80, sortable: false, fixed: true,
-            menuDisabled: true, dataIndex: 'currentVersion', align:'center'},
+            menuDisabled: true, dataIndex: hd[3].toLowerCase().replace(' ', ''),
+            align:'center'},
         {header: 'Available Version', menuDisabled: true, width: 90, sortable: false,
-            dataIndex: 'availableVersion', fixed: true,
+            dataIndex: hd[4].toLowerCase().replace(' ', ''), fixed: true,
             align:'center',
             renderer: f_renderGridComboBox,
             editor: cb},
         {header: 'Deployment Schedule', width: 100, menuDisabled: true, sortable: false,
-            dataIndex: 'deployScheduleDate',
+            dataIndex: hd[5].toLowerCase().replace(' ', ''),
             align:'center',
             type: 'date',
             dateFormat: 'd/m/y',
@@ -813,7 +893,7 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
             })
         },
         {header: 'Deployment Schedule', width: 90, menuDisabled: true, sortable: false,
-            dataIndex: 'deployScheduleTime',
+            dataIndex: hd[6].toLowerCase().replace(' ', ''),
             align:'center',
             type: 'date',
             dateFormat: 'm/d/y',
@@ -829,13 +909,13 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
     var store = new Ext.data.SimpleStore(
     {
         fields: [
-            { name: 'checker', type: 'bool' },
-            { name: 'vm' },
-            { name: 'status' },
-            { name: 'currentVersion' },
-            { name: 'availableVersion' },
-            { name: 'deployScheduleDate', type: 'date', dateFormat: 'n/j h:ai' },
-            { name: 'deployScheduleTime' }
+            { name: hd[0].toLowerCase().replace(' ', ''), type: 'bool' },
+            { name: hd[1].toLowerCase().replace(' ', '') },
+            { name: hd[2].toLowerCase().replace(' ', '') },
+            { name: hd[3].toLowerCase().replace(' ', '') },
+            { name: hd[4].toLowerCase().replace(' ', '') },
+            { name: hd[5].toLowerCase().replace(' ', ''), type: 'date', dateFormat: 'n/j h:ai' },
+            { name: hd[6].toLowerCase().replace(' ', '') }
         ]
     });
 
@@ -848,6 +928,7 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
         ,[ false, '3rd Parties', 'status', '1.2', '1.5', 'now', 'now']
     ];
     store.loadData(data);
+    store.colHeaders = hd;
 
     //////////////////////////////////////////////////////////
     // create grid panel
@@ -1015,7 +1096,7 @@ function f_populateUserPanel(opObject)
     thisObject.saveCallback = saveCallback;
 
     var checkColumn = f_createGridCheckColumn(CheckColumnOnMousePress);
-    
+
 
 /*/
     var comboBox = new Ext.form.ComboBox(
@@ -1028,6 +1109,8 @@ function f_populateUserPanel(opObject)
         ,lazyRender: true
     });
     */
+
+    var colHeaderNames = thisObject.f_getUserColHeaderNames(false);
     var cm = new Ext.grid.ColumnModel(
         [
         checkColumn,
@@ -1036,7 +1119,7 @@ function f_populateUserPanel(opObject)
             id: 'first',
             width: 110,
             sortable: false,
-            dataIndex: 'first',
+            dataIndex: colHeaderNames[1].toLowerCase().replace(' ', ''),
             fixed: true,
             //type: 'string',
             renderer: f_renderGridTextField,
@@ -1046,7 +1129,7 @@ function f_populateUserPanel(opObject)
             header: '<p align=center><b>Lastname<br>&nbsp;</b></p>',
             width: 110,
             sortable: false,
-            dataIndex: 'last',
+            dataIndex: colHeaderNames[2].toLowerCase().replace(' ', ''),
             //type: 'string',
             renderer: f_renderGridTextField,
             editor: f_createUserTextField(true)
@@ -1055,7 +1138,7 @@ function f_populateUserPanel(opObject)
             header: '<p align=center><b>Username<br>&nbsp;</b></p>',
             width: 110,
             sortable: false,
-            dataIndex: 'user',
+            dataIndex: colHeaderNames[3].toLowerCase().replace(' ', ''),
             //type: 'string',
             renderer: f_renderGridTextField,
             editor: f_createUserTextField(true)
@@ -1064,7 +1147,7 @@ function f_populateUserPanel(opObject)
             header: '<p align=center><b>Password<br>&nbsp;</b></p>',
             width: 110,
             sortable: false,
-            dataIndex: 'password',
+            dataIndex: colHeaderNames[4].toLowerCase().replace(' ', ''),
             //type: 'string',
             renderer: f_renderGridTextField,
             editor: f_createUserTextField(false)
@@ -1074,17 +1157,15 @@ function f_populateUserPanel(opObject)
 
     var store = new Ext.data.SimpleStore(
     {
-        fields:
-        [
-            { name: 'checker', type: 'bool' },
-            { name: 'first' },
-            { name: 'last' },
-            { name: 'user'},
-            { name: 'password'},
-            { name: 'action'}
-        ]
+        fields: [ {name: colHeaderNames[0].toLowerCase().replace(' ', ''), type: 'bool'},
+                  {name: colHeaderNames[1].toLowerCase().replace(' ', '')},
+                  {name: colHeaderNames[2].toLowerCase().replace(' ', '')},
+                  {name: colHeaderNames[3].toLowerCase().replace(' ', '')},
+                  {name: colHeaderNames[4].toLowerCase().replace(' ', '')},
+                  {name: colHeaderNames[5].toLowerCase().replace(' ', '')},]
     });
     store.loadData(thisObject.m_userDBData);
+    store.colHeaders = colHeaderNames;
 
     ///////////////////////////////////////////////////////
     // add user panel grid into working panel
@@ -1100,12 +1181,37 @@ function f_populateUserPanel(opObject)
     // enhance header
     var grid = panels[0];
 
-    var headers = thisObject.f_getUserColHeaderNames(true);
-    //for(var i=1; i<headers.length-1; i++)
-      //  alert(grid.getView().getHeaderCell(0));
-      //  grid.getView().getHeaderCell(i).innerHTML = headers[i];
-
     thisObject.f_updateDataPanel(panels);
+}
+
+function f_createDataStore(dataModel)
+{
+    var field = [];
+
+    for(var i=0; i<dataModel.length; i++)
+    {
+        var comma = i == dataModel.length-1 ? comma = '' : ',';
+
+        if(dataModel[i] == 'checker')
+            field[i] = "\"{name: '" + dataModel[i].toLowerCase().replace(' ', '') +
+                      "', type: 'bool'}\"";
+        else
+            field[i] = "\"{name: '" + dataModel[i].toLowerCase().replace(' ','') + "'}\"";
+
+    }
+
+    var store = new Ext.data.SimpleStore(
+    {
+        fields : field
+        //fields: [ {name: 'checker', type: 'bool'},
+          //        {name: 'firstname'},
+            //      {name: 'lastname'},
+              //    {name: 'username'},
+                //  {name: 'password'},
+                  //{name: 'action'},]
+    });
+
+    return store;
 }
 
 function f_getMonitoringNetworkDataFromServer(opObject)
@@ -1158,22 +1264,18 @@ function f_getMonitoringHardwareDataFromServer(opObject)
 
 function f_populateMonitoringNetworkPanel(opObject)
 {
-    var empty = new Ext.Panel(
-    {
-        border: false
-    });
+    var lPanel = f_createLogPanel('Monitoring &rArr; Network',
+          'This page is under construction...');
 
-    opObject.f_updateDataPanel(new Array(empty));
+    opObject.f_updateDataPanel(new Array(lPanel));
 }
 
 function f_populateMonitoringSoftwarePanel(opObject)
 {
-    var empty = new Ext.Panel(
-    {
-        border: false
-    });
+    var lPanel = f_createLogPanel('Monitoring &rArr; Software',
+          'This page is under construction...');
 
-    opObject.f_updateDataPanel(new Array(empty));
+    opObject.f_updateDataPanel(new Array(lPanel));
 }
 
 function f_populateMonitoringHardwarePanel(opObject)
@@ -1210,6 +1312,7 @@ function f_populateMonitoringHardwarePanel(opObject)
         ]
     });
     store.loadData(opObject.m_monitorHwDBData);
+    store.colHeaders = opObject.f_getMonitorHWColHeader(false);
 
     ////////////////////////////////////////////////////
     // add grid into working panel
@@ -1219,16 +1322,31 @@ function f_populateMonitoringHardwarePanel(opObject)
 
     //////////////////////////////////////////////
     // enhance header
-    grid.getView().getHeaderCell(0).innerHTML =
-                      "<p align='center'><b>Component<br>&nbsp;</b></p>";
-    grid.getView().getHeaderCell(1).innerHTML =
-                      "<p align='center'><b>Status<br>&nbsp;</b></p>";
+    var headers = opObject.f_getMonitorHWColHeader(true);
+    for(var i=0; i<headers.length; i++)
+        grid.getView().getHeaderCell(i).innerHTML = headers[i];
 }
 
-function f_renderGridImage(val, metaData, record, rIndex, cIndex)
+function f_getGridHeaderName(store, colIndex)
+{
+    if(store.colHeaders != undefined)
+        return store.colHeaders[colIndex].replace(' ', '&nbsp;');
+
+    return '&nbsp;';
+}
+
+function f_renderGridText(val, metaData, record, rIndex, cIndex, store)
+{
+    metaData.attr = 'ext:qtitle="' + f_getGridHeaderName(store, cIndex) +
+                        ':" ext:qtip=' + val;
+
+    return val;
+}
+
+function f_renderGridImage(val, metaData, record, rIndex, cIndex, store)
 {
     var str = undefined;
-    var title = 'Status:';
+    var title = f_getGridHeaderName(store, cIndex);
     var tip = '';
 
     switch(val)
@@ -1261,12 +1379,12 @@ function f_renderGridImage(val, metaData, record, rIndex, cIndex)
     return str;
 }
 
-function f_renderProgressBarChange(val, metaData, record, rowIndex, colIndex)
+function f_renderProgressBarChange(val, metaData, record, rowIndex, colIndex, store)
 {
     var contentId = Ext.id();
 
     //alert(Ext.urlEncode(record));
-    var tTitle = "";
+    var tTitle = f_getGridHeaderName(store, colIndex);
     var tTip = "tips";
 
     switch(colIndex)
@@ -1289,13 +1407,13 @@ function f_renderProgressBarChange(val, metaData, record, rowIndex, colIndex)
     metaData.attr = 'ext:qtitle=' + tTitle + ' ext:qtip=' + tTip;
 
     f_createGridProgressBar.defer(1, this, [val, contentId, metaData,
-            record, rowIndex, colIndex]);
+            record, rowIndex, colIndex, store]);
 
     return String.format("<span align='center' id=" + contentId + "></span>");
 }
-function f_createGridProgressBar(val, contentId, metaData, record, rowIndex, colIndex)
+function f_createGridProgressBar(val, contentId, metaData, record, rowIndex, colIndex, store)
 {
-    var tTitle = "";
+    var tTitle = f_getGridHeaderName(store, colIndex);
     var tTip = "tips";
     switch(colIndex)
     {
@@ -1332,9 +1450,6 @@ function f_createGridCheckColumn(callback)
 
     return cl;
 }
-
-
-
 
 function f_createDataPanelNoteMessage()
 {
@@ -1513,7 +1628,7 @@ function f_compareDateTime(vDate, vTime)
     if(givenTime == undefined || givenTime.length < 1 || givenTime == 'now')
     {
         givenTime = new Date();
-        givenTime = new Date(givenDate.getFullYear(), givenDate.getMonth(), 
+        givenTime = new Date(givenDate.getFullYear(), givenDate.getMonth(),
                         givenDate.getDate(), givenTime.getHours(),
                         givenTime.getMinutes(), 0, 0);
     }

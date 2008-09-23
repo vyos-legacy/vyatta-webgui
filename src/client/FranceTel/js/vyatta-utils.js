@@ -484,3 +484,41 @@ function f_replace(str, expOld, expNew)
 
     return str;
 }
+
+function f_commitSingleStoreField(store, record, dataIndex, iindex)
+{
+    if(store.colHeaders != undefined)
+    {
+        var modifiedNames = [];
+        var modifiedVals = [];
+        var j=0;
+        var colHeaders = store.colHeaders;
+
+        ////////////////////////////////////////////
+        // save user's input data
+        for(var i=0; i<colHeaders.length; i++)
+        {
+            var index = colHeaders[i].toLowerCase().replace(' ', '');
+
+            if(record.modified[index] != undefined)
+            {
+                modifiedNames[j] = index;
+                modifiedVals[j++] = record.modified[index];
+            }
+        }
+
+        ////////////////////////////////
+        // commit it
+        record.commit(false);
+
+        ////////////////////////////////////////
+        // then, replace the user's input
+        record = store.getAt(iindex);
+        for(var i=0; i<modifiedVals.length; i++)
+        {
+            var saveVal = record.data[modifiedNames[i]];
+            record.set(modifiedNames[i], modifiedVals[i]);
+            record.set(modifiedNames[i], saveVal);
+        }
+    }
+}

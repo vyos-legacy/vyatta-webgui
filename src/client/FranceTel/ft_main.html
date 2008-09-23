@@ -9,6 +9,17 @@
   <script type="text/javascript" src="/ext-2.2/ext-all.js"></script>
 
   <style type="text/css">
+    .x-window-body
+    {
+        background:transparent none repeat scroll 0 0;
+        color:#ff6600;
+    }
+    .x-window-header-text
+    {
+        cursor:pointer;
+        color: #ff6600;
+    }
+
     .x-panel-header
     {
         overflow:hidden;
@@ -185,7 +196,7 @@
         <div id="logo"><img src="images/Logo_OBS-Web.gif" alt="logo Orange Business Services" border="0"></div>
 
         <div id="toolbar">
-          <select id="language" name="language" size="1" STYLE="width: 87px" onChange="changeLangue();">
+          <select id="ft_language" name="language" size="1" STYLE="width: 87px" onChange="onLanguageChange();">
                   <option value="en" selected="selected">English</option>
                   <option value="fr">Fran�ais</option>
           </select>

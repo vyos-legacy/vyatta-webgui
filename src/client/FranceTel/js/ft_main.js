@@ -259,7 +259,7 @@ function onLanguageChange()
 {
     var el = document.getElementById('ft_language');
 
-    alert(el.options[el.selectedIndex].value);
+    //alert(el.options[el.selectedIndex].value);
 
 }
 ////////////////////////////////////////////////////////////////////////////////

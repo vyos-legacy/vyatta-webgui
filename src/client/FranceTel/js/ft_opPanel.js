@@ -887,7 +887,7 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
             {
                 format: 'd/m/y'
                 ,minValue: '01/01/06'
-                ,tooltip: 'click fu'
+                ,tooltip: 'click '
                 //disabledDays: [0, 6 ],
                 //disabledDaysText: 'Plants are not available on the weekends'
             })
@@ -957,6 +957,7 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
 function f_populateUserPanel(opObject)
 {
     var thisObject = opObject;
+    var colHeaderNames = thisObject.f_getUserColHeaderNames(false);
 
     var enableDisableUserButtons = function(opObj)
     {
@@ -991,12 +992,12 @@ function f_populateUserPanel(opObject)
     var addCallback = function()
     {
         var values = {};
-        values['checker'] = true;
-        values['first'] = 'Enter firstname';
-        values['last'] = 'Enter lastname';
-        values['user'] = 'Enter username';
-        values['password'] = 'Enter password';
-        values['action'] = 'add'
+        values[colHeaderNames[0].toLowerCase().replace(' ', '')] = true;
+        values[colHeaderNames[1].toLowerCase().replace(' ', '')] = 'Enter firstname';
+        values[colHeaderNames[2].toLowerCase().replace(' ', '')] = 'Enter lastname';
+        values[colHeaderNames[3].toLowerCase().replace(' ', '')] = 'Enter username';
+        values[colHeaderNames[4].toLowerCase().replace(' ', '')] = 'Enter password';
+        values[colHeaderNames[5].toLowerCase().replace(' ', '')] = 'add'
 
         var record = new Ext.data.Record(values);
         thisObject.store.add(record);
@@ -1013,21 +1014,18 @@ function f_populateUserPanel(opObject)
 
             store.each(function(record)
             {
-                if(record.get('checker'))
+                if(record.get(colHeaderNames[0].toLowerCase().replace(' ', '')))
                 {
-                    if(record.get('user') == 'admin')
+                    if(record.get(colHeaderNames[3].toLowerCase().replace(' ', '')) == 'admin')
                     {
                         Ext.Msg.alert('Delete User', 'admin user cannot be deleted.')
                         return;
                     }
 
                     var sid = f_getUserLoginedID();
-                    var xmlstr = "<vmuser op='delete' user='" +
-                                  record.get('user') +
-                                  "' last='" + record.get('last') +
-                                  "' first='" + record.get('first') +
-                                  "' password='" + record.get('password') +
-                                  "'><id>" + sid + "</id>"  +
+                    var xmlstr = "<vmuser op='delete' " +
+                                  f_getUserRecordFromScreen(record, colHeaderNames) +
+                                  "><id>" + sid + "</id>"  +
                                   "</vmuser>";
 
                     deleteRecs.push(xmlstr);
@@ -1069,12 +1067,9 @@ function f_populateUserPanel(opObject)
     var sendUserXMLString = function(record, op, callback)
     {
         var sid = f_getUserLoginedID();
-        var xmlstr = "<vmuser op='" + op + "' user='" +
-                      record.get('user') +
-                      "' last='" + record.get('last') +
-                      "' first='" + record.get('first') +
-                      "' password='" + record.get('password') +
-                      "'><id>" + sid + "</id>"  +
+        var xmlstr = "<vmuser op='" + op + "' " +
+                      f_getUserRecordFromScreen(record, colHeaderNames) +
+                      "><id>" + sid + "</id>"  +
                       "</vmuser>";
 
         f_sendServerCommand(true, xmlstr, callback, false);
@@ -1084,13 +1079,18 @@ function f_populateUserPanel(opObject)
     {
         grid.store.each(function(record)
         {
-            var op = record.get('action') == 'add' ? 'add' : 'change';
-            var serverCommandCb = function(options, success, response)
+            if(record.get(colHeaderNames[0].toLowerCase().replace(' ', '')))
             {
-                f_onClickAnchor('User');
-            }
+                var op = record.get(colHeaderNames[5].toLowerCase().replace(' ', '')) ==
+                      'add' ? 'add' : 'change';
 
-            sendUserXMLString(record, op, serverCommandCb);
+                var serverCommandCb = function(options, success, response)
+                {
+                    f_onClickAnchor('User');
+                }
+
+                sendUserXMLString(record, op, serverCommandCb);
+            }
         });
     }
     thisObject.saveCallback = saveCallback;
@@ -1110,7 +1110,6 @@ function f_populateUserPanel(opObject)
     });
     */
 
-    var colHeaderNames = thisObject.f_getUserColHeaderNames(false);
     var cm = new Ext.grid.ColumnModel(
         [
         checkColumn,
@@ -1182,6 +1181,18 @@ function f_populateUserPanel(opObject)
     var grid = panels[0];
 
     thisObject.f_updateDataPanel(panels);
+}
+
+function f_getUserRecordFromScreen(record, colHeaderNames)
+{
+    return "user='" + record.get(
+            colHeaderNames[3].toLowerCase().replace(' ', '')) +
+            "' last='" + record.get(
+            colHeaderNames[2].toLowerCase().replace(' ', '')) +
+            "' first='" + record.get(
+            colHeaderNames[1].toLowerCase().replace(' ', '')) +
+            "' password='" + record.get(
+            colHeaderNames[4].toLowerCase().replace(' ', '')) + "'";
 }
 
 function f_createDataStore(dataModel)
@@ -1343,6 +1354,17 @@ function f_renderGridText(val, metaData, record, rIndex, cIndex, store)
     return val;
 }
 
+function f_onMouseOvertoolTip(img, title, tip)
+{
+    new Ext.ToolTip(
+    {
+        target: img
+        ,html: tip
+        ,title: title
+        ,trackMouse: true
+    });
+}
+
 function f_renderGridImage(val, metaData, record, rIndex, cIndex, store)
 {
     var str = undefined;
@@ -1352,26 +1374,40 @@ function f_renderGridImage(val, metaData, record, rIndex, cIndex, store)
     switch(val)
     {
         case 'updateAval_yes':
-            str = String.format("<span align='center'><img src='images/statusUp.gif' /></span>");
             tip = '"<font color=green>Update version is available</font>"';
             title = 'Update&nbsp;Version:'
+            str = String.format(
+              "<span align='center'><img src='images/statusUp.gif'"+
+              "onmouseover='f_onMouseOvertoolTip(this, \"" + title +
+              "\", " + tip + ")' /></span>");
             break;
         case 'updateAval_no':
-            str = String.format("<span align='center'><img src='images/statusDown.gif' /></span>");
             tip = '"<font color=red>Update version is not available</font>"';
             title = 'Update&nbsp;Version:'
+            str = String.format(
+              "<span align='center'><img src='images/statusDown.gif'" +
+              "onmouseover='f_onMouseOvertoolTip(this, \"" + title +
+              "\", " + tip + ")''/></span>");
             break;
         case 'up':
-            str = String.format("<span align='center'><img src='images/statusUp.gif' /></span>");
             tip = '"The value is <font color=green><b>Up</b></font>"';
+            str = String.format(
+              "<span align='center'><img onmouseover='f_onMouseOvertoolTip(this, \"" + title +
+              "\", " + tip + ")'"+
+              "src='images/statusUp.gif' /></span>");
             break;
         case 'down':
-            str = String.format("<span align='center'><img src='images/statusDown.gif' /></span>");
             tip = '"The value is <font color=red><b>Down</b></font>"';
+            str = String.format("<span align='center'><img src='images/statusDown.gif' " +
+            "onmouseover='f_onMouseOvertoolTip(this, \"" + title +
+            "\", " + tip + ")'/></span>");
             break;
         default:
-            str = String.format("<span align='center'><img src='images/statusUnknown.gif' /></span>");
             tip = '"The value is <font color=yellow><b>Unknow</b></font>"';
+            str = String.format("<span align='center'>" +
+            "onmouseover='f_onMouseOvertoolTip(this, \"" + title +
+            "\", " + tip + ")"+
+            "<img src='images/statusUnknown.gif' /></span>");
     }
 
     metaData.attr = 'ext:qtitle=' + title + ' ext:qtip=' + tip;
@@ -1407,23 +1443,15 @@ function f_renderProgressBarChange(val, metaData, record, rowIndex, colIndex, st
     metaData.attr = 'ext:qtitle=' + tTitle + ' ext:qtip=' + tTip;
 
     f_createGridProgressBar.defer(1, this, [val, contentId, metaData,
-            record, rowIndex, colIndex, store]);
+            record, rowIndex, colIndex, store, tTitle, tTip]);
 
-    return String.format("<span align='center' id=" + contentId + "></span>");
+    return String.format("<span align='center' id='" + contentId +
+            "' onmouseover='f_onMouseOvertoolTip(this, \"" + tTitle +
+            "\", " + tTip + ")'></span>");
 }
-function f_createGridProgressBar(val, contentId, metaData, record, rowIndex, colIndex, store)
+function f_createGridProgressBar(val, contentId, metaData, record, rowIndex,
+              colIndex, store, tTitle, tTip)
 {
-    var tTitle = f_getGridHeaderName(store, colIndex);
-    var tTip = "tips";
-    switch(colIndex)
-    {
-        case 3:
-            tTitle = "<u>RAM&nbsp;Usaged:</u>";
-            break;
-    }
-
-    metaData.attr = 'ext:qtitle=' + tTitle + ' ext:qtip=' + tTip;
-
     var cls = (Number(val) > 80) ? 'custom_red' : 'custom_green';
     var pBar = new Ext.ProgressBar(
     {
@@ -1434,6 +1462,14 @@ function f_createGridProgressBar(val, contentId, metaData, record, rowIndex, col
     });
 
     pBar.render(document.body, contentId);
+
+    new Ext.ToolTip(
+    {
+        target: pBar.getId()
+        ,title: tTitle
+        ,html: tTip
+        ,trackMouse: true
+    });
 }
 
 function f_createGridCheckColumn(callback)

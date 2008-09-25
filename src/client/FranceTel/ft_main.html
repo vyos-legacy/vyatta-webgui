@@ -183,7 +183,6 @@
   <script type="text/javascript" src="js/vyatta_grid_checkColumn.js"></script>
   <script type="text/javascript" src="js/vyatta_rowLayout.js"></script>
   <script type="text/javascript" src="js/ft_dataStructures.js"></script>
-  <script type="text/javascript" src="js/panelsManager.js"></script>
   <script type="text/javascript" src="js/panel.js"></script>
   <script type="text/javascript" src="js/loginPanel.js"></script>
   <script type="text/javascript" src="js/ft_opPanel.js"></script>
@@ -213,15 +212,18 @@
     <div id="nav_primaire">
         <table id="nav_primaire1">
             <tr>
-                <td><a href="#" onClick="f_handleOnTabClick('name')" onfocus="this.blur();">
+                <td><a href="#" onClick="f_handleOnTabClick('0')" onfocus="this.blur();">
                         <img src="images/tabnav_blb_off.png"></a></td>
-                <td><a href="#" onClick="f_handleOnTabClick('op')" onfocus="this.blur();">
+                <td><a href="#" onClick="f_handleOnTabClick('1')" onfocus="this.blur();">
                         <img src="images/tabnav_oa_on.png"></a></td>
-                <td><a href="#" onfocus="this.blur();">
+                <td><a href="#" onfocus="this.blur();"
+                        onClick="f_handleOnTabClick('2')">
                         <img src="images/tabnav_utm_off.png"></a></td>
-                <td><a href="#" onfocus="this.blur();">
+                <td><a href="#" onfocus="this.blur();"
+                        onClick="f_handleOnTabClick('3')">
                         <img src="images/tabnav_pbx_off.png"></a></td>
-                <td><a href="#" onfocus="this.blur();">
+                <td><a href="#" onfocus="this.blur();"
+                        onClick="f_handleOnTabClick('4')">
                         <img src="images/tabnav_3pa_off.png"></a></td>
             </tr>
         </table>

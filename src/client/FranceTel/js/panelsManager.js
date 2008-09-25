@@ -39,7 +39,9 @@ v_panelsManager = Ext.extend(Ext.util.Observable,
     {
         for(var i=0; i<this.m_panel.length; i++)
         {
-            if(this.m_panel.m_name != undefined && this.m_panel.m_name == panelName)
+            var panel = this.m_panel[i];
+
+            if(panel.m_name != undefined && panel.m_name == panelName)
                 return this.m_panel;
         }
 

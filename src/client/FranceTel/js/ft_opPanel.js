@@ -461,6 +461,9 @@ function f_parseVMDashboarData(vm)
     var diskTotal = disk.getAttribute('total');
     var diskFree = disk.getAttribute('free');
 
+    if(vmName == 'jvm')
+        g_3rdPartyURL = q.selectValue('guiUrl');
+
     ///////////////////////////////////////
     // get current and available versions
     var versions = q.selectNode('version', vm);
@@ -954,10 +957,17 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
     for(var i=1; i<header.length; i++)
         grid.getView().getHeaderCell(i).innerHTML = header[i];
 }
+
 function f_populateUserPanel(opObject)
 {
     var thisObject = opObject;
     var colHeaderNames = thisObject.f_getUserColHeaderNames(false);
+    var chnLCase = [ colHeaderNames[0].toLowerCase().replace(' ', ''),
+                      colHeaderNames[1].toLowerCase().replace(' ', ''),
+                      colHeaderNames[2].toLowerCase().replace(' ', ''),
+                      colHeaderNames[3].toLowerCase().replace(' ', ''),
+                      colHeaderNames[4].toLowerCase().replace(' ', ''),
+                      colHeaderNames[5].toLowerCase().replace(' ', '') ];
 
     var enableDisableUserButtons = function(opObj)
     {
@@ -986,18 +996,34 @@ function f_populateUserPanel(opObject)
 
     var CheckColumnOnMousePress = function()
     {
+        var grid = thisObject.grid;
+        var loginUser = f_getUserLoginName();
+
+        if(loginUser != 'admin')
+        {
+            grid.store.each(function(record)
+            {
+                if(record.get('checker') && record.get('username') != loginUser)
+                {
+                    f_promptErrorMessage('User',
+                        'You have no privilege to change this record');
+                    record.set('checker', false);
+                    return;
+                }
+            });
+        }
         enableDisableUserButtons(thisObject);
     }
 
     var addCallback = function()
     {
         var values = {};
-        values[colHeaderNames[0].toLowerCase().replace(' ', '')] = true;
-        values[colHeaderNames[1].toLowerCase().replace(' ', '')] = 'Enter firstname';
-        values[colHeaderNames[2].toLowerCase().replace(' ', '')] = 'Enter lastname';
-        values[colHeaderNames[3].toLowerCase().replace(' ', '')] = 'Enter username';
-        values[colHeaderNames[4].toLowerCase().replace(' ', '')] = 'Enter password';
-        values[colHeaderNames[5].toLowerCase().replace(' ', '')] = 'add'
+        values[chnLCase[0]] = true;
+        values[chnLCase[1]] = 'EnterFirstname';
+        values[chnLCase[2]] = 'EnterLastname';
+        values[chnLCase[3]] = 'EnterUsername';
+        values[chnLCase[4]] = 'EnterPassword';
+        values[chnLCase[5]] = 'add'
 
         var record = new Ext.data.Record(values);
         thisObject.store.add(record);
@@ -1014,9 +1040,9 @@ function f_populateUserPanel(opObject)
 
             store.each(function(record)
             {
-                if(record.get(colHeaderNames[0].toLowerCase().replace(' ', '')))
+                if(record.get(chnLCase[0]))
                 {
-                    if(record.get(colHeaderNames[3].toLowerCase().replace(' ', '')) == 'admin')
+                    if(record.get(chnLCase[3]) == 'admin')
                     {
                         Ext.Msg.alert('Delete User', 'admin user cannot be deleted.')
                         return;
@@ -1024,7 +1050,7 @@ function f_populateUserPanel(opObject)
 
                     var sid = f_getUserLoginedID();
                     var xmlstr = "<vmuser op='delete' " +
-                                  f_getUserRecordFromScreen(record, colHeaderNames) +
+                                  f_getUserRecordFromScreen(record, chnLCase) +
                                   "><id>" + sid + "</id>"  +
                                   "</vmuser>";
 
@@ -1037,12 +1063,11 @@ function f_populateUserPanel(opObject)
             var serverCommandCb = function(options, success, response)
             {
                 var xmlRoot = response.responseXML.documentElement;
-                var q = Ext.DomQuery;
 
                 var isSuccess = f_parseResponseError(xmlRoot);
                 if(!isSuccess[0])
                 {
-                    f_promptErrorMessage('Load Monitoring Hardware', isSuccess[1]);
+                    f_promptErrorMessage('Delete User', isSuccess[1]);
                 }
 
                 numOfSent--;
@@ -1068,7 +1093,7 @@ function f_populateUserPanel(opObject)
     {
         var sid = f_getUserLoginedID();
         var xmlstr = "<vmuser op='" + op + "' " +
-                      f_getUserRecordFromScreen(record, colHeaderNames) +
+                      f_getUserRecordFromScreen(record, chnLCase) +
                       "><id>" + sid + "</id>"  +
                       "</vmuser>";
 
@@ -1079,13 +1104,27 @@ function f_populateUserPanel(opObject)
     {
         grid.store.each(function(record)
         {
-            if(record.get(colHeaderNames[0].toLowerCase().replace(' ', '')))
+            if(record.get(chnLCase[0]))
             {
-                var op = record.get(colHeaderNames[5].toLowerCase().replace(' ', '')) ==
+                if(!f_isUserInputOK(record, colHeaderNames))
+                    return;
+
+                var op = record.get(chnLCase[5]) ==
                       'add' ? 'add' : 'change';
+                var userName = record.get(chnLCase[3]);
 
                 var serverCommandCb = function(options, success, response)
                 {
+                    var xmlRoot = response.responseXML.documentElement;
+
+                    var isSuccess = f_parseResponseError(xmlRoot);
+                    if(!isSuccess[0])
+                    {
+                        f_promptErrorMessage(op + ' User', isSuccess[1] +
+                            ' to ' + op + ' ' + userName);
+                        return;
+                    }
+
                     f_onClickAnchor('User');
                 }
 
@@ -1110,6 +1149,10 @@ function f_populateUserPanel(opObject)
     });
     */
 
+    var fField = f_createUserTextField(true, 'userText', 'First Name');
+    var lField = f_createUserTextField(true, 'userText', 'Last Name');
+    var uField = f_createUserTextField(true, 'userText', 'User Name');
+    var pField = f_createUserTextField(false, 'password', 'Password');
     var cm = new Ext.grid.ColumnModel(
         [
         checkColumn,
@@ -1118,50 +1161,48 @@ function f_populateUserPanel(opObject)
             id: 'first',
             width: 110,
             sortable: false,
-            dataIndex: colHeaderNames[1].toLowerCase().replace(' ', ''),
+            dataIndex: chnLCase[1],
             fixed: true,
             //type: 'string',
             renderer: f_renderGridTextField,
-            editor: f_createUserTextField(true)
+            editor: fField
         },
         {
             header: '<p align=center><b>Lastname<br>&nbsp;</b></p>',
             width: 110,
             sortable: false,
-            dataIndex: colHeaderNames[2].toLowerCase().replace(' ', ''),
-            //type: 'string',
+            dataIndex: chnLCase[2],
             renderer: f_renderGridTextField,
-            editor: f_createUserTextField(true)
+            editor: lField
         },
         {
             header: '<p align=center><b>Username<br>&nbsp;</b></p>',
             width: 110,
             sortable: false,
-            dataIndex: colHeaderNames[3].toLowerCase().replace(' ', ''),
+            dataIndex: chnLCase[3],
             //type: 'string',
             renderer: f_renderGridTextField,
-            editor: f_createUserTextField(true)
+            editor: uField
         },
         {
             header: '<p align=center><b>Password<br>&nbsp;</b></p>',
             width: 110,
             sortable: false,
-            dataIndex: colHeaderNames[4].toLowerCase().replace(' ', ''),
-            //type: 'string',
+            dataIndex: chnLCase[4],
             renderer: f_renderGridTextField,
-            editor: f_createUserTextField(false)
+            editor: pField
         },
         {header: 'action', hidden:true, dataIndex:'action' }
         ]);
 
     var store = new Ext.data.SimpleStore(
     {
-        fields: [ {name: colHeaderNames[0].toLowerCase().replace(' ', ''), type: 'bool'},
-                  {name: colHeaderNames[1].toLowerCase().replace(' ', '')},
-                  {name: colHeaderNames[2].toLowerCase().replace(' ', '')},
-                  {name: colHeaderNames[3].toLowerCase().replace(' ', '')},
-                  {name: colHeaderNames[4].toLowerCase().replace(' ', '')},
-                  {name: colHeaderNames[5].toLowerCase().replace(' ', '')},]
+        fields: [ {name: chnLCase[0], type: 'bool'},
+                  {name: chnLCase[1]},
+                  {name: chnLCase[2]},
+                  {name: chnLCase[3]},
+                  {name: chnLCase[4]},
+                  {name: chnLCase[5]},]
     });
     store.loadData(thisObject.m_userDBData);
     store.colHeaders = colHeaderNames;
@@ -1183,46 +1224,42 @@ function f_populateUserPanel(opObject)
     thisObject.f_updateDataPanel(panels);
 }
 
+function f_isUserInputOK(record, colHeaderNames)
+{
+    for(var i=1; i<4; i++)
+    {
+        if(!f_isUserTextValid(record.get(
+                colHeaderNames[i].toLowerCase().replace(' ', ''))))
+        {
+            f_promptErrorMessage('User', 'Invalid Input!\n' +
+                'Please enter 0-9 a-z A-Z - or _ characters only for ' +
+                colHeaderNames[i]);
+
+            return false;
+        }
+    }
+
+    if(!f_isPasswordValid(record.get(colHeaderNames[4])))
+    {
+        f_promptErrorMessage('User', 'Invalid Input!\n' +
+                colHeaderNames[4] + ' field cannot be blank');
+
+        return false;
+    }
+
+    return true;
+}
+
 function f_getUserRecordFromScreen(record, colHeaderNames)
 {
     return "user='" + record.get(
-            colHeaderNames[3].toLowerCase().replace(' ', '')) +
+            colHeaderNames[3]) +
             "' last='" + record.get(
-            colHeaderNames[2].toLowerCase().replace(' ', '')) +
+            colHeaderNames[2]) +
             "' first='" + record.get(
-            colHeaderNames[1].toLowerCase().replace(' ', '')) +
-            "' password='" + record.get(
-            colHeaderNames[4].toLowerCase().replace(' ', '')) + "'";
-}
-
-function f_createDataStore(dataModel)
-{
-    var field = [];
-
-    for(var i=0; i<dataModel.length; i++)
-    {
-        var comma = i == dataModel.length-1 ? comma = '' : ',';
-
-        if(dataModel[i] == 'checker')
-            field[i] = "\"{name: '" + dataModel[i].toLowerCase().replace(' ', '') +
-                      "', type: 'bool'}\"";
-        else
-            field[i] = "\"{name: '" + dataModel[i].toLowerCase().replace(' ','') + "'}\"";
-
-    }
-
-    var store = new Ext.data.SimpleStore(
-    {
-        fields : field
-        //fields: [ {name: 'checker', type: 'bool'},
-          //        {name: 'firstname'},
-            //      {name: 'lastname'},
-              //    {name: 'username'},
-                //  {name: 'password'},
-                  //{name: 'action'},]
-    });
-
-    return store;
+            colHeaderNames[1]) +
+            "' password='" + f_filterPassword(record.get(
+            colHeaderNames[4])) + "'";
 }
 
 function f_getMonitoringNetworkDataFromServer(opObject)
@@ -1257,7 +1294,6 @@ function f_getMonitoringHardwareDataFromServer(opObject)
         }
 
         var hwNodes = q.select('hw', xmlRoot);
-        //for(var i=0; i<hwNodes.length; i++)
             dbData = f_parseMonitoringHardwareData(hwNodes[0]);
 
         thisObject.m_monitorHwDBData = dbData;
@@ -1405,9 +1441,9 @@ function f_renderGridImage(val, metaData, record, rIndex, cIndex, store)
         default:
             tip = '"The value is <font color=yellow><b>Unknow</b></font>"';
             str = String.format("<span align='center'>" +
-            "onmouseover='f_onMouseOvertoolTip(this, \"" + title +
-            "\", " + tip + ")"+
-            "<img src='images/statusUnknown.gif' /></span>");
+            "<img onmouseover='f_onMouseOvertoolTip(this, \"" + title +
+            "\", " + tip + ")' "+
+            "src='images/statusUnknown.gif' /></span>");
     }
 
     metaData.attr = 'ext:qtitle=' + title + ' ext:qtip=' + tip;
@@ -1715,7 +1751,7 @@ function f_renderGridTextField(val, metadata, record, rowIndex, colIndex)
         }
     }
 
-    if(colIndex == 4 && val != 'Enter password')
+    if(colIndex == 4 && val != 'EnterPassword')
         val = '******';
 
     metadata.attr =
@@ -1725,21 +1761,47 @@ function f_renderGridTextField(val, metadata, record, rowIndex, colIndex)
     return val;
 }
 
-function f_createUserTextField(disableRowZero)
+function f_createUserTextField(disableRowZero, textType, fieldName)
 {
+    var invText = textType == 'password' ? fieldName + ' field is required' :
+              'Please enter 0-9 a-z A-Z - or _ characters only for ' +
+              fieldName;
+
     var tf = new Ext.form.TextField(
     {
-        listeners: {
+        allowBlank: false
+        ,blankText: 'This field is required'
+        ,invalidText: invText
+        ,validator: function(v)
+        {
+            return true;
+        }
+        ,listeners: {
             beforeshow: function()
             {
                 if(g_opPanelObject.m_selGridRow == 0 && disableRowZero)
                     this.disable();
                 else
                     this.enable();
-            },
-            keyup: function()
+            }
+        }
+        ,blur: function(field)
+        {
+            switch(textType)
             {
-
+                case 'password':
+                    if(!f_isPasswordValid(this.getValue()))
+                    {
+                        
+                    }
+                    break;
+                case 'userText':
+                    if(!f_isUserTextValid(this.getValue()))
+                    {
+                        f_promptErrorMessage("User", invText);
+                        return false;
+                    }
+                    break;
             }
         }
     });
@@ -1795,9 +1857,11 @@ function f_createUserButtonsPanel(opObject)
         }
     });
 
+    var disabled = f_getUserLoginName() == 'admin' ? false : true;
     var addUser = new Ext.Button(
     {
         text: 'Add User'
+        ,disabled: disabled
         ,handler: thisObject.addCallback
     });
 

@@ -9,34 +9,21 @@ function f_startLogin()
     /////////////////////////////////////////////////
     // create a login object and add it to manager
     var loginObject = new v_loginPanelObject('login');
-    g_panelsMgr.f_manageThisPanel(loginObject);
+    loginObject.m_name = 'login';
     loginObject.f_initLoginPanel(g_ftBaseSystem);
 }
 
 function f_startOpenAppliance()
 {
-    f_startupApplication(1)
-}
-
-function f_start3rdPartiesApplication()
-{
-    f_startupApplication(4);
-}
-
-function f_startupApplication(appIndex)
-{
     //////////////////////////////////////////////////
     // get system main frame body panel
     var bp = g_ftBaseSystem.m_bodyPanel;
 
-    f_initWelcomePanel();
-    f_initTabPanel(appIndex);
-
     /////////////////////////////////////////////////
     // create a application object and add it to manager
     var opObject = new v_opPanelObject(bp,
-                  g_ftBaseSystem.f_getTabsData(appIndex)[0]);
-    g_panelsMgr.f_manageThisPanel(opObject);
+                  g_ftBaseSystem.f_getTabsData(1)[0]);
+    //g_panelsMgr.f_manageThisPanel(opObject);
 
     bp.add(opObject.f_getMainPanel());
 
@@ -50,6 +37,34 @@ function f_startupApplication(appIndex)
     bp.doLayout();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// g_3rdParyURL is provided from server by call getOpenApplianceVM.
+g_3rdPartyURL = null;
+function f_start3rdPartyApplication()
+{
+    if(g_3rdParyURL != null)
+    {
+        var iframe = Ext.DomHelper.append(document.body,
+              {
+                  tag: 'iframe', frameBorder:0,
+                  src:g_3rdPartyURL,
+                  width: '100%', height: '100%'
+              });
+
+        var pp = new Ext.Panel(
+        {
+            contentEl: iframe
+            ,border: false
+        });
+
+        var bp = g_ftBaseSystem.m_bodyPanel;
+        bp.add(pp);
+        bp.doLayout();
+    }
+    else
+        f_startEmptyApplication();
+}
+
 function f_initWelcomePanel()
 {
     var el = document.getElementById('barre_etat');
@@ -60,34 +75,43 @@ function f_initWelcomePanel()
 
 function f_showApplication(appIndex)
 {
-    var bp = g_ftBaseSystem.m_bodyPanel();
+    var bp = g_ftBaseSystem.m_bodyPanel;
 
     /////////////////////////////////////////////////////
     // let find out the application you selection is
     // implemented
-    appObject = g_panelsMgr.f_getPanelByName(
-                    g_ftBaseSystem.f_getTabsData(appIndex)[0]);
 
     /////////////////////////////////////////////
     // clean up body panel
     while(bp.items.getCount() > 0)
-        bp.items.remove(bp.items.itemAt(0));
-
-    appObject = g_panelsMgr.f_getPanelByName(
-                    g_ftBaseSystem.f_getTabsData(appIndex)[0]);
-
-    if(appObject == undefined)
     {
-       alert('application you selection not yet implement.');
-    }
-    else
-    {
-        bp.add(appObject.f_getMainPanel());
-        opObject.f_resizePanels(bp);
+        var rItem = bp.items.remove(bp.items.itemAt(0));
+        if(rItem instanceof Object)
+            delete rItem;
     }
 
-    //////////////////////////////////////////////
-    // let update the layout
+    switch(g_ftBaseSystem.f_getTabsData(appIndex)[1])
+    {
+        case 'tabnav_3pa_':
+            f_start3rdPartyApplication();
+        break;
+        case 'tabnav_oa_':
+            f_startOpenAppliance();
+        break;
+        default:
+            f_startEmptyApplication();
+    }
+}
+
+function f_startEmptyApplication()
+{
+    var bp = g_ftBaseSystem.m_bodyPanel;
+    var ePanel = f_createEmptyPanel(
+                  'The application you selected is not yet implemented.');
+
+    ePanel.setSize(bp.getSize().width, bp.getSize().height);
+
+    bp.add(ePanel);
     bp.doLayout();
 }
 
@@ -99,8 +123,15 @@ function f_initTabPanel(tabIndex)
 
 function f_handleOnTabClick(tabIndex)
 {
+    if(!f_isUserLogin(true))
+    {
+        window.location = 'ft_main.html';
+        return;
+    }
+
     g_ftBaseSystem.m_selTab = g_ftBaseSystem.f_getTabsData(tabIndex)[0];
     f_refreshTabs();
+
     f_showApplication(tabIndex);
 }
 
@@ -135,9 +166,6 @@ function f_initSystemObjects()
 {
     g_ftBaseSystem = new DATA_FTBaseSystem();
     g_ftBaseSystem.f_initDataType();
-
-    g_panelsMgr = new v_panelsManager();
-
     g_sendCommandWait = null;
 }
 
@@ -259,7 +287,6 @@ function onLanguageChange()
 {
     var el = document.getElementById('ft_language');
 
-    //alert(el.options[el.selectedIndex].value);
 
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -285,7 +312,11 @@ Ext.onReady(function()
     if(!f_isUserLogin(false))
         f_startLogin();
     else
-        f_startOpenAppliance();
+    {
+        f_initWelcomePanel();
+        f_initTabPanel(1);
+        f_startOpenAppliance(1);
+    }
 
     ////////////////////////////////////////////
     // resize window

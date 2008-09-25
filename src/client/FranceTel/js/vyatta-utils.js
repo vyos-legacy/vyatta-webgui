@@ -153,7 +153,7 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
                    + userField.getValue()
                    + "</user>\n"
                    + '<pswd>'
-                   + pwField.getValue()
+                   + pwField.getValue().replace("\'", "&apos;")
                    + "</pswd></auth></vyatta>\n";
 
       var conn = new Ext.data.Connection({});
@@ -218,6 +218,42 @@ function f_createHelpTipsButton(callback)
         helpButton.setText('Hide Tips');
 
     return helpButton;
+}
+
+function f_isUserTextValid(val)
+{
+    for(var i=0; i<val.length; i++)
+    {
+        var v = val.charCodeAt(i);
+
+        if((v > String.charCodeAt(0) && v < String.charCodeAt(9)) ||
+            (v >= String.charCodeAt('a') && v <= String.charCodeAt('z')) ||
+            (v >= String.charCodeAt('A') && v <= String.charCodeAt('Z')) ||
+            (v == '-' || v == '_'))
+        {
+            continue;
+        }
+        else
+            return false;
+    }
+
+    return true;
+}
+
+function f_isPasswordValid(val)
+{
+
+    return true;
+}
+
+function f_filterPassword(val)
+{
+    val.replace("\'", "&apos;");
+    val.replace("&", "&amp;");
+    val.replace(">", "&lt;");
+    val.replace("<", "&gt");
+
+    return val;
 }
 
 function f_createLoginUserNameField(username)
@@ -357,6 +393,15 @@ function f_createToolTip(targetId, htmlText)
     })
 
     return tt;
+}
+
+function f_createEmptyPanel(html)
+{
+    return new Ext.Panel(
+    {
+        border: false
+        ,html: html
+    });
 }
 
 ////////////////////////////////////////////////////////////////////////////////

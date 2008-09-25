@@ -34,9 +34,18 @@ EOS
 
 my $op = <STDIN>;
 
+sub checkString {
+  my $v = shift;
+  return 0 if ($v =~ /[^-0-9a-zA-Z_]/);
+  return 1;
+}
+
 chomp $op;
 $op =~ m/^([^,]+),([^,]+),([^,]*),([^,]*),(.*)$/;
 my ($action, $user, $last, $first, $password) = ($1, $2, $3, $4, $5);
+
+return 3 if (!checkString($user) || !checkString($last)
+             || !checkString($first) || $user =~ /^-/);
 
 # check permission (only admin and self allowed)
 my ($cuser) = getpwuid($>);
@@ -58,12 +67,12 @@ if ($action eq 'add') {
   my $epassword = encrypt_password($password);
   $cmd = "sudo /usr/sbin/useradd -c '$first $last' -g $VMUSER_GRP ";
   $cmd .= "-G $VMUSER_GRP,vyattacfg,sudo -N -p '$epassword' -s /bin/false ";
-  $cmd .= "$user";
+  $cmd .= "'$user'";
 } elsif ($action eq 'delete') {
-  $cmd = "sudo /usr/sbin/userdel $user";
+  $cmd = "sudo /usr/sbin/userdel '$user'";
 } elsif ($action eq 'change') {
   my $epassword = encrypt_password($password);
-  $cmd = "sudo /usr/sbin/usermod -c '$first $last' -p '$epassword' $user";
+  $cmd = "sudo /usr/sbin/usermod -c '$first $last' -p '$epassword' '$user'";
 } else {
   # invalid action
   exit 1;

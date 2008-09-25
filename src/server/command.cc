@@ -1,8 +1,11 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <string>
+#include "rl_str_proc.hh"
 #include "systembase.hh"
 #include "command.hh"
 
@@ -122,12 +125,18 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   }
   else {
     //treat this as an op mode command
-    string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
-    string stdout;
-    err = WebGUI::execute(opmodecmd,stdout,true);
-    stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
-    stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
-    resp = stdout;
+    if (validate_op_cmd(cmd)) {
+      string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
+      string stdout;
+      err = WebGUI::execute(opmodecmd,stdout,true);
+      stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
+      stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
+      resp = stdout;
+    }
+    else {
+      string err = "";
+      _proc->set_response(WebGUI::COMMAND_ERROR, err);
+    }
     return;
   }
 
@@ -160,4 +169,49 @@ Command::validate_session(unsigned long id)
   //finally, we'll want to support a timeout value here
 
   return true;
+}
+
+/**
+ * replaces quoted values with node.tag and validates against cmd directory
+ **/
+bool
+Command::validate_op_cmd(std::string &cmd)
+{
+  //convert to op directory
+
+  //first let's replace all 'asdf asdf' with node.tag string
+  string tmp = cmd;
+  string out_cmd;
+  bool quote_flag = false;
+  int pos = string::npos;
+  //replace everything in quotes with node.tag
+  while ((pos = tmp.find("'")) != string::npos) {
+    if (quote_flag == false) {
+      out_cmd += tmp.substr(0,pos) + " node.tag ";
+      tmp = tmp.substr(pos+1,tmp.length());
+      quote_flag = true;
+    }
+    else {
+      tmp = tmp.substr(pos+1,tmp.length());
+      quote_flag = false;
+    }
+  }
+  
+  out_cmd += tmp;
+
+  //now construct the relative path for validation
+  StrProc str_proc(out_cmd, " ");
+  vector<string> coll = str_proc.get();
+  vector<string>::iterator iter = coll.begin();
+  string path;
+  while (iter != coll.end()) {
+    path += "/" + *iter;
+    ++iter;
+  }
+
+  path = WebGUI::OP_COMMAND_DIR + path;
+
+  //now that we have a path let's compare this to the op cmds
+  struct stat s;
+  return (stat(path.c_str(), &s) == 0);
 }

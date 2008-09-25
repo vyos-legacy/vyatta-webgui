@@ -249,7 +249,7 @@ sub vmDisk {
 }
 
 sub getVmStatus {
-  my ($name, $ip) = @_;
+  my ($name, $ip, $url) = @_;
 
   my ($status, $cpu_util, $mem_total, $mem_free, $disk_total, $disk_free)
     = ('unknown', 0, 0, 0, 0, 0);
@@ -294,6 +294,7 @@ EOS
     <cpu util='$cpu_util'/>
     <mem total='$mem_total' free='$mem_free'/>
     <disk total='$disk_total' free='$disk_free'/>
+    <guiUrl>$url</guiUrl>
 $ver  </vm>
 EOS
   return $ret;
@@ -315,8 +316,9 @@ $outstr .= getDom0Status();
 my $vf;
 if ((-r $VM_LIST_FILE) && open($vf, "<", "$VM_LIST_FILE")) {
   while (<$vf>) {
-    my ($name, $ip) = split / +/;
-    $outstr .= getVmStatus($name, $ip);
+    chomp;
+    my ($name, $ip, $xml, $url) = split / +/;
+    $outstr .= getVmStatus($name, $ip, $url);
   }
 }
 

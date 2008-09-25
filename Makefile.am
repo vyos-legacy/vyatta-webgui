@@ -1,5 +1,6 @@
 wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
+opdir = $(datadir)/vyatta-op/templates
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
@@ -55,4 +56,6 @@ install-exec-hook:
 		rm -f /tmp/ext-$$v.zip; \
 	done
 	@cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
+	@mkdir -p $(DESTDIR)$(opdir)
+	@cd src/server/templates; $(cpiop) $(DESTDIR)$(opdir)
 

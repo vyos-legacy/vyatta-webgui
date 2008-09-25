@@ -44,9 +44,9 @@ Command::execute_command()
   vector<string>::iterator iter = coll.begin();
   while (iter != coll.end()) {
     string err;
-    int err_code;
+    int err_code = WebGUI::SUCCESS;
     execute_single_command(*iter, err, err_code);
-    if (err_code != 0) {
+    if (err_code != WebGUI::SUCCESS) {
       //generate error response for this command and exit
       _proc->set_response(WebGUI::COMMAND_ERROR, err);
       return;
@@ -60,18 +60,20 @@ Command::execute_command()
   return;
 }
 
+/**
+ *
+ **/
 void
 Command::execute_single_command(string &cmd, string &resp, int &err)
 {
   if (cmd.empty()) {
     resp = "";
-    err = 1;
+    err = WebGUI::MALFORMED_REQUEST;
     return;
   }
 
 
   //need to set up environment variables
-  //  string command = "export VYATTA_ACTIVE_CONFIGURATION_DIR=/opt/vyatta/config/active;export VYATTA_CONFIG_TMP=/opt/vyatta/config/tmp/tmp_" + string(buf) + ";export VYATTA_TEMPLATE_LEVEL=/;export vyatta_datadir=/opt/vyatta/share;export vyatta_sysconfdir=/opt/vyatta/etc;export vyatta_sharedstatedir=/opt/vyatta/com;export VYATTA_TAG_NAME=node.tag;export vyatta_sbindir=/opt/vyatta/sbin;export VYATTA_CHANGES_ONLY_DIR=/tmp/changes_only_" + string(buf) + ";export vyatta_cfg_templates=/opt/vyatta/share/vyatta-cfg/templates;export VYATTA_CFG_GROUP_NAME=vyattacfg;export vyatta_bindir=/opt/vyatta/bin;export vyatta_libdir=/opt/vyatta/lib;export VYATTA_CONFIG_TEMPLATE=/opt/vyatta/share/vyatta-cfg/templates;export vyatta_libexecdir=/opt/vyatta/libexec;export vyatta_prefix=/opt/vyatta;export vyatta_datarootdir=/opt/vyatta/share;export vyatta_configdir=/opt/vyatta/config;export vyatta_infodir=/opt/vyatta/share/info;export VYATTA_TEMP_CONFIG_DIR=/opt/vyatta/config/tmp/new_config_"+string(buf)+";export vyatta_localedir=/opt/vyatta/share/locale";  
   string command = "export VYATTA_ACTIVE_CONFIGURATION_DIR="+WebGUI::ACTIVE_CONFIG_DIR+"; \
 export VYATTA_CONFIG_TMP=/opt/vyatta/config/tmp/tmp_" + _proc->get_msg().id() + "; \
 export VYATTA_TEMPLATE_LEVEL=/; \
@@ -120,13 +122,16 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     string tmp = _proc->get_msg().id();
     WebGUI::discard_session(tmp);
     resp = "";
-    err = 1;
+    err = WebGUI::SUCCESS;
     return;
   }
   else {
     //treat this as an op mode command
     if (validate_op_cmd(cmd)) {
-      string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
+      cmd = WebGUI::mass_replace(cmd,"'","'\\''");
+
+      string opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c '"
+                         + cmd + " 2>&1'";
       string stdout;
       err = WebGUI::execute(opmodecmd,stdout,true);
       stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
@@ -134,8 +139,8 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       resp = stdout;
     }
     else {
-      string err = "";
-      _proc->set_response(WebGUI::COMMAND_ERROR, err);
+      err = WebGUI::COMMAND_ERROR;
+      _proc->set_response(WebGUI::COMMAND_ERROR);
     }
     return;
   }
@@ -183,7 +188,7 @@ Command::validate_op_cmd(std::string &cmd)
   string tmp = cmd;
   string out_cmd;
   bool quote_flag = false;
-  int pos = string::npos;
+  string::size_type pos = string::npos;
   //replace everything in quotes with node.tag
   while ((pos = tmp.find("'")) != string::npos) {
     if (quote_flag == false) {

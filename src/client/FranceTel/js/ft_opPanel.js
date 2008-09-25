@@ -1587,16 +1587,16 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
     {
         case 'Restart':
             if(status == V_STATUS_UP) disable = false;
-            xmlStatement = vm + ' restart';
+            xmlStatement = "restart '" + vm + "'";
             break;
         case 'Stop':
             if(status == V_STATUS_UP) disable = false;
-            xmlStatement = vm + ' stop';
+            xmlStatement = "stop '" + vm + "'";
             hide = rIndex == 0 ? true : false;
             break;
         case 'Start':
             if(status == V_STATUS_DOWN) disable = false;
-            xmlStatement = vm + ' start';
+            xmlStatement = "start '" + vm + "'";
             hide = rIndex == 0 ? true : false;
             break;
     }
@@ -1630,8 +1630,7 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
         {
 
             var xmlstr = "<command><id>" + f_getUserLoginedID() +
-            "</id><statement>/opt/vyatta/sbin/vyatta-vmop.pl " +
-            xmlStatement + "</statement></command>";
+            "</id><statement>vm " + xmlStatement + "</statement></command>";
 
             f_sendServerCommand(true, xmlstr, serverCommandCb);
         }

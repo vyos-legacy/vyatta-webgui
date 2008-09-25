@@ -38,18 +38,18 @@ function f_startOpenAppliance()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// g_3rdParyURL is provided from server by call getOpenApplianceVM.
+// g_3rdPartyURL is provided from server by call getOpenApplianceVM.
 g_3rdPartyURL = null;
 function f_start3rdPartyApplication()
 {
-    if(g_3rdParyURL != null)
+    if(g_3rdPartyURL != null)
     {
         var iframe = Ext.DomHelper.append(document.body,
-              {
-                  tag: 'iframe', frameBorder:0,
-                  src:g_3rdPartyURL,
-                  width: '100%', height: '100%'
-              });
+        {
+            tag: 'iframe', frameBorder:0,
+            src:g_3rdPartyURL,
+            width: '100%', height: '100%'
+        });
 
         var pp = new Ext.Panel(
         {
@@ -164,6 +164,7 @@ function f_refreshTabs()
 
 function f_initSystemObjects()
 {
+    g_homePage = 'ft_main.html';
     g_ftBaseSystem = new DATA_FTBaseSystem();
     g_ftBaseSystem.f_initDataType();
     g_sendCommandWait = null;

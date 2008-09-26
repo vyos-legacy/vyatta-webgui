@@ -462,7 +462,8 @@ function f_parseVMDashboarData(vm)
     var diskFree = disk.getAttribute('free');
 
     if(vmName == 'jvm')
-        g_3rdPartyURL = q.selectValue('guiUrl');
+        g_3rdPartyURL = q.selectValue('guiUrl', vm);
+
 
     ///////////////////////////////////////
     // get current and available versions
@@ -1587,16 +1588,16 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
     {
         case 'Restart':
             if(status == V_STATUS_UP) disable = false;
-            xmlStatement = "restart '" + vm + "'";
+            xmlStatement = vm + ' restart';
             break;
         case 'Stop':
             if(status == V_STATUS_UP) disable = false;
-            xmlStatement = "stop '" + vm + "'";
+            xmlStatement = vm + ' stop';
             hide = rIndex == 0 ? true : false;
             break;
         case 'Start':
             if(status == V_STATUS_DOWN) disable = false;
-            xmlStatement = "start '" + vm + "'";
+            xmlStatement = vm + ' start';
             hide = rIndex == 0 ? true : false;
             break;
     }
@@ -1630,7 +1631,8 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
         {
 
             var xmlstr = "<command><id>" + f_getUserLoginedID() +
-            "</id><statement>vm " + xmlStatement + "</statement></command>";
+            "</id><statement>/opt/vyatta/sbin/vyatta-vmop.pl " +
+            xmlStatement + "</statement></command>";
 
             f_sendServerCommand(true, xmlstr, serverCommandCb);
         }

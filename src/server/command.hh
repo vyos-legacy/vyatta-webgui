@@ -20,5 +20,7 @@ private:
   bool
   validate_session(unsigned long id);
 
+  bool
+  validate_op_cmd(std::string &cmd);
 };
 #endif //__COMMAND_HH__

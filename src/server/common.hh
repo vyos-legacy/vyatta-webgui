@@ -21,13 +21,13 @@ public:
   const static std::string VYATTA_MODIFY_FILE;
 
   enum Error {SUCCESS = 0,
-		      MALFORMED_REQUEST,
-		      AUTHENTICATION_FAILURE,
-		      SESSION_FAILURE,
-		      SERVER_FAILURE,
-		      COMMAND_ERROR,
-		      COMMIT_IN_PROGRESS,
-		      CONFIGURATION_CHANGE};
+	      MALFORMED_REQUEST,
+	      AUTHENTICATION_FAILURE,
+	      SESSION_FAILURE,
+	      SERVER_FAILURE,
+	      COMMAND_ERROR,
+	      COMMIT_IN_PROGRESS,
+	      CONFIGURATION_CHANGE};
 
 
   static char const *ErrorDesc[];

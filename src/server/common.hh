@@ -9,6 +9,7 @@ public:
 
   const static unsigned long SESSION_TIMEOUT_WINDOW;
 
+  const static std::string OP_COMMAND_DIR;
   const static std::string ACTIVE_CONFIG_DIR;
   const static std::string CONFIG_TMP_DIR;
   const static std::string LOCAL_CHANGES_ONLY;

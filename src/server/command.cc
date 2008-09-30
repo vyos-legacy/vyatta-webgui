@@ -187,7 +187,7 @@ Command::validate_op_cmd(std::string &cmd)
   string tmp = cmd;
   string out_cmd;
   bool quote_flag = false;
-  int pos = string::npos;
+  string::size_type pos = string::npos;
   //replace everything in quotes with node.tag
   while ((pos = tmp.find("'")) != string::npos) {
     if (quote_flag == false) {

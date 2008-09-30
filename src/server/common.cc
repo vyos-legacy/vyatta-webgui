@@ -87,10 +87,12 @@ std::string // replace all instances of victim with replacement
 WebGUI::mass_replace(const std::string &source, const std::string &victim, const
 	     std::string &replacement)
 {
+  std::string::size_type jump = replacement.length();
   std::string answer = source;
   std::string::size_type j = 0;
-  while ((j = answer.find(victim, j)) != std::string::npos )
+  while ((j = answer.find(victim, j+jump)) != std::string::npos ) {
     answer.replace(j, victim.length(), replacement);
+  }
   return answer;
 }
 

@@ -80,6 +80,7 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read, bool raw)
       }
     }
     err = pclose(f);
+    err = (WIFEXITED(err)) ? (WEXITSTATUS(err)) : err;
   }
   return err;
 }

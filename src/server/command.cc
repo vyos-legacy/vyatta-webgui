@@ -130,7 +130,8 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     if (validate_op_cmd(cmd)) {
       cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
-      string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
+      string opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c '"
+                         + cmd + " 2>&1'";
       string stdout;
       err = WebGUI::execute(opmodecmd,stdout,true);
       stdout = WebGUI::mass_replace(stdout, "<", "&lt;");

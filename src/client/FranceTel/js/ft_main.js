@@ -3,7 +3,67 @@
  * and open the template in the editor.
  */
 
+DATA_FTBaseSystem = Ext.extend(Ext.util.Observable,
+{
+    f_initDataType: function()
+    {
+        ///////////////////////////////////////////////////////
+        //
+        this.m_headerPanel = undefined;
+        this.m_footerPanel = undefined;
+        this.m_bodyPanel = undefined;
+        this.m_tabNames = [ 'Business LiveBox settings',
+                    'Open Appliance settings', 'UTM configuration',
+                    'PBX configuration', '3rd Parties Applications'];
+        this.m_selTab = this.m_tabNames[1];
 
+        //////////////////////////////////////////////////////
+        //an array of panels object belong to specific tab
+        this.systemTabObjects = new Array();
+        this.m_homePage = 'ft_main.html';
+    },
+
+    ///////////////////////////////////
+    //
+    f_getSystemTabNames: function()
+    {
+        return this.m_tabNames;
+    },
+
+
+    ///////////////////////////////////////////
+    //
+
+    f_setSystemTabPanels: function(tabObjects)
+    {
+        this.systemTabObjects = tabObjects;
+    },
+
+    ///////////////////////////////////////////////////
+    // Tabs data
+    /**
+     * if tabIndex is provided, return that specific tab.
+     * else return all tabs in an array form.
+     */
+    f_getTabsData: function(tabIndex /*optional*/)
+    {
+        var tabs = [ [this.m_tabNames[0], 'tabnav_blb_'],
+                  [this.m_tabNames[1], 'tabnav_oa_'],
+                  [this.m_tabNames[2], 'tabnav_utm_'],
+                  [this.m_tabNames[3], 'tabnav_pbx_'],
+                  [this.m_tabNames[4], 'tabnav_3pa_']];
+
+        if(tabIndex == undefined)
+            return tabs;
+        else
+            return tabs[tabIndex];
+    }
+});
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 function f_startLogin()
 {
     /////////////////////////////////////////////////
@@ -37,6 +97,28 @@ function f_startOpenAppliance()
     bp.doLayout();
 }
 
+function f_startVyattaApplication()
+{
+    var iframe = Ext.DomHelper.append(document.body,
+    {
+        tag: 'iframe',
+        frameBorder:0,
+        src: '../Vyatta/main.html',
+        width: '100%',
+        height: '100%'
+    });
+
+    var pp = new Ext.Panel(
+    {
+        contentEl: iframe
+        ,border: false
+    });
+
+    var bp = g_ftBaseSystem.m_bodyPanel;
+    bp.add(pp);
+    bp.doLayout();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // g_3rdPartyURL is provided from server by call getOpenApplianceVM.
 g_3rdPartyURL = null;
@@ -46,9 +128,11 @@ function f_start3rdPartyApplication()
     {
         var iframe = Ext.DomHelper.append(document.body,
         {
-            tag: 'iframe', frameBorder:0,
+            tag: 'iframe',
+            frameBorder:0,
             src:g_3rdPartyURL,
-            width: '100%', height: '100%'
+            width: '100%',
+            height: '100%'
         });
 
         var pp = new Ext.Panel(
@@ -70,7 +154,9 @@ function f_initWelcomePanel()
     var el = document.getElementById('barre_etat');
     el.innerHTML = "<span>&nbsp;&nbsp;Welcome <font color=#FF6600><b>" + f_getUserLoginName() +
                   "</b></font>! You are connected to the Open Appliance administrative service.</span>" +
-                  "<a href='#' onclick='f_userLogout(true)' class='dec' onfocus='this.blur();'>log out</a>";
+                  "<a href='#' onclick='f_userLogout(true, \"" +
+                  g_ftBaseSystem.m_homePage +
+                  "\")' class='dec' onfocus='this.blur();'>log out</a>";
 }
 
 function f_showApplication(appIndex)
@@ -87,11 +173,17 @@ function f_showApplication(appIndex)
     {
         var rItem = bp.items.remove(bp.items.itemAt(0));
         if(rItem instanceof Object)
+        {
+            rItem.hide();
             delete rItem;
+        }
     }
 
     switch(g_ftBaseSystem.f_getTabsData(appIndex)[1])
     {
+        case 'tabnav_utm_':
+            f_startVyattaApplication();
+        break;
         case 'tabnav_3pa_':
             f_start3rdPartyApplication();
         break;
@@ -123,7 +215,7 @@ function f_initTabPanel(tabIndex)
 
 function f_handleOnTabClick(tabIndex)
 {
-    if(!f_isUserLogin(true))
+    if(!f_isUserLogined(true, true))
     {
         window.location = 'ft_main.html';
         return;
@@ -164,7 +256,6 @@ function f_refreshTabs()
 
 function f_initSystemObjects()
 {
-    g_homePage = 'ft_main.html';
     g_ftBaseSystem = new DATA_FTBaseSystem();
     g_ftBaseSystem.f_initDataType();
     g_sendCommandWait = null;
@@ -310,7 +401,7 @@ Ext.onReady(function()
 
     //////////////////////////////////////////
     // if user not login yet, do login here..
-    if(!f_isUserLogin(false))
+    if(!f_isUserLogined(false, false))
         f_startLogin();
     else
     {

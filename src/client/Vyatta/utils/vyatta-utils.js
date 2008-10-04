@@ -58,10 +58,10 @@ function f_isUserLogined(updateLoginTimer, promptMsg)
     var loginTimer = cookie.get(V_COOKIES_LOGIN_TIMER, V_NOT_FOUND);
 
     var curTime = new Date().getTime();
-    if(loginTimer == V_NOT_FOUND || loginTimer < curTime)
+    if(loginTimer == V_NOT_FOUND || loginTimer.valueOf() < curTime)
     {
         if(promptMsg != undefined && promptMsg)
-          f_promptUserNotLoginMessage(null);
+            f_promptUserNotLoginMessage(null);
 
         return false;
     }
@@ -72,14 +72,6 @@ function f_isUserLogined(updateLoginTimer, promptMsg)
 
         return true;
     }
-}
-
-function f_isUserLogin(promptMsg, updateTimer)
-{
-    if(updateTimer != undefined)
-        return f_isUserLogined(updateTimer, promptMsg);
-
-    return f_isUserLogined(true, promptMsg);
 }
 
 function f_saveUserLoginName(name)
@@ -108,14 +100,15 @@ function f_getUserLoginedID(cookieP /* cookieP is optional */)
     return cookieP.get(V_COOKIES_USER_ID, V_NOT_FOUND);
 }
 
-function f_userLogout(isRedirectToHomePage)
+function f_userLogout(isRedirectToHomePage, toPage)
 {
     var cookieP = f_getCookieProvider();
 
     cookieP.set(V_COOKIES_LOGIN_TIMER, V_NOT_FOUND);
+    cookieP.set(V_COOKIES_USER_ID, V_NOT_FOUND);
 
     if(isRedirectToHomePage != undefined && isRedirectToHomePage)
-        f_redirectToHomePage();
+        window.location = toPage;
 }
 
 /***************************************************************************
@@ -248,12 +241,32 @@ function f_isPasswordValid(val)
 
 function f_filterPassword(val)
 {
-    val.replace("\'", "&apos;");
-    val.replace("&", "&amp;");
-    val.replace(">", "&lt;");
-    val.replace("<", "&gt");
+    return f_convertXMLSpecialCharacters(val);
+}
 
-    return val;
+function f_convertXMLSpecialCharacters(val)
+{
+    var xml = f_converXMLSpecialChar(val, "&", "&amp;")
+    xml = f_converXMLSpecialChar(xml, "'", "&apos;");
+    xml = f_converXMLSpecialChar(xml, ">", "&lt;");
+    xml = f_converXMLSpecialChar(xml, "<", "&gt");
+
+    return xml;
+}
+
+function f_converXMLSpecialChar(val, o, n)
+{
+    var xml = val;
+
+    var pos=-1;
+    var newPos = 0;
+    while((newPos = xml.indexOf(o)) > pos)
+    {
+        xml = xml.replace(o, n);
+        pos = newPos;
+    }
+
+    return xml;
 }
 
 function f_createLoginUserNameField(username)
@@ -323,22 +336,6 @@ function f_getHelpTipsState()
     var help = cookiesP.get(V_COOKIES_HELP_TIP_STATE, V_NOT_FOUND);
 
     return (help == V_NOT_FOUND) ? V_HELP_ON : help;
-}
-
-function f_ForceUserLoginIfNotLogin()
-{
-    //////////////////////////////////////////////////////////
-    // if user is not login, f_redirectToHomePage() will be
-    // called.
-    if(!f_isUserLogined(true, true))
-      f_redirectToHomePage();
-    else
-      f_resetLoginTimer();
-}
-
-function f_redirectToHomePage()
-{
-    window.location = 'ft_main.html';
 }
 
 ////////////////////////////////////////////////////////////////////////////////

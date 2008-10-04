@@ -1,0 +1,175 @@
+/* 
+    Document   : base-css
+    Created on : Aug 10, 2008, 8:51:52 PM
+    Author     : Kevin.Choi
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+/******************************************************************************/
+/*  Header */
+#id_header
+{
+    background: transparent url(images/head-background.PNG) repeat-x top left;
+}
+#id_header table tr td
+{
+    float: left
+}
+
+.v_header_text
+{
+    color: white;
+    font-size: 10px;
+    font-weight:bold;
+    float: right;
+    margin-right:15px;
+    margin-top:3px;
+}
+.v_header_text a
+{
+    color: white;
+    font-size: 10px;
+    font-weight:bold;
+    float: right;
+    margin-right:15px;
+    margin-top:3px;
+}
+
+.x-toolbar
+{
+    border-color:#fff;
+    border-style:none;
+    border-width:0 0 0px 0;
+    /*display: block;*/
+    padding:2px;
+    background:#d0def0 url(../images/default/toolbar/bg.gif) repeat-x top left;
+    position:relative;
+    zoom:1;
+}
+
+
+#v_tab_table
+{
+    float: left;
+    /*
+    margin-bottom:0px;
+    margin-top:8px;
+    margin-left:0px;
+    margin-right:30px;*/
+    position: absolute;
+    top: 33px;
+    left: 200px;
+}
+
+/******************************************************************************/
+/*  body */
+.v-data-panel-body
+{
+    border: 2px solid #FF6600;
+    background-color:#FFF;
+}
+body
+{
+  font-family:helvetica,tahoma,verdana,sans-serif;
+  /*padding:20px;
+  padding-top:32px;*/
+  font-size:13px;
+  background-color:#fff !important;
+}
+.vlabel_right
+{
+    font-family:helvetica,tahoma,verdana,sans-serif;
+    text-align: right;
+    padding-right: 5px;
+    font-weight: bold;
+}
+
+.vlabel_left
+{
+    text-align: left;
+    padding-left: 15px;
+    padding-top: 3px;
+    font-weight: bold;
+    color: blue;
+}
+
+
+/******************************************************************************/
+/*  left, tree panel */
+.v_tree
+{
+  background-color: d0def0;
+}
+.x-tree .x-panel-body{
+    background-color:#d0def0;
+}
+
+.v-border-less
+{
+    border: 0px;
+    border-style: none;
+    background-color: d0def0;
+}
+.v-node-nocfg {
+  font-size: 13px;
+  font-weight: normal;
+}
+.v-node-active {
+  font-size: 13px;
+  font-weight: 900;
+}
+.v-node-set {
+  font-size: 13px;
+  font-weight: bold;
+}
+.v-node-delete {
+  font-size: 13px;
+  font-weight: bold;
+}
+root
+{
+    display: block;
+}
+
+/******************************************************************************/
+/*  footer */
+#v_footer_text
+{
+    color: blue;
+    font-size: 12px;
+    font-weight:bold;
+    padding-top: 5px;
+}
+
+/******************************************************************************/
+/*  common */
+.ext-ie6 .v_panel
+{
+    zoom: 1;
+}
+
+.v-panel-with-background-color .x-panel-body
+{
+    background-color:#d0def0 !important;
+}
+
+
+pre.code
+{
+  background: #F8F8F8;
+  border: 1px solid #e8e8e8;
+  padding:10px;
+  margin:10px;
+  margin-left:0px;
+  border-left:5px solid #e8e8e8;
+  font-size: 12px !important;
+  line-height:14px !important;
+}
+
+

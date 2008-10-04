@@ -51,7 +51,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
     },
     f_getUserAnchorData: function()
     {
-        return [ 'User' ];
+        return [ 'User', 'User Right' ];
     },
     f_getBackupAnchorData: function()
     {
@@ -388,6 +388,13 @@ v_opPanelObject = Ext.extend(v_panelObject,
                 g_opPanelObject.m_dataPanelTitle = 'Users';
                 this.f_invokeUserAnchor();
                 break;
+            case 'User_Right':
+                g_opPanelObject.m_dataPanelTitle = 'Users Right';
+                f_getUserRightDataFromServer(this);
+                this.m_selLeftAnchorName = this.f_getUserAnchorData()[1];
+                this.f_updateLeftPanel(this.f_getVMLeftPanelData(
+                                        this.f_getUserAnchorData()));
+                break;
             case 'Configuration_Backup':
                 g_opPanelObject.m_dataPanelTitle += 'Configuration Backup';
                 this.f_invokeBackupAnchor();
@@ -414,7 +421,7 @@ function f_sendServerCommand(checkLogin, xmlSend, callback, showWait)
 {
     if(checkLogin)
     {
-        if(!f_isUserLogin(true))
+        if(!f_isUserLogined(true, true))
         {
             window.location = 'ft_main.html';
             return;
@@ -602,6 +609,7 @@ function f_getVMDashboard_RestartDataFromServer(opObject)
         var isSuccess = f_parseResponseError(xmlRoot);
         if(!isSuccess[0])
         {
+            f_hideSendWaitMessage();
             f_promptErrorMessage('Load VM Dashboard', isSuccess[1]);
             return;
         }
@@ -718,6 +726,7 @@ function f_getUserDataFromServer(opObject)
         var isSuccess = f_parseResponseError(xmlRoot);
         if(!isSuccess[0])
         {
+            f_hideSendWaitMessage();
             f_promptErrorMessage('Load User', isSuccess[1]);
             return;
         }
@@ -729,6 +738,42 @@ function f_getUserDataFromServer(opObject)
 
         thisObject.m_userDBData = dbData;
         f_populateUserPanel(thisObject);
+
+        f_hideSendWaitMessage();
+    }
+
+    var sid = f_getUserLoginedID();
+    var xmlstr = "<vmuser op='list'><id>" + sid + "</id>\n"
+    + "</vmuser>";
+
+    f_sendServerCommand(true, xmlstr, serverCommandCb);
+}
+
+function f_getUserRightDataFromServer(opObject)
+{
+    var dbData = new Array();
+    var thisObject =  opObject;
+
+    var serverCommandCb = function(options, success, response)
+    {
+        var xmlRoot = response.responseXML.documentElement;
+        var q = Ext.DomQuery;
+
+        var isSuccess = f_parseResponseError(xmlRoot);
+        if(!isSuccess[0])
+        {
+            f_hideSendWaitMessage();
+            f_promptErrorMessage('Load User', isSuccess[1]);
+            return;
+        }
+
+        var vmUserNodes = q.select('vmuser', xmlRoot);
+
+        for(var i=0; i<vmUserNodes.length; i++)
+            dbData[i] = f_parseUserData(vmUserNodes[i]);
+
+        thisObject.m_userDBData = dbData;
+        f_populateUserRightPanel(thisObject);
 
         f_hideSendWaitMessage();
     }
@@ -753,6 +798,7 @@ function f_getResotreDataFromServer(opObject)
         var isSuccess = f_parseResponseError(xmlRoot);
         if(!isSuccess[0])
         {
+            f_hideSendWaitMessage();
             f_promptErrorMessage('Load Restore', isSuccess[1]);
             return;
         }
@@ -787,6 +833,7 @@ function f_getBackupDataFromServer(opObject)
         var isSuccess = f_parseResponseError(xmlRoot);
         if(!isSuccess[0])
         {
+            f_hideSendWaitMessage();
             f_promptErrorMessage('Load Backup', isSuccess[1]);
             return;
         }
@@ -959,6 +1006,14 @@ cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);   
         grid.getView().getHeaderCell(i).innerHTML = header[i];
 }
 
+function f_populateUserRightPanel(opObject)
+{
+    var lPanel = f_createLogPanel('User &rArr; User Right',
+          'This page is under construction...');
+
+    opObject.f_updateDataPanel(new Array(lPanel));
+}
+
 function f_populateUserPanel(opObject)
 {
     var thisObject = opObject;
@@ -1068,6 +1123,7 @@ function f_populateUserPanel(opObject)
                 var isSuccess = f_parseResponseError(xmlRoot);
                 if(!isSuccess[0])
                 {
+                    //f_hideSendWaitMessage();
                     f_promptErrorMessage('Delete User', isSuccess[1]);
                 }
 
@@ -1121,6 +1177,7 @@ function f_populateUserPanel(opObject)
                     var isSuccess = f_parseResponseError(xmlRoot);
                     if(!isSuccess[0])
                     {
+                        f_hideSendWaitMessage();
                         f_promptErrorMessage(op + ' User', isSuccess[1] +
                             ' to ' + op + ' ' + userName);
                         return;
@@ -1290,6 +1347,7 @@ function f_getMonitoringHardwareDataFromServer(opObject)
         var isSuccess = f_parseResponseError(xmlRoot);
         if(!isSuccess[0])
         {
+            f_hideSendWaitMessage();
             f_promptErrorMessage('Load Monitoring Hardware', isSuccess[1]);
             return;
         }
@@ -1612,6 +1670,7 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
         var isSuccess = f_parseResponseError(xmlRoot);
         if(!isSuccess[0])
         {
+            f_hideSendWaitMessage();
             f_promptErrorMessage('Load Restart', isSuccess[1]);
             return;
         }
@@ -1629,9 +1688,9 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
         ,
         handler: function(btn, e)
         {
-
             var xmlstr = "<command><id>" + f_getUserLoginedID() +
-            "</id><statement>vm " + xmlStatement + "</statement></command>";
+            "</id><statement>/opt/vyatta/sbin/vyatta-vmop.pl " +
+            xmlStatement + "</statement></command>";
 
             f_sendServerCommand(true, xmlstr, serverCommandCb);
         }

@@ -18,6 +18,9 @@ V_HELP_OFF = 'helpOff';
 
 ///////////////////////////////////////////
 // tree
+V_TREE_ID_login = 'login';
+V_TREE_ID_status = 'status';
+V_TREE_ID_diag = 'diagnostics';
 V_TREE_ID_config = 'configuration';
 V_TREE_ID_oper = 'operation'
 

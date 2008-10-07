@@ -508,7 +508,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  string tmp = WebGUI::mass_replace(*iter, "<>", "*"); //handle special case for wildcard
 
 	  //strip out all values enclosed in <*>
-	  unsigned start_pos = 0;
+	  string::size_type start_pos = 0;
 	  while ((start_pos = tmp.find("<")) != string::npos) {
 	    int end_pos = tmp.find(">");
 	    tmp = tmp.substr(0,start_pos) + tmp.substr(end_pos+1,tmp.length());

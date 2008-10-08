@@ -27,7 +27,6 @@ AC_ARG_ENABLE([nostrip],
 
 AC_CONFIG_FILES(
 	[Makefile]
-  [debian/vyatta-webgui.postinst]
   [debian/vyatta-webgui.postrm])
 
 AC_SUBST(NOSTRIP)

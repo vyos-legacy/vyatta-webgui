@@ -17,7 +17,6 @@ config.log
 config.status
 config.sub
 debian/vyatta-webgui
-debian/vyatta-webgui.postinst
 debian/vyatta-webgui.postrm
 debian/files
 debian/vyatta-webgui.debhelper.log

@@ -920,14 +920,13 @@ function f_populateConfigBackupPanel(opObject, vmData)
         var xmlRoot = response.responseXML.documentElement;
 
         var isSuccess = f_parseResponseError(xmlRoot);
-        if(!isSuccess[0])
-        {
-            f_hideSendWaitMessage();
-            f_promptErrorMessage('Error - Backup VM: ' + vmName, isSuccess[1]);
-            return;
-        }
-
         f_hideSendWaitMessage();
+
+        if(!isSuccess[0])
+            f_promptErrorMessage('Error - Backup VM: ' + vmName, isSuccess[1]);
+        else
+            f_promptInfoMessage('Backup VM: ' + vmName,
+                              'Backup complete successfully!');
     }
 
 
@@ -1005,10 +1004,25 @@ function f_populateConfigRestorePanel(opObject, vmBackupFiles)
             { name: 'files' }]
     });
     store.loadData(vmBackupFiles);
-    //store.colHeaders = hd;
 
-    var handleRestoreButtonPressed = function()
+    var handleRestoreCallback = function(options, success, response)
     {
+        var xmlRoot = response.responseXML.documentElement;
+
+        var isSuccess = f_parseResponseError(xmlRoot);
+        f_hideSendWaitMessage();
+
+        if(!isSuccess[0])
+            f_promptErrorMessage('Error - Restore: ' + restoreFileName, isSuccess[1]);
+        else
+            f_promptInfoMessage('Restore: ' + restoreFileName,
+                                'Restore complete successfully!');
+    }
+
+    var xmlStr = '';
+    var handleMyPCRestoreButtonPressed = function()
+    {
+        /*
         Ext.Ajax.request(
         {
             url:'js/ft_main.js'
@@ -1031,18 +1045,36 @@ function f_populateConfigRestorePanel(opObject, vmBackupFiles)
                 alert('fail');
             }
         });
-
-        return;
+        */
+    }
+    var handleOARestoreButtonPressed = function()
+    {
         /////////////////////////////////////////
         // find the selected row
         store.each(function(record)
         {
             if(record.get('checker'))
             {
-                alert(record.get('target'));
+                var sid = f_getUserLoginedID();
+                restoreFileName = record.get('files');
+                xmlStr = "<command><id>" + sid + "</id>" +
+                    "<statement>vm restore '" + restoreFileName +
+                    "'</statement></command>";
             }
         });
+
+        f_yesNoMessageBox('Configuration Restore',
+                'Are you sure you wish to restore the selected file '+
+                'from Open Appliance?',
+                startRestore);
     };
+
+    var restoreFileName = '';
+    var startRestore = function(btn)
+    {
+        if(btn == 'yes')
+            f_sendServerCommand(true, xmlStr, handleRestoreCallback, true);
+    }
 
     ///////////////////////////////////////////////////////
     // add grid into working panel
@@ -1051,7 +1083,7 @@ function f_populateConfigRestorePanel(opObject, vmBackupFiles)
                         g_opPanelObject.m_dataPanelTitle+
                         "&nbsp;&rArr;&nbsp;from Open Appliance");
     var buttons = f_createButtonsPanel(new Array('Start Restore from Open Appliance'),
-                  new Array(handleRestoreButtonPressed));
+                  new Array(handleOARestoreButtonPressed));
     buttons.buttons[0].disable();
     gridPanel[gridPanel.length] = buttons;
     opObject.f_updateDataPanel(gridPanel);

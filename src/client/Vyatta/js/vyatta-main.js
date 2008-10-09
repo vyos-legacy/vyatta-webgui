@@ -101,15 +101,15 @@ function f_createTabHTML(tabName)
 {
     var imgId = 'v-tab-' + tabName;
     var img = (g_baseSystem.f_getTabIndex(tabName) == g_baseSystem.m_selTabIndex) ?
-              tabName + '-tab-on.PNG' : tabName + '-tab-off.PNG';
+              'tab-' + tabName + '-active.gif' : 'tab-' + tabName + '-available.gif';
 
     return '<td><a href="#" onClick="f_handleTabClick(\'' + tabName + '\')">' +
-            '<img src=\'images/' + img + '\' id=\'' + imgId +
+            '<img class="v_tab_image" src=\'images/' + img + '\' id=\'' + imgId +
             '\' onmouseover="f_handleTabOnMouseAction(\'' + tabName +
             '\', \'over\')" ' +
             'onmouseout="f_handleTabOnMouseAction(\'' + tabName + 
-            '\', \'off\')"' +
-            '></a></td>';
+            '\', \'available\')"' +
+            '/></a></td>';
 }
 
 function f_createTabsHTML()
@@ -141,7 +141,7 @@ function f_handleTabOnMouseAction(tabName, action)
         return;
 
     var tabId = document.getElementById('v-tab-' + tabName);
-    tabId.src = "images/" + tabName + "-tab-" + action + ".PNG";
+    tabId.src = "images/tab-" + tabName + "-" + action + ".gif";
 }
 
 function f_createFrameHeaderPanel()
@@ -156,9 +156,9 @@ function f_createFrameHeaderPanel()
     }
     else
     {
-        id.innerHTML = 'User:&nbsp; <b>' + f_getUserLoginName() + '</b>&nbsp;&nbsp;&nbsp;' +
-            '<a href="#" onclick="f_userLogout(true, \'' +
-            g_baseSystem.m_homePage + '\')">Logout</a>';
+        //id.innerHTML = 'Username:&nbsp; <b>' + f_getUserLoginName() + '</b>&nbsp;&nbsp;&nbsp;' +
+            //'<a href="#" onclick="f_userLogout(true, \'' +
+            //g_baseSystem.m_homePage + '\')">Logout</a>';
         f_createTabsHTML();
     }
 

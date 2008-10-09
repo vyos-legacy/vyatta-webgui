@@ -484,8 +484,8 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
     }
 
     //    cout << "INPUT COMMAND: %>" << cmd << "<%" << endl;
-
-    int err = WebGUI::execute(cmd, stdout, true);
+    bool dummy;
+    int err = WebGUI::execute(cmd, stdout, dummy, true);
     if (err == 0) {
       //      cout << "allowed(OUT): '" << stdout.substr(0,stdout.length()-1) << "', ERROR CODE: " << err << endl;
       //now fill out enumeration now

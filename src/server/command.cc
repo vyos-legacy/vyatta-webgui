@@ -133,9 +133,12 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       string opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c '"
                          + cmd + " 2>&1'";
       string stdout;
-      err = WebGUI::execute(opmodecmd,stdout,true);
-      stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
-      stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
+      bool verbatim = false;
+      err = WebGUI::execute(opmodecmd,stdout,verbatim,true);
+      if (!verbatim) {
+        stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
+        stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
+      }
       resp = stdout;
     }
     else {
@@ -148,7 +151,8 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   command += ";" + tmp;
 
   string stdout;
-  err = WebGUI::execute(command,stdout,true);
+  bool dummy;
+  err = WebGUI::execute(command,stdout,dummy,true);
   stdout = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
   resp = stdout;
 }

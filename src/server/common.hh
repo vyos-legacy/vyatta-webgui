@@ -19,6 +19,7 @@ public:
   const static std::string COMMIT_LOCK_FILE;
   const static std::string VYATTA_MODIFY_DIR;
   const static std::string VYATTA_MODIFY_FILE;
+  const static std::string VERBATIM_OUTPUT;
 
   enum Error {SUCCESS = 0,
 	      MALFORMED_REQUEST,
@@ -77,8 +78,8 @@ public:
    *
    **/
   static int
-  execute(std::string &cmd, std::string &stdout, bool read = false,
-          bool raw = false);
+  execute(std::string &cmd, std::string &stdout, bool &verbatim,
+          bool read = false, bool raw = false);
 
   /**
    *

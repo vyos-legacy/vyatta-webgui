@@ -25,6 +25,7 @@ const string WebGUI::OP_TEMPLATE_DIR = "/opt/vyatta/share/vyatta-op/templates";
 const string WebGUI::COMMIT_LOCK_FILE = "/opt/vyatta/config/.lock";
 const string WebGUI::VYATTA_MODIFY_DIR = "/opt/vyatta/config/tmp/";
 const string WebGUI::VYATTA_MODIFY_FILE = WebGUI::VYATTA_MODIFY_DIR + ".vyattamodify_";
+const string WebGUI::VERBATIM_OUTPUT = "VERBATIM_OUTPUT";
 
 char const* WebGUI::ErrorDesc[8] = {" ",
 				    "request cannot be parsed",
@@ -50,7 +51,8 @@ WebGUI::generate_response(string &token, Error err)
  *
  **/
 int
-WebGUI::execute(std::string &cmd, std::string &stdout, bool read, bool raw)
+WebGUI::execute(std::string &cmd, std::string &stdout, bool &verbatim,
+                bool read, bool raw)
 {
   int err = 0;
 
@@ -66,9 +68,13 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read, bool raw)
       char *buf = NULL;
       size_t len = 0;
       ssize_t read_len = 0;
+      verbatim = false;
       while ((read_len = getline(&buf, &len, f)) != -1) {
 	//	cout << "WebGUI::execute(): " << string(buf) << ", " << len << ", " << read_len << endl;
-        if (raw) {
+        if (strncmp(VERBATIM_OUTPUT.c_str(), buf, read_len - 1) == 0) {
+          verbatim = true;
+          stdout += "\n";
+        } else if (raw || verbatim) {
           stdout += string(buf);
         } else {
           stdout += string(buf) + " ";
@@ -141,7 +147,8 @@ WebGUI::discard_session(string &id)
   cmd = "sudo umount " + WebGUI::LOCAL_CONFIG_DIR + id;
   cmd += ";rm -fr " + WebGUI::LOCAL_CHANGES_ONLY + id;
   cmd += ";mkdir -p " + WebGUI::LOCAL_CHANGES_ONLY + id;
-  execute(cmd,stdout);
+  bool dummy;
+  execute(cmd,stdout,dummy);
 
 }
 
@@ -153,12 +160,13 @@ WebGUI::remove_session(string &id)
 {
   string cmd,stdout;
   cmd = "sudo umount " + WebGUI::LOCAL_CONFIG_DIR + id;
-  execute(cmd, stdout);
+  bool dummy;
+  execute(cmd, stdout, dummy);
   cmd = "rm -fr " + WebGUI::LOCAL_CHANGES_ONLY + id + " 2>/dev/null";
   cmd += ";rm -fr " + WebGUI::CONFIG_TMP_DIR + id + " 2>/dev/null";
   cmd += ";rm -fr " + WebGUI::LOCAL_CONFIG_DIR + id + " 2>/dev/null";
   cmd += ";rm -f " + WebGUI::VYATTA_MODIFY_FILE + id + " 2>/dev/null";
-  execute(cmd, stdout);
+  execute(cmd, stdout, dummy);
 }
 
 

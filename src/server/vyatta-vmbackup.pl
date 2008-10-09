@@ -5,12 +5,10 @@ use POSIX qw(strftime);
 
 my $BROOT = '/backup';
 my $op = shift;
-my $vm = shift;
-my $BPATH = "$BROOT/$vm";
-
-exit 1 if (! -d "$BPATH");
 
 if ($op eq 'backup') {
+  my $vm = shift;
+  exit 1 if (! -d "$BROOT/$vm"); # vm doesn't exist
   my $stamp = strftime "%Y-%m-%d-%H%M%S", localtime;
   my $fname = "$vm\_$stamp";
   my $cmd = "cd $BROOT";
@@ -29,7 +27,38 @@ if ($op eq 'backup') {
   }
   exit 0;
 } elsif ($op eq 'restore') {
-  exit 0;
+  my $file = shift;
+  $file .= '.tar.gz';
+  exit 1 if (!($file =~ /^([^_]+)_(.+)\.tar\.gz$/));
+  my $vm = $1;
+  exit 1 if (! -f "$BROOT/$file"); # file doesn't exist
+  exit 1 if (! -d "$BROOT/$vm"); # vm doesn't exist
+  my $tdir = "tmp-$$";
+  my $cmd = "cd $BROOT ; sg users -c ";
+  $cmd .= "\"mkdir $tdir ; cd $tdir ; tar -xzf ../$file\"";
+  system("$cmd");
+  exit 1 if (! -d "$BROOT/$tdir/$vm"); # vm dir doesn't exist
+  system("mkdir $BROOT/$vm/.restore >&/dev/null");
+  exit 1 if ($? >> 8); # restore in progress
+  $cmd = "sudo mv $BROOT/$tdir/$vm $BROOT/$vm/restore ; ";
+  $cmd .= "sudo chown -R nobody:users $BROOT/$vm/restore";
+  system("$cmd");
+  
+  # wait for domU restore
+  my ($i, $done) = (0, 0);
+  while (1) {
+    sleep 1;
+    if (-d "$BROOT/$vm/restore/success") {
+      # success
+      $done = 1;
+      last;
+    }
+    last if (-d "$BROOT/$vm/restore/failure"); # failed
+    last if ((++$i) >= 30);
+  }
+
+  system("rm -rf $BROOT/{$vm/restore,$tdir} ; rm -rf $BROOT/$vm/.restore");
+  exit (($done) ? 0 : 1);
 }
 
 # invalid op

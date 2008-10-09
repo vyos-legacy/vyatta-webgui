@@ -83,7 +83,6 @@ function f_startOpenAppliance()
     // create a application object and add it to manager
     var opObject = new v_opPanelObject(bp,
                   g_ftBaseSystem.f_getTabsData(1)[0]);
-    //g_panelsMgr.f_manageThisPanel(opObject);
 
     bp.add(opObject.f_getMainPanel());
 
@@ -227,6 +226,17 @@ function f_handleOnTabClick(tabIndex)
     f_showApplication(tabIndex);
 }
 
+function f_handleOnMouseMove(tabIndex, action)
+{
+    if(g_ftBaseSystem.m_selTab == g_ftBaseSystem.f_getTabsData(tabIndex)[0])
+        return;
+
+    var tabName = g_ftBaseSystem.f_getTabsData(tabIndex)[1];
+    var tabId = document.getElementById('v_tab_img_' + tabIndex);
+
+    tabId.src = "images/" + tabName + action + ".png";
+}
+
 function f_refreshTabs()
 {
     var tabs = g_ftBaseSystem.f_getTabsData();
@@ -240,8 +250,10 @@ function f_refreshTabs()
         var isOn = (tab[0] == g_ftBaseSystem.m_selTab) ? 'on' : 'off';
 
         str += '<td><a href="#" onClick="f_handleOnTabClick('+ i +
-                    ')" onfocus="this.blur();">'+
-                    '<img src="images/' + tab[1] + isOn + '.png"></a></td>';
+                    ')"><img onmouseover="f_handleOnMouseMove(' + i + ',\'over\')" '+
+                    'onmouseout="f_handleOnMouseMove(' + i + ', \'off\');" ' +
+                    ' id="v_tab_img_'+ i + '" ' +
+                    'src="images/' + tab[1] + isOn + '.png"></a></td>';
     }
     str += "</tr></table>";
 
@@ -258,7 +270,6 @@ function f_initSystemObjects()
 {
     g_ftBaseSystem = new DATA_FTBaseSystem();
     g_ftBaseSystem.f_initDataType();
-    g_sendCommandWait = null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -407,7 +418,7 @@ Ext.onReady(function()
     {
         f_initWelcomePanel();
         f_initTabPanel(1);
-        f_startOpenAppliance(1);
+        f_startOpenAppliance();
     }
 
     ////////////////////////////////////////////

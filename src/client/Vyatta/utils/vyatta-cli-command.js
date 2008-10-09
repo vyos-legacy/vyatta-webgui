@@ -2,13 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
-function f_sendOperationCliCommand(node, callbackObj)
+function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
 {
     var sid = f_getUserLoginedID();
     if(sid == 'NOTFOUND')
       // no sid. do nothing.
-      return;
+      return undefined;
 
     var narr = [ ];
     var n = node;
@@ -35,8 +34,7 @@ function f_sendOperationCliCommand(node, callbackObj)
         headerStr += c;
     }
 
-    g_sendCommandWait = Ext.MessageBox.wait('Running operational command...',
-                                  'Operation');
+    var l_clear = clear;
 
     //////////////////////////////////////////////////////////////
     // operaction command callback
@@ -46,17 +44,8 @@ function f_sendOperationCliCommand(node, callbackObj)
         var q = Ext.DomQuery;
 
         var isSuccess = f_parseResponseError(xmlRoot);
-        if(!isSuccess[0])
-        {
-            f_hideSendWaitMessage();
-            f_promptErrorMessage('Operation', isSuccess[1]);
-            return;
-        }
-
         f_hideSendWaitMessage();
-
-        callbackObj.f_updateOperCmdResponse(headerStr, isSuccess[1]);
-
+        callbackObj.f_updateOperCmdResponse(headerStr, isSuccess[1], l_clear);
     }   // end oper cmd callback
 
     /* send request */
@@ -65,6 +54,15 @@ function f_sendOperationCliCommand(node, callbackObj)
                + "<statement>" + sendStr + "</statement>\n"
                + "</command></vyatta>\n";
 
+    //////////////////////////////////////////////////////////////////
+    // avoid to send a duplicate command again
+    if(prevXMLStr != undefined && prevXMLStr == xmlstr)
+    {
+        alert('eq');
+        return xmlstr;
+    }
+    g_sendCommandWait = Ext.MessageBox.wait('Running operational command...',
+                                  'Operation');
 
     var conn = new Ext.data.Connection({});
     conn.request(
@@ -74,6 +72,8 @@ function f_sendOperationCliCommand(node, callbackObj)
         xmlData: xmlstr,
         callback: opCmdCb
     });
+
+    return xmlstr;
 }
 
 function f_sendCLICommand(cmds, treeObj)
@@ -125,13 +125,13 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                     tree.selectPath(selPath, 'text', function(success,sel)
                     {
                         var nnode = thisTree.getSelectionModel().getSelectedNode();
-                        treeObj.f_HandleNodeConfigClick(nnode, null);
+                        treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
                     });
                 }
                 else
                 {
                     tree.selectPath(selPath, 'text');
-                    treeObj.f_HandleNodeConfigClick(last, null);
+                    treeObj.f_HandleNodeConfigClick(last, null, undefined, treeObj);
                 }
             }
 
@@ -173,7 +173,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                   tree.selectPath(selPath, 'text', function(success,sel)
                   {
                       var nnode = tree.getSelectionModel().getSelectedNode();
-                      treeObj.f_HandleNodeConfigClick(nnode, null);
+                      treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
                   });
 
                   narg.un('expand', handler);

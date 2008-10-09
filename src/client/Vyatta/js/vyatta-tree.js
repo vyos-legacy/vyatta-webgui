@@ -36,8 +36,9 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
         switch(node.attributes.configured)
         {
             case 'set':
-            case 'active':
                 return '<img src="images/statusUnknown.gif"/>';
+            case 'active':
+                //return '<img src="images/statusUnknown.gif"/>';
             break;
             case 'delete':
                 return '<img src="images/statusDown.gif"/>';
@@ -45,6 +46,8 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
             default:
                 return '';
         }
+
+        return '';
     },
 
     renderElements: function(n, a, targetNode, bulkRender)
@@ -307,6 +310,11 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
+    f_setThisTreeObj: function(thisObj)
+    {
+        m_thisObj = thisObj;
+    },
+
     f_createTree: function(parent)
     {
         m_thisObj = this;
@@ -339,6 +347,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             ,defaults: {autoScroll:true, bodyBorder:false}
             ,loader: this.m_treeLoader
         });
+        new Ext.tree.TreeSorter(this.m_tree, {folderSort: true});
 
         /////////////////////////////////////////////
         // create tree panel
@@ -528,9 +537,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                            ], m_thisObj, node);
         }
 
-        alert('inter mult');
         var field = f_createTextField(undefined, 'Create ' + node.text + ' value',
-                      node.attributes.help, 250, callback);
+                      node.attributes.help, 250, callback, node);
         f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.text);
         field = field.items.itemAt(1);
 
@@ -660,7 +668,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(node.attributes.values != undefined)
             ival = node.attributes.values[0];
 
-        var field = f_createTextField(ival, node.text, hlabel, 250, callback);
+        var field = f_createTextField(ival, node.text, hlabel, 250, callback, node);
         f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.txt);
 
         field = field.items.itemAt(1);
@@ -699,7 +707,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             isCheckbox = false;
             field1 = f_createCombobox(values, ival,
                       'Select a valid value...', node.text, 250,
-                      helpStr, isEditable, callback);
+                      helpStr, isEditable, callback, node);
             //field2 = f_createCombobox(values, ival,
               //        'Select a valid value...', node.text, 250,
                 //      helpStr, isEditable, callback);
@@ -739,17 +747,13 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
           values = narr;
         }
 
-        var grid = f_createEditGrid(vala, gridStore, GridT, node.text, hlabel, 250, callback);
+        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 250, callback);
 
         f_addField2Panel(m_thisObj.m_parent.m_editorPanel, grid, node.txt);
 
         node.getValsFunc = function()
         {
-            var ret = [ ];
-            for (var i = 0; i < gridStore.getCount(); i++)
-                ret[i] = gridStore.getAt(i).get('value');
-
-            return ret;
+            return f_getEditGridValues(gridStore);
         }
     },
 
@@ -768,19 +772,13 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
 
         var GridT = Ext.data.Record.create([{ name: 'value' }]);
-        var grid = f_createEditGrid(vala, gridStore, GridT, node.text, hlabel, 250, callback);
+        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 250, callback);
 
         f_addField2Panel(m_thisObj.m_parent.m_editorPanel, grid, node.txt);
 
         node.getValsFunc = function()
         {
-            var ret = [ ];
-            for (var i = 0; i < gridStore.getCount(); i++)
-            {
-              ret[i] = gridStore.getAt(i).get('value');
-            }
-
-            return ret;
+            return f_getEditGridValues(gridStore);
         }
     },
 
@@ -803,22 +801,13 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
           { name: 'value' }
         ]);
 
-        var grid = f_createEditGrid(vala, gridStore, GridT, node.text, hlabel, 250, callback);
+        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 250, callback);
 
         f_addField2Panel(m_thisObj.m_parent.m_editorPanel, grid, node.txt);
 
         node.getValsFunc = function()
         {
-          var ret = [ ];
-          var jj = 0;
-          for (var i = 0; i < gridStore.getCount(); i++)
-          {
-              var val = gridStore.getAt(i).get('value');
-              if(val.length > 0)
-                ret[jj++] = val;
-          }
-
-          return ret;
+            return f_getEditGridValues(gridStore);
         }
     },
 
@@ -829,7 +818,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if (node.attributes.values != undefined)
             ival = node.attributes.values[0];
 
-        var field = f_createNumberField(ival, node.text, hlabel, 250, callback);
+        var field = f_createNumberField(ival, node, hlabel, 250, callback);
         f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.txt);
 
         field = field.items.itemAt(1);
@@ -856,13 +845,15 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         if(m_thisObj.m_parent.m_editorPanel == undefined)
             m_thisObj.m_parent.f_createEditorPanel();
+
         m_thisObj.m_parent.f_cleanEditorPanel();
 
         /////////////////////////////////////////
         // on input field blur callback function
         var inputFieldOnBlur = function()
         {
-            f_sendOperationCliCommand(node, m_thisObj);
+            m_thisObj.m_prevXMLStr = f_sendOperationCliCommand(node,
+                                      m_thisObj, true, m_thisObj.m_prevXMLStr);
         }
 
         // end on blur
@@ -925,7 +916,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                             'Select a valuid value...', undefined,
                             labelStr, 250,
                             helpStr, true, 
-                            inputFieldOnBlur);
+                            inputFieldOnBlur, nNode);
 
                 f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, labelStr);
 
@@ -939,7 +930,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             else
             {
                 var field = f_createTextField('', labelStr, helpStr,
-                            250, inputFieldOnBlur);
+                            250, inputFieldOnBlur, node);
 
                 f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, helpStr);
 
@@ -952,15 +943,28 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             }
         }
 
-        g_sendCommandWait = null;
         f_sendOperationCliCommand(node, m_thisObj);
     },
 
-    f_updateOperCmdResponse: function(headerStr, values)
+    f_updateOperCmdResponse: function(headerStr, values, clear)
     {
-        var mlbl = f_createTextAreaField(headerStr, values, 600, 500);
+        var tf = m_thisObj.m_parent.f_getTextAreaFieldByHeaderName(headerStr);
 
-        f_addField2Panel(m_thisObj.m_parent.m_editorPanel, mlbl, undefined);
+        if(tf != undefined)
+        {
+            while(headerStr.indexOf('&rArr;') > -1)
+                headerStr = headerStr.replace('&rArr;', ' ');
+
+            tf.setValue(tf.getValue() + '\n* ' +
+                headerStr + ': ' + values);
+        }
+        else
+        {
+            var mlbl = f_createTextAreaField(headerStr, values, 500, 200);
+
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, mlbl, undefined);
+            m_thisObj.m_parent.m_editorPanel.doLayout();
+        }
     }
 });
 
@@ -990,13 +994,16 @@ function getNodeStyleImage(node)
     switch(node.attributes.configured)
     {
         case 'set':
+            return '<img align="center" src="images/statusUnknown.gif" alt="img"/>';
         case 'active':
-            return '<img align="center" src="images/statusUnknown.gif"/>';
+            //return '<img align="center" src="images/statusUnknown.gif" alt="img"/>';
         break;
         case 'delete':
-            return '<img align="center" src="images/statusDown.gif"/>';
+            return '<img align="center" src="images/statusDown.gif" alt="img"/>';
         break;
         default:
             return '';
     }
+
+    return '';
 }

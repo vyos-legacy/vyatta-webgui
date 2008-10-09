@@ -101,7 +101,7 @@ v_panelObject = Ext.extend(Ext.util.Observable,
                 if(child != undefined)
                 {
                     if(child.fixHeight == undefined)
-                        child.setSize(w-this.m_leftWidth-43, 220);
+                        child.setSize(w-this.m_leftWidth-43, 180);
                     else
                         child.setSize(w-this.m_leftWidth-43, child.fixHeight);
                 }
@@ -281,13 +281,10 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             ,cm: columns
             ,stripeRows: false
             ,autoExpandColumn:expandColName
-            //,autoHeight: true
-            ,height: 200
-            //,autoWidth: true
+            ,height: 130
             ,width: 600
             ,border: true
             ,bodyBorder: true
-    //        ,bodyStyle: 'padding: 0px 10px 8px 0px'
             ,viewConfig: { forceFit: true, borderWidth: 0 }
             ,view: gridView
             ,plugins: plugins
@@ -340,18 +337,13 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             ,stripeRows: false
             ,autoExpandColumn: expandColName
             ,border: true
-            ,height: 200
+            ,height: 130
             ,maxHeight: 200
-            //,autoHeight: true
-            //,minWidth: 400
-            //,width: 600
             ,autoWidth: true
             ,bodyBorder: true
-            //,bodyStyle: 'padding: 0px 10px 10px 0px'
             ,viewConfig: { forceFit: true, enableRowBody: false }
             ,view: gridView
             ,plugins: plugins
-            //,frame: true
             ,enableColumnHide: true
             ,enableHdMenu: false
             ,defaults: { autoScroll: true }

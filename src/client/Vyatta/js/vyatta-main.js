@@ -8,16 +8,29 @@ DATA_baseSystem = Ext.extend(Ext.util.Observable,
     constructor: function()
     {
         this.m_tabNames = [V_TREE_ID_status, V_TREE_ID_diag,
-                    V_TREE_ID_config, V_TREE_ID_oper];
+                            V_TREE_ID_config, V_TREE_ID_oper];
+        
         this.m_iStatus = 0;
         this.m_iDiag = 1;
         this.m_iConf = 2;
         this.m_iOper = 3;
-        this.m_tabObjects = new Array(4);
+        this.m_selTabIndex = this.m_iConf;
+
+        this.m_tabObjects = [];
+        for(var i=0; i<this.m_tabNames.length; i++)
+            this.m_tabObjects[i] = undefined;
+
         this.m_homePage = 'main.html'
+    },
+
+    f_getTabIndex: function(tabName)
+    {
+        for(var i=0; i<this.m_tabNames.length; i++)
+            if(tabName == this.m_tabNames[i]) return i;
+
+        return 0;
     }
 });
-
 
 function f_startLogin()
 {
@@ -26,55 +39,36 @@ function f_startLogin()
     loginObj.f_initDataType();
     loginObj.f_initLoginPanel();
 }
-function f_startConfigurationTab()
-{
-    f_resetTabs();
 
-    if(g_baseSystem.m_tabObjects[g_baseSystem.m_iConf] == undefined)
+function f_showTab(tabIndex)
+{
+    f_hideTab(g_baseSystem.m_selTabIndex);
+    g_baseSystem.m_selTabIndex =tabIndex;
+    f_createTabsHTML();
+
+    if(g_baseSystem.m_tabObjects[tabIndex] == undefined)
     {
-        g_baseSystem.m_tabObjects[g_baseSystem.m_iConf] = new
-                VYATTA_configurationObject(g_baseSystem.m_bodyPanel,
-                                              V_TREE_ID_config);
-        g_baseSystem.m_tabObjects[g_baseSystem.m_iConf].f_initDataType();
-        g_baseSystem.m_tabObjects[g_baseSystem.m_iConf].f_initLayout();
+        g_baseSystem.m_tabObjects[tabIndex] = new
+                VYATTA_operationObject(g_baseSystem.m_bodyPanel,
+                                      g_baseSystem.m_tabNames[tabIndex]);
+        g_baseSystem.m_tabObjects[tabIndex].f_initDataType();
+        g_baseSystem.m_tabObjects[tabIndex].f_initLayout();
     }
     else
-    {
-        g_baseSystem.m_tabObjects[g_baseSystem.m_iConf].f_showPanel(true);
-    }
-}
-function f_startOperationTab()
-{
-    f_resetTabs();
+        g_baseSystem.m_tabObjects[tabIndex].f_showPanel(true);
 
-    if(g_baseSystem.m_tabObjects[g_baseSystem.m_iOper] == undefined)
-    {
-        g_baseSystem.m_tabObjects[g_baseSystem.m_iOper] = new
-                VYATTA_configurationObject(g_baseSystem.m_bodyPanel,
-                                              V_TREE_ID_oper);
-        g_baseSystem.m_tabObjects[g_baseSystem.m_iOper].f_initDataType();
-        g_baseSystem.m_tabObjects[g_baseSystem.m_iOper].f_initLayout();
-    }
-    else
-    {
-        g_baseSystem.m_tabObjects[g_baseSystem.m_iOper].f_showPanel(true);
-    }
+    f_handleOnBodyPanelResize(tabIndex);
 }
 
-function f_resetTabs()
+function f_hideTab(tabIndex)
 {
-    for(var i=0; i<g_baseSystem.m_tabNames.length; i++)
-    {
-        if(g_baseSystem.m_tabObjects[i] != undefined)
-            g_baseSystem.m_tabObjects[i].f_showPanel(false);
-    }
+    if(tabIndex > 0 && g_baseSystem.m_tabObjects[tabIndex] != undefined)
+        g_baseSystem.m_tabObjects[tabIndex].f_showPanel(false);
 }
 
 function f_initSystemObjects()
 {
     g_baseSystem = new DATA_baseSystem();
-    g_homePage = g_baseSystem.m_homePage;
-    g_sendCommandWait = null;
 }
 
 function f_startViewPort()
@@ -105,17 +99,20 @@ function f_startViewPort()
 
 function f_createTabHTML(tabName)
 {
-    var img = tabName + '-tab-off.PNG';
     var imgId = 'v-tab-' + tabName;
+    var img = (g_baseSystem.f_getTabIndex(tabName) == g_baseSystem.m_selTabIndex) ?
+              tabName + '-tab-on.PNG' : tabName + '-tab-off.PNG';
 
     return '<td><a href="#" onClick="f_handleTabClick(\'' + tabName + '\')">' +
             '<img src=\'images/' + img + '\' id=\'' + imgId +
-            '\' onmouseover="f_handleTabOnMouseOver(\'' + tabName + '\')" '+
-            'onmouseout="f_handleTabOnMouseOut(\'' + tabName + '\')"' +
+            '\' onmouseover="f_handleTabOnMouseAction(\'' + tabName +
+            '\', \'over\')" ' +
+            'onmouseout="f_handleTabOnMouseAction(\'' + tabName + 
+            '\', \'off\')"' +
             '></a></td>';
 }
 
-function f_createTabsHTML(focusTabName)
+function f_createTabsHTML()
 {
     var idTab = document.getElementById('id_header_tab');
     var htmlStr = '<table id="v_tab_table" valign="bottom"><tr>';
@@ -124,10 +121,7 @@ function f_createTabsHTML(focusTabName)
         htmlStr += f_createTabHTML(g_baseSystem.m_tabNames[i]);
 
     htmlStr += '</tr></table>';
-
     idTab.innerHTML = htmlStr;
-
-    f_setTabFocus(focusTabName);
 }
 
 function f_handleTabClick(tabName)
@@ -138,40 +132,16 @@ function f_handleTabClick(tabName)
         return;
     }
 
-    switch(tabName)
-    {
-        case g_baseSystem.m_tabNames[0]:
-            break;
-        case g_baseSystem.m_tabNames[1]:
-            break;
-        case g_baseSystem.m_tabNames[2]:
-            f_startConfigurationTab();
-            break;
-        case g_baseSystem.m_tabNames[3]:
-            f_startOperationTab();
-            break;
-    }
+    f_showTab(g_baseSystem.f_getTabIndex(tabName));
 }
 
-function f_setTabFocus(tabName)
+function f_handleTabOnMouseAction(tabName, action)
 {
+    if(g_baseSystem.f_getTabIndex(tabName) == g_baseSystem.m_selTabIndex)
+        return;
+
     var tabId = document.getElementById('v-tab-' + tabName);
-
-    tabId.src = "images/" + tabName + "-tab-on.PNG";
-}
-
-function f_handleTabOnMouseOver(tabName)
-{
-    var tabId = document.getElementById('v-tab-' + tabName);
-
-    tabId.src = "images/" + tabName + "-tab-over.PNG";
-}
-
-function f_handleTabOnMouseOut(tabName)
-{
-    var tabId = document.getElementById('v-tab-' + tabName);
-
-    tabId.src = "images/" + tabName + "-tab-off.PNG";
+    tabId.src = "images/" + tabName + "-tab-" + action + ".PNG";
 }
 
 function f_createFrameHeaderPanel()
@@ -189,7 +159,7 @@ function f_createFrameHeaderPanel()
         id.innerHTML = 'User:&nbsp; <b>' + f_getUserLoginName() + '</b>&nbsp;&nbsp;&nbsp;' +
             '<a href="#" onclick="f_userLogout(true, \'' +
             g_baseSystem.m_homePage + '\')">Logout</a>';
-        f_createTabsHTML(V_TREE_ID_config);
+        f_createTabsHTML();
     }
 
     var header = new Ext.Panel(
@@ -200,7 +170,6 @@ function f_createFrameHeaderPanel()
         ,height: 60
         ,contentEl: 'id_header'
     });
-
 
     return header;
 }
@@ -223,15 +192,32 @@ function f_createFrameBodyPanel()
 {
     var bodyPanel = new Ext.Panel(
     {
-        //cls: 'v-panel-with-background-color'
         border: false
         ,bodyBorder: false
         ,width: 600
         ,height: 300
-        //,contentEl: 'id_center_panel'
+    });
+
+    bodyPanel.on( {'resize':
+    {
+        fn: function() {f_handleOnBodyPanelResize()}}
     });
 
     return bodyPanel;
+}
+
+function f_handleOnBodyPanelResize(tabIndex)
+{
+    if(tabIndex == undefined)
+    {
+        for(var i=0; i<g_baseSystem.m_tabNames.length; i++)
+        {
+            if(g_baseSystem.m_tabObjects[i] != undefined)
+                g_baseSystem.m_tabObjects[i].f_resizePanels();
+        }
+    }
+    else
+        g_baseSystem.m_tabObjects[tabIndex].f_resizePanels();
 }
 
 function f_createUnuseSidePanel()
@@ -250,6 +236,7 @@ function f_createMainFramePanel()
 {
     g_baseSystem.m_headerPanel = f_createFrameHeaderPanel();
     g_baseSystem.m_footerPanel = f_createFrameFooterPanel();
+    g_footerPanel = g_baseSystem.m_footerPanel;
     g_baseSystem.m_bodyPanel = f_createFrameBodyPanel();
 
     var mainFramePanel = new Ext.Panel(
@@ -300,7 +287,5 @@ Ext.onReady(function()
     if(!f_isUserLogined(false, false))
         f_startLogin();
     else
-        f_startConfigurationTab();
-
-    
+        f_showTab(g_baseSystem.m_iConf);
 });

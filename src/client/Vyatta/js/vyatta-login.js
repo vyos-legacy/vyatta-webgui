@@ -8,7 +8,6 @@ VYATTA_LoginObject = Ext.extend(VYATTA_panels,
     ////////////////////////////////////////////////////////////////////////////
     constructor: function(parentContainer, name)
     {
-        thisObj = this;
         this.m_parentContainer = parentContainer;
         this.m_name = name;
     },

@@ -145,9 +145,9 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
                    + '<vyatta><auth><user>'
                    + userField.getValue()
                    + "</user>\n"
-                   + '<pswd>'
-                   + pwField.getValue().replace("\'", "&apos;")
-                   + "</pswd></auth></vyatta>\n";
+                   + '<pswd><![CDATA['
+                   + pwField.getValue()
+                   + "]]></pswd></auth></vyatta>\n";
 
       var conn = new Ext.data.Connection({});
       conn.request(
@@ -239,17 +239,28 @@ function f_isPasswordValid(val)
     return true;
 }
 
-function f_filterPassword(val)
+function f_filterPassword(val, isCreate)
 {
-    return f_convertXMLSpecialCharacters(val);
+    var xml = val;
+
+    if(isCreate)
+    {
+        xml = f_converXMLSpecialChar(val, "&", "&amp;")
+        xml = f_converXMLSpecialChar(xml, "'", "&apos;");
+        xml = f_converXMLSpecialChar(xml, ">", "&gt;");
+    }
+    
+    xml = f_converXMLSpecialChar(xml, "<", "&lt;");
+
+    return xml
 }
 
 function f_convertXMLSpecialCharacters(val)
 {
     var xml = f_converXMLSpecialChar(val, "&", "&amp;")
     xml = f_converXMLSpecialChar(xml, "'", "&apos;");
-    xml = f_converXMLSpecialChar(xml, ">", "&lt;");
-    xml = f_converXMLSpecialChar(xml, "<", "&gt");
+    xml = f_converXMLSpecialChar(xml, ">", "&gt;");
+    xml = f_converXMLSpecialChar(xml, "<", "&lt;");
 
     return xml;
 }
@@ -477,12 +488,6 @@ function f_yesNoMessageBox(title, msgText, callback)
     });
 }
 
-function f_hideSendWaitMessage()
-{
-    if(g_sendCommandWait != null)
-        g_sendCommandWait.hide();
-}
-
 function f_parseResponseError(xmlRoot)
 {
     var success = true;
@@ -563,4 +568,11 @@ function f_commitSingleStoreField(store, record, dataIndex, iindex)
             record.set(modifiedNames[i], saveVal);
         }
     }
+}
+
+g_sendCommandWait = null;
+function f_hideSendWaitMessage()
+{
+    if(g_sendCommandWait != null)
+        g_sendCommandWait.hide();
 }

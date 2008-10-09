@@ -71,7 +71,8 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool &verbatim,
       verbatim = false;
       while ((read_len = getline(&buf, &len, f)) != -1) {
 	//	cout << "WebGUI::execute(): " << string(buf) << ", " << len << ", " << read_len << endl;
-        if (strncmp(VERBATIM_OUTPUT.c_str(), buf, read_len - 1) == 0) {
+        if (strncmp(VERBATIM_OUTPUT.c_str(), buf, VERBATIM_OUTPUT.size())
+            == 0) {
           verbatim = true;
           stdout += "\n";
         } else if (raw || verbatim) {

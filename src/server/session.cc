@@ -160,7 +160,8 @@ Session::process_message()
       {
         string cmd = "/opt/vyatta/sbin/vyatta-vmstatus.pl";
         string ret;
-        int err = WebGUI::execute(cmd, ret, true, true);
+        bool dummy;
+        int err = WebGUI::execute(cmd, ret, dummy, true, true);
         if (err) {
           _processor->set_response(WebGUI::COMMAND_ERROR, ret);
         } else {
@@ -180,7 +181,8 @@ Session::process_message()
       if (strcmp(msg._vmuser_op.c_str(), "list") == 0) {
         string cmd = "/opt/vyatta/sbin/vyatta-vmuser.pl --list";
         string ret;
-        int err = WebGUI::execute(cmd, ret, true, true);
+        bool dummy;
+        int err = WebGUI::execute(cmd, ret, dummy, true, true);
         if (err) {
           _processor->set_response(WebGUI::COMMAND_ERROR, ret);
         } else {
@@ -329,7 +331,8 @@ Session::update_session()
   string update_file = "sudo touch " + file;
 
   //now touch session time mark file'
-  WebGUI::execute(update_file, stdout);
+  bool dummy;
+  WebGUI::execute(update_file, stdout, dummy);
   return true;
 }
 
@@ -345,7 +348,8 @@ Session::start_session()
   string update_file = "sudo touch " + file;
   //now touch session time mark file
   string stdout;
-  WebGUI::execute(update_file,stdout);
+  bool dummy;
+  WebGUI::execute(update_file,stdout,dummy);
 }
 
 

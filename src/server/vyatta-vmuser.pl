@@ -66,8 +66,8 @@ my $cmd = '';
 if ($action eq 'add') {
   my $epassword = encrypt_password($password);
   $cmd = "sudo /usr/sbin/useradd -c '$first $last' -g $VMUSER_GRP ";
-  $cmd .= "-G $VMUSER_GRP,vyattacfg,sudo -N -p '$epassword' -s /bin/false ";
-  $cmd .= "'$user'";
+  $cmd .= "-G $VMUSER_GRP,vyattacfg,sudo,users -N -p '$epassword' ";
+  $cmd .= "-s /bin/false '$user'";
 } elsif ($action eq 'delete') {
   $cmd = "sudo /usr/sbin/userdel '$user'";
 } elsif ($action eq 'change') {

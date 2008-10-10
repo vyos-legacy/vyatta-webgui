@@ -1911,8 +1911,7 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
         handler: function(btn, e)
         {
             var xmlstr = "<command><id>" + f_getUserLoginedID() +
-            "</id><statement>/opt/vyatta/sbin/vyatta-vmop.pl " +
-            xmlStatement + "</statement></command>";
+            "</id><statement>vm " + xmlStatement + "</statement></command>";
 
             f_sendServerCommand(true, xmlstr, serverCommandCb);
         }

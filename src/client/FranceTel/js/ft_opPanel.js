@@ -623,6 +623,12 @@ function f_parseUserData(vm)
     var last = vm.getAttribute('last');
     var first = vm.getAttribute('first');
 
+    if(f_getUserLoginName() != 'admin' && user == 'admin')
+    {
+        last = '';
+        first = '';
+    }
+
     return [ false, first, last, user, '*****', 'list' ];
 }
 
@@ -1468,10 +1474,20 @@ function f_populateUserPanel(opObject)
     });
     */
 
-    var fField = f_createUserTextField(true, 'userText', 'First Name');
-    var lField = f_createUserTextField(true, 'userText', 'Last Name');
-    var uField = f_createUserTextField(true, 'userText', 'User Name');
-    var pField = f_createUserTextField(false, 'password', 'Password');
+    var store = new Ext.data.SimpleStore(
+    {
+        fields: [ {name: chnLCase[0], type: 'bool'},
+                  {name: chnLCase[1]},
+                  {name: chnLCase[2]},
+                  {name: chnLCase[3]},
+                  {name: chnLCase[4]},
+                  {name: chnLCase[5]},]
+    });
+
+    var fField = f_createUserTextField(true, 'userText', 'First Name', store);
+    var lField = f_createUserTextField(true, 'userText', 'Last Name', store);
+    var uField = f_createUserTextField(true, 'userText', 'User Name', store);
+    var pField = f_createUserTextField(false, 'password', 'Password', store);
     var cm = new Ext.grid.ColumnModel(
         [
         checkColumn,
@@ -1518,15 +1534,6 @@ function f_populateUserPanel(opObject)
         {header: 'action', hidden:true, dataIndex:'action' }
         ]);
 
-    var store = new Ext.data.SimpleStore(
-    {
-        fields: [ {name: chnLCase[0], type: 'bool'},
-                  {name: chnLCase[1]},
-                  {name: chnLCase[2]},
-                  {name: chnLCase[3]},
-                  {name: chnLCase[4]},
-                  {name: chnLCase[5]},]
-    });
     store.loadData(thisObject.m_userDBData);
     store.colHeaders = colHeaderNames;
 
@@ -1575,14 +1582,15 @@ function f_isUserInputOK(record, colHeaderNames)
 
 function f_getUserRecordFromScreen(record, colHeaderNames)
 {
+    var pw = f_filterPassword(record.get(colHeaderNames[4]), true);
+    pw = pw == '*****' ? '' : " password='" + pw + "'";
+
     return "user='" + record.get(
             colHeaderNames[3]) +
             "' last='" + record.get(
             colHeaderNames[2]) +
             "' first='" + record.get(
-            colHeaderNames[1]) +
-            "' password='" + f_filterPassword(record.get(
-            colHeaderNames[4]), true) + "'";
+            colHeaderNames[1]) + "'" + pw;
 }
 
 function f_getMonitoringNetworkDataFromServer(opObject)
@@ -2072,12 +2080,12 @@ function f_renderGridComboBox(val, metaData, record, rowIndex, colIndex)
 
 function f_renderGridTextField(val, metadata, record, rowIndex, colIndex)
 {
-    if(rowIndex == 0)
+    if(rowIndex == 0 && f_getUserLoginName() != 'admin')
     {
         switch(colIndex)
         {
             case 1:
-                val = '&nbsp;';
+                val = '';
                 break;
             case 2:
                 val = ''
@@ -2095,7 +2103,7 @@ function f_renderGridTextField(val, metadata, record, rowIndex, colIndex)
     return val;
 }
 
-function f_createUserTextField(disableRowZero, textType, fieldName)
+function f_createUserTextField(disableRowZero, textType, fieldName, store)
 {
     var invText = textType == 'password' ? fieldName + ' field is required' :
               'Please enter 0-9 a-z A-Z - or _ characters only for ' +
@@ -2113,9 +2121,22 @@ function f_createUserTextField(disableRowZero, textType, fieldName)
         ,listeners: {
             beforeshow: function()
             {
-                if(g_opPanelObject.m_selGridRow == 0 && disableRowZero)
+                if(g_opPanelObject.m_selGridRow == 0 && disableRowZero &&
+                    f_getUserLoginName() != 'admin')
                     this.disable();
-                else
+                else /*if(this.fieldName == 'User Name')
+                {
+                    store.each(function(record)
+                    {
+                        if(record.get('username') == this.getValue() && 
+                            record.get('action') != 'add')
+                        {
+                            this.diable();
+                            return;
+                        }    
+                    });
+                }
+                else*/
                     this.enable();
             }
         }
@@ -2139,6 +2160,7 @@ function f_createUserTextField(disableRowZero, textType, fieldName)
             }
         }
     });
+    tf.fieldName = fieldName;
 
     return tf;
 }

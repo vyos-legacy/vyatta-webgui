@@ -2080,25 +2080,30 @@ function f_renderGridComboBox(val, metaData, record, rowIndex, colIndex)
 
 function f_renderGridTextField(val, metadata, record, rowIndex, colIndex)
 {
-    if(rowIndex == 0 && f_getUserLoginName() != 'admin')
+    var tip = 'ext:qtip="Click on this <font color=#FF6600><b>cell</b></font> enter new value."';
+
+    switch(colIndex)
     {
-        switch(colIndex)
-        {
-            case 1:
+        case 1:
+            if(rowIndex == 0 && f_getUserLoginName() != 'admin')
                 val = '';
-                break;
-            case 2:
+            break;
+        case 2:
+            if(rowIndex == 0 && f_getUserLoginName() != 'admin')
                 val = ''
-                break;
+            break;
+        case 3:
+            if(record.get('action') != 'add')
+                tip = 'ext:qtip="This cell is not editable except for create user"';
+            break;
+        case 4:
+        {
+            if(val == 'EnterPasswword')
+                val = '*****';
         }
     }
 
-    if(colIndex == 4 && val != 'EnterPassword')
-        val = '******';
-
-    metadata.attr =
-    'ext:qtip="Click on this <font color=#FF6600><b>cell</b></font> enter new value"' +
-    'ext:qtitle=' + val;
+    metadata.attr = tip + 'ext:qtitle=' + val;
 
     return val;
 }
@@ -2118,25 +2123,28 @@ function f_createUserTextField(disableRowZero, textType, fieldName, store)
         {
             return true;
         }
-        ,listeners: {
+        ,listeners:
+        {
             beforeshow: function()
             {
                 if(g_opPanelObject.m_selGridRow == 0 && disableRowZero &&
                     f_getUserLoginName() != 'admin')
                     this.disable();
-                else /*if(this.fieldName == 'User Name')
+                else if(this.fieldName == 'User Name')
                 {
+                    var f = this;
+                    f.disable();
                     store.each(function(record)
                     {
-                        if(record.get('username') == this.getValue() && 
-                            record.get('action') != 'add')
+                        if((record.get('username') == f.getValue() &&
+                            record.get('action') == 'add'))
                         {
-                            this.diable();
+                            f.enable();
                             return;
-                        }    
+                        }
                     });
                 }
-                else*/
+                else
                     this.enable();
             }
         }

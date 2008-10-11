@@ -12,6 +12,7 @@ DATA_FTBaseSystem = Ext.extend(Ext.util.Observable,
         this.m_headerPanel = undefined;
         this.m_footerPanel = undefined;
         this.m_bodyPanel = undefined;
+        this.m_opObject = undefined;
         this.m_tabNames = [ 'Business LiveBox settings',
                     'Open Appliance settings', 'UTM configuration',
                     'PBX configuration', '3rd Parties Applications'];
@@ -81,41 +82,55 @@ function f_startOpenAppliance()
 
     /////////////////////////////////////////////////
     // create a application object and add it to manager
-    var opObject = new v_opPanelObject(bp,
+    if(this.m_opObject == undefined)
+    {
+        this.m_opObject = new v_opPanelObject(bp,
                   g_ftBaseSystem.f_getTabsData(1)[0]);
+        this.m_opObject.m_mainPanel = this.m_opObject.f_getMainPanel();
+        var opObject = this.m_opObject;
 
-    bp.add(opObject.f_getMainPanel());
-
-    ////////////////////////////////////////////
-    // register the panel resize listener
-    bp.on( {'resize': {fn: function(){opObject.f_resizePanels(bp) }}});
+        ////////////////////////////////////////////
+        // register the panel resize listener
+        bp.on( {'resize': {fn: function(){opObject.f_resizePanels(bp) }}});
+    }
 
     //////////////////////////////////////////////
     // let update the layout
-    opObject.f_resizePanels(bp);
+    this.m_opObject.m_mainPanel.show();
+    bp.add(this.m_opObject.m_mainPanel);
+    this.m_opObject.f_resizePanels(bp);
     bp.doLayout();
 }
-
+g_vyattaURL = null;
 function f_startVyattaApplication()
 {
-    var iframe = Ext.DomHelper.append(document.body,
+    if(g_vyattaURL != null)
     {
-        tag: 'iframe',
-        frameBorder:0,
-        src: '../Vyatta/main.html',
-        width: '100%',
-        height: '100%'
-    });
+        if(this.m_vyattaPanel == undefined)
+        {
+            var iframe = Ext.DomHelper.append(document.body,
+            {
+                tag: 'iframe',
+                frameBorder:0,
+                src: g_vyattaURL,
+                width: '100%',
+                height: '100%'
+            });
 
-    var pp = new Ext.Panel(
-    {
-        contentEl: iframe
-        ,border: false
-    });
+            this.m_vyattaPanel = new Ext.Panel(
+            {
+                contentEl: iframe
+                ,border: false
+            });
+        }
 
-    var bp = g_ftBaseSystem.m_bodyPanel;
-    bp.add(pp);
-    bp.doLayout();
+        this.m_vyattaPanel.show();
+        var bp = g_ftBaseSystem.m_bodyPanel;
+        bp.add(this.m_vyattaPanel);
+        bp.doLayout();
+    }
+    else
+        f_startEmptyApplication();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -125,23 +140,27 @@ function f_start3rdPartyApplication()
 {
     if(g_3rdPartyURL != null)
     {
-        var iframe = Ext.DomHelper.append(document.body,
+        if(this.m_3rdPartyPanel == undefined)
         {
-            tag: 'iframe',
-            frameBorder:0,
-            src:g_3rdPartyURL,
-            width: '100%',
-            height: '100%'
-        });
+            var iframe = Ext.DomHelper.append(document.body,
+            {
+                tag: 'iframe',
+                frameBorder:0,
+                src:g_3rdPartyURL,
+                width: '100%',
+                height: '100%'
+            });
 
-        var pp = new Ext.Panel(
-        {
-            contentEl: iframe
-            ,border: false
-        });
+            this.m_3rdPartyPanel = new Ext.Panel(
+            {
+                contentEl: iframe
+                ,border: false
+            });
+        }
+        this.m_3rdPartyPanel.show();
 
         var bp = g_ftBaseSystem.m_bodyPanel;
-        bp.add(pp);
+        bp.add(this.m_3rdPartyPanel);
         bp.doLayout();
     }
     else
@@ -174,7 +193,7 @@ function f_showApplication(appIndex)
         if(rItem instanceof Object)
         {
             rItem.hide();
-            delete rItem;
+            //delete rItem;
         }
     }
 

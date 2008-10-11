@@ -56,44 +56,34 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         });
         this.m_parentPanel.iPanel = ipanel;
 
-
         this.m_container.add(this.m_parentPanel);
         this.f_updatePanels();
-        this.m_container.doLayout(true);
-
-/*/
-        var resizePanels = function(comp)
-        {
-            comp.childPanel.f_resizePanels();
-        }
-
-        this.m_container.childPanel = this;
-        this.m_container.on( {'resize':
-        {
-            fn: function() {resizePanels(this)}}
-        });
-        */
+        this.m_container.doLayout();
     },
 
     f_showPanel: function(show)
     {
-        //var c = this.m_container;
-
-//        while(c.items.getCount() > 0)
-  //          c.items.remove(c.items.itemAt(0));
-
         if(show)
         {
             this.m_treeObj.f_setThisTreeObj(this.m_treeObj);
+
+            var cb = this.m_topPanel.cbpanel;
+            //alert(cb.items.getCount());
+            //cb.show();
+            //cb.setSize(0, 25);
+            //cb.triggerClass = 'x-form';
+            delete cb.remove(cb.items.itemAt(1));
+            cb.combo = null;
+            cb.hide();
+            cb.add(f_createComboBox(this).show());
+            cb.doLayout();
             this.m_parentPanel.show();
             this.f_resizePanels();
-            //this.m_parentPanel.doLayout();
         }
         else
         {
             this.m_parentPanel.hide();
         }
-        //c.doLayout(true);
     },
 
     f_updatePanels: function()
@@ -176,6 +166,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             ,items: items
         });
         topPanel.height = 26;
+        topPanel.cbpanel = cbpanel;
 
         var tp = this.m_toolbar;
         var resizePanels = function(comp)
@@ -387,6 +378,7 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
 {
       var field = new Ext.form.ComboBox(
       {
+          id: this.m_tabName,
           mode: 'local',
           store: values,
           displayField: 'value',
@@ -500,6 +492,29 @@ function f_handleHelpButton(panel, helpbutton)
     }
 }
 
+function f_createComboBox(thisObj)
+{
+    var field = new Ext.form.ComboBox(
+    {
+        mode: 'local',
+        store: thisObj.m_viewerValues,
+        displayField: 'value',
+        editable: false,
+        triggerAction: 'all',
+        selectOnFocus: true,
+        height: 23,
+        width: 150,
+        value: thisObj.m_viewerValues[0]
+    });
+    /*/
+    var onCollapseCallback = function()
+    {
+
+    };
+    field.on('collapse', onCollapseCallback);
+*/
+    return field;
+}
 function f_createTopPanelViewPanel(thisObj)
 {
     var label = new Ext.form.Label(
@@ -511,28 +526,7 @@ function f_createTopPanelViewPanel(thisObj)
         ,position: 'fixed'
     });
 
-    var field = new Ext.form.ComboBox(
-    {
-        mode: 'local',
-        emptyText: 'Select a target to back',
-        fieldLabel: 'View:',
-        store: thisObj.m_viewerValues,
-        displayField: 'value',
-        labelSeparator: '',
-        editable: false,
-        triggerAction: 'all',
-        selectOnFocus: true,
-        height: 23,
-        width: 150,
-        value: thisObj.m_viewerValues[0],
-        hideParent: true
-    });
-    var onCollapseCallback = function()
-    {
-
-    };
-    field.on('collapse', onCollapseCallback);
-
+    var field = f_createComboBox(thisObj);
     var cbpanel = new Ext.Panel(
     {
         autoWidth: true
@@ -546,6 +540,7 @@ function f_createTopPanelViewPanel(thisObj)
         ,cls: 'v-panel-with-background-color'
         ,items: [ label, field ]
     });
+    cbpanel.combo = field;
 
     return cbpanel;
 }
@@ -600,16 +595,15 @@ function f_createToolbar(panel)
               ,handler: function() {f_sendCLICommand(['redo']);}
           }),
           '-',
-
           new Ext.Action(
           {
-            text: 'Discard',
-            handler: function(){f_sendCLICommand(['discard'], panel.m_treeObj);}
+              text: 'Discard',
+              handler: function(){f_sendCLICommand(['discard'], panel.m_treeObj);}
           }),
           new Ext.Action(
           {
-            text: 'Commit'
-            ,handler: function() {f_sendCLICommand(['commit'], panel.m_treeObj);}
+              text: 'Commit'
+              ,handler: function() {f_sendCLICommand(['commit'], panel.m_treeObj);}
           }),
         ]
     })

@@ -365,7 +365,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             this.m_tree.setRootNode(this.f_getConfigRootNode());
             this.initTreeListeners(this.m_tree, this.f_HandleNodeConfigClick);
         }
-        else if(this.m_treeMode == V_TREE_ID_oper)
+        else// if(this.m_treeMode == V_TREE_ID_oper)
         {
             this.m_tree.setRootNode(this.f_getOperationRootNode());
             this.initTreeListeners(this.m_tree, this.f_handleNodeOperClick);

@@ -224,17 +224,13 @@ v_opPanelObject = Ext.extend(v_panelObject,
         Ext.getBody().createChild(
                             {tag:'div', id:'id_vmAnchor_' + selIndex, html: str});
 
-        str = "id_vmAnchor_" + selIndex;
-
-        var comp = new Ext.Panel(
+        return new Ext.Panel(
         {
             id: Ext.id()
             ,border: false
             ,bodyStyle: 'padding: 0px 10px 0px 0px'
-            ,contentEl: str
+            ,contentEl: "id_vmAnchor_" + selIndex
         });
-
-        return comp;
     },
 
 
@@ -470,7 +466,8 @@ function f_parseVMDashboarData(vm)
 
     if(vmName == 'jvm')
         g_3rdPartyURL = q.selectValue('guiUrl', vm);
-
+    else if(vmName == 'router')
+        g_vyattaURL = q.selectValue('guiUrl', vm);
 
     ///////////////////////////////////////
     // get current and available versions
@@ -488,8 +485,28 @@ function f_parseVMDashboarData(vm)
     }
 
     return [ vmName, status, cpu, f_findPercentage(memTotal, memFree),
-              f_findPercentage(diskTotal, diskFree), disVerCur, updateAvail, 'down',
+              f_findPercentage(diskTotal, diskFree), disVerCur, updateAvail, 'deploy_no',
               memTotal, memFree, diskTotal, diskFree];
+}
+
+function f_parseVMDeployData(vm)
+{
+    var q = Ext.DomQuery;
+    var vmName = vm.getAttribute('name');
+
+    var versions = q.selectNode('version', vm);
+    var verCur = q.selectNumber('current', versions)
+
+    var verAvails = q.select('avail', versions);
+    var vAvails = [ ];
+    var updateAvail = '';
+    for(var j=0; j<verAvails.length; j++)
+    {
+        vAvails[j] = q.selectNumber('avail:nth(' + (j+1) + ')', versions);
+        updateAvail = (vAvails[j] > verCur) ? 'updateAval_yes' : 'updateAval_no';
+    }
+
+    return [vmName, verCur, updateAvail, 'none', 'none'];
 }
 
 function f_populateVMRestartPanel(opObject, vmData)
@@ -651,23 +668,29 @@ function f_getVMDataFromServer(opObject, anchorName)
 
         var vmData = [];
         var db = thisObj.f_getVMAnchorData()[0];
+        var dp = thisObj.f_getVMAnchorData()[1];
         var restart = thisObj.f_getVMAnchorData()[2];
         var bk = thisObj.f_getBackupAnchorData()[0];
         for(var i=0; i<vmNodes.length; i++)
         {
             switch(anchorName)
             {
-                case db:
+                case db:  // dashboard data
                     vmData[i] = f_parseVMDashboarData(vmNodes[i]);
                     if(i == vmNodes.length-1)
                         f_populateVMDashboardPanel(thisObj, vmData);
+                    break;
+                case dp:  // deploy software
+                    vmData[i] = f_parseVMDeployData(vmNodes[i]);
+                    if(i == vmNodes.length-1)
+                        f_populateVMDeploySoftwarePanel(thisObj, vmData);
                     break;
                 case restart:
                     vmData[i] = f_parseVMRestartData(vmNodes[i]);
                     if(i == vmNodes.length-1)
                         f_populateVMRestartPanel(thisObj, vmData);
                     break;
-                case bk:
+                case bk:  // configuration backup
                     ////////////////////////////////////////
                     // skip the open appliance
                     if(i == 0) continue;
@@ -875,10 +898,11 @@ function f_populateConfigBackupPanel(opObject, vmData)
     }
     var radioColumn = f_createGridCheckColumn(radioColumnOnMousePress);
 
-    var userStore = new Ext.data.SimpleStore( 
+    var userStore = new Ext.data.SimpleStore(
     {
         fields: [ 'name', 'value'],
-        data: [['Open Appliance', 'Open Appliance']]
+        data: [['Open Appliance', 'Open Appliance'],
+                ['My PC', 'My PC']]
     });
     var cb = new Ext.form.ComboBox(
     {
@@ -931,10 +955,9 @@ function f_populateConfigBackupPanel(opObject, vmData)
 
 
     var xmlStr = '';
+    var target = '';
     var handleBackupButtonPress = function()
     {
-        var target = '';
-
         /////////////////////////////////////////
         // find the selected row
         store.each(function(record)
@@ -960,7 +983,10 @@ function f_populateConfigBackupPanel(opObject, vmData)
     {
         if(btn == 'yes')
         {
-            f_sendServerCommand(true, xmlStr, handleBackupCallback, true);
+            if(target == 'Open Appliance')
+                f_sendServerCommand(true, xmlStr, handleBackupCallback, true);
+            else
+                f_backupTargetMyPC();
         }
     }
 
@@ -986,7 +1012,6 @@ function f_populateConfigRestorePanel(opObject, vmBackupFiles)
     }
     var radioColumn = f_createGridCheckColumn(radioColumnOnMousePress);
 
-
     var cm = new Ext.grid.ColumnModel(
     [
         radioColumn,
@@ -999,7 +1024,8 @@ function f_populateConfigRestorePanel(opObject, vmBackupFiles)
 
     var store = new Ext.data.SimpleStore(
     {
-        fields: [
+        sortInfo: {field: 'files'}
+        ,fields: [
             { name: 'checker' },
             { name: 'files' }]
     });
@@ -1020,13 +1046,13 @@ function f_populateConfigRestorePanel(opObject, vmBackupFiles)
     }
 
     var xmlStr = '';
-    var handleMyPCRestoreButtonPressed = function()
+    var handlePCRestoreButtonPressed = function()
     {
         /*
         Ext.Ajax.request(
         {
             url:'js/ft_main.js'
-            ,params: {method:'requestDowload', id:'js/ft_main.js'}
+            ,params: {method:'requestDownload', id:'js/ft_main.js'}
             ,success: function(response)
             {
                 Ext.DomHelper.append(document.body,
@@ -1082,14 +1108,21 @@ function f_populateConfigRestorePanel(opObject, vmBackupFiles)
                         radioColumn, 'files',
                         g_opPanelObject.m_dataPanelTitle+
                         "&nbsp;&rArr;&nbsp;from Open Appliance");
+/*/
+    var buttons = f_createButtonsPanel(new Array('Start Restore from Open Appliance',
+                  'Start Restore from My PC'),
+                  new Array(handleOARestoreButtonPressed,
+                  handlePCRestoreButtonPressed));
+    */
     var buttons = f_createButtonsPanel(new Array('Start Restore from Open Appliance'),
                   new Array(handleOARestoreButtonPressed));
     buttons.buttons[0].disable();
     gridPanel[gridPanel.length] = buttons;
+
     opObject.f_updateDataPanel(gridPanel);
 }
 
-function f_populateVMDeploySoftwarePanel(opObject)
+function f_populateVMDeploySoftwarePanel(opObject, vmData)
 {
     var thisObject = opObject;
     var fm = Ext.form;
@@ -1101,23 +1134,24 @@ function f_populateVMDeploySoftwarePanel(opObject)
 
     var checkColumn = f_createGridCheckColumn(CheckColumnOnMousePress);
 
-    var userStore = new Ext.data.SimpleStore( {
-fields: [ 'userId', 'userName' ],
-data: [[1, 2], [3, 4]]
-} );
+    var updateStore = new Ext.data.SimpleStore(
+    {
+        fields: [ 'value', 'name' ],
+        data: [[1, 2], [3, 4]]
+    });
 
     var cb = new Ext.form.ComboBox(
     {
-        store: userStore
+        store: updateStore
         ,mode: 'local'
-        ,displayField: 'userName'
-        ,valueField: 'userId'
+        ,displayField: 'nameame'
+        ,valueField: 'value'
         ,typeAhead: true
         ,triggerAction: 'all'
         ,lazyRender:true
         ,listClass: 'x-combo-list-small'
-        ,listeners: { expand: function(obj) { cb = obj;
-cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);          }}
+        //,listeners: { expand: function(obj) { cb = obj;
+        //cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);}}
     });
 
     function formatDate(value)
@@ -1450,6 +1484,7 @@ function f_populateUserPanel(opObject)
             fixed: true,
             //type: 'string',
             renderer: f_renderGridTextField,
+            menuDisabled: true,
             editor: fField
         },
         {
@@ -1458,6 +1493,7 @@ function f_populateUserPanel(opObject)
             sortable: false,
             dataIndex: chnLCase[2],
             renderer: f_renderGridTextField,
+            menuDisabled: true,
             editor: lField
         },
         {
@@ -1467,6 +1503,7 @@ function f_populateUserPanel(opObject)
             dataIndex: chnLCase[3],
             //type: 'string',
             renderer: f_renderGridTextField,
+            menuDisabled: true,
             editor: uField
         },
         {
@@ -1475,6 +1512,7 @@ function f_populateUserPanel(opObject)
             sortable: false,
             dataIndex: chnLCase[4],
             renderer: f_renderGridTextField,
+            menuDisabled: true,
             editor: pField
         },
         {header: 'action', hidden:true, dataIndex:'action' }
@@ -1695,6 +1733,22 @@ function f_renderGridImage(val, metaData, record, rIndex, cIndex, store)
 
     switch(val)
     {
+        case 'deploy_yes':   // deploy is scheduled
+            tip = '"Yes"';
+            title = 'Deployment&nbsp;Scheduled:';
+            str = String.format(
+              "<span align='center'><img src='images/statusUp.gif'"+
+              "onmouseover='f_onMouseOvertoolTip(this, \"" + title +
+              "\", " + tip + ")' /></span>");
+            break;
+        case 'deploy_no':   // deploy is not scheduled
+            tip = '"No"';
+            title = 'Deployment&nbsp;Scheduled:';
+            str = String.format(
+              "<span align='center'><img src='images/statusDown.gif'"+
+              "onmouseover='f_onMouseOvertoolTip(this, \"" + title +
+              "\", " + tip + ")' /></span>");
+            break;
         case 'updateAval_yes':
             tip = '"<font color=green>Update version is available</font>"';
             title = 'Update&nbsp;Version:'
@@ -2023,7 +2077,7 @@ function f_renderGridTextField(val, metadata, record, rowIndex, colIndex)
         switch(colIndex)
         {
             case 1:
-                val = ''
+                val = '&nbsp;';
                 break;
             case 2:
                 val = ''
@@ -2072,7 +2126,7 @@ function f_createUserTextField(disableRowZero, textType, fieldName)
                 case 'password':
                     if(!f_isPasswordValid(this.getValue()))
                     {
-                        
+
                     }
                     break;
                 case 'userText':
@@ -2182,6 +2236,16 @@ function f_loadHelp()
     alert('Need link for help');
 }
 
+function f_backupTargetMyPC(action)
+{
+    var forms = document.forms;
+
+    if(forms[0] != undefined && forms[0].id == 'id_my_pc_backup')
+    {
+        forms[0].action = 'images/test.zip';
+        forms[0].submit();
+    }
+}
 function f_onClickAnchor(anchorId)
 {
     g_opPanelObject.f_updateMainPanel(anchorId);

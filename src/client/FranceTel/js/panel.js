@@ -357,9 +357,5 @@ v_panelObject = Ext.extend(Ext.util.Observable,
 
         return grid;
     },
-    ABC: function()
-    {
-
-    }
 });
 

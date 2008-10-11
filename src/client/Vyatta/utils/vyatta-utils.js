@@ -122,6 +122,7 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
       //m_statusBar.showBusy();
       var f_authCb = function(options, success, response)
       {
+          
         var xmlRoot = response.responseXML.documentElement;
         var q = Ext.DomQuery;
         var id = q.selectValue(V_COOKIES_USER_ID, xmlRoot, V_NOT_FOUND);

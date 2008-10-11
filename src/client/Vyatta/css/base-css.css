@@ -41,6 +41,27 @@
     margin-top:3px;
 }
 
+.v-anchor-test
+{
+    margin-top:0px;
+}
+
+.x-combo-list-configuration
+{
+    border:1px solid #98c0f4;
+    background:#ddecfe;
+    zoom:1;
+    overflow:hidden;
+}
+
+.x-combo-list-operation
+{
+    border:1px solid #98c0f4;
+    background:#fff;
+    zoom:1;
+    overflow:hidden;
+}
+
 .v_tab_image
 {
     margin-right:1px;
@@ -87,10 +108,11 @@ body
   font-size:13px;
   background-color:#fff !important;
 }
+
 .vlabel_right
 {
     font-family:helvetica,tahoma,verdana,sans-serif;
-    text-align: right;
+    text-align: right !important;
     padding-right: 5px;
     font-weight: bold;
 }

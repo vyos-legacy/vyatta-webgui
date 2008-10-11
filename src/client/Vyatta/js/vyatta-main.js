@@ -62,7 +62,7 @@ function f_showTab(tabIndex)
 
 function f_hideTab(tabIndex)
 {
-    if(tabIndex > 0 && g_baseSystem.m_tabObjects[tabIndex] != undefined)
+    if(tabIndex >= 0 && g_baseSystem.m_tabObjects[tabIndex] != undefined)
         g_baseSystem.m_tabObjects[tabIndex].f_showPanel(false);
 }
 
@@ -156,9 +156,10 @@ function f_createFrameHeaderPanel()
     }
     else
     {
-        //id.innerHTML = 'Username:&nbsp; <b>' + f_getUserLoginName() + '</b>&nbsp;&nbsp;&nbsp;' +
-            //'<a href="#" onclick="f_userLogout(true, \'' +
-            //g_baseSystem.m_homePage + '\')">Logout</a>';
+       id.innerHTML = 'Username:&nbsp; <b>' + f_getUserLoginName() + '</b>&nbsp;&nbsp;&nbsp;' +
+            '<a class="anchor-test" valign="top" href="#" onclick="f_userLogout(true, \'' +
+            g_baseSystem.m_homePage + '\')">' +
+            '<img src="images/logout.gif"/> Logout</a>';
         f_createTabsHTML();
     }
 
@@ -287,5 +288,6 @@ Ext.onReady(function()
     if(!f_isUserLogined(false, false))
         f_startLogin();
     else
+        //f_showTab(g_baseSystem.m_iOper);
         f_showTab(g_baseSystem.m_iConf);
 });

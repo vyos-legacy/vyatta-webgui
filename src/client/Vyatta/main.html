@@ -1,24 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
 <html>
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>Vyatta Web GUI</title>
     <link rel="stylesheet" type="text/css"
-                href="/ext-2.1/resources/css/ext-all.css" />
+                href="/ext-2.2/resources/css/ext-all.css" />
 
     <!-- GC -->
         <!-- LIBS -->
         <script type="text/javascript"
-         src="/ext-2.1/adapter/ext/ext-base.js"></script>
+         src="/ext-2.2/adapter/ext/ext-base.js"></script>
         <!-- ENDLIBS -->
 
-    <script type="text/javascript" src="/ext-2.1/ext-all.js"></script>
+    <script type="text/javascript" src="/ext-2.2/ext-all.js"></script>
     <link href="css/base-css.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
   <script type="text/javascript" src="utils/vyatta-constant-values.js"></script>
-  <script type="text/javascript" src="utils/vyatta_rowLayout.js"></script>
   <script type="text/javascript" src="utils/vyatta-cli-command.js"></script>
   <script type="text/javascript" src="utils/vyatta_grid_checkColumn.js"></script>
   <script type="text/javascript" src="utils/vyatta-utils.js"></script>
@@ -45,16 +46,10 @@
     <td nowrap colspan="2" valign="top"  border="0" halign="right">
         <table>
         <tr>
-            <td>
-                <div id="id_header_text" class="v_header_text">
-                  <nobr>
-                  User:&nbsp; name
-                  <a href="#" onclick="f_userLogout(true)">
-                  <img src="images/logout.gif"/>Logout
-                  </a>
-                  </nobr>
-                  <br><br><br><p>&nbsp;</p>
+            <td><nobr>
+                <div valign="top" id="id_header_text" class="v_header_text">
                 </div>
+              </nobr>
             </td>
         </tr>
       </table>
@@ -63,20 +58,7 @@
     <td id="id_header_tab" border="1" valign="bottom" halign="left"
             colspan="2" width="100%">
         <div id="id_header_tab">
-        <table id="v_tab_table" valign="bottom">
-        <tr>
-            <td><a href="#" onClick="f_handleOnTabClick('name')" onfocus="this.blur();">
-                <img src="images/tab_status_available.gif"/></a>&nbsp;</td>
-            <td><a href="#" onClick="f_handleOnTabClick('op')" onfocus="this.blur();">
-                <img src="images/tab_diagnostics_available.gif"/></a>&nbsp;</td>
-            <td><a href="#" onfocus="this.blur();">
-                <img src="images/tab_configuration_available.gif"/></a>&nbsp;</td>
-            <td><a href="#" onfocus="this.blur();">
-                <img src="images/tab_operation_available.gif" id="v_tab_operation"
-                onmouseover="f_handleTabOnMouseOver('op')"
-                onmouseout="f_handleTabOnMouseOut('op')"/></a></td>
-        </tr>
-        </table>
+        
         </div>
     </td>
 
@@ -85,10 +67,6 @@
     </tr></table>
   </div>
 
-  <!-- pre-load all the tab images --- 
-  <div>
-    <img width="200" src="images/operation-tab-over.PNG" alt="vyatta VC4" border="0">
-  </div> -->
 </body>
 </html>
 

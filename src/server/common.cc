@@ -15,13 +15,13 @@ const unsigned long WebGUI::ID_RANGE = 2147483647UL;
 const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = 1800UL;
 //const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = (unsigned long)99999999;
 
-const string WebGUI::OP_COMMAND_DIR = "/opt/vyatta/share/vyatta-op/templates";
+const string WebGUI::OP_COMMAND_DIR = "/opt/vyatta/share/oa-op/templates";
 const string WebGUI::ACTIVE_CONFIG_DIR = "/opt/vyatta/config/active";
 const string WebGUI::CONFIG_TMP_DIR = "/opt/vyatta/config/tmp/tmp_";
 const string WebGUI::LOCAL_CHANGES_ONLY = "/tmp/changes_only_";
 const string WebGUI::LOCAL_CONFIG_DIR = "/opt/vyatta/config/tmp/new_config_";
 const string WebGUI::CFG_TEMPLATE_DIR = "/opt/vyatta/share/vyatta-cfg/templates";
-const string WebGUI::OP_TEMPLATE_DIR = "/opt/vyatta/share/vyatta-op/templates";
+const string WebGUI::OP_TEMPLATE_DIR = "/opt/vyatta/share/oa-op/templates";
 const string WebGUI::COMMIT_LOCK_FILE = "/opt/vyatta/config/.lock";
 const string WebGUI::VYATTA_MODIFY_DIR = "/opt/vyatta/config/tmp/";
 const string WebGUI::VYATTA_MODIFY_FILE = WebGUI::VYATTA_MODIFY_DIR + ".vyattamodify_";

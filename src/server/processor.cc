@@ -238,18 +238,7 @@ extern "C" void
 start_hndl(void *data, const XML_Char *el, const XML_Char **attr) 
 {
   Message *m = (Message*)data;
-  if (strcmp(el,"configuration") == 0) {
-    m->_type = WebGUI::GETCONFIG; 
-
-    //looking for op mode attribute
-    for (int i=0;attr[i];i+=2) {
-      if (strcmp(attr[i],"mode") == 0 &&
-	  strcmp(attr[i+1],"op") == 0) {
-	m->_conf_mode = WebGUI::OP;
-      }
-    }
-  }
-  else if (strcmp(el, "command") == 0) {
+  if (strcmp(el, "command") == 0) {
     m->_type = WebGUI::CLICMD; 
   }
   else if (strcmp(el, "auth") == 0) {
@@ -286,15 +275,7 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
     }
   }
   
-  if (m->_type == WebGUI::GETCONFIG) {
-    if (strcmp(el, "id") == 0) {
-      m->_node = WebGUI::GETCONFIG_ID;
-    }
-    else if (strcmp(el, "node") == 0) {
-      m->_node = WebGUI::GETCONFIG_NODE;
-    }
-  }
-  else if (m->_type == WebGUI::NEWSESSION) {
+  if (m->_type == WebGUI::NEWSESSION) {
     if (strcmp(el, "user") == 0) {
       m->_node = WebGUI::NEWSESSION_USER;
     }

@@ -1,6 +1,6 @@
 wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
-opdir = $(datadir)/vyatta-op/templates
+opdir = $(datadir)/oa-op/templates
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
@@ -27,8 +27,7 @@ src_server_webgui_LDADD += -lpam
 
 cgi_PROGRAMS = src/server/webgui
 
-cgi_SCRIPTS = src/server/webgui-wrap
-cgi_SCRIPTS += src/server/webgui-oa
+cgi_SCRIPTS = src/server/webgui-oa
 
 sbin_PROGRAMS = src/server/test
 

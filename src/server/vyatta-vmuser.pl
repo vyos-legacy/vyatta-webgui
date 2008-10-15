@@ -71,8 +71,12 @@ if ($action eq 'add') {
 } elsif ($action eq 'delete') {
   $cmd = "sudo /usr/sbin/userdel '$user'";
 } elsif ($action eq 'change') {
-  my $epassword = encrypt_password($password);
-  $cmd = "sudo /usr/sbin/usermod -c '$first $last' -p '$epassword' '$user'";
+  my $p = '';
+  if ("$password" ne '') {
+    my $epassword = encrypt_password($password);
+    $p = "-p '$epassword'";
+  }
+  $cmd = "sudo /usr/sbin/usermod -c '$first $last' $p '$user'";
 } else {
   # invalid action
   exit 1;

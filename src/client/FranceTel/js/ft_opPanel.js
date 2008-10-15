@@ -129,11 +129,10 @@ v_opPanelObject = Ext.extend(v_panelObject,
 
 
     ////////////////////////////////////////////////////////////////////////////
-    f_getOpTopPanelData: function()
+    f_getOpTopPanelHTML: function()
     {
         var links = this.f_getOApplianceAnchorData();
         var str = "<nobr><div id='header'>";
-        var selIndex = 0;
 
         for(var i=0; i<links.length; i++)
         {
@@ -146,7 +145,6 @@ v_opPanelObject = Ext.extend(v_panelObject,
                     "<img src='images/carre.gif'/>&nbsp;&nbsp;<font color='#FF6600'>" +
                     "<b>" + links[i] + "</b></font>" +
                     "</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                selIndex = i;
             }
             else
             {
@@ -159,22 +157,26 @@ v_opPanelObject = Ext.extend(v_panelObject,
         }
         str += "</div></nobr>";
 
-        var el = document.getElementById('nav');
-
-        if(el == undefined)
-        {
-            Ext.getBody().createChild({tag:'div', id:'nav', html: str});
-            el = document.getElementById('nav');
-        }
-
+        //var el = document.getElementById('nav');
+        //if(el == undefined)
+        //{
+        var nav_id = Ext.id();
+            Ext.getBody().createChild({tag:'div', id:'nav_'+nav_id, html: str});
+            var el = document.getElementById('nav_'+nav_id);
+        //}
         el.innerHTML = str;
 
+        return el;
+    },
+
+    f_getOpTopPanelData: function()
+    {
         var comp = new Ext.Panel(
         {
             id: Ext.id()
             ,border: false
             ,bodyStyle: 'padding: 0px 10px 0px 10px'
-            ,contentEl: el
+            ,contentEl: this.f_getOpTopPanelHTML()
         });
         comp.doLayout();
 
@@ -1025,7 +1027,7 @@ function f_populateConfigRestorePanel(opObject, vmBackupFiles)
                 sortable: true,
                 dataIndex: 'files',
                 menuDisabled: true,
-                style: 'padding:10px 0px 0px 5px', renderer: f_renderGridText},
+                style: 'padding:10px 0px 0px 5px', renderer: f_renderGridText}
     ]);
 
     var store = new Ext.data.SimpleStore(
@@ -1663,10 +1665,8 @@ function f_populateMonitoringHardwarePanel(opObject)
     {
         id: 'component',
         header: 'Component',
-        width: 120,
         sortable: true,
-        dataIndex: 'component',
-        style: 'padding:10px 0px 0px 5px'
+        dataIndex: 'component'
     },
     {
         header: 'Status',
@@ -1676,7 +1676,7 @@ function f_populateMonitoringHardwarePanel(opObject)
         dataIndex: 'status',
         fixed: true,
         align: 'center'
-    },
+    }
     ]);
 
     var store = new Ext.data.SimpleStore(
@@ -1687,7 +1687,7 @@ function f_populateMonitoringHardwarePanel(opObject)
         },
         {
             name: 'status'
-        },
+        }
         ]
     });
     store.loadData(opObject.m_monitorHwDBData);

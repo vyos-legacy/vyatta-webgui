@@ -27,7 +27,6 @@ v_panelObject = Ext.extend(Ext.util.Observable,
               this.m_topPanel.items.getCount() > 0)
               this.m_topPanel.remove(this.m_topPanel.items.itemAt(0));
 
-alert('update top panel')
         this.m_topPanel.add(newDataPanel);
         this.m_topPanel.doLayout();
     },

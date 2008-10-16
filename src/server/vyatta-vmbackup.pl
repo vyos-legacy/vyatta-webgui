@@ -13,6 +13,7 @@ if ($op eq 'backup') {
   my $fname = "$vm\_$stamp";
   system("cd $BROOT ; tar -czf '$fname.tar.gz' '$vm'");
   exit 1 if (! -f "$BROOT/$fname.tar.gz");
+  print "$fname";
   exit 0;
 } elsif ($op eq 'backup-list') {
   opendir(DIR, $BROOT) or exit 1;

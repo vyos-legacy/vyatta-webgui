@@ -35,6 +35,7 @@ sbin_SCRIPTS = src/server/vyatta-vmstatus.pl
 sbin_SCRIPTS += src/server/vyatta-vmop.pl
 sbin_SCRIPTS += src/server/vyatta-vmuser.pl
 sbin_SCRIPTS += src/server/vyatta-vmbackup.pl
+sbin_SCRIPTS += src/server/vyatta-vmdeploy
 
 cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
 	cpio -0pd

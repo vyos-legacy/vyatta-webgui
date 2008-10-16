@@ -1,0 +1,85 @@
+#!/bin/bash
+
+VM_NAME=$1
+shift
+VM_VERSION=$1
+
+IMG_HOME=/home/vmdeploy
+IMG=$IMG_HOME/"$VM_NAME"_"$VM_VERSION".tar
+IMG_DIR="$IMG_HOME/$VM_NAME"_"$VM_VERSION"
+
+if [ ! -r "$IMG" ]; then
+  echo "Image file \"$IMG\" does not exist"
+  exit 1
+fi
+
+if ! mkdir $IMG_HOME/.deploy >&/dev/null; then
+  # deployment in progress
+  echo "Deployment is in progress"
+  exit 1
+fi
+
+_exit ()
+{
+  rm -rf $IMG_DIR
+  rmdir $IMG_HOME/.deploy
+  exit $*
+}
+
+cd $IMG_HOME
+tar -xf $IMG
+if [ ! -d "$IMG_DIR" ] || [ ! -r "$IMG_DIR/V_$VM_VERSION" ] \
+    || [ ! -r "$IMG_DIR/$VM_NAME.img.gz" ]; then
+  echo "Invalid image file \"$IMG\""
+  _exit 1
+fi
+gzip -d $IMG_DIR/$VM_NAME.img.gz
+
+# backup
+BFILE=$(/opt/vyatta/sbin/vyatta-vmbackup.pl backup "$VM_NAME")
+if [ -z "$BFILE" ]; then
+  echo "VM backup failed"
+  _exit 1
+fi
+
+# stop
+if ! /opt/vyatta/sbin/vyatta-vmop.pl "$VM_NAME" stop; then
+  echo "VM stop failed"
+  _exit 1
+fi
+
+# deploy
+mv -f $IMG_DIR/$VM_NAME.img /var/xen/
+
+# start
+if ! /opt/vyatta/sbin/vyatta-vmop.pl "$VM_NAME" start; then
+  echo "VM start failed"
+  _exit 1
+fi
+
+# wait until up
+IP=$(grep "^$VM_NAME " /opt/vyatta/etc/gui/vmlist \
+     | (read name ip xml url ; echo $ip))
+i=0
+while ! ping -c 1 -w 1 $IP >&/dev/null; do
+  if (( ++i >= 60 )); then
+    break
+  fi
+  sleep 1
+done
+if (( i >= 60 )); then
+  echo "VM start failed"
+  _exit 1
+fi
+
+# restore
+tfile=$(mktemp /tmp/vmrestore.XXXXXXXXX)
+sg users -c "if /opt/vyatta/sbin/vyatta-vmbackup.pl restore '$BFILE'; then \
+              rm -f $tfile; fi"
+if [ -f "$tfile" ]; then
+  rm -f $tfile
+  _exit 1
+fi
+
+_exit 0
+

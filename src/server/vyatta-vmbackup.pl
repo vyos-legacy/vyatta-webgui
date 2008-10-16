@@ -39,7 +39,7 @@ if ($op eq 'backup') {
   system("mv $BROOT/$tdir/$vm $BROOT/$vm/restore");
   
   # wait for domU restore
-  my ($i, $done) = (0, 0);
+  my ($i, $done, $err) = (0, 0, 'Restore failed');
   while (1) {
     sleep 1;
     if (-d "$BROOT/$vm/restore/success") {
@@ -47,12 +47,21 @@ if ($op eq 'backup') {
       $done = 1;
       last;
     }
-    last if (-d "$BROOT/$vm/restore/failure"); # failed
+    if (-d "$BROOT/$vm/restore/failure") {
+      # failed
+      $err = `cat $BROOT/$vm/restore/error`;
+      last;
+    }
     last if ((++$i) >= 30);
   }
 
   system("rm -rf $BROOT/{$vm/restore,$tdir} ; rm -rf $BROOT/$vm/.restore");
-  exit (($done) ? 0 : 1);
+  if (!$done) {
+    print $err;
+    exit 1;
+  } else {
+    exit 0;
+  }
 }
 
 # invalid op

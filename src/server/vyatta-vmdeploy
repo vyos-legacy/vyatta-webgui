@@ -41,6 +41,13 @@ if ! mkdir $IMG_HOME/.deploy >&/dev/null; then
   exit_fail "Deployment is in progress"
 fi
 
+# backup
+BFILE=$(/opt/vyatta/sbin/vyatta-vmbackup.pl backup "$VM_NAME")
+if [ -z "$BFILE" ]; then
+  exit_fail "VM backup failed"
+fi
+
+# extract image
 cd $IMG_HOME
 tar -xf $IMG
 if [ ! -d "$IMG_DIR" ] || [ ! -r "$IMG_DIR/V_$VM_VERSION" ] \
@@ -48,12 +55,6 @@ if [ ! -d "$IMG_DIR" ] || [ ! -r "$IMG_DIR/V_$VM_VERSION" ] \
   exit_fail "Invalid image file \"$IMG\""
 fi
 gzip -d $IMG_DIR/$VM_NAME.img.gz
-
-# backup
-BFILE=$(/opt/vyatta/sbin/vyatta-vmbackup.pl backup "$VM_NAME")
-if [ -z "$BFILE" ]; then
-  exit_fail "VM backup failed"
-fi
 
 # stop
 if ! /opt/vyatta/sbin/vyatta-vmop.pl "$VM_NAME" stop; then

@@ -11,7 +11,16 @@ if ($op eq 'backup') {
   exit 1 if (! -d "$BROOT/$vm"); # vm doesn't exist
   my $stamp = strftime "%Y-%m-%d-%H%M%S", localtime;
   my $fname = "$vm\_$stamp";
-  system("cd $BROOT ; tar -czf '$fname.tar.gz' '$vm'");
+  my $lock = "$BROOT/$vm/.lock";
+  while (1) {
+    system("mkdir $lock >&/dev/null");
+    if ($? >> 8) {
+      sleep 1;
+    } else {
+      last;
+    }
+  }
+  system("cd $BROOT ; tar -czf '$fname.tar.gz' '$vm'; rmdir $lock");
   exit 1 if (! -f "$BROOT/$fname.tar.gz");
   print "$fname";
   exit 0;

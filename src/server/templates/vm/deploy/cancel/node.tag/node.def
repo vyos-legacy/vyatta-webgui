@@ -1,1 +1,5 @@
-run: sh -c "/opt/vyatta/sbin/vyatta-vmdeploy-op cancel '$4'"
+run: if /opt/vyatta/sbin/vyatta-vmdeploy-op cancel "$4"; then
+       return 0
+     else
+       return 1
+     fi

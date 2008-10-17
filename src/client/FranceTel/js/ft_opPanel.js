@@ -20,6 +20,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
         this.m_parentContainer = parentContainer;
         this.m_userDBData = new Array();
         this.m_monitorHwDBData = new Array();
+        this.m_popupMenu = null;
         g_opPanelObject = this;
 
         //v_loginPanelObject.suprclass.constructor.apply(this, arguments);
@@ -55,14 +56,14 @@ v_opPanelObject = Ext.extend(v_panelObject,
     f_getVMDashboardColHeader: function(htmlBase)
     {
         if(htmlBase == undefined || !htmlBase)
-            return ['VM', 'Status', 'CPU', 'RAM', 'Desk Space',
+            return ['VM', 'Status', 'CPU', 'RAM', 'Disk Space',
                     'Current Version', 'Update Version', 'Deployment Schedule'];
         else
             return ["<p align='center'><b>VM<br></b></p>",
                     "<p align='center'><b>Status<br></b></p>",
                     "<p align='center'><b>CPU<br></b></p>",
                     "<p align='center'><b>RAM<br></b></p>",
-                    "<p align='center'><b>Desk Space<br></b></p>",
+                    "<p align='center'><b>Disk Space<br></b></p>",
                     "<p align='center'><b>Current<br>Version</b></p>",
                     "<p align='center'><b>Update<br>Version</b></p>",
                     "<p align='center'><b>Deployment<br>Schedule</b></p>"];
@@ -133,6 +134,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
     {
         var links = this.f_getOApplianceAnchorData();
         var str = "<nobr><div id='header'>";
+        var mouseOver = Ext.isGecko ? true : false;
 
         for(var i=0; i<links.length; i++)
         {
@@ -140,18 +142,24 @@ v_opPanelObject = Ext.extend(v_panelObject,
 
             if(this.m_selTopAnchorName == links[i])
             {
-                str += "<a class='on' id='id_" + myId + "_link' href='#top' onclick=" +
-                    "f_onClickAnchor('" + links[i] + "')>" +
+                str += "<a class='on' id='id_" + myId + "_link' href='#top' " +
+                    "onclick=f_onClickAnchor('" + links[i] + "')>" +
                     "<img src='images/carre.gif'/>&nbsp;&nbsp;<font color='#FF6600'>" +
                     "<b>" + links[i] + "</b></font>" +
-                    "</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                    "</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             }
             else
             {
-                str += "<a class='on' id='id_" + myId + "_link' href='#top' onclick=" +
-                    "f_onClickAnchor('" + links[i] + "')>" +
+                var id = "'id_" + myId + "_link'";
+                str += "<a class='off' id=" + id + " href='#top' ";
+
+                if(mouseOver)
+                    str += "onMouseOver=f_onMouseOverHorizAnchor(" + id +
+                            ",'" + links[i] + "') ";
+
+                str += "onclick=f_onClickAnchor('" + links[i] + "')>" +
                     "<img src='images/carre.gif'/>&nbsp;&nbsp;" + links[i] +
-                    "</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                    "</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             }
 
         }
@@ -161,8 +169,8 @@ v_opPanelObject = Ext.extend(v_panelObject,
         //if(el == undefined)
         //{
         var nav_id = Ext.id();
-            Ext.getBody().createChild({tag:'div', id:'nav_'+nav_id, html: str});
-            var el = document.getElementById('nav_'+nav_id);
+        Ext.getBody().createChild({tag:'div', id:'nav_'+nav_id, cls:'nav', html: str});
+        var el = document.getElementById('nav_'+nav_id);
         //}
         el.innerHTML = str;
 
@@ -184,13 +192,21 @@ v_opPanelObject = Ext.extend(v_panelObject,
     },
 
     ////////////////////////////////////////////////////////////////////////////
-    f_getVMLeftPanelData: function(anchorLinkData)
+    f_getVMLeftPanelHTML: function(anchorLinkData, oaAnchor)
     {
+        var divAffect = "id='leftMenu' ";
+
+        if(oaAnchor == undefined)
+            oaAnchor = "";
+        else
+        {
+            divAffect = "id='leftPopupMenu' class='ft_popup_menu' ";
+        }
         var links = anchorLinkData == undefined ? this.f_getVMAnchorData() :
                                       anchorLinkData;
 
         var selIndex = 0;
-        var str = "<div id='leftMenu'>" +
+        var str = "<div " + divAffect + ">" +
               "<ul id='openAppliance' style='display:block'>";
 
         if(links != 'empty')
@@ -218,20 +234,28 @@ v_opPanelObject = Ext.extend(v_panelObject,
         else
             selIndex = 999;
 
-        str += '</ul><div id="helpMenu" style="display:block">' +
+        if(oaAnchor == "")
+            str += '</ul><div id="helpMenu" style="display:block">' +
                 '<a target = "_blank" href="#" onfocus="this.blur();" ' +
                 'class="linkhelp" onclick="f_loadHelp();return false;">' +
                 '<img src="images/img_help.gif" alt="Help" title="Help"></a></div></div>';
+        else
+            str += '</ul></div>';
 
+        var id = "id_vmAnchor_" + selIndex + oaAnchor;
         Ext.getBody().createChild(
-                            {tag:'div', id:'id_vmAnchor_' + selIndex, html: str});
+                            {tag:'div', id:id, html: str});
 
+        return id;
+    },
+    f_getVMLeftPanelData: function(anchorLinkData)
+    {
         return new Ext.Panel(
         {
             id: Ext.id()
             ,border: false
             ,bodyStyle: 'padding: 0px 10px 0px 0px'
-            ,contentEl: "id_vmAnchor_" + selIndex
+            ,contentEl: this.f_getVMLeftPanelHTML(anchorLinkData)
         });
     },
 
@@ -352,27 +376,32 @@ v_opPanelObject = Ext.extend(v_panelObject,
         {
             case 'VM_Dashboard':
                 g_opPanelObject.m_dataPanelTitle += 'VM Dashboard';
+                this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[0]
                 this.f_invokeVMDashboardAnchor();
                 break;
             case 'Deploy_VM_Software':
                 g_opPanelObject.m_dataPanelTitle += 'Deploy VM Software';
                 this.m_selLeftAnchorName = this.f_getVMAnchorData()[1];
+                this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[0]
                 f_populateVMDeploySoftwarePanel(this);
                 this.f_updateLeftPanel(this.f_getVMLeftPanelData());
                 break;
             case 'Restart':
                 g_opPanelObject.m_dataPanelTitle += 'Restart';
                 f_getVMDataFromServer(this, this.f_getVMAnchorData()[2]);
+                this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[0]
                 this.m_isDashboard = false;
                 this.m_selLeftAnchorName = this.f_getVMAnchorData()[2];
                 this.f_updateLeftPanel(this.f_getVMLeftPanelData());
                 break;
             case 'Hardware':
                 g_opPanelObject.m_dataPanelTitle += 'Hardware';
+                this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[2]
                 this.f_invokeMonitorHardwareAnchor();
                 break;
             case 'Network':
                 g_opPanelObject.m_dataPanelTitle += 'Network';
+                this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[2]
                 f_getMonitoringNetworkDataFromServer(this);
                 this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[1];
                 this.f_updateLeftPanel(this.f_getVMLeftPanelData(
@@ -380,6 +409,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
                 break;
             case 'Software':
                 g_opPanelObject.m_dataPanelTitle += 'Software';
+                this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[2]
                 f_getMonitoringSoftwareDataFromServer(this);
                 this.m_selLeftAnchorName = this.f_getMonitoringAnchorData()[2];
                 this.f_updateLeftPanel(this.f_getVMLeftPanelData(
@@ -387,9 +417,11 @@ v_opPanelObject = Ext.extend(v_panelObject,
                 break;
             case 'User':
                 g_opPanelObject.m_dataPanelTitle = 'Users';
+                this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[1]
                 this.f_invokeUserAnchor();
                 break;
             case 'User_Right':
+                this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[1]
                 g_opPanelObject.m_dataPanelTitle = 'Users Right';
                 f_getUserRightDataFromServer(this);
                 this.m_selLeftAnchorName = this.f_getUserAnchorData()[1];
@@ -397,10 +429,12 @@ v_opPanelObject = Ext.extend(v_panelObject,
                                         this.f_getUserAnchorData()));
                 break;
             case 'Configuration_Backup':
+                this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[3]
                 g_opPanelObject.m_dataPanelTitle += 'Configuration Backup';
                 this.f_invokeBackupAnchor();
                 break;
             case 'Configuration_Restore':
+                this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[3]
                 g_opPanelObject.m_dataPanelTitle += 'Configuration Restore';
                 f_getConfigRestoreDataFromServer(this);
                 this.m_selLeftAnchorName = this.f_getBackupAnchorData()[1];
@@ -2276,7 +2310,111 @@ function f_backupTargetMyPC(action)
         forms[0].submit();
     }
 }
+
+function f_onMouseOutHorizPopupMenu(el, duration)
+{
+    if(el != undefined && el.isVisible())
+    {
+        el.slideOut('t',
+        {
+            easing: 'easeOut',
+            duration: duration,
+            remove: true,
+            useDisplay: true
+        });
+
+        delete el;
+    }
+}
+function f_onMouseOverHorizAnchor(thisId, anchorId)
+{
+    var tt='';
+    var topAnchor = Ext.get(thisId);
+    var x= topAnchor.getXY()[0] - 15;
+    var y = topAnchor.getXY()[1] + topAnchor.getHeight();
+
+    //topAnchor.fadeOut({duration:2});
+    //topAnchor.frame('#FF6600', 1);
+    topAnchor.on(
+    {
+        'mouseout' :
+        {
+            fn: function(e, t)
+            {
+                var xy = e.getXY();
+                if(xy[1] < 150)
+                {
+                    topAnchor.un('mouseout');
+                    f_onMouseOutHorizPopupMenu(g_opPanelObject.m_popupMenu, .05);
+                }
+            }
+        }
+    });
+
+    ///////////////////////////////////////////////////
+    // make sure popup menu is closed
+    if(g_opPanelObject.m_popupMenu != null)
+    {
+        g_opPanelObject.m_popupMenu.un('mouseout');
+        f_onMouseOutHorizPopupMenu(g_opPanelObject.m_popupMenu, .05);
+    }
+
+    switch(anchorId)
+    {
+        case g_opPanelObject.f_getOApplianceAnchorData()[0]:  // vm
+            tt = g_opPanelObject.f_getVMLeftPanelHTML(
+                  g_opPanelObject.f_getVMAnchorData(), anchorId);
+            break;
+        case g_opPanelObject.f_getOApplianceAnchorData()[1]:  // user
+            tt = g_opPanelObject.f_getVMLeftPanelHTML(
+                  g_opPanelObject.f_getUserAnchorData(), anchorId);
+            break;
+        case g_opPanelObject.f_getOApplianceAnchorData()[2]:  // monitering
+            tt = g_opPanelObject.f_getVMLeftPanelHTML(
+                  g_opPanelObject.f_getMonitoringAnchorData(), anchorId);
+            break;
+        case g_opPanelObject.f_getOApplianceAnchorData()[3]:  // backup
+            tt  = g_opPanelObject.f_getVMLeftPanelHTML(
+                  g_opPanelObject.f_getBackupAnchorData(), anchorId);
+            break;
+        default:
+            return;
+    }
+
+    f_popupLeftMenu(x, y, tt);
+}
+
+function f_popupLeftMenu(xPos, yPos, popupMenuId)
+{
+    var x = xPos; var y = yPos;
+
+    g_opPanelObject.m_popupMenu = Ext.get(popupMenuId);
+    g_opPanelObject.m_popupMenu.moveTo(x, y);
+    g_opPanelObject.m_popupMenu.slideIn('t',
+    {
+        easing: 'easeOut',
+        duration: .3
+    });
+    g_opPanelObject.m_popupMenu.on(
+    {
+        'mouseout' :
+        {
+            fn: function(e, t)
+            {
+                var xy = e.getXY();
+                if(xy[0] < x || xy[0] > (x+170) || xy[1] < y ||
+                    xy[1] > (g_opPanelObject.m_popupMenu.getHeight()+y-3))
+                {
+                    g_opPanelObject.m_popupMenu.un('mouseout');
+                    f_onMouseOutHorizPopupMenu(g_opPanelObject.m_popupMenu, .1);
+                }
+            }
+        }
+    });
+}
+
 function f_onClickAnchor(anchorId)
 {
+    f_onMouseOutHorizPopupMenu(g_opPanelObject.m_popupMenu, .5);
     g_opPanelObject.f_updateMainPanel(anchorId);
 }

@@ -52,8 +52,8 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             for(var i=0; i<panels.length; i++)
                 iPanel.add(panels[i]);
 
-            this.f_resizePanels(this.m_bodyPanel);
             iPanel.doLayout();
+            this.f_resizePanels(this.m_bodyPanel);
         }
     },
     f_updateDataPanelLabel: function(topLabelString)
@@ -322,10 +322,9 @@ v_panelObject = Ext.extend(Ext.util.Observable,
     {
         var gridView = new Ext.grid.GridView(
         {
-            id: Ext.id()
-            ,enableRowBody: false
+            enableRowBody: false
             ,forceFit: true
-            ,borderWidth: 0
+            //,borderWidth: 0
         });
         //gridView.scrollOffset = 0;
 
@@ -345,17 +344,14 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             ,view: gridView
             ,plugins: plugins
             ,enableColumnHide: true
-            ,enableHdMenu: false
+            ,enableHideMenu: false
             ,defaults: { autoScroll: true }
-
-            // inline buttons
             ,buttons: buttons
             ,buttonAlign: 'right'
         });
         grid.isGrid = true;
 
-
         return grid;
-    },
+    }
 });
 

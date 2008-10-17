@@ -91,14 +91,14 @@ function f_startOpenAppliance()
 
         ////////////////////////////////////////////
         // register the panel resize listener
-        bp.on( {'resize': {fn: function(){opObject.f_resizePanels(bp) }}});
+        bp.on( {'resize': {fn: function(){ f_onBodyPanelResize(bp) }}});
     }
 
     //////////////////////////////////////////////
     // let update the layout
     this.m_opObject.m_mainPanel.show();
     bp.add(this.m_opObject.m_mainPanel);
-    this.m_opObject.f_resizePanels(bp);
+    //this.m_opObject.f_resizePanels(bp);
     bp.doLayout();
 }
 g_vyattaURL = null;
@@ -131,6 +131,23 @@ function f_startVyattaApplication()
     }
     else
         f_startEmptyApplication();
+
+    f_onBodyPanelResize(bp);
+}
+
+function f_onBodyPanelResize(bodyPanel)
+{
+    if(this.m_opObject != null)
+        this.m_opObject.f_resizePanels(bodyPanel);
+
+    var h = bodyPanel.getInnerHeight();
+    var w = bodyPanel.getInnerWidth();
+
+    if(this.m_vyattaPanel != undefined)
+        this.m_vyattaPanel.setSize(w-2, h-2);
+
+    if(this.m_3rdPartyPanel != undefined)
+        this.m_3rdPartyPanel.setSize(w-2, h-2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -165,6 +182,8 @@ function f_start3rdPartyApplication()
     }
     else
         f_startEmptyApplication();
+
+    f_onBodyPanelResize(bp);
 }
 
 function f_initWelcomePanel()
@@ -414,8 +433,14 @@ function onLanguageChange()
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+g_ie = 0;
 Ext.onReady(function()
 {
+    ///////////////////////////////////////////////////////////////
+    // below to fix for IE enter this point twice.
+    if(Ext.isIE && g_ie > 0) return;
+    g_ie++;
+    
     ////////////////////////////////////////////////
     // quick tip init.....
     Ext.QuickTips.init();

@@ -1,0 +1,97 @@
+#!/bin/bash
+
+VM_NAME=$1
+shift
+VM_VERSION=$1
+
+IMG_HOME=/home/vmdeploy
+LOG=$IMG_HOME/.deploy.log
+IMG=$IMG_HOME/"$VM_NAME"_"$VM_VERSION".tar
+IMG_DIR="$IMG_HOME/$VM_NAME"_"$VM_VERSION"
+
+lecho ()
+{
+  t=$(date +"%F %H:%M:%S")
+  echo $t $* >>$LOG
+}
+
+lecho "Deploying $VM_NAME version $VM_VERSION ..."
+
+exit_fail ()
+{
+  lecho $*
+  lecho "Deploying $VM_NAME version $VM_VERSION failed"
+  rm -rf $IMG_DIR $IMG_HOME/.deploy
+  exit 1
+}
+
+exit_succeed ()
+{
+  lecho "Deploying $VM_NAME version $VM_VERSION succeeded"
+  rm -rf $IMG_DIR $IMG_HOME/.deploy
+  exit 0
+}
+
+if [ ! -r "$IMG" ]; then
+  exit_fail "Image file \"$IMG\" does not exist"
+fi
+
+if ! mkdir $IMG_HOME/.deploy >&/dev/null; then
+  # deployment in progress
+  exit_fail "Deployment is in progress"
+fi
+
+# backup
+BFILE=$(/opt/vyatta/sbin/vyatta-vmbackup.pl backup "$VM_NAME")
+if [ -z "$BFILE" ]; then
+  exit_fail "VM backup failed"
+fi
+
+# extract image
+cd $IMG_HOME
+tar -xf $IMG
+if [ ! -d "$IMG_DIR" ] || [ ! -r "$IMG_DIR/V_$VM_VERSION" ] \
+    || [ ! -r "$IMG_DIR/$VM_NAME.img.gz" ]; then
+  exit_fail "Invalid image file \"$IMG\""
+fi
+gzip -d $IMG_DIR/$VM_NAME.img.gz
+
+# stop
+if ! /opt/vyatta/sbin/vyatta-vmop.pl "$VM_NAME" stop; then
+  exit_fail "VM stop failed"
+fi
+
+# deploy
+mv -f $IMG_DIR/$VM_NAME.img /var/xen/
+echo $VM_VERSION >"$IMG_HOME/.V_$VM_NAME"
+
+# start
+if ! /opt/vyatta/sbin/vyatta-vmop.pl "$VM_NAME" start; then
+  exit_fail "VM start failed"
+fi
+
+# wait until up
+IP=$(grep "^$VM_NAME " /opt/vyatta/etc/gui/vmlist \
+     | (read name ip xml url ; echo $ip))
+i=0
+while ! ping -c 1 -w 1 $IP >&/dev/null; do
+  if (( ++i >= 60 )); then
+    break
+  fi
+  sleep 1
+done
+if (( i >= 60 )); then
+  exit_fail "VM start failed"
+fi
+
+# restore
+tfile=$(mktemp /tmp/vmrestore.XXXXXXXXX)
+sg users -c "if /opt/vyatta/sbin/vyatta-vmbackup.pl restore '$BFILE'; then \
+              rm -f $tfile; fi"
+if [ -f "$tfile" ]; then
+  rm -f $tfile
+  exit_fail "VM restore failed"
+fi
+
+exit_succeed
+

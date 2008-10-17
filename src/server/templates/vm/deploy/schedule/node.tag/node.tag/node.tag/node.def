@@ -1,0 +1,1 @@
+run: sh -c "/opt/vyatta/sbin/vyatta-vmdeploy-op schedule '$4' '$5' '$6'"

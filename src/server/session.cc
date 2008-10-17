@@ -199,7 +199,7 @@ Session::update_session()
   string stdout;
   //get timestamp from file
   string file = WebGUI::VYATTA_MODIFY_FILE + _processor->get_msg().id();
-
+  
   struct stat buf;
 
   if (stat(file.c_str(), &buf) != 0) {
@@ -244,20 +244,14 @@ Session::update_session()
   time_t t = time(NULL);
 
   if ((buf.st_mtime + WebGUI::SESSION_TIMEOUT_WINDOW) < (unsigned)t) {
-    //have to clean up session at this point!!!!!!!!
-    cerr << "clean up session here" << endl;
     _processor->set_response(WebGUI::SESSION_FAILURE);
-
-    //let's ask the system to clean up at this point..
-
-    //execute exit discard;
 
     //command pulled from exit discard
     WebGUI::remove_session(_processor->get_msg().id_by_val());
     return false;
   }
 
-  string update_file = "touch " + file;
+  string update_file = "sudo touch " + file;
 
   //now touch session time mark file'
   WebGUI::execute(update_file, stdout);
@@ -273,7 +267,7 @@ Session::start_session()
   //get timestamp from file
   string file = WebGUI::VYATTA_MODIFY_FILE + _processor->get_msg().id();
 
-  string update_file = "touch " + file;
+  string update_file = "sudo touch " + file;
   //now touch session time mark file
   string stdout;
   WebGUI::execute(update_file,stdout);

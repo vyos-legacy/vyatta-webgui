@@ -13,12 +13,14 @@ public:
   void
   execute_command();
 
-  std::string
-  execute_single_command(std::string &cmd);
+  void
+  execute_single_command(std::string &cmd, std::string &resp, int &err);
 
 private:
   bool
   validate_session(unsigned long id);
 
+  bool
+  validate_op_cmd(std::string &cmd);
 };
 #endif //__COMMAND_HH__

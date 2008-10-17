@@ -65,6 +65,11 @@ TemplateParams::get_xml(const string &value)
     out += "<multi/>";
   }
 
+  //currently only enabled for op mode, but can be used in a configuration context to denote an "active" node
+  if (_action) {
+    out += "<action/>";
+  }
+
   if (_end) {
     if (value.empty()) {
       out += "<terminal/>";
@@ -210,6 +215,14 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   Message *m = (Message*)data;
   if (strcmp(el,"configuration") == 0) {
     m->_type = WebGUI::GETCONFIG; 
+
+    //looking for op mode attribute
+    for (int i=0;attr[i];i+=2) {
+      if (strcmp(attr[i],"mode") == 0 &&
+	  strcmp(attr[i+1],"op") == 0) {
+	m->_conf_mode = WebGUI::OP;
+      }
+    }
   }
   else if (strcmp(el, "command") == 0) {
     m->_type = WebGUI::CLICMD; 
@@ -409,7 +422,7 @@ Processor::get_response()
   else if (_msg._custom_error_msg.empty() == false) {
     char buf[20];
     sprintf(buf, "%d", _msg._error_code);
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><token>"+_msg._token+"</token><vyatta><error><code>"+string(buf)+"</code><msg>"+_msg._custom_error_msg+"</msg></error></vyatta>";
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_msg._token+"</token><error><code>"+string(buf)+"</code><msg>"+_msg._custom_error_msg+"</msg></error></vyatta>";
     return _msg._response;
   }
   else {

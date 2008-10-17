@@ -67,36 +67,11 @@ Authenticate::create_new_session()
     string stdout;
     sprintf(buf, "%lu", id);
 
-    cmd = "mkdir -p " + WebGUI::ACTIVE_CONFIG_DIR;
-    if (WebGUI::execute(cmd, stdout) != 0) {
-      //syslog here
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
-    }
+    WebGUI::mkdir_p(WebGUI::ACTIVE_CONFIG_DIR.c_str());
+    WebGUI::mkdir_p((WebGUI::LOCAL_CHANGES_ONLY + string(buf)).c_str());
+    WebGUI::mkdir_p((WebGUI::LOCAL_CONFIG_DIR + string(buf)).c_str());
 
-    cmd = "mkdir -p " + WebGUI::LOCAL_CHANGES_ONLY + string(buf);
-    if (WebGUI::execute(cmd, stdout) != 0) {
-      //syslog here
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
-    }
-    //exec
-
-    cmd = "mkdir -p " + WebGUI::LOCAL_CONFIG_DIR + string(buf);
-    if (WebGUI::execute(cmd, stdout) != 0) {
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
-    }
-    //exec
-
-    //    cmd = "grep -q union=aufs /proc/cmdline || grep -q aufs /proc/filesystems";
-    string unionfs = "unionfs";
-    //CRAJ@--ADD SUPPORT FOR AUSF
-    /*
-    if (WebGUI::execute(cmd, true)) {
-      unionfs = "aufs";
-    }
-    */
+    string unionfs = WebGUI::unionfs();
 
     cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+string(buf)+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ string(buf);
 
@@ -105,13 +80,8 @@ Authenticate::create_new_session()
       _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
       return false;
     }
-
-    cmd = "mkdir -p " +WebGUI::CONFIG_TMP_DIR+ string(buf);
-    if (WebGUI::execute(cmd, stdout) != 0) {
-      //syslog here
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
-    }
+    
+    WebGUI::mkdir_p((WebGUI::CONFIG_TMP_DIR+string(buf)).c_str());
 
     //write the username here to modify file
     string file = WebGUI::VYATTA_MODIFY_FILE + buf;

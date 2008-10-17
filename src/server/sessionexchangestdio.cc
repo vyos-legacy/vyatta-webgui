@@ -10,6 +10,8 @@
 
 using namespace std;
 
+const unsigned long SessionExchangeStdIO::_request_limit = 8192;
+
 /**
  *
  **/
@@ -59,6 +61,10 @@ SessionExchangeStdIO::read(Session &session)
     string tmp(buf);
     req += tmp.substr(0,tmp.length()-1);
   }
+  if (req.length() > _request_limit) {
+    return false;
+  }
+
   session.set_message(req);
   return true;
 }

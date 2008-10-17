@@ -38,7 +38,8 @@ fi
 
 if ! mkdir $IMG_HOME/.deploy >&/dev/null; then
   # deployment in progress
-  exit_fail "Deployment is in progress"
+  lecho "Failed: deployment is in progress"
+  exit 1
 fi
 
 # backup

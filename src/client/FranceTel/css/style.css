@@ -292,17 +292,17 @@ textarea {
 
 /*############ NAVIGATION SECONDAIRE ##############*/
 
-#nav {
+.nav {
 	margin:4px 5px 10px 0px;
 	height:20px;
 	/*border-bottom: 3px solid #CCC; */
 }
 
-#nav ul{
+.nav ul{
 	margin:0px;
 }
 
-#nav li{
+.nav li{
 	display : inline;
     margin-right: 12px;
     padding-left:15px; 
@@ -310,21 +310,21 @@ textarea {
     list-style-type: none;
 }
 
-#nav a {
+.nav a {
 	font: 11px arial, sans-serif;
 	color: #000;
 }
 
-#nav a:hover, #nav a:active{
+.nav a:hover, .nav a:active{
 	color: #FF5500;
 }
 
-#nav li a.on {
+.nav li a.on {
 	color: #FF5500;
 	font-weight:bold;
 }
 
-#nav li a.off {
+.nav li a.off {
 	color: #000;
 	font-weight:normal;
 }
@@ -332,12 +332,69 @@ textarea {
 /**************************************************/
 /*     			 MENU VERTICAL                    */
 /**************************************************/
+#leftPopupMenu {
+	margin:0px 8px 0px 15px;
+	/*width:170px;
+	height:120px;*/
+}
+
+#leftPopupMenu h3{
+	margin:0px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	border-top: 1px solid #CCC;
+	border-bottom: 1px solid #CCC;
+	font-weight:bold;
+	font-size:11px;
+
+}
+
+#leftPopupMenu ul{
+	margin: 0px;
+	padding: 0px;
+	border-bottom: 6px solid #eeeeee;
+	border-top: 6px solid #eeeeee;
+	display:none;
+}
+
+#leftPopupMenu li{
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+	border-bottom: 1px solid #cccccc;
+	padding-top: 6px;
+	padding-bottom: 1px;
+	display: list-item;
+}
+
+#leftPopupMenu li a{
+	font: 11px arial, sans-serif;
+	color: #000000;
+	text-decoration: none;
+	display: block;
+	padding-left: 11px;
+	background: transparent url(../images/fl_ig.gif) no-repeat;
+	background-position: 0px 3px;
+	margin-right: 10px;
+	margin-bottom: 0px;
+	padding-bottom: 6px;
+}
+
+#leftPopupMenu li a:hover{
+	color: #ff6600;
+}
+
+#leftPopupMenu li a.on{
+	font-weight: bold;
+	color: #ff6600;
+	background: transparent url(../images/lien2.gif) no-repeat;
+	background-position: 0px 3px;
+}
 
 #leftMenu {  
 	margin:0px 8px 0px 15px;
 	width:170px;
-	height:500px;
-
+	height:300px;
 }
 
 #leftMenu h3{

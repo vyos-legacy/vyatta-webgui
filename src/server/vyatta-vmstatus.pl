@@ -261,13 +261,44 @@ sub getVmStatus {
     $status = 'down';
   }
 
-  # TODO: domU "version" stuff
-  my $ver = <<'EOS';
-    <version>
-      <current>1.1</current>
-      <avail>1.1</avail>
-    </version>
+  # domU deployment info
+  my $ddir = '/home/vmdeploy';
+  my $vfile = "$ddir/.V_$name";
+  my $jfile = "$ddir/.J_$name";
+  my $vcur = 'unknown';
+  my @vavail = ();
+  if (open(VF, "<$vfile")) {
+    $vcur = <VF>;
+    chomp $vcur;
+    close(VF);
+  }
+  if (opendir(DDIR, "$ddir")) {
+    @vavail = grep { /^$name\_.+\.tar$/ } readdir(DDIR);
+    map { s/^$name\_(.+)\.tar$/$1/ } @vavail;
+  }
+
+  my $ver = "    <version>\n";
+  $ver .= "      <current>$vcur</current>\n";
+  if (scalar(@vavail) <= 0) {
+    $ver .= "      <avail>unknown</avail>\n";
+  } else {
+    foreach (@vavail) {
+      $ver .= "      <avail>$_</avail>\n";
+    }
+  }
+  $ver .= "    </version>\n";
+
+  if ((-r "$jfile") && open(JF, "<$jfile")) {
+    my $dtime = <JF>;
+    close(JF);
+    chomp $dtime;
+    $dtime =~ s/^[^ ]+ [^ ]+ (.*)$/$1/;
+    $ver .= <<EOS;
+    <deploy>
+      <scheduled>$dtime</scheduled>
+    </deploy>
 EOS
+  }
 
   while ($status eq 'unknown') {
     my ($s, $err) = Net::SNMP->session(-hostname => "$ip",

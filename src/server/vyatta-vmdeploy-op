@@ -59,7 +59,7 @@ if [ "$OP" == "schedule" ]; then
     exit_fail "\"$VM_NAME\" is already scheduled for deployment"
   fi
   CMD="/opt/vyatta/sbin/vyatta-vmdeploy \"$VM_NAME\" \"$VM_VERSION\""
-  AT_OUT=$(echo '$CMD' | sudo at "$TIME" 2>&1 | grep -v warning)
+  AT_OUT=$(echo "$CMD" | sudo at "$TIME" 2>&1 | grep -v warning)
   re='^job ([0-9]+) at '
   if ! [[ $AT_OUT =~ $re ]]; then
     exit_fail "Failed to schedule \"$VM_NAME $VM_VERSION\" deployment"

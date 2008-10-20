@@ -94,5 +94,8 @@ if [ -f "$tfile" ]; then
   exit_fail "VM restore failed"
 fi
 
+# remove job file
+rm -f "$IMG_HOME/.J_$VM_NAME"
+
 exit_succeed
 

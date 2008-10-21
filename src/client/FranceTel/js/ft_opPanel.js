@@ -1318,6 +1318,7 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
                 increment: 15
                 ,allowBlank: true
                 ,editable: false
+                ,format: 'H:i'
             })
         },
         {header: 'AvalVersionData',
@@ -1376,7 +1377,7 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
                 if(dDate < curDate)
                     dTime = 'now + 1 minute';
                 else
-                    dTime = f_get24HrFormat(dTime) + ' ' + dDate.format('d.m.Y');
+                    dTime = dTime + ' ' + dDate.format('d.m.Y');
 
                 deployVMs.push("<command><id>" + sid + "</id>" +
                     "<statement>vm deploy schedule '"+ record.get('vm') +
@@ -2236,7 +2237,7 @@ function f_renderGridTimeField(val, metadata, record, rowIndex, colIndex)
 
     metadata.attr = 'ext:qtitle="Date" ext:qtip=' + tt;
 
-    return val == undefined || val == '' ? "12:00 AM" : val;
+    return val == undefined || val == '' ? "00:00" : val;
 }
 
 function f_compareDateTime(vDate, vTime)

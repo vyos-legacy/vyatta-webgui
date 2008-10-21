@@ -102,9 +102,12 @@ function f_startOpenAppliance()
     bp.doLayout();
 }
 g_vyattaURL = null;
+g_dummy = null;
 function f_startVyattaApplication()
 {
-    if(g_vyattaURL != null)
+    window.open(g_vyattaURL);
+
+    if(g_dummy != null)
     {
         if(this.m_vyattaPanel == undefined)
         {

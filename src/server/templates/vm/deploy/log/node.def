@@ -1,1 +1,3 @@
-run: cat /home/vmdeploy/.deploy.log
+run: if [ -r /home/vmdeploy/.deploy.log ]; then
+       cat /home/vmdeploy/.deploy.log
+     fi

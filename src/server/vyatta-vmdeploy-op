@@ -60,11 +60,13 @@ if [ "$OP" == "schedule" ]; then
   fi
   CMD="/opt/vyatta/sbin/vyatta-vmdeploy \"$VM_NAME\" \"$VM_VERSION\""
   AT_OUT=$(echo "$CMD" | sudo at "$TIME" 2>&1 | grep -v warning)
-  re='^job ([0-9]+) at '
+  re='^job ([0-9]+) at ([^ ]+ [^ ]+ [0-9]+ [^ ]+ [0-9]+)$'
   if ! [[ $AT_OUT =~ $re ]]; then
     exit_fail "Failed to schedule \"$VM_NAME $VM_VERSION\" deployment"
   fi
   JOB=${BASH_REMATCH[1]}
+  DT=${BASH_REMATCH[2]}
+  TIME=$(date -d "$DT" +"%H:%M %d.%m.%y")
   sudo sh -c "echo \"$JOB $VM_VERSION $TIME\" >$JFILE"
   lecho "Deployment of \"$VM_NAME $VM_VERSION\" scheduled at \"$TIME\""
   exit_succeed

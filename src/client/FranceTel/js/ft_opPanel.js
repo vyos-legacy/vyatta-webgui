@@ -1058,13 +1058,10 @@ function f_populateConfigBackupPanel(opObject, vmData)
     var vmName = '';
     var startBackup = function(btn)
     {
-        if(btn == 'yes')
-        {
-            if(target == 'Open Appliance')
-                f_sendServerCommand(true, xmlStr, handleBackupCallback, true);
-            else
-                f_backupTargetMyPC();
-        }
+        if(target == 'Open Appliance')
+            f_sendServerCommand(true, xmlStr, handleBackupCallback, true);
+        else
+            f_backupTargetMyPC();
     }
 
     ///////////////////////////////////////////////////////
@@ -1175,8 +1172,7 @@ function f_populateConfigRestorePanel(opObject, vmBackupFiles)
     var restoreFileName = '';
     var startRestore = function(btn)
     {
-        if(btn == 'yes')
-            f_sendServerCommand(true, xmlStr, handleRestoreCallback, true);
+        f_sendServerCommand(true, xmlStr, handleRestoreCallback, true);
     }
 
     ///////////////////////////////////////////////////////
@@ -1243,18 +1239,7 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
 
     var CheckColumnOnMousePress = function()
     {
-        bPanel.buttons[0].disable();
-        bPanel.buttons[1].disable();
-
-        store.each(function(record)
-        {
-            if(record.get('checker'))
-            {
-                bPanel.buttons[0].enable();
-                bPanel.buttons[1].enable();
-                return;
-            }
-        });
+        f_handleEnableDisableButtons(bPanel.buttons, store);
     }
 
     var checkColumn = f_createGridCheckColumn(CheckColumnOnMousePress);
@@ -1460,6 +1445,8 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
                   'Cancel Selected'),
                   new Array(handleDeploySelectedButtonPress,
                             handleCancelSelectedButtonPress));
+    bPanel.buttons[0].disable();
+    bPanel.buttons[1].disable();
     gPanel[gPanel.length] = bPanel;
     var grid = gPanel[0];
     grid.on({"cellclick":{fn: f_onGridCellClick }});
@@ -1489,6 +1476,23 @@ function f_populateUserRightPanel(opObject)
     opObject.f_updateDataPanel(new Array(lPanel));
 }
 
+function f_handleEnableDisableButtons(buttons, store)
+{
+    for(var i=0; i<buttons.length; i++)
+        buttons[i].disable();
+
+    store.each(function(record)
+    {
+        if(record.get('checker'))
+        {
+            for(var i=0; i<buttons.length; i++)
+                buttons[i].enable();
+
+            return;
+        }
+    });
+}
+
 function f_populateUserPanel(opObject)
 {
     var thisObject = opObject;
@@ -1502,27 +1506,9 @@ function f_populateUserPanel(opObject)
 
     var enableDisableUserButtons = function(opObj)
     {
-        var g = opObj.grid;
-
-        if(g != undefined)
-        {
-            var buttonPanel = opObj.buttonPanel;
-            if(buttonPanel != undefined && buttonPanel.buttons.length == 3)
-            {
-                buttonPanel.buttons[1].disable();
-                buttonPanel.buttons[2].disable();
-
-                g.store.each(function(record)
-                {
-                    if(record.get('checker'))
-                    {
-                        buttonPanel.buttons[1].enable();
-                        buttonPanel.buttons[2].enable();
-                        return;
-                    }
-                });
-            }
-        }
+        var buttonPanel = opObj.buttonPanel;
+        f_handleEnableDisableButtons(buttonPanel.buttons, opObj.grid.store);
+        buttonPanel.buttons[0].enable();
     }
 
     var CheckColumnOnMousePress = function()
@@ -1565,59 +1551,56 @@ function f_populateUserPanel(opObject)
 
     var deleteCallback = function(btn)
     {
-        if(btn == 'yes')
+        var deleteRecs = [ ];
+        var sid = f_getUserLoginedID();
+
+        store.each(function(record)
         {
-            var deleteRecs = [ ];
-            var sid = f_getUserLoginedID();
-
-            store.each(function(record)
+            if(record.get(chnLCase[0]))
             {
-                if(record.get(chnLCase[0]))
+                if(record.get(chnLCase[3]) == 'admin')
                 {
-                    if(record.get(chnLCase[3]) == 'admin')
-                    {
-                        Ext.Msg.alert('Delete User', 'admin user cannot be deleted.')
-                        return;
-                    }
-                    
-                    var xmlstr = "<vmuser op='delete' " +
-                                  f_getUserRecordFromScreen(record, chnLCase) +
-                                  "><id>" + sid + "</id>"  +
-                                  "</vmuser>";
-
-                    deleteRecs.push(xmlstr);
-                    //store.remove(record);
-                }
-            });
-
-            var numOfSent = deleteRecs.length;
-            var serverCommandCb = function(options, success, response)
-            {
-                var xmlRoot = response.responseXML.documentElement;
-
-                var isSuccess = f_parseResponseError(xmlRoot);
-                if(!isSuccess[0])
-                {
-                    //f_hideSendWaitMessage();
-                    f_promptErrorMessage('Delete User', isSuccess[1]);
+                    Ext.Msg.alert('Delete User', 'admin user cannot be deleted.')
+                    return;
                 }
 
-                numOfSent--;
+                var xmlstr = "<vmuser op='delete' " +
+                              f_getUserRecordFromScreen(record, chnLCase) +
+                              "><id>" + sid + "</id>"  +
+                              "</vmuser>";
 
-                /////////////////////////////////////////////
-                // if we received all the command callback
-                // then refresh the user screen.
-                if(numOfSent == 0)
-                    f_onClickAnchor('User');
+                deleteRecs.push(xmlstr);
+                //store.remove(record);
+            }
+        });
+
+        var numOfSent = deleteRecs.length;
+        var serverCommandCb = function(options, success, response)
+        {
+            var xmlRoot = response.responseXML.documentElement;
+
+            var isSuccess = f_parseResponseError(xmlRoot);
+            if(!isSuccess[0])
+            {
+                //f_hideSendWaitMessage();
+                f_promptErrorMessage('Delete User', isSuccess[1]);
             }
 
-            //////////////////////////////////////////////
-            // ready to send commands to server
-            while(deleteRecs.length > 0)
-                f_sendServerCommand(true, deleteRecs.pop(), serverCommandCb, false);
+            numOfSent--;
 
-            CheckColumnOnMousePress();
+            /////////////////////////////////////////////
+            // if we received all the command callback
+            // then refresh the user screen.
+            if(numOfSent == 0)
+                f_onClickAnchor('User');
         }
+
+        //////////////////////////////////////////////
+        // ready to send commands to server
+        while(deleteRecs.length > 0)
+            f_sendServerCommand(true, deleteRecs.pop(), serverCommandCb, false);
+
+        CheckColumnOnMousePress();
     };
     thisObject.deleteCallback = deleteCallback;
 

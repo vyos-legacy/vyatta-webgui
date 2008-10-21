@@ -484,12 +484,16 @@ function f_yesNoMessageBox(title, msgText, callback)
         title: title
         ,msg: msgText
         ,buttons: Ext.MessageBox.YESNO
-        ,fn: callback
+        ,fn: function(button)
+        {
+            if(button == 'yes')
+                callback.call();
+        }
         ,icon: Ext.MessageBox.QUESTION
     });
 }
 
-function f_parseResponseError(xmlRoot)
+function f_parseResponseError(xmlRoot, wantMsg)
 {
     var success = true;
     var errmsg = '';
@@ -505,7 +509,7 @@ function f_parseResponseError(xmlRoot)
             success = false;
             errmsg = "Unknown";
         }
-        else if(code != 0)
+        else if(wantMsg != undefined || code != 0)
         {
             success = false;
             var msg = q.selectValue('msg', err, 'UNKNOWN');
@@ -569,6 +573,31 @@ function f_commitSingleStoreField(store, record, dataIndex, iindex)
             record.set(modifiedNames[i], saveVal);
         }
     }
+}
+
+function f_replaceAll(string, oldExp, newExp)
+{
+    var str = string;
+
+    while(str.indexOf(oldExp) >= 0)
+        str = str.replace(oldExp, newExp);
+
+    return str;
+}
+function f_get24HrFormat(dTime /* "hh:mm AM/PM" */)
+{
+    dTime = dTime.split(' ');
+
+    if(dTime[1] == "PM")
+    {
+        var time = dTime[0].split(':');
+        dTime = Number(time[0]) + 12;
+        dTime = dTime + ":" + time[1];
+    }
+    else  // AM ... do nothing
+        dTime = dTime[0];
+
+    return dTime;
 }
 
 g_sendCommandWait = null;

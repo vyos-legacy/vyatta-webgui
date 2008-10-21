@@ -72,8 +72,8 @@ v_opPanelObject = Ext.extend(v_panelObject,
     {
         if(htmlBase == undefined || !htmlBase)
             return ['checker', 'VM', 'Status', 'Current Version',
-                    'Available Version', 'Deployment Schedule Date',
-                    'Deployment Schedule Time'];
+                    'AvailableVersion', 'DeploymentScheduleDate',
+                    'DeploymentScheduleTime', 'avalVerData'];
         else
             return [' ',
                 "<p align='center'><b>VM<br></b></p>",
@@ -81,7 +81,8 @@ v_opPanelObject = Ext.extend(v_panelObject,
                 "<p align='center'><b>Current<br>Version</b></p>",
                 "<p align='center'><b>Available<br>Version</b></p>",
                 "<p align='center'><b>Deployment<br>Schedule Date</b></p>",
-                "<p align='center'><b>Deployment<br>Schedule Time</b></p>"];
+                "<p align='center'><b>Deployment<br>Schedule Time</b></p>",
+                "<p align='center'><b>Avail Version<br>Data</b></p>"];
     },
     f_getVMRestartColHeader: function(htmlBase)
     {
@@ -383,7 +384,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
                 g_opPanelObject.m_dataPanelTitle += 'Deploy VM Software';
                 this.m_selLeftAnchorName = this.f_getVMAnchorData()[1];
                 this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[0]
-                f_populateVMDeploySoftwarePanel(this);
+                f_getVMDataFromServer(this, this.f_getVMAnchorData()[1]);
                 this.f_updateLeftPanel(this.f_getVMLeftPanelData());
                 break;
             case 'Restart':
@@ -510,18 +511,22 @@ function f_parseVMDashboarData(vm)
     var versions = q.selectNode('version', vm);
     var verCur = q.selectNumber('current', versions)
     var disVerCur = q.selectValue('current', versions);
-                  //Ext.num(q.selectValue('current', versions), 0);
     var verAvails = q.select('avail', versions);
     var vAvails = [ ];
     var updateAvail = '';
     for(var j=0; j<verAvails.length; j++)
     {
         vAvails[j] = q.selectNumber('avail:nth(' + (j+1) + ')', versions);
-        updateAvail = (vAvails[j] > verCur) ? 'updateAval_yes' : 'updateAval_no';
+        updateAvail = (vAvails[j] > verCur || updateAvail == 'updateAval_yes') ?
+                    'updateAval_yes' : 'updateAval_no';
     }
 
+    var deploy = q.selectNode('deploy', vm);
+    deploy = (deploy != undefined && q.selectValue('scheduled', deploy) != undefined) ?
+              'deploy_yes' : 'deploy_no';
+
     return [ vmName, status, cpu, f_findPercentage(memTotal, memFree),
-              f_findPercentage(diskTotal, diskFree), disVerCur, updateAvail, 'deploy_no',
+              f_findPercentage(diskTotal, diskFree), disVerCur, updateAvail, deploy,
               memTotal, memFree, diskTotal, diskFree];
 }
 
@@ -529,20 +534,28 @@ function f_parseVMDeployData(vm)
 {
     var q = Ext.DomQuery;
     var vmName = vm.getAttribute('name');
-
     var versions = q.selectNode('version', vm);
+    var disVerCur = q.selectValue('current', versions);
     var verCur = q.selectNumber('current', versions)
 
     var verAvails = q.select('avail', versions);
-    var vAvails = [ ];
-    var updateAvail = '';
+    var vAvails = [];
+    var updateAvail = 'no';
     for(var j=0; j<verAvails.length; j++)
     {
-        vAvails[j] = q.selectNumber('avail:nth(' + (j+1) + ')', versions);
-        updateAvail = (vAvails[j] > verCur) ? 'updateAval_yes' : 'updateAval_no';
+        var v = q.selectNumber('avail:nth(' + (j+1) + ')', versions);
+        var vv = q.selectValue('avail:nth(' + (j+1) + ')', versions);
+        vAvails[j] = [vv, vv];
+        updateAvail = (v > verCur || updateAvail == 'yes') ? 'yes' : 'no';
     }
 
-    return [vmName, verCur, updateAvail, 'none', 'none'];
+    var deploy = q.selectNode('deploy', vm);
+    deploy = (deploy != undefined) ? q.selectValue('scheduled', deploy) : V_NOT_FOUND;
+    var deployStatus = deploy == V_NOT_FOUND ? 'deploy_no' : 'deploy_yes';
+    deploy = deploy == V_NOT_FOUND ? ["", ""] : deploy.split(' ');
+
+    return ['checker', vmName, deployStatus, disVerCur, updateAvail, deploy[1],
+            deploy[0], vAvails];
 }
 
 function f_populateVMRestartPanel(opObject, vmData)
@@ -689,6 +702,25 @@ function f_parseHardwareStatus(hw)
         return 'up';
 }
 
+function f_getVMDeployLogFromServer(opObject, logPanel)
+{
+    var lPanel = logPanel
+
+    var serverCommandCb = function(options, success, response)
+    {
+        var xmlRoot = response.responseXML.documentElement;
+
+        var isSuccess = f_parseResponseError(xmlRoot, true);
+        lPanel.textArea.setValue(isSuccess[1]);
+    }
+
+    var sid = f_getUserLoginedID();
+    var xmlstr = "<command><id>" + sid + "</id><statement>\n"
+               + "vm deploy log</statement></command>";
+
+    f_sendServerCommand(true, xmlstr, serverCommandCb, false);
+}
+
 function f_getVMDataFromServer(opObject, anchorName)
 {
     var thisObj = opObject;
@@ -725,7 +757,10 @@ function f_getVMDataFromServer(opObject, anchorName)
                 case dp:  // deploy software
                     vmData[i] = f_parseVMDeployData(vmNodes[i]);
                     if(i == vmNodes.length-1)
-                        f_populateVMDeploySoftwarePanel(thisObj, vmData);
+                    {
+                        var logPanel = f_populateVMDeploySoftwarePanel(thisObj, vmData);
+                        f_getVMDeployLogFromServer(thisObj, logPanel);
+                    }
                     break;
                 case restart:
                     vmData[i] = f_parseVMRestartData(vmNodes[i]);
@@ -1164,6 +1199,43 @@ function f_populateConfigRestorePanel(opObject, vmBackupFiles)
     opObject.f_updateDataPanel(gridPanel);
 }
 
+function f_createNameValueStoreComboBox(vmData, index)
+{
+    var updateStore = [];
+    var storeData=[];
+    for(var i=0; i<vmData.length; i++)
+    {
+        storeData[i] = vmData[i][index];
+        updateStore[i] = new Ext.data.SimpleStore(
+        {
+            fields: [ 'value', 'name' ],
+            data: storeData[i]
+        });
+    }
+
+    var cb = new Ext.form.ComboBox(
+    {
+        store: updateStore[0]
+        ,mode: 'local'
+        ,displayField: 'name'
+        ,valueField: 'value'
+        ,typeAhead: true
+        ,triggerAction: 'all'
+        ,lazyRender:true
+        ,editable:false
+        ,listClass: 'x-combo-list-small'
+        ,listeners: { expand: function(obj)
+        {
+            cb = obj;
+            cb.reset();
+            this.store.removeAll();
+            this.store.loadData(storeData[g_opPanelObject.m_selGridRow]);
+        }}
+    });
+
+    return cb;
+}
+
 function f_populateVMDeploySoftwarePanel(opObject, vmData)
 {
     var thisObject = opObject;
@@ -1171,30 +1243,22 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
 
     var CheckColumnOnMousePress = function()
     {
-        //enableDisableUserButtons(thisObject);
+        bPanel.buttons[0].disable();
+        bPanel.buttons[1].disable();
+
+        store.each(function(record)
+        {
+            if(record.get('checker'))
+            {
+                bPanel.buttons[0].enable();
+                bPanel.buttons[1].enable();
+                return;
+            }
+        });
     }
 
     var checkColumn = f_createGridCheckColumn(CheckColumnOnMousePress);
-
-    var updateStore = new Ext.data.SimpleStore(
-    {
-        fields: [ 'value', 'name' ],
-        data: [[1, 2], [3, 4]]
-    });
-
-    var cb = new Ext.form.ComboBox(
-    {
-        store: updateStore
-        ,mode: 'local'
-        ,displayField: 'nameame'
-        ,valueField: 'value'
-        ,typeAhead: true
-        ,triggerAction: 'all'
-        ,lazyRender:true
-        ,listClass: 'x-combo-list-small'
-        //,listeners: { expand: function(obj) { cb = obj;
-        //cb.reset(); userStore.removeAll(); userStore.loadData([['a','b'],['c','d']]);}}
-    });
+    var cb = f_createNameValueStoreComboBox(vmData, 7);
 
     function formatDate(value)
     {
@@ -1202,24 +1266,33 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
     }
 
     var hd = opObject.f_getVMDeploySoftwareColHeader(false);
+    hd = [ hd[0].toLowerCase().replace(' ', ''),
+                      hd[1].toLowerCase().replace(' ', ''),
+                      hd[2].toLowerCase().replace(' ', ''),
+                      hd[3].toLowerCase().replace(' ', ''),
+                      hd[4].toLowerCase().replace(' ', ''),
+                      hd[5].toLowerCase().replace(' ', ''),
+                      hd[6].toLowerCase().replace(' ', ''),
+                      hd[7].toLowerCase().replace(' ', ''),];
+
     var cm = new Ext.grid.ColumnModel([
         checkColumn,
         {header: 'VM', width: 120, menuDisabled: true, fixed: true,
-            sortable: false, dataIndex: hd[1].toLowerCase().replace(' ', ''),
+            sortable: false, dataIndex: hd[1],
             align:'left'},
         {header: 'Deployment Status', width: 100, sortable: false, fixed: true,
-            menuDisabled: true, dataIndex: hd[2].toLowerCase().replace(' ', ''),
-            align:'center'},
+            menuDisabled: true, dataIndex: hd[2],
+            align:'center', renderer: f_renderGridImage},
         {header: 'Current Version', width: 80, sortable: false, fixed: true,
-            menuDisabled: true, dataIndex: hd[3].toLowerCase().replace(' ', ''),
+            menuDisabled: true, dataIndex: hd[3],
             align:'center'},
         {header: 'Available Version', menuDisabled: true, width: 90, sortable: false,
-            dataIndex: hd[4].toLowerCase().replace(' ', ''), fixed: true,
+            dataIndex: hd[4], fixed: true,
             align:'center',
             renderer: f_renderGridComboBox,
             editor: cb},
         {header: 'Deployment Schedule', width: 100, menuDisabled: true, sortable: false,
-            dataIndex: hd[5].toLowerCase().replace(' ', ''),
+            dataIndex: hd[5],
             align:'center',
             type: 'date',
             dateFormat: 'd/m/y',
@@ -1229,12 +1302,13 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
                 format: 'd/m/y'
                 ,minValue: '01/01/06'
                 ,tooltip: 'click '
+                ,editable: false
                 //disabledDays: [0, 6 ],
                 //disabledDaysText: 'Plants are not available on the weekends'
             })
         },
         {header: 'Deployment Schedule', width: 90, menuDisabled: true, sortable: false,
-            dataIndex: hd[6].toLowerCase().replace(' ', ''),
+            dataIndex: hd[6],
             align:'center',
             type: 'date',
             dateFormat: 'm/d/y',
@@ -1243,42 +1317,138 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
             {
                 increment: 15
                 ,allowBlank: true
+                ,editable: false
             })
+        },
+        {header: 'AvalVersionData',
+            dataIndex: hd[7],
+            hidden:true
         }
     ]);
 
     var store = new Ext.data.SimpleStore(
     {
         fields: [
-            { name: hd[0].toLowerCase().replace(' ', ''), type: 'bool' },
-            { name: hd[1].toLowerCase().replace(' ', '') },
-            { name: hd[2].toLowerCase().replace(' ', '') },
-            { name: hd[3].toLowerCase().replace(' ', '') },
-            { name: hd[4].toLowerCase().replace(' ', '') },
-            { name: hd[5].toLowerCase().replace(' ', ''), type: 'date', dateFormat: 'n/j h:ai' },
-            { name: hd[6].toLowerCase().replace(' ', '') }
+            { name: hd[0], type: 'bool' },
+            { name: hd[1]},
+            { name: hd[2]},
+            { name: hd[3]},
+            { name: hd[4]},
+            { name: hd[5]}, //type: 'date', dateFormat: 'n/j h:ai' },
+            { name: hd[6]},
+            { name: hd[7]}
         ]
     });
 
     //////////////////////////////////////////////////////
     // load data
-    var data = [
-        [ true, 'O. Appliance', 'status', '1.2', '1.5', 'now', 'now']
-        ,[ false, 'Telephony', 'status', '1.2', '1.5', 'now', 'now']
-        ,[ true, 'Security', 'status', '1.2', '1.5', 'now', 'now']
-        ,[ false, '3rd Parties', 'status', '1.2', '1.5', 'now', 'now']
-    ];
-    store.loadData(data);
-    store.colHeaders = hd;
+    store.loadData(vmData);
+    store.colHeaders = opObject.f_getVMDeploySoftwareColHeader(false);
 
     var handleDeploySelectedButtonPress = function()
     {
-
+        f_yesNoMessageBox('VM Deployment',
+                'Are you sure you wish to deploy the selected vm?',
+                handleDeployVM);
     }
 
     var handleCancelSelectedButtonPress = function()
     {
+        f_yesNoMessageBox('Cancel VM Deployment',
+                'Are you sure you wish to cancel the selected vm deployment?',
+                handleCancelDeploy);
+    }
 
+    var handleDeployVM = function()
+    {
+        var deployVMs = [];
+        var sid = f_getUserLoginedID();
+
+        store.each(function(record)
+        {
+            if(record.get('checker'))
+            {
+                var dDate = record.get(hd[5]);
+                var dTime = record.get(hd[6]);
+                var version = record.get(hd[4]);
+                var curDate = new Date();
+
+                if(dDate < curDate)
+                    dTime = 'now + 1 minute';
+                else
+                    dTime = f_get24HrFormat(dTime) + ' ' + dDate.format('d.m.Y');
+
+                deployVMs.push("<command><id>" + sid + "</id>" +
+                    "<statement>vm deploy schedule '"+ record.get('vm') +
+                    "' '" + version + "' '"  + dTime +
+                    "'</statement></command>");
+            }
+        });
+
+        var numOfSent = deployVMs.length;
+        var serverCommandCb = function(options, success, response)
+        {
+            var xmlRoot = response.responseXML.documentElement;
+
+            var isSuccess = f_parseResponseError(xmlRoot);
+            if(!isSuccess[0])
+                f_promptErrorMessage('VM Deployment', isSuccess[1]);
+
+            numOfSent--;
+
+            /////////////////////////////////////////////
+            // if we received all the command callback
+            // then refresh the user screen.
+            if(numOfSent == 0)
+                f_onClickAnchor('Deploy_VM_Software');
+        }
+
+        //////////////////////////////////////////////
+        // ready to send commands to server
+        while(deployVMs.length > 0)
+            f_sendServerCommand(true, deployVMs.pop(), serverCommandCb, false);
+
+        CheckColumnOnMousePress();
+    }
+    var handleCancelDeploy = function()
+    {
+        var cancelVMs = [];
+        var sid = f_getUserLoginedID();
+
+        store.each(function(record)
+        {
+            if(record.get('checker'))
+            {
+                cancelVMs.push("<command><id>" + sid + "</id>" +
+                    "<statement>vm deploy cancel '"+ record.get('vm') +
+                    "'</statement></command>");
+            }
+        });
+
+        var numOfSent = cancelVMs.length;
+        var serverCommandCb = function(options, success, response)
+        {
+            var xmlRoot = response.responseXML.documentElement;
+
+            var isSuccess = f_parseResponseError(xmlRoot);
+            if(!isSuccess[0])
+                f_promptErrorMessage('Cancel VM Deployment', isSuccess[1]);
+
+            numOfSent--;
+
+            /////////////////////////////////////////////
+            // if we received all the command callback
+            // then refresh the user screen.
+            if(numOfSent == 0)
+                f_onClickAnchor('Deploy_VM_Software');
+        }
+
+        //////////////////////////////////////////////
+        // ready to send commands to server
+        while(cancelVMs.length > 0)
+            f_sendServerCommand(true, cancelVMs.pop(), serverCommandCb, false);
+
+        CheckColumnOnMousePress();
     }
 
     //////////////////////////////////////////////////////////
@@ -1297,8 +1467,7 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
 
     ///////////////////////////////////////////////
     // add WM deployment log into working panel
-    var lPanel = f_createLogPanel('VM Software Deployment Log',
-          'The status of VM Deployment will display here....');
+    var lPanel = f_createLogPanel('VM Software Deployment Log', "");
     gPanel[gPanel.length] = lPanel;
     thisObject.f_updateDataPanel(gPanel);
 
@@ -1307,6 +1476,8 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
     var header = thisObject.f_getVMDeploySoftwareColHeader(true);
     for(var i=1; i<header.length; i++)
         grid.getView().getHeaderCell(i).innerHTML = header[i];
+
+    return lPanel;
 }
 
 function f_populateUserRightPanel(opObject)
@@ -1396,6 +1567,7 @@ function f_populateUserPanel(opObject)
         if(btn == 'yes')
         {
             var deleteRecs = [ ];
+            var sid = f_getUserLoginedID();
 
             store.each(function(record)
             {
@@ -1406,8 +1578,7 @@ function f_populateUserPanel(opObject)
                         Ext.Msg.alert('Delete User', 'admin user cannot be deleted.')
                         return;
                     }
-
-                    var sid = f_getUserLoginedID();
+                    
                     var xmlstr = "<vmuser op='delete' " +
                                   f_getUserRecordFromScreen(record, chnLCase) +
                                   "><id>" + sid + "</id>"  +
@@ -1567,7 +1738,7 @@ function f_populateUserPanel(opObject)
             menuDisabled: true,
             editor: pField
         },
-        {header: 'action', hidden:true, dataIndex:'action' }
+        {header: chnLCase[5], hidden:true, dataIndex:chnLCase[5] }
         ]);
 
     store.loadData(thisObject.m_userDBData);
@@ -1931,7 +2102,7 @@ function f_createLogPanel(title, logText)
 
     var textArea = new Ext.form.TextArea(
     {
-        height: 78
+        height: 120
         ,width: 200
         ,scroll: true
         ,value: logText
@@ -1946,11 +2117,13 @@ function f_createLogPanel(title, logText)
         ,bodyStyle: 'padding: 0px 0px 10px 0px'
         ,items: [ textArea ]
     });
+    panel.textArea = textArea;
 
     panel.on({'resize': { fn: function()
     {
-        textArea.setSize(panel.getSize().width, 78);
+        textArea.setSize(panel.getSize().width, 120);
     } }});
+
 
     return panel;
 }
@@ -2032,12 +2205,20 @@ function f_renderGridButton(val, p, record, rowIndex, colIndex)
 
 function f_renderGridDateField(val, metadata, record, rowIndex, colIndex)
 {
-    var sDate = f_compareDateTime(val, record.get('deployScheduleTime'));
-
     var tt = '"Click on this <font color=#FF6600><b>cell</b></font>' +
               ' to select date.<br>'+
               'To deploy NOW, select past date from calender."';
     metadata.attr = 'ext:qtitle="Date: " ext:qtip=' + tt;
+
+    if(record.get('status') == 'deploy_yes')
+    {
+        tt = '"This field is not allowed to change."';
+        metadata.attr = 'ext:qtitle="Date: " ext:qtip=' + tt;
+
+        return f_replaceAll(record.get('deploymentscheduledate'), '.', '-');
+    }
+
+    var sDate = f_compareDateTime(val, "11:59 PM");
 
     if(sDate == 'now')
         return 'now';
@@ -2047,7 +2228,7 @@ function f_renderGridDateField(val, metadata, record, rowIndex, colIndex)
 
 function f_renderGridTimeField(val, metadata, record, rowIndex, colIndex)
 {
-    var sDate = f_compareDateTime(record.get('deployScheduleDate'), val);
+    //var sDate = f_compareDateTime(record.get('deploymentscheduledate'), val);
 
     var tt = '"Click on this <font color=#FF6600><b>cell</b></font>' +
               ' to select time.<br>'+
@@ -2055,10 +2236,7 @@ function f_renderGridTimeField(val, metadata, record, rowIndex, colIndex)
 
     metadata.attr = 'ext:qtitle="Date" ext:qtip=' + tt;
 
-    if(sDate == 'now')
-        return 'now';
-    else
-        return val;
+    return val == undefined || val == '' ? "12:00 AM" : val;
 }
 
 function f_compareDateTime(vDate, vTime)
@@ -2069,7 +2247,7 @@ function f_compareDateTime(vDate, vTime)
 
     if(givenDate == undefined || givenDate.length < 5 || givenDate == 'now')
     {
-        givenDate = curDate;
+        givenDate = new Date(curDate.getTime() - (24*60*60*1000));
     }
 
     /////////////////////////////////////////////////////

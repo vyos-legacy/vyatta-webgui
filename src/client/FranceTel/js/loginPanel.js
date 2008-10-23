@@ -12,8 +12,7 @@ v_loginPanelObject = Ext.extend(v_panelObject,
 
     constructor: function(name)
     {
-        this.m_name = name;
-        this.m_tabName = 'login'
+        this.m_tabName = name
 
         //v_loginPanelObject.suprclass.constructor.apply(this, arguments);
     },

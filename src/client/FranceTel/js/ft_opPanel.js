@@ -37,7 +37,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
     // VM Anchor data ....
     f_getVMAnchorData: function()
     {
-        return [ 'VM Dashboard', 'Deploy VM Software',
+        return [ 'VM Dashboard', 'Update VM Software',
                   'Restart'];
     },
     f_getMonitoringAnchorData: function()
@@ -380,8 +380,8 @@ v_opPanelObject = Ext.extend(v_panelObject,
                 this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[0]
                 this.f_invokeVMDashboardAnchor();
                 break;
-            case 'Deploy_VM_Software':
-                g_opPanelObject.m_dataPanelTitle += 'Deploy VM Software';
+            case 'Update_VM_Software':
+                g_opPanelObject.m_dataPanelTitle += 'Update VM Software';
                 this.m_selLeftAnchorName = this.f_getVMAnchorData()[1];
                 this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[0]
                 f_getVMDataFromServer(this, this.f_getVMAnchorData()[1]);
@@ -539,23 +539,32 @@ function f_parseVMDeployData(vm)
     var verCur = q.selectNumber('current', versions)
 
     var verAvails = q.select('avail', versions);
-    var vAvails = [];
-    var updateAvail = 'no';
-    for(var j=0; j<verAvails.length; j++)
+    if(verAvails.length > 1)
     {
-        var v = q.selectNumber('avail:nth(' + (j+1) + ')', versions);
-        var vv = q.selectValue('avail:nth(' + (j+1) + ')', versions);
-        vAvails[j] = [vv, vv];
-        updateAvail = (v > verCur || updateAvail == 'yes') ? 'yes' : 'no';
+        var vAvails = [];
+        var hAvail=0;
+        var lAvail=0;
+        for(var j=0; j<verAvails.length; j++)
+        {
+            var v = q.selectNumber('avail:nth(' + (j+1) + ')', versions);
+            var vv = q.selectValue('avail:nth(' + (j+1) + ')', versions);
+            vAvails[j] = [vv, vv];
+            hAvail = (v >= verCur && v > hAvail) ? vv : verCur;
+            lAvail = (v < verCur) ? vv : lAvail;
+        }
+
+        var updateAvail = hAvail == verCur ? lAvail : hAvail;
+
+        var deploy = q.selectNode('deploy', vm);
+        deploy = (deploy != undefined) ? q.selectValue('scheduled', deploy) : V_NOT_FOUND;
+        var deployStatus = deploy == V_NOT_FOUND ? 'deploy_no' : 'deploy_yes';
+        deploy = deploy == V_NOT_FOUND ? ["", ""] : deploy.split(' ');
+
+        return ['checker', vmName, deployStatus, disVerCur, updateAvail, deploy[1],
+                deploy[0], vAvails];
     }
 
-    var deploy = q.selectNode('deploy', vm);
-    deploy = (deploy != undefined) ? q.selectValue('scheduled', deploy) : V_NOT_FOUND;
-    var deployStatus = deploy == V_NOT_FOUND ? 'deploy_no' : 'deploy_yes';
-    deploy = deploy == V_NOT_FOUND ? ["", ""] : deploy.split(' ');
-
-    return ['checker', vmName, deployStatus, disVerCur, updateAvail, deploy[1],
-            deploy[0], vAvails];
+    return null;
 }
 
 function f_populateVMRestartPanel(opObject, vmData)
@@ -734,7 +743,7 @@ function f_getVMDataFromServer(opObject, anchorName)
         if(!isSuccess[0])
         {
             f_hideSendWaitMessage();
-            f_promptErrorMessage('Load VM Dashboard', isSuccess[1]);
+            f_promptErrorMessage('Load VM Data', isSuccess[1]);
             return;
         }
 
@@ -745,24 +754,31 @@ function f_getVMDataFromServer(opObject, anchorName)
         var dp = thisObj.f_getVMAnchorData()[1];
         var restart = thisObj.f_getVMAnchorData()[2];
         var bk = thisObj.f_getBackupAnchorData()[0];
+        var deployDataIndex = 0;
         for(var i=0; i<vmNodes.length; i++)
         {
             switch(anchorName)
             {
-                case db:  // dashboard data
+                case db:  // vm dashboard data
                     vmData[i] = f_parseVMDashboarData(vmNodes[i]);
                     if(i == vmNodes.length-1)
                         f_populateVMDashboardPanel(thisObj, vmData);
                     break;
-                case dp:  // deploy software
-                    vmData[i] = f_parseVMDeployData(vmNodes[i]);
+                case dp:  // update vm software
+                    var d = f_parseVMDeployData(vmNodes[i]);
+
+                    //////////////////////////////////////////
+                    // want only update is available
+                    if(d != null)
+                        vmData[deployDataIndex++] = d;
+
                     if(i == vmNodes.length-1)
                     {
                         var logPanel = f_populateVMDeploySoftwarePanel(thisObj, vmData);
                         f_getVMDeployLogFromServer(thisObj, logPanel);
                     }
                     break;
-                case restart:
+                case restart: // vm restart
                     vmData[i] = f_parseVMRestartData(vmNodes[i]);
                     if(i == vmNodes.length-1)
                         f_populateVMRestartPanel(thisObj, vmData);
@@ -771,6 +787,7 @@ function f_getVMDataFromServer(opObject, anchorName)
                     ////////////////////////////////////////
                     // skip the open appliance
                     if(i == 0) continue;
+
                     vmData[i-1] = f_parseConfigBackupData(vmNodes[i]);
                     if(i == vmNodes.length-1)
                         f_populateConfigBackupPanel(thisObj, vmData);
@@ -1236,19 +1253,28 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
 {
     var thisObject = opObject;
     var fm = Ext.form;
+    g_opPanelObject.vmData = vmData;
 
     var CheckColumnOnMousePress = function()
     {
-        f_handleEnableDisableButtons(bPanel.buttons, store);
+        //f_handleEnableDisableButtons(bPanel.buttons, store);
+        bPanel.buttons[1].disable();
+        bPanel.buttons[1].disable();
+
+        store.each(function(record)
+        {
+            if(record.get('checker'))
+            {
+                if(record.get(hd[2]) == 'deploy_yes')
+                    bPanel.buttons[1].enable();
+                else
+                    bPanel.buttons[0].enable();
+            }
+        });
     }
 
     var checkColumn = f_createGridCheckColumn(CheckColumnOnMousePress);
     var cb = f_createNameValueStoreComboBox(vmData, 7);
-
-    function formatDate(value)
-    {
-        return value ? value.dateFormat('M d, Y') : '';
-    }
 
     var hd = opObject.f_getVMDeploySoftwareColHeader(false);
     hd = [ hd[0].toLowerCase().replace(' ', ''),
@@ -1280,30 +1306,39 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
             dataIndex: hd[5],
             align:'center',
             type: 'date',
-            dateFormat: 'd/m/y',
+            dateFormat: 'd-m-y',
             renderer: f_renderGridDateField,//Ext.util.Format.dateRenderer('d/m/Y'),
             editor: new fm.DateField(
             {
-                format: 'd/m/y'
-                ,minValue: '01/01/06'
-                ,tooltip: 'click '
-                ,editable: false
+                format: 'd-m-y'
+                ,minValue: '01-01-08'
                 //disabledDays: [0, 6 ],
                 //disabledDaysText: 'Plants are not available on the weekends'
+                ,listeners:
+                {
+                    beforeshow: function()
+                    {
+                        f_handleEnableDisableVMUpdateTextField(this, store, hd[2])
+                    }
+                }
             })
         },
         {header: 'Deployment Schedule', width: 90, menuDisabled: true, sortable: false,
             dataIndex: hd[6],
             align:'center',
             type: 'date',
-            dateFormat: 'm/d/y',
             renderer: f_renderGridTimeField,
             editor: new fm.TimeField(
             {
                 increment: 15
-                ,allowBlank: true
-                ,editable: false
                 ,format: 'H:i'
+                ,listeners:
+                {
+                    beforeshow: function()
+                    {
+                        f_handleEnableDisableVMUpdateTextField(this, store, hd[2])
+                    }
+                }
             })
         },
         {header: 'AvalVersionData',
@@ -1354,20 +1389,23 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
         {
             if(record.get('checker'))
             {
-                var dDate = record.get(hd[5]);
-                var dTime = record.get(hd[6]);
-                var version = record.get(hd[4]);
-                var curDate = new Date();
+                if(record.get(hd[2]) != 'deploy_yes')
+                {
+                    var dDate = record.get(hd[5]);
+                    var dTime = record.get(hd[6]);
+                    var version = record.get(hd[4]);
+                    var curDate = new Date();
 
-                if(dDate < curDate)
-                    dTime = 'now + 1 minute';
-                else
-                    dTime = dTime + ' ' + dDate.format('d.m.Y');
+                    if(dDate < curDate)
+                        dTime = 'now + 1 minute';
+                    else
+                        dTime = dTime + ' ' + dDate.format('d.m.Y');
 
-                deployVMs.push("<command><id>" + sid + "</id>" +
-                    "<statement>vm deploy schedule '"+ record.get('vm') +
-                    "' '" + version + "' '"  + dTime +
-                    "'</statement></command>");
+                    deployVMs.push("<command><id>" + sid + "</id>" +
+                        "<statement>vm deploy schedule '"+ record.get('vm') +
+                        "' '" + version + "' '"  + dTime +
+                        "'</statement></command>");
+                }
             }
         });
 
@@ -1386,7 +1424,7 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
             // if we received all the command callback
             // then refresh the user screen.
             if(numOfSent == 0)
-                f_onClickAnchor('Deploy_VM_Software');
+                f_onClickAnchor('Update_VM_Software');
         }
 
         //////////////////////////////////////////////
@@ -1405,9 +1443,12 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
         {
             if(record.get('checker'))
             {
-                cancelVMs.push("<command><id>" + sid + "</id>" +
-                    "<statement>vm deploy cancel '"+ record.get('vm') +
-                    "'</statement></command>");
+                if(record.get(hd[2]) == 'deploy_yes')
+                {
+                    cancelVMs.push("<command><id>" + sid + "</id>" +
+                        "<statement>vm deploy cancel '"+ record.get('vm') +
+                        "'</statement></command>");
+                }
             }
         });
 
@@ -1426,7 +1467,7 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
             // if we received all the command callback
             // then refresh the user screen.
             if(numOfSent == 0)
-                f_onClickAnchor('Deploy_VM_Software');
+                f_onClickAnchor('Update_VM_Software');
         }
 
         //////////////////////////////////////////////
@@ -1441,16 +1482,14 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
     // create grid panel
     var gPanel = thisObject.f_createEditorGridPanel(thisObject, store, cm, checkColumn,
                       'vm', thisObject.m_dataPanelTitle);
-    var bPanel = f_createButtonsPanel(new Array('Deploy Selected',
-                  'Cancel Selected'),
+    var bPanel = f_createButtonsPanel(new Array('Update VM Software',
+                  'Cancel Update VM Software'),
                   new Array(handleDeploySelectedButtonPress,
                             handleCancelSelectedButtonPress));
     bPanel.buttons[0].disable();
     bPanel.buttons[1].disable();
     gPanel[gPanel.length] = bPanel;
     var grid = gPanel[0];
-    grid.on({"cellclick":{fn: f_onGridCellClick }});
-
     gPanel[gPanel.length] = f_createEmptyPanel();
 
     ///////////////////////////////////////////////
@@ -1493,6 +1532,15 @@ function f_handleEnableDisableButtons(buttons, store)
     });
 }
 
+function f_handleEnableDisableVMUpdateTextField(tf, store, fieldName)
+{
+    tf.rec = store.getAt(g_opPanelObject.m_selGridRow);
+    if(tf.rec.get(fieldName) == 'deploy_yes')
+        tf.disable();
+    else
+        tf.enable();
+}
+
 function f_populateUserPanel(opObject)
 {
     var thisObject = opObject;
@@ -1508,7 +1556,11 @@ function f_populateUserPanel(opObject)
     {
         var buttonPanel = opObj.buttonPanel;
         f_handleEnableDisableButtons(buttonPanel.buttons, opObj.grid.store);
-        buttonPanel.buttons[0].enable();
+
+        if(f_getUserLoginName() == 'admin')
+            buttonPanel.buttons[0].enable();
+        else
+            buttonPanel.buttons[0].disable();
     }
 
     var CheckColumnOnMousePress = function()
@@ -1976,7 +2028,7 @@ function f_renderGridImage(val, metaData, record, rIndex, cIndex, store)
             "\", " + tip + ")'/></span>");
             break;
         default:
-            tip = '"The value is <font color=yellow><b>Unknow</b></font>"';
+            tip = '"The value is <font color=#ffcc00><b>Unknow</b></font>"';
             str = String.format("<span align='center'>" +
             "<img onmouseover='f_onMouseOvertoolTip(this, \"" + title +
             "\", " + tip + ")' "+
@@ -2091,6 +2143,7 @@ function f_createLogPanel(title, logText)
         ,scroll: true
         ,value: logText
         ,border: true
+        ,readOnly: true
         ,bodyStyle: 'padding: 0px 10px 10px 0px'
     });
 
@@ -2191,7 +2244,7 @@ function f_renderGridDateField(val, metadata, record, rowIndex, colIndex)
 {
     var tt = '"Click on this <font color=#FF6600><b>cell</b></font>' +
               ' to select date.<br>'+
-              'To deploy NOW, select past date from calender."';
+              'To update VM NOW, select past date from calender."';
     metadata.attr = 'ext:qtitle="Date: " ext:qtip=' + tt;
 
     if(record.get('status') == 'deploy_yes')
@@ -2199,7 +2252,7 @@ function f_renderGridDateField(val, metadata, record, rowIndex, colIndex)
         tt = '"This field is not allowed to change."';
         metadata.attr = 'ext:qtitle="Date: " ext:qtip=' + tt;
 
-        return f_replaceAll(record.get('deploymentscheduledate'), '.', '-');
+        return f_replaceAll(g_opPanelObject.vmData[rowIndex][colIndex], '.', '-');
     }
 
     var sDate = f_compareDateTime(val, "11:59 PM");
@@ -2207,16 +2260,14 @@ function f_renderGridDateField(val, metadata, record, rowIndex, colIndex)
     if(sDate == 'now')
         return 'now';
     else
-        return Ext.util.Format.date(sDate, 'd/m/y');
+        return Ext.util.Format.date(sDate, 'd-m-y');
 }
 
 function f_renderGridTimeField(val, metadata, record, rowIndex, colIndex)
 {
-    //var sDate = f_compareDateTime(record.get('deploymentscheduledate'), val);
-
     var tt = '"Click on this <font color=#FF6600><b>cell</b></font>' +
               ' to select time.<br>'+
-              'To deploy NOW, select past date from calender."';
+              'To Update VM NOW, select past date from calender."';
 
     metadata.attr = 'ext:qtitle="Date" ext:qtip=' + tt;
 
@@ -2230,9 +2281,7 @@ function f_compareDateTime(vDate, vTime)
     var givenTime = vTime;
 
     if(givenDate == undefined || givenDate.length < 5 || givenDate == 'now')
-    {
         givenDate = new Date(curDate.getTime() - (24*60*60*1000));
-    }
 
     /////////////////////////////////////////////////////
     if(givenTime == undefined || givenTime.length < 1 || givenTime == 'now')
@@ -2450,11 +2499,6 @@ function f_createEmptyPanel()
     bPanel.fixHeight = 38;
 
     return bPanel
-}
-function f_onGridCellClick(grid, rowIndex, columnIndex, e)
-{
-    //var cb = grid.getColumnModel().getCellEditor(columnIndex, rowIndex);
-    //alert(cb.getValue());G362
 }
 
 function f_loadHelp()

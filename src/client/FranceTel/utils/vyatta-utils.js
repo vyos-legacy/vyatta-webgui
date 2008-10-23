@@ -1,6 +1,8 @@
 /* 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
+ *
+ * FT utils
  */
 
 MyLabel = Ext.extend(Ext.form.Label,
@@ -25,8 +27,9 @@ function f_getCookieProvider()
     {
       m_cookieP = new Ext.state.CookieProvider(
       {
-        expires: new Date(new Date().getTime() + (5 * 60 * 60 * 1000))
-        //secure: true
+          domain: document.domain
+          ,expires: new Date(new Date().getTime() + (5 * 60 * 60 * 1000))
+          //,secure: true
       });
 
       Ext.state.Manager.setProvider(m_cookieP);
@@ -354,22 +357,31 @@ function f_getHelpTipsState()
 ////////////////////////////////////////////////////////////////////////////////
 // clock ticking every second
 var m_clock = new Ext.Toolbar.TextItem('new Date()');
-function f_clockTicking()
+function f_clockTicking(sDate)
 {
     //Ext.fly(clock.getEl().parentNode).addClass('x-status-text-panel').createChild({cls:'spacer'});
+
+    var secTime = new Date().getTime();
+    if(sDate != undefined && sDate instanceof Date)
+         secTime = sDate.getTime();
 
     // Kick off the clock timer that updates the clock el every second:
     Ext.TaskMgr.start(
     {
         run: function()
         {
-            Ext.fly(m_clock.getEl()).update(new Date().format('g:i:s A'));
+            secTime += 1000;
+            Ext.fly(m_clock.getEl()).update(new Date(secTime).format('j-n-y g:i:s A'));
         }
         ,interval: 1000
     });
 
+    new Ext.ToolTip(
+    {
+        target: 'footer_clock'
+        ,html: 'This is a <font color="#ff6600">server</font> clock'
+    });
 }
-f_clockTicking();
 
 ////////////////////////////////////////////////////////////////////////////////
 //

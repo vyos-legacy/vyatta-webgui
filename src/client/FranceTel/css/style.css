@@ -551,12 +551,22 @@ a.button_conf img{
 
 
 #footer_center {
-	left: 45%; 
+	left: 40%;
 	text-align:center;
 	margin-top:5px;
 	position:absolute;
 }
-	 
+
+#footer_clock
+{
+	left: 88%;
+        float:right;
+	text-align:right;
+        color:#FF6600;
+        font-weight:bold;
+	margin-top:5px;
+	position:absolute;
+}
 
 /** TF8854 : begin */
 #footer_progress_bar {

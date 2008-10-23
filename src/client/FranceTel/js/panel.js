@@ -101,7 +101,7 @@ v_panelObject = Ext.extend(Ext.util.Observable,
                 if(child != undefined)
                 {
                     if(child.fixHeight == undefined)
-                        child.setSize(w-this.m_leftWidth-43, 180);
+                        child.setSize(w-this.m_leftWidth-43, 200);
                     else
                         child.setSize(w-this.m_leftWidth-43, child.fixHeight);
                 }
@@ -336,7 +336,7 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             ,stripeRows: false
             ,autoExpandColumn: expandColName
             ,border: true
-            ,height: 130
+            ,height: 150
             ,maxHeight: 200
             ,autoWidth: true
             ,bodyBorder: true

@@ -70,7 +70,6 @@ function f_startLogin()
     /////////////////////////////////////////////////
     // create a login object and add it to manager
     var loginObject = new v_loginPanelObject('login');
-    loginObject.m_name = 'login';
     loginObject.f_initLoginPanel(g_ftBaseSystem);
 }
 
@@ -87,7 +86,6 @@ function f_startOpenAppliance()
         this.m_opObject = new v_opPanelObject(bp,
                   g_ftBaseSystem.f_getTabsData(1)[0]);
         this.m_opObject.m_mainPanel = this.m_opObject.f_getMainPanel();
-        var opObject = this.m_opObject;
 
         ////////////////////////////////////////////
         // register the panel resize listener
@@ -98,16 +96,16 @@ function f_startOpenAppliance()
     // let update the layout
     this.m_opObject.m_mainPanel.show();
     bp.add(this.m_opObject.m_mainPanel);
-    //this.m_opObject.f_resizePanels(bp);
     bp.doLayout();
 }
+
 g_vyattaURL = null;
 g_dummy = null;
 function f_startVyattaApplication()
 {
-    window.open(g_vyattaURL);
+    //window.open(g_vyattaURL);
 
-    if(g_dummy != null)
+    if(g_vyattaURL != null)
     {
         if(this.m_vyattaPanel == undefined)
         {
@@ -115,6 +113,7 @@ function f_startVyattaApplication()
             {
                 tag: 'iframe',
                 frameBorder:0,
+                //src: 'http://192.168.94.131/Vyatta/main.html',//g_vyattaURL,
                 src: g_vyattaURL,
                 width: '100%',
                 height: '100%'
@@ -194,9 +193,15 @@ function f_initWelcomePanel()
     var el = document.getElementById('barre_etat');
     el.innerHTML = "<span>&nbsp;&nbsp;Welcome <font color=#FF6600><b>" + f_getUserLoginName() +
                   "</b></font>! You are connected to the Open Appliance administrative service.</span>" +
-                  "<a href='#' onclick='f_userLogout(true, \"" +
+                  "<a id='id_logoff' href='#' onclick='f_userLogout(true, \"" +
                   g_ftBaseSystem.m_homePage +
                   "\")' class='dec' onfocus='this.blur();'>log out</a>";
+
+    new Ext.ToolTip(
+    {
+        target: 'id_logoff'
+        ,html: 'To logoff of Open Appliance Application'
+    })
 }
 
 function f_showApplication(appIndex)
@@ -213,10 +218,7 @@ function f_showApplication(appIndex)
     {
         var rItem = bp.items.remove(bp.items.itemAt(0));
         if(rItem instanceof Object)
-        {
             rItem.hide();
-            //delete rItem;
-        }
     }
 
     switch(g_ftBaseSystem.f_getTabsData(appIndex)[1])
@@ -339,6 +341,8 @@ function f_createFrameFooterPanel()
         ,contentEl: 'id_footer'
     });
 
+    m_clock.render(document.getElementById('footer_clock'));
+
     return footer;
 }
 function f_createFrameBodyPanel()
@@ -436,6 +440,7 @@ function onLanguageChange()
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+//Ext.BLANK_IMAGE_URL = 'images/orange_line.PNG';
 g_ie = 0;
 Ext.onReady(function()
 {
@@ -466,6 +471,7 @@ Ext.onReady(function()
         f_initWelcomePanel();
         f_initTabPanel(1);
         f_startOpenAppliance();
+        f_clockTicking();
     }
 
     ////////////////////////////////////////////

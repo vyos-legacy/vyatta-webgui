@@ -357,9 +357,11 @@ function f_getHelpTipsState()
 ////////////////////////////////////////////////////////////////////////////////
 // clock ticking every second
 var m_clock = new Ext.Toolbar.TextItem('Server Date/Time goes here');
-//m_clock.m_serverTime;
+m_clock.m_serverTime = null;
 function f_clockTicking(sDate)
 {
+    if(m_clock.m_serverTime != null) return;
+
     //Ext.fly(clock.getEl().parentNode).addClass('x-status-text-panel').createChild({cls:'spacer'});
 
     var secTime = new Date().getTime();

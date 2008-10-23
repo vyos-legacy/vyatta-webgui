@@ -2,6 +2,7 @@
 
 use strict;
 use Net::SNMP;
+use POSIX qw(strftime);
 
 my $VM_LIST_FILE = '/opt/vyatta/etc/gui/vmlist';
 
@@ -353,8 +354,10 @@ if ((-r $VM_LIST_FILE) && open($vf, "<", "$VM_LIST_FILE")) {
   }
 }
 
+my $tstamp = strftime "%H:%M:%S %d.%m.%Y", localtime;
 # footer
-$outstr .= <<'EOS';
+$outstr .= <<EOS;
+  <time>$tstamp</time>
 </vyatta>
 EOS
 

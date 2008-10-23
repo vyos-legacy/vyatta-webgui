@@ -103,9 +103,9 @@ g_vyattaURL = null;
 g_dummy = null;
 function f_startVyattaApplication()
 {
-    //window.open(g_vyattaURL);
+    window.open(g_vyattaURL);
 
-    if(g_vyattaURL != null)
+    if(g_dummy != null)
     {
         if(this.m_vyattaPanel == undefined)
         {
@@ -471,7 +471,6 @@ Ext.onReady(function()
         f_initWelcomePanel();
         f_initTabPanel(1);
         f_startOpenAppliance();
-        f_clockTicking();
     }
 
     ////////////////////////////////////////////

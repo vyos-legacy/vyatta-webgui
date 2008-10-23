@@ -730,6 +730,16 @@ function f_getVMDeployLogFromServer(opObject, logPanel)
     f_sendServerCommand(true, xmlstr, serverCommandCb, false);
 }
 
+function f_parseServerTime(dt)
+{
+    var sdt = dt.split(' ');
+    var t = sdt[0].split(':');
+    var d = sdt[1].split('.');
+
+    m_clock.m_serverTime = new Date(d[2], d[1], d[0], t[0], t[1], t[2])
+    f_clockTicking(m_clock.m_serverTime);
+}
+
 function f_getVMDataFromServer(opObject, anchorName)
 {
     var thisObj = opObject;
@@ -747,8 +757,9 @@ function f_getVMDataFromServer(opObject, anchorName)
             return;
         }
 
-        var vmNodes = q.select('vm', xmlRoot);
+        f_parseServerTime(q.selectValue('time', xmlRoot));
 
+        var vmNodes = q.select('vm', xmlRoot);
         var vmData = [];
         var db = thisObj.f_getVMAnchorData()[0];
         var dp = thisObj.f_getVMAnchorData()[1];
@@ -1394,7 +1405,7 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
                     var dDate = record.get(hd[5]);
                     var dTime = record.get(hd[6]);
                     var version = record.get(hd[4]);
-                    var curDate = new Date();
+                    var curDate = m_clock.m_serverTime;
 
                     if(dDate < curDate)
                         dTime = 'now + 1 minute';

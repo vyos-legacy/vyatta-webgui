@@ -24,12 +24,12 @@ src_server_webgui_SOURCES += src/server/rl_str_proc.cc
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
 
-www_DATA = src/client/index.html
-www_DATA += src/client/vyatta.js
-
 cgi_PROGRAMS = src/server/webgui
 cgi_SCRIPTS = src/server/webgui-wrap
 sbin_PROGRAMS = src/server/test
+
+cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
+				cpio -0pd
 
 # XXX get Ext here for now
 install-exec-hook:
@@ -47,4 +47,5 @@ install-exec-hook:
 		); \
 		rm -f /tmp/ext-$$v.zip; \
 	done
+	@cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
 

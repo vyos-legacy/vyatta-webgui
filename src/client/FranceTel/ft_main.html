@@ -11,7 +11,7 @@
   <style type="text/css">
     .x-window-body
     {
-        background:transparent none repeat scroll 0 0;
+        background:transparent #ff6600 repeat scroll 0 0 !important;
         color:#ff6600;
     }
     .x-window-header-text
@@ -19,6 +19,8 @@
         cursor:pointer;
         color: #ff6600;
     }
+    
+
 
     .x-panel-header
     {
@@ -38,11 +40,6 @@
         overflow:hidden;
         background: white;
         position: relative; /* added for item scroll positioning */
-    }
-
-    .vProgressPanel_css
-    {
-      border: #000000 1px solid;
     }
 
     .status
@@ -124,10 +121,14 @@
 	margin-top: 30px;
 	margin-bottom: 20px;
     }
-    .tf_wait_message
+    .tf_wait_message .x-progress-bar
     {
         background: #ff6600;
-        color: #ff6600;
+        text-color: #000;
+    }
+    .tf_wait_message_panel .x-panel-body
+    {
+        background: transparent;
     }
 
     /**************************************************************************
@@ -150,26 +151,26 @@
 
     #logon_content td
     {
-            width:50%;
-            line-height:25px;
-            border:0px;
-            padding:10px;
+        width:50%;
+        line-height:25px;
+        border:0px;
+        padding:10px;
     }
 
     #logon_content td.alignRight
     {
-            text-align:right;
+        text-align:right;
     }
 
     #logon_content td.alignLeft
     {
-            text-align:left;
+        text-align:left;
     }
 
     #logon_content input
     {
-            background:#FFF;
-            font-size:11px;
+        background:#FFF;
+        font-size:11px;
     }
 
     #ft_table
@@ -180,6 +181,32 @@
 	border-collapse:collapse;
 	width:100%;
 	margin-left:0px;
+    }
+
+    #id_add_delete_vm
+    {
+        margin-top:5px;
+        float: right;
+        width:100%;
+    }
+    #id_add_delete_vm ul li
+    {
+        display : inline;
+        margin-right: 12px;
+        padding-left:15px;
+        background: url(images/carre.gif) no-repeat 3px;
+        list-style-type: none;
+    }
+
+    #id_add_delete_vm ul li a:hover
+    {
+        color: #ff6600;
+    }
+
+    .off
+    {
+        font-family: arial;
+        font-size: 15px;
     }
   </style>
 
@@ -255,31 +282,25 @@
     <div id="footer">
         <div id="footer_left">
             <ul>
-                <li><a href="#" onclick="loadContact();return false;">contact</a></li>
-                <li><a href="#" onclick="popup();return false;">site map</a></li>
-            </ul>
+                <li><a href="http://orange.com/en_EN/tools/contact/index.html" >contact</a></li>
+                <li><a href="http://orange.com/en_EN/tools/map/index.html">site map</a></li>
+          </ul>
         </div>
 
-	<div id="footer_center">
-          Copyright France Telecom <font color="#ff6600">&copy;</font> 2008
-	</div>
+        <div id="footer_center">
+            Copyright France Telecom <font color="#ff6600">&copy;</font> 2008
+        </div>
 
-<div id="footer_clock">
-</div>
-<!--		<div id="footer_wait">
-				<img src="../../globalPBX/images/pleaseWait.gif" alt="*" />
-		</div>
-		<div id="footer_right">
-		 <script>
-			var versionWebA = getCookie("versionWebA");
-			var versionOS = getCookie("versionOS");
-			document.write(versionWebA+" OS: "+versionOS);
-		</script>
+        <div id="footer_clock">
+        </div>
 
-
-		</div> -->
     </div>
  </div>
+
+<!-- -------------------------------------------------------------------- -->
+<div id="id_add_delete_vm">
+    
+</div>
 
 <form id="id_my_pc_backup" method="POST">
   <a href="images/test.zip"></a>

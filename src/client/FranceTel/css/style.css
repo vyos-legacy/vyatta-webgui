@@ -19,64 +19,70 @@ FR_3.4.3 : add style "button_esp_firewall" to Customized Firewall
 TF8854 : display of web-gui pages too slow
 TF12215 : WEBGUI => Migration tool for WEB upgrade
 */
-*{
-margin:0;
-padding:0;
-
+*
+{
+    margin:0;
+    padding:0;
 }
 
-body { 
-	background-color: #ffffff;
-	font-family:arial;
-	font-size: 11px; 
+body
+{ 
+    background-color: #ffffff;
+    font-family:arial;
+    font-size: 11px;
 }
 
 /**************************************************/
 /*     				 SELECTEURS                   */
 /**************************************************/
-
-
-a{
-	text-decoration:none;
-	color:#000;
+a
+{
+    text-decoration:none;
+    color:#000;
 }
 	
-img{
-	border: 0px;
+img
+{
+    border: 0px;
 }
 
-img.img_marge{
-	margin-top:20px;
-	margin-bottom:30px;
+img.img_marge
+{
+    margin-top:20px;
+    margin-bottom:30px;
 }
 
-img.img_marge_FXS{
-	margin-top:10px;
-	margin-bottom:10px;
+img.img_marge_FXS
+{
+    margin-top:10px;
+    margin-bottom:10px;
 }
 
-h2{
-	font:bold 14px arial;
-	color:#FFF;
-	padding:5px;
-	/*border-bottom:2px solid #CCC;*/
-	width:80%;
-	background-color:#FF6600;
+h2
+{
+    font:bold 14px arial;
+    color:#FFF;
+    padding:5px;
+    width:80%;
+    background-color:#FF6600;
 }
 
-h3{
-	font:bold 12px arial  ;
-	color:#333;
-	width:80%;
-	margin-top:20px;
-	height:20px;
+h3
+{
+    font:bold 12px arial  ;
+    color:#333;
+    width:80%;
+    margin-top:20px;
+    height:20px;
 }
 
-h3.line{
-	border-bottom:1px solid #CCC;
+h3.line
+{
+    border-bottom:1px solid #CCC;
 }
 
-h3.colored{
+h3.colored
+{
 	color:#FF5500;
 	margin-top:40px;
 	margin-bottom:10px;
@@ -91,11 +97,8 @@ h3 span{
 	font: normal 11px arial;
 
 }
-
-
-
-}
-h3 span a.backtop{
+h3 span a.backtop
+{
 	padding-left: 15px;
 	background: transparent url(../images/ico_backtop.gif) no-repeat;
 	background-position: 2px 3px;
@@ -194,39 +197,43 @@ textarea {
 }
 
 
-/**************************************************/
-/*     				 HEADER                       */
-/**************************************************/
-
-#header {
-	margin-left:20px;
-	margin-right:20px;
-	color : #999999;
-	font: 11px arial, sans-serif;
-	width:980px;
+/******************************************************************************/
+/*     				 HEADER                                       */
+/******************************************************************************/
+#header
+{
+    margin-left:20px;
+    margin-right:20px;
+    color : #999999;
+    font: 11px arial, sans-serif;
+    width:980px;
 }
 
-#logo{
-	float:left;
+#logo
+{
+    float:left;
 }
 
 /* barre de langue en haut � droite */
-#toolbar{
-	margin-top:20px;
-	float:right;
-	height:21px;
-	color: #000;
-	vertical-align:top;
+#toolbar
+{
+    margin-top:20px;
+    float:right;
+    height:21px;
+    color: #000;
+    vertical-align:top;
 }
 
-#toolbar span{
-	vertical-align:top;
-	margin: 0px 5px 0px 5px;
-	}
+#toolbar span
+{
+    vertical-align:top;
+    margin: 0px 5px 0px 5px;
+}
 	
 
 
-#toolbar select{
+#toolbar select
+{
 	font-family:arial;
 	color: #444444;
 	font-size:11px;
@@ -311,7 +318,7 @@ textarea {
 }
 
 .nav a {
-	font: 11px arial, sans-serif;
+	font: 13px arial, sans-serif;
 	color: #000;
 }
 
@@ -424,11 +431,10 @@ textarea {
 	padding-top: 6px;
 	padding-bottom: 1px;
 	display: list-item;
-		
-
 }
 
-#leftMenu li a{
+#leftMenu ul li a
+{
 	font: 11px arial, sans-serif;
 	color: #000000;
 	text-decoration: none;
@@ -548,7 +554,10 @@ a.button_conf img{
     background: url(../images/carre.gif) no-repeat 3px;
     list-style-type: none;
 }
-
+#footer_left ul li a:hover
+{
+    color: #ff6600;
+}
 
 #footer_center {
 	left: 40%;
@@ -903,4 +912,127 @@ p.saveConfig{
 p.saveConfig a img{
 	vertical-align:middle;
 	margin-left:5px;
+}
+
+/*////////////////////////////////////////////////////////////////////////////*/
+/* button images */
+.v-border-less .x-panel
+{
+    border: 0 none;
+    border-style: none;
+    background: #fff !important;
+    border-top: none !important;
+}
+.v-border-less .x-panel-body
+{
+    border: 0 none;
+    border-style: none;
+    background: #fff !important;
+    border-top: none !important;
+}
+.v-border-less .x-panel-header
+{
+    border: 0 none;
+    border-style: none;
+    background: #fff !important;
+    border-top: none !important;
+    border-bottom: none !important;
+}
+.v-border-less .x-toolbar
+{
+    border: 0 none !important;
+    border-style: none !important;
+    background: #fff !important;
+    border-bottom: none !important;
+    padding: 0px !important;
+}
+.ft_vm_restart_button
+{
+    background: transparent url(../images/vm_restart.PNG) no-repeat left !important;
+    height: 16px !important;
+    width: 65px !important;
+    cursor:pointer;
+    white-space: nowrap;
+    margin-top:18px;
+}
+.ft_vm_start_button
+{
+    background:  url(../images/vm_start.PNG) no-repeat left !important;
+    height: 16px !important;
+    width: 50px !important;
+    cursor:pointer;
+    white-space: nowrap;
+    margin-bottom:28px;
+}
+.ft_vm_stop_button
+{
+    background:  url(../images/vm_stop.PNG) no-repeat left !important;
+    height: 16px !important;
+    width: 50px !important;
+    cursor:pointer;
+    white-space: nowrap;
+    margin-bottom:28px;
+}
+.ft_start_backup_button
+{
+    background:  url(../images/start_backup.PNG) no-repeat left !important;
+    height: 18px !important;
+    width: 100px !important;
+    cursor:pointer;
+    white-space: nowrap;
+    margin-bottom:38px;
+}
+.ft_restore_oa_button
+{
+    background:  url(../images/restore_from_oa.PNG) no-repeat left !important;
+    height: 18px !important;
+    width: 122px !important;
+    cursor:pointer;
+    white-space: nowrap;
+    margin-bottom:38px;
+}
+.ft_add_user_button
+{
+    background:  url(../images/add_user.PNG) no-repeat left !important;
+    height: 18px !important;
+    width: 84px !important;
+    cursor:pointer;
+    white-space: nowrap;
+    margin-bottom:38px;
+}
+.ft_save_changes_button
+{
+    background:  url(../images/save_change.PNG) no-repeat left !important;
+    height: 18px !important;
+    width: 110px !important;
+    cursor:pointer;
+    white-space: nowrap;
+    margin-bottom:38px;
+}
+.ft_delete_user_button
+{
+    background:  url(../images/delete_user.PNG) no-repeat left !important;
+    height: 18px !important;
+    width: 94px !important;
+    cursor:pointer;
+    white-space: nowrap;
+    margin-bottom:38px;
+}
+.ft_update_vm_software_button
+{
+    background:  url(../images/update_vm_software.PNG) no-repeat left !important;
+    height: 18px !important;
+    width: 141px !important;
+    cursor:pointer;
+    white-space: nowrap;
+    margin-bottom:38px;
+}
+.ft_cancel_update_vm_software_button
+{
+    background:  url(../images/cancel_update_vm_software.PNG) no-repeat left !important;
+    height: 18px !important;
+    width: 180px !important;
+    cursor:pointer;
+    white-space: nowrap;
+    margin-bottom:38px;
 }

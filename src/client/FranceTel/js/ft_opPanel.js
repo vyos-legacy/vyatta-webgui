@@ -214,7 +214,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
         {
             for(var i=0; i<links.length; i++)
             {
-                var anchorId = f_replace(links[i], ' ', '_');
+                var anchorId = f_replaceAll(links[i], ' ', '_');
                 var myId = this.m_tabName + anchorId;
 
                 if(this.m_selLeftAnchorName == links[i])
@@ -445,12 +445,8 @@ v_opPanelObject = Ext.extend(v_panelObject,
         }
     }
     ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
 });
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 function f_sendServerCommand(checkLogin, xmlSend, callback, showWait)
@@ -469,8 +465,8 @@ function f_sendServerCommand(checkLogin, xmlSend, callback, showWait)
                xmlSend + "</vyatta>\n";
 
     if(showWait == undefined || showWait == true)
-        g_sendCommandWait = f_promptWaitMessage('Wait for Server Response ...',
-                                              'Post Request to Server')
+        f_promptWaitMessage('Wait for Server Response ...',
+                                              'Post Request to Server');
 
     /* send request */
     var conn = new Ext.data.Connection({});
@@ -732,12 +728,15 @@ function f_getVMDeployLogFromServer(opObject, logPanel)
 
 function f_parseServerTime(dt)
 {
-    var sdt = dt.split(' ');
-    var t = sdt[0].split(':');
-    var d = sdt[1].split('.');
+    if(m_clock.serverTimer == null && dt != null)
+    {
+        var sdt = dt.split(' ');
+        var t = sdt[0].split(':');
+        var d = sdt[1].split('.');
 
-    m_clock.m_serverTime = new Date(d[2], d[1], d[0], t[0], t[1], t[2])
-    f_clockTicking(m_clock.m_serverTime);
+        m_clock.m_serverTime = new Date(d[2], d[1], d[0], t[0], t[1], t[2])
+        f_clockTicking(m_clock.m_serverTime);
+    }
 }
 
 function f_getVMDataFromServer(opObject, anchorName)
@@ -862,24 +861,14 @@ function f_populateVMDashboardPanel(opObject, vmData)
     store.loadData(vmData);
     store.colHeaders = opObject.f_getVMDashboardColHeader(false);
 
-    var addVM = new Ext.Button(
-    {
-        text: 'Add New VM'
-        ,handler: function(btn, e) { alert('will link to Orange site.'); }
-    });
-
-    var removeVM = new Ext.Button(
-    {
-        text: 'Remove VM'
-        ,handler: function(btn, e) { alert('will link to Orange site.'); }
-    });
-    var buttons = [ addVM, removeVM ];
+    var aPanel = f_createDashboardAnchorPanel()
 
     ///////////////////////////////////////////////////////
     // add grid into working panel
-    var grid = opObject.f_createGridPanel(store, cm, undefined, 'vm', buttons,
+    var grid = opObject.f_createGridPanel(store, cm, undefined, 'vm', undefined,
                 g_opPanelObject.m_dataPanelTitle);
-    var panels = [grid];
+
+    var panels = [grid, f_createEmptyPanel(), aPanel];
     opObject.f_updateDataPanel(panels);
 
     //////////////////////////////////////////////
@@ -1097,7 +1086,7 @@ function f_populateConfigBackupPanel(opObject, vmData)
     var gridPanel = opObject.f_createEditorGridPanel(thisObject, store, cm,
                         radioColumn, 'vm',
                         g_opPanelObject.m_dataPanelTitle);
-    var buttons = f_createButtonsPanel(new Array('Start Backup'),
+    var buttons = f_createButtonsPanel(new Array('ft_start_backup_button'),
                       new Array(handleBackupButtonPress));
     buttons.buttons[0].disable();
     gridPanel[gridPanel.length] = buttons;
@@ -1215,7 +1204,7 @@ function f_populateConfigRestorePanel(opObject, vmBackupFiles)
                   new Array(handleOARestoreButtonPressed,
                   handlePCRestoreButtonPressed));
     */
-    var buttons = f_createButtonsPanel(new Array('Start Restore from Open Appliance'),
+    var buttons = f_createButtonsPanel(new Array('ft_restore_oa_button'),
                   new Array(handleOARestoreButtonPressed));
     buttons.buttons[0].disable();
     gridPanel[gridPanel.length] = buttons;
@@ -1493,8 +1482,8 @@ function f_populateVMDeploySoftwarePanel(opObject, vmData)
     // create grid panel
     var gPanel = thisObject.f_createEditorGridPanel(thisObject, store, cm, checkColumn,
                       'vm', thisObject.m_dataPanelTitle);
-    var bPanel = f_createButtonsPanel(new Array('Update VM Software',
-                  'Cancel Update VM Software'),
+    var bPanel = f_createButtonsPanel(new Array('ft_update_vm_software_button',
+                  'ft_cancel_update_vm_software_button'),
                   new Array(handleDeploySelectedButtonPress,
                             handleCancelSelectedButtonPress));
     bPanel.buttons[0].disable();
@@ -2145,8 +2134,6 @@ function f_createDataPanelNoteMessage()
 
 function f_createLogPanel(title, logText)
 {
-    var dataPanel = g_opPanelObject.f_getDataPanel();
-
     var textArea = new Ext.form.TextArea(
     {
         height: 120
@@ -2179,26 +2166,29 @@ function f_createLogPanel(title, logText)
 function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
 {
     var disable = true;
-    var hide = false;
     var status = record.get('status');
     var vm = record.get('vm');
     var xmlStatement = '';
+    var iconCls = '';
 
     switch(val)
     {
         case 'Restart':
             if(status == V_STATUS_UP) disable = false;
             xmlStatement = "restart '" + vm + "'";
+            iconCls = 'ft_vm_restart_button';
             break;
         case 'Stop':
             if(status == V_STATUS_UP) disable = false;
             xmlStatement = "stop '" + vm + "'";
             hide = rIndex == 0 ? true : false;
+            iconCls = 'ft_vm_stop_button';
             break;
         case 'Start':
             if(status == V_STATUS_DOWN) disable = false;
             xmlStatement = "start '" + vm + "'";
             hide = rIndex == 0 ? true : false;
+            iconCls = 'ft_vm_start_button';
             break;
     }
 
@@ -2218,14 +2208,12 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
         f_hideSendWaitMessage();
     }
 
-    var button = new Ext.Button(
+    var actionButton = new Ext.Action(
     {
-        text: val
+        text: "<b>" + val + "</b>"
         ,disabled: disable
-        ,hidden: hide
-        ,width: 100
-        ,
-        handler: function(btn, e)
+        //,iconCls: iconCls
+        ,handler: function()
         {
             var xmlstr = "<command><id>" + f_getUserLoginedID() +
             "</id><statement>vm " + xmlStatement + "</statement></command>";
@@ -2234,7 +2222,13 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
         }
     });
 
-    button.render(document.body, contentId);
+    var panel = new Ext.Panel(
+    {
+        cls: 'v-border-less'
+        ,tbar: [ actionButton ]
+    });
+
+    panel.render(document.body, contentId);
 }
 
 function f_renderGridButton(val, p, record, rowIndex, colIndex)
@@ -2244,8 +2238,8 @@ function f_renderGridButton(val, p, record, rowIndex, colIndex)
         var contentId = Ext.id();
 
         f_createGridVMRestartButton.defer(1, this, [val, contentId, record, rowIndex, colIndex]);
-        return String.format("<p align='center'>" +
-            "<span id='" + contentId + "'></span></p>");
+        return String.format("<div align='center'>" +
+            "<span id='" + contentId + "'></span></div>");
     }
 
     return "";
@@ -2321,12 +2315,6 @@ function f_compareDateTime(vDate, vTime)
 
 function f_renderGridComboBox(val, metaData, record, rowIndex, colIndex)
 {
-    switch(colIndex)
-    {
-        case 1:
-
-    }
-
     metaData.attr =
         'ext:qtip="Click on this <font color=#FF6600><b>cell</b></font> to select new value"' +
         'ext:qtitle=' + val;
@@ -2408,12 +2396,6 @@ function f_createUserTextField(disableRowZero, textType, fieldName, store)
         {
             switch(textType)
             {
-                case 'password':
-                    if(!f_isPasswordValid(this.getValue()))
-                    {
-
-                    }
-                    break;
                 case 'userText':
                     if(!f_isUserTextValid(this.getValue()))
                     {
@@ -2429,6 +2411,26 @@ function f_createUserTextField(disableRowZero, textType, fieldName, store)
     return tf;
 }
 
+function f_createDashboardAnchorPanel()
+{
+    var el = document.createElement("div");
+    el.id = 'id_add_delete_vm';
+    el.innerHTML = '<ul>'+
+                    '<li><a href="#">Add New VM</a></li>' +
+                    '<li><a href="#">Remove VM</a></li>' +
+                    '</ul>';
+
+    var aPanel = new Ext.Panel(
+    {
+        border: false
+        ,bodyBorder: false
+        ,autoScroll: false
+        ,contentEl: el
+    });
+    aPanel.fixHeight = 38;
+
+    return aPanel
+}
 function f_createButtonsPanel(buttonTexts, callbacks)
 {
     var dButtons= [];
@@ -2436,7 +2438,8 @@ function f_createButtonsPanel(buttonTexts, callbacks)
     {
         dButtons[i] = new Ext.Button(
         {
-            text: buttonTexts[i]
+            text: ''
+            ,iconCls: buttonTexts[i]
             ,handler: callbacks[i]
         });
     }
@@ -2459,14 +2462,16 @@ function f_createUserButtonsPanel(opObject)
 
     var saveChanged = new Ext.Button(
     {
-        text: 'Save Changes'
+        text: ''
+        ,iconCls: 'ft_save_changes_button'
         ,disabled: true
         ,handler: thisObject.saveCallback
     });
 
     var deleteSelected = new Ext.Button(
     {
-        text: 'Delete Selected'
+        text: ''
+        ,iconCls: 'ft_delete_user_button'
         ,disabled: true
         ,handler: function(btn, e)
         {
@@ -2479,7 +2484,8 @@ function f_createUserButtonsPanel(opObject)
     var disabled = f_getUserLoginName() == 'admin' ? false : true;
     var addUser = new Ext.Button(
     {
-        text: 'Add User'
+        text: ''
+        ,iconCls: 'ft_add_user_button'
         ,disabled: disabled
         ,handler: thisObject.addCallback
     });

@@ -346,8 +346,8 @@ v_panelObject = Ext.extend(Ext.util.Observable,
             ,enableColumnHide: true
             ,enableHideMenu: false
             ,defaults: { autoScroll: true }
-            ,buttons: buttons
-            ,buttonAlign: 'right'
+            //,buttons: buttons
+            //,buttonAlign: 'right'
         });
         grid.isGrid = true;
 

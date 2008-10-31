@@ -200,23 +200,6 @@ var f_clearEditor = function(editor)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Help session related....
-function f_createHelpTipsButton(callback)
-{
-    var help = f_getHelpTipsState();
-
-    var helpButton = new Ext.Button(
-    {
-      handler: callback
-    });
-
-    if(help == V_HELP_ON)
-        helpButton.setText('Show Tips');
-      else
-        helpButton.setText('Hide Tips');
-
-    return helpButton;
-}
-
 function f_isUserTextValid(val)
 {
     for(var i=0; i<val.length; i++)
@@ -325,47 +308,14 @@ function f_createLoginPasswordField(pw)
     return passField;
 }
 
-
-function f_toggleHelpTips(helpButton)
-{
-    var cookiesP = f_getCookieProvider();
-
-    var help = f_getHelpTipsState();
-    if(help == V_HELP_ON)
-        cookiesP.set(V_COOKIES_HELP_TIP_STATE, V_HELP_OFF);
-    else
-        cookiesP.set(V_COOKIES_HELP_TIP_STATE, V_HELP_ON);
-
-    if(helpButton != undefined)
-    {
-        if(help == V_HELP_ON)
-          helpButton.setText('Hide Tips');
-        else
-          helpButton.setText('Show Tips');
-    }
-}
-
-function f_getHelpTipsState()
-{
-    var cookiesP = f_getCookieProvider();
-    var help = cookiesP.get(V_COOKIES_HELP_TIP_STATE, V_NOT_FOUND);
-
-    return (help == V_NOT_FOUND) ? V_HELP_ON : help;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 // clock ticking every second
 var m_clock = new Ext.Toolbar.TextItem('Server Date/Time goes here');
 m_clock.m_serverTime = null;
-m_clock.m_timeSet=null;
 function f_clockTicking(sDate)
 {
-    if(m_clock.m_timeSet != null) return;
-
-    m_clock.m_timeSet = true;
     //Ext.fly(clock.getEl().parentNode).addClass('x-status-text-panel').createChild({cls:'spacer'});
-
     var secTime = new Date().getTime();
     if(sDate != undefined && sDate instanceof Date)
          secTime = sDate.getTime();
@@ -376,7 +326,8 @@ function f_clockTicking(sDate)
         run: function()
         {
             secTime += 1000;
-            Ext.fly(m_clock.getEl()).update(new Date(secTime).format('j-n-y g:i:s A'));
+            Ext.fly(m_clock.getEl()).update(new
+                            Date(secTime).format('j-n-y g:i:s A'));
         }
         ,interval: 1000
     });
@@ -387,20 +338,6 @@ function f_clockTicking(sDate)
         ,html: 'This is a <font color="#ff6600">server</font> clock'
     });
 }
-
-////////////////////////////////////////////////////////////////////////////////
-//
-function f_onResize(parentPanel, childPanel, adjW, adjH)
-{
-    if(parentPanel != undefined && childPanel != undefined)
-    {
-        childPanel.setHeight(parentPanel.getInnerHeight()+adjH);
-        childPanel.setWidth(parentPanel.getInnerWidth()+adjW);
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -446,14 +383,74 @@ function f_promptErrorMessage(title, msgText)
 
 function f_promptWaitMessage(msgText, title)
 {
+    /*
     var cls = 'tf_wait_message';
 
     return Ext.MessageBox.wait(msgText, title,
     {
-        text: 'processing...'
+        text: 'Loading...'
         ,frame: false
         ,cls: cls
     });
+    */
+
+    var panel = new Ext.Panel(
+    {
+        html: "<font size=2><b>" + msgText + "...</b></font>"
+        ,border: false
+        ,height: 30
+        ,bodyStyle: 'padding: 5px'
+        ,cls : 'tf_wait_message_panel'
+    });
+
+    var myLoadBar = new Ext.ProgressBar(
+    {
+	text	: "Loading ...",
+        cls     : 'tf_wait_message'
+    });
+
+    g_sendCommandWait = new Ext.Window(
+    {
+        closable	: false,
+        collapsible	: false,
+        draggable	: false,
+        resizable	: false,
+        autoDestroy	: true,
+        frame           : false,
+        border          : true,
+        bodyBorder      : true,
+        renderTo	: document.body,
+        //layout		: "fit",
+        width		: 250,
+        height		: 68,
+        plain		: true,
+        modal		: true,
+        bodyStyle       : 'padding: 10px',
+        items		: [ panel, myLoadBar ],
+        cls             : 'tf_wait_message',
+        listeners	:
+        {
+            "hide"	: function ()
+            {
+                if(myLoadBar.rendered && myLoadBar.isWaiting()) myLoadBar.reset();
+            },
+            "show"	: function ()
+            {
+                if(myLoadBar.rendered && !myLoadBar.isWaiting())
+                {
+                    myLoadBar.wait(
+                    {
+                            interval	: 50,
+                            duration	: 59000,
+                            increment	: 100
+                    });
+                }
+            }
+        }
+    });
+
+    //Ext.get(document.body).mask();
+    g_sendCommandWait.show();
 }
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -546,14 +543,6 @@ function f_findPercentage(total, free)
     return 100 - Math.round((free/total) * 100);
 }
 
-function f_replace(str, expOld, expNew)
-{
-    while(str.search(expOld) > -1)
-        str = str.replace(expOld, expNew);
-
-    return str;
-}
-
 function f_commitSingleStoreField(store, record, dataIndex, iindex)
 {
     if(store.colHeaders != undefined)
@@ -600,21 +589,6 @@ function f_replaceAll(string, oldExp, newExp)
         str = str.replace(oldExp, newExp);
 
     return str;
-}
-function f_get24HrFormat(dTime /* "hh:mm AM/PM" */)
-{
-    dTime = dTime.split(' ');
-
-    if(dTime[1] == "PM")
-    {
-        var time = dTime[0].split(':');
-        dTime = Number(time[0]) + 12;
-        dTime = dTime + ":" + time[1];
-    }
-    else  // AM ... do nothing
-        dTime = dTime[0];
-
-    return dTime;
 }
 
 g_sendCommandWait = null;

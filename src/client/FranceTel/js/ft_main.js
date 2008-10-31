@@ -335,7 +335,6 @@ function f_createFrameFooterPanel()
 {
     var footer = new Ext.Panel(
     {
-        //height: 28
         border: false
         ,bodyBorder: false
         ,contentEl: 'id_footer'

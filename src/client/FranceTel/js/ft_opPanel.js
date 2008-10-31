@@ -501,6 +501,8 @@ function f_parseVMDashboarData(vm)
         g_3rdPartyURL = q.selectValue('guiUrl', vm);
     else if(vmName == 'router')
         g_vyattaURL = q.selectValue('guiUrl', vm);
+    else if(vmName == 'pbx')
+        g_pbxURL = q.selectValue('guiUrl', vm);
 
     ///////////////////////////////////////
     // get current and available versions
@@ -2204,8 +2206,8 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
             return;
         }
 
-        f_onClickAnchor(g_opPanelObject.f_getVMAnchorData()[2])
         f_hideSendWaitMessage();
+        f_onClickAnchor(g_opPanelObject.f_getVMAnchorData()[2])
     }
 
     var actionButton = new Ext.Action(

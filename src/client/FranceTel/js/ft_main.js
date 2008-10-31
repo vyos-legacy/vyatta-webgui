@@ -150,6 +150,9 @@ function f_onBodyPanelResize(bodyPanel)
 
     if(this.m_3rdPartyPanel != undefined)
         this.m_3rdPartyPanel.setSize(w-2, h-2);
+
+    if(this.m_pbxPanel != undefined)
+        this.m_pbxPanel.setSize(w-2, h-2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -180,6 +183,43 @@ function f_start3rdPartyApplication()
 
         var bp = g_ftBaseSystem.m_bodyPanel;
         bp.add(this.m_3rdPartyPanel);
+        bp.doLayout();
+    }
+    else
+        f_startEmptyApplication();
+
+    f_onBodyPanelResize(bp);
+}
+
+g_pbxURL = null;
+function f_startPBXApplication()
+{
+    window.open(g_pbxURL);
+    return;
+
+    if(g_pbxURL != null)
+    {
+        if(this.m_pbxPanel == undefined)
+        {
+            var iframe = Ext.DomHelper.append(document.body,
+            {
+                tag: 'iframe',
+                frameBorder:0,
+                src:g_pbxURL,
+                width: '100%',
+                height: '100%'
+            });
+
+            this.m_pbxPanel = new Ext.Panel(
+            {
+                contentEl: iframe
+                ,border: false
+            });
+        }
+        this.m_pbxPanel.show();
+
+        var bp = g_ftBaseSystem.m_bodyPanel;
+        bp.add(this.m_pbxPanel);
         bp.doLayout();
     }
     else
@@ -231,6 +271,9 @@ function f_showApplication(appIndex)
         break;
         case 'tabnav_oa_':
             f_startOpenAppliance();
+        break;
+        case 'tabnav_pbx_':
+            f_startPBXApplication();
         break;
         default:
             f_startEmptyApplication();

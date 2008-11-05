@@ -770,7 +770,6 @@ function f_getVMDataFromServer(opObject, anchorName, showWaitMsg)
 {
     var thisObj = opObject;
     var swm = showWaitMsg == undefined ? true : showWaitMsg;
-    //f_stopBackgroundTask();
 
     var serverCommandCb = function(options, success, response)
     {
@@ -1917,10 +1916,11 @@ function f_getMonitoringSoftwareDataFromServer(opObject)
     f_populateMonitoringSoftwarePanel(thisObject);
 }
 
-function f_getMonitoringHardwareDataFromServer(opObject)
+function f_getMonitoringHardwareDataFromServer(opObject, showWaitMsg)
 {
     var dbData = new Array();
     var thisObject = opObject;
+    var swm = showWaitMsg == undefined ? true : showWaitMsg;
 
     var serverCommandCb = function(options, success, response)
     {
@@ -1930,8 +1930,11 @@ function f_getMonitoringHardwareDataFromServer(opObject)
         var isSuccess = f_parseResponseError(xmlRoot);
         if(!isSuccess[0])
         {
-            f_hideSendWaitMessage();
-            f_promptErrorMessage('Load Monitoring Hardware', isSuccess[1]);
+            if(!swm)
+            {
+                f_hideSendWaitMessage();
+                f_promptErrorMessage('Load Monitoring Hardware', isSuccess[1]);
+            }
             return;
         }
 
@@ -1949,7 +1952,7 @@ function f_getMonitoringHardwareDataFromServer(opObject)
     var xmlstr = "<vmstatus><id>" + sid + "</id>\n"
     + "</vmstatus>";
 
-    f_sendServerCommand(true, xmlstr, serverCommandCb);
+    f_sendServerCommand(true, xmlstr, serverCommandCb, swm);
 }
 
 function f_populateMonitoringNetworkPanel(opObject)
@@ -2734,9 +2737,11 @@ function f_startBackgroundTask(object)
                 case 'VM_Dashboard':   // vm dashboard
                 case 'VM':    // vm dashboard
                 case 'Restart':
+                    f_getVMDataFromServer(mObj, mObj.m_curScreen, false);
+                    break;
                 case 'Monitoring': // hardward monitor
                 case 'Hardware': // hardward monitor
-                    f_getVMDataFromServer(mObj, mObj.m_curScreen, false);
+                    f_getMonitoringHardwareDataFromServer(mObj, false);
                     break;
             }
         },

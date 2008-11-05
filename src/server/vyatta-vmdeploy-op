@@ -30,14 +30,12 @@ fi
 exit_fail ()
 {
   lecho $*
-  lecho Deployment operation failed
   sudo rm -rf $IMG_HOME/.deploy-op
   exit 1
 }
 
 exit_succeed ()
 {
-  lecho Deployment operation succeeded
   sudo rm -rf $IMG_HOME/.deploy-op
   exit 0
 }
@@ -60,7 +58,7 @@ if [ "$OP" == "schedule" ]; then
   fi
   CMD="/opt/vyatta/sbin/vyatta-vmdeploy \"$VM_NAME\" \"$VM_VERSION\""
   AT_OUT=$(echo "$CMD" | sudo at "$TIME" 2>&1 | grep -v warning)
-  re='^job ([0-9]+) at ([^ ]+ [^ ]+ [0-9]+ [^ ]+ [0-9]+)$'
+  re='^job +([0-9]+) +at +([^ ]+ +[^ ]+ +[0-9]+ +[^ ]+ +[0-9]+)$'
   if ! [[ $AT_OUT =~ $re ]]; then
     exit_fail "Failed to schedule \"$VM_NAME $VM_VERSION\" deployment"
   fi

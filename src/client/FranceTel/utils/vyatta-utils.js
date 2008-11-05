@@ -538,9 +538,12 @@ function f_parseResponseError(xmlRoot, wantMsg)
 
 function f_findPercentage(total, free)
 {
+    if(total == 0 && free == 0) return 0;
     if(free <= 0) return 100;
 
-    return 100 - Math.round((free/total) * 100);
+    var p = 100 - Math.round((free/total) * 100);
+
+    return p < 0 ? 0 : p;
 }
 
 function f_commitSingleStoreField(store, record, dataIndex, iindex)

@@ -5,6 +5,8 @@
 
 DATA_FTBaseSystem = Ext.extend(Ext.util.Observable,
 {
+    m_tabURLs : new Array(5),
+
     f_initDataType: function()
     {
         ///////////////////////////////////////////////////////

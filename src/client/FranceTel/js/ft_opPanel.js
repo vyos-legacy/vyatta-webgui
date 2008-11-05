@@ -222,7 +222,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
         {
             divAffect = "id='leftPopupMenu' class='ft_popup_menu' ";
         }
-        var links = anchorLinkData == undefined ? this.f_getVMAnchorData('anchor') :
+        var links = anchorLinkData == undefined ? this.f_getVMAnchorData('display') :
                                       anchorLinkData;
 
         var selIndex = 0;
@@ -233,7 +233,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
         {
             for(var i=0; i<links.length; i++)
             {
-                var anchorId = links[i]//f_replaceAll(links[i], ' ', '_');
+                var anchorId = f_replaceAll(links[i], ' ', '_');
                 var myId = this.m_tabName + anchorId;
 
                 if(this.m_selLeftAnchorName == links[i])

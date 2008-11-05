@@ -54,13 +54,16 @@ v_opPanelObject = Ext.extend(v_panelObject,
         return [ 'Configuration Backup', 'Configuration Restore' ];
     },
 
-    f_getVMDashboardColHeader: function(htmlBase)
+    f_getVMDashboardColHeader: function(type)
     {
-        if(htmlBase == undefined || !htmlBase)
-            return ['VM', 'Status', 'CPU', 'RAM', 'Disk Space',
-                    'Current Version', 'Update Version', 'Deployment Schedule'];
-        else
-            return ["<p align='center'><b>VM<br></b></p>",
+        switch(type)
+        {
+            case 'gridHeader':
+                return ['VM', 'Status', 'CPU', 'RAM', 'Disk Space',
+                    'Current Version', 'Update Version', 'Deployment Schedule',
+                    'mt', 'mf', 'dt', 'df'];
+            case 'grdiHeaderHTML':
+                return ["<p align='center'><b>VM<br></b></p>",
                     "<p align='center'><b>Status<br></b></p>",
                     "<p align='center'><b>CPU<br></b></p>",
                     "<p align='center'><b>RAM<br></b></p>",
@@ -68,6 +71,12 @@ v_opPanelObject = Ext.extend(v_panelObject,
                     "<p align='center'><b>Current<br>Version</b></p>",
                     "<p align='center'><b>Update<br>Version</b></p>",
                     "<p align='center'><b>Deployment<br>Schedule</b></p>"];
+            default:
+            case 'dataField':
+                return ['vm', 'status', 'cpu', 'ram', 'diskSpace', 'current',
+                    'available', 'deployment', 'memTotal', 'memFree',
+                    'diskTotal', 'diskFree'];
+        }
     },
     f_getVMDeploySoftwareColHeader: function(htmlBase)
     {
@@ -846,61 +855,52 @@ function f_getVMDataFromServer(opObject, anchorName, showWaitMsg)
 
 function f_populateVMDashboardPanel(opObject, vmData)
 {
+    var vmHeader = opObject.f_getVMDashboardColHeader('dataField');
+
     if(opObject.m_dashboardStore == undefined)
     {
         opObject.m_dashboardStore = new Ext.data.SimpleStore(
         {
-            fields: [
-                { name: 'vm' },
-                { name: 'status' },
-                { name: 'cpu' },
-                { name: 'ram' },
-                { name: 'diskSpace' },
-                { name: 'current' },
-                { name: 'available' },
-                { name: 'deployment'},
-                { name: 'memTotal' },
-                { name: 'memFree' },
-                { name: 'diskTotal' },
-                { name: 'diskFree'}]
+            fields: vmHeader
         });
     }
     else
     {
-        var vmHeader = ['vm', 'status', 'cpu', 'ram', 'diskSpace', 'current',
-                    'available', 'deployment', 'memTotal', 'memFree',
-                    'diskTotal', 'diskFree'];
         f_updateVMDataStore(opObject.m_dashboardStore, vmHeader, vmData);
         return;
     }
 
+    var hd = opObject.f_getVMDashboardColHeader('gridHeader');
     var cm = new Ext.grid.ColumnModel(
     [
-        {header: 'VM', width: 120, sortable: true, dataIndex: 'vm',
+        {header: hd[0], width: 120, sortable: true, dataIndex: 'vm',
                 style: 'padding:10px 0px 0px 5px', renderer: f_renderGridText},
-        {header: 'Status', width: 50, sortable: false, renderer: f_renderGridImage,
+        {header: hd[1], width: 50, sortable: false, renderer: f_renderGridImage,
                 dataIndex: 'status', fixed: false, align: 'center'},
-        {header: 'CPU', width: 100, sortable: false, renderer: f_renderProgressBarChange,
+        {header: hd[2], width: 100, sortable: false,
+                renderer: f_renderDashboardProgressBarChange,
                 dataIndex: 'cpu', align: 'center'},
-        {header: 'RAM', width: 100, sortable: false, renderer: f_renderProgressBarChange,
+        {header: hd[3], width: 100, sortable: false,
+                renderer: f_renderDashboardProgressBarChange,
                 dataIndex: 'ram', align: 'center'},
-        {header: 'Disk Space', width: 100, sortable: false, renderer: f_renderProgressBarChange,
+        {header: hd[4], width: 100, sortable: false,
+                renderer: f_renderDashboardProgressBarChange,
                 dataIndex: 'diskSpace', align: 'center'},
-        {header: 'Current Version', width: 60, sortable: false,
+        {header: hd[5], width: 60, sortable: false,
                 dataIndex: 'current', fixed: false, align: 'center'},
-        {header: 'Available Version', width: 60, sortable: false,
+        {header: hd[6], width: 60, sortable: false,
                 dataIndex: 'available', fixed: false, align: 'center',
                 renderer: f_renderGridImage},
-        {header: 'Deployment Scheduled', width: 76, sortable: false, align: 'center',
+        {header: hd[7], width: 76, sortable: false, align: 'center',
                 dataIndex: 'deployment', fixed: false, renderer: f_renderGridImage},
-        {header: 'memTotal', hidden:true, dataIndex:'memTotal'},
-        {header: 'memFree', hidden:true, dataIndex:'memFree'},
-        {header: 'diskTotal', hidden:true, dataIndex:'diskTotal'},
-        {header: 'diskFree', hidden:true, dataIndex:'diskFree'}
+        {header: hd[8], hidden:true, dataIndex:'memTotal'},
+        {header: hd[9], hidden:true, dataIndex:'memFree'},
+        {header: hd[10], hidden:true, dataIndex:'diskTotal'},
+        {header: hd[11], hidden:true, dataIndex:'diskFree'}
     ]);
 
     opObject.m_dashboardStore.loadData(vmData);
-    opObject.m_dashboardStore.colHeaders = opObject.f_getVMDashboardColHeader(false);
+    opObject.m_dashboardStore.colHeaders = hd;
 
     var aPanel = f_createDashboardAnchorPanel()
 
@@ -915,7 +915,7 @@ function f_populateVMDashboardPanel(opObject, vmData)
 
     //////////////////////////////////////////////
     // enhance header
-    var header = opObject.f_getVMDashboardColHeader(true);
+    var header = opObject.f_getVMDashboardColHeader('gridHeaderHTML');
     for(var i=0; i<header.length; i++)
         grid.getView().getHeaderCell(i).innerHTML = header[i];
 }
@@ -1945,7 +1945,6 @@ function f_getMonitoringHardwareDataFromServer(opObject, showWaitMsg)
         f_populateMonitoringHardwarePanel(thisObject);
 
         f_hideSendWaitMessage();
-        //f_startBackgroundTask(g_opPanelObject);
     }
 
     var sid = f_getUserLoginedID();
@@ -2111,9 +2110,10 @@ function f_renderGridImage(val, metaData, record, rIndex, cIndex, store)
     return str;
 }
 
-function f_renderProgressBarChange(val, metaData, record, rowIndex, colIndex, store)
+function f_renderDashboardProgressBarChange(val, metaData, record,
+                                            rowIndex, colIndex, store)
 {
-    var contentId = Ext.id();
+    var contentId = 'id-' + record.get('vm'); //Ext.id();
 
     //alert(Ext.urlEncode(record));
     var tTitle = f_getGridHeaderName(store, colIndex);
@@ -2124,26 +2124,34 @@ function f_renderProgressBarChange(val, metaData, record, rowIndex, colIndex, st
         case 2:
             tTitle = "CPU&nbsp;Used:";
             tTip = 'CPU&nbsp;Used=&nbsp;' + record.get('cpu');
+            contentId += '-cpu';
             break;
         case 3:
             tTitle = "RAM&nbsp;Used:";
             tTip = 'Total=&nbsp;' + record.get('memTotal') +
                     ',&nbsp;Free=&nbsp;' + record.get('memFree');
+            contentId += '-ram';
             break;
         case 4:
             tTitle = "Disk&nbsp;Space&nbsp;Used:";
             tTip = 'Total=&nbsp;' + record.get('diskTotal') +
                     ',&nbsp;Free=&nbsp;' + record.get('diskFree');
+            contentId += '-diskspace';
             break;
     }
     metaData.attr = 'ext:qtitle=' + tTitle + ' ext:qtip=' + tTip;
 
-    f_createGridProgressBar.defer(1, this, [val, contentId, metaData,
+    if(document.getElementById(contentId) == undefined)
+    {
+        f_createGridProgressBar.defer(1, this, [val, contentId, metaData,
             record, rowIndex, colIndex, store, tTitle, tTip]);
 
-    return String.format("<span align='center' id='" + contentId +
+        return String.format("<span align='center' id='" + contentId +
             "' onmouseover='f_onMouseOvertoolTip(this, \"" + tTitle +
             "\", " + tTip + ")'></span>");
+    }
+    else
+        return document.getElementById(contentId+'bar').innerHTML;
 }
 function f_createGridProgressBar(val, contentId, metaData, record, rowIndex,
               colIndex, store, tTitle, tTip)
@@ -2152,6 +2160,7 @@ function f_createGridProgressBar(val, contentId, metaData, record, rowIndex,
     var pBar = new Ext.ProgressBar(
     {
         width: 80
+        ,id: contentId+'bar'
         ,text: val + "%"
         ,value: (val/100)
         ,cls: cls
@@ -2265,14 +2274,17 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
 
     var serverCommandCb = function(options, success, response)
     {
-        var xmlRoot = response.responseXML.documentElement;
-
-        var isSuccess = f_parseResponseError(xmlRoot);
-        if(!isSuccess[0])
+        if(response.responseXML != undefined)
         {
-            f_hideSendWaitMessage();
-            f_promptErrorMessage('Load Restart', isSuccess[1]);
-            return;
+            var xmlRoot = response.responseXML.documentElement;
+
+            var isSuccess = f_parseResponseError(xmlRoot);
+            if(!isSuccess[0])
+            {
+                f_hideSendWaitMessage();
+                f_promptErrorMessage('Load Restart', isSuccess[1]);
+                return;
+            }
         }
 
         f_hideSendWaitMessage();

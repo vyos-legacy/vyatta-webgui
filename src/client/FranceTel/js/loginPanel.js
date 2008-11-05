@@ -58,7 +58,9 @@ v_loginPanelObject = Ext.extend(v_panelObject,
                   '<tbody><tr>'+
                   '<td class="alignRight"><label for="username">' +
                   '<script>document.write(eval("user_"+lang))</script>username</label></td>'+
-		  '<td class="alignLeft"><input id="username" name="username" type="text"></td>'+
+		  '<td class="alignLeft">' +
+                  '<input id="username" name="username" type="text" '+
+                  'onkeydown="f_LoginKeyPressHandler(event)"></td>'+
                   //'<script>var el = document.getElementById("username"); el.focus()' +
 		  '</tr>'+
 		  '<tr>'+
@@ -66,7 +68,8 @@ v_loginPanelObject = Ext.extend(v_panelObject,
                   '<script>document.write(eval("password_"+lang))'+
                   '</script>password</label></td>'+
 		  '<td class="alignLeft">'+
-                  '<input id="password" name="password" type="password"></td>'+
+                  '<input id="password" name="password" type="password" '+
+                  'onkeydown="f_LoginKeyPressHandler(event)"></td>'+
 		  '</tr>'+
 		  '</tbody></table></div>';
 
@@ -83,6 +86,15 @@ v_loginPanelObject = Ext.extend(v_panelObject,
 
 });
 
+var f_LoginKeyPressHandler = function(event)
+{
+    //////////////////////////////////////////////////
+    // check for ENTER key to trigger the 'login'
+    // button
+    if(event.keyCode == 13)
+        submi();
+
+}
 
 function submi()
 {

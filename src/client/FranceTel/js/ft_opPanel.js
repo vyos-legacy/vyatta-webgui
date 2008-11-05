@@ -36,10 +36,19 @@ v_opPanelObject = Ext.extend(v_panelObject,
     },
     /////////////////////////////////////////////////////
     // VM Anchor data ....
-    f_getVMAnchorData: function()
+    f_getVMAnchorData: function(type)
     {
-        return [ 'VM Dashboard', 'Update VM Software',
+        switch(type)
+        {
+            case 'display':
+                return [ 'VM Dashboard', 'Update VM Software',
                   'Restart'];
+            default:
+            case 'anchor':
+                return [ 'VM_Dashboard', 'Update_VM_Software',
+                  'Restart'];
+        }
+        
     },
     f_getMonitoringAnchorData: function()
     {
@@ -62,7 +71,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
                 return ['VM', 'Status', 'CPU', 'RAM', 'Disk Space',
                     'Current Version', 'Update Version', 'Deployment Schedule',
                     'mt', 'mf', 'dt', 'df'];
-            case 'grdiHeaderHTML':
+            case 'gridHeaderHTML':
                 return ["<p align='center'><b>VM<br></b></p>",
                     "<p align='center'><b>Status<br></b></p>",
                     "<p align='center'><b>CPU<br></b></p>",
@@ -213,7 +222,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
         {
             divAffect = "id='leftPopupMenu' class='ft_popup_menu' ";
         }
-        var links = anchorLinkData == undefined ? this.f_getVMAnchorData() :
+        var links = anchorLinkData == undefined ? this.f_getVMAnchorData('anchor') :
                                       anchorLinkData;
 
         var selIndex = 0;
@@ -224,7 +233,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
         {
             for(var i=0; i<links.length; i++)
             {
-                var anchorId = f_replaceAll(links[i], ' ', '_');
+                var anchorId = links[i]//f_replaceAll(links[i], ' ', '_');
                 var myId = this.m_tabName + anchorId;
 
                 if(this.m_selLeftAnchorName == links[i])
@@ -328,8 +337,8 @@ v_opPanelObject = Ext.extend(v_panelObject,
 
     f_invokeVMDashboardAnchor: function()
     {
-        this.m_selLeftAnchorName = this.f_getVMAnchorData()[0];
-        f_getVMDataFromServer(this, this.f_getVMAnchorData()[0]);
+        this.m_selLeftAnchorName = this.f_getVMAnchorData('display')[0];
+        f_getVMDataFromServer(this, this.f_getVMAnchorData('anchor')[0]);
         this.f_updateLeftPanel(this.f_getVMLeftPanelData());
     },
 
@@ -395,16 +404,16 @@ v_opPanelObject = Ext.extend(v_panelObject,
                 break;
             case 'Update_VM_Software':
                 g_opPanelObject.m_dataPanelTitle += 'Update VM Software';
-                this.m_selLeftAnchorName = this.f_getVMAnchorData()[1];
+                this.m_selLeftAnchorName = this.f_getVMAnchorData('display')[1];
                 this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[0]
-                f_getVMDataFromServer(this, this.f_getVMAnchorData()[1]);
+                f_getVMDataFromServer(this, this.f_getVMAnchorData('anchor')[1]);
                 this.f_updateLeftPanel(this.f_getVMLeftPanelData());
                 break;
             case 'Restart':
                 g_opPanelObject.m_dataPanelTitle += 'Restart';
-                f_getVMDataFromServer(this, this.f_getVMAnchorData()[2]);
+                f_getVMDataFromServer(this, this.f_getVMAnchorData('display')[2]);
                 this.m_selTopAnchorName = g_opPanelObject.f_getOApplianceAnchorData()[0]
-                this.m_selLeftAnchorName = this.f_getVMAnchorData()[2];
+                this.m_selLeftAnchorName = this.f_getVMAnchorData('anchor')[2];
                 this.f_updateLeftPanel(this.f_getVMLeftPanelData());
                 break;
             case 'Hardware':
@@ -801,18 +810,18 @@ function f_getVMDataFromServer(opObject, anchorName, showWaitMsg)
         var vmNodes = q.select('vm', xmlRoot);
         var vmData = [];
         var deployDataIndex = 0;
+        var anchor = thisObj.f_getVMAnchorData('anchor');
         for(var i=0; i<vmNodes.length; i++)
         {
             switch(anchorName)
             {
-                case thisObj.f_getVMAnchorData()[0]:  // vm dashboard data
-                case 'VM_Dashboard':
+                case anchor[0]:  // vm dashboard data
                 case 'VM':
                     vmData[i] = f_parseVMDashboarData(vmNodes[i]);
                     if(i == vmNodes.length-1)
                         f_populateVMDashboardPanel(thisObj, vmData);
                     break;
-                case thisObj.f_getVMAnchorData()[1]:  // update vm software
+                case anchor[1]:  // update vm software
                     var d = f_parseVMDeployData(vmNodes[i]);
 
                     //////////////////////////////////////////
@@ -826,7 +835,7 @@ function f_getVMDataFromServer(opObject, anchorName, showWaitMsg)
                         f_getVMDeployLogFromServer(thisObj, logPanel);
                     }
                     break;
-                case thisObj.f_getVMAnchorData()[2]: // vm restart
+                case anchor[2]: // vm restart
                     vmData[i] = f_parseVMRestartData(vmNodes[i]);
                     if(i == vmNodes.length-1)
                         f_populateVMRestartPanel(thisObj, vmData);
@@ -2288,7 +2297,7 @@ function f_createGridVMRestartButton(val, contentId, record, rIndex, cIndex)
         }
 
         f_hideSendWaitMessage();
-        f_onClickAnchor(g_opPanelObject.f_getVMAnchorData()[2])
+        f_onClickAnchor(g_opPanelObject.f_getVMAnchorData('anchor')[2])
     }
 
     var actionButton = new Ext.Action(
@@ -2670,7 +2679,7 @@ function f_onMouseOverHorizAnchor(thisId, anchorId)
     {
         case g_opPanelObject.f_getOApplianceAnchorData()[0]:  // vm
             tt = g_opPanelObject.f_getVMLeftPanelHTML(
-                  g_opPanelObject.f_getVMAnchorData(), anchorId);
+                  g_opPanelObject.f_getVMAnchorData('display'), anchorId);
             break;
         case g_opPanelObject.f_getOApplianceAnchorData()[1]:  // user
             tt = g_opPanelObject.f_getVMLeftPanelHTML(
@@ -2730,6 +2739,7 @@ function f_startBackgroundTask(object)
 {
     var mObj = object;
     var byPass = true;
+    var anchor = mObj.f_getVMAnchorData('anchor');
 
     mObj.m_bkTask =
     {
@@ -2746,9 +2756,9 @@ function f_startBackgroundTask(object)
 
             switch(mObj.m_curScreen)
             {
-                case 'VM_Dashboard':   // vm dashboard
+                case anchor[0]:   // vm dashboard
                 case 'VM':    // vm dashboard
-                case 'Restart':
+                case anchor[2]: // Restart
                     f_getVMDataFromServer(mObj, mObj.m_curScreen, false);
                     break;
                 case 'Monitoring': // hardward monitor

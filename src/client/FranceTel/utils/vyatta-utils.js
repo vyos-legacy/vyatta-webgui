@@ -313,49 +313,37 @@ function f_createLoginPasswordField(pw)
 // clock ticking every second
 var m_clock = new Ext.Toolbar.TextItem('Server Date/Time goes here');
 m_clock.m_serverTime = null;
+m_clock.m_isClockRan = false;
+m_clock.m_secTime = null;
 function f_clockTicking(sDate)
 {
     //Ext.fly(clock.getEl().parentNode).addClass('x-status-text-panel').createChild({cls:'spacer'});
-    var secTime = new Date().getTime();
+    m_clock.m_secTime = new Date().getTime();
     if(sDate != undefined && sDate instanceof Date)
-         secTime = sDate.getTime();
+         m_clock.m_secTime = sDate.getTime();
 
-    // Kick off the clock timer that updates the clock el every second:
-    Ext.TaskMgr.start(
+    if(!m_clock.m_isClockRan)
     {
-        run: function()
+        // Kick off the clock timer that updates the clock el every second:
+        Ext.TaskMgr.start(
         {
-            secTime += 1000;
-            Ext.fly(m_clock.getEl()).update(new
-                            Date(secTime).format('j-n-y g:i:s A'));
-        }
-        ,interval: 1000
-    });
+            run: function()
+            {
+                m_clock.m_secTime += 1000;
+                Ext.fly(m_clock.getEl()).update(new
+                                Date(m_clock.m_secTime).format('j-n-y g:i:s A'));
+            }
+            ,interval: 1000
+        });
 
-    new Ext.ToolTip(
-    {
-        target: 'footer_clock'
-        ,html: 'This is a <font color="#ff6600">server</font> clock'
-    });
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//
-function f_createToolTip(targetId, htmlText)
-{
-    var styleStr =
-        "{ width: 100px; text-align:center; padding: 5px 0; border:1px dotted #99bbe8;" +
-        " background:#dfe8f6; color: #15428b; cursor:default; margin:10px; " +
-        "font:bold 11px tahoma,arial,sans-serif; float:left; }";
-
-    var tt = new Ext.ToolTip(
-    {
-        target: targetId
-        ,html: htmlText
-        ,style: styleStr
-    })
-
-    return tt;
+        new Ext.ToolTip(
+        {
+            target: 'footer_clock'
+            ,html: 'This is a <font color="#ff6600">server</font> clock'
+        });
+        
+        m_clock.m_isClockRan = true;
+    }
 }
 
 function f_createEmptyPanel(html)
@@ -432,7 +420,8 @@ function f_promptWaitMessage(msgText, title)
         {
             "hide"	: function ()
             {
-                if(myLoadBar.rendered && myLoadBar.isWaiting()) myLoadBar.reset();
+                if(myLoadBar.rendered && myLoadBar.isWaiting())
+                    myLoadBar.reset();
             },
             "show"	: function ()
             {

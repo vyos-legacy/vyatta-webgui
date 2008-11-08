@@ -48,7 +48,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
                 return [ 'VM_Dashboard', 'Update_VM_Software',
                   'Restart'];
         }
-        
+
     },
     f_getMonitoringAnchorData: function()
     {
@@ -115,13 +115,19 @@ v_opPanelObject = Ext.extend(v_panelObject,
                     "<p align='center'><b><br>&nbsp;</b></p>",
                     "<p align='center'><b><br>&nbsp;</b></p>"];
     },
-    f_getMonitorHWColHeader: function(htmlBase)
+    f_getMonitorHWColHeader: function(type)
     {
-        if(htmlBase == undefined || !htmlBase)
-            return ['Component', 'Status'];
-        else
-            return ["<p align='center'><b>Component<br></b>&nbsp;</p>",
+        switch(type)
+        {
+            case 'display':
+                return ['Component', 'Status'];
+            case 'index':
+                return ['component', 'status'];
+            default:
+            case 'gridHeaderHTML':
+                return ["<p align='center'><b>Component<br></b>&nbsp;</p>",
                     "<p align='center'><b>Status<br>&nbsp;</b></p>"];
+        }
     },
     f_getBackupColHeader: function(htmlBase)
     {
@@ -579,7 +585,7 @@ function f_parseVMDeployData(vm)
         var deploy = q.selectNode('deploy', vm);
         deploy = (deploy != undefined) ? q.selectValue('scheduled', deploy) : V_NOT_FOUND;
         var deployStatus = deploy == V_NOT_FOUND ? 'deploy_no' : 'deploy_yes';
-        deploy = deploy == V_NOT_FOUND ? ["", ""] : deploy.split(' ');
+        deploy = deploy == V_NOT_FOUND ? ["00:00", ""] : deploy.split(' ');
 
         return ['checker', vmName, deployStatus, disVerCur, updateAvail, deploy[1],
                 deploy[0], vAvails];
@@ -589,22 +595,22 @@ function f_parseVMDeployData(vm)
 }
 function f_populateVMRestartPanel(opObject, vmData)
 {
+    ////////////////////////////////////////////////////////
+    // we make sure we populate data to the correct screen
+    if(!f_okToPopulate(opObject, opObject.f_getVMAnchorData('anchor')[2]))
+        return;
+
+    var vmHeader = ['vm', 'status', 'restart', 'stop', 'start'];
+
     if(opObject.m_vmRestartStore == undefined)
     {
         opObject.m_vmRestartStore = new Ext.data.SimpleStore(
         {
-            fields: [
-                { name: 'vm' },
-                { name: 'status' },
-                { name: 'restart' },
-                { name: 'stop' },
-                { name: 'start' }
-            ]
+            fields: vmHeader
         });
     }
     else
     {
-        var vmHeader = ['vm', 'status', 'restart', 'stop', 'start'];
         f_updateVMDataStore(opObject.m_vmRestartStore, vmHeader, vmData);
         return;
     }
@@ -622,16 +628,7 @@ function f_populateVMRestartPanel(opObject, vmData)
         {header: ' ', width: 110, sortable: false, renderer: f_renderGridButton,
                 dataIndex: 'start'}
     ]);
-    opObject.m_vmRestartStore = new Ext.data.SimpleStore(
-    {
-        fields: [
-            { name: 'vm' },
-            { name: 'status' },
-            { name: 'restart' },
-            { name: 'stop' },
-            { name: 'start' }
-        ]
-    });
+
     opObject.m_vmRestartStore.loadData(vmData);
     opObject.m_vmRestartStore.colHeaders = opObject.f_getVMRestartColHeader(false);
 
@@ -773,7 +770,7 @@ function f_getVMDeployLogFromServer(opObject, logPanel)
 
 function f_parseServerTime(dt)
 {
-    if(m_clock.serverTimer == null && dt != null)
+    if(dt != null)
     {
         var sdt = dt.split(' ');
         var t = sdt[0].split(':');
@@ -791,79 +788,94 @@ function f_getVMDataFromServer(opObject, anchorName, showWaitMsg)
 
     var serverCommandCb = function(options, success, response)
     {
-        var xmlRoot = response.responseXML.documentElement;
-        var q = Ext.DomQuery;
-
-        var isSuccess = f_parseResponseError(xmlRoot);
-        if(!isSuccess[0])
+        if(response.responseXML != undefined)
         {
-            if(!swm)
+            var xmlRoot = response.responseXML.documentElement;
+            var q = Ext.DomQuery;
+
+            var isSuccess = f_parseResponseError(xmlRoot);
+            if(!isSuccess[0])
             {
-                f_hideSendWaitMessage();
-                f_promptErrorMessage('Load VM Data', isSuccess[1]);
+                if(!swm)
+                {
+                    f_hideSendWaitMessage();
+                    f_promptErrorMessage('Load VM Data', isSuccess[1]);
+                }
+                return;
             }
-            return;
+
+            f_parseServerTime(q.selectValue('time', xmlRoot));
+
+            var vmNodes = q.select('vm', xmlRoot);
+            var vmData = [];
+            var deployDataIndex = 0;
+            var anchor = thisObj.f_getVMAnchorData('anchor');
+            for(var i=0; i<vmNodes.length; i++)
+            {
+                switch(anchorName)
+                {
+                    case anchor[0]:  // vm dashboard data
+                    case 'VM':
+                        vmData[i] = f_parseVMDashboarData(vmNodes[i]);
+                        if(i == vmNodes.length-1)
+                            f_populateVMDashboardPanel(thisObj, vmData);
+                        break;
+                    case anchor[1]:  // update vm software
+                        var d = f_parseVMDeployData(vmNodes[i]);
+
+                        //////////////////////////////////////////
+                        // want only update is available
+                        if(d != null)
+                            vmData[deployDataIndex++] = d;
+
+                        if(i == vmNodes.length-1)
+                        {
+                            var logPanel = f_populateVMDeploySoftwarePanel(thisObj, vmData);
+                            f_getVMDeployLogFromServer(thisObj, logPanel);
+                        }
+                        break;
+                    case anchor[2]: // vm restart
+                        vmData[i] = f_parseVMRestartData(vmNodes[i]);
+                        if(i == vmNodes.length-1)
+                            f_populateVMRestartPanel(thisObj, vmData);
+                        break;
+                    case thisObj.f_getBackupAnchorData()[0]:  // configuration backup
+                        ////////////////////////////////////////
+                        // skip the open appliance
+                        if(i == 0) continue;
+
+                        vmData[i-1] = f_parseConfigBackupData(vmNodes[i]);
+                        if(i == vmNodes.length-1)
+                            f_populateConfigBackupPanel(thisObj, vmData);
+                        break;
+                }
+            }
         }
 
-        f_parseServerTime(q.selectValue('time', xmlRoot));
-
-        var vmNodes = q.select('vm', xmlRoot);
-        var vmData = [];
-        var deployDataIndex = 0;
-        var anchor = thisObj.f_getVMAnchorData('anchor');
-        for(var i=0; i<vmNodes.length; i++)
-        {
-            switch(anchorName)
-            {
-                case anchor[0]:  // vm dashboard data
-                case 'VM':
-                    vmData[i] = f_parseVMDashboarData(vmNodes[i]);
-                    if(i == vmNodes.length-1)
-                        f_populateVMDashboardPanel(thisObj, vmData);
-                    break;
-                case anchor[1]:  // update vm software
-                    var d = f_parseVMDeployData(vmNodes[i]);
-
-                    //////////////////////////////////////////
-                    // want only update is available
-                    if(d != null)
-                        vmData[deployDataIndex++] = d;
-
-                    if(i == vmNodes.length-1)
-                    {
-                        var logPanel = f_populateVMDeploySoftwarePanel(thisObj, vmData);
-                        f_getVMDeployLogFromServer(thisObj, logPanel);
-                    }
-                    break;
-                case anchor[2]: // vm restart
-                    vmData[i] = f_parseVMRestartData(vmNodes[i]);
-                    if(i == vmNodes.length-1)
-                        f_populateVMRestartPanel(thisObj, vmData);
-                    break;
-                case thisObj.f_getBackupAnchorData()[0]:  // configuration backup
-                    ////////////////////////////////////////
-                    // skip the open appliance
-                    if(i == 0) continue;
-
-                    vmData[i-1] = f_parseConfigBackupData(vmNodes[i]);
-                    if(i == vmNodes.length-1)
-                        f_populateConfigBackupPanel(thisObj, vmData);
-                    break;
-            }
-        }
-
-        f_hideSendWaitMessage();
+        if(swm)
+            f_hideSendWaitMessage();
     }
 
     var sid = f_getUserLoginedID();
     var xmlstr = "<vmstatus><id>" + sid + "</id>\n"
                + "</vmstatus>";
 
-    f_sendServerCommand(true, xmlstr, serverCommandCb, showWaitMsg);
+    f_sendServerCommand(true, xmlstr, serverCommandCb, swm);
 }
 
+function f_okToPopulate(opObject, anchor)
+{
+    return (opObject.m_curScreen == anchor) ? true : false;
+
+}
 function f_populateVMDashboardPanel(opObject, vmData)
 {
+    ////////////////////////////////////////////////////////
+    // we make sure we populate data to the correct screen
+    if(!f_okToPopulate(opObject, opObject.f_getVMAnchorData('anchor')[0]) &&
+        !f_okToPopulate(opObject, opObject.f_getOApplianceAnchorData()[0]))
+        return;
+
     var vmHeader = opObject.f_getVMDashboardColHeader('dataField');
 
     if(opObject.m_dashboardStore == undefined)
@@ -1953,7 +1965,8 @@ function f_getMonitoringHardwareDataFromServer(opObject, showWaitMsg)
         thisObject.m_monitorHwDBData = dbData;
         f_populateMonitoringHardwarePanel(thisObject);
 
-        f_hideSendWaitMessage();
+        if(swm)
+            f_hideSendWaitMessage();
     }
 
     var sid = f_getUserLoginedID();
@@ -1981,47 +1994,51 @@ function f_populateMonitoringSoftwarePanel(opObject)
 
 function f_populateMonitoringHardwarePanel(opObject)
 {
+    var hd = opObject.f_getMonitorHWColHeader('index');
+    var displayHd = opObject.f_getMonitorHWColHeader('display');
+
+
+    ////////////////////////////////////////////////////////
+    // we make sure we populate data to the correct screen
+    if(!f_okToPopulate(opObject, 'Monitoring') &&
+        !f_okToPopulate(opObject, 'Hardware'))
+        return;
+
     var cm = new Ext.grid.ColumnModel([
     {
-        id: 'component',
-        header: 'Component',
+        id: hd[0],
+        header: displayHd[0],
         sortable: true,
-        dataIndex: 'component'
+        dataIndex: hd[0]
     },
     {
-        header: 'Status',
+        header: displayHd[1],
         width: 70,
         sortable: false,
         renderer: f_renderGridImage,
-        dataIndex: 'status',
+        dataIndex: hd[1],
         fixed: true,
         align: 'center'
     }
     ]);
 
+
     var store = new Ext.data.SimpleStore(
     {
-        fields: [
-        {
-            name: 'component'
-        },
-        {
-            name: 'status'
-        }
-        ]
+        fields: hd
     });
     store.loadData(opObject.m_monitorHwDBData);
-    store.colHeaders = opObject.f_getMonitorHWColHeader(false);
+    store.colHeaders = displayHd;
 
     ////////////////////////////////////////////////////
     // add grid into working panel
-    var grid = opObject.f_createGridPanel(store, cm, undefined, 'component',
+    var grid = opObject.f_createGridPanel(store, cm, undefined, hd[0],
                         undefined, opObject.m_dataPanelTitle);
     opObject.f_updateDataPanel(new Array(grid));
 
     //////////////////////////////////////////////
     // enhance header
-    var headers = opObject.f_getMonitorHWColHeader(true);
+    var headers = opObject.f_getMonitorHWColHeader('gridHeaderHTML');
     for(var i=0; i<headers.length; i++)
         grid.getView().getHeaderCell(i).innerHTML = headers[i];
 }

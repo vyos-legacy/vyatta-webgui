@@ -47,7 +47,7 @@ VYATTA_LoginObject = Ext.extend(VYATTA_panels,
 
         var onKeyPressHandler = function(field, e)
         {
-            f_LoginKeyPressHandler(field, e, 'main.html', '/cgi-bin/webgui',
+            f_LoginKeyPressHandler(field, e, 'main.html', '/cgi-bin/webgui-wrap',
                       userField, passField, loginButton);
         }
 

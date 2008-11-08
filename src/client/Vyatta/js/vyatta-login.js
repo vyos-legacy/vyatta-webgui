@@ -29,12 +29,12 @@ VYATTA_LoginObject = Ext.extend(VYATTA_panels,
         
         var loginButton = new Ext.Button(
         {
-          text: 'Login'
-          ,iconCls: 'login-button-image'
+          text: ' '
+          ,iconCls: 'v_login_in'
           ,minWidth: 100
           ,disabled: true
           ,handler: function() { f_loginHandler(
-                  'main.html', '/cgi-bin/webgui', userField, passField); }
+                  'main.html', '/cgi-bin/webgui-wrap', userField, passField); }
         })
 
         var f_validateInputs = function()
@@ -47,7 +47,7 @@ VYATTA_LoginObject = Ext.extend(VYATTA_panels,
 
         var onKeyPressHandler = function(field, e)
         {
-            f_LoginKeyPressHandler(field, e, 'main.html', '/cgi-bin/webgui',
+            f_LoginKeyPressHandler(field, e, 'main.html', '/cgi-bin/webgui-wrap',
                       userField, passField, loginButton);
         }
 

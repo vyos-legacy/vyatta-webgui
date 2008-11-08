@@ -67,16 +67,19 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         {
             this.m_treeObj.f_setThisTreeObj(this.m_treeObj);
 
-            var cb = this.m_topPanel.cbpanel;
+            //var cb = this.m_topPanel.cbpanel;
             //alert(cb.items.getCount());
             //cb.show();
             //cb.setSize(0, 25);
             //cb.triggerClass = 'x-form';
-            delete cb.remove(cb.items.itemAt(1));
-            cb.combo = null;
-            cb.hide();
-            cb.add(f_createComboBox(this).show());
-            cb.doLayout();
+            //delete cb.remove(cb.items.itemAt(1));
+            //cb.combo = null;
+            //cb.hide();
+            //var f = f_createComboBox(this);
+            //f.setSize(28, 90);
+            //cb.setSize(28, 190);
+            //cb.add(f);
+            //cb.show();
             this.m_parentPanel.show();
             this.f_resizePanels();
         }
@@ -210,7 +213,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         this.m_editorPanel.setSize(500, 250);
 
         //var showBorder = (panelName == 'login') ? undefined : 'v-data-panel-body';
-        var datapanel = new Ext.Panel(
+        return new Ext.Panel(
         {
             border: false
             ,bodyStyle: 'padding: 3px 0px 0px 15px'
@@ -218,8 +221,6 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             ,defaults: {autoScroll: true}
             ,items: [this.m_editorPanel ]
         });
-
-        return datapanel;
     },
 
     f_createEditorPanel: function()
@@ -247,18 +248,21 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 
     f_getTextAreaFieldByHeaderName: function(headerName)
     {
-        var fp = this.m_editorPanel.items.itemAt(0);
-
-        if(fp != undefined)
+        if(this.m_editorPanel.items != undefined)
         {
-            for(var i=0; i<fp.items.getCount() > 0; i++)
+            var fp = this.m_editorPanel.items.itemAt(0);
+
+            if(fp != undefined)
             {
-                var fd = fp.items.itemAt(i);
-                if(fd.getXType() == 'panel' && headerName.indexOf(fd.title) > -1)
+                for(var i=0; i<fp.items.getCount() > 0; i++)
                 {
-                    fd = fd.items.itemAt(0);
-                    if(fd.getXType() == 'textarea')
-                        return fd;
+                    var fd = fp.items.itemAt(i);
+                    if(fd.getXType() == 'panel' && headerName.indexOf(fd.title) > -1)
+                    {
+                        fd = fd.items.itemAt(0);
+                        if(fd.getXType() == 'textarea')
+                            return fd;
+                    }
                 }
             }
         }
@@ -274,9 +278,12 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         this.m_treeObj = new VYATTA_tree(this.m_tabName);
         this.m_treeObj.f_createTree(this);
         this.m_treeObj.m_tree.show();
+    },
+
+    f_onTreeRenderer: function(tree)
+    {
+        f_updateToolbarButtons(tree);
     }
-
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -286,15 +293,13 @@ function f_createFieldDirtyIndicatorPanel(node)
 {
     var img = getNodeStyleImage(node);
 
-    var dirtyPanel = new Ext.Panel(
+    return new Ext.Panel(
     {
         border: false
         ,width: 18
         ,bodyStyle: 'padding: 3px 2px, 1px, 3px'
         ,html: img
     });
-
-    return dirtyPanel;
 }
 
 function f_createNumberField(value, node, help, width, callback)
@@ -320,7 +325,7 @@ function f_createNumberField(value, node, help, width, callback)
 
     field.on('keyDown', keyupPressHandler);
 
-    var colLayout = new Ext.Panel(
+    return new Ext.Panel(
     {
         layout: 'column'
         ,border: false
@@ -333,9 +338,6 @@ function f_createNumberField(value, node, help, width, callback)
                   'Goto next input field or press ENTER to submit</small></font>'
                   , V_LABEL_HELP) ]
     });
-
-
-    return colLayout;
 }
 
 function f_createTextField(value, labelStr, helpStr, width, callback, node)
@@ -356,7 +358,7 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
 
     field.on('keyup', keyupPressHandler);
 
-    var colLayout = new Ext.Panel(
+    return new Ext.Panel(
     {
         layout: 'column'
         ,border: false
@@ -369,8 +371,6 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
                     'Goto next input field or press ENTER to submit</small></font>'
                     , V_LABEL_HELP) ]
     });
-
-    return colLayout;
 }
 
 function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
@@ -407,7 +407,7 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
           ,items: [field]
       });
 
-      var colLayout = new Ext.Panel(
+      return new Ext.Panel(
       {
           layout: 'column'
           ,border: false
@@ -417,25 +417,20 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
                     fPanel, f_createFieldDirtyIndicatorPanel(node),
                     f_createLabel(helpStr, V_LABEL_HELP) ]
       });
-
-      return colLayout;
 }
 
 function f_createCheckbox(value, node, helpStr, width, callback)
 {
     var labelStr = node.text;
+    var chk = (value != undefined && (value == 'enable' || value == 'true')) ?
+                true : false;
 
     var field = new Ext.form.Checkbox(
     {
         style: 'anchor: 0%, text-align:right, padding:20px'
-        ,checked: false
+        ,checked: chk
         ,onClick: callback
     });
-
-    if(value != undefined && (value == 'enable' || value == 'true'))
-        field.setValue(true);
-    else if(value != undefined && (value == 'diable' || value == 'false'))
-        field.setValue(false);
 
     //////////////////////////////////////////////
     // need this panel to align the help labels
@@ -446,7 +441,7 @@ function f_createCheckbox(value, node, helpStr, width, callback)
         ,items: [field]
     });
 
-    var colLayout = new Ext.Panel(
+    return new Ext.Panel(
     {
         layout: 'column'
         ,border: false
@@ -456,8 +451,6 @@ function f_createCheckbox(value, node, helpStr, width, callback)
                   f_createFieldDirtyIndicatorPanel(node),
                   f_createLabel(helpStr, V_LABEL_HELP) ]
     });
-
-    return colLayout;
 }
 
 function f_isPanelEmpty(panel)
@@ -481,7 +474,8 @@ function f_handleHelpButton(panel, helpbutton)
         var rPanel = fPanel.items.itemAt(i);
         if(rPanel == undefined) return;
 
-        var helpLabel = rPanel.items.itemAt(panel.m_helpIndex);
+        var helpLabel = rPanel.items == undefined ? undefined :
+                        rPanel.items.itemAt(panel.m_helpIndex);
         if(helpLabel != undefined)
         {
             if(f_getHelpTipsState() == V_HELP_OFF)
@@ -494,7 +488,7 @@ function f_handleHelpButton(panel, helpbutton)
 
 function f_createComboBox(thisObj)
 {
-    var field = new Ext.form.ComboBox(
+    return new Ext.form.ComboBox(
     {
         mode: 'local',
         store: thisObj.m_viewerValues,
@@ -506,14 +500,6 @@ function f_createComboBox(thisObj)
         width: 150,
         value: thisObj.m_viewerValues[0]
     });
-    /*/
-    var onCollapseCallback = function()
-    {
-
-    };
-    field.on('collapse', onCollapseCallback);
-*/
-    return field;
 }
 function f_createTopPanelViewPanel(thisObj)
 {
@@ -553,7 +539,7 @@ function f_createToolbar(panel)
     }
     var m_helpTipButton = f_createHelpTipsButton(f_helpButtonHandler);
 
-    var ePanel = new Ext.Panel(
+    return new Ext.Panel(
     {
         margins: '5 5 5 0'
         ,bodyStyle: 'padding:10px 2% 0px 2%'
@@ -565,50 +551,47 @@ function f_createToolbar(panel)
         [ '->',
           m_helpTipButton,
           '-',
-          new Ext.Action(
-          {
-              text: 'View'
-              ,border: false
-              ,handler: function() {f_sendCLICommand(['view'], panel.m_treeObj);}
-          }),
-          new Ext.Action(
-          {
-              text: 'Load'
-              ,border: false
-              ,handler: function() {f_sendCLICommand(['load'], panel.m_treeObj);}
-          }),
-          new Ext.Action(
-          {
-              text: 'Save'
-              ,handler: function() {f_sendCLICommand(['save'], panel.m_treeObj);}
-          }),
+          panel.m_viewBtn = f_createToolbarButton('v_view_button', 'view', panel.m_panelObj),
+          panel.m_loadBtn = f_createToolbarButton('v_load_button', 'load', panel.m_panelObj),
+          panel.m_saveBtn = f_createToolbarButton('v_save_button', 'save', panel.m_treeObj),
           '-',
-
-          new Ext.Action(
-          {
-              text: 'Undo'
-              ,handler: function() {f_sendCLICommand(['undo']);}
-          }),
-          new Ext.Action(
-          {
-              text: 'Redo'
-              ,handler: function() {f_sendCLICommand(['redo']);}
-          }),
+          panel.m_undoBtn = f_createToolbarButton('v_undo_button', 'undo', panel.m_treeObj),
+          panel.m_redoBtn = f_createToolbarButton('v_redo_button', 'redo', panel.m_treeObj),
           '-',
-          new Ext.Action(
-          {
-              text: 'Discard',
-              handler: function(){f_sendCLICommand(['discard'], panel.m_treeObj);}
-          }),
-          new Ext.Action(
-          {
-              text: 'Commit'
-              ,handler: function() {f_sendCLICommand(['commit'], panel.m_treeObj);}
-          }),
+          panel.m_discardBtn = f_createToolbarButton('v_discard_button',
+                              'discard', panel.m_treeObj),
+          panel.m_commitBtn = f_createToolbarButton('v_commit_button',
+                                'commit', panel.m_treeObj),
         ]
-    })
+    });
+}
+function f_createToolbarButton(iconCls, cmdName, treeObj)
+{
+    return new Ext.Action(
+    {
+        text: ' '
+        ,iconCls: iconCls
+        ,handler: function() {f_sendCLICommand(this, [cmdName], treeObj);}
+    });
+}
+function f_updateToolbarButtons(tree)
+{
+    tree.m_parent.m_commitBtn.setIconClass(tree.m_isCommitAvailable ?
+                    'v_commit_button' : 'v_commit_button_no');
+    tree.m_parent.m_discardBtn.setIconClass(tree.m_isCommitAvailable ?
+                    'v_discard_button' : 'v_discard_button_no');
+    tree.m_parent.m_undoBtn.setIconClass(tree.m_isCommitAvailable ?
+                    'v_undo_button' : 'v_undo_button_no');
+    tree.m_parent.m_redoBtn.setIconClass(tree.m_isCommitAvailable ?
+                    'v_redo_button' : 'v_redo_button_no');
+}
 
-    return ePanel;
+function f_sendCLICommand(button, cmds, treeObj)
+{
+    if(button.iconCls.indexOf('_no') > 0)
+        return;
+
+    f_sendConfigCLICommand(cmds, treeObj);
 }
 
 function f_addField2Panel(editorPanel, fields, labelTxt)
@@ -699,7 +682,7 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
     });
     grid.on('afteredit', callback );
 
-    var colLayout = new Ext.Panel(
+    return new Ext.Panel(
     {
         layout: 'column'
         ,border: false
@@ -709,8 +692,25 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
                 f_createFieldDirtyIndicatorPanel(node),
                 f_createLabel(helpLabel, V_LABEL_HELP) ]
     });
+}
 
-    return colLayout
+function f_createEditorTitle(node)
+{
+    var titleName = '';
+    var arrow = ' ';
+    var n = node;
+
+    while(n != undefined)
+    {
+        titleName =  n.text + arrow + titleName;
+        arrow = '&nbsp;&rArr;&nbsp;';
+        n = n.parentNode;
+    }
+
+    return new Ext.Panel(
+    {
+        title: titleName
+    });
 }
 
 function f_createLabel(value, labelFor)
@@ -731,15 +731,13 @@ function f_createLabel(value, labelFor)
         value = value + ': ';
     }
 
-    var label = new Ext.form.Label(
+    return new Ext.form.Label(
     {
         html: value
         ,cls: lAlign
         ,position: 'fixed'
         ,width: width
     });
-
-    return label
 }
 
 function f_createTextAreaField(headerTitle, values, width, height)
@@ -754,7 +752,7 @@ function f_createTextAreaField(headerTitle, values, width, height)
         ,value: values
     });
 
-    var colLayout = new Ext.Panel(
+    return new Ext.Panel(
     {
         layout: 'ux.row'
         ,title: headerTitle
@@ -764,8 +762,6 @@ function f_createTextAreaField(headerTitle, values, width, height)
         ,autoScroll: false
         ,items: [ field ]
     });
-
-    return colLayout;
 }
 
 function f_enterKeyPressHandler(field, e, callback)

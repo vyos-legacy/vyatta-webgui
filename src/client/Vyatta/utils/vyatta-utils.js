@@ -1,6 +1,7 @@
 /* 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
+ * Vyatta utils
  */
 
 MyLabel = Ext.extend(Ext.form.Label,
@@ -25,8 +26,9 @@ function f_getCookieProvider()
     {
       m_cookieP = new Ext.state.CookieProvider(
       {
-        expires: new Date(new Date().getTime() + (5 * 60 * 60 * 1000))
-        //secure: true
+          domain: document.domain
+          ,expires: new Date(new Date().getTime() + (5 * 60 * 60 * 1000))
+          //,secure: true
       });
 
       Ext.state.Manager.setProvider(m_cookieP);
@@ -203,13 +205,14 @@ function f_createHelpTipsButton(callback)
 
     var helpButton = new Ext.Button(
     {
-      handler: callback
+        handler: callback
+        ,text: ' '
     });
 
     if(help == V_HELP_ON)
-        helpButton.setText('Show Tips');
-      else
-        helpButton.setText('Hide Tips');
+        helpButton.setIconClass("v_help_button_show");
+    else
+        helpButton.setIconClass("v_help_button_hide");
 
     return helpButton;
 }
@@ -297,7 +300,6 @@ function f_createLoginUserNameField(username)
       ,enableKeyEvents: true
       ,allowBlank:false
       ,blankText: 'Please enter User Name'
-      //,tabIndex: 0
     });
 
     return userField;
@@ -308,15 +310,15 @@ function f_createLoginPasswordField(pw)
     var fl = pw != undefined ? pw : 'Password:'
     passField = new Ext.form.TextField(
     {
-      fieldLabel: fl
-      ,labelAlign: 'left'
-      ,name: 'password'
-      ,labelSeparator: ''
-      ,width: 180
-      ,inputType: 'password'
-      ,enableKeyEvents: true
-      ,allowBlank:false
-      ,blankText: 'Please enter Password'
+        fieldLabel: fl
+        ,labelAlign: 'left'
+        ,name: 'password'
+        ,labelSeparator: ''
+        ,width: 180
+        ,inputType: 'password'
+        ,enableKeyEvents: true
+        ,allowBlank:false
+        ,blankText: 'Please enter Password'
     });
 
     return passField;
@@ -328,6 +330,7 @@ function f_toggleHelpTips(helpButton)
     var cookiesP = f_getCookieProvider();
 
     var help = f_getHelpTipsState();
+
     if(help == V_HELP_ON)
         cookiesP.set(V_COOKIES_HELP_TIP_STATE, V_HELP_OFF);
     else
@@ -336,9 +339,9 @@ function f_toggleHelpTips(helpButton)
     if(helpButton != undefined)
     {
         if(help == V_HELP_ON)
-          helpButton.setText('Hide Tips');
+            helpButton.setIconClass("v_help_button_hide");
         else
-          helpButton.setText('Show Tips');
+            helpButton.setIconClass("v_help_button_show");
     }
 }
 
@@ -353,7 +356,7 @@ function f_getHelpTipsState()
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 // clock ticking every second
-var m_clock = new Ext.Toolbar.TextItem('new Date()');
+var m_clock = new Ext.Toolbar.TextItem('Server Clock goes here');
 function f_clockTicking()
 {
     //Ext.fly(clock.getEl().parentNode).addClass('x-status-text-panel').createChild({cls:'spacer'});
@@ -363,13 +366,18 @@ function f_clockTicking()
     {
         run: function()
         {
-            Ext.fly(m_clock.getEl()).update(new Date().format('g:i:s A'));
+            Ext.fly(m_clock.getEl()).update(new
+                        Date().format('j-n-y g:i:s A'));
         }
         ,interval: 1000
     });
 
+    new Ext.ToolTip(
+    {
+        target: 'v_footer_clock'
+        ,html: 'This is a <font color="#ff6600">server</font> clock'
+    });
 }
-f_clockTicking();
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -452,29 +460,29 @@ function f_promptUserNotLoginMessage(callbackFn)
 // info Message Box
 function f_promptInfoMessage(title, msgText, callbackFn)
 {
-  if(callbackFn == undefined)
-  {
-    Ext.Msg.show(
+    if(callbackFn == undefined)
     {
-      title: title
-      ,msg: msgText
-      ,buttons: Ext.Msg.OK
-      ,icon: Ext.MessageBox.INFO
-      ,modal: true
-    });
-  }
-  else
-  {
-    Ext.Msg.show(
+        Ext.Msg.show(
+        {
+            title: title
+            ,msg: msgText
+            ,buttons: Ext.Msg.OK
+            ,icon: Ext.MessageBox.INFO
+            ,modal: true
+        });
+    }
+    else
     {
-      title: title
-      ,msg: msgText
-      ,buttons: Ext.Msg.OK
-      ,icon: Ext.MessageBox.INFO
-      ,modal: true
-      //,fn: function() { callbackFn }
-    });
-  }
+        Ext.Msg.show(
+        {
+            title: title
+            ,msg: msgText
+            ,buttons: Ext.Msg.OK
+            ,icon: Ext.MessageBox.INFO
+            ,modal: true
+            //,fn: function() { callbackFn }
+        });
+    }
 }
 
 function f_yesNoMessageBox(title, msgText, callback)
@@ -516,13 +524,6 @@ function f_parseResponseError(xmlRoot)
     }
 
     return [ success, errmsg ];
-}
-
-function f_findPercentage(total, free)
-{
-    if(free <= 0) return 100;
-
-    return 100 - Math.round((free/total) * 100);
 }
 
 function f_replace(str, expOld, expNew)

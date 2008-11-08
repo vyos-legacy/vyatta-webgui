@@ -95,6 +95,9 @@ function f_startViewPort()
                 function() {f_handleMainFramePanelResize()}}});
 
     f_handleMainFramePanelResize();
+
+    f_clockTicking();
+    m_clock.render(document.getElementById('v_footer_clock'));
 }
 
 function f_createTabHTML(tabName)
@@ -126,7 +129,7 @@ function f_createTabsHTML()
 
 function f_handleTabClick(tabName)
 {
-    if(!f_isUserLogined(true, true))
+    if(!f_isLogined(true, true))
     {
         window.location = g_baseSystem.m_homePage;
         return;
@@ -147,8 +150,7 @@ function f_handleTabOnMouseAction(tabName, action)
 function f_createFrameHeaderPanel()
 {
     var id = document.getElementById('id_header_text');
-
-    if(!f_isUserLogined(false, false))
+    if(!f_isLogined(false, false))
     {
         id.innerHTML = '&nbsp;';
         var idTab = document.getElementById('id_header_tab');
@@ -156,7 +158,8 @@ function f_createFrameHeaderPanel()
     }
     else
     {
-       id.innerHTML = 'Username:&nbsp; <b>' + f_getUserLoginName() + '</b>&nbsp;&nbsp;&nbsp;' +
+       id.innerHTML = 'Username:&nbsp; <font color="orange">' + f_getUserLoginName() +
+           ',</font>&nbsp;&nbsp;&nbsp;' +
             '<a class="anchor-test" valign="top" href="#" onclick="f_userLogout(true, \'' +
             g_baseSystem.m_homePage + '\')">' +
             '<img src="images/logout.gif"/> Logout</a>';
@@ -176,7 +179,9 @@ function f_createFrameHeaderPanel()
 }
 function f_createFrameFooterPanel()
 {
-    var str = "<p id='v_footer_text'>&nbsp;&nbsp;&copy; 2006 - 2008 Vyatta Inc.</p>";
+    //var str = "<nobr><div id='v_footer_text'>&nbsp;&nbsp;&copy; 2006 - 2008 Vyatta Inc." +
+      //        "<div id='v_footer_clock'>sss</div></div></nobr>";
+
 
     var footer = new Ext.Panel(
     {
@@ -184,9 +189,10 @@ function f_createFrameFooterPanel()
         ,height: 25
         ,border: false
         ,bodyBorder: false
-        ,html: str
+        //,html: str
+        ,contentEl: 'v_footer_text'
     });
-
+    
     return footer;
 }
 function f_createFrameBodyPanel()
@@ -268,6 +274,40 @@ function f_handleMainFramePanelResize()
     }
 }
 
+/******************************************************************************
+ *
+ ******************************************************************************/
+function f_isLogined(updateLoginTimer, promptMsg)
+{
+    if(f_isUserLogined(updateLoginTimer, promptMsg))
+        return true;
+
+    //////////////////////////////////////
+    // check of auto login.
+    if(f_isAutoLogin())
+    {
+        f_autoLogin();
+        return true;
+    }
+
+    return false;
+}
+
+function f_isAutoLogin()
+{
+    return document.getElementById('id_ft_demo') == undefined ? false : true;
+}
+
+function f_autoLogin()
+{
+    var userField = f_createLoginUserNameField();
+    var passField = f_createLoginPasswordField();
+    var u = document.getElementById('id_ft_pp');
+    userField.setValue(u.className);
+    passField.setValue(u.className);
+
+    f_loginHandler('main.html', '/cgi-bin/webgui-wrap', userField, passField);
+}
 /*******************************************************************************
  * Start of onReady function
  *******************************************************************************/
@@ -283,11 +323,16 @@ Ext.onReady(function()
     // start up the main frame
     f_startViewPort();
 
+
     //////////////////////////////////////////
     // if user not login yet, do login here..
-    if(!f_isUserLogined(false, false))
-        f_startLogin();
+    if(!f_isLogined(false, false))
+    {
+        if(f_isAutoLogin())
+            f_autoLogin();
+        else
+            f_startLogin();
+    }
     else
-        //f_showTab(g_baseSystem.m_iOper);
         f_showTab(g_baseSystem.m_iConf);
 });

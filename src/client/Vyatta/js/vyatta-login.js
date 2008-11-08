@@ -1,4 +1,4 @@
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -20,13 +20,13 @@ VYATTA_LoginObject = Ext.extend(VYATTA_panels,
     f_initLoginPanel: function()
     {
         this.f_initLayout(this.m_parentContainer, V_TREE_ID_login);
-        
+
         /*
          * login form with input components
          */
         var userField = f_createLoginUserNameField();
         var passField = f_createLoginPasswordField();
-        
+
         var loginButton = new Ext.Button(
         {
           text: ' '
@@ -47,14 +47,8 @@ VYATTA_LoginObject = Ext.extend(VYATTA_panels,
 
         var onKeyPressHandler = function(field, e)
         {
-<<<<<<< HEAD:src/client/Vyatta/js/vyatta-login.js
-            f_LoginKeyPressHandler(field, e, 'main.html', '/cgi-bin/webgui-wrap',
+            f_LoginKeyPressHandler(field, e, 'main.html', '/cgi-bin/webgui',
                       userField, passField, loginButton);
-=======
-            f_LoginKeyPressHandler(field, e, 'main.html',
-                                   '/cgi-bin/webgui-wrap',
-                                   userField, passField, loginButton);
->>>>>>> 2b69f4e974c219de8881d1293295ca35cfc9f95f:src/client/Vyatta/js/vyatta-login.js
         }
 
         userField.on('keyup', onKeyPressHandler);
@@ -78,7 +72,7 @@ VYATTA_LoginObject = Ext.extend(VYATTA_panels,
 
 
         userField.focus(false, 1000);
-        
+
         this.m_editorPanel.add(loginFormPanel);
         this.m_editorPanel.doLayout();
     }

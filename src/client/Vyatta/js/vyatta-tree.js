@@ -11,18 +11,22 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
     {
         if(node.attributes.configured == undefined)
         {
+            node.getOwnerTree().m_parent.m_isCommitAvailable = false;
             return ' class="v-node-nocfg" style="color:black;"';
         }
         else if(node.attributes.configured == 'active')
         {
+            node.getOwnerTree().m_parent.m_isCommitAvailable = false;
             return ' class="v-node-active" style="color:black;"';
         }
         else if(node.attributes.configured == 'set')
         {
+            node.getOwnerTree().m_parent.m_isCommitAvailable = true;
             return ' class="v-node-set" style="color:green;"';
         }
         else if(node.attributes.configured == 'delete')
         {
+            node.getOwnerTree().m_parent.m_isCommitAvailable = true;
             return ' class="v-node-delete" style="color:red;"';
         }
 
@@ -31,14 +35,14 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
 
     getNodeStyleImage: function(node)
     {
-        if(node == undefined) return 'active';
+        if(node == undefined) return '';
 
         switch(node.attributes.configured)
         {
             case 'set':
                 return '<img src="images/statusUnknown.gif"/>';
             case 'active':
-                //return '<img src="images/statusUnknown.gif"/>';
+                return '';
             break;
             case 'delete':
                 return '<img src="images/statusDown.gif"/>';
@@ -46,12 +50,14 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
             default:
                 return '';
         }
-
-        return '';
     },
 
     renderElements: function(n, a, targetNode, bulkRender)
     {
+        ////////////////////////////////////////////////////
+        // tree display only parent node.
+        if(n.leaf) return;
+
         this.indentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
         var cb = typeof a.checked == 'boolean';
         var href = a.href ? a.href : Ext.isGecko ? "" : "#";
@@ -107,6 +113,8 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
 
         this.anchor = cs[index];
         this.textNode = cs[index].firstChild;
+
+        n.getOwnerTree().m_parent.f_onRenderer(this);
     }
 });
 
@@ -118,7 +126,7 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
     {
         //////////////////////////////////////
         // if user is not login prompt message
-        if(!f_isUserLogined(true, true))
+        if(!f_isLogined(true, true))
         {
           // no sid. do nothing.
           if(typeof callback == "function")
@@ -308,6 +316,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         this.m_treeMode = tabName;
     },
 
+    m_isCommitAvailable : false,
+
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     f_setThisTreeObj: function(thisObj)
@@ -348,6 +358,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             ,loader: this.m_treeLoader
         });
         new Ext.tree.TreeSorter(this.m_tree, {folderSort: true});
+        this.m_tree.m_parent = this;
 
         /////////////////////////////////////////////
         // create tree panel
@@ -414,6 +425,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         return root;
     },
 
+    f_onRenderer: function(treeNodeUI)
+    {
+        if(m_thisObj.m_parent != undefined)
+            m_thisObj.m_parent.f_onTreeRenderer(m_thisObj);
+    },
+
     initTreeListeners: function(tree, nodeClickHandler)
     {
         tree.getLoader().on('beforeload', function(loader, node)
@@ -458,7 +475,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     // node click handler for configuration tree
     f_HandleNodeConfigClick: function(node, e, dontClear)
     {
-        if(!f_isUserLogined(true, true))
+        if(!f_isLogined(true, true))
         {
             window.location = g_baseSystem.m_homePage;
             return;
@@ -467,9 +484,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(m_thisObj.m_parent.m_editorPanel == undefined)
             m_thisObj.m_parent.f_createEditorPanel();
 
-        if(dontClear == undefined || dontClear == false)
+        if(dontClear == undefined || !dontClear)
         {
             m_thisObj.m_parent.f_cleanEditorPanel();
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
+                              f_createEditorTitle(node), node.text);
+            m_thisObj.f_handleDeleteButton(node);
         }
 
         if(node.leaf)
@@ -481,16 +501,16 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
         else
         {
-          // non-leaf
-          node.expand(false, true, function(n)
-          {
-              if (n.attributes.multi == undefined || !n.attributes.multi)
-              {
-                  m_thisObj.f_interHandler(n);
-              }
-              else
-                  m_thisObj.f_interMultiHandler(n);
-          });
+            // non-leaf
+            node.expand(false, true, function(n)
+            {
+                if (n.attributes.multi == undefined || !n.attributes.multi)
+                {
+                    m_thisObj.f_interHandler(n);
+                }
+                else
+                    m_thisObj.f_interMultiHandler(n);
+            });
         }
     },
 
@@ -528,13 +548,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
          *   configured-active: "delete"
          *   configured-added: "delete"
          */
-
-
         var callback = function()
         {
             f_sendConfigCLICommand([ 'set ' + m_thisObj.f_getNodePathStr(node)
-                             + " '" + field.getValue() + "'"
-                           ], m_thisObj, node);
+                             + " " + field.getValue() ], m_thisObj, node);
         }
 
         var field = f_createTextField(undefined, 'Create ' + node.text + ' value',
@@ -546,16 +563,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             return field.getValue();
         }
-        /*/
-        if (node.attributes.configured != undefined
-            && node.attributes.configured != 'delete') {
-          editor.add(new Ext.Button({
-            text: 'Delete',
-            handler: function() {
-              f_sendConfigCLICommand([ 'delete ' + getConfigPathStr(node) ], node);
-            }
-          }));
-        }*/
 
         m_thisObj.m_parent.m_editorPanel.doLayout();
     },
@@ -581,7 +588,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             else if (node.getValFunc != undefined)
             {
                 f_sendConfigCLICommand([ isSetOrDelete + m_thisObj.f_getNodePathStr(node)
-                             + " '" + node.getValFunc() + "'" ],
+                             + " " + node.getValFunc() ],
                              m_thisObj, node, true);
             }
         }
@@ -635,7 +642,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 for(var i=0; i<values.length; i++)
                 {
                     varr[i+jj] = 'set ' + m_thisObj.f_getNodePathStr(node)
-                                + " '" + values[i] + "'";
+                                + " " + values[i];
                 }
 
                 f_sendConfigCLICommand(varr, m_thisObj, node, true);
@@ -700,7 +707,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             isCheckbox = true;
             field1 = f_createCheckbox(ival, node, helpStr, 250, callback);
-            //field2 = f_createCheckbox(ival, node.text, helpStr, 250, callback);
         }
         else
         {
@@ -719,7 +725,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             var val =  field1.items.itemAt(1).items.itemAt(0).getValue();
             if(isCheckbox)
-                return (val != undefined && val) ? 'enable' : 'disable';
+                return (val != undefined && val) ? 'disable' : 'enable';
             else
                 return (val != undefined) ? val : '';
         }
@@ -837,7 +843,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     // node click handler for operation tree
     f_handleNodeOperClick: function(node, e)
     {
-        if(!f_isUserLogined(true, true))
+        if(!f_isLogined(true, true))
         {
             window.location = g_baseSystem.m_homePage;
             return;
@@ -847,6 +853,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             m_thisObj.m_parent.f_createEditorPanel();
 
         m_thisObj.m_parent.f_cleanEditorPanel();
+        //f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
+        //                      f_createEditorTitle(node), node.text);
+        //m_thisObj.f_handleDeleteButton(node);
 
         /////////////////////////////////////////
         // on input field blur callback function
@@ -965,6 +974,39 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             f_addField2Panel(m_thisObj.m_parent.m_editorPanel, mlbl, undefined);
             m_thisObj.m_parent.m_editorPanel.doLayout();
         }
+    },
+
+    f_handleDeleteButton: function(node)
+    {
+        if(node.attributes.configured != undefined &&
+            (node.attributes.configured == 'add' ||
+            node.attributes.configured == 'active'))
+        {
+            var buttons = [ ];
+            var btn_id = Ext.id();
+
+            buttons[buttons.length] = new Ext.Button(
+            {
+                id: btn_id
+                ,text: 'Delete'
+                ,handler: function()
+                {
+                    f_sendConfigCLICommand(
+                        ['delete ' + m_thisObj.f_getNodePathStr(node) ], node);
+                }
+            });
+
+            var panel = new Ext.Panel(
+            {
+                items: buttons
+                ,border: false
+                ,bodyStyle: 'padding: 6px 2px 10px 8px'
+            });
+
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, panel, 'Delete Node');
+
+            //f_createToolTip(btn_id, 'Delete ' +  node.text);
+        }
     }
 });
 
@@ -991,11 +1033,14 @@ function filterWildcard(arr)
 
 function getNodeStyleImage(node)
 {
+    if(node == undefined) return '';
+
     switch(node.attributes.configured)
     {
         case 'set':
             return '<img align="center" src="images/statusUnknown.gif" alt="img"/>';
         case 'active':
+            return '';
             //return '<img align="center" src="images/statusUnknown.gif" alt="img"/>';
         break;
         case 'delete':
@@ -1004,6 +1049,4 @@ function getNodeStyleImage(node)
         default:
             return '';
     }
-
-    return '';
 }

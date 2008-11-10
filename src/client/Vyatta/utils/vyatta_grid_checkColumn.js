@@ -49,7 +49,8 @@ Vyatta_grid_CheckColumn.prototype =
     renderer : function(v, p, record)
     {
         p.css += ' x-grid3-check-col-td';
-        return '<div class="x-grid3-check-col'+(v?'-on':'')+' x-grid3-cc-'+this.id+'">&#160;</div>';
+        return '<div class="x-grid3-check-col'+(v?'-on':'')+
+                ' x-grid3-cc-'+this.id+'">&#160;</div>';
     }
 };
 

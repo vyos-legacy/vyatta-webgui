@@ -57,10 +57,8 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
     //////////////////////////////////////////////////////////////////
     // avoid to send a duplicate command again
     if(prevXMLStr != undefined && prevXMLStr == xmlstr)
-    {
-        alert('eq');
         return xmlstr;
-    }
+
     g_sendCommandWait = Ext.MessageBox.wait('Running operational command...',
                                   'Operation');
 
@@ -74,11 +72,6 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
     });
 
     return xmlstr;
-}
-
-function f_sendCLICommand(cmds, treeObj)
-{
-    f_sendConfigCLICommand(cmds, treeObj);
 }
 
 function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
@@ -97,21 +90,17 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
     {
         var xmlRoot = response.responseXML.documentElement;
         var q = Ext.DomQuery;
-        var errmsg = 'Unknown error';
 
         var isSuccess = f_parseResponseError(xmlRoot);
+        f_hideSendWaitMessage();
         if(!isSuccess[0])
         {
-            f_hideSendWaitMessage();
             f_promptErrorMessage('Changing configuration...', isSuccess[1]);
             return;
         }
 
-        f_hideSendWaitMessage();
-
         var selNode = tree.getSelectionModel().getSelectedNode();
         var selPath = selNode.getPath('text');
-        var selText = selNode.text;
 
         if(node == undefined)
         {
@@ -170,13 +159,13 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             var p = node.parentNode;
             var handler = function(narg)
             {
-                  tree.selectPath(selPath, 'text', function(success,sel)
-                  {
-                      var nnode = tree.getSelectionModel().getSelectedNode();
-                      treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
-                  });
+                tree.selectPath(selPath, 'text', function(success, sel)
+                {
+                    var nnode = tree.getSelectionModel().getSelectedNode();
+                    treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
+                });
 
-                  narg.un('expand', handler);
+                narg.un('expand', handler);
             }
 
             p.on('expand', handler);

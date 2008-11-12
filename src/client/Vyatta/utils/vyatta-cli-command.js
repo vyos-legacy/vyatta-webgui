@@ -99,7 +99,10 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             return;
         }
 
+
         var selNode = tree.getSelectionModel().getSelectedNode();
+        if(selNode == undefined)
+            selNode = tree.getRootNode();
         var selPath = selNode.getPath('text');
 
         if(node == undefined)
@@ -130,6 +133,9 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 narg.un('expand', handler);
             }
 
+            if(cmds.indexOf('discard') >= 0 || cmds.indexOf('commit') >= 0)
+                selNode.reload();
+
             p.on('expand', handler);
             p.collapse();
             p.expand();
@@ -149,13 +155,16 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 {
                     if ((n.attributes.configured == 'active')
                                   || (n.attributes.configured == 'set'))
-                       // already set. we're done.
-                      break;
+                        // already set. we're done.
+                        break;
+
+                    n.attributes.configured = 'set';
+                    n = n.parentNode;
                 }
-                n.attributes.configured = 'set';
-                n = n.parentNode;
             }
 
+            //alert(selPath)
+            /*
             var p = node.parentNode;
             var handler = function(narg)
             {
@@ -168,9 +177,17 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 narg.un('expand', handler);
             }
 
-            p.on('expand', handler);
-            p.collapse();
-            p.expand();
+            //p.on('expand', handler);
+            //p.collapse();
+            //p.expand();
+*/
+            ////////////////////////////////////////////////
+            // since simple expand the parendNode doesnot
+            // refresh the parentNode's renderer, we need
+            // to refresh from the root, then after the reload
+            // we expand the m_selNode node.
+            treeObj.m_selNodePath = selPath;//node.parentNode;
+            tree.getRootNode().reload();
         }
     }
 

@@ -11,22 +11,18 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
     {
         if(node.attributes.configured == undefined)
         {
-            node.getOwnerTree().m_parent.m_isCommitAvailable = false;
             return ' class="v-node-nocfg" style="color:black;"';
         }
         else if(node.attributes.configured == 'active')
         {
-            node.getOwnerTree().m_parent.m_isCommitAvailable = false;
             return ' class="v-node-active" style="color:black;"';
         }
         else if(node.attributes.configured == 'set')
         {
-            node.getOwnerTree().m_parent.m_isCommitAvailable = true;
             return ' class="v-node-set" style="color:green;"';
         }
         else if(node.attributes.configured == 'delete')
         {
-            node.getOwnerTree().m_parent.m_isCommitAvailable = true;
             return ' class="v-node-delete" style="color:red;"';
         }
 
@@ -56,8 +52,13 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
     {
         ////////////////////////////////////////////////////
         // tree display only parent node.
-        if(n.leaf) return;
-
+        if(n.leaf)
+        {
+            //VyattaNodeUI.superclass.apply(arguments);
+            n.ui.rendered = false;
+            return;
+        }
+        
         this.indentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
         var cb = typeof a.checked == 'boolean';
         var href = a.href ? a.href : Ext.isGecko ? "" : "#";
@@ -88,11 +89,11 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
         if(bulkRender !== true && n.nextSibling
            && (nel = n.nextSibling.ui.getEl()))
         {
-          this.wrap = Ext.DomHelper.insertHtml("beforeBegin", nel, buf);
+            this.wrap = Ext.DomHelper.insertHtml("beforeBegin", nel, buf);
         }
         else
         {
-          this.wrap = Ext.DomHelper.insertHtml("beforeEnd", targetNode, buf);
+            this.wrap = Ext.DomHelper.insertHtml("beforeEnd", targetNode, buf);
         }
 
         this.elNode = this.wrap.childNodes[0];
@@ -122,6 +123,8 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
 ///////////////////////////////////////////////////////////////////////////////
 MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
 {
+    m_tree: undefined,
+
     requestData: function(node, callback)
     {
         //////////////////////////////////////
@@ -146,9 +149,6 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
               case V_TREE_ID_oper:
                 cstr = "<vyatta><configuration mode='op'><id>";
                 break;
-              //case V_TREE_LOAD_MODE_child:
-              //default:
-                //  basePath = this.baseParams.nodepath;
           }
 
 
@@ -209,6 +209,7 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
               //alert(V_TREE_ID_config + str);
               //rootNode = node.getOwnerTree().getRootNode();
               //rootNode.setText('Configuration');
+
               return MyTreeLoader.superclass.processResponse.apply(this, arguments);
             }
             case V_TREE_ID_oper:
@@ -343,6 +344,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             }
         });
         this.m_treeLoader.g_loadMode = parent.m_tabName;
+        this.m_treeLoader.m_tree = this;
 
         ///////////////////////////////////////////////
         // create tree, then set tree root node
@@ -374,15 +376,97 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(this.m_treeMode == V_TREE_ID_config)
         {
             this.m_tree.setRootNode(this.f_getConfigRootNode());
-            this.initTreeListeners(this.m_tree, this.f_HandleNodeConfigClick);
+            this.initTreeListeners(this.m_tree, this.f_HandleNodeConfigClick, 
+                  this.f_handleSelectedNodeExpand);
         }
         else// if(this.m_treeMode == V_TREE_ID_oper)
         {
             this.m_tree.setRootNode(this.f_getOperationRootNode());
-            this.initTreeListeners(this.m_tree, this.f_handleNodeOperClick);
+            this.initTreeListeners(this.m_tree, this.f_handleNodeOperClick, 
+                  this.f_handleSelectedNodeExpand);
         }
 
         this.m_tree.getRootNode().expand(false, false);
+    },
+
+    /////////////////////////////////////////////////////////////
+    //
+    f_handleSelectedNodeExpand: function()
+    {
+        if(this.m_parent.m_selNodePath != undefined)
+        {
+            var treeObj = this.m_parent;
+            var len = treeObj.m_selNodePath.length;
+            var snode = treeObj.m_selNodePath.substr(1, len);
+            snode = snode.split(" ");
+            var node = treeObj.m_tree.getRootNode().firstChild;
+
+            ////////////////////////////////////////////////
+            // find the selected node by given the path
+            for(var i=0; i<snode.length; i++)
+            {
+                if(snode[i] == 'Configuration' || snode[i] == 'Operation')
+                    continue;
+
+                while(node != undefined)
+                {
+                    if(node.text == snode[i])
+                        break;
+
+                    node = node.nextSibling;
+                }
+
+                ////////////////////////////////////////
+                // drill down to next level
+                if(i+1 < snode.length)
+                {
+                    node.expand();
+                    node = node.firstChild;
+
+                    ///////////////////////////////////////
+                    // child node is not exist yet,
+                    // so let get it from server.
+                    if(node == undefined)
+                    {
+                        treeObj.f_handleExpandNode(node, treeObj, false);
+                        return;
+                    }
+                }
+            }
+
+            //snode = treeObj.m_selNodePath.substr(1, len);
+            //treeObj.m_tree.selectPath(snode);
+            //node = treeObj.m_tree.getSelectionModel().getSelectedNode();
+            //treeObj.m_tree.expandPath(node);
+
+            ///////////////////////////////////////
+            // reset the select node path
+            treeObj.m_selNodePath = undefined;
+
+            ////////////////////////////////////
+            // if select node found, expand it
+            treeObj.f_handleExpandNode(node, treeObj, true);
+        }
+    },
+
+    f_handleExpandNode: function(node, treeObj, handleClick)
+    {
+        if(node != undefined)
+        {
+            var handler = function(narg)
+            {
+                if(handleClick)
+                {
+                    treeObj.m_tree.getSelectionModel().select(node);
+                    treeObj.f_HandleNodeConfigClick(node, null, undefined, treeObj);
+                }
+
+                narg.un('expand', handler);
+            }
+
+            node.on('expand', handler);
+            node.expand();
+        }
     },
 
     f_resizeTreePanel: function(w, h)
@@ -427,11 +511,28 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_onRenderer: function(treeNodeUI)
     {
+        //////////////////////////////////////////////////////
+        // walk through tree to set Commit flag. if any node's
+        // attribute had sent down to server, this flag is set
+        var child = this.m_tree.getRootNode().firstChild;
+        this.m_isCommitAvailable = false;
+        while(child != undefined)
+        {
+            if(child.attributes.configured == 'set')
+            {
+                this.m_isCommitAvailable = true;
+                break;
+            }
+            child = child.nextSibling;
+        }
+
+        ////////////////////////////////////////////////////////
+        // let the working panels know.
         if(m_thisObj.m_parent != undefined)
             m_thisObj.m_parent.f_onTreeRenderer(m_thisObj);
     },
 
-    initTreeListeners: function(tree, nodeClickHandler)
+    initTreeListeners: function(tree, nodeClickHandler, nodeLoadedHandler)
     {
         tree.getLoader().on('beforeload', function(loader, node)
         {
@@ -458,9 +559,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             // avoid to reload again on root configuration.
             if(node.getPath('text') != ' Configuration' &&
                                     node.getPath('text') != ' Operation')
-            {
                 node.reload();
-            }
         });
 
         tree.on('beforecollapsenode', function(node, deep, anim)
@@ -469,6 +568,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         });
 
         tree.on('click', nodeClickHandler);
+
+        tree.on('load', nodeLoadedHandler);
     },
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1038,7 +1139,7 @@ function getNodeStyleImage(node)
     switch(node.attributes.configured)
     {
         case 'set':
-            return '<img align="center" src="images/statusUnknown.gif" alt="img"/>';
+            return '<img align="center" src="images/statusUnknown.gif" />';
         case 'active':
             return '';
             //return '<img align="center" src="images/statusUnknown.gif" alt="img"/>';

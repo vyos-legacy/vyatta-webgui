@@ -296,8 +296,9 @@ function f_createFieldDirtyIndicatorPanel(node)
     return new Ext.Panel(
     {
         border: false
-        ,width: 18
-        ,bodyStyle: 'padding: 3px 2px, 1px, 3px'
+        ,width: 20
+        ,height: 22
+        ,bodyStyle: 'padding: 5px 2px, 1px, 3px'
         ,html: img
     });
 }

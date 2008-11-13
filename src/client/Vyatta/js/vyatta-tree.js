@@ -1139,13 +1139,13 @@ function getNodeStyleImage(node)
     switch(node.attributes.configured)
     {
         case 'set':
-            return '<img align="center" src="images/statusUnknown.gif" />';
+            return '<img src="images/statusUnknown.gif" />';
         case 'active':
             return '';
             //return '<img align="center" src="images/statusUnknown.gif" alt="img"/>';
         break;
         case 'delete':
-            return '<img align="center" src="images/statusDown.gif" alt="img"/>';
+            return '<img src="images/statusDown.gif" alt="img"/>';
         break;
         default:
             return '';

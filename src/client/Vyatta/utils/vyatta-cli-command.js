@@ -88,6 +88,14 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
     var tree = treeObj.m_tree;
     var sendCommandCliCb = function(options, success, response)
     {
+        if(response.responseXML == undefined)
+        {
+            alert('<b>Request timed out!</b>\n\n' +
+                  'Wait for response from server has time-out. ' +
+                   'Please refrsh GUI and try again later.');
+            return;
+        }
+
         var xmlRoot = response.responseXML.documentElement;
         var q = Ext.DomQuery;
 
@@ -116,7 +124,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                     // we were at leaf. "last" is parent.
                     tree.selectPath(selPath, 'text', function(success,sel)
                     {
-                        var nnode = thisTree.getSelectionModel().getSelectedNode();
+                        var nnode = treeObj.m_tree.getSelectionModel().getSelectedNode();
                         treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
                     });
                 }
@@ -133,7 +141,12 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 narg.un('expand', handler);
             }
 
-            if(cmds.indexOf('discard') >= 0 || cmds.indexOf('commit') >= 0)
+            if(cmds.indexOf('discard') >= 0)
+            {
+                p.reload();
+                return;
+            }
+            else if(cmds.indexOf('commit') >= 0)
                 selNode.reload();
 
             p.on('expand', handler);
@@ -163,7 +176,6 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 }
             }
 
-            //alert(selPath)
             /*
             var p = node.parentNode;
             var handler = function(narg)

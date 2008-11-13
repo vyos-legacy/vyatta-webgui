@@ -282,6 +282,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 
     f_onTreeRenderer: function(tree)
     {
+        return;
         f_updateToolbarButtons(tree);
     }
 });
@@ -296,6 +297,7 @@ function f_createFieldDirtyIndicatorPanel(node)
     return new Ext.Panel(
     {
         border: false
+        ,bodyBorder: true
         ,width: 20
         ,height: 22
         ,bodyStyle: 'padding: 5px 2px, 1px, 3px'

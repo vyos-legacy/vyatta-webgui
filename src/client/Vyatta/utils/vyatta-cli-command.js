@@ -88,9 +88,11 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
     var tree = treeObj.m_tree;
     var sendCommandCliCb = function(options, success, response)
     {
+        f_hideSendWaitMessage();
+
         if(response.responseXML == undefined)
         {
-            alert('<b>Request timed out!</b>\n\n' +
+            alert('Request timed out!\n\n' +
                   'Wait for response from server has time-out. ' +
                    'Please refrsh GUI and try again later.');
             return;
@@ -100,7 +102,6 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         var q = Ext.DomQuery;
 
         var isSuccess = f_parseResponseError(xmlRoot);
-        f_hideSendWaitMessage();
         if(!isSuccess[0])
         {
             f_promptErrorMessage('Changing configuration...', isSuccess[1]);
@@ -144,6 +145,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             if(cmds.indexOf('discard') >= 0)
             {
                 p.reload();
+                treeObj.m_parent.f_cleanEditorPanel();
                 return;
             }
             else if(cmds.indexOf('commit') >= 0)

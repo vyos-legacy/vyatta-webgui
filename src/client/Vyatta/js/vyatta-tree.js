@@ -36,13 +36,9 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
         switch(node.attributes.configured)
         {
             case 'set':
+            case 'delete':
                 return '<img src="images/statusUnknown.gif"/>';
             case 'active':
-                return '';
-            break;
-            case 'delete':
-                return '<img src="images/statusDown.gif"/>';
-            break;
             default:
                 return '';
         }
@@ -150,7 +146,6 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                 cstr = "<vyatta><configuration mode='op'><id>";
                 break;
           }
-
 
           var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + cstr + f_getUserLoginedID() + "</id>\n"
@@ -458,7 +453,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 if(handleClick)
                 {
                     treeObj.m_tree.getSelectionModel().select(node);
-                    treeObj.f_HandleNodeConfigClick(node, null, undefined, treeObj);
+                    node.ensureVisible();
+                    treeObj.f_HandleNodeConfigClick(node, null, undefined);
                 }
 
                 narg.un('expand', handler);
@@ -559,7 +555,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             // avoid to reload again on root configuration.
             if(node.getPath('text') != ' Configuration' &&
                                     node.getPath('text') != ' Operation')
-                node.reload();
+            {
+                    node.reload();
+            }
         });
 
         tree.on('beforecollapsenode', function(node, deep, anim)
@@ -576,6 +574,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     // node click handler for configuration tree
     f_HandleNodeConfigClick: function(node, e, dontClear)
     {
+        var titlePanel = '';
         if(!f_isLogined(true, true))
         {
             window.location = g_baseSystem.m_homePage;
@@ -588,9 +587,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(dontClear == undefined || !dontClear)
         {
             m_thisObj.m_parent.f_cleanEditorPanel();
-            f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
-                              f_createEditorTitle(node), node.text);
-            m_thisObj.f_handleDeleteButton(node);
+            titlePanel = f_createEditorTitle(node);
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, titlePanel,
+                              node.text);
+            m_thisObj.f_handleButton(node, titlePanel.title);
         }
 
         if(node.leaf)
@@ -607,6 +607,11 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             {
                 if (n.attributes.multi == undefined || !n.attributes.multi)
                 {
+                    // a second chance to add button for case all the child nodes
+                    // has not retrieve from server yet.
+                    if(m_thisObj.m_parent.f_getEidtorItemCount() < 2)
+                        m_thisObj.f_handleButton(n, titlePanel.title);
+
                     m_thisObj.f_interHandler(n);
                 }
                 else
@@ -956,7 +961,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         m_thisObj.m_parent.f_cleanEditorPanel();
         //f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
         //                      f_createEditorTitle(node), node.text);
-        //m_thisObj.f_handleDeleteButton(node);
 
         /////////////////////////////////////////
         // on input field blur callback function
@@ -1077,41 +1081,47 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
     },
 
-    f_handleDeleteButton: function(node)
+    f_handleButton: function(node, title)
     {
         if(node.attributes.configured != undefined &&
             (node.attributes.configured == 'add' ||
-            node.attributes.configured == 'active'))
+            node.attributes.configured == 'active' ||
+            node.attributes.configured == 'set'))
         {
-            var buttons = [ ];
-            var btn_id = Ext.id();
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
+                  f_createButton(m_thisObj, node, 'Delete', title), 'Delete Node');
+        }
+        else if((node.attributes.configured == undefined ||
+                node.attributes.configured == 'delete') &&
+                node.attributes.type == undefined)
+        {
+            /////////////////////////////////////////////////////////
+            // add 'create' button if and only if node type is not
+            // define and has no leaf child.
+            var hasLeaf = node.hasChildNodes() && node.firstChild == null ?
+                          true : false;
 
-            buttons[buttons.length] = new Ext.Button(
+            if(node.hasChildNodes())
             {
-                id: btn_id
-                ,text: 'Delete'
-                ,handler: function()
+                var n = node.firstChild;
+                while(n != undefined)
                 {
-                    f_sendConfigCLICommand(
-                        ['delete ' + m_thisObj.f_getNodePathStr(node) ], node);
+                    if(n.leaf)
+                    {
+                        hasLeaf = true;
+                        break;
+                    }
+                    n = n.nextSibling;
                 }
-            });
+            }
 
-            var panel = new Ext.Panel(
-            {
-                items: buttons
-                ,border: false
-                ,bodyStyle: 'padding: 6px 2px 10px 8px'
-            });
-
-            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, panel, 'Delete Node');
-
-            //f_createToolTip(btn_id, 'Delete ' +  node.text);
+            if(!hasLeaf)
+                f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
+                                f_createButton(m_thisObj, node, 'Create',
+                                title), 'Create Node');
         }
     }
 });
-
-
 
 function filterWildcard(arr)
 {
@@ -1139,14 +1149,9 @@ function getNodeStyleImage(node)
     switch(node.attributes.configured)
     {
         case 'set':
+        case 'delete':
             return '<img src="images/statusUnknown.gif" />';
         case 'active':
-            return '';
-            //return '<img align="center" src="images/statusUnknown.gif" alt="img"/>';
-        break;
-        case 'delete':
-            return '<img src="images/statusDown.gif" alt="img"/>';
-        break;
         default:
             return '';
     }

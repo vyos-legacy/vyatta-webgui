@@ -218,9 +218,13 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
 
     //looking for op mode attribute
     for (int i=0;attr[i];i+=2) {
-      if (strcmp(attr[i],"mode") == 0 &&
-	  strcmp(attr[i+1],"op") == 0) {
-	m->_conf_mode = WebGUI::OP;
+      if (strcmp(attr[i],"mode") == 0) {
+	if (strcmp(attr[i+1],"op") == 0) {
+	  m->_conf_mode = WebGUI::OP;
+	}
+	else if (strcmp(attr[i+1],"data") == 0) {
+	  m->_conf_mode = WebGUI::DATA;
+	}
       }
     }
   }

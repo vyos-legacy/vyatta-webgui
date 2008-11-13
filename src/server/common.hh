@@ -48,7 +48,8 @@ public:
 		  CLICMD_ID};
 
   enum Attributes {NOATTR = 0,
-		   OP};
+		   OP,
+		   DATA};
 
   enum NodeType {NONE,
 			 TEXT,

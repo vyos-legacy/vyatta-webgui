@@ -46,8 +46,17 @@ Configuration::get_config()
   if (_proc->get_msg()._conf_mode == WebGUI::OP) {
     foobar = get_full_op_level();
   }
+  else if (_proc->get_msg()._conf_mode == WebGUI::DATA) {
+    string root_node = _proc->get_msg()._root_node;
+    foobar = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->get_msg()._token+"</token>";
+    get_full_level(root_node,foobar,true); //make this recursive
+    foobar += "</vyatta>";
+  }
   else {
-    foobar = get_full_level();
+    string root_node = _proc->get_msg()._root_node;
+    foobar = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->get_msg()._token+"</token>";
+    get_full_level(root_node,foobar,false);
+    foobar += "</vyatta>";
   }
   _proc->set_response(foobar);
 }
@@ -103,7 +112,6 @@ Configuration::get_full_op_level()
       //now build out response...
       out += string("<node name='") + string(dirp->d_name) + string("'>");
 
-
       //now add template parameters
       TemplateParams tmpl_params;
       string tmp = WebGUI::OP_TEMPLATE_DIR + "/" + rel_tmpl_path + "/" + dirp->d_name;
@@ -145,13 +153,7 @@ Configuration::get_full_op_level()
     out += "</node>";
   }
 
-
-
-
-
-
   closedir(dp);
-
   out += "</vyatta>";
   return out;
 }
@@ -159,16 +161,15 @@ Configuration::get_full_op_level()
 /**
  *
  **/
-string
-Configuration::get_full_level()
+void
+Configuration::get_full_level(const std::string &root_node, std::string &out, bool recursive)
 {
   string rel_tmpl_path;
   DIR *dp;
   struct dirent *dirp;
-  string out = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->get_msg()._token+"</token>";
 
   //first convert root request into template path
-  StrProc str_proc(_proc->get_msg()._root_node, "/");
+  StrProc str_proc(root_node, "/");
   vector<string> coll = str_proc.get();
   vector<string>::iterator iter = coll.begin();
   while (iter != coll.end()) {
@@ -183,8 +184,7 @@ Configuration::get_full_level()
     ++iter;
   }
 
-  string rel_config_path = _proc->get_msg()._root_node;
-
+  string rel_config_path = root_node;
 
   //rework get_conf_dir to work off of get_templ_dir...
 
@@ -197,7 +197,7 @@ Configuration::get_full_level()
   string tmpl_path = WebGUI::CFG_TEMPLATE_DIR + "/" + rel_tmpl_path;
   if ((dp = opendir(tmpl_path.c_str())) == NULL) {
     out += "</vyatta>";
-    return out;
+    return;
   }
 
   while ((dirp = readdir(dp)) != NULL) {
@@ -233,7 +233,16 @@ Configuration::get_full_level()
 	string node_name("value");
 	parse_value(tmp, node_name, value);
       }
-      out += tmpl_params.get_xml(value);
+      else {
+	if (recursive == true) {
+	  tmp = rel_config_path + "/" + dirp->d_name;
+	  get_full_level(tmp,out,true);
+	}
+      }
+      //skip the parameters on a recursive walkthrough
+      if (recursive == false) {
+	out += tmpl_params.get_xml(value);
+      }
       out += "</node>";
     }  
   }    
@@ -267,21 +276,23 @@ Configuration::get_full_level()
       out += "<configured>delete</configured>";
       break;
     }
-    out += multi_params.get_xml();
-
+    if (recursive == false) {
+      out += multi_params.get_xml();
+    }
     string value;
     if (multi_params._end == true) {
       string tmp = rel_config_path + "/" + m_iter->first + "/node.val";
       string node_name("value");
       parse_value(tmp, node_name, value);
     }
-    out += multi_params.get_xml(value);
+    if (recursive == false) {
+      out += multi_params.get_xml(value);
+    }
     out += "</node>";
+
     ++m_iter;
   }
-
-  out += "</vyatta>";
-  return out;
+  return;
 }
 
 /**

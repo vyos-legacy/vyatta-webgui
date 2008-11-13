@@ -25,8 +25,8 @@ private:
   std::string
   get_configuration();
 
-  std::string
-  get_full_level();
+  void
+  get_full_level(const std::string &root_node, std::string &out, bool recursive);
 
   std::string
   get_full_op_level();

@@ -246,6 +246,19 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         }
     },
 
+    f_getEidtorItemCount: function()
+    {
+        var ep = this.m_editorPanel;
+
+        if(ep != undefined && ep.items != undefined && ep.items.getCount() > 0)
+        {
+            var eFormPanel = ep.items.itemAt(0);
+            return eFormPanel.items.getCount();
+        }
+
+        return 0;
+    },
+
     f_getTextAreaFieldByHeaderName: function(headerName)
     {
         if(this.m_editorPanel.items != undefined)
@@ -282,6 +295,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 
     f_onTreeRenderer: function(tree)
     {
+        return;
         f_updateToolbarButtons(tree);
     }
 });
@@ -296,8 +310,10 @@ function f_createFieldDirtyIndicatorPanel(node)
     return new Ext.Panel(
     {
         border: false
-        ,width: 18
-        ,bodyStyle: 'padding: 3px 2px, 1px, 3px'
+        ,bodyBorder: true
+        ,width: 20
+        ,height: 22
+        ,bodyStyle: 'padding: 5px 2px, 1px, 3px'
         ,html: img
     });
 }
@@ -710,6 +726,40 @@ function f_createEditorTitle(node)
     return new Ext.Panel(
     {
         title: titleName
+    });
+}
+
+function f_createButton(treeObj, node, btnText, title)
+{
+    var buttons = [ ];
+    var btn_id = Ext.id();
+    var cmd = btnText;
+
+    if(btnText == 'Delete')
+        cmd = 'delete ';
+    else if(btnText == 'Create')
+        cmd = 'set ';
+
+    title = f_replace(title, '&rArr;', '');
+    buttons[buttons.length] = new Ext.Button(
+    {
+        id: btn_id
+        ,text: btnText
+        ,tooltip: btnText + ' ' + title
+        ,handler: function()
+        {
+            f_sendConfigCLICommand(
+                [cmd + treeObj.f_getNodePathStr(node) ], node);
+        }
+    });
+
+    return new Ext.Panel(
+    {
+        items: buttons
+        ,border: false
+        ,bodyStyle: 'padding: 6px 2px 10px 8px'
+        ,height: 55
+        ,html: '<b>' + btnText + '</b> ' + title + '<br><hr>'
     });
 }
 

@@ -40,5 +40,6 @@ V_STATUS_UP = 'up';
 V_STATUS_DOWN = 'down';
 V_STATUS_UNKNOWN = 'unknown';
 
+V_DIRTY_FLAG = '<img src="images/statusUnknown.gif" />';
 
 

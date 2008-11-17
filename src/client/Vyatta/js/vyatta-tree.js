@@ -37,7 +37,7 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
         {
             case 'set':
             case 'delete':
-                return '<img src="images/statusUnknown.gif"/>';
+                return V_DIRTY_FLAG;
             case 'active':
             default:
                 return '';
@@ -454,6 +454,13 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 {
                     treeObj.m_tree.getSelectionModel().select(node);
                     node.ensureVisible();
+                    
+                    if(treeObj.m_cmd != undefined && treeObj.m_cmd == 'delete')
+                    {
+                        treeObj.m_cmd = undefined;
+                        treeObj.m_parent.f_cleanEditorPanel();
+                    }
+
                     treeObj.f_HandleNodeConfigClick(node, null, undefined);
                 }
 
@@ -586,10 +593,16 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         if(dontClear == undefined || !dontClear)
         {
-            m_thisObj.m_parent.f_cleanEditorPanel();
             titlePanel = f_createEditorTitle(node);
-            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, titlePanel,
+
+            ////////////////////////////////////////////////////
+            // do not clear editor if in the same node
+            if(m_thisObj.m_parent.f_getEditorTitle() != titlePanel.title)
+            {
+                m_thisObj.m_parent.f_cleanEditorPanel();
+                f_addField2Panel(m_thisObj.m_parent.m_editorPanel, titlePanel,
                               node.text);
+            }
             m_thisObj.f_handleButton(node, titlePanel.title);
         }
 
@@ -609,7 +622,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 {
                     // a second chance to add button for case all the child nodes
                     // has not retrieve from server yet.
-                    if(m_thisObj.m_parent.f_getEidtorItemCount() < 2)
+                    if(m_thisObj.m_parent.f_getEditorItemCount() < 2)
                         m_thisObj.f_handleButton(n, titlePanel.title);
 
                     m_thisObj.f_interHandler(n);
@@ -680,6 +693,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         var onBlur = function()
         {
+            if(node.ownerTree == null)
+                node.ownerTree = m_thisObj;
+
             var isSetOrDelete = (node.getValFunc() == undefined ||
                                 node.getValFunc().length == 0) ?
                                 'delete ' : 'set ';
@@ -722,7 +738,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             m_thisObj.f_leafSingleTxtHandler(node, helpStr, onBlur);
         }
 
-      m_thisObj.m_parent.m_editorPanel.doLayout();
+        m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 
     f_leafMultiHandler: function(node)
@@ -1150,7 +1166,7 @@ function getNodeStyleImage(node)
     {
         case 'set':
         case 'delete':
-            return '<img src="images/statusUnknown.gif" />';
+            return V_DIRTY_FLAG;
         case 'active':
         default:
             return '';

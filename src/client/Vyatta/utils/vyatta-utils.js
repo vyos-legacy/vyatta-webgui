@@ -124,24 +124,26 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
       //m_statusBar.showBusy();
       var f_authCb = function(options, success, response)
       {
-          
-        var xmlRoot = response.responseXML.documentElement;
-        var q = Ext.DomQuery;
-        var id = q.selectValue(V_COOKIES_USER_ID, xmlRoot, V_NOT_FOUND);
+          if(response.responseXML != undefined)
+          {
+              var xmlRoot = response.responseXML.documentElement;
+              var q = Ext.DomQuery;
+              var id = q.selectValue(V_COOKIES_USER_ID, xmlRoot, V_NOT_FOUND);
 
-        f_saveUserLoginId(id);
-        f_saveUserLoginName(userField.getValue());
+              f_saveUserLoginId(id);
+              f_saveUserLoginName(userField.getValue());
 
-        if(id == V_NOT_FOUND)
-        {
-          f_promptErrorMessage('Login Failed',
-              'Invalid User Name and/or Password. Please try again.');
-        }
-        else
-        {
-          f_resetLoginTimer();
-          window.location = urlLocation;
-        }
+              if(id == V_NOT_FOUND)
+              {
+                f_promptErrorMessage('Login Failed',
+                    'Invalid User Name and/or Password. Please try again.');
+              }
+              else
+              {
+                f_resetLoginTimer();
+                window.location = urlLocation;
+              }
+          }
       }
 
       var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"

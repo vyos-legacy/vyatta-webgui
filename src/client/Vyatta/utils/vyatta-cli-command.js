@@ -77,6 +77,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
 function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 {
     var sid = f_getUserLoginedID();
+    var cmdSent = cmds;
     if(sid == 'NOTFOUND')
       // no sid. do nothing.
       return;
@@ -88,11 +89,20 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
     var tree = treeObj.m_tree;
     var sendCommandCliCb = function(options, success, response)
     {
+        f_hideSendWaitMessage();
+
+        if(response.responseXML == undefined)
+        {
+            alert('Request timed out!\n\n' +
+                  'Wait for response from server has time-out. ' +
+                   'Please refrsh GUI and try again later.');
+            return;
+        }
+
         var xmlRoot = response.responseXML.documentElement;
         var q = Ext.DomQuery;
 
         var isSuccess = f_parseResponseError(xmlRoot);
-        f_hideSendWaitMessage();
         if(!isSuccess[0])
         {
             f_promptErrorMessage('Changing configuration...', isSuccess[1]);
@@ -100,6 +110,8 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         }
 
         var selNode = tree.getSelectionModel().getSelectedNode();
+        if(selNode == undefined)
+            selNode = tree.getRootNode();
         var selPath = selNode.getPath('text');
 
         if(node == undefined)
@@ -113,7 +125,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                     // we were at leaf. "last" is parent.
                     tree.selectPath(selPath, 'text', function(success,sel)
                     {
-                        var nnode = thisTree.getSelectionModel().getSelectedNode();
+                        var nnode = treeObj.m_tree.getSelectionModel().getSelectedNode();
                         treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
                     });
                 }
@@ -129,6 +141,15 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 tree.expandPath(selPath, 'text', ehandler);
                 narg.un('expand', handler);
             }
+
+            if(cmds.indexOf('discard') >= 0)
+            {
+                p.reload();
+                treeObj.m_parent.f_cleanEditorPanel();
+                return;
+            }
+            else if(cmds.indexOf('commit') >= 0)
+                selNode.reload();
 
             p.on('expand', handler);
             p.collapse();
@@ -149,28 +170,25 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 {
                     if ((n.attributes.configured == 'active')
                                   || (n.attributes.configured == 'set'))
-                       // already set. we're done.
-                      break;
+                        // already set. we're done.
+                        break;
+
+                    n.attributes.configured = 'set';
+                    n = n.parentNode;
                 }
-                n.attributes.configured = 'set';
-                n = n.parentNode;
             }
-
-            var p = node.parentNode;
-            var handler = function(narg)
+            else if(cmds[0].indexOf("delete", 0) >= 0)
             {
-                tree.selectPath(selPath, 'text', function(success, sel)
-                {
-                    var nnode = tree.getSelectionModel().getSelectedNode();
-                    treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
-                });
-
-                narg.un('expand', handler);
+                treeObj.m_cmd = cmds[0].substring(0, 6);
             }
 
-            p.on('expand', handler);
-            p.collapse();
-            p.expand();
+            ////////////////////////////////////////////////
+            // since simple expand the parendNode.expand()
+            // doesnot refresh/rendereer parentNode's parents,
+            // we need to refresh from the root, then after
+            // the reload we expand the m_selNode node.
+            treeObj.m_selNodePath = selPath;//node.parentNode;
+            tree.getRootNode().reload();
         }
     }
 

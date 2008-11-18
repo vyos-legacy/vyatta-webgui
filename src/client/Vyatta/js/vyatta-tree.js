@@ -481,9 +481,11 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     f_getNodePathStr: function(node)
     {
         var str = node.getPath('text');
-        var newstr = str.replace(/^ Configuration /, '');
+        str = str.replace(/^ Configuration /, '');
+        str = str.replace('undefined', '');
+        str = str.replace(',', ' ');
 
-        return newstr;
+        return str;
     },
 
     f_getConfigRootNode: function()

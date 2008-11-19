@@ -77,6 +77,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
 function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 {
     var sid = f_getUserLoginedID();
+    var cmdSent = cmds;
     if(sid == 'NOTFOUND')
       // no sid. do nothing.
       return;
@@ -107,7 +108,6 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             f_promptErrorMessage('Changing configuration...', isSuccess[1]);
             return;
         }
-
 
         var selNode = tree.getSelectionModel().getSelectedNode();
         if(selNode == undefined)
@@ -177,29 +177,16 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                     n = n.parentNode;
                 }
             }
-
-            /*
-            var p = node.parentNode;
-            var handler = function(narg)
+            else if(cmds[0].indexOf("delete", 0) >= 0)
             {
-                tree.selectPath(selPath, 'text', function(success, sel)
-                {
-                    var nnode = tree.getSelectionModel().getSelectedNode();
-                    treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
-                });
-
-                narg.un('expand', handler);
+                treeObj.m_cmd = cmds[0].substring(0, 6);
             }
 
-            //p.on('expand', handler);
-            //p.collapse();
-            //p.expand();
-*/
             ////////////////////////////////////////////////
-            // since simple expand the parendNode doesnot
-            // refresh the parentNode's renderer, we need
-            // to refresh from the root, then after the reload
-            // we expand the m_selNode node.
+            // since simple expand the parendNode.expand()
+            // doesnot refresh/rendereer parentNode's parents,
+            // we need to refresh from the root, then after
+            // the reload we expand the m_selNode node.
             treeObj.m_selNodePath = selPath;//node.parentNode;
             tree.getRootNode().reload();
         }

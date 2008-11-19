@@ -371,4 +371,7 @@ pre.code
   line-height:14px !important;
 }
 
-
+.hr-editor
+{
+  border: 1px solid #e8e8e8;
+}

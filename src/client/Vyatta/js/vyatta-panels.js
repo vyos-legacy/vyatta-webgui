@@ -317,17 +317,19 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 ////////////////////////////////////////////////////////////////////////////////
 function f_createFieldDirtyIndicatorPanel(node)
 {
-    var img = getNodeStyleImage(node);
-
-    return new Ext.Panel(
+    var p = new Ext.Panel(
     {
         border: false
         ,bodyBorder: true
         ,width: 20
         ,height: 22
-        ,bodyStyle: 'padding: 5px 2px, 1px, 3px'
-        ,html: img
+        ,html: V_DIRTY_FLAG
     });
+
+    var img = getNodeStyleImage(node);
+    if(img.length > 0) p.show(); else p.hide();
+
+    return p;
 }
 
 function f_createNumberField(value, node, help, width, callback)
@@ -656,8 +658,8 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
         var f = eFormPanel.items.itemAt(i);
         if(f.items != undefined && fields.items != undefined)
         {
-            var label = f.items.itemAt(0);
-            var cLabel = fields.items.itemAt(0);
+            var label = f.items.itemAt(V_IF_INDEX_LABEL);
+            var cLabel = fields.items.itemAt(V_IF_INDEX_LABEL);
 
             ///////////////////////////////////////////////////////
             // if the below statement is true, the fields already
@@ -668,12 +670,13 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
                 // handle field dirty indicator
                 if(getNodeStyleImage(fields.m_node).length > 0)
                 {
-                    f.items.item(2).html = V_DIRTY_FLAG
+                    f.items.item(V_IF_INDEX_DIRTY).show();
+
                     ///////////////////////////////////////////
                     // update checkbox renderer. only for checkbox component
-                    if(f.items.itemAt(1).items != undefined)
+                    if(f.items.itemAt(V_IF_INDEX_INPUT).items != undefined)
                     {
-                        var chk = f.items.itemAt(1).items.itemAt(0);
+                        var chk = f.items.itemAt(V_IF_INDEX_INPUT).items.itemAt(0);
                         if(chk.getXType() == 'checkbox')
                         {
                             chk.setValue(f_getValueForCheckbox(
@@ -717,7 +720,7 @@ function f_addField2Panel(editorPanel, fields, labelTxt)
 
         ///////////////////////////////////////////////
         // all button should add right after the title
-        if(fields.items.item(0).getXType() == 'button')
+        if(fields.items.item(V_IF_INDEX_LABEL).getXType() == 'button')
             eFormPanel.insert(1, fields);
         else
             eFormPanel.add(fields);
@@ -744,7 +747,7 @@ function f_addField2Panel(editorPanel, fields, labelTxt)
     {
         if(fields.items != undefined)
         {
-          var helpLabel = fields.items.itemAt(2);
+          var helpLabel = fields.items.itemAt(V_IF_INDEX_TIP);
           if(helpLabel != undefined)
             helpLabel.hide();
         }

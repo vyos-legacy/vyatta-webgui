@@ -329,9 +329,8 @@ function f_createLoginPasswordField(pw)
 
 function f_toggleHelpTips(helpButton)
 {
-    var cookiesP = f_getCookieProvider();
-
     var help = f_getHelpTipsState();
+    var cookiesP = f_getCookieProvider();
 
     if(help == V_HELP_ON)
         cookiesP.set(V_COOKIES_HELP_TIP_STATE, V_HELP_OFF);

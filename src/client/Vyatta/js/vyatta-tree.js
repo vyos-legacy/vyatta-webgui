@@ -31,17 +31,7 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
 
     getNodeStyleImage: function(node)
     {
-        if(node == undefined) return '';
-
-        switch(node.attributes.configured)
-        {
-            case 'set':
-            case 'delete':
-                return V_DIRTY_FLAG;
-            case 'active':
-            default:
-                return '';
-        }
+        return getNodeStyleImage(node);
     },
 
     renderElements: function(n, a, targetNode, bulkRender)
@@ -140,7 +130,8 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
 
           switch(this.g_loadMode)
           {
-              case V_TREE_ID_config:
+              case V_TREE_ID_config_data:
+                  cstr = "<vyatta><configuration mode='data'><id>";
                 break;
               case V_TREE_ID_oper:
                 cstr = "<vyatta><configuration mode='op'><id>";
@@ -190,30 +181,28 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         var str = '';
         for (var i = 0; i < nodes.length; i++)
         {
-          if (str != '')
-              str += ',';
+            if (str != '')
+                str += ',';
 
-          str += this.f_jsonGenNode(nodes[i], nodes[i].getAttribute('name'));
+            str += this.f_jsonGenNode(nodes[i], nodes[i].getAttribute('name'));
         }
 
         switch(this.g_loadMode)
         {
             case V_TREE_ID_config:
             {
-              response.responseText = '[' + str + ']';
-              //alert(V_TREE_ID_config + str);
-              //rootNode = node.getOwnerTree().getRootNode();
-              //rootNode.setText('Configuration');
+                response.responseText = '[' + str + ']';
+                //rootNode = node.getOwnerTree().getRootNode();
+                //rootNode.setText('Configuration');
 
-              return MyTreeLoader.superclass.processResponse.apply(this, arguments);
+                return MyTreeLoader.superclass.processResponse.apply(this, arguments);
             }
             case V_TREE_ID_oper:
             {
-              var rootNode = node.getOwnerTree().getRootNode();
-              rootNode.setText('Operation');
-              //alert(V_TREE_ID_oper + str);
-              response.responseText = '[' + str + ']';
-              return MyTreeLoader.superclass.processResponse.apply(this, arguments);
+                var rootNode = node.getOwnerTree().getRootNode();
+                rootNode.setText('Operation');
+                response.responseText = '[' + str + ']';
+                return MyTreeLoader.superclass.processResponse.apply(this, arguments);
             }
         }
     },
@@ -229,64 +218,60 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
 
         if (nLeaf != undefined)
         {
-          str += ",leaf:true";
-          var nvals = q.select('value', nLeaf);
-          if (nvals.length > 0)
-          {
-            var vstr = '';
-            for (var i = 0; i < nvals.length; i++)
+            str += ",leaf:true";
+            var nvals = q.select('value', nLeaf);
+            if (nvals.length > 0)
             {
-              var cfgd = q.selectValue('configured', nvals[i], 'NONE');
-              if (cfgd == 'active' || cfgd == 'set')
-              {
-                if (vstr != '')
-                  vstr += ',';
+                var vstr = '';
+                for (var i = 0; i < nvals.length; i++)
+                {
+                    var cfgd = q.selectValue('configured', nvals[i], 'NONE');
+                    if (cfgd == 'active' || cfgd == 'set')
+                    {
+                        if (vstr != '')
+                            vstr += ',';
 
-                vstr += "'" + nvals[i].getAttribute('name') + "'";
-              }
-            }
+                        vstr += "'" + nvals[i].getAttribute('name') + "'";
+                    }
+                }
                 str += ",values:[ " + vstr + " ]";
-          }
+            }
         }
 
         var nType = q.selectNode('type', node);
         if (nType != undefined)
-        {
-          str += ",type:'" + nType.getAttribute('name') + "'";
-        }
+            str += ",type:'" + nType.getAttribute('name') + "'";
 
         var nMulti = q.selectNode('multi', node);
         if (nMulti != undefined)
-        {
-          str += ",multi:true";
-        }
+            str += ",multi:true";
+
         var tHelp = q.selectValue('help', node);
         if (tHelp != undefined)
         {
-          tHelp = tHelp.replace(/'/g, "\\'", 'g');
-          str += ",help:'" + tHelp + "'";
+            tHelp = tHelp.replace(/'/g, "\\'", 'g');
+            str += ",help:'" + tHelp + "'";
         }
+
         var tConfig = q.selectValue('configured', node);
-        if (tConfig != undefined) {
-          str += ",configured:'" + tConfig + "'";
-        }
+        if (tConfig != undefined)
+            str += ",configured:'" + tConfig + "'";
+
         var nenums = q.selectNode('enum', node);
         if (nenums != undefined)
         {
-          var enums = q.select('match', nenums);
-          var vstr = '';
-          for (var i = 1; i <= enums.length; i++)
-          {
-            if (vstr != '')
+            var enums = q.select('match', nenums);
+            var vstr = '';
+            for (var i = 1; i <= enums.length; i++)
             {
-              vstr += ',';
+                if (vstr != '')
+                    vstr += ',';
+
+                vstr += "'" + q.selectValue('match:nth(' + i + ')', nenums) + "'";
             }
-            vstr += "'" + q.selectValue('match:nth(' + i + ')', nenums) + "'";
-          }
 
-          str += ",enums:[ " + vstr + " ]";
+            str += ",enums:[ " + vstr + " ]";
         }
-
         str += "}";
 
         return str;
@@ -978,10 +963,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             return;
         }
 
-        if(m_thisObj.m_parent.m_editorPanel == undefined)
-            m_thisObj.m_parent.f_createEditorPanel();
+        var vPanel = m_thisObj.m_parent;
 
-        m_thisObj.m_parent.f_cleanEditorPanel();
+        if(vPanel.m_editorPanel == undefined)
+            vPanel.f_createEditorPanel();
+
+        vPanel.f_cleanEditorPanel();
 
         /////////////////////////////////////////
         // on input field blur callback function
@@ -990,8 +977,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             m_thisObj.m_prevXMLStr = f_sendOperationCliCommand(node,
                                       m_thisObj, true, m_thisObj.m_prevXMLStr);
         }
-
-        // end on blur
 
         ///////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////
@@ -1007,13 +992,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             if (nNode.text == '&lt;value&gt;')
             {
-              nodeArray.push(nNode);
-              nNode = nNode.parentNode;
-              continue;
+                nodeArray.push(nNode);
+                nNode = nNode.parentNode;
+                continue;
             }
 
             labelArray.push(nNode.text);
-
             nNode = nNode.parentNode;
         }
 
@@ -1027,13 +1011,14 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             labelStr += c;
         }
 
+        var field = null;
         while(nodeArray.length > 0)
         {
             nNode = nodeArray.pop();
             var helpStr = undefined;
 
             if(nNode.attributes.help != undefined)
-              helpStr = nNode.attributes.help;
+                helpStr = nNode.attributes.help;
 
             if(nNode.attributes.enums != undefined)
             {
@@ -1047,34 +1032,31 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     values = wild;
                   }*/
 
-                var field = f_createCombobox(values,
+                field = f_createCombobox(values,
                             'Select a valuid value...', undefined,
                             labelStr, 250,
                             helpStr, true, 
                             inputFieldOnBlur, nNode);
 
-                f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, labelStr);
+                f_addField2Panel(vPanel.m_editorPanel, field, labelStr);
 
                 field = field.items.itemAt(V_IF_INDEX_INPUT).items.itemAt(0);
-                nNode.getValFunc = function()
-                {
-                    if(field.getValue() != undefined)
-                      return field.getValue();
-                }
             }
             else
             {
-                var field = f_createTextField('', labelStr, helpStr,
-                            250, inputFieldOnBlur, node);
-
-                f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, helpStr);
+                field = f_createTextField('', labelStr, helpStr,
+                                          250, inputFieldOnBlur, node);
+                f_addField2Panel(vPanel.m_editorPanel, field, helpStr);
 
                 field = field.items.itemAt(V_IF_INDEX_INPUT);
-                nNode.getValFunc = function()
-                {
-                    if(field.getValue() != undefined)
-                      return field.getValue();
-                }
+            }
+
+            nNode.getValFunc = function()
+            {
+                if(field.getValue() != undefined)
+                    return field.getValue();
+                else
+                    return null;
             }
         }
 
@@ -1083,22 +1065,28 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_updateOperCmdResponse: function(headerStr, values, clear)
     {
-        var tf = m_thisObj.m_parent.f_getTextAreaFieldByHeaderName(headerStr);
+        var tf = m_thisObj.m_parent.f_getEditorTitleCompByHeaderName(headerStr);
 
         if(tf != undefined)
         {
-            while(headerStr.indexOf('&rArr;') > -1)
-                headerStr = headerStr.replace('&rArr;', ' ');
+            headerStr = headerStr.replace('&rArr;', ' ');
 
             tf.setValue(tf.getValue() + '\n* ' +
                 headerStr + ': ' + values);
         }
         else
         {
-            var mlbl = f_createTextAreaField(headerStr, values, 500, 200);
+            var ePanel = m_thisObj.m_parent.m_editorPanel;
 
-            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, mlbl, undefined);
-            m_thisObj.m_parent.m_editorPanel.doLayout();
+            ///////////////////////////////////////
+            // create and add editor title header
+            var hPanel = f_createEditorTitle(null, headerStr);
+            f_addField2Panel(ePanel, hPanel, undefined);
+
+            var mlbl = f_createTextAreaField(values, 500, 200);
+            f_addField2Panel(ePanel, mlbl, undefined);
+            
+            ePanel.doLayout();
         }
     },
 
@@ -1149,18 +1137,15 @@ function filterWildcard(arr)
     var wc = false;
     var narr = [ ];
 
-    for (var i = 0; i < arr.length; i++)
+    for(var i = 0; i < arr.length; i++)
     {
-      if (arr[i] == '*')
-        wc = true;
-      else
-        narr[narr.length] = arr[i];
+        if(arr[i] == '*')
+            wc = true;
+        else
+            narr[narr.length] = arr[i];
     }
 
-    if (wc)
-      return narr;
-    else
-      return undefined;
+    return wc ? narr : undefined;
 }
 
 function getNodeStyleImage(node)

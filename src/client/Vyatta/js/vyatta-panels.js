@@ -52,7 +52,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             ,split: true
             ,autoHeight: true
             ,autoWidth: true
-            ,items: [ this.m_topPanel, ipanel ]
+            ,items: [this.m_topPanel, ipanel ]
         });
         this.m_parentPanel.iPanel = ipanel;
 
@@ -67,16 +67,15 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         {
             this.m_treeObj.f_setThisTreeObj(this.m_treeObj);
 
-            //var cb = this.m_topPanel.cbpanel;
-            //alert(cb.items.getCount());
-            //cb.show();
+            var cb = this.m_topPanel.cbpanel;
+            //cb.combo.trigger.show();
             //cb.setSize(0, 25);
             //cb.triggerClass = 'x-form';
             //delete cb.remove(cb.items.itemAt(1));
             //cb.combo = null;
             //cb.hide();
             //var f = f_createComboBox(this);
-            //f.setSize(28, 90);
+            //cb.setSize(28, 290);
             //cb.setSize(28, 190);
             //cb.add(f);
             //cb.show();
@@ -126,7 +125,6 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
     f_resizeLeftPanel: function(w, h)
     {
         var lp = this.m_leftPanel;
-
         lp.setSize(lp.width, h);
 
         if(this.m_treeObj != undefined)
@@ -161,7 +159,6 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             autoWidth: true
             ,layout: 'column'
             ,height: 26
-            ,width: 195
             ,boder: false
             ,bodyBorder: false
             ,bodyStyle: 'padding: 2px'
@@ -271,7 +268,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         return 0;
     },
 
-    f_getTextAreaFieldByHeaderName: function(headerName)
+    f_getEditorTitleCompByHeaderName: function(headerName)
     {
         if(this.m_editorPanel.items != undefined)
         {
@@ -363,9 +360,7 @@ function f_createNumberField(value, node, help, width, callback)
         ,width: 800
         ,items: [ f_createLabel(label, V_LABEL_LABEL),
                   field,
-                  f_createFieldDirtyIndicatorPanel(node), f_createLabel(help +
-                  '. <font color=red><small>'+
-                  'Goto next input field or press ENTER to submit</small></font>'
+                  f_createFieldDirtyIndicatorPanel(node), f_createLabel(help
                   , V_LABEL_HELP) ]
     });
     p.m_node = node;
@@ -400,9 +395,7 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
         ,items: [ f_createLabel(labelStr, V_LABEL_LABEL),
                     field,
                     f_createFieldDirtyIndicatorPanel(node),
-                    f_createLabel(helpStr + '. <font color=red><small>' +
-                    'Goto next input field or press ENTER to submit</small></font>'
-                    , V_LABEL_HELP) ]
+                    f_createLabel(helpStr, V_LABEL_HELP) ]
     });
     p.m_node = node;
 
@@ -544,37 +537,28 @@ function f_createComboBox(thisObj)
         selectOnFocus: true,
         height: 23,
         width: 150,
-        value: thisObj.m_viewerValues[0]
+        hideLabel: false,
+        hideTrigger: false,
+        hideParent: false,
+        value: thisObj.m_viewerValues[1]
     });
 }
 function f_createTopPanelViewPanel(thisObj)
 {
-    var label = new Ext.form.Label(
-    {
-        text: 'View:'
-        ,cls: 'vlabel_right'
-        ,width: 38
-        ,boder: false
-        ,position: 'fixed'
-    });
-
     var field = f_createComboBox(thisObj);
-    var cbpanel = new Ext.Panel(
+    return new Ext.Panel(
     {
         autoWidth: true
-        ,layout: 'column'
         ,height: 28
         ,width: 192
-        ,maxWidth: 192
+        ,maxWidth: 200
         ,boder: false
         ,bodyBorder: false
-        ,bodyStyle: 'padding: 2px'
+        ,collapsible: false
         ,cls: 'v-panel-with-background-color'
-        ,items: [ label, field ]
+        //,cls: 'v-border-less'
+        ,tbar: [ 'View: ', field ]
     });
-    cbpanel.combo = field;
-
-    return cbpanel;
 }
 
 function f_createToolbar(panel)
@@ -607,7 +591,7 @@ function f_createToolbar(panel)
           panel.m_discardBtn = f_createToolbarButton('v_discard_button',
                               'discard', panel.m_treeObj),
           panel.m_commitBtn = f_createToolbarButton('v_commit_button',
-                                'commit', panel.m_treeObj),
+                                'commit', panel.m_treeObj)
         ]
     });
 }
@@ -664,7 +648,8 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
             ///////////////////////////////////////////////////////
             // if the below statement is true, the fields already
             // exist. Update the dirty flag if neccessary
-            if(label.getXType() == 'label' && label.html == cLabel.html)
+            if(label != undefined && label.getXType() == 'label' &&
+                label.html == cLabel.html)
             {
                 ////////////////////////////////////////
                 // handle field dirty indicator
@@ -689,7 +674,7 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
             }
             ///////////////////////////////////////
             // if true, let handle the button issue
-            else if(label.getXType() == 'button')
+            else if(label != undefined && label.getXType() == 'button')
             {
                 if(label.text == cLabel.text)
                     return false;
@@ -720,7 +705,9 @@ function f_addField2Panel(editorPanel, fields, labelTxt)
 
         ///////////////////////////////////////////////
         // all button should add right after the title
-        if(fields.items.item(V_IF_INDEX_LABEL).getXType() == 'button')
+        if(fields.items != undefined &&
+                fields.items.item(V_IF_INDEX_LABEL) != undefined &&
+                fields.items.item(V_IF_INDEX_LABEL).getXType() == 'button')
             eFormPanel.insert(1, fields);
         else
             eFormPanel.add(fields);
@@ -821,18 +808,24 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
     return p;
 }
 
-function f_createEditorTitle(node)
+function f_createEditorTitle(node, title)
 {
     var titleName = '';
-    var arrow = ' ';
-    var n = node;
 
-    while(n != undefined)
+    if(node != null)
     {
-        titleName =  n.text + arrow + titleName;
-        arrow = '&nbsp;&rArr;&nbsp;';
-        n = n.parentNode;
+        var arrow = ' ';
+        var n = node;
+
+        while(n != undefined)
+        {
+            titleName =  n.text + arrow + titleName;
+            arrow = '&nbsp;&rArr;&nbsp;';
+            n = n.parentNode;
+        }
     }
+    else
+        titleName = title;
 
     return new Ext.Panel(
     {
@@ -902,31 +895,18 @@ function f_createLabel(value, labelFor)
     });
 }
 
-function f_createTextAreaField(headerTitle, values, width, height)
+function f_createTextAreaField(values, width, height)
 {
-    var field = new Ext.form.TextArea(
+    return new Ext.Panel(
     {
-        mode: 'local'
-        ,border: false
-        ,width: width  //600,
-        ,height: height // 500
-        ,style: 'font-family:monospace'
-        ,value: values
-    });
-
-    var p = new Ext.Panel(
-    {
-        layout: 'ux.row'
-        ,title: headerTitle
-        ,border: true
+        border: false
         ,style: 'padding:5px'
-        ,width: width+2
+        //,width: width+2
+        ,autoWidth: true
+        ,autoHeight: true
         ,autoScroll: false
-        ,items: [ field ]
+        ,html: values
     });
-    p.m_node = null;
-
-    return p;
 }
 
 function f_enterKeyPressHandler(field, e, callback)

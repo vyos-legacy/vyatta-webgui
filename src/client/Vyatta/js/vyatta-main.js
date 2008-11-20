@@ -181,15 +181,12 @@ function f_createFrameFooterPanel()
 {
     //var str = "<nobr><div id='v_footer_text'>&nbsp;&nbsp;&copy; 2006 - 2008 Vyatta Inc." +
       //        "<div id='v_footer_clock'>sss</div></div></nobr>";
-
-
     var footer = new Ext.Panel(
     {
         cls: 'v-panel-with-background-color'
         ,height: 25
         ,border: false
         ,bodyBorder: false
-        //,html: str
         ,contentEl: 'v_footer_text'
     });
     

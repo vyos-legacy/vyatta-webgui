@@ -6,8 +6,8 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
 {
     var sid = f_getUserLoginedID();
     if(sid == 'NOTFOUND')
-      // no sid. do nothing.
-      return undefined;
+        // no sid. do nothing.
+        return undefined;
 
     var narr = [ ];
     var n = node;
@@ -34,18 +34,16 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
         headerStr += c;
     }
 
-    var l_clear = clear;
-
     //////////////////////////////////////////////////////////////
     // operaction command callback
     var opCmdCb = function(options, success, response)
     {
-        var xmlRoot = response.responseXML.documentElement;
-        var q = Ext.DomQuery;
-
-        var isSuccess = f_parseResponseError(xmlRoot);
         f_hideSendWaitMessage();
-        callbackObj.f_updateOperCmdResponse(headerStr, isSuccess[1], l_clear);
+        if(response.responseXML == null) return;
+
+        var xmlRoot = response.responseXML.documentElement;
+        var isSuccess = f_parseResponseError(xmlRoot);
+        callbackObj.f_updateOperCmdResponse(headerStr, isSuccess[1], clear);
     }   // end oper cmd callback
 
     /* send request */
@@ -59,6 +57,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
     if(prevXMLStr != undefined && prevXMLStr == xmlstr)
         return xmlstr;
 
+    f_resetLoginTimer();
     g_sendCommandWait = Ext.MessageBox.wait('Running operational command...',
                                   'Operation');
 
@@ -78,8 +77,8 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 {
     var sid = f_getUserLoginedID();
     if(sid == 'NOTFOUND')
-      // no sid. do nothing.
-      return;
+        // no sid. do nothing.
+        return;
 
     f_resetLoginTimer();
     g_sendCommandWait = Ext.MessageBox.wait('Changing configuration...',
@@ -99,8 +98,6 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         }
 
         var xmlRoot = response.responseXML.documentElement;
-        var q = Ext.DomQuery;
-
         var isSuccess = f_parseResponseError(xmlRoot);
         if(!isSuccess[0])
         {

@@ -77,7 +77,6 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
 function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 {
     var sid = f_getUserLoginedID();
-    var cmdSent = cmds;
     if(sid == 'NOTFOUND')
       // no sid. do nothing.
       return;
@@ -136,21 +135,25 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 }
             }
 
-            var handler = function(narg)
-            {
-                tree.expandPath(selPath, 'text', ehandler);
-                narg.un('expand', handler);
-            }
-
-            if(cmds.indexOf('discard') >= 0)
+            if(cmds[0].indexOf('discard') >= 0)
             {
                 p.reload();
                 treeObj.m_parent.f_cleanEditorPanel();
                 return;
             }
-            else if(cmds.indexOf('commit') >= 0)
-                selNode.reload();
+            else if(cmds[0].indexOf('commit') >= 0)
+            {
+                f_handlePropagateParentNodes(selNode);
+                treeObj.m_selNodePath = selPath;//node.parentNode;
+                tree.getRootNode().reload();
+                return;
+            }
 
+            var handler = function(narg)
+            {
+                tree.expandPath(selPath, 'text', ehandler);
+                narg.un('expand', handler);
+            }
             p.on('expand', handler);
             p.collapse();
             p.expand();
@@ -165,29 +168,17 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                  * parent node, which only updates all siblings of the newly
                  * created node).
                  */
-                var n = node.parentNode;
-                while (n != undefined)
-                {
-                    if ((n.attributes.configured == 'active')
-                                  || (n.attributes.configured == 'set'))
-                        // already set. we're done.
-                        break;
-
-                    n.attributes.configured = 'set';
-                    n = n.parentNode;
-                }
+                f_handlePropagateParentNodes(node);
             }
             else if(cmds[0].indexOf("delete", 0) >= 0)
-            {
                 treeObj.m_cmd = cmds[0].substring(0, 6);
-            }
 
             ////////////////////////////////////////////////
             // since simple expand the parendNode.expand()
             // doesnot refresh/rendereer parentNode's parents,
             // we need to refresh from the root, then after
             // the reload we expand the m_selNode node.
-            treeObj.m_selNodePath = selPath;//node.parentNode;
+            treeObj.m_selNodePath = selPath;
             tree.getRootNode().reload();
         }
     }
@@ -207,4 +198,19 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         xmlData: xmlstr,
         callback: sendCommandCliCb
     });
+}
+
+function f_handlePropagateParentNodes(node)
+{
+    var n = node.parentNode;
+    while (n != undefined)
+    {
+        if ((n.attributes.configured == 'active')
+                      || (n.attributes.configured == 'set'))
+            // already set. we're done.
+            break;
+
+        n.attributes.configured = 'set';
+        n = n.parentNode;
+    }
 }

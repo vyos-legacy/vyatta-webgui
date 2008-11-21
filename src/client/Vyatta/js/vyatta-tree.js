@@ -416,23 +416,30 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 if(i+1 < snode.length)
                 {
                     node.expand();
-                    node = node.firstChild;
+                    var cNode = node.firstChild;
 
-                    ///////////////////////////////////////
-                    // child node is not exist yet,
-                    // so let get it from server.
-                    if(node == undefined)
+                    /////////////////////////////////////////////
+                    // get cNode from server if it's not defined
+                    if(cNode == undefined)
                     {
-                        treeObj.f_handleExpandNode(node, treeObj, false);
+                        var isUserClick = false;
+
+                        /////////////////////////////////////
+                        // cNode could be deleted. if this is
+                        // the case, get its parent instead
+                        if(treeObj.m_cmd != undefined && treeObj.m_cmd == 'delete')
+                        {
+                            cNode = node;
+                            isUserClick = true;
+                        }
+
+                        treeObj.f_handleExpandNode(cNode, treeObj, isUserClick);
                         return;
                     }
+
+                    node = cNode;
                 }
             }
-
-            //snode = treeObj.m_selNodePath.substr(1, len);
-            //treeObj.m_tree.selectPath(snode);
-            //node = treeObj.m_tree.getSelectionModel().getSelectedNode();
-            //treeObj.m_tree.expandPath(node);
 
             ///////////////////////////////////////
             // reset the select node path
@@ -446,6 +453,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_handleExpandNode: function(node, treeObj, handleClick)
     {
+        if(treeObj.m_cmd != undefined && treeObj.m_cmd == 'delete')
+        {
+            treeObj.m_cmd = undefined;
+            treeObj.m_parent.f_cleanEditorPanel();
+        }
+
         if(node != undefined)
         {
             var handler = function(narg)
@@ -455,12 +468,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     treeObj.m_tree.getSelectionModel().select(node);
                     node.ensureVisible();
                     
-                    if(treeObj.m_cmd != undefined && treeObj.m_cmd == 'delete')
-                    {
-                        treeObj.m_cmd = undefined;
-                        treeObj.m_parent.f_cleanEditorPanel();
-                    }
-
                     treeObj.f_HandleNodeConfigClick(node, null, undefined);
                 }
 
@@ -480,10 +487,11 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_getNodePathStr: function(node)
     {
+        if(node.ownerTree == null)
+            node.ownerTree = this.m_tree;
+
         var str = node.getPath('text');
         str = str.replace(/^ Configuration /, '');
-        str = str.replace('undefined', '');
-        str = str.replace(',', ' ');
 
         return str;
     },
@@ -678,7 +686,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         var field = f_createTextField(undefined, 'Create ' + node.text + ' value',
                       node.attributes.help, 250, callback, node);
         f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.text);
-        field = field.items.itemAt(1);
+        field = field.items.itemAt(V_IF_INDEX_INPUT);
 
         node.getValFunc = function()
         {
@@ -695,9 +703,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         var onBlur = function()
         {
-            if(node.ownerTree == null)
-                node.ownerTree = m_thisObj;
-
             var isSetOrDelete = (node.getValFunc() == undefined ||
                                 node.getValFunc().length == 0) ?
                                 'delete ' : 'set ';
@@ -802,7 +807,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         var field = f_createTextField(ival, node.text, hlabel, 250, callback, node);
         f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.txt);
 
-        field = field.items.itemAt(1);
+        field = field.items.itemAt(V_IF_INDEX_INPUT);
         node.getValFunc = function()
         {
             return field.getValue();
@@ -847,7 +852,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         node.getValFunc = function()
         {
-            var val =  field1.items.itemAt(1).items.itemAt(0).getValue();
+            var val =  field1.items.itemAt(V_IF_INDEX_INPUT).items.itemAt(0).getValue();
             if(isCheckbox)
                 return (val != undefined && val) ? 'disable' : 'enable';
             else
@@ -951,7 +956,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         var field = f_createNumberField(ival, node, hlabel, 250, callback);
         f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.txt);
 
-        field = field.items.itemAt(1);
+        field = field.items.itemAt(V_IF_INDEX_INPUT);
         node.getValFunc = function()
         {
             return field.getValue();
@@ -977,8 +982,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             m_thisObj.m_parent.f_createEditorPanel();
 
         m_thisObj.m_parent.f_cleanEditorPanel();
-        //f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
-        //                      f_createEditorTitle(node), node.text);
 
         /////////////////////////////////////////
         // on input field blur callback function
@@ -1052,7 +1055,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
                 f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, labelStr);
 
-                field = field.items.itemAt(1).items.itemAt(0);
+                field = field.items.itemAt(V_IF_INDEX_INPUT).items.itemAt(0);
                 nNode.getValFunc = function()
                 {
                     if(field.getValue() != undefined)
@@ -1066,7 +1069,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
                 f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, helpStr);
 
-                field = field.items.itemAt(1);
+                field = field.items.itemAt(V_IF_INDEX_INPUT);
                 nNode.getValFunc = function()
                 {
                     if(field.getValue() != undefined)

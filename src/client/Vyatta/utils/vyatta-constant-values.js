@@ -42,4 +42,9 @@ V_STATUS_UNKNOWN = 'unknown';
 
 V_DIRTY_FLAG = '<img src="images/statusUnknown.gif" />';
 
-
+//////////////////////////////////////////
+// editor inner field index
+V_IF_INDEX_LABEL = 0;   // input label
+V_IF_INDEX_INPUT = 1;   // input field
+V_IF_INDEX_DIRTY = 2;   // dirty indicator
+V_IF_INDEX_TIP = 3;     // tip

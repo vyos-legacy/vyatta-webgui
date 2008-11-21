@@ -61,10 +61,11 @@ public:
 			 BOOL,
 			 MACADDR};
 
-  enum NodeState {ACTIVE,
-			  DELETE,
-			  SET};
-
+  enum NodeState {ACTIVE,        //node is in active config
+		  ACTIVE_PLUS,   //node contains a child in set/delete state
+		  DELETE,        //node is deleted in local config
+		  SET};          //node is set in local config
+  
 
   static std::string
   generate_response(std::string &token, Error err);

@@ -214,6 +214,9 @@ Configuration::get_full_level(const std::string &root_node, std::string &out, bo
 	case WebGUI::ACTIVE:
 	  out += "<configured>active</configured>";
 	  break;
+	case WebGUI::ACTIVE_PLUS:
+	  out += "<configured>active_plus</configured>";
+	  break;
 	case WebGUI::SET:
 	  out += "<configured>set</configured>";
 	  break;
@@ -268,6 +271,9 @@ Configuration::get_full_level(const std::string &root_node, std::string &out, bo
     switch (m_iter->second) {
     case WebGUI::ACTIVE:
       out += "<configured>active</configured>";
+      break;
+    case WebGUI::ACTIVE_PLUS:
+      out += "<configured>active_plus</configured>";
       break;
     case WebGUI::SET:
       out += "<configured>set</configured>";
@@ -600,6 +606,9 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
     case WebGUI::ACTIVE:
       out += "<configured>active</configured>";
       break;
+    case WebGUI::ACTIVE_PLUS:
+      out += "<configured>active</configured>";
+      break;
     case WebGUI::SET:
       out += "<configured>set</configured>";
       break;
@@ -645,6 +654,7 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
 {
   string active_config = WebGUI::ACTIVE_CONFIG_DIR + "/" + rel_config_path;
   string local_config = WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id() + "/" + rel_config_path;
+  string changes_only_config = WebGUI::LOCAL_CHANGES_ONLY + _proc->get_msg().id() + "/" + rel_config_path;
   map<string,WebGUI::NodeState> coll;
   
 
@@ -661,7 +671,6 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
     }
     closedir(dp);
   }
-  //  cout << "Configruation::get_conf_dir(): " << active_config << ", " << coll.size() << endl;
 
   //iterate over changes only dir and identify set/delete states
   //iterate over temporary configuration
@@ -670,18 +679,26 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
     return coll;
     //    return map<string,WebGUI::NodeState>();
   }
-  //
-  //
-  // NOTE: NEED TO HANDLE MULTIPLE VALUES IN THE NODE.VAL FILE HERE!!!
-  //
-  //
 
   while ((dirp = readdir(dp)) != NULL) {
     if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
       map<string,WebGUI::NodeState>::iterator iter = coll.find(dirp->d_name);
       if (iter != coll.end()) {
 	//correct handling of delete is if it is only present in the active config
-	iter->second = WebGUI::ACTIVE;
+	//is this an active or active_plus?
+	//need to check tmp dir
+	struct stat s;
+	string tmp = changes_only_config + string(dirp->d_name);
+	lstat(tmp.c_str(), &s);
+	cout << tmp << endl;
+	if ((lstat(tmp.c_str(),&s) == 0)) {
+	  cout << "A" << endl;
+	  iter->second = WebGUI::ACTIVE_PLUS; //DOES THIS SHOW UP IN THE CHANGES ONLY DIR?
+	}
+	else {
+	  cout << "B" << endl;
+	  iter->second = WebGUI::ACTIVE;
+	}
       }
       else {
 	//this means this is a new node
@@ -689,11 +706,6 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
       }
     }
   }
-
-  
-
   closedir(dp);
-  //  cout << "Configruation::get_conf_dir(): " << local_config << ", " << coll.size() << endl;
-
   return coll;
 }

@@ -229,6 +229,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             ,cls: 'v-border-less'
             ,collapsible: false
         });
+        this.m_editorPanel.m_treeObj = this.m_treeObj;
     },
 
     f_cleanEditorPanel: function()
@@ -651,9 +652,13 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
             if(label != undefined && label.getXType() == 'label' &&
                 label.html == cLabel.html)
             {
+                var setField = editorPanel.m_treeObj.m_setField;
+
                 ////////////////////////////////////////
                 // handle field dirty indicator
-                if(getNodeStyleImage(fields.m_node).length > 0)
+                if(getNodeStyleImage(fields.m_node).length > 0 ||
+                    (setField != undefined &&
+                    setField.items.itemAt(V_IF_INDEX_LABEL).html == label.html))
                 {
                     f.items.item(V_IF_INDEX_DIRTY).show();
 
@@ -838,11 +843,15 @@ function f_createButton(treeObj, node, btnText, title)
     var buttons = [ ];
     var btn_id = Ext.id();
     var cmd = btnText;
+    var isDelete = false;
 
     if(btnText == 'Delete')
         cmd = 'delete ';
     else if(btnText == 'Create')
+    {
         cmd = 'set ';
+        isDelete = true;
+    }
 
     title = f_replace(title, '&rArr;', '');
     title = f_replace(title, 'Configuration&nbsp;', '');
@@ -854,7 +863,7 @@ function f_createButton(treeObj, node, btnText, title)
         ,handler: function()
         {
             f_sendConfigCLICommand(
-                [cmd + treeObj.f_getNodePathStr(node) ], treeObj, node);
+                [cmd + treeObj.f_getNodePathStr(node) ], treeObj, node, isDelete);
         }
     });
 

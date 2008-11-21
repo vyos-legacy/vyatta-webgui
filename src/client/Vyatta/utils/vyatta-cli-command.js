@@ -84,7 +84,6 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
     g_sendCommandWait = Ext.MessageBox.wait('Changing configuration...',
                                               'Configuration');
 
-    var tree = treeObj.m_tree;
     var sendCommandCliCb = function(options, success, response)
     {
         f_hideSendWaitMessage();
@@ -105,79 +104,16 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             return;
         }
 
+        var tree = treeObj.m_tree;
         var selNode = tree.getSelectionModel().getSelectedNode();
         if(selNode == undefined)
             selNode = tree.getRootNode();
         var selPath = selNode.getPath('text');
 
         if(node == undefined)
-        {
-            var p = tree.root;
-
-            var ehandler = function(success, last)
-            {
-                if(last.getPath('text') != selPath)
-                {
-                    // we were at leaf. "last" is parent.
-                    tree.selectPath(selPath, 'text', function(success,sel)
-                    {
-                        var nnode = treeObj.m_tree.getSelectionModel().getSelectedNode();
-                        treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
-                    });
-                }
-                else
-                {
-                    tree.selectPath(selPath, 'text');
-                    treeObj.f_HandleNodeConfigClick(last, null, undefined, treeObj);
-                }
-            }
-
-            if(cmds[0].indexOf('discard') >= 0)
-            {
-                p.reload();
-                treeObj.m_parent.f_cleanEditorPanel();
-                return;
-            }
-            else if(cmds[0].indexOf('commit') >= 0)
-            {
-                f_handlePropagateParentNodes(selNode);
-                treeObj.m_selNodePath = selPath;//node.parentNode;
-                tree.getRootNode().reload();
-                return;
-            }
-
-            var handler = function(narg)
-            {
-                tree.expandPath(selPath, 'text', ehandler);
-                narg.un('expand', handler);
-            }
-            p.on('expand', handler);
-            p.collapse();
-            p.expand();
-        }
-        else if(node.parentNode != undefined)
-        {
-            if(isCreate)
-            {
-                /*
-                 * successfully created a node. now need to propagate the
-                 * "configured" status up the tree (since we only reload the
-                 * parent node, which only updates all siblings of the newly
-                 * created node).
-                 */
-                f_handlePropagateParentNodes(node);
-            }
-            else if(cmds[0].indexOf("delete", 0) >= 0)
-                treeObj.m_cmd = cmds[0].substring(0, 6);
-
-            ////////////////////////////////////////////////
-            // since simple expand the parendNode.expand()
-            // doesnot refresh/rendereer parentNode's parents,
-            // we need to refresh from the root, then after
-            // the reload we expand the m_selNode node.
-            treeObj.m_selNodePath = selPath;
-            tree.getRootNode().reload();
-        }
+            f_handleNodeExpansion(treeObj, selNode, selPath, cmds);
+        else if(node.parentNode != undefined || selNode.parentNode != undefined)
+            f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCreate);
     }
 
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -197,15 +133,140 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
     });
 }
 
+function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
+{
+    var tree = treeObj.m_tree;
+    var p = tree.root;
+
+    //////////////////////////////////////////////////
+    // check for the command we sent.
+    if(cmds[0].indexOf('discard') >= 0)
+    {
+        p.reload();
+        treeObj.m_parent.f_cleanEditorPanel();
+        return;
+    }
+    else if(cmds[0].indexOf('commit') >= 0)
+    {
+        f_handlePropagateParentNodes(selNode);
+        treeObj.m_selNodePath = selPath;//node.parentNode;
+        tree.getRootNode().reload();
+        return;
+    }
+
+    //////////////////////////////////////////////
+    // expand handler
+    var ehandler = function(success, last)
+    {
+        if(last.getPath('text') != selPath)
+        {
+            // we were at leaf. "last" is parent.
+            tree.selectPath(selPath, 'text', function(success,sel)
+            {
+                var nnode = treeObj.m_tree.getSelectionModel().getSelectedNode();
+                treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
+            });
+        }
+        else
+        {
+            tree.selectPath(selPath, 'text');
+            treeObj.f_HandleNodeConfigClick(last, null, undefined, treeObj);
+        }
+    }
+
+    //////////////////////////////////////////////////////
+    // expand node
+    var handler = function(narg)
+    {
+        tree.expandPath(selPath, 'text', ehandler);
+        narg.un('expand', handler);
+    }
+    p.on('expand', handler);
+    p.collapse();
+    p.expand();
+}
+
+function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCreate)
+{
+    if(node.parentNode == undefined)
+        node.parentNode = selNode;
+
+    var tree = treeObj.m_tree;
+    treeObj.m_selNodePath = selPath;
+    var p = node.parentNode;
+
+    if(isCreate)
+    {
+        /*
+         * successfully created a node. now need to propagate the
+         * "configured" status up the tree (since we only reload the
+         * parent node, which only updates all siblings of the newly
+         * created node).
+         */
+        f_handlePropagateParentNodes(node);
+
+        ////////////////////////////////////////////////////////
+        // if spath == scmd, creation is from push button, else
+        // creation is from input fields.
+        var spath = selPath.replace('Configuration', '');
+        var scmd = cmds[0].replace('set', '');
+        spath = f_replace(spath, ' ', '');
+        scmd = f_replace(scmd, ' ', '');
+        if(spath == scmd)
+            p = node;
+    }
+    else if(cmds[0].indexOf("delete", 0) >= 0)
+    {
+        treeObj.m_cmd = cmds[0].substring(0, 6);
+
+        ///////////////////////////////////////////
+        // the selected node should have been
+        // deleted. set the new selected node here.
+        var sm = tree.getSelectionModel();
+        sm.select(selNode.parentNode);
+        treeObj.m_selNodePath = sm.getSelectedNode().getPath('text');
+        
+        var nnode = sm.getSelectedNode();
+        nnode.reload();
+        //nnode.collapse();
+        //nnode.expand();
+        //treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
+        return;
+    }
+    
+    var handler = function(narg)
+    {
+        tree.selectPath(selPath, 'text', function(success, sel)
+        {
+            var nnode = tree.getSelectionModel().getSelectedNode();
+            treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
+        });
+
+        narg.un('expand', handler);
+    }
+
+    p.on('expand', handler);
+    p.collapse();
+    p.expand();
+}
 function f_handlePropagateParentNodes(node)
 {
-    var n = node.parentNode;
+    var n = node;
     while (n != undefined)
     {
-        if ((n.attributes.configured == 'active')
-                      || (n.attributes.configured == 'set'))
-            // already set. we're done.
-            break;
+        /////////////////////////////////////////////
+        // mark node as dirty.
+        if(n.ui.anchor != undefined)
+        {
+            var inner = n.ui.anchor.innerHTML;
+            if(inner.indexOf(V_DIRTY_FLAG) < 0 &&
+                n.attributes.configured != 'set')
+            {
+                inner = inner.replace(n.text, V_DIRTY_FLAG+n.text);
+                inner = inner.replace('="v-node-nocfg"', '="v-node-set"');
+                n.ui.anchor.innerHTML = inner;
+            }
+        }
 
         n.attributes.configured = 'set';
         n = n.parentNode;

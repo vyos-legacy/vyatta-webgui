@@ -535,6 +535,31 @@ function f_replace(str, expOld, expNew)
     return str;
 }
 
+function f_getUploadDialog()
+{
+    var dialog = new Ext.Window(
+    {
+        url: 'upload',
+        title: 'Save Configuration File',
+        reset_on_hide: true,
+        allow_close_on_upload: true,
+        upload_autostart: false,
+        base_params:
+        {
+            reqaction: 'uploadfile', resptype: 'json'},
+            permitted_extensions: ['xml']
+        }
+    );
+
+      //dialog.on('uploadsuccess', onUploadSuccess);
+      //dialog.on('uploadsuccess', onUploadSuccess);
+      //dialog.on('filetest', checkFileCount);
+      //dialog.on('resetqueue', function(){fileCount=0;});
+      //dialog.on('fileremove', function(){fileCount--} )
+
+    return dialog;
+}
+
 function f_commitSingleStoreField(store, record, dataIndex, iindex)
 {
     if(store.colHeaders != undefined)

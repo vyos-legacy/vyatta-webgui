@@ -248,6 +248,15 @@
 
 /******************************************************************************/
 /*  body */
+.x-grid3-modify-cell
+{
+    background: transparent url(../images/grid_modify.gif) no-repeat 0 0;
+}
+.x-grid3-error-cell
+{
+    background: transparent url(../images/grid_error.gif) no-repeat 0 0;
+}
+
 .v-data-panel-body
 {
     border: 2px solid orange;
@@ -256,8 +265,6 @@
 body
 {
   font-family:helvetica,tahoma,verdana,sans-serif;
-  /*padding:20px;
-  padding-top:32px;*/
   font-size:13px;
   background-color:#fff !important;
 }
@@ -376,7 +383,6 @@ pre.code
   border: 1px solid #e8e8e8;
 }
 
-////////////////////////////
 .ext-strict .ext-safari .x-small-editor .x-form-text
 {
     height: 18px !important;

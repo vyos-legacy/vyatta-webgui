@@ -101,6 +101,11 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         if(!isSuccess[0])
         {
             f_promptErrorMessage('Changing configuration...', isSuccess[1]);
+            
+            /////////////////////////////////
+            // handle grid row input error
+            f_setGridViewError(node);
+
             return;
         }
 

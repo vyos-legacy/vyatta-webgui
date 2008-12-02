@@ -49,9 +49,9 @@ function f_showTab(tabIndex)
     if(g_baseSystem.m_tabObjects[tabIndex] == undefined)
     {
         g_baseSystem.m_tabObjects[tabIndex] = new
-                VYATTA_operationObject(g_baseSystem.m_bodyPanel,
-                                      g_baseSystem.m_tabNames[tabIndex]);
-        g_baseSystem.m_tabObjects[tabIndex].f_initDataType();
+                                  VYATTA_panels(g_baseSystem.m_bodyPanel,
+                                  g_baseSystem.m_tabNames[tabIndex]);
+        g_baseSystem.m_tabObjects[tabIndex].f_initPanelDataType();
         g_baseSystem.m_tabObjects[tabIndex].f_initLayout();
     }
     else

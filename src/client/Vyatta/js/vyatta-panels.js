@@ -16,12 +16,22 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
     // m_parentPanel
     // m_container
     // m_treeObj
+    constructor: function(parentContainer, name)
+    {
+        this.m_container = parentContainer;
+        this.m_tabName = name;
+    },
+
     f_initPanelDataType: function(parentContainer, tabName)
     {
         this.m_helpIndex = 3;
-        this.m_container = parentContainer;
-        this.m_tabName = tabName;
         this.m_viewerValues = [ 'Key Components', 'Completed Hierarchical']
+
+        if(parentContainer != undefined)
+            this.m_container = parentContainer;
+
+        if(tabName != undefined)
+            this.m_tabName = tabName;
     },
 
     ////////////////////////////////////////////////////////////////////////////
@@ -66,26 +76,11 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         if(show)
         {
             this.m_treeObj.f_setThisTreeObj(this.m_treeObj);
-
-            var cb = this.m_topPanel.cbpanel;
-            //cb.combo.trigger.show();
-            //cb.setSize(0, 25);
-            //cb.triggerClass = 'x-form';
-            //delete cb.remove(cb.items.itemAt(1));
-            //cb.combo = null;
-            //cb.hide();
-            //var f = f_createComboBox(this);
-            //cb.setSize(28, 290);
-            //cb.setSize(28, 190);
-            //cb.add(f);
-            //cb.show();
             this.m_parentPanel.show();
             this.f_resizePanels();
         }
         else
-        {
             this.m_parentPanel.hide();
-        }
     },
 
     f_updatePanels: function()
@@ -305,7 +300,6 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 
     f_onTreeRenderer: function(tree)
     {
-        return;
         f_updateToolbarButtons(tree);
     }
 });
@@ -596,13 +590,23 @@ function f_createToolbar(panel)
         ]
     });
 }
+
 function f_createToolbarButton(iconCls, cmdName, treeObj)
 {
     return new Ext.Action(
     {
         text: ' '
         ,iconCls: iconCls
-        ,handler: function() {f_sendCLICommand(this, [cmdName], treeObj);}
+        ,handler: function() 
+        {
+            if(cmdName == 'save')
+            {
+                f_getUploadDialog().show();
+                return;
+            }
+
+            f_sendCLICommand(this, [cmdName], treeObj);
+        }
     });
 }
 function f_updateToolbarButtons(tree)
@@ -752,8 +756,9 @@ function f_getEditGridValues(gridStore)
     var jj = 0;
     for (var i = 0; i < gridStore.getCount(); i++)
     {
+        var rec = gridStore.getAt(i);
         var val = gridStore.getAt(i).get('value');
-        if(val.length > 0)
+        if(val.length > 0 && rec.error != true)
             ret[jj++] = val;
     }
 
@@ -774,6 +779,7 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
     for(var i=0; i<50-count; i++)
         gridStore.loadData([ '' ], true);
 
+    var gv = new VYATTA_gridview();
     var grid = new Ext.grid.EditorGridPanel(
     {
         store: gridStore,
@@ -785,6 +791,7 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
         height: 200,
         sm: new Ext.grid.RowSelectionModel({ singleSelect: true }),
         stripeRows: true,
+        view: gv,
         columns:
         [
           { id: 'value',
@@ -809,6 +816,7 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
                 f_createLabel(helpLabel, V_LABEL_HELP) ]
     });
     p.m_node = node;
+    node.m_inputField = grid;
 
     return p;
 }

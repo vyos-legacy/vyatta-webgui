@@ -10,21 +10,13 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
     getNodeStyle: function(node)
     {
         if(node.attributes.configured == undefined)
-        {
             return ' class="v-node-nocfg" style="color:black;"';
-        }
         else if(node.attributes.configured == 'active')
-        {
             return ' class="v-node-active" style="color:black;"';
-        }
         else if(node.attributes.configured == 'set')
-        {
             return ' class="v-node-set" style="color:black;"';
-        }
         else if(node.attributes.configured == 'delete')
-        {
-            return ' class="v-node-delete" style="color:red;"';
-        }
+            return ' class="v-node-delete" style="color:black;"';
 
         return '';
     },
@@ -74,13 +66,9 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
         var nel;
         if(bulkRender !== true && n.nextSibling
            && (nel = n.nextSibling.ui.getEl()))
-        {
             this.wrap = Ext.DomHelper.insertHtml("beforeBegin", nel, buf);
-        }
         else
-        {
             this.wrap = Ext.DomHelper.insertHtml("beforeEnd", targetNode, buf);
-        }
 
         this.elNode = this.wrap.childNodes[0];
         this.ctNode = this.wrap.childNodes[1];
@@ -100,7 +88,6 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
 
         this.anchor = cs[index];
         this.textNode = cs[index].firstChild;
-
         n.getOwnerTree().m_parent.f_onRenderer(this);
     }
 });
@@ -119,50 +106,50 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         {
           // no sid. do nothing.
           if(typeof callback == "function")
-            callback();
+              callback();
 
           return;
         }
 
         if(this.fireEvent("beforeload", this, node, callback) !== false)
         {
-          var cstr = "<vyatta><configuration><id>";
+            var cstr = "<vyatta><configuration><id>";
 
-          switch(this.g_loadMode)
-          {
-              case V_TREE_ID_config_data:
-                  cstr = "<vyatta><configuration mode='data'><id>";
-                break;
-              case V_TREE_ID_oper:
-                cstr = "<vyatta><configuration mode='op'><id>";
-                break;
-          }
+            switch(this.g_loadMode)
+            {
+                case V_TREE_ID_config_data:
+                    cstr = "<vyatta><configuration mode='data'><id>";
+                  break;
+                case V_TREE_ID_oper:
+                  cstr = "<vyatta><configuration mode='op'><id>";
+                  break;
+            }
 
-          var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+            var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + cstr + f_getUserLoginedID() + "</id>\n"
                        + "<node>" + this.baseParams.nodepath + "</node>\n"
                        + "</configuration></vyatta>\n";
 
 
-          this.transId = Ext.Ajax.request(
-          {
-              method:this.requestMethod,
-              url: this.dataUrl||this.url,
-              success: this.handleResponse,
-              failure: this.handleFailure,
-              scope: this,
-              argument: {callback: callback, node: node},
-              //params: this.baseParams
-              xmlData: xmlstr
-          });
+            this.transId = Ext.Ajax.request(
+            {
+                method:this.requestMethod,
+                url: this.dataUrl||this.url,
+                success: this.handleResponse,
+                failure: this.handleFailure,
+                scope: this,
+                argument: {callback: callback, node: node},
+                //params: this.baseParams
+                xmlData: xmlstr
+            });
 
         }
         else
         {
-          // if the load is cancelled, make sure we notify
-          // the node that we are done
-          if(typeof callback == "function")
-              callback();
+            // if the load is cancelled, make sure we notify
+            // the node that we are done
+            if(typeof callback == "function")
+                callback();
         }
     },
 
@@ -179,7 +166,7 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         }
 
         var str = '';
-        for (var i = 0; i < nodes.length; i++)
+        for(var i = 0; i < nodes.length; i++)
         {
             if (str != '')
                 str += ',';
@@ -216,7 +203,7 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         var q = Ext.DomQuery;
         var nLeaf = q.selectNode('terminal', node);
 
-        if (nLeaf != undefined)
+        if(nLeaf != undefined)
         {
             str += ",leaf:true";
             var nvals = q.select('value', nLeaf);
@@ -697,8 +684,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         var onBlur = function()
         {
-            var cmdAction = (cNode.getValFunc() == undefined ||
-                                cNode.getValFunc().length == 0) ?
+            var val = cNode.getValFunc();
+            var cmdAction = (val == undefined ||
+                            val.length == 0) ?
                                 'delete ' : 'set ';
             m_thisObj.m_setField = node.getValFieldFunc();
 
@@ -708,33 +696,25 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                               m_thisObj, cNode,
                               cmdAction == 'delete'?false:true);
             else if(cNode.getValFunc != undefined)
-                f_sendConfigCLICommand([ cmdAction + nodePath + " " +
-                             cNode.getValFunc() ], m_thisObj, cNode,
-                              cmdAction == 'delete'?false:true);
+                f_sendConfigCLICommand([ cmdAction + nodePath + " " + val ],
+                              m_thisObj, cNode, cmdAction == 'delete'?false:true);
         }
 
         if (node.attributes.enums != undefined)
-        {
             m_thisObj.f_leafSingleEnumHandler(node, node.attributes.enums, helpStr, onBlur);
-        }
         else if (node.attributes.type == undefined)
         {
             // type-less node
             // XXX needs a handler
         }
         else if (node.attributes.type == 'bool')
-        {
             m_thisObj.f_leafSingleBoolHandler(node, helpStr, onBlur);
-        }
         else if (node.attributes.type == 'u32')
-        {
             m_thisObj.f_leafSingleU32Handler(node, helpStr, onBlur);
-        }
         else
-        {   //if (node.attributes.type == 'text') {
+            //if (node.attributes.type == 'text') {
             // XXX treat everything else as text for now
             m_thisObj.f_leafSingleTxtHandler(node, helpStr, onBlur);
-        }
 
         m_thisObj.m_parent.m_editorPanel.doLayout();
     },
@@ -752,8 +732,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             {
                 var varr = [ ];
 
-                if(node.valuesCount != undefined && node.valuesCount > 0)
-                    varr = [ 'delete ' + nodePath ];
+                ////////////////////////////////////////////
+                // make sure delete prev node before set
+                //if(node.valuesCount != undefined && node.valuesCount > 0)
+                varr = [ 'delete ' + nodePath ];
 
                 var values = node.getValsFunc();
                 var jj = (varr.length != undefined) ? varr.length : 0;
@@ -766,20 +748,15 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
 
         if(node.attributes.enums != undefined)
-        {
             m_thisObj.f_leafMultiEnumHandler(node, node.attributes.enums, hlabel, onBlur);
-        }
         else if(node.attributes.type == 'u32')
-        {
             m_thisObj.f_leafMultiU32Handler(node, hlabel, onBlur);
-        }
         else
-        { //if (node.attributes.type == 'text') {
+            //if (node.attributes.type == 'text') {
             // XXX treat everything else as text for now
             m_thisObj.f_leafMultiTxtHandler(node, hlabel, onBlur);
-        }
 
-      m_thisObj.m_parent.m_editorPanel.doLayout();
+        m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 
     ////////////////////////////////////////////////////////////////////////////
@@ -868,13 +845,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             vala = node.attributes.values;
 
         var GridT = Ext.data.Record.create([{ name: 'value' }]);
-
         var narr = filterWildcard(values);
         var doValidate = true;
         if(narr != undefined)
         {
-          doValidate = false;
-          values = narr;
+            doValidate = false;
+            values = narr;
         }
 
         var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 250, callback);
@@ -896,7 +872,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         var vala = [ ];
         var gridStore = new Ext.data.SimpleStore(
         {
-          fields: [ { name: 'value' } ]
+            fields: [ { name: 'value' } ]
         });
 
         gridStore.loadData(vala);
@@ -923,7 +899,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         var vala = [ ];
         var gridStore = new Ext.data.SimpleStore(
         {
-          fields: [ { name: 'value' } ]
+            fields: [ { name: 'value' } ]
         });
 
         gridStore.loadData(vala);
@@ -934,7 +910,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         var GridT = Ext.data.Record.create(
         [
-          { name: 'value' }
+            { name: 'value' }
         ]);
 
         var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 250, callback);
@@ -1183,6 +1159,7 @@ function getNodeStyleImage(node)
     {
         case 'set':
         case 'delete':
+        case 'activeplus':
             return V_DIRTY_FLAG;
         case 'active':
         default:

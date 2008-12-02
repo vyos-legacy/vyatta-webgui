@@ -300,6 +300,8 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 
     f_onTreeRenderer: function(tree)
     {
+        return;
+
         f_updateToolbarButtons(tree);
     }
 });

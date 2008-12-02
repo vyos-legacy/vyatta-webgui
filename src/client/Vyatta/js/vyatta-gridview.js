@@ -14,7 +14,14 @@ VYATTA_gridview = Ext.extend(Ext.grid.GridView,
         // mark row dirt on lost focus
         if(rs.length == 1 && buf.indexOf('x-grid3-dirty-cell') >= 0)
         {
-            buf = f_replace(buf, 'x-grid3-dirty-cell', 'x-grid3-modify-cell');
+            if(rs[0].data.value.length == 0)
+            {
+                buf = f_replace(buf, 'x-grid3-dirty-cell', '');
+                //rs[0].dirty = false;
+            }
+            else
+                buf = f_replace(buf, 'x-grid3-dirty-cell', 'x-grid3-modify-cell');
+
             rs[0].error = null;
             this.m_row = startRow;
         }

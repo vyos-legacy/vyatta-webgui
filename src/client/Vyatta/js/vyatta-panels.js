@@ -395,6 +395,7 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
                     f_createLabel(helpStr, V_LABEL_HELP) ]
     });
     p.m_node = node;
+    node.m_inputPanel = p;
 
     return p;
 }
@@ -640,6 +641,8 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
         return true;
 
     var eFormPanel = editorPanel.items.itemAt(0);
+
+    if(eFormPanel.items == undefined) return true;
     var len = eFormPanel.items.getCount();
 
     ///////////////////////////////
@@ -679,8 +682,9 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
                                   fields.m_node.attributes.values[0]));
                         }
                     }
+                    f_updateDirtyIndicatorPanel(f.items.item(V_IF_INDEX_DIRTY), false);
                 }
-                
+
                 return false;
             }
             ///////////////////////////////////////
@@ -752,6 +756,21 @@ function f_addField2Panel(editorPanel, fields, labelTxt)
     }
 }
 
+function f_insertField2Panel(editorPanel, fields, labelTxt, index, check4Exist)
+{
+    if(!check4Exist)
+        editorPanel.insert(index, fields);
+    else
+    {
+        var f = editorPanel.items.itemAt(0);
+        if(f.getXType() == 'panel' && f.title != undefined &&
+            fields.title != undefined)
+            f.title = fields.title;
+        else
+            editorPanel.insert(index, fields);
+    }
+}
+
 function f_getEditGridValues(gridStore)
 {
     var ret = [ ];
@@ -818,7 +837,7 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
                 f_createLabel(helpLabel, V_LABEL_HELP) ]
     });
     p.m_node = node;
-    node.m_inputField = grid;
+    node.m_inputPanel = p;
 
     return p;
 }
@@ -845,6 +864,7 @@ function f_createEditorTitle(node, title)
     return new Ext.Panel(
     {
         title: titleName
+        ,height: 0
     });
 }
 
@@ -916,16 +936,52 @@ function f_createLabel(value, labelFor)
 
 function f_createTextAreaField(values, width, height)
 {
+    var val = f_replace(values, "\n", "<br>");
+    var val = f_replace(val, ' ', "&nbsp;");
+    var border = val.length > 0 ? true : false;
+
     return new Ext.Panel(
     {
-        border: false
+        border: border
         ,style: 'padding:5px'
-        //,width: width+2
         ,autoWidth: true
-        ,autoHeight: true
-        ,autoScroll: false
-        ,html: values
+        ,height: height
+        ,autoScroll: true
+        ,html: val
     });
+}
+
+function f_handleInputFieldError(node)
+{
+    if(node == undefined || node.m_inputPanel == undefined) return;
+
+    var inputField = node.m_inputPanel.items.itemAt(V_IF_INDEX_INPUT);
+    var type = inputField.getXType();
+
+    if(type == 'editorgrid')
+        f_setGridViewError(inputField);
+    else if(type == 'textfield')
+        f_handleTextFieldInputError(inputField);
+
+    var error = node.m_inputPanel.items.itemAt(V_IF_INDEX_DIRTY);
+    f_updateDirtyIndicatorPanel(error, true);
+}
+
+function f_updateDirtyIndicatorPanel(field, isError)
+{
+    var html = field.el.dom.innerHTML;
+    if(isError)
+        html = f_replace(html, 'statusUnknown', 'statusDown');
+    else
+        html =  f_replace(html, 'statusDown', 'statusUnknown');
+
+    field.el.dom.innerHTML = html;
+    field.show();
+}
+
+function f_handleTextFieldInputError(inputField)
+{
+
 }
 
 function f_enterKeyPressHandler(field, e, callback)

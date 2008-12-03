@@ -501,30 +501,19 @@ function f_yesNoMessageBox(title, msgText, callback)
 function f_parseResponseError(xmlRoot)
 {
     var success = true;
-    var errmsg = '';
     var q = Ext.DomQuery;
     var err = q.selectNode('error', xmlRoot);
 
     if(err != undefined)
     {
         var code = q.selectValue('code', err, 'UNKNOWN');
+        var msg = q.selectValue('msg', err, 'UNKNOWN');
 
-        if(code == 'UNKNOWN')
-        {
+        if(code == 'UNKNOWN' || code != 0)
             success = false;
-            errmsg = "Unknown";
-        }
-        else if(code != 0)
-        {
-            success = false;
-            var msg = q.selectValue('msg', err, 'UNKNOWN');
-
-            if(msg != 'UNKNOWN')
-                errmsg = msg;
-        }
     }
 
-    return [ success, errmsg ];
+    return [ success, msg ];
 }
 
 function f_replace(str, expOld, expNew)

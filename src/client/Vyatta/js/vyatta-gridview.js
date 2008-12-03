@@ -30,14 +30,12 @@ VYATTA_gridview = Ext.extend(Ext.grid.GridView,
     }
 });
 
-function f_setGridViewError(node)
+function f_setGridViewError(inputField)
 {
-    if(node == undefined || node.m_inputField == undefined) return;
-
-    var gv = node.m_inputField.getView();
+    var gv = inputField.getView();
     var r = gv.m_row;
     var row = gv.getRow(r);
-    var rec = node.m_inputField.getStore().getAt(r);
+    var rec = inputField.getStore().getAt(r);
     var html = row.innerHTML;
 
     rec.error = true;

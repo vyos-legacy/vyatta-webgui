@@ -43,8 +43,10 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
 
         var xmlRoot = response.responseXML.documentElement;
         var isSuccess = f_parseResponseError(xmlRoot);
+
+        if(isSuccess[1].indexOf('command failed') >= 0) isSuccess[1] = '';
         callbackObj.f_updateOperCmdResponse(headerStr, isSuccess[1], clear);
-    }   // end oper cmd callback
+    }
 
     /* send request */
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -103,8 +105,8 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             f_promptErrorMessage('Changing configuration...', isSuccess[1]);
             
             /////////////////////////////////
-            // handle grid row input error
-            f_setGridViewError(node);
+            // handle input error
+            f_handleInputFieldError(node);
 
             return;
         }

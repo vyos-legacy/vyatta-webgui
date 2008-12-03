@@ -16,7 +16,7 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
         else if(node.attributes.configured == 'set')
             return ' class="v-node-set" style="color:black;"';
         else if(node.attributes.configured == 'delete')
-            return ' class="v-node-delete" style="color:black;"';
+            return ' class="v-node-delete" style="color:red;"';
 
         return '';
     },
@@ -545,7 +545,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             if(node.getPath('text') != ' Configuration' &&
                                     node.getPath('text') != ' Operation')
             {
-                    node.reload();
+                node.reload();
             }
         });
 
@@ -962,8 +962,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             return;
         }
 
-        var vPanel = m_thisObj.m_parent;
+        //////////////////////////////
+        // expand the clicked node
+        if(!node.leaf)
+            node.expand();
 
+        var vPanel = m_thisObj.m_parent;
         if(vPanel.m_editorPanel == undefined)
             vPanel.f_createEditorPanel();
 
@@ -1079,16 +1083,22 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
         else
         {
+            //////////////////////////////////////////////////
+            // add title and respose data into view panel
+
             var ePanel = m_thisObj.m_parent.m_editorPanel;
-
-            ///////////////////////////////////////
-            // create and add editor title header
             var hPanel = f_createEditorTitle(null, headerStr);
-            f_addField2Panel(ePanel, hPanel, undefined);
 
-            var mlbl = f_createTextAreaField(values, 500, 200);
+            if(ePanel == undefined || ePanel.items == undefined ||
+                    ePanel.items.getCount() == 0)
+                f_addField2Panel(ePanel, hPanel, undefined);
+            else
+                f_insertField2Panel(ePanel, hPanel, undefined, 0, true);
+
+            var mlbl = f_createTextAreaField(values, 500,
+                                                ePanel.getInnerHeight()-45);
             f_addField2Panel(ePanel, mlbl, undefined);
-            
+
             ePanel.doLayout();
         }
     },

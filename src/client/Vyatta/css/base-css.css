@@ -302,8 +302,13 @@ body
 {
   background-color: d0def0;
 }
-.x-tree .x-panel-body{
+.x-tree .x-panel-body
+{
     background-color:#dfe8f6;
+}
+.x-tree-node .x-tree-selected
+{
+    background-color: #fff;
 }
 
 .v-border-less

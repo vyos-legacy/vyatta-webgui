@@ -132,13 +132,6 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 
         this.m_dataPanel.setSize(w-lp.width, h);
         this.m_editorPanel.setSize(w-lp.width-20, h);
-
-        if(this.m_editorPanel.items != undefined &&
-            this.m_editorPanel.items.getCount() > 0)
-        {
-            var fPanel = this.m_editorPanel.items.itemAt(0);
-            fPanel.setSize(w-lp.width-21, h-7);
-        }
     },
 
     ////////////////////////////////////////////////////////////////////////////
@@ -230,6 +223,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
     f_cleanEditorPanel: function()
     {
         var ep = this.m_editorPanel;
+        ep.m_opTextArea = null;
 
         while(ep != undefined && ep.items != undefined && ep.items.getCount() > 0)
         {
@@ -258,34 +252,11 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         if(ep != undefined && ep.items != undefined && ep.items.getCount() > 0)
         {
             var eFormPanel = ep.items.itemAt(0);
-            return eFormPanel.items.getCount();
+
+            return eFormPanel.items != undefined ? eFormPanel.items.getCount():0;
         }
 
         return 0;
-    },
-
-    f_getEditorTitleCompByHeaderName: function(headerName)
-    {
-        if(this.m_editorPanel.items != undefined)
-        {
-            var fp = this.m_editorPanel.items.itemAt(0);
-
-            if(fp != undefined)
-            {
-                for(var i=0; i<fp.items.getCount() > 0; i++)
-                {
-                    var fd = fp.items.itemAt(i);
-                    if(fd.getXType() == 'panel' && headerName.indexOf(fd.title) > -1)
-                    {
-                        fd = fd.items.itemAt(0);
-                        if(fd.getXType() == 'textarea')
-                            return fd;
-                    }
-                }
-            }
-        }
-
-        return undefined;
     },
 
     ////////////////////////////////////////////////////////////////////////////
@@ -381,7 +352,8 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
         f_enterKeyPressHandler(field, e, callback);
     }
 
-    field.on('keyup', keyupPressHandler);
+    if(callback != undefined)
+        field.on('keyup', keyupPressHandler);
 
     var p = new Ext.Panel(
     {
@@ -419,7 +391,8 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
           hideParent: true
       });
 
-      field.on('collapse', callback);
+      if(callback != undefined)
+          field.on('collapse', callback);
 
       ////////////////////////////////////////
       // for some reasons, a combo box must
@@ -872,7 +845,7 @@ function f_createButton(treeObj, node, btnText, title)
 {
     var buttons = [ ];
     var btn_id = Ext.id();
-    var cmd = btnText;
+    var cmd = '';
     var isDelete = false;
 
     if(btnText == 'Delete')
@@ -892,8 +865,12 @@ function f_createButton(treeObj, node, btnText, title)
         ,tooltip: btnText + ' ' + title
         ,handler: function()
         {
-            f_sendConfigCLICommand(
-                [cmd + treeObj.f_getNodePathStr(node) ], treeObj, node, isDelete);
+            if(cmd.length == 0)
+                f_sendOperationCliCommand(node, treeObj, true, undefined);
+            else
+                f_sendConfigCLICommand(
+                                [cmd + treeObj.f_getNodePathStr(node) ],
+                                treeObj, node, isDelete);
         }
     });
 
@@ -937,12 +914,11 @@ function f_createLabel(value, labelFor)
 function f_createTextAreaField(values, width, height)
 {
     var val = f_replace(values, "\n", "<br>");
-    var val = f_replace(val, ' ', "&nbsp;");
-    var border = val.length > 0 ? true : false;
+    val = f_replace(val, ' ', "&nbsp;");
 
     return new Ext.Panel(
     {
-        border: border
+        border: true
         ,style: 'padding:5px'
         ,autoWidth: true
         ,height: height
@@ -977,11 +953,6 @@ function f_updateDirtyIndicatorPanel(field, isError)
 
     field.el.dom.innerHTML = html;
     field.show();
-}
-
-function f_handleTextFieldInputError(inputField)
-{
-
 }
 
 function f_enterKeyPressHandler(field, e, callback)

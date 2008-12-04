@@ -518,8 +518,11 @@ function f_parseResponseError(xmlRoot)
 
 function f_replace(str, expOld, expNew)
 {
-    while(str.search(expOld) > -1)
-        str = str.replace(expOld, expNew);
+    if(str != undefined && str.search != undefined)
+    {
+        while(str.search(expOld) > -1)
+            str = str.replace(expOld, expNew);
+    }
 
     return str;
 }

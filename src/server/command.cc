@@ -7,6 +7,7 @@
 #include <string>
 #include "rl_str_proc.hh"
 #include "systembase.hh"
+#include "multirespcmd.hh"
 #include "command.hh"
 
 using namespace std;
@@ -127,7 +128,10 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   }
   else {
     //treat this as an op mode command
-    if (validate_op_cmd(cmd)) {
+    if (multi_part_op_cmd(cmd)) {
+      return;
+    }
+    else if (validate_op_cmd(cmd)) {
       cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
       string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
@@ -172,6 +176,26 @@ Command::validate_session(unsigned long id)
 
   //finally, we'll want to support a timeout value here
 
+  return true;
+}
+
+/**
+ *
+ **/
+bool
+Command::multi_part_op_cmd(std::string &cmd)
+{
+  return false;
+  //does the cmd either equal an in-process bground op multi-part cmd
+  //or is this the start of one?
+  MultiResponseCommand multi_resp_cmd(cmd);
+  //blocks until enough of a response is generated
+  if (!multi_resp_cmd.process()) {
+    //generate the error response
+    return false;
+  }
+  string resp,token;
+  multi_resp_cmd.get_resp(resp,token);
   return true;
 }
 

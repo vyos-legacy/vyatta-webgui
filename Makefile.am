@@ -3,7 +3,10 @@ cgidir = /usr/lib/cgi-bin
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
-CLEANFILES = src/server/main.o src/server/manager.o src/server/session.o src/server/processor.o src/server/sessionexchange.o src/server/sessionexchangefile.o src/server/sessionexchangesocket.o src/server/sessionexchangestdio.o src/server/test.o src/server/authenticate.o src/server/common.o src/server/command.o src/server/configuration.o src/server/rl_str_proc.o
+CLEANFILES = src/server/main.o src/server/manager.o src/server/session.o src/server/processor.o src/server/sessionexchange.o src/server/sessionexchangefile.o src/server/sessionexchangesocket.o src/server/sessionexchangestdio.o src/server/test.o src/server/authenticate.o src/server/common.o src/server/command.o src/server/configuration.o src/server/rl_str_proc.o src/server/multirespcmd.o
+
+src_server_webgui_chunker_SOURCES = src/server/webgui_chunker.cc
+src_server_webgui_chunker_SOURCES += src/server/common.cc
 
 src_server_test_SOURCES = src/server/test.cc
 
@@ -20,13 +23,16 @@ src_server_webgui_SOURCES += src/server/authenticate.cc
 src_server_webgui_SOURCES += src/server/command.cc
 src_server_webgui_SOURCES += src/server/configuration.cc
 src_server_webgui_SOURCES += src/server/rl_str_proc.cc
+src_server_webgui_SOURCES += src/server/multirespcmd.cc
 
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
 
 cgi_PROGRAMS = src/server/webgui
+sbin_PROGRAMS = src/server/webgui_chunker
+sbin_PROGRAMS += src/server/test
 cgi_SCRIPTS = src/server/webgui-wrap
-sbin_PROGRAMS = src/server/test
+sbin_scripts = scripts/vyatta-webgui.init
 
 cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
 				cpio -0pd

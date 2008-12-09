@@ -692,11 +692,9 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
 	lstat(tmp.c_str(), &s);
 	cout << tmp << endl;
 	if ((lstat(tmp.c_str(),&s) == 0)) {
-	  cout << "A" << endl;
 	  iter->second = WebGUI::ACTIVE_PLUS; //DOES THIS SHOW UP IN THE CHANGES ONLY DIR?
 	}
 	else {
-	  cout << "B" << endl;
 	  iter->second = WebGUI::ACTIVE;
 	}
       }

@@ -12,6 +12,10 @@ using namespace std;
 const unsigned long WebGUI::ID_START = 2147483648UL;
 const unsigned long WebGUI::ID_RANGE = 2147483647UL;
 
+const std::string WebGUI::WEBGUI_MULTI_RESP_TOK_DIR = "/tmp/webgui/";
+const std::string WebGUI::WEBGUI_MULTI_RESP_TOK_BASE = "multi_";
+
+
 const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = 1800UL;
 //const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = (unsigned long)99999999;
 
@@ -25,6 +29,8 @@ const string WebGUI::OP_TEMPLATE_DIR = "/opt/vyatta/share/vyatta-op/templates";
 const string WebGUI::COMMIT_LOCK_FILE = "/opt/vyatta/config/.lock";
 const string WebGUI::VYATTA_MODIFY_DIR = "/opt/vyatta/config/tmp/";
 const string WebGUI::VYATTA_MODIFY_FILE = WebGUI::VYATTA_MODIFY_DIR + ".vyattamodify_";
+
+const string WebGUI::WEBGUI_MULTI_RESP_CMDS = "webgui.conf";
 
 char const* WebGUI::ErrorDesc[8] = {" ",
 				    "request cannot be parsed",

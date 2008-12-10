@@ -203,19 +203,13 @@ var f_clearEditor = function(editor)
 // Help session related....
 function f_createHelpTipsButton(callback)
 {
-    var help = f_getHelpTipsState();
-
     var helpButton = new Ext.Button(
     {
         handler: callback
         ,text: ' '
     });
 
-    if(help == V_HELP_ON)
-        helpButton.setIconClass("v_help_button_show");
-    else
-        helpButton.setIconClass("v_help_button_hide");
-
+    f_updateHelpButtonIcon(helpButton);
     return helpButton;
 }
 
@@ -337,12 +331,19 @@ function f_toggleHelpTips(helpButton)
     else
         cookiesP.set(V_COOKIES_HELP_TIP_STATE, V_HELP_ON);
 
-    if(helpButton != undefined)
+    f_updateHelpButtonIcon(helpButton)
+}
+
+function f_updateHelpButtonIcon(hButton)
+{
+    var help = f_getHelpTipsState();
+
+    if(hButton != undefined)
     {
-        if(help == V_HELP_ON)
-            helpButton.setIconClass("v_help_button_hide");
+        if(help == V_HELP_OFF)
+            hButton.setIconClass("v_help_button_hide");
         else
-            helpButton.setIconClass("v_help_button_show");
+            hButton.setIconClass("v_help_button_show");
     }
 }
 
@@ -354,6 +355,14 @@ function f_getHelpTipsState()
     return (help == V_NOT_FOUND) ? V_HELP_ON : help;
 }
 
+function f_needToggleHelpButton(hButton)
+{
+    var hState = f_getHelpTipsState();
+    var curHState = (hButton.iconCls == "v_help_button_show") ?
+              V_HELP_ON : V_HELP_OFF;
+
+    return hState == curHState ? false : true;
+}
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 // clock ticking every second

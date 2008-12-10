@@ -75,6 +75,11 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
     {
         if(show)
         {
+            ////////////////////////////////
+            // handle help tip button state
+            if(f_needToggleHelpButton(this.m_helpTipButton))
+                f_handleHelpButtonClick(this, this.m_helpTipButton, false);
+
             this.m_treeObj.f_setThisTreeObj(this.m_treeObj);
             this.m_parentPanel.show();
             this.f_resizePanels();
@@ -129,9 +134,20 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
     f_resizeDataPanel: function(w, h)
     {
         var lp = this.m_leftPanel;
+        var ePanel = this.m_editorPanel;
 
         this.m_dataPanel.setSize(w-lp.width, h);
-        this.m_editorPanel.setSize(w-lp.width-20, h);
+
+        if(ePanel != undefined)
+        {
+            ePanel.setSize(w-lp.width-20, h);
+
+            if(ePanel.items != undefined && ePanel.items.itemAt(0) != undefined)
+                ePanel.items.itemAt(0).setSize(w-lp.width-25, h-5);
+
+            if(ePanel.m_opTextArea != undefined)
+                ePanel.m_opTextArea.setSize(w-lp.width-30, h-10);
+        }
     },
 
     ////////////////////////////////////////////////////////////////////////////
@@ -471,9 +487,12 @@ function f_isPanelEmpty(panel)
         return true;
 }
 
-function f_handleHelpButton(panel, helpbutton)
+function f_handleHelpButtonClick(panel, helpbutton, saveCookie)
 {
-    f_toggleHelpTips(helpbutton);
+    if(saveCookie)
+        f_toggleHelpTips(helpbutton);
+    else
+        f_updateHelpButtonIcon(helpbutton)
 
     if(panel == undefined || panel.m_editorPanel == undefined ||
         panel.m_editorPanel.items == undefined) return;
@@ -532,13 +551,34 @@ function f_createTopPanelViewPanel(thisObj)
     });
 }
 
-function f_createToolbar(panel)
+function f_createToolbar(panelObj)
 {
-    var f_helpButtonHandler = function()
+    var helpButtonHandler = function()
     {
-        f_handleHelpButton(panel, m_helpTipButton)
+        f_handleHelpButtonClick(panelObj, helpTipButton, true)
     }
-    var m_helpTipButton = f_createHelpTipsButton(f_helpButtonHandler);
+    var helpTipButton = f_createHelpTipsButton(helpButtonHandler);
+    panelObj.m_helpTipButton = helpTipButton;
+
+    var toolBar = panelObj.m_tabName == V_TREE_ID_config ?
+        [ '->',
+          helpTipButton,
+          '-',
+          panelObj.m_viewBtn = f_createToolbarButton('v_view_button', 'view', panelObj.m_panelObj),
+          panelObj.m_loadBtn = f_createToolbarButton('v_load_button', 'load', panelObj.m_panelObj),
+          panelObj.m_saveBtn = f_createToolbarButton('v_save_button', 'save', panelObj.m_treeObj),
+          '-',
+          panelObj.m_undoBtn = f_createToolbarButton('v_undo_button', 'undo', panelObj.m_treeObj),
+          panelObj.m_redoBtn = f_createToolbarButton('v_redo_button', 'redo', panelObj.m_treeObj),
+          '-',
+          panelObj.m_discardBtn = f_createToolbarButton('v_discard_button',
+                              'discard', panelObj.m_treeObj),
+          panelObj.m_commitBtn = f_createToolbarButton('v_commit_button',
+                                'commit', panelObj.m_treeObj)
+        ] :
+        [ '->',
+          helpTipButton
+        ];
 
     return new Ext.Panel(
     {
@@ -548,22 +588,7 @@ function f_createToolbar(panel)
         ,collapsible: false
         ,border: false
         ,bodyBorder: false
-        ,tbar:
-        [ '->',
-          m_helpTipButton,
-          '-',
-          panel.m_viewBtn = f_createToolbarButton('v_view_button', 'view', panel.m_panelObj),
-          panel.m_loadBtn = f_createToolbarButton('v_load_button', 'load', panel.m_panelObj),
-          panel.m_saveBtn = f_createToolbarButton('v_save_button', 'save', panel.m_treeObj),
-          '-',
-          panel.m_undoBtn = f_createToolbarButton('v_undo_button', 'undo', panel.m_treeObj),
-          panel.m_redoBtn = f_createToolbarButton('v_redo_button', 'redo', panel.m_treeObj),
-          '-',
-          panel.m_discardBtn = f_createToolbarButton('v_discard_button',
-                              'discard', panel.m_treeObj),
-          panel.m_commitBtn = f_createToolbarButton('v_commit_button',
-                                'commit', panel.m_treeObj)
-        ]
+        ,tbar: toolBar
     });
 }
 

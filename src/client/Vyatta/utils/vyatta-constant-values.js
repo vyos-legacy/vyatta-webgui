@@ -5,14 +5,14 @@
 
 //////////////////////////////////////////////
 // cookies property name
+V_NOT_FOUND = 'NOTFOUND';
 V_COOKIES_USER_NAME = 'userName';
 V_COOKIES_USER_ID = 'id';
 V_COOKIES_LOGIN_TIMER = 'loginTimer';
-V_COOKIES_HELP_TIP_STATE = 'helpOnOff';
 
 //////////////////////////////////////////////
 // cookies value
-V_NOT_FOUND = 'NOTFOUND';
+V_COOKIES_HELP_TIP_STATE = 'helpOnOff';
 V_HELP_ON = 'helpOn';
 V_HELP_OFF = 'helpOff';
 

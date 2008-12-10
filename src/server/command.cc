@@ -39,7 +39,7 @@ Command::execute_command()
     _proc->set_response(WebGUI::SESSION_FAILURE);
     return;
   }
-
+  
   //strip off additional commands
   vector<string> coll = _proc->get_msg()._command_coll;
   vector<string>::iterator iter = coll.begin();
@@ -57,7 +57,6 @@ Command::execute_command()
     }
     ++iter;
   }
-
   return;
 }
 
@@ -142,7 +141,6 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       resp = stdout;
     }
     else {
-      err = WebGUI::COMMAND_ERROR;
       _proc->set_response(WebGUI::COMMAND_ERROR);
     }
     return;
@@ -185,7 +183,6 @@ Command::validate_session(unsigned long id)
 bool
 Command::multi_part_op_cmd(std::string &cmd)
 {
-  return false;
   //does the cmd either equal an in-process bground op multi-part cmd
   //or is this the start of one?
   MultiResponseCommand multi_resp_cmd(cmd);
@@ -195,7 +192,12 @@ Command::multi_part_op_cmd(std::string &cmd)
     return false;
   }
   string resp,token;
-  multi_resp_cmd.get_resp(resp,token);
+  multi_resp_cmd.get_resp(token,resp);
+
+  //will build out special response here:
+  string msg = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->_msg._token+"</token><error><code>0</code><msg segment='"+token+"'>"+resp+"</msg></error></vyatta>";  
+
+  _proc->set_response(msg);
   return true;
 }
 

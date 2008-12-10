@@ -21,9 +21,10 @@ public:
   const static std::string VYATTA_MODIFY_FILE;
 
   const static std::string WEBGUI_MULTI_RESP_CMDS;
-
+  const static std::string WEBGUI_MULTI_RESP_INIT;
   const static std::string WEBGUI_MULTI_RESP_TOK_DIR;
   const static std::string WEBGUI_MULTI_RESP_TOK_BASE;
+  const static std::string WEBGUI_MULTI_RESP_PID;
 
   enum Error {SUCCESS = 0,
 	      MALFORMED_REQUEST,

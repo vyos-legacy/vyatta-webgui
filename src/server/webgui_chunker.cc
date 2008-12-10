@@ -5,6 +5,7 @@
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
  */
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -23,6 +24,9 @@ using namespace std;
 string 
 process_chunk(string &str, string &token, long chunk_size, long &chunk_ct, long &last_time, long delta);
 
+pid_t
+pid_output (const char *path);
+
 /**
  *
  **/
@@ -32,6 +36,7 @@ static void usage()
   cout << "  -c command" << endl;
   cout << "  -t token" << endl;
   cout << "  -s chunk size" << endl;
+  cout << "  -i pid" << endl;
   cout << "  -h help" << endl;
 }
 
@@ -59,12 +64,13 @@ static void sig_user(int signo)
 int main(int argc, char* argv[])
 {
   int ch;
+  string pid_path = WebGUI::WEBGUI_MULTI_RESP_PID;
   string command, token;
   long chunk_size = 8192;
   long delta = 5;  //no outputs closer than 5 seconds apart
 
   //grab inputs
-  while ((ch = getopt(argc, argv, "c:s:t:h")) != -1) {
+  while ((ch = getopt(argc, argv, "c:s:t:i:h")) != -1) {
     switch (ch) {
     case 'c':
       command = optarg;
@@ -78,12 +84,31 @@ int main(int argc, char* argv[])
 	chunk_size = 8192;
       }
       break;
+    case 'i':
+      pid_path = optarg;
+      break;
     case 'h':
     default:
       usage();
       exit(0);
     }
   }
+
+
+  if (fork() != 0) {
+    //      int s;
+    //      wait(&s);
+    exit(0);
+  }
+
+  if (pid_path.empty() == false) {
+    pid_output(pid_path.c_str());
+  }
+
+  //on start clean out directory as we are only allowing a single processing running at a time for now.
+  string clean_cmd = string("rm -f ") + WebGUI::WEBGUI_MULTI_RESP_TOK_DIR + "/* >/dev/null";
+  //  remove(string(WebGUI::WEBGUI_MULTI_RESP_TOK_DIR).c_str());
+  system(clean_cmd.c_str());
   
   FILE *fp = popen(command.c_str(), "r");
 
@@ -134,6 +159,40 @@ process_chunk(string &str, string &token, long chunk_size, long &chunk_ct, long 
       last_time = cur_time;
       fclose(fp);
     }
+    else {
+      cerr << "Failed to write out response chunk" << endl;
+    }
   }
   return str;
+}
+
+/**
+ *
+ *below borrowed from quagga library.
+ **/
+#define PIDFILE_MASK 0644
+pid_t
+pid_output (const char *path)
+{
+  FILE *fp;
+  pid_t pid;
+  mode_t oldumask;
+
+  pid = getpid();
+
+  oldumask = umask(0777 & ~PIDFILE_MASK);
+  fp = fopen (path, "w");
+  if (fp != NULL) 
+    {
+      fprintf (fp, "%d\n", (int) pid);
+      fclose (fp);
+      umask(oldumask);
+      return pid;
+    }
+  /* XXX Why do we continue instead of exiting?  This seems incompatible
+     with the behavior of the fcntl version below. */
+  syslog(LOG_ERR,"Can't fopen pid lock file %s, continuing",
+            path);
+  umask(oldumask);
+  return -1;
 }

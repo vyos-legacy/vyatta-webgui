@@ -1,0 +1,32 @@
+#! /bin/bash
+
+declare progname=${0##*/}
+
+declare command=$1; 
+declare token=$2; 
+declare action=$3; 
+
+pid=/usr/lib/cgi-bin/var/run/webgui_chunker.pid
+
+test -x $bb  || exit 0
+
+start ()
+{
+    /opt/vyatta/sbin/webgui_chunker -c "$command" -t $token -i $pid
+}
+
+stop ()
+{
+    if [ -f $pid ]
+    then
+	kill -s SIGTERM $( cat $pid ) 2>/dev/null
+    fi
+}
+
+case "$action" in
+  start)	start;;
+  stop)		stop;;
+  restart)	stop; sleep 1; start;;
+  *)	echo "Usage: $progname {start|stop|restart}"
+	exit 1
+esac

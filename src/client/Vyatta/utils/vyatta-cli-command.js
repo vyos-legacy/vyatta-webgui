@@ -15,7 +15,12 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
     while(n.text != 'Operation')
     {
         if(n.text == '&lt;value&gt;')
-            narr.push(n.getValFunc());
+        {
+            if(n.getValFunc != undefined)
+                narr.push(n.getValFunc());
+            else
+                narr.push("<Value>");
+        }
         else
             narr.push(n.text);
 
@@ -30,9 +35,10 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
         sendStr += (c + ' ');
 
         if(headerStr.length > 1)
-            headerStr += '&rArr;';
+            headerStr += '&nbsp;&rArr;&nbsp;';
         headerStr += c;
     }
+
 
     //////////////////////////////////////////////////////////////
     // operaction command callback
@@ -44,8 +50,8 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
         var xmlRoot = response.responseXML.documentElement;
         var isSuccess = f_parseResponseError(xmlRoot);
 
-        if(isSuccess[1].indexOf('command failed') >= 0) isSuccess[1] = '';
-        callbackObj.f_updateOperCmdResponse(headerStr, isSuccess[1], clear);
+        callbackObj.f_updateOperCmdResponse(headerStr,
+                    isSuccess[1], clear);
     }
 
     /* send request */

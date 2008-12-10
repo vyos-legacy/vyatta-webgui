@@ -179,9 +179,6 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             case V_TREE_ID_config:
             {
                 response.responseText = '[' + str + ']';
-                //rootNode = node.getOwnerTree().getRootNode();
-                //rootNode.setText('Configuration');
-
                 return MyTreeLoader.superclass.processResponse.apply(this, arguments);
             }
             case V_TREE_ID_oper:
@@ -224,6 +221,10 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                 str += ",values:[ " + vstr + " ]";
             }
         }
+
+        var action = q.selectNode('action', node);
+        if(action != undefined)
+            str += ",action:'true'";
 
         var nType = q.selectNode('type', node);
         if (nType != undefined)
@@ -464,6 +465,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         var str = node.getPath('text');
         str = str.replace(/^ Configuration /, '');
+        str = str.replace(/^ Operation /, '');
 
         return str;
     },
@@ -949,7 +951,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_leafSingleBoolHandler: function(node, hlabel, callback)
     {
-        m_thisObj.f_leafSingleEnumHandler(node, [ 'true', 'false' ], hlabel, callback);
+        m_thisObj.f_leafSingleEnumHandler(node, ['true', 'false'], hlabel, callback);
     },
 
     ////////////////////////////////////////////////////////////////////////////
@@ -963,26 +965,31 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
 
         //////////////////////////////
-        // expand the clicked node
+        // if not leaf node, expand it
         if(!node.leaf)
             node.expand();
 
+        //////////////////////////////////////
+        // create editor panel if not defined
         var vPanel = m_thisObj.m_parent;
         if(vPanel.m_editorPanel == undefined)
             vPanel.f_createEditorPanel();
 
+        ////////////////////////////////////
+        // always clean editor for each click
         vPanel.f_cleanEditorPanel();
 
-        /////////////////////////////////////////
-        // on input field blur callback function
-        var inputFieldOnBlur = function()
-        {
-            m_thisObj.m_prevXMLStr = f_sendOperationCliCommand(node,
-                                      m_thisObj, true, m_thisObj.m_prevXMLStr);
-        }
+        var parsedNode = m_thisObj.f_parseOpNode(node);
 
-        ///////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////
+        if(node.attributes.action != undefined && parsedNode[0].length > 0)
+            f_sendOperationCliCommand(node, m_thisObj);
+
+        m_thisObj.f_populateOperEditorPanelOnNodeClick(node, parsedNode,
+                                                      undefined);
+    },
+
+    f_parseOpNode: function(node)
+    {
         var str = node.getPath('text');
         var path = str.replace(/^ Operation/, '');
         path = path.replace('&lt;value&gt;', '<value>', 'g');
@@ -991,6 +998,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         var nodeArray = [ ];
         var labelArray = [ ];
         var nNode = node;
+
         while(nNode.text != 'Operation')
         {
             if (nNode.text == '&lt;value&gt;')
@@ -1005,17 +1013,51 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
 
         labelStr = '';
+        var header = '';
         while(labelArray.length > 0)
         {
             var c = labelArray.pop();
             if(labelStr.length > 1)
+            {
                 labelStr += ' ';
+                header += '&nbsp;&rArr;&nbsp;';
+            }
 
             labelStr += c;
+            header += c;
         }
 
+        return [nodeArray, labelStr, header];
+    },
+
+    /////////////////////////////////////////////////////////
+    // populate operational editor panel for the given node
+    f_populateOperEditorPanelOnNodeClick: function(node, parsedNode,
+                                          inputFieldOnBlur)
+    {
+        var nodeArray = parsedNode[0]
+        var labelStr = parsedNode[1];
+        var header = parsedNode[2];
+        var ePanel = m_thisObj.m_parent.m_editorPanel;
+
+        ///////////////////////////
+        // add panel header
+        var hPanel = f_createEditorTitle(null, header);
+        f_addField2Panel(ePanel, hPanel, undefined);
+
+        ///////////////////////////////////////////
+        // add action button
+        if(node.attributes.action != undefined)
+        {
+            f_addField2Panel(ePanel, f_createButton(m_thisObj, node, 'Run',
+                              node.attributes.help), 'Run Node');
+        }
+
+        //////////////////////////////////////////////
+        // populate input fields for editor panel
         var field = null;
-        while(nodeArray.length > 0)
+        var nNode = null;
+        while(nodeArray.length > 0 && node.attributes.action != undefined)
         {
             nNode = nodeArray.pop();
             var helpStr = undefined;
@@ -1038,10 +1080,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 field = f_createCombobox(values,
                             'Select a valuid value...', undefined,
                             labelStr, 250,
-                            helpStr, true, 
+                            helpStr, true,
                             inputFieldOnBlur, nNode);
 
-                f_addField2Panel(vPanel.m_editorPanel, field, labelStr);
+                f_addField2Panel(ePanel, field, labelStr);
 
                 field = field.items.itemAt(V_IF_INDEX_INPUT).items.itemAt(0);
             }
@@ -1049,7 +1091,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             {
                 field = f_createTextField('', labelStr, helpStr,
                                           250, inputFieldOnBlur, node);
-                f_addField2Panel(vPanel.m_editorPanel, field, helpStr);
+                f_addField2Panel(ePanel, field, helpStr);
 
                 field = field.items.itemAt(V_IF_INDEX_INPUT);
             }
@@ -1061,46 +1103,48 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             nNode.getValFunc = function()
             {
                 if(field.getValue() != undefined)
-                    return field.getValue();
+                    return "'" + field.getValue() + "'";
                 else
                     return null;
             }
         }
 
-        f_sendOperationCliCommand(node, m_thisObj);
+        ePanel.doLayout();
     },
 
     f_updateOperCmdResponse: function(headerStr, values, clear)
     {
-        var tf = m_thisObj.m_parent.f_getEditorTitleCompByHeaderName(headerStr);
+        var ePanel = m_thisObj.m_parent.m_editorPanel;
 
-        if(tf != undefined)
+        if(ePanel.m_opTextArea != undefined)
         {
-            headerStr = headerStr.replace('&rArr;', ' ');
-
-            tf.setValue(tf.getValue() + '\n* ' +
-                headerStr + ': ' + values);
+            //ePanel.m_opTextArea.el.dom.textContent = values;
+            var eForm = ePanel.items.itemAt(0);
+            for(var i=0; i<eForm.items.getCount(); i++)
+            {
+                var f = eForm.items.item(i);
+                if(ePanel.m_opTextArea == f)
+                {
+                    var mlbl = f_createTextAreaField(values, 500, 
+                                ePanel.getInnerHeight()-45);
+                    eForm.remove(f);
+                    eForm.insert(i, mlbl);
+                    ePanel.m_opTextArea = mlbl;
+                    break;
+                }
+            }
         }
-        else
-        {
-            //////////////////////////////////////////////////
-            // add title and respose data into view panel
+        else if(values != undefined && values.length > 0)
+            m_thisObj.f_addOpTextAreaField(ePanel, values);
 
-            var ePanel = m_thisObj.m_parent.m_editorPanel;
-            var hPanel = f_createEditorTitle(null, headerStr);
+        ePanel.doLayout();
+    },
 
-            if(ePanel == undefined || ePanel.items == undefined ||
-                    ePanel.items.getCount() == 0)
-                f_addField2Panel(ePanel, hPanel, undefined);
-            else
-                f_insertField2Panel(ePanel, hPanel, undefined, 0, true);
-
-            var mlbl = f_createTextAreaField(values, 500,
-                                                ePanel.getInnerHeight()-45);
-            f_addField2Panel(ePanel, mlbl, undefined);
-
-            ePanel.doLayout();
-        }
+    f_addOpTextAreaField: function(ePanel, values)
+    {
+        var mlbl = f_createTextAreaField(values, 500, ePanel.getInnerHeight()-45);
+        f_addField2Panel(ePanel, mlbl, undefined);
+        m_thisObj.m_parent.m_editorPanel.m_opTextArea = mlbl;
     },
 
     f_handleButton: function(node, title)

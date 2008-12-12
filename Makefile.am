@@ -1,5 +1,6 @@
 wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
+initddir = etc/init.d
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
@@ -32,13 +33,16 @@ cgi_PROGRAMS = src/server/webgui
 sbin_PROGRAMS = src/server/webgui_chunker
 sbin_PROGRAMS += src/server/test
 cgi_SCRIPTS = src/server/webgui-wrap
-sbin_scripts = scripts/vyatta-webgui.init
 
 cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
 				cpio -0pd
 
 # XXX get Ext here for now
 install-exec-hook:
+	mkdir -p $(DESTDIR)/$(cgidir)/$(initddir)/
+	cp scripts/vyatta-webgui-chunker.init $(DESTDIR)/$(cgidir)/$(initddir)/vyatta-webgui-chunker
+	mkdir -p $(DESTDIR)/$(cgidir)/
+	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/
 	@mkdir -p $(DESTDIR)/var/www
 	@for v in 2.1 2.2; do \
 		rm -f /tmp/ext-$$v.zip; \

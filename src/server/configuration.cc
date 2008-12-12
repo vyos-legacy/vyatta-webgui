@@ -690,7 +690,6 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
 	struct stat s;
 	string tmp = changes_only_config + string(dirp->d_name);
 	lstat(tmp.c_str(), &s);
-	cout << tmp << endl;
 	if ((lstat(tmp.c_str(),&s) == 0)) {
 	  iter->second = WebGUI::ACTIVE_PLUS; //DOES THIS SHOW UP IN THE CHANGES ONLY DIR?
 	}

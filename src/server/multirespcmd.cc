@@ -83,9 +83,11 @@ MultiResponseCommand::process()
       if (fgets(buf, 1024, fp)) { //read the pid
 	pid_t pid = (int)strtoul(buf,NULL,10);
 	if (getpgid(pid)) {  //is the pid running?
+	  fclose(fp);
 	  return true; //yes, then return the same token as before
 	}
       }
+      fclose(fp);
     }
     
   }
@@ -118,6 +120,16 @@ MultiResponseCommand::start_new_proc()
 void
 MultiResponseCommand::get_resp(string &token, string &output)
 {
+  string cmd = "kill -12 ";
+  FILE *fp = fopen(WebGUI::WEBGUI_MULTI_RESP_PID.c_str(),"r"); //can we find the pid file...
+  if (fp) {
+    char buf[1025];
+    if (fgets(buf, 1024, fp)) { //read the pid
+      cmd  += string(buf);
+      system(cmd.c_str());
+    }
+    fclose(fp);
+  }
   token = _next_token;
   output = _resp;
 }

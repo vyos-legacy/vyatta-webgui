@@ -7,6 +7,7 @@
  */
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/sysinfo.h>
@@ -19,6 +20,9 @@
 #include "common.hh"
 
 using namespace std;
+
+//globals
+unsigned long g_last_request_time = 0;
 
 
 string 
@@ -37,6 +41,7 @@ static void usage()
   cout << "  -t token" << endl;
   cout << "  -s chunk size" << endl;
   cout << "  -i pid" << endl;
+  cout << "  -k kill timeout (seconds)" << endl;
   cout << "  -h help" << endl;
 }
 
@@ -49,13 +54,12 @@ static void sig_end(int signo)
   syslog(LOG_ERR, "webgui_chunker, exit signal caught, exiting..");
 }
 
-/**
- *
- **/
-static void sig_user(int signo)
+static void sig_user2(int signo)
 {
-  cerr << "User signal: " << signo << endl;
-  syslog(LOG_ERR, "webgui_chunker, user exit signal caught, exiting..");
+  //used to wake up the process to check paths
+  struct timeval t;
+  gettimeofday(&t,NULL);
+  g_last_request_time = t.tv_sec;
 }
 
 /**
@@ -68,9 +72,14 @@ int main(int argc, char* argv[])
   string command, token;
   long chunk_size = 8192;
   long delta = 5;  //no outputs closer than 5 seconds apart
+  unsigned long kill_timeout = 300; //5 minutes
+
+  signal(SIGINT, sig_end);
+  signal(SIGTERM, sig_end);
+  signal(SIGUSR2, sig_user2);
 
   //grab inputs
-  while ((ch = getopt(argc, argv, "c:s:t:i:h")) != -1) {
+  while ((ch = getopt(argc, argv, "c:s:t:i:k:h")) != -1) {
     switch (ch) {
     case 'c':
       command = optarg;
@@ -86,6 +95,12 @@ int main(int argc, char* argv[])
       break;
     case 'i':
       pid_path = optarg;
+      break;
+    case 'k':
+      kill_timeout = strtoul(optarg,NULL,10);
+      if (kill_timeout > 86400) { //one hour
+	kill_timeout = 86400;
+      }
       break;
     case 'h':
     default:
@@ -116,9 +131,22 @@ int main(int argc, char* argv[])
   long chunk_ct = 0;
   long last_time = 0;
   string tmp;
-  while (fgets(buf, chunk_size, fp)) {
+  /*
+    Need to implement a kill switch here that allows this process
+    to die if no msg is received from parent.   
+  */
+  struct timeval t;
+  gettimeofday(&t,NULL);
+  unsigned long cur_time;
+  g_last_request_time = cur_time = t.tv_sec;
+
+  while (fgets(buf, chunk_size, fp) && (g_last_request_time + kill_timeout > cur_time)) {
     tmp += string(buf);
     tmp = process_chunk(tmp, token, chunk_size, chunk_ct, last_time, delta);
+
+    //now update our time
+    gettimeofday(&t,NULL);
+    cur_time = t.tv_sec;
   }
   pclose(fp);
   exit(0);

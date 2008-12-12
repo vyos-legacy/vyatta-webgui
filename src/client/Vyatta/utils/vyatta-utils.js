@@ -121,7 +121,6 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
       var userField = uField;
       var pwField = pField;
 
-      //m_statusBar.showBusy();
       var f_authCb = function(options, success, response)
       {
           if(response.responseXML != undefined)
@@ -135,13 +134,13 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
 
               if(id == V_NOT_FOUND)
               {
-                f_promptErrorMessage('Login Failed',
+                  f_promptErrorMessage('Login Failed',
                     'Invalid User Name and/or Password. Please try again.');
               }
               else
               {
-                f_resetLoginTimer();
-                window.location = urlLocation;
+                  f_resetLoginTimer();
+                  window.location = urlLocation;
               }
           }
       }
@@ -186,19 +185,6 @@ var f_LoginKeyPressHandler = function(field, e, urlLocation, urlPost,
                          lButton.disable();
 }
 
-var f_clearEditor = function(editor)
-{
-    if(editor == undefined) return;
-
-    editor.opVal = undefined;
-
-    if(editor.items != undefined)
-    {
-        while(editor.items.getCount() > 0)
-            editor.remove(editor.items.itemAt(0));
-    }
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Help session related....
 function f_createHelpTipsButton(callback)
@@ -223,18 +209,10 @@ function f_isUserTextValid(val)
             (v >= String.charCodeAt('a') && v <= String.charCodeAt('z')) ||
             (v >= String.charCodeAt('A') && v <= String.charCodeAt('Z')) ||
             (v == '-' || v == '_'))
-        {
             continue;
-        }
         else
             return false;
     }
-
-    return true;
-}
-
-function f_isPasswordValid(val)
-{
 
     return true;
 }
@@ -284,7 +262,7 @@ function f_createLoginUserNameField(username)
 {
     var fl = username != undefined ? username : 'User name:';
 
-    var userField = new Ext.form.TextField(
+    return new Ext.form.TextField(
     {
       id: 'id_userField'
       ,fieldLabel: fl
@@ -297,14 +275,12 @@ function f_createLoginUserNameField(username)
       ,allowBlank:false
       ,blankText: 'Please enter User Name'
     });
-
-    return userField;
 }
 
 function f_createLoginPasswordField(pw)
 {
     var fl = pw != undefined ? pw : 'Password:'
-    passField = new Ext.form.TextField(
+    return new Ext.form.TextField(
     {
         fieldLabel: fl
         ,labelAlign: 'left'
@@ -316,8 +292,6 @@ function f_createLoginPasswordField(pw)
         ,allowBlank:false
         ,blankText: 'Please enter Password'
     });
-
-    return passField;
 }
 
 
@@ -326,11 +300,7 @@ function f_toggleHelpTips(helpButton)
     var help = f_getHelpTipsState();
     var cookiesP = f_getCookieProvider();
 
-    if(help == V_HELP_ON)
-        cookiesP.set(V_COOKIES_HELP_TIP_STATE, V_HELP_OFF);
-    else
-        cookiesP.set(V_COOKIES_HELP_TIP_STATE, V_HELP_ON);
-
+    cookiesP.set(V_COOKIES_HELP_TIP_STATE, help==V_HELP_ON?V_HELP_OFF:V_HELP_ON);
     f_updateHelpButtonIcon(helpButton)
 }
 
@@ -339,12 +309,7 @@ function f_updateHelpButtonIcon(hButton)
     var help = f_getHelpTipsState();
 
     if(hButton != undefined)
-    {
-        if(help == V_HELP_OFF)
-            hButton.setIconClass("v_help_button_hide");
-        else
-            hButton.setIconClass("v_help_button_show");
-    }
+        hButton.setIconClass(help==V_HELP_OFF?"v_help_button_hide":"v_help_button_show");
 }
 
 function f_getHelpTipsState()
@@ -399,9 +364,6 @@ function f_onResize(parentPanel, childPanel, adjW, adjH)
         childPanel.setWidth(parentPanel.getInnerWidth()+adjW);
     }
 }
-
-////////////////////////////////////////////////////////////////////////////////
-//
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -505,24 +467,6 @@ function f_yesNoMessageBox(title, msgText, callback)
         ,fn: callback
         ,icon: Ext.MessageBox.QUESTION
     });
-}
-
-function f_parseResponseError(xmlRoot)
-{
-    var success = true;
-    var q = Ext.DomQuery;
-    var err = q.selectNode('error', xmlRoot);
-
-    if(err != undefined)
-    {
-        var code = q.selectValue('code', err, 'UNKNOWN');
-        var msg = q.selectValue('msg', err, 'UNKNOWN');
-
-        if(code == 'UNKNOWN' || code != 0)
-            success = false;
-    }
-
-    return [ success, msg ];
 }
 
 function f_replace(str, expOld, expNew)

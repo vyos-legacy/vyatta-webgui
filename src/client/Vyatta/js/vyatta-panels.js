@@ -287,8 +287,6 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 
     f_onTreeRenderer: function(tree)
     {
-        return;
-
         f_updateToolbarButtons(tree);
     }
 });
@@ -612,14 +610,23 @@ function f_createToolbarButton(iconCls, cmdName, treeObj)
 }
 function f_updateToolbarButtons(tree)
 {
-    tree.m_parent.m_commitBtn.setIconClass(tree.m_isCommitAvailable ?
-                    'v_commit_button' : 'v_commit_button_no');
-    tree.m_parent.m_discardBtn.setIconClass(tree.m_isCommitAvailable ?
-                    'v_discard_button' : 'v_discard_button_no');
-    tree.m_parent.m_undoBtn.setIconClass(tree.m_isCommitAvailable ?
-                    'v_undo_button' : 'v_undo_button_no');
-    tree.m_parent.m_redoBtn.setIconClass(tree.m_isCommitAvailable ?
-                    'v_redo_button' : 'v_redo_button_no');
+    var m = tree.m_parent;
+
+    if(m.m_commitBtn != undefined)
+        tree.m_parent.m_commitBtn.setIconClass(tree.m_isCommitAvailable ?
+                        'v_commit_button' : 'v_commit_button_no');
+
+    if(m.m_discardBtn != undefined)
+        tree.m_parent.m_discardBtn.setIconClass(tree.m_isCommitAvailable ?
+                        'v_discard_button' : 'v_discard_button_no');
+
+    if(m.m_undoBtn != undefined)
+        tree.m_parent.m_undoBtn.setIconClass(tree.m_isCommitAvailable ?
+                        'v_undo_button' : 'v_undo_button_no');
+
+    if(m.m_redoBtn != undefined)
+        tree.m_parent.m_redoBtn.setIconClass(tree.m_isCommitAvailable ?
+                        'v_redo_button' : 'v_redo_button_no');
 }
 
 function f_sendCLICommand(button, cmds, treeObj)
@@ -727,7 +734,7 @@ function f_addField2Panel(editorPanel, fields, labelTxt)
 
         eFormPanel.doLayout();
     }
-    else
+    else  // editor panel is empty. create a form and add fields into it
     {
         var fieldP = new Ext.form.FormPanel(
         {
@@ -891,7 +898,7 @@ function f_createButton(treeObj, node, btnText, title)
         ,handler: function()
         {
             if(cmd.length == 0)
-                f_sendOperationCliCommand(node, treeObj, true, undefined);
+                f_sendOperationCliCommand(node, treeObj, true, undefined, true);
             else
                 f_sendConfigCLICommand(
                                 [cmd + treeObj.f_getNodePathStr(node) ],

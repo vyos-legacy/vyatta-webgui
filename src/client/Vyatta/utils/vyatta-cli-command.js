@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
+function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, forceSend)
 {
     var sid = f_getUserLoginedID();
     if(sid == 'NOTFOUND')
@@ -17,7 +17,16 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr)
         if(n.text == '&lt;value&gt;')
         {
             if(n.getValFunc != undefined)
-                narr.push(n.getValFunc());
+            {
+                var val = n.getValFunc();
+                if(val == "'Select a valuid value...'" || val == "''")
+                    if(!forceSend)
+                        return "";  // nothing to send.
+
+                narr.push(val);
+            }
+            else if(!forceSend)
+                return "";  // nothing to send
             else
                 narr.push("<Value>");
         }
@@ -241,9 +250,6 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         
         var nnode = sm.getSelectedNode();
         nnode.reload();
-        //nnode.collapse();
-        //nnode.expand();
-        //treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
         return;
     }
     
@@ -275,7 +281,9 @@ function f_handlePropagateParentNodes(node)
             if(inner.indexOf(V_DIRTY_FLAG) < 0 &&
                 n.attributes.configured != 'set')
             {
-                inner = inner.replace(n.text, V_DIRTY_FLAG+n.text);
+                if(inner.indexOf("images/statusUnknown.gif") < 0)
+                    inner = inner.replace(n.text, V_DIRTY_FLAG+n.text);
+
                 inner = inner.replace('="v-node-nocfg"', '="v-node-set"');
                 n.ui.anchor.innerHTML = inner;
             }
@@ -284,4 +292,22 @@ function f_handlePropagateParentNodes(node)
         n.attributes.configured = 'set';
         n = n.parentNode;
     }
+}
+
+function f_parseResponseError(xmlRoot)
+{
+    var success = true;
+    var q = Ext.DomQuery;
+    var err = q.selectNode('error', xmlRoot);
+
+    if(err != undefined)
+    {
+        var code = q.selectValue('code', err, 'UNKNOWN');
+        var msg = q.selectValue('msg', err, 'UNKNOWN');
+
+        if(code == 'UNKNOWN' || code != 0)
+            success = false;
+    }
+
+    return [ success, msg ];
 }

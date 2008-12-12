@@ -19,9 +19,14 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, forceSe
             if(n.getValFunc != undefined)
             {
                 var val = n.getValFunc();
-                if(val == "'Select a valuid value...'" || val == "''")
-                    if(!forceSend)
-                        return "";  // nothing to send.
+                if(forceSend && (val == "'Select a valuid value...'" || val == "''"))
+                {
+                    alert('Please enter a valid value.');
+                    return "";
+                }
+
+                if(!forceSend || (val == "'Select a valuid value...'" || val == "''"))
+                    return "";  // nothing to send.
 
                 narr.push(val);
             }

@@ -1,3 +1,92 @@
+vyatta-webgui (0.2.1) unstable; urgency=low
+
+  Checkpoint release
+
+  [ root ]
+  * initial support for node name and help for operational command
+    structure. behavior is similar to configuration request. op mode
+    data can be retrieved with mode="op" attribute.
+  * fixed permission on touch gui file. added op configuration support
+    for dynamic and static enumeration values and for multinode node
+    types.
+  * added support for op mode commands. now return unmodified (except
+    for '\n' conversion) output from op mode shell.
+  * changed op mode node name from multi to node.tag for multinodes.
+
+  [ An-Cheng Huang ]
+  * fix backend op mode detection
+  * fix backend op response format
+  * fix backend op response special character escaping
+  * add basic op commands support in gui front-end
+
+  [ root ]
+  * added <action> tag to op mode node that contains a "run" action in
+    the template. Note that this definition can be expanded to config
+    mode, but currently only sets this node for an op mode configuration
+    request.
+  * strip out comments in allowed template keyword--these are values
+    that are enclosed by "<" and ">". will need to have these statements
+    migrated to help in the operational mode template files.
+  * modified error return code for op mode commands, now based on error
+    value returned from popen call rather than response string.
+
+  [ slioch ]
+  * convert shell mkdir commands to system mkdir calls.
+
+  [ An-Cheng Huang ]
+  * clean up unused files
+
+  [ Stephen Hemminger ]
+  * Add support for either unionfs or aufs
+
+  [ An-Cheng Huang ]
+  * fix signedness for geline return value
+  * more 64-bit fixes
+  * remove compiler warning
+  * add extjs 2.2 to package
+
+  [ slioch ]
+  * added validation for op mode commands. Arguments are required to be
+    enclosed within single quotes. Validation is against operation mode
+    template. currently arguments are
+  * initialize variable being compared--caused failure in validation of
+    op command.wq
+
+  [ An-Cheng Huang ]
+  * remove compiler warning
+
+  [ slioch ]
+  * added more single quotes to protect against rogue hidden cmds. also
+    modified mass replace to allow for replacement=victim value.
+  * limit incoming request size to 8192 bytes. On requests exceeding
+    8192 bytes the request is dropped and the binary exits with no
+    response
+
+  [ An-Cheng Huang ]
+  * 64-bit fix for gui backend
+  * fix debian lighttpd cgi config file
+  * merge Kevin's Vyatta GUI work from phuket
+  * remove obsolete files
+  * correct the CGI URL used in the front-end, resolving permission
+    problems
+
+  [ Kevin Choi ]
+  * changed tree view to display parent leaf only
+  * retrack meraged
+  * fixed mereged conflicts
+  * Improved tree and editor views to display the set values indicator
+    correctly
+  * Minor changed to discard command.
+
+  [ slioch ]
+  * added recursive data mode to getconfig command. This allows a full
+    get of the configuration tree
+
+  [ Kevin Choi ]
+  * add comment text to all action buttons
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 15 Dec 2008 17:20:00 -0800
+
 vyatta-webgui (0.2) unstable; urgency=low
 
 	  3.1.3

@@ -1020,8 +1020,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             if(c == '&lt;value&gt;')
             {
                 lArray[lIndex++] = labelStr;
-                labelStr = '';
-                continue;
+                //labelStr = '';
+                //continue;
             }
 
             if(labelStr.length > 1)
@@ -1088,7 +1088,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 field = f_createCombobox(values,
                             'Select a valuid value...', undefined,
                             labelArray[i], 250,
-                            helpStr, true,
+                            helpStr, false,
                             inputFieldOnBlur, nNode);
 
                 f_addField2Panel(ePanel, field, labelArray[i++]);

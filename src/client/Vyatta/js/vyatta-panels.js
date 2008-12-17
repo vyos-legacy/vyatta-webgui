@@ -662,31 +662,34 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
 
             ///////////////////////////////////////////////////////
             // if the below statement is true, the fields already
-            // exist. Update the dirty flag if neccessary
+            // exist. Update the dirty flag and values if neccessary
             if(label != undefined && label.getXType() == 'label' &&
                 label.html == cLabel.html)
             {
-                var setField = editorPanel.m_treeObj.m_setField;
-
                 ////////////////////////////////////////
                 // handle field dirty indicator
-                if(getNodeStyleImage(fields.m_node).length > 0 ||
-                    (setField != undefined &&
-                    setField.items.itemAt(V_IF_INDEX_LABEL).html == label.html))
+                var node = fields.m_node;
+                if(node != undefined && node.attributes.configured == 'set')
                 {
                     f.items.item(V_IF_INDEX_DIRTY).show();
 
                     ///////////////////////////////////////////
-                    // update checkbox renderer. only for checkbox component
-                    if(f.items.itemAt(V_IF_INDEX_INPUT).items != undefined)
+                    // update input field value
+                    var updateF = f.items.itemAt(V_IF_INDEX_INPUT);
+                    if(updateF.items != undefined)
                     {
-                        var chk = f.items.itemAt(V_IF_INDEX_INPUT).items.itemAt(0);
-                        if(chk.getXType() == 'checkbox')
-                        {
-                            chk.setValue(f_getValueForCheckbox(
+                        var input = updateF.items.itemAt(0);
+                        
+                        if(input.getXType() == 'checkbox')
+                            input.setValue(f_getValueForCheckbox(
                                   fields.m_node.attributes.values[0]));
-                        }
                     }
+                    else if(updateF.getXType() == 'numberfield' ||
+                        updateF.getXType() == 'textfield')
+                    {
+                        updateF.setValue(node.attributes.values);
+                    }
+
                     f_updateDirtyIndicatorPanel(f.items.item(V_IF_INDEX_DIRTY), false);
                 }
 

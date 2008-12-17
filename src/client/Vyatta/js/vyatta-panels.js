@@ -109,7 +109,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 
     f_resizePanels: function()
     {
-        if(this.m_container != undefined)
+        if(this.m_container != undefined && this.m_topPanel != undefined)
         {
             var h = this.m_container.getSize().height-this.m_topPanel.height;
             var w = this.m_container.getSize().width;
@@ -241,12 +241,34 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         var ep = this.m_editorPanel;
         ep.m_opTextArea = null;
 
-        while(ep != undefined && ep.items != undefined && ep.items.getCount() > 0)
+        while(ep.items != undefined && ep.items.getCount() > 0)
         {
             var old = ep.items.itemAt(0);
             ep.remove(old);
             delete old;
         }
+    },
+
+    f_resetEditorPanel: function()
+    {
+        var ep = this.m_editorPanel;
+        var ef = ep.items.itemAt(0);
+
+        if(ef != undefined && ef.items != undefined)
+        {
+            var len = ef.items.getCount();
+
+            ///////////////////////////////
+            // walk the form editor.
+            for(var i=0; i<len; i++)
+            {
+                var f = ef.items.itemAt(i);
+                if(f.items != undefined)
+                    f.items.item(V_IF_INDEX_DIRTY).hide();
+            }
+        }
+
+        return
     },
 
     f_getEditorTitle: function()
@@ -328,7 +350,7 @@ function f_createNumberField(value, node, help, width, callback)
         maxValue: (Math.pow(2, 32) - 1),
         maskRe: /^\d+$/,
         value: value,
-        onChange: keyupPressHandler//function(e, n, o){ alert('onChange num ' + e.getKey()); },
+        onChange: keyupPressHandler//function(e, n, o){ },
         ,onBlur: callback
     });
 
@@ -958,7 +980,7 @@ function f_createTextAreaField(values, width, height)
         ,autoWidth: true
         ,height: height
         ,autoScroll: true
-        ,html: val
+        ,html: '<font face="monospace">' + val + '</font>'
     });
 }
 
@@ -971,8 +993,6 @@ function f_handleInputFieldError(node)
 
     if(type == 'editorgrid')
         f_setGridViewError(inputField);
-    else if(type == 'textfield')
-        f_handleTextFieldInputError(inputField);
 
     var error = node.m_inputPanel.items.itemAt(V_IF_INDEX_DIRTY);
     f_updateDirtyIndicatorPanel(error, true);

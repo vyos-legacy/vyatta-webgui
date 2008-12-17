@@ -169,10 +169,16 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         var str = '';
         for(var i = 0; i < nodes.length; i++)
         {
-            if (str != '')
-                str += ',';
+            ///////////////////////////
+            // skip op 'configure' node
+            if(this.g_loadMode != V_TREE_ID_oper ||
+                nodes[i].getAttribute('name') != "configure")
+            {
+                if(str != '')
+                    str += ',';
 
-            str += this.f_jsonGenNode(nodes[i], nodes[i].getAttribute('name'));
+                str += this.f_jsonGenNode(nodes[i], nodes[i].getAttribute('name'));
+            }
         }
 
         switch(this.g_loadMode)
@@ -1127,6 +1133,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 var f = eForm.items.item(i);
                 if(ePanel.m_opTextArea == f)
                 {
+                    if(g_cliCmdObj.m_segmentId != undefined && f.html != undefined)
+                        values = f.html + values;
+
                     var mlbl = f_createTextAreaField(values, 0,
                                 ePanel.getInnerHeight()-20*i);
                     eForm.remove(f);

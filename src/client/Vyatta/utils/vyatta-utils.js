@@ -28,7 +28,6 @@ function f_getCookieProvider()
       {
           domain: document.domain
           ,expires: new Date(new Date().getTime() + (5 * 60 * 60 * 1000))
-          //,secure: true
       });
 
       Ext.state.Manager.setProvider(m_cookieP);
@@ -44,7 +43,8 @@ function f_resetLoginTimer()
 {
     var timer = new Date(new Date().getTime() + (15 * 60 * 1000));
     var cookie = f_getCookieProvider();
-    cookie.set(V_COOKIES_LOGIN_TIMER, timer);
+
+    cookie.set(V_COOKIES_LOGIN_TIMER, timer.valueOf());
 
     return timer;
 }
@@ -60,7 +60,8 @@ function f_isUserLogined(updateLoginTimer, promptMsg)
     var loginTimer = cookie.get(V_COOKIES_LOGIN_TIMER, V_NOT_FOUND);
 
     var curTime = new Date().getTime();
-    if(loginTimer == V_NOT_FOUND || loginTimer.valueOf() < curTime)
+
+    if(loginTimer == V_NOT_FOUND || loginTimer < curTime)
     {
         if(promptMsg != undefined && promptMsg)
             f_promptUserNotLoginMessage(null);
@@ -404,6 +405,7 @@ function f_promptErrorMessage(title, msgText)
       ,buttons: Ext.Msg.OK
       ,handler: function() { f_hideSendWaitMessage();}
       ,icon: Ext.MessageBox.ERROR
+      ,modal: true
     });
 }
 
@@ -432,29 +434,15 @@ function f_promptUserNotLoginMessage(callbackFn)
 // info Message Box
 function f_promptInfoMessage(title, msgText, callbackFn)
 {
-    if(callbackFn == undefined)
+    Ext.Msg.show(
     {
-        Ext.Msg.show(
-        {
-            title: title
-            ,msg: msgText
-            ,buttons: Ext.Msg.OK
-            ,icon: Ext.MessageBox.INFO
-            ,modal: true
-        });
-    }
-    else
-    {
-        Ext.Msg.show(
-        {
-            title: title
-            ,msg: msgText
-            ,buttons: Ext.Msg.OK
-            ,icon: Ext.MessageBox.INFO
-            ,modal: true
-            //,fn: function() { callbackFn }
-        });
-    }
+        title: title
+        ,msg: msgText
+        ,buttons: Ext.Msg.OK
+        ,icon: Ext.MessageBox.INFO
+        ,modal: true
+        //,fn: function() { callbackFn }
+    });
 }
 
 function f_yesNoMessageBox(title, msgText, callback)
@@ -534,7 +522,7 @@ function f_commitSingleStoreField(store, record, dataIndex, iindex)
         ////////////////////////////////////////
         // then, replace the user's input
         record = store.getAt(iindex);
-        for(var i=0; i<modifiedVals.length; i++)
+        for(i=0; i<modifiedVals.length; i++)
         {
             var saveVal = record.data[modifiedNames[i]];
             record.set(modifiedNames[i], modifiedVals[i]);
@@ -543,9 +531,8 @@ function f_commitSingleStoreField(store, record, dataIndex, iindex)
     }
 }
 
-g_sendCommandWait = null;
 function f_hideSendWaitMessage()
 {
-    if(g_sendCommandWait != null)
-        g_sendCommandWait.hide();
+    if(g_cliCmdObj.m_sendCmdWait != null)
+        g_cliCmdObj.m_sendCmdWait.hide();
 }

@@ -2,7 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, forceSend)
+function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, 
+                                    forceSend, segmentId)
 {
     var sid = f_getUserLoginedID();
     if(sid == 'NOTFOUND')
@@ -21,7 +22,8 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, forceSe
                 var val = n.getValFunc();
                 if(forceSend && (val == "'Select a valuid value...'" || val == "''"))
                 {
-                    alert('Please enter a valid value.');
+                    f_promptErrorMessage('Input Error!',
+                                        'Please enter a valid value.');
                     return "";
                 }
 
@@ -59,14 +61,27 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, forceSe
     var opCmdCb = function(options, success, response)
     {
         f_hideSendWaitMessage();
-        if(response.responseXML == null) return;
+        if(!f_isResponseOK(response))
+            return;
 
         var xmlRoot = response.responseXML.documentElement;
         var isSuccess = f_parseResponseError(xmlRoot);
+        g_cliCmdObj.m_segmentId = (isSuccess[2] != undefined)?isSuccess[2]:null;
 
         callbackObj.f_updateOperCmdResponse(headerStr,
                     isSuccess[1], clear);
     }
+
+    if(segmentId != undefined)
+        sendStr = segmentId;
+    else
+        g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait(
+                        'Running operational command...', 'Operation');
+
+    f_resetLoginTimer();
+    g_cliCmdObj.m_node = node;
+    g_cliCmdObj.m_cb = callbackObj;
+    g_cliCmdObj.m_segmentId = undefined;
 
     /* send request */
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -78,10 +93,6 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, forceSe
     // avoid to send a duplicate command again
     if(prevXMLStr != undefined && prevXMLStr == xmlstr)
         return xmlstr;
-
-    f_resetLoginTimer();
-    g_sendCommandWait = Ext.MessageBox.wait('Running operational command...',
-                                  'Operation');
 
     var conn = new Ext.data.Connection({});
     conn.request(
@@ -103,20 +114,15 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         return;
 
     f_resetLoginTimer();
-    g_sendCommandWait = Ext.MessageBox.wait('Changing configuration...',
-                                              'Configuration');
+    g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait('Changing configuration...',
+                                                      'Configuration');
 
     var sendCommandCliCb = function(options, success, response)
     {
         f_hideSendWaitMessage();
 
-        if(response.responseXML == undefined)
-        {
-            alert('Request timed out!\n\n' +
-                  'Wait for response from server has time-out. ' +
-                   'Please refrsh GUI and try again later.');
+        if(!f_isResponseOK(response))
             return;
-        }
 
         var xmlRoot = response.responseXML.documentElement;
         var isSuccess = f_parseResponseError(xmlRoot);
@@ -150,6 +156,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         xmlstr += "<statement>" + cmds[i] + "</statement>\n";
     xmlstr += "</command></vyatta>\n";
 
+    g_cliCmdObj.m_segmentId = undefined;
     var conn = new Ext.data.Connection({});
     conn.request(
     {
@@ -158,6 +165,32 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         xmlData: xmlstr,
         callback: sendCommandCliCb
     });
+}
+
+function f_isResponseOK(response)
+{
+    var msg = 'Please refrsh GUI and try again later.';
+    var ret = false;
+
+    if(response.responseXML == undefined ||
+            response.status == 408 /* request timeout */)
+        f_promptErrorMessage('Request timeout!',
+              'Request to the service failed in the time allowed by the server. ' +
+              msg);
+    else if(response.status == 500)
+          f_promptErrorMessage('Internal Server Error!',
+              'Server had a problem either getting data or parsing the results. ' +
+              msg);
+    else if(response.status == 503)
+        f_promptErrorMessage('Service Unavailable!',
+              'Web service had a temporary overload and count not process the request. ' +
+              msg);
+    else if(response.status == 200)
+        ret = true;
+    else
+        f_promptErrorMessage('Service Unavailable!', 'Unkown error. ' + msg);
+
+    return ret;
 }
 
 function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
@@ -175,6 +208,7 @@ function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
     }
     else if(cmds[0].indexOf('commit') >= 0)
     {
+        tree.Obj.m_parent.f_resetEditorPanel();
         f_handlePropagateParentNodes(selNode);
         treeObj.m_selNodePath = selPath;//node.parentNode;
         tree.getRootNode().reload();
@@ -304,15 +338,33 @@ function f_parseResponseError(xmlRoot)
     var success = true;
     var q = Ext.DomQuery;
     var err = q.selectNode('error', xmlRoot);
+    var msg = '', code = 0, segment = undefined;
 
     if(err != undefined)
     {
-        var code = q.selectValue('code', err, 'UNKNOWN');
-        var msg = q.selectValue('msg', err, 'UNKNOWN');
+        code = q.selectValue('code', err, 'UNKNOWN');
+        msg = q.selectValue('msg', err, 'UNKNOWN');
+        segment = err.getAttribute('segment_id');
 
         if(code == 'UNKNOWN' || code != 0)
             success = false;
     }
 
-    return [ success, msg ];
+    return [ success, msg, segment ];
+}
+
+function f_startSegmentCommand()
+{
+    Ext.TaskMgr.start(
+    {
+        run: function()
+        {
+            if(g_cliCmdObj.m_segmentId != undefined)
+                f_sendOperationCliCommand(g_cliCmdObj.m_node, g_cliCmdObj.m_cb,
+                                    false, undefined, true,
+                                    g_cliCmdObj.m_segmentId);
+        }
+        ,interval: 5500
+    });
+
 }

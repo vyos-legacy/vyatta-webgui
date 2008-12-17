@@ -69,6 +69,16 @@ function f_hideTab(tabIndex)
 function f_initSystemObjects()
 {
     g_baseSystem = new DATA_baseSystem();
+    g_cliCmdObj = {};
+    
+    /////////////////////////////////////////
+    // this id provides by server to identify
+    // the long/continuous response. client
+    // can use this id to request for the next
+    // segment of response.
+    g_cliCmdObj.m_segmentId = undefined;
+    g_cliCmdObj.m_sendCmdWait = null;
+    f_startSegmentCommand();
 }
 
 function f_startViewPort()

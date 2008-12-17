@@ -189,7 +189,7 @@ process_chunk(string &str, string &token, long chunk_size, long &chunk_ct, long 
       fclose(fp);
     }
     else {
-      syslog(LOG_ERR,webgui:"Failed to write out response chunk");
+      syslog(LOG_ERR,"webgui: Failed to write out response chunk");
     }
   }
   return str;

@@ -50,7 +50,6 @@ static void usage()
  **/
 static void sig_end(int signo)
 {
-  cerr << "End signal: " << signo << endl;
   syslog(LOG_ERR, "webgui_chunker, exit signal caught, exiting..");
 }
 
@@ -125,6 +124,8 @@ int main(int argc, char* argv[])
   //  remove(string(WebGUI::WEBGUI_MULTI_RESP_TOK_DIR).c_str());
   system(clean_cmd.c_str());
   
+  command = WebGUI::mass_replace(command,"'","'\\''");
+  string opmodecmd = "/bin/bash -i -c '" + command + "'";
   FILE *fp = popen(command.c_str(), "r");
 
   char buf[chunk_size+1];
@@ -188,7 +189,7 @@ process_chunk(string &str, string &token, long chunk_size, long &chunk_ct, long 
       fclose(fp);
     }
     else {
-      cerr << "Failed to write out response chunk" << endl;
+      syslog(LOG_ERR,webgui:"Failed to write out response chunk");
     }
   }
   return str;

@@ -7,7 +7,7 @@ CHUNKER_PID_DIR=/usr/lib/cgi-bin/var/run
 
 # create chunker temp directory
 mkdir -p $CHUNKER_DIR
-chmod 0755 $CHUNKER_DIR
+chmod 0777 $CHUNKER_DIR
 
 #create chunker proc directory
 mkdir -p $CHUNKER_INIT_DIR

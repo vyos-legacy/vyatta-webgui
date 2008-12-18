@@ -73,7 +73,10 @@ function f_userLogout(isRedirectToHomePage, toPage)
     g_cookie.f_remove(V_COOKIES_USER_ID);
 
     if(isRedirectToHomePage != undefined && isRedirectToHomePage)
-        window.location = toPage;
+    {
+        if(navigator.userAgent.indexOf('Chrome') > 0)
+            location.reload(true);
+    }
 }
 
 /***************************************************************************

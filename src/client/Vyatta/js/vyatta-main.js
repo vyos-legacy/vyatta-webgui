@@ -69,6 +69,7 @@ function f_hideTab(tabIndex)
 function f_initSystemObjects()
 {
     g_baseSystem = new DATA_baseSystem();
+
     g_cliCmdObj = {};
     
     /////////////////////////////////////////

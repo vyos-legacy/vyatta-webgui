@@ -10,6 +10,7 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <syslog.h>
 #include <sys/sysinfo.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -126,7 +127,7 @@ int main(int argc, char* argv[])
   
   command = WebGUI::mass_replace(command,"'","'\\''");
   string opmodecmd = "/bin/bash -i -c '" + command + "'";
-  FILE *fp = popen(command.c_str(), "r");
+  FILE *fp = popen(opmodecmd.c_str(), "r");
 
   char buf[chunk_size+1];
   long chunk_ct = 0;

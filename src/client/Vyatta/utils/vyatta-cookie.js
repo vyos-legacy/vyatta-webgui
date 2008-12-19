@@ -6,7 +6,7 @@
 var g_cookie =
 {
     m_loginTimeExpire: (10*60*1000),
-    m_userNameExpire: (11*60*1000),
+    m_userNameExpire: (60*60*1000),
     m_helpExpire: (5 * 60 * 60 * 1000),
 
     /**

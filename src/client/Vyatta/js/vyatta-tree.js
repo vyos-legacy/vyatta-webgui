@@ -572,6 +572,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     // node click handler for configuration tree
     f_HandleNodeConfigClick: function(node, e, dontClear)
     {
+        /////////////////////////////////////////////
+        // we want to stop segment runs in background
+        g_cliCmdObj.m_segmentId = undefined;
+
         var titlePanel = '';
         if(!f_isLogined(true, true))
         {
@@ -965,6 +969,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     // node click handler for operation tree
     f_handleNodeOperClick: function(node, e)
     {
+        /////////////////////////////////////////////
+        // we want to stop segment runs in background
+        g_cliCmdObj.m_segmentId = undefined;
+
         if(!f_isLogined(true, true))
         {
             window.location = g_baseSystem.m_homePage;
@@ -1133,8 +1141,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 var f = eForm.items.item(i);
                 if(ePanel.m_opTextArea == f)
                 {
-                    if(g_cliCmdObj.m_segmentId != undefined && f.html != undefined)
-                        values = f.html + values;
+                    if(g_cliCmdObj.m_segmentId != undefined &&
+                            f.el.dom.textContent != undefined)
+                        values = f.el.dom.textContent + values;
 
                     var mlbl = f_createTextAreaField(values, 0,
                                 ePanel.getInnerHeight()-20*i);

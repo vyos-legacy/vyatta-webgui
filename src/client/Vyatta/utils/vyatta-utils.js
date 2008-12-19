@@ -76,6 +76,8 @@ function f_userLogout(isRedirectToHomePage, toPage)
     {
         if(navigator.userAgent.indexOf('Chrome') > 0)
             location.reload(true);
+        else
+            window.location = toPage;
     }
 }
 

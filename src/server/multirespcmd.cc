@@ -57,7 +57,6 @@ MultiResponseCommand::process()
   if (_next_token.empty() == true) { //want to start a new command
     _next_token = start_new_proc();
     _next_token = WebGUI::WEBGUI_MULTI_RESP_TOK_BASE + _next_token + "_1";
-    ::sleep(3); //sleep for 1 second
   }
   
   //then check if this matches a mult-part cmd

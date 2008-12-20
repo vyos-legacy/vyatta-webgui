@@ -12,14 +12,14 @@ test -x $bb  || exit 0
 
 start ()
 {
-    /opt/vyatta/sbin/webgui_chunker -c "$command" -t $token -i $pid
+    /opt/vyatta/sbin/webgui_chunker -c "$command" -t $token -i $pid 
 }
 
 stop ()
 {
     if [ -f $pid ]
     then
-	kill -s SIGTERM $( cat $pid ) 2>/dev/null
+	kill -s SIGKILL $( cat $pid ) 2>/dev/null
     fi
 }
 

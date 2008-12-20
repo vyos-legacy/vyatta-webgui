@@ -344,10 +344,14 @@ function f_parseResponseError(xmlRoot)
     {
         code = q.selectValue('code', err, 'UNKNOWN');
         msg = q.selectValue('msg', err, 'UNKNOWN');
-        segment = err.getAttribute('segment_id');
+
+        var msgNode = q.selectNode('msg', err);
+        segment = msgNode.getAttribute('segment');
 
         if(code == 'UNKNOWN' || code != 0)
             success = false;
+        else if(msg == 'UNKNOWN')
+            msg = '';
     }
 
     return [ success, msg, segment ];
@@ -366,5 +370,4 @@ function f_startSegmentCommand()
         }
         ,interval: 5500
     });
-
 }

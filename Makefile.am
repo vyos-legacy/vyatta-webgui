@@ -1,4 +1,4 @@
-tmpdir = /tmp/webgui
+tmpdir = /usr/lib/cgi-bin/tmp/webgui
 chunkerinitdir = /usr/lib/cgi-bin/etc/init.d
 chunkerpiddir = /usr/lib/cgi-bin/var/run
 wwwdir = /var/www
@@ -45,6 +45,7 @@ install-exec-hook:
 	mkdir -p $(DESTDIR)$(chunkerinitdir)/
 	mkdir -p $(DESTDIR)$(chunkerpiddir)/
 	mkdir -p $(DESTDIR)$(tmpdir)/
+	touch $(DESTDIR)$(tmpdir)/dummy
 	mkdir -p $(DESTDIR)/$(cgidir)/$(initddir)/
 	cp scripts/vyatta-webgui-chunker.init $(DESTDIR)/$(cgidir)/$(initddir)/vyatta-webgui-chunker
 	mkdir -p $(DESTDIR)/$(cgidir)/

@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
     //    close(pc[1]);
     usleep(1000*1000);
     close(cp[1]);
-    while ((read(cp[0], &buf, 1) == 1) && g_shutdown == false/* && (g_last_request_time + kill_timeout > cur_time)*/) {
+    while ((read(cp[0], &buf, 1) == 1) && (g_shutdown == false) && (g_last_request_time + kill_timeout > cur_time)) {
       tmp += string(buf);
       tmp = process_chunk(tmp, token, chunk_size, chunk_ct, last_time, delta);
       

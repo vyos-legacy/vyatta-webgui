@@ -119,7 +119,7 @@ MultiResponseCommand::start_new_proc()
 void
 MultiResponseCommand::get_resp(string &token, string &output)
 {
-  string cmd = "kill -12 ";
+  string cmd = "kill -12 "; //notify process we are grabbing another response
   FILE *fp = fopen(WebGUI::WEBGUI_MULTI_RESP_PID.c_str(),"r"); //can we find the pid file...
   if (fp) {
     char buf[1025];

@@ -12,7 +12,7 @@ using namespace std;
 const unsigned long WebGUI::ID_START = 2147483648UL;
 const unsigned long WebGUI::ID_RANGE = 2147483647UL;
 
-const string WebGUI::WEBGUI_MULTI_RESP_TOK_DIR = "/tmp/webgui/";
+const string WebGUI::WEBGUI_MULTI_RESP_TOK_DIR = "/usr/lib/cgi-bin/tmp/webgui/";
 const string WebGUI::WEBGUI_MULTI_RESP_TOK_BASE = "multi_";
 const string WebGUI::WEBGUI_MULTI_RESP_PID = "/usr/lib/cgi-bin/var/run/webgui_chunker.pid";
 const string WebGUI::WEBGUI_MULTI_RESP_CMDS = "/usr/lib/cgi-bin/webgui.conf";

@@ -24,13 +24,16 @@ using namespace std;
 
 //globals
 unsigned long g_last_request_time = 0;
-
+bool g_shutdown = false;
 
 string 
 process_chunk(string &str, string &token, long chunk_size, long &chunk_ct, long &last_time, long delta);
 
 pid_t
 pid_output (const char *path);
+
+void  
+parse(char *line, char **argv);
 
 /**
  *
@@ -51,6 +54,7 @@ static void usage()
  **/
 static void sig_end(int signo)
 {
+  g_shutdown = true;
   syslog(LOG_ERR, "webgui_chunker, exit signal caught, exiting..");
 }
 
@@ -116,42 +120,82 @@ int main(int argc, char* argv[])
     exit(0);
   }
 
-  if (pid_path.empty() == false) {
-    pid_output(pid_path.c_str());
-  }
-
   //on start clean out directory as we are only allowing a single processing running at a time for now.
   string clean_cmd = string("rm -f ") + WebGUI::WEBGUI_MULTI_RESP_TOK_DIR + "/* >/dev/null";
   //  remove(string(WebGUI::WEBGUI_MULTI_RESP_TOK_DIR).c_str());
   system(clean_cmd.c_str());
-  
-  command = WebGUI::mass_replace(command,"'","'\\''");
-  string opmodecmd = "/bin/bash -i -c '" + command + "'";
-  FILE *fp = popen(opmodecmd.c_str(), "r");
 
-  char buf[chunk_size+1];
-  long chunk_ct = 0;
-  long last_time = 0;
-  string tmp;
-  /*
-    Need to implement a kill switch here that allows this process
-    to die if no msg is received from parent.   
-  */
-  struct timeval t;
-  gettimeofday(&t,NULL);
-  unsigned long cur_time;
-  g_last_request_time = cur_time = t.tv_sec;
+  //  int pc[2]; /* Parent to child pipe */
+  int cp[2]; /* Child to parent pipe */
 
-  while (fgets(buf, chunk_size, fp) && (g_last_request_time + kill_timeout > cur_time)) {
-    tmp += string(buf);
-    tmp = process_chunk(tmp, token, chunk_size, chunk_ct, last_time, delta);
-
-    //now update our time
-    gettimeofday(&t,NULL);
-    cur_time = t.tv_sec;
+  if( pipe(cp) < 0) {
+    perror("Can't make pipe");
+    exit(1);
   }
-  pclose(fp);
-  exit(0);
+  
+  pid_t pid = fork();
+  if (pid == 0) {
+    //use child pid to allow cleanup of parent
+    if (pid_path.empty() == false) {
+      pid_output(pid_path.c_str());
+    }
+
+    /* Child. */
+    close(1); /* Close current stdout. */
+    dup( cp[1]); /* Make stdout go to write                                                                                        
+		    end of pipe. */
+    close(0); /* Close current stdin. */
+    //    dup( pc[0]); /* Make stdin come from read                                                                                      
+    //		    end of pipe. */
+    //    close( pc[1]);
+    close( cp[0]);
+
+
+    command = WebGUI::mass_replace(command,"'","'\\''");
+    //    string opmodecmd = "/bin/bash -i -c '" + command + "'";
+    //    string opmodecmd = "/bin/bash -i -c " + command;
+    string opmodecmd = command;
+
+    //    cout << "full command: " << opmodecmd << endl;
+
+    char *argv[64];
+    char *tmp = (char*)opmodecmd.c_str();
+    parse(tmp, argv);
+
+    //    cout << string(argv[0]) << ", " << string(argv[1]) << endl;//", " << string(argv[2]) << ", " << string(argv[3]) << ", " << string(argv[4]) << endl;
+    execvp(argv[0], argv);
+
+    perror("No exec");
+    //      signal(getppid(), SIGQUIT);                                                                                            
+    exit(1);
+  }
+  else {
+    /* Parent. */
+    /* Close what we don't need. */
+    char buf[chunk_size+1];
+    long chunk_ct = 0;
+    long last_time = 0;
+    string tmp;
+
+    struct timeval t;
+    gettimeofday(&t,NULL);
+    unsigned long cur_time;
+    g_last_request_time = cur_time = t.tv_sec;
+
+    //    close(pc[1]);
+    usleep(1000*1000);
+    close(cp[1]);
+    while ((read(cp[0], &buf, 1) == 1) && (g_shutdown == false) && (g_last_request_time + kill_timeout > cur_time)) {
+      tmp += string(buf);
+      tmp = process_chunk(tmp, token, chunk_size, chunk_ct, last_time, delta);
+      
+      //now update our time
+      gettimeofday(&t,NULL);
+      cur_time = t.tv_sec;
+    }
+    //    cout << "Done! " << endl;
+    exit(0);
+  }
 }
 
 /**
@@ -195,6 +239,24 @@ process_chunk(string &str, string &token, long chunk_size, long &chunk_ct, long 
   }
   return str;
 }
+
+/**
+ *
+ **/
+void  
+parse(char *line, char **argv)
+{
+  while (*line != '\0') {       /* if not the end of line ....... */ 
+    while (*line == ' ' || *line == '\t' || *line == '\n')
+      *line++ = '\0';     /* replace white spaces with 0    */
+    *argv++ = line;          /* save the argument position     */
+    while (*line != '\0' && *line != ' ' && 
+	   *line != '\t' && *line != '\n') 
+      line++;             /* skip the argument until ...    */
+  }
+  *argv = '\0';                 /* mark the end of argument list  */
+}
+
 
 /**
  *

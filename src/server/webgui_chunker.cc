@@ -120,10 +120,6 @@ int main(int argc, char* argv[])
     exit(0);
   }
 
-  if (pid_path.empty() == false) {
-    pid_output(pid_path.c_str());
-  }
-
   //on start clean out directory as we are only allowing a single processing running at a time for now.
   string clean_cmd = string("rm -f ") + WebGUI::WEBGUI_MULTI_RESP_TOK_DIR + "/* >/dev/null";
   //  remove(string(WebGUI::WEBGUI_MULTI_RESP_TOK_DIR).c_str());
@@ -139,6 +135,11 @@ int main(int argc, char* argv[])
   
   pid_t pid = fork();
   if (pid == 0) {
+    //use child pid to allow cleanup of parent
+    if (pid_path.empty() == false) {
+      pid_output(pid_path.c_str());
+    }
+
     /* Child. */
     close(1); /* Close current stdout. */
     dup( cp[1]); /* Make stdout go to write                                                                                        

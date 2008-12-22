@@ -368,6 +368,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     //
     f_handleSelectedNodeExpand: function()
     {
+        ////////////////////////
+        // this = m_tree.
         if(this.m_parent.m_selNodePath != undefined)
         {
             var treeObj = this.m_parent;
@@ -979,11 +981,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             return;
         }
 
-        //////////////////////////////
-        // if not leaf node, expand it
-        if(!node.leaf)
-            node.expand();
-
         //////////////////////////////////////
         // create editor panel if not defined
         var vPanel = m_thisObj.m_parent;
@@ -998,6 +995,30 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         if(node.attributes.action != undefined && parsedNode[0].length > 0)
             f_sendOperationCliCommand(node, m_thisObj, false, '', false);
+        else if(node.attributes.action == undefined)
+        {
+            var handler = function(narg)
+            {
+                var selPath = node.getPath('text');
+                m_thisObj.m_tree.selectPath(selPath, 'text', function(success, sel)
+                {
+                    if(sel.firstChild != undefined)
+                        m_thisObj.f_handleNodeOperClick(sel.firstChild, null);
+                });
+
+                narg.un('expand', handler);
+            }
+
+            node.on('expand', handler);
+            node.collapse();
+            node.expand();
+            return;
+        }
+
+        //////////////////////////////
+        // if not leaf node, expand it
+        if(!node.leaf)
+            node.expand();
 
         m_thisObj.f_populateOperEditorPanelOnNodeClick(node, parsedNode,
                                                       undefined);
@@ -1155,7 +1176,15 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             }
         }
         else if(values != undefined && values.length > 0)
+        {
             m_thisObj.f_addOpTextAreaField(ePanel, values);
+        }
+        else if(g_cliCmdObj.m_segmentId != undefined && values == '')
+        {
+            values = 'Server acknowledges command. ' +
+                      'Please wait for server to response.\n'
+            m_thisObj.f_addOpTextAreaField(ePanel, values);
+        }
 
         ePanel.doLayout();
     },

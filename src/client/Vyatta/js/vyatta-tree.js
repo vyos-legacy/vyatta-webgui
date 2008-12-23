@@ -37,7 +37,7 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
             n.ui.rendered = false;
             return;
         }
-        
+
         this.indentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
         var cb = typeof a.checked == 'boolean';
         var href = a.href ? a.href : Ext.isGecko ? "" : "#";
@@ -154,6 +154,16 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         }
     },
 
+    f_constructNodeDomStr: function(node, str)
+    {
+        if(str != '')
+            str += ',';
+
+        str += this.f_jsonGenNode(node, node.getAttribute('name'));
+
+        return str;
+    },
+
     processResponse: function(response, node, callback)
     {
         var xmlRoot = response.responseXML.documentElement;
@@ -169,16 +179,19 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         var str = '';
         for(var i = 0; i < nodes.length; i++)
         {
+            var n = nodes[i];
+
             ///////////////////////////
             // skip op 'configure' node
-            if(this.g_loadMode != V_TREE_ID_oper ||
-                nodes[i].getAttribute('name') != "configure")
+            if(this.g_loadMode == V_TREE_ID_oper)
             {
-                if(str != '')
-                    str += ',';
+                if(n.getAttribute('name') == "configure")
+                    continue;
 
-                str += this.f_jsonGenNode(nodes[i], nodes[i].getAttribute('name'));
+                str = this.f_constructNodeDomStr(n, str);
             }
+            else
+                str = this.f_constructNodeDomStr(n, str);
         }
 
         switch(this.g_loadMode)
@@ -1002,8 +1015,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 var selPath = node.getPath('text');
                 m_thisObj.m_tree.selectPath(selPath, 'text', function(success, sel)
                 {
-                    if(sel.firstChild != undefined)
-                        m_thisObj.f_handleNodeOperClick(sel.firstChild, null);
+                    var cn = sel.firstChild;
+                    if(cn != undefined)
+                    {
+                        m_thisObj.m_tree.selectPath(cn.getPath('text'), 'text', null);
+                        m_thisObj.f_handleNodeOperClick(cn, null);
+                    }
                 });
 
                 narg.un('expand', handler);

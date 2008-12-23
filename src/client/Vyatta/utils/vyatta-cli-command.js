@@ -363,8 +363,8 @@ function f_startSegmentCommand()
     {
         run: function()
         {
-            if(g_cliCmdObj.m_segmentId != undefined &&
-                g_cliCmdObj.m_segmentId != g_cliCmdObj.m_prevSegId)
+            if(g_cliCmdObj.m_segmentId != undefined)// &&
+                //g_cliCmdObj.m_segmentId != g_cliCmdObj.m_prevSegId)
             {
                 g_cliCmdObj.m_prevSegId = g_cliCmdObj.m_segmentId;
                 f_sendOperationCliCommand(g_cliCmdObj.m_node, g_cliCmdObj.m_cb,
@@ -372,6 +372,6 @@ function f_startSegmentCommand()
                                     g_cliCmdObj.m_segmentId);
             }
         }
-        ,interval: 3500
+        ,interval: 5500
     });
 }

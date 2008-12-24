@@ -124,7 +124,9 @@ MultiResponseCommand::get_resp(string &token, string &output)
   if (fp) {
     char buf[1025];
     if (fgets(buf, 1024, fp)) { //read the pid
-      cmd  += string(buf);
+      string tmp = string(buf);
+      cmd  += tmp.substr(0,tmp.length()-1) + " 2> /dev/null";
+      //      cout << "cmd : " << cmd << endl;
       system(cmd.c_str());
     }
     fclose(fp);

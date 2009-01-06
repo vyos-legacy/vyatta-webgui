@@ -23,7 +23,7 @@ v_opPanelObject = Ext.extend(v_panelObject,
         this.m_curScreen = null;
         g_opPanelObject = this;
 
-        //v_loginPanelObject.suprclass.constructor.apply(this, arguments);
+        //v_loginPanelObject.superclass.constructor.apply(this, arguments);
         f_startBackgroundTask(g_opPanelObject);
     },
 

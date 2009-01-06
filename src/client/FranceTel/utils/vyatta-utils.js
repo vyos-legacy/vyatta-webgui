@@ -15,40 +15,16 @@ MyLabel = Ext.extend(Ext.form.Label,
     }
 });
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// Vyatta cookie provider. the cookie stays in the system for 30 days.
-m_cookieP = undefined;
-function f_getCookieProvider()
-{
-    if(m_cookieP == undefined)
-    {
-      m_cookieP = new Ext.state.CookieProvider(
-      {
-          domain: document.domain
-          ,expires: new Date(new Date().getTime() + (5 * 60 * 60 * 1000))
-          //,secure: true
-      });
-
-      Ext.state.Manager.setProvider(m_cookieP);
-    }
-
-    return m_cookieP;
-}
-
 /*******************************************************************************
  * return a new login timer counter
  *******************************************************************************/
 function f_resetLoginTimer()
 {
-    var timer = new Date(new Date().getTime() + (15 * 60 * 1000));
-    var cookie = f_getCookieProvider();
-    cookie.set(V_COOKIES_LOGIN_TIMER, timer);
-
-    return timer;
+    var exp = g_cookie.m_loginTimeExpire;
+    g_cookie.f_set(V_COOKIES_LOGIN_TIMER, exp, exp);
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 // return true if user is still login, else reture false;
 // updateLoginTimer - true - will update the login timer
@@ -57,11 +33,9 @@ function f_resetLoginTimer()
 //             false - will not prompt login timeout message
 function f_isUserLogined(updateLoginTimer, promptMsg)
 {
-    var cookie = f_getCookieProvider();
-    var loginTimer = cookie.get(V_COOKIES_LOGIN_TIMER, V_NOT_FOUND);
+    var loginTimer = g_cookie.f_get(V_COOKIES_LOGIN_TIMER);
 
-    var curTime = new Date().getTime();
-    if(loginTimer == V_NOT_FOUND || loginTimer.valueOf() < curTime)
+    if(loginTimer == V_NOT_FOUND)
     {
         if(promptMsg != undefined && promptMsg)
             f_promptUserNotLoginMessage(null);
@@ -70,48 +44,43 @@ function f_isUserLogined(updateLoginTimer, promptMsg)
     }
     else
     {
-        if(updateLoginTimer != undefined && updateLoginTimer)
-            f_resetLoginTimer();
-
+        f_resetLoginTimer();
         return true;
     }
 }
 
 function f_saveUserLoginName(name)
 {
-    var cookie = f_getCookieProvider();
-    cookie.set(V_COOKIES_USER_NAME, name);
+    g_cookie.f_set(V_COOKIES_USER_NAME, name, g_cookie.m_userNameExpire);
 }
 
 function f_getUserLoginName()
 {
-    var cookie = f_getCookieProvider();
-    return cookie.get(V_COOKIES_USER_NAME, V_NOT_FOUND);
+    return g_cookie.f_get(V_COOKIES_USER_NAME);
 }
 
 function f_saveUserLoginId(id)
 {
-    var cookie = f_getCookieProvider();
-    cookie.set(V_COOKIES_USER_ID, id);
+    g_cookie.f_set(V_COOKIES_USER_ID, id, g_cookie.m_loginTimeExpire);
 }
 
 function f_getUserLoginedID(cookieP /* cookieP is optional */)
 {
-    if(cookieP == undefined)
-        return f_getCookieProvider().get(V_COOKIES_USER_ID, V_NOT_FOUND);
-
-    return cookieP.get(V_COOKIES_USER_ID, V_NOT_FOUND);
+    return g_cookie.f_get(V_COOKIES_USER_ID);
 }
 
 function f_userLogout(isRedirectToHomePage, toPage)
 {
-    var cookieP = f_getCookieProvider();
-
-    cookieP.set(V_COOKIES_LOGIN_TIMER, V_NOT_FOUND);
-    cookieP.set(V_COOKIES_USER_ID, V_NOT_FOUND);
+    g_cookie.f_remove(V_COOKIES_LOGIN_TIMER);
+    g_cookie.f_remove(V_COOKIES_USER_ID);
 
     if(isRedirectToHomePage != undefined && isRedirectToHomePage)
-        window.location = toPage;
+    {
+        if(navigator.userAgent.indexOf('Chrome') > 0)
+            location.reload(true);
+        else
+            window.location = toPage;
+    }
 }
 
 /***************************************************************************
@@ -165,8 +134,7 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
 
 var f_isLoginFieldsDirty = function(uField, pField)
 {
-    if(uField.isDirty() && pField.isDirty())
-        return true;
+    return (uField.isDirty() && pField.isDirty()) ? true : false;
 }
 
 var f_LoginKeyPressHandler = function(field, e, urlLocation, urlPost,
@@ -222,7 +190,6 @@ function f_isUserTextValid(val)
 
 function f_isPasswordValid(val)
 {
-
     return true;
 }
 

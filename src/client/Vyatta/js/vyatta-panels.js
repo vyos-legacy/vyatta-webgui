@@ -635,6 +635,25 @@ function f_createToolbarButton(iconCls, cmdName, treeObj)
         }
     });
 }
+
+function f_showConfigurationViewDialog(configData)
+{
+    var val = f_replace(configData, "\n", "<br>");
+    val = f_replace(val, ' ', "&nbsp;");
+
+    var dialog = new Ext.Window(
+    {
+        title: 'Configuration View'
+        ,reset_on_hide: true
+        ,height: 380
+        ,width: 600
+        ,autoScroll: true
+        ,html:'<font face="monospace">' + val + '</font>'
+    });
+
+    dialog.show();
+}
+
 function f_updateToolbarButtons(tree)
 {
     var m = tree.m_parent;
@@ -666,9 +685,7 @@ function f_sendCLICommand(button, cmds, treeObj)
 
 function f_handleToolbarViewCmdResponse(panelObj, responseTxt)
 {
-    panelObj.m_viewCmdPanel = f_createTextAreaField(
-                            responseTxt, undefined, 120, 'Configuration View');
-    f_addField2Panel(panelObj.m_editorPanel, panelObj.m_viewCmdPanel, undefined);
+    f_showConfigurationViewDialog(responseTxt);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -980,26 +997,18 @@ function f_createLabel(value, labelFor)
     });
 }
 
-function f_createTextAreaField(values, width, height, title)
+function f_createTextAreaField(values, width, height)
 {
     var val = f_replace(values, "\n", "<br>");
     val = f_replace(val, ' ', "&nbsp;");
-    var cls = null;
-
-    if(title != undefined)
-    {
-        cls = 'v-panel-with-header';
-    }
 
     return new Ext.Panel(
     {
         border: true
-        ,title: title
         ,style: 'padding:5px'
         ,autoWidth: true
         ,height: height
         ,autoScroll: true
-        ,cls: cls
         ,html: '<font face="monospace">' + val + '</font>'
     });
 }

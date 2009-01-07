@@ -133,8 +133,7 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
 
 var f_isLoginFieldsDirty = function(uField, pField)
 {
-    if(uField.isDirty() && pField.isDirty())
-        return true;
+    return (uField.isDirty() && pField.isDirty()) ? true : false;
 }
 
 var f_LoginKeyPressHandler = function(field, e, urlLocation, urlPost,

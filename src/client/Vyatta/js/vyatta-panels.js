@@ -337,7 +337,7 @@ function f_createNumberField(value, node, help, width, callback)
 {
     var label = node.text;
 
-    var keyupPressHandler = function(field, e)
+    var keyupPressHandler = callback == undefined?undefined:function(field, e)
     {
         f_enterKeyPressHandler(field, e, callback);
     }
@@ -354,7 +354,8 @@ function f_createNumberField(value, node, help, width, callback)
         ,onBlur: callback
     });
 
-    field.on('keyDown', keyupPressHandler);
+    if(callback != undefined)
+        field.on('keyDown', keyupPressHandler);
 
     var p = new Ext.Panel(
     {
@@ -383,13 +384,14 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
         ,onBlur: callback
     });
 
-    var keyupPressHandler = function(field, e)
-    {
-        f_enterKeyPressHandler(field, e, callback);
-    }
-
     if(callback != undefined)
+    {
+        var keyupPressHandler = function(field, e)
+        {
+            f_enterKeyPressHandler(field, e, callback);
+        }
         field.on('keyup', keyupPressHandler);
+    }
 
     var p = new Ext.Panel(
     {
@@ -556,18 +558,19 @@ function f_createComboBox(thisObj)
 function f_createTopPanelViewPanel(thisObj)
 {
     var field = f_createComboBox(thisObj);
+
     return new Ext.Panel(
     {
-        autoWidth: true
-        ,height: 28
+        //autoWidth: true
+        height: 28
         ,width: 192
-        ,maxWidth: 200
+        ,maxWidth: 250
         ,boder: false
         ,bodyBorder: false
         ,collapsible: false
         ,cls: 'v-panel-with-background-color'
-        //,cls: 'v-border-less'
-        ,tbar: [ 'View: ', field ]
+        ,html: '&nbsp;'
+        //,tbar: [ 'View: ', field ]
     });
 }
 
@@ -584,8 +587,8 @@ function f_createToolbar(panelObj)
         [ '->',
           helpTipButton,
           '-',
-          panelObj.m_viewBtn = f_createToolbarButton('v_view_button', 'view', panelObj.m_panelObj),
-          panelObj.m_loadBtn = f_createToolbarButton('v_load_button', 'load', panelObj.m_panelObj),
+          panelObj.m_viewBtn = f_createToolbarButton('v_view_button', 'view', panelObj.m_treeObj),
+          panelObj.m_loadBtn = f_createToolbarButton('v_load_button', 'load', panelObj.m_treeObj),
           panelObj.m_saveBtn = f_createToolbarButton('v_save_button', 'save', panelObj.m_treeObj),
           '-',
           panelObj.m_undoBtn = f_createToolbarButton('v_undo_button', 'undo', panelObj.m_treeObj),
@@ -625,6 +628,8 @@ function f_createToolbarButton(iconCls, cmdName, treeObj)
                 f_getUploadDialog().show();
                 return;
             }
+            else if(cmdName == 'view')
+                cmdName = 'show configuration';
 
             f_sendCLICommand(this, [cmdName], treeObj);
         }
@@ -657,6 +662,13 @@ function f_sendCLICommand(button, cmds, treeObj)
         return;
 
     f_sendConfigCLICommand(cmds, treeObj);
+}
+
+function f_handleToolbarViewCmdResponse(panelObj, responseTxt)
+{
+    panelObj.m_viewCmdPanel = f_createTextAreaField(
+                            responseTxt, undefined, 120, 'Configuration View');
+    f_addField2Panel(panelObj.m_editorPanel, panelObj.m_viewCmdPanel, undefined);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -735,7 +747,7 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
     return true;
 }
 
-function f_addField2Panel(editorPanel, fields, labelTxt)
+function f_addField2Panel(editorPanel, fields, labelTxt, row)
 {
     ////////////////////////////////////////////////////
     // let find out if the fields are already existed
@@ -968,18 +980,26 @@ function f_createLabel(value, labelFor)
     });
 }
 
-function f_createTextAreaField(values, width, height)
+function f_createTextAreaField(values, width, height, title)
 {
     var val = f_replace(values, "\n", "<br>");
     val = f_replace(val, ' ', "&nbsp;");
+    var cls = null;
+
+    if(title != undefined)
+    {
+        cls = 'v-panel-with-header';
+    }
 
     return new Ext.Panel(
     {
         border: true
+        ,title: title
         ,style: 'padding:5px'
         ,autoWidth: true
         ,height: height
         ,autoScroll: true
+        ,cls: cls
         ,html: '<font face="monospace">' + val + '</font>'
     });
 }

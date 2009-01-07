@@ -185,7 +185,8 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             // skip op 'configure' node
             if(this.g_loadMode == V_TREE_ID_oper)
             {
-                if(n.getAttribute('name') == "configure")
+                var an = n.getAttribute('name');
+                if(an == "configure" || an == 'telnet')
                     continue;
 
                 str = this.f_constructNodeDomStr(n, str);

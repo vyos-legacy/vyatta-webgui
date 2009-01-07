@@ -7,13 +7,13 @@ DATA_baseSystem = Ext.extend(Ext.util.Observable,
 {
     constructor: function()
     {
-        this.m_tabNames = [V_TREE_ID_status, V_TREE_ID_diag,
-                            V_TREE_ID_config, V_TREE_ID_oper];
+        this.m_tabNames = //[V_TREE_ID_status, V_TREE_ID_diag,
+                            [ V_TREE_ID_config, V_TREE_ID_oper];
         
         this.m_iStatus = 0;
         this.m_iDiag = 1;
-        this.m_iConf = 2;
-        this.m_iOper = 3;
+        this.m_iConf = 0;
+        this.m_iOper = 1;
         this.m_selTabIndex = this.m_iConf;
 
         this.m_tabObjects = [];
@@ -69,7 +69,6 @@ function f_hideTab(tabIndex)
 function f_initSystemObjects()
 {
     g_baseSystem = new DATA_baseSystem();
-
     g_cliCmdObj = {};
     
     /////////////////////////////////////////
@@ -190,8 +189,6 @@ function f_createFrameHeaderPanel()
 }
 function f_createFrameFooterPanel()
 {
-    //var str = "<nobr><div id='v_footer_text'>&nbsp;&nbsp;&copy; 2006 - 2008 Vyatta Inc." +
-      //        "<div id='v_footer_clock'>sss</div></div></nobr>";
     var footer = new Ext.Panel(
     {
         cls: 'v-panel-with-background-color'

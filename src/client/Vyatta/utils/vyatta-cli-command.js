@@ -137,16 +137,25 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             return;
         }
 
-        var tree = treeObj.m_tree;
-        var selNode = tree.getSelectionModel().getSelectedNode();
-        if(selNode == undefined)
-            selNode = tree.getRootNode();
-        var selPath = selNode.getPath('text');
+        /////////////////////////////////////
+        // handle the 'View' toolbar command
+        if(cmds == 'show configuration')
+        {
+            f_handleToolbarViewCmdResponse(treeObj.m_parent, isSuccess[1]);
+        }
+        else
+        {
+            var tree = treeObj.m_tree;
+            var selNode = tree.getSelectionModel().getSelectedNode();
+            if(selNode == undefined)
+                selNode = tree.getRootNode();
+            var selPath = selNode.getPath('text');
 
-        if(node == undefined)
-            f_handleNodeExpansion(treeObj, selNode, selPath, cmds);
-        else if(node.parentNode != undefined || selNode.parentNode != undefined)
-            f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCreate);
+            if(node == undefined)
+                f_handleNodeExpansion(treeObj, selNode, selPath, cmds);
+            else if(node.parentNode != undefined || selNode.parentNode != undefined)
+                f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCreate);
+        }
     }
 
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"

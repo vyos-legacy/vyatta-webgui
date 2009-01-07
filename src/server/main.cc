@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
   bool debug = false;
   bool strip_err_msg = false;
   bool daemon = false;
-  string pid_path = "/var/run";
+  string pid_path = "/usr/lib/cgi-bin/var/run/webgui.pid";
   string file; 
   unsigned long port = 0;
 
@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
   //parent dies
   int s(0);
   if (fork() != 0) {
-    wait(&s);
+    //    wait(&s);
     exit(0); //always fork and kill parent
   }
 

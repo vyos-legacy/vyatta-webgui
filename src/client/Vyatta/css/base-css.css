@@ -83,7 +83,7 @@
     border-width:0 0 0px 0;
     /*display: block;*/
     padding:2px;
-    background:#dfe8f6 url(../images/default/toolbar/bg.gif) repeat-x top left;
+    background:#fff url(../images/default/toolbar/bg.gif) repeat-x top left;
     position:relative;
     zoom:1;
 }
@@ -259,7 +259,8 @@
 
 .v-data-panel-body
 {
-    border: 2px solid orange;
+    border-top: 2px solid #999999;
+    border-left: 2px solid #999999;
     background-color:#FFF;
 }
 body
@@ -285,6 +286,18 @@ body
     font-weight: bold;
     color: blue;
 }
+
+.v-panel-with-background-color .x-panel-body
+{
+    background-color:#fff !important;
+}
+
+.v-footer-panel .x-panel-body
+{
+    background-color:#dfe8f6 !important;
+    border-top: 2px solid #999999 !important;
+}
+
 .x-panel-header
 {
     overflow:hidden;
@@ -320,14 +333,14 @@ body
 }
 .x-tree-node .x-tree-selected
 {
-    background-color: #fff;
+    background-color: #dfe8f6;
 }
 
 .v-border-less
 {
     border: 0 none;
     border-style: none;
-    background-color: d0def0;
+    background-color: #fff;
     border-top: none;
 }
 .v-node-nocfg {
@@ -376,12 +389,6 @@ root
 {
     zoom: 1;
 }
-
-.v-panel-with-background-color .x-panel-body
-{
-    background-color:#dfe8f6 !important;
-}
-
 
 pre.code
 {

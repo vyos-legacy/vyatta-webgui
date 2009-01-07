@@ -591,9 +591,9 @@ function f_createToolbar(panelObj)
           panelObj.m_loadBtn = f_createToolbarButton('v_load_button', 'load', panelObj.m_treeObj),
           panelObj.m_saveBtn = f_createToolbarButton('v_save_button', 'save', panelObj.m_treeObj),
           '-',
-          panelObj.m_undoBtn = f_createToolbarButton('v_undo_button', 'undo', panelObj.m_treeObj),
-          panelObj.m_redoBtn = f_createToolbarButton('v_redo_button', 'redo', panelObj.m_treeObj),
-          '-',
+          //panelObj.m_undoBtn = f_createToolbarButton('v_undo_button', 'undo', panelObj.m_treeObj),
+          //panelObj.m_redoBtn = f_createToolbarButton('v_redo_button', 'redo', panelObj.m_treeObj),
+          //'-',
           panelObj.m_discardBtn = f_createToolbarButton('v_discard_button',
                               'discard', panelObj.m_treeObj),
           panelObj.m_commitBtn = f_createToolbarButton('v_commit_button',
@@ -912,13 +912,17 @@ function f_createEditorTitle(node, title)
 
         while(n != undefined)
         {
-            titleName =  n.text + arrow + titleName;
-            arrow = '&nbsp;&rArr;&nbsp;';
+            if(n.text != 'Configuration')
+            {
+                titleName =  n.text + arrow + titleName;
+                arrow = '&nbsp;&rArr;&nbsp;';
+            }
             n = n.parentNode;
         }
     }
     else
         titleName = title;
+
 
     return new Ext.Panel(
     {

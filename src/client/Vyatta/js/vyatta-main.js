@@ -172,7 +172,7 @@ function f_createFrameHeaderPanel()
            '</font>,&nbsp;&nbsp;&nbsp;' +
             '<a class="anchor-test" valign="top" href="#" onclick="f_userLogout(true, \'' +
             g_baseSystem.m_homePage + '\')">' +
-            '<img src="images/logout.gif"/> Logout</a>';
+            '<img src="images/logout.gif"/> Log Out</a>';
         f_createTabsHTML();
     }
 
@@ -191,7 +191,7 @@ function f_createFrameFooterPanel()
 {
     var footer = new Ext.Panel(
     {
-        cls: 'v-panel-with-background-color'
+        cls: 'v-footer-panel'
         ,height: 25
         ,border: false
         ,bodyBorder: false

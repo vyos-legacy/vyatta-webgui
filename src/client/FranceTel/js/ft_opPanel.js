@@ -482,6 +482,7 @@ function f_sendServerCommand(checkLogin, xmlSend, callback, showWait)
     // stop the background task before command sent
     //f_stopBackgroundTask(g_opPanelObject);
 
+/*
     if(checkLogin)
     {
         if(!f_isUserLogined(true, true))
@@ -490,6 +491,7 @@ function f_sendServerCommand(checkLogin, xmlSend, callback, showWait)
             return;
         }
     }
+*/
 
     var xmlStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                + "<vyatta>" +

@@ -302,12 +302,6 @@ function f_initTabPanel(tabIndex)
 
 function f_handleOnTabClick(tabIndex)
 {
-    if(!f_isUserLogined(true, true))
-    {
-        window.location = 'ft_main.html';
-        return;
-    }
-
     g_ftBaseSystem.m_selTab = g_ftBaseSystem.f_getTabsData(tabIndex)[0];
     f_refreshTabs();
 

@@ -7,7 +7,7 @@
 // cookies property name
 V_COOKIES_USER_NAME = 'userName';
 V_COOKIES_USER_ID = 'id';
-V_COOKIES_LOGIN_TIMER = 'loginTimer';
+V_COOKIES_ISLOGIN = 'isLogin';
 V_COOKIES_HELP_TIP_STATE = 'helpOnOff';
 
 //////////////////////////////////////////////

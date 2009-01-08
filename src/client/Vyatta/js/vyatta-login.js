@@ -59,7 +59,7 @@ VYATTA_LoginObject = Ext.extend(VYATTA_panels,
             labelWidth: 75 // label settings here cascade unless overridden
             ,frame:false
             ,border: false
-            ,title: 'Please Enter User Name and Password to Login'
+            ,title: 'Please enter User Name and Password to log in'
             //,layoutConfig: Ext.layout.FormLayout
             ,bodyStyle:'padding:10px 10px 5px 10px'
             ,width: 350

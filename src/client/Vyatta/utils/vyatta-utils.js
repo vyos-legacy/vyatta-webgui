@@ -342,15 +342,17 @@ function f_createEmptyPanel(html)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Error Message Box
-function f_promptErrorMessage(title, msgText)
+function f_promptErrorMessage(title, msgText, msgType)
 {
+    var mType = msgType == undefined ? Ext.MessageBox.ERROR : msgType;
+
     Ext.Msg.show(
     {
       title: title
       ,msg: msgText
       ,buttons: Ext.Msg.OK
       ,handler: function() { f_hideSendWaitMessage();}
-      ,icon: Ext.MessageBox.ERROR
+      ,icon: mType
       ,modal: true
     });
 }

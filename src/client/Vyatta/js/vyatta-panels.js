@@ -623,15 +623,28 @@ function f_createToolbarButton(iconCls, cmdName, treeObj)
         ,iconCls: iconCls
         ,handler: function() 
         {
+            var bt = this;
+            var cb = function(btn)
+            {
+                if(btn == 'yes')
+                    f_sendCLICommand(bt, [cmdName], treeObj);
+            }
+
             if(cmdName == 'save')
             {
-                f_getUploadDialog().show();
+                //f_getUploadDialog().show();
+                //return;
+            }
+            else if(cmdName == 'load')
+            {
+                f_yesNoMessageBox('Re-load Configuration',
+                    'Are you sure you wish to reload configuration?', cb);
                 return;
             }
             else if(cmdName == 'view')
                 cmdName = 'show configuration';
 
-            f_sendCLICommand(this, [cmdName], treeObj);
+            f_sendCLICommand(bt, [cmdName], treeObj);
         }
     });
 }

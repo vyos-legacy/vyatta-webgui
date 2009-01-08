@@ -180,7 +180,7 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             if(this.g_loadMode == V_TREE_ID_oper)
             {
                 var an = n.getAttribute('name');
-                if(an == "configure" || an == 'telnet')
+                if(an == "configure" || an == 'telnet' || an == 'terminal')
                     continue;
 
                 str = this.f_constructNodeDomStr(n, str);

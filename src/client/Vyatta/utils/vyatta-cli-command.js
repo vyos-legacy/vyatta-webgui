@@ -125,6 +125,12 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 
             return undefined;
         }
+        else if(cmds == 'save')
+        {
+            f_promptErrorMessage('Save configuration', isSuccess[1],
+                                  Ext.MessageBox.INFO);
+            return undefined;
+        }
 
         /////////////////////////////////////
         // handle the 'View' toolbar command

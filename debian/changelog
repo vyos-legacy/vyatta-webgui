@@ -1,3 +1,15 @@
+vyatta-webgui (0.2.2) unstable; urgency=low
+
+  [ slioch ]
+  * added same parsing code for op cmd on argument, i.e. escape single
+    quotes and quote whole command. Also added syslog output in chunker
+    in place of stderr output. Finally,
+
+  [ An-Cheng Huang ]
+  * fix typo
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 08 Jan 2009 11:37:01 -0800
+
 vyatta-webgui (0.2.1) unstable; urgency=low
 
   Checkpoint release

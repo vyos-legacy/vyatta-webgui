@@ -259,8 +259,8 @@
 
 .v-data-panel-body
 {
-    border-top: 2px solid #999999;
-    border-left: 2px solid #999999;
+    border-top: 2px solid #ccc;
+    border-left: 2px solid #ccc;
     background-color:#FFF;
 }
 body

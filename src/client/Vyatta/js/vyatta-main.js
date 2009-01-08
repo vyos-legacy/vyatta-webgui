@@ -139,12 +139,6 @@ function f_createTabsHTML()
 
 function f_handleTabClick(tabName)
 {
-    if(!f_isLogined(true, true))
-    {
-        window.location = g_baseSystem.m_homePage;
-        return;
-    }
-
     f_showTab(g_baseSystem.f_getTabIndex(tabName));
 }
 
@@ -160,7 +154,7 @@ function f_handleTabOnMouseAction(tabName, action)
 function f_createFrameHeaderPanel()
 {
     var id = document.getElementById('id_header_text');
-    if(!f_isLogined(false, false))
+    if(!f_isUserLogined())
     {
         id.innerHTML = '&nbsp;';
         var idTab = document.getElementById('id_header_tab');
@@ -328,7 +322,6 @@ Ext.onReady(function()
     // start up the main frame
     f_startViewPort();
 
-
     //////////////////////////////////////////
     // if user not login yet, do login here..
     if(!f_isLogined(false, false))
@@ -340,4 +333,5 @@ Ext.onReady(function()
     }
     else
         f_showTab(g_baseSystem.m_iConf);
+
 });

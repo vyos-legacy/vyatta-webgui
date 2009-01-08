@@ -17,33 +17,12 @@ MyLabel = Ext.extend(Ext.form.Label,
 /*******************************************************************************
  * set new login expire time
  *******************************************************************************/
-function f_resetLoginTimer()
-{
-    var exp = g_cookie.m_loginTimeExpire;
-    g_cookie.f_set(V_COOKIES_LOGIN_TIMER, exp, exp);
-}
 ////////////////////////////////////////////////////////////////////////////////
-// return true if user is still login, else reture false;
-// updateLoginTimer - true - will update the login timer
-//                    false - will not update login timer
-// promptMsg - true - will prompt login timeout message.
-//             false - will not prompt login timeout message
-function f_isUserLogined(updateLoginTimer, promptMsg)
+function f_isUserLogined()
 {
-    var loginTimer = g_cookie.f_get(V_COOKIES_LOGIN_TIMER);
+    var login = g_cookie.f_get(V_COOKIES_ISLOGIN);
 
-    if(loginTimer == V_NOT_FOUND)
-    {
-        if(promptMsg != undefined && promptMsg)
-            f_promptUserNotLoginMessage(null);
-
-        return false;
-    }
-    else
-    {
-        f_resetLoginTimer();
-        return true;
-    }
+    return (login == V_NOT_FOUND || login == 'no') ? false : true;
 }
 
 function f_saveUserLoginName(name)
@@ -59,7 +38,7 @@ function f_getUserLoginName()
 
 function f_saveUserLoginId(id)
 {
-    g_cookie.f_set(V_COOKIES_USER_ID, id, g_cookie.m_loginTimeExpire);
+    g_cookie.f_set(V_COOKIES_USER_ID, id, g_cookie.m_userNameExpire);
 }
 
 function f_getUserLoginedID(cookieP /* cookieP is optional */)
@@ -69,11 +48,12 @@ function f_getUserLoginedID(cookieP /* cookieP is optional */)
 
 function f_userLogout(isRedirectToHomePage, toPage)
 {
-    g_cookie.f_remove(V_COOKIES_LOGIN_TIMER);
     g_cookie.f_remove(V_COOKIES_USER_ID);
 
     if(isRedirectToHomePage != undefined && isRedirectToHomePage)
     {
+        g_cookie.f_set(V_COOKIES_ISLOGIN, 'no', g_cookie.m_userNameExpire);
+
         if(navigator.userAgent.indexOf('Chrome') > 0)
             location.reload(true);
         else
@@ -107,7 +87,8 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
               }
               else
               {
-                  f_resetLoginTimer();
+                  g_cookie.f_set(V_COOKIES_ISLOGIN, 'yes',
+                                      g_cookie.m_userNameExpire);
                   window.location = urlLocation;
               }
           }
@@ -124,10 +105,10 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
       var conn = new Ext.data.Connection({});
       conn.request(
       {
-        url: urlPost,       //'/cgi-bin/webgui-wrap',
-        method: 'POST',
-        xmlData: xmlstr,
-        callback: f_authCb
+          url: urlPost,       //'/cgi-bin/webgui-wrap',
+          method: 'POST',
+          xmlData: xmlstr,
+          callback: f_authCb
       });
 }
 

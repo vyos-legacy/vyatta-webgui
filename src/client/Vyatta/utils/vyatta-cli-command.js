@@ -349,6 +349,11 @@ function f_parseResponseError(xmlRoot)
         code = q.selectValue('code', err, 'UNKNOWN');
         msg = q.selectValue('msg', err, 'UNKNOWN');
 
+        //////////////////////////////////////////////
+        // selectValue only can return up to 4096 char
+        if(msg.length >= 4096 && xmlRoot.textContent != undefined)
+            msg = xmlRoot.textContent;
+
         var msgNode = q.selectNode('msg', err);
         segment = msgNode.getAttribute('segment');
 

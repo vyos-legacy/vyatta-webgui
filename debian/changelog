@@ -1,3 +1,14 @@
+vyatta-webgui (0.2.4) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Fix the cut off data for the large data response from server which
+    DomQuery
+  * * Update active tab images for the new layout
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@build-vm.localdomain>  Fri, 09 Jan 2009 16:08:31 -0800
+
 vyatta-webgui (0.2.3) unstable; urgency=low
 
   [ Kevin Choi ]

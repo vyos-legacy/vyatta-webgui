@@ -7,13 +7,13 @@ DATA_baseSystem = Ext.extend(Ext.util.Observable,
 {
     constructor: function()
     {
-        this.m_tabNames = [V_TREE_ID_status, V_TREE_ID_diag,
-                            V_TREE_ID_config, V_TREE_ID_oper];
+        this.m_tabNames = //[V_TREE_ID_status, V_TREE_ID_diag,
+                            [ V_TREE_ID_config, V_TREE_ID_oper];
         
         this.m_iStatus = 0;
         this.m_iDiag = 1;
-        this.m_iConf = 2;
-        this.m_iOper = 3;
+        this.m_iConf = 0;
+        this.m_iOper = 1;
         this.m_selTabIndex = this.m_iConf;
 
         this.m_tabObjects = [];
@@ -69,7 +69,6 @@ function f_hideTab(tabIndex)
 function f_initSystemObjects()
 {
     g_baseSystem = new DATA_baseSystem();
-
     g_cliCmdObj = {};
     
     /////////////////////////////////////////
@@ -140,12 +139,6 @@ function f_createTabsHTML()
 
 function f_handleTabClick(tabName)
 {
-    if(!f_isLogined(true, true))
-    {
-        window.location = g_baseSystem.m_homePage;
-        return;
-    }
-
     f_showTab(g_baseSystem.f_getTabIndex(tabName));
 }
 
@@ -161,7 +154,7 @@ function f_handleTabOnMouseAction(tabName, action)
 function f_createFrameHeaderPanel()
 {
     var id = document.getElementById('id_header_text');
-    if(!f_isLogined(false, false))
+    if(!f_isUserLogined())
     {
         id.innerHTML = '&nbsp;';
         var idTab = document.getElementById('id_header_tab');
@@ -173,7 +166,7 @@ function f_createFrameHeaderPanel()
            '</font>,&nbsp;&nbsp;&nbsp;' +
             '<a class="anchor-test" valign="top" href="#" onclick="f_userLogout(true, \'' +
             g_baseSystem.m_homePage + '\')">' +
-            '<img src="images/logout.gif"/> Logout</a>';
+            '<img src="images/logout.gif"/> Log Out</a>';
         f_createTabsHTML();
     }
 
@@ -190,11 +183,9 @@ function f_createFrameHeaderPanel()
 }
 function f_createFrameFooterPanel()
 {
-    //var str = "<nobr><div id='v_footer_text'>&nbsp;&nbsp;&copy; 2006 - 2008 Vyatta Inc." +
-      //        "<div id='v_footer_clock'>sss</div></div></nobr>";
     var footer = new Ext.Panel(
     {
-        cls: 'v-panel-with-background-color'
+        cls: 'v-footer-panel'
         ,height: 25
         ,border: false
         ,bodyBorder: false
@@ -331,7 +322,6 @@ Ext.onReady(function()
     // start up the main frame
     f_startViewPort();
 
-
     //////////////////////////////////////////
     // if user not login yet, do login here..
     if(!f_isLogined(false, false))
@@ -343,4 +333,5 @@ Ext.onReady(function()
     }
     else
         f_showTab(g_baseSystem.m_iConf);
+
 });

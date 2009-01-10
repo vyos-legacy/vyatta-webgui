@@ -1,3 +1,33 @@
+vyatta-webgui (0.2.4) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Fix the cut off data for the large data response from server which
+    DomQuery
+  * * Update active tab images for the new layout
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@build-vm.localdomain>  Fri, 09 Jan 2009 16:08:31 -0800
+
+vyatta-webgui (0.2.3) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Fixed typo on login page
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 09 Jan 2009 15:08:58 -0800
+
+vyatta-webgui (0.2.2) unstable; urgency=low
+
+  [ slioch ]
+  * added same parsing code for op cmd on argument, i.e. escape single
+    quotes and quote whole command. Also added syslog output in chunker
+    in place of stderr output. Finally,
+
+  [ An-Cheng Huang ]
+  * fix typo
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 08 Jan 2009 11:37:01 -0800
+
 vyatta-webgui (0.2.1) unstable; urgency=low
 
   Checkpoint release

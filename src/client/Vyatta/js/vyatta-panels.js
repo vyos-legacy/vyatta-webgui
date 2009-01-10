@@ -337,7 +337,7 @@ function f_createNumberField(value, node, help, width, callback)
 {
     var label = node.text;
 
-    var keyupPressHandler = function(field, e)
+    var keyupPressHandler = callback == undefined?undefined:function(field, e)
     {
         f_enterKeyPressHandler(field, e, callback);
     }
@@ -354,7 +354,8 @@ function f_createNumberField(value, node, help, width, callback)
         ,onBlur: callback
     });
 
-    field.on('keyDown', keyupPressHandler);
+    if(callback != undefined)
+        field.on('keyDown', keyupPressHandler);
 
     var p = new Ext.Panel(
     {
@@ -383,13 +384,14 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
         ,onBlur: callback
     });
 
-    var keyupPressHandler = function(field, e)
-    {
-        f_enterKeyPressHandler(field, e, callback);
-    }
-
     if(callback != undefined)
+    {
+        var keyupPressHandler = function(field, e)
+        {
+            f_enterKeyPressHandler(field, e, callback);
+        }
         field.on('keyup', keyupPressHandler);
+    }
 
     var p = new Ext.Panel(
     {
@@ -556,18 +558,19 @@ function f_createComboBox(thisObj)
 function f_createTopPanelViewPanel(thisObj)
 {
     var field = f_createComboBox(thisObj);
+
     return new Ext.Panel(
     {
-        autoWidth: true
-        ,height: 28
+        //autoWidth: true
+        height: 28
         ,width: 192
-        ,maxWidth: 200
+        ,maxWidth: 250
         ,boder: false
         ,bodyBorder: false
         ,collapsible: false
         ,cls: 'v-panel-with-background-color'
-        //,cls: 'v-border-less'
-        ,tbar: [ 'View: ', field ]
+        ,html: '&nbsp;'
+        //,tbar: [ 'View: ', field ]
     });
 }
 
@@ -584,13 +587,13 @@ function f_createToolbar(panelObj)
         [ '->',
           helpTipButton,
           '-',
-          panelObj.m_viewBtn = f_createToolbarButton('v_view_button', 'view', panelObj.m_panelObj),
-          panelObj.m_loadBtn = f_createToolbarButton('v_load_button', 'load', panelObj.m_panelObj),
+          panelObj.m_viewBtn = f_createToolbarButton('v_view_button', 'view', panelObj.m_treeObj),
+          panelObj.m_loadBtn = f_createToolbarButton('v_load_button', 'load', panelObj.m_treeObj),
           panelObj.m_saveBtn = f_createToolbarButton('v_save_button', 'save', panelObj.m_treeObj),
           '-',
-          panelObj.m_undoBtn = f_createToolbarButton('v_undo_button', 'undo', panelObj.m_treeObj),
-          panelObj.m_redoBtn = f_createToolbarButton('v_redo_button', 'redo', panelObj.m_treeObj),
-          '-',
+          //panelObj.m_undoBtn = f_createToolbarButton('v_undo_button', 'undo', panelObj.m_treeObj),
+          //panelObj.m_redoBtn = f_createToolbarButton('v_redo_button', 'redo', panelObj.m_treeObj),
+          //'-',
           panelObj.m_discardBtn = f_createToolbarButton('v_discard_button',
                               'discard', panelObj.m_treeObj),
           panelObj.m_commitBtn = f_createToolbarButton('v_commit_button',
@@ -620,16 +623,50 @@ function f_createToolbarButton(iconCls, cmdName, treeObj)
         ,iconCls: iconCls
         ,handler: function() 
         {
-            if(cmdName == 'save')
+            var bt = this;
+            var cb = function(btn)
             {
-                f_getUploadDialog().show();
-                return;
+                if(btn == 'yes')
+                    f_sendCLICommand(bt, [cmdName], treeObj);
             }
 
-            f_sendCLICommand(this, [cmdName], treeObj);
+            if(cmdName == 'save')
+            {
+                //f_getUploadDialog().show();
+                //return;
+            }
+            else if(cmdName == 'load')
+            {
+                f_yesNoMessageBox('Re-load Configuration',
+                    'Are you sure you wish to reload configuration?', cb);
+                return;
+            }
+            else if(cmdName == 'view')
+                cmdName = 'show configuration';
+
+            f_sendCLICommand(bt, [cmdName], treeObj);
         }
     });
 }
+
+function f_showConfigurationViewDialog(configData)
+{
+    var val = f_replace(configData, "\n", "<br>");
+    val = f_replace(val, ' ', "&nbsp;");
+
+    var dialog = new Ext.Window(
+    {
+        title: 'Configuration View'
+        ,reset_on_hide: true
+        ,height: 380
+        ,width: 600
+        ,autoScroll: true
+        ,html:'<font face="monospace">' + val + '</font>'
+    });
+
+    dialog.show();
+}
+
 function f_updateToolbarButtons(tree)
 {
     var m = tree.m_parent;
@@ -657,6 +694,11 @@ function f_sendCLICommand(button, cmds, treeObj)
         return;
 
     f_sendConfigCLICommand(cmds, treeObj);
+}
+
+function f_handleToolbarViewCmdResponse(panelObj, responseTxt)
+{
+    f_showConfigurationViewDialog(responseTxt);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -735,7 +777,7 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
     return true;
 }
 
-function f_addField2Panel(editorPanel, fields, labelTxt)
+function f_addField2Panel(editorPanel, fields, labelTxt, row)
 {
     ////////////////////////////////////////////////////
     // let find out if the fields are already existed
@@ -883,13 +925,17 @@ function f_createEditorTitle(node, title)
 
         while(n != undefined)
         {
-            titleName =  n.text + arrow + titleName;
-            arrow = '&nbsp;&rArr;&nbsp;';
+            if(n.text != 'Configuration')
+            {
+                titleName =  n.text + arrow + titleName;
+                arrow = '&nbsp;&rArr;&nbsp;';
+            }
             n = n.parentNode;
         }
     }
     else
         titleName = title;
+
 
     return new Ext.Panel(
     {

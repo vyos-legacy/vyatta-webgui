@@ -101,17 +101,6 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
 
     requestData: function(node, callback)
     {
-        //////////////////////////////////////
-        // if user is not login prompt message
-        if(!f_isLogined(true, true))
-        {
-          // no sid. do nothing.
-          if(typeof callback == "function")
-              callback();
-
-          return;
-        }
-
         if(this.fireEvent("beforeload", this, node, callback) !== false)
         {
             var cstr = "<vyatta><configuration><id>";
@@ -169,6 +158,11 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         var xmlRoot = response.responseXML.documentElement;
         var q = Ext.DomQuery;
 
+        ///////////////////////////////////////////
+        // parse error will redirect to login page
+        // if user not login or login timeout
+        f_parseResponseError(xmlRoot);
+
         var nodes = q.select('node', xmlRoot);
         if (nodes.length == 0)
         {
@@ -185,7 +179,8 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             // skip op 'configure' node
             if(this.g_loadMode == V_TREE_ID_oper)
             {
-                if(n.getAttribute('name') == "configure")
+                var an = n.getAttribute('name');
+                if(an == "configure" || an == 'telnet' || an == 'terminal')
                     continue;
 
                 str = this.f_constructNodeDomStr(n, str);
@@ -592,11 +587,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         g_cliCmdObj.m_segmentId = undefined;
 
         var titlePanel = '';
-        if(!f_isLogined(true, true))
-        {
-            window.location = g_baseSystem.m_homePage;
-            return;
-        }
 
         if(m_thisObj.m_parent.m_editorPanel == undefined)
             m_thisObj.m_parent.f_createEditorPanel();
@@ -988,11 +978,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         // we want to stop segment runs in background
         g_cliCmdObj.m_segmentId = undefined;
 
-        if(!f_isLogined(true, true))
-        {
-            window.location = g_baseSystem.m_homePage;
-            return;
-        }
 
         //////////////////////////////////////
         // create editor panel if not defined

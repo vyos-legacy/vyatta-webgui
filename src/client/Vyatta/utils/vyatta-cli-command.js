@@ -2,14 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
 function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, 
                                     forceSend, segmentId)
 {
-    var sid = f_getUserLoginedID();
-    if(sid == 'NOTFOUND')
-        // no sid. do nothing.
-        return undefined;
-
     var narr = [ ];
     var n = node;
 
@@ -78,14 +74,13 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait(
                         'Running operational command...', 'Operation');
 
-    f_resetLoginTimer();
     g_cliCmdObj.m_node = node;
     g_cliCmdObj.m_cb = callbackObj;
     g_cliCmdObj.m_segmentId = undefined;
 
     /* send request */
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-               + "<vyatta><command><id>" + sid + "</id>\n"
+               + "<vyatta><command><id>" + f_getUserLoginedID() + "</id>\n"
                + "<statement>" + sendStr + "</statement>\n"
                + "</command></vyatta>\n";
 
@@ -108,12 +103,6 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
 
 function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 {
-    var sid = f_getUserLoginedID();
-    if(sid == 'NOTFOUND')
-        // no sid. do nothing.
-        return;
-
-    f_resetLoginTimer();
     g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait('Changing configuration...',
                                                       'Configuration');
 
@@ -122,7 +111,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         f_hideSendWaitMessage();
 
         if(!f_isResponseOK(response))
-            return;
+            return undefined;
 
         var xmlRoot = response.responseXML.documentElement;
         var isSuccess = f_parseResponseError(xmlRoot);
@@ -134,23 +123,38 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             // handle input error
             f_handleInputFieldError(node);
 
-            return;
+            return undefined;
+        }
+        else if(cmds == 'save')
+        {
+            f_promptErrorMessage('Save configuration', isSuccess[1],
+                                  Ext.MessageBox.INFO);
+            return undefined;
         }
 
-        var tree = treeObj.m_tree;
-        var selNode = tree.getSelectionModel().getSelectedNode();
-        if(selNode == undefined)
-            selNode = tree.getRootNode();
-        var selPath = selNode.getPath('text');
+        /////////////////////////////////////
+        // handle the 'View' toolbar command
+        if(cmds == 'show configuration')
+        {
+            f_handleToolbarViewCmdResponse(treeObj.m_parent, isSuccess[1]);
+        }
+        else
+        {
+            var tree = treeObj.m_tree;
+            var selNode = tree.getSelectionModel().getSelectedNode();
+            if(selNode == undefined)
+                selNode = tree.getRootNode();
+            var selPath = selNode.getPath('text');
 
-        if(node == undefined)
-            f_handleNodeExpansion(treeObj, selNode, selPath, cmds);
-        else if(node.parentNode != undefined || selNode.parentNode != undefined)
-            f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCreate);
+            if(node == undefined)
+                f_handleNodeExpansion(treeObj, selNode, selPath, cmds);
+            else if(node.parentNode != undefined || selNode.parentNode != undefined)
+                f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCreate);
+        }
     }
 
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                   + "<vyatta><command><id>" + sid + "</id>\n";
+                   + "<vyatta><command><id>" + f_getUserLoginedID() + "</id>\n";
 
     for (var i = 0; i < cmds.length; i++)
         xmlstr += "<statement>" + cmds[i] + "</statement>\n";
@@ -345,6 +349,11 @@ function f_parseResponseError(xmlRoot)
         code = q.selectValue('code', err, 'UNKNOWN');
         msg = q.selectValue('msg', err, 'UNKNOWN');
 
+        //////////////////////////////////////////////
+        // selectValue only can return up to 4096 char
+        if(msg.length >= 4096 && xmlRoot.textContent != undefined)
+            msg = xmlRoot.textContent;
+
         var msgNode = q.selectNode('msg', err);
         segment = msgNode.getAttribute('segment');
 
@@ -352,6 +361,15 @@ function f_parseResponseError(xmlRoot)
             success = false;
         else if(msg == 'UNKNOWN')
             msg = '';
+
+        if(code == 3) // server timeout
+        {
+            f_promptUserNotLoginMessage();
+            if(f_isAutoLogin())
+                f_autoLogin();
+            else
+                f_userLogout(true, g_baseSystem.m_homePage);
+        }
     }
 
     return [ success, msg, segment ];

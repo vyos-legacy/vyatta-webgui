@@ -125,6 +125,9 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     err = WebGUI::SUCCESS;
     return;
   }
+  else if (strncmp(tmp.c_str(),"reboot",6) == 0) {
+    tmp = "sudo /sbin/reboot";
+  }
   else {
     //treat this as an op mode command
     if (multi_part_op_cmd(cmd)) {

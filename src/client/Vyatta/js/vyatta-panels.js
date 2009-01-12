@@ -263,7 +263,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             for(var i=0; i<len; i++)
             {
                 var f = ef.items.itemAt(i);
-                if(f.items != undefined)
+                if(f.items != undefined && f.items.item(V_IF_INDEX_DIRTY) != undefined)
                     f.items.item(V_IF_INDEX_DIRTY).hide();
             }
         }

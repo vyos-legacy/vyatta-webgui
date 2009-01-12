@@ -212,7 +212,7 @@ function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
     }
     else if(cmds[0].indexOf('commit') >= 0)
     {
-        tree.Obj.m_parent.f_resetEditorPanel();
+        treeObj.m_parent.f_resetEditorPanel();
         f_handlePropagateParentNodes(selNode);
         treeObj.m_selNodePath = selPath;//node.parentNode;
         tree.getRootNode().reload();

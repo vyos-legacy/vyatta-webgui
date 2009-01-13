@@ -189,7 +189,8 @@ Command::multi_part_op_cmd(std::string &cmd)
 {
   //does the cmd either equal an in-process bground op multi-part cmd
   //or is this the start of one?
-  MultiResponseCommand multi_resp_cmd(cmd);
+  MultiResponseCommand multi_resp_cmd(_proc->get_msg().id(),cmd);
+  multi_resp_cmd.init();
   //blocks until enough of a response is generated
   if (!multi_resp_cmd.process()) {
     //generate the error response

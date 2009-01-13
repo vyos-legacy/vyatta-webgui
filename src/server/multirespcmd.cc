@@ -1,6 +1,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <unistd.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <string>
@@ -13,7 +16,7 @@ using namespace std;
 /**
  *
  **/
-MultiResponseCommand::MultiResponseCommand(string &cmd) : _cmd(cmd)
+MultiResponseCommand::MultiResponseCommand(string session_id, string &cmd) : _session_id(session_id), _cmd(cmd)
 {
   //read in valid cmd list
   load_valid_multi_cmds();
@@ -27,6 +30,30 @@ MultiResponseCommand::~MultiResponseCommand()
 
 }
 
+/**
+ *
+ **/
+void
+MultiResponseCommand::init()
+{
+  int servlen,n;
+  struct sockaddr_un  serv_addr;
+
+  bzero((char *)&serv_addr,sizeof(serv_addr));
+  serv_addr.sun_family = AF_UNIX;
+  strcpy(serv_addr.sun_path, WebGUI::CHUNKER_SOCKET.c_str());
+  servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
+  if ((_sock = socket(AF_UNIX, SOCK_STREAM,0)) < 0) {
+    cerr << "MultiResponseCommand::init(): error creating socket" << endl;
+    return;
+    //    error("Creating socket");
+  }
+  if (connect(_sock, (struct sockaddr *)&serv_addr, servlen) < 0) {
+    cerr << "MultiResponseCommand::init(): error connecting to socket: " << errno << endl;
+    return;
+    //    error("Connecting");
+  }
+}
 
 /**
  *
@@ -44,9 +71,10 @@ MultiResponseCommand::process()
     }
     ++iter;
   }
+
   if (found == false) {
     //OK, is this a request for an ongoing transaction?
-    if (strncmp(WebGUI::WEBGUI_MULTI_RESP_TOK_BASE.c_str(),_cmd.c_str(),WebGUI::WEBGUI_MULTI_RESP_TOK_BASE.length()) == 0) {
+    if (strncmp(WebGUI::CHUNKER_RESP_TOK_BASE.c_str(),_cmd.c_str(),WebGUI::CHUNKER_RESP_TOK_BASE.length()) == 0) {
       _next_token = _cmd;
     }
     else {
@@ -55,12 +83,12 @@ MultiResponseCommand::process()
   }
 
   if (_next_token.empty() == true) { //want to start a new command
-    _next_token = start_new_proc();
-    _next_token = WebGUI::WEBGUI_MULTI_RESP_TOK_BASE + _next_token + "_1";
+    string id = start_new_proc();
+    _next_token = WebGUI::CHUNKER_RESP_TOK_BASE + id + "_1";
   }
   
   //then check if this matches a mult-part cmd
-  string file_chunk = WebGUI::WEBGUI_MULTI_RESP_TOK_DIR + "/" + _next_token;
+  string file_chunk = WebGUI::CHUNKER_RESP_TOK_DIR + "/" + _next_token;
   struct stat s;
   if ((lstat(file_chunk.c_str(), &s) == 0) && S_ISREG(s.st_mode)) {
     //found chunk now read next
@@ -76,7 +104,8 @@ MultiResponseCommand::process()
     }
   }
   else { //need to determine if the chunker is done, or the request needs to be resent
-    FILE *fp = fopen(WebGUI::WEBGUI_MULTI_RESP_PID.c_str(),"r"); //can we find the pid file...
+    string pidfile = WebGUI::CHUNKER_RESP_PID + "/" + _session_id;
+    FILE *fp = fopen(pidfile.c_str(),"r"); //can we find the pid file...
     if (fp) {
       char buf[1025];
       if (fgets(buf, 1024, fp)) { //read the pid
@@ -88,7 +117,6 @@ MultiResponseCommand::process()
       }
       fclose(fp);
     }
-    
   }
   return false;
 }
@@ -99,17 +127,13 @@ MultiResponseCommand::process()
 string
 MultiResponseCommand::start_new_proc()
 {
-  //GOT TO FIGURE HOW TO KICK THIS OFF....
-  /*
-    probably make this a separate process that is started/stopped via script, i.e.
-    /etc/init.d/multi_resp_webgui 'ping 12.12.12.12' token restart
-   */
-  string tok;
-  tok = generate_token(tok);
-  string command = WebGUI::WEBGUI_MULTI_RESP_INIT + " '" +  _cmd + "' " + tok + string(" restart");
-  system(command.c_str());
-  
-  //CRAJ--RETURN INITIAL TOKEN KEY HERE
+  string tok = _session_id;
+  char buffer[1024];
+  bzero(buffer,1024);
+  sprintf(buffer,WebGUI::CHUNKER_MSG_FORMAT.c_str(),tok.c_str(),_cmd.c_str());
+
+  ssize_t num = write(_sock,buffer,sizeof(buffer));
+  usleep(1000*1000); //give this a 1 second delay on start
   return tok;
 }
 
@@ -119,18 +143,13 @@ MultiResponseCommand::start_new_proc()
 void
 MultiResponseCommand::get_resp(string &token, string &output)
 {
-  string cmd = "kill -12 "; //notify process we are grabbing another response
-  FILE *fp = fopen(WebGUI::WEBGUI_MULTI_RESP_PID.c_str(),"r"); //can we find the pid file...
-  if (fp) {
-    char buf[1025];
-    if (fgets(buf, 1024, fp)) { //read the pid
-      string tmp = string(buf);
-      cmd  += tmp.substr(0,tmp.length()-1) + " 2> /dev/null";
-      //      cout << "cmd : " << cmd << endl;
-      system(cmd.c_str());
-    }
-    fclose(fp);
-  }
+  string tok = _session_id;
+  char buffer[1024];
+  bzero(buffer,1024);
+  sprintf(buffer,WebGUI::CHUNKER_UPDATE_FORMAT.c_str(),tok.c_str());
+
+  ssize_t num = write(_sock,buffer,sizeof(buffer));
+
   token = _next_token;
   output = _resp;
 }
@@ -142,7 +161,7 @@ void
 MultiResponseCommand::load_valid_multi_cmds()
 {
   //read in conf file and stuff values into set
-  FILE *fp = fopen(WebGUI::WEBGUI_MULTI_RESP_CMDS.c_str(),"r"); 
+  FILE *fp = fopen(WebGUI::CHUNKER_RESP_CMDS.c_str(),"r"); 
   if (fp) {
     char buf[1025];
     while (fgets(buf,1024,fp) != 0) {
@@ -202,11 +221,11 @@ string
 MultiResponseCommand::get_next_resp_file(std::string &tok)
 {
   //find last character and add 1
-  int pos = _cmd.rfind("_");
-  string tmp = _cmd.substr(pos+1,_cmd.length());
+  int pos = tok.rfind("_");
+  string tmp = tok.substr(pos+1,tok.length());
   int val = strtoul(tmp.c_str(),NULL,10);
   ++val;
   char buf[80];
   sprintf(buf,"%d",val);
-  return _cmd.substr(0,pos) + "_" + string(buf);
+  return tok.substr(0,pos) + "_" + string(buf);
 }

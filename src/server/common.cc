@@ -12,11 +12,6 @@ using namespace std;
 const unsigned long WebGUI::ID_START = 2147483648UL;
 const unsigned long WebGUI::ID_RANGE = 2147483647UL;
 
-const string WebGUI::WEBGUI_MULTI_RESP_TOK_DIR = "/usr/lib/cgi-bin/tmp/webgui/";
-const string WebGUI::WEBGUI_MULTI_RESP_TOK_BASE = "multi_";
-const string WebGUI::WEBGUI_MULTI_RESP_PID = "/usr/lib/cgi-bin/var/run/webgui_chunker.pid";
-const string WebGUI::WEBGUI_MULTI_RESP_CMDS = "/usr/lib/cgi-bin/webgui.conf";
-const string WebGUI::WEBGUI_MULTI_RESP_INIT="/usr/lib/cgi-bin/etc/init.d/vyatta-webgui-chunker";
 
 
 //const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = 1800UL;
@@ -33,6 +28,16 @@ const string WebGUI::COMMIT_LOCK_FILE = "/opt/vyatta/config/.lock";
 const string WebGUI::VYATTA_MODIFY_DIR = "/opt/vyatta/config/tmp/";
 const string WebGUI::VYATTA_MODIFY_FILE = WebGUI::VYATTA_MODIFY_DIR + ".vyattamodify_";
 
+
+const string WebGUI::CHUNKER_RESP_TOK_DIR = "/usr/lib/cgi-bin/tmp/webgui/";
+const string WebGUI::CHUNKER_RESP_TOK_BASE = "multi_";
+const string WebGUI::CHUNKER_RESP_CMDS = "/usr/lib/cgi-bin/webgui.conf";
+const string WebGUI::CHUNKER_RESP_INIT="/usr/lib/cgi-bin/etc/init.d/vyatta-webgui-chunker";
+const string WebGUI::CHUNKER_RESP_PID = "/usr/lib/cgi-bin/var/run";
+const string WebGUI::CHUNKER_SOCKET = "/tmp/chunker_foobar";
+const unsigned long WebGUI::CHUNKER_MAX_WAIT_TIME = 5; //seconds
+const string WebGUI::CHUNKER_MSG_FORMAT = "<vyatta><chunker_command><token>%s</token><statement>%s</statement></chunker_command></vyatta>\0\0";
+const string WebGUI::CHUNKER_UPDATE_FORMAT = "<vyatta><chunker_command><token>%s</token><statement></statement></chunker_command></vyatta>\0\0";
 
 char const* WebGUI::ErrorDesc[8] = {" ",
 				    "request cannot be parsed",

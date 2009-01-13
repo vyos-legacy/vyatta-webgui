@@ -104,7 +104,16 @@
 
 .v_login_in
 {
-    background: url(../images/commit_available.gif) no-repeat left !important;
+    background: url(../images/login_button.gif) no-repeat left !important;
+    height: 18px !important;
+    width: 79px !important;
+    cursor:pointer;
+    left: 3px !important;
+    padding-left: 3px !important;
+}
+.v_login_in_disable
+{
+    background: url(../images/login_button_disabled.gif) no-repeat left !important;
     height: 18px !important;
     width: 79px !important;
     cursor:pointer;

@@ -10,8 +10,11 @@ class MultiResponseCommand
   typedef std::set<std::string>::iterator CmdIter;
 
 public:
-  MultiResponseCommand(std::string &cmd);
+  MultiResponseCommand(std::string session_id, std::string &cmd);
   ~MultiResponseCommand();
+
+  void
+  init();
 
   bool
   process();
@@ -33,9 +36,11 @@ private:
   get_next_resp_file(std::string &tok);
 
 private:
+  std::string _session_id;
   std::string _cmd;
   CmdColl _cmd_coll;
   std::string _resp;
   std::string _next_token;
+  int _sock; //used to talk to chunker daemon
 };
 #endif //__MULTIRESPONSECOMMAND_HH__

@@ -109,9 +109,8 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
     var sendCommandCliCb = function(options, success, response)
     {
         f_hideSendWaitMessage();
-
         if(!f_isResponseOK(response))
-            return undefined;
+            return;
 
         var xmlRoot = response.responseXML.documentElement;
         var isSuccess = f_parseResponseError(xmlRoot);
@@ -123,29 +122,41 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             // handle input error
             f_handleInputFieldError(node);
 
-            return undefined;
+            return;
         }
-        else if(cmds == 'save')
+
+        var tree = treeObj.m_tree;
+        var selNode = tree.getSelectionModel().getSelectedNode();
+        if(selNode == undefined)
+            selNode = tree.getRootNode();
+        var selPath = selNode.getPath('text');
+
+        /////////////////////////////////////
+        if(cmds == 'save')
         {
             f_promptErrorMessage('Save configuration', isSuccess[1],
                                   Ext.MessageBox.INFO);
-            return undefined;
         }
-
+        else if(cmds[0].indexOf('discard') >= 0)
+        {
+            tree.reload();
+            treeObj.m_parent.f_cleanEditorPanel();
+        }
+        else if(cmds[0].indexOf('commit') >= 0)
+        {
+            treeObj.m_parent.f_resetEditorPanel();
+            f_handlePropagateParentNodes(selNode);
+            treeObj.m_selNodePath = selPath;//node.parentNode;
+            tree.getRootNode().reload();
+        }
         /////////////////////////////////////
         // handle the 'View' toolbar command
-        if(cmds == 'show configuration')
+        else if(cmds == 'show configuration')
         {
             f_handleToolbarViewCmdResponse(treeObj.m_parent, isSuccess[1]);
         }
         else
         {
-            var tree = treeObj.m_tree;
-            var selNode = tree.getSelectionModel().getSelectedNode();
-            if(selNode == undefined)
-                selNode = tree.getRootNode();
-            var selPath = selNode.getPath('text');
-
             if(node == undefined)
                 f_handleNodeExpansion(treeObj, selNode, selPath, cmds);
             else if(node.parentNode != undefined || selNode.parentNode != undefined)
@@ -201,23 +212,6 @@ function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
 {
     var tree = treeObj.m_tree;
     var p = tree.root;
-
-    //////////////////////////////////////////////////
-    // check for the command we sent.
-    if(cmds[0].indexOf('discard') >= 0)
-    {
-        p.reload();
-        treeObj.m_parent.f_cleanEditorPanel();
-        return;
-    }
-    else if(cmds[0].indexOf('commit') >= 0)
-    {
-        treeObj.m_parent.f_resetEditorPanel();
-        f_handlePropagateParentNodes(selNode);
-        treeObj.m_selNodePath = selPath;//node.parentNode;
-        tree.getRootNode().reload();
-        return;
-    }
 
     //////////////////////////////////////////////
     // expand handler

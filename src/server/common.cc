@@ -14,8 +14,13 @@ const unsigned long WebGUI::ID_RANGE = 2147483647UL;
 
 
 
-//const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = 1800UL;
-const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = (unsigned long)99999999;
+const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = 1800UL;
+//const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = (unsigned long)99999999;
+
+const string WebGUI::VYATTA_TEMP_CONFIG_DIR = "/opt/vyatta/config/tmp/new_config_"; //VYATTA_TEMP_CONFIG_DIR=/opt/vyatta/config/tmp/new_config_22764
+const string WebGUI::VYATTA_CHANGES_ONLY_DIR = "/tmp/changes_only_"; //VYATTA_CHANGES_ONLY_DIR=/tmp/changes_only_22764
+const string WebGUI::VYATTA_ACTIVE_CONFIGURATION_DIR = "/opt/vyatta/config/active"; //VYATTA_ACTIVE_CONFIGURATION_DIR=/opt/vyatta/config/active
+
 
 const string WebGUI::OP_COMMAND_DIR = "/opt/vyatta/share/vyatta-op/templates";
 const string WebGUI::ACTIVE_CONFIG_DIR = "/opt/vyatta/config/active";
@@ -146,11 +151,19 @@ void
 WebGUI::discard_session(string &id)
 {
   string cmd,stdout;
+  /* //OLD WAY...
   cmd = "sudo umount " + WebGUI::LOCAL_CONFIG_DIR + id;
   cmd += ";rm -fr " + WebGUI::LOCAL_CHANGES_ONLY + id;
   cmd += ";mkdir -p " + WebGUI::LOCAL_CHANGES_ONLY + id;
   execute(cmd,stdout);
+  */
 
+  cmd = "sudo umount " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+  cmd += ";sudo rm -fr " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + " " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+  cmd += ";mkdir -p " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id;
+  cmd += ";mkdir -p " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+  cmd += ";sudo mount -t unionfs -o dirs=" + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "=rw:" + WebGUI::VYATTA_ACTIVE_CONFIGURATION_DIR + "=ro unionfs " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+  execute(cmd,stdout);
 }
 
 /**

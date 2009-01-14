@@ -78,7 +78,7 @@ MultiResponseCommand::process()
       _next_token = _cmd;
     }
     else {
-      return false;
+      return false; //the only wait this command can pass on this request
     }
   }
 
@@ -118,7 +118,7 @@ MultiResponseCommand::process()
       fclose(fp);
     }
   }
-  return false;
+  return true; //want to return true here
 }
 
 /**

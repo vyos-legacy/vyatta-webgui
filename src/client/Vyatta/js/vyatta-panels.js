@@ -969,7 +969,23 @@ function f_createButton(treeObj, node, btnText, title)
         ,handler: function()
         {
             if(cmd.length == 0)
+            {
+                var cb = function send(btn)
+                {
+                    if(btn == 'yes')
+                        f_sendOperationCliCommand(node, treeObj,
+                                                  true, undefined, true);
+                };
+
+                if(node.text == 'reboot')
+                {
+                    f_yesNoMessageBox('Reboot Operational',
+                        'Are you sure you wish to reboot the server?', cb);
+                    return;
+                }
+
                 f_sendOperationCliCommand(node, treeObj, true, undefined, true);
+            }
             else
                 f_sendConfigCLICommand(
                                 [cmd + treeObj.f_getNodePathStr(node) ],

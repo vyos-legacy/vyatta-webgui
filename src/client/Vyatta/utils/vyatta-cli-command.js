@@ -66,7 +66,8 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
 
         if(sendStr == 'reboot ')
             isSuccess[1] = 'Server is in process of rebooting the system.\n'+
-                            'Please refresh the browser for re-log in.';
+                            'Please wait for server completed rebooting then ' +
+                            'refresh the browser for re-log in.';
 
         callbackObj.f_updateOperCmdResponse(headerStr,
                     isSuccess[1], clear);
@@ -244,7 +245,7 @@ function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
         tree.expandPath(selPath, 'text', ehandler);
         narg.un('expand', handler);
     }
-    //p.collapse();
+    p.collapse();
     p.on('expand', handler);
     p.expand();
 }
@@ -260,6 +261,8 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
 
     if(isCreate)
     {
+        treeObj.m_isCommitAvailable = true;
+
         /*
          * successfully created a node. now need to propagate the
          * "configured" status up the tree (since we only reload the
@@ -293,22 +296,28 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         nnode.reload();
         return;
     }
-    
-    var handler = function(narg)
+
+    if(f_isExpandableNode(p))
     {
-        tree.selectPath(selPath, 'text', function(success, sel)
+        var handler = function(narg)
         {
-            var nnode = tree.getSelectionModel().getSelectedNode();
-            treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
-        });
+            tree.selectPath(selPath, 'text', function(success, sel)
+            {
+                var nnode = tree.getSelectionModel().getSelectedNode();
+                treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
+            });
 
-        narg.un('expand', handler);
+            narg.un('expand', handler);
+        }
+
+        p.collapse();
+        p.on('expand', handler);
+        p.expand();
     }
-
-    p.on('expand', handler);
-    p.collapse();
-    p.expand();
+    else  //
+        treeObj.m_parent.f_onTreeRenderer(treeObj);
 }
+
 function f_handlePropagateParentNodes(node)
 {
     var n = node;

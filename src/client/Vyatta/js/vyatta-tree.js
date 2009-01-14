@@ -1257,6 +1257,26 @@ function filterWildcard(arr)
     return wc ? narr : undefined;
 }
 
+/**
+ * find out if given node has any child which is not a leaf node
+ */
+function f_isExpandableNode(node)
+{
+    if(node != undefined && node.childNodes.length > 0)
+    {
+        var cn = node.childNodes;
+        for(var i=0; i<cn.length; i++)
+        {
+            if(cn[i].leaf)
+                continue
+            else
+                return true;
+        }
+    }
+
+    return false;
+}
+
 function getNodeStyleImage(node)
 {
     if(node == undefined) return '';

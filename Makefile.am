@@ -3,7 +3,7 @@ chunkerinitdir = /usr/lib/cgi-bin/etc/init.d
 chunkerpiddir = /usr/lib/cgi-bin/var/run
 wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
-initddir = etc/init.d
+initddir = /etc/init.d
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
@@ -52,8 +52,8 @@ install-exec-hook:
 	mkdir -p $(DESTDIR)$(chunkerpiddir)/
 	mkdir -p $(DESTDIR)$(tmpdir)/
 	touch $(DESTDIR)$(tmpdir)/dummy
-	mkdir -p $(DESTDIR)/$(cgidir)/$(initddir)/
-	cp scripts/vyatta-webgui-chunker.init $(DESTDIR)/$(cgidir)/$(initddir)/vyatta-webgui-chunker
+	mkdir -p $(DESTDIR)/$(initddir)
+	cp scripts/vyatta-webgui-chunker.init $(DESTDIR)/$(initddir)/vyatta-webgui-chunker
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/
 	@mkdir -p $(DESTDIR)/var/www

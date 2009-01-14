@@ -125,6 +125,9 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     err = WebGUI::SUCCESS;
     return;
   }
+  else if (strncmp(tmp.c_str(),"show session",12) == 0) {
+    tmp = "/opt/vyatta/sbin/vyatta-output-config.pl -all";
+  }
   else if (strncmp(tmp.c_str(),"reboot",6) == 0) {
     tmp = "sudo /sbin/reboot";
   }

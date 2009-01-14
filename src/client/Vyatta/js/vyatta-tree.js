@@ -214,6 +214,7 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         var str = "{text:'" + nn + "',uiProvider:'node'";
         var q = Ext.DomQuery;
         var nLeaf = q.selectNode('terminal', node);
+        var tConfig = undefined;
 
         if(nLeaf != undefined)
         {
@@ -231,6 +232,7 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                             vstr += ',';
 
                         vstr += "'" + nvals[i].getAttribute('name') + "'";
+                        tConfig = cfgd;
                     }
                 }
                 str += ",values:[ " + vstr + " ]";
@@ -256,7 +258,8 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             str += ",help:'" + tHelp + "'";
         }
 
-        var tConfig = q.selectValue('configured', node);
+        if(tConfig == undefined)
+            tConfig = q.selectValue('configured', node);
         if (tConfig != undefined)
             str += ",configured:'" + tConfig + "'";
 

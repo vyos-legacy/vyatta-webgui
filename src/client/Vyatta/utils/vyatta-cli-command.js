@@ -297,25 +297,26 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         return;
     }
 
-    if(f_isExpandableNode(p))
+    var handler = function(narg)
     {
-        var handler = function(narg)
+        tree.selectPath(selPath, 'text', function(success, sel)
         {
-            tree.selectPath(selPath, 'text', function(success, sel)
-            {
-                var nnode = tree.getSelectionModel().getSelectedNode();
-                treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
-            });
+            var nnode = tree.getSelectionModel().getSelectedNode();
+            treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
+        });
 
-            narg.un('expand', handler);
-        }
-
-        p.collapse();
-        p.on('expand', handler);
-        p.expand();
+        narg.un('expand', handler);
     }
-    else  //
+
+    if(!f_isExpandableNode(p))
         treeObj.m_parent.f_onTreeRenderer(treeObj);
+
+    if(p.expanded)
+        p.collapse();
+
+    p.on('expand', handler);
+    p.expand();
+        
 }
 
 function f_handlePropagateParentNodes(node)

@@ -64,6 +64,10 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         var isSuccess = f_parseResponseError(xmlRoot);
         g_cliCmdObj.m_segmentId = (isSuccess[2] != undefined)?isSuccess[2]:null;
 
+        if(sendStr == 'reboot ')
+            isSuccess[1] = 'Server is in process of rebooting the system.\n'+
+                            'Please refresh the browser for re-log in.';
+
         callbackObj.f_updateOperCmdResponse(headerStr,
                     isSuccess[1], clear);
     }
@@ -240,8 +244,8 @@ function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
         tree.expandPath(selPath, 'text', ehandler);
         narg.un('expand', handler);
     }
+    //p.collapse();
     p.on('expand', handler);
-    p.collapse();
     p.expand();
 }
 

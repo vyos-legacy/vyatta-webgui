@@ -139,7 +139,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         }
         else if(cmds[0].indexOf('discard') >= 0)
         {
-            tree.reload();
+            tree.root.reload();
             treeObj.m_parent.f_cleanEditorPanel();
         }
         else if(cmds[0].indexOf('commit') >= 0)
@@ -211,7 +211,6 @@ function f_isResponseOK(response)
 function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
 {
     var tree = treeObj.m_tree;
-    var p = tree.root;
 
     //////////////////////////////////////////////
     // expand handler
@@ -235,6 +234,7 @@ function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
 
     //////////////////////////////////////////////////////
     // expand node
+    var p = tree.root;
     var handler = function(narg)
     {
         tree.expandPath(selPath, 'text', ehandler);

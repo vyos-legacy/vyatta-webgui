@@ -468,9 +468,11 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	if (!line.empty()) {
 	  if (mode.empty()) {
 	    allowed += line.substr(8,line.length()-9) + "\n";
+	    //	    allowed += line.substr(8,line.length()-9);
 	  }
 	  else {
-	    allowed += line + "\n";
+	    //	    allowed += line + "\n";
+	    allowed += line;
 	  }
 	}
 	mode = "allowed:";
@@ -500,9 +502,12 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       cmd = allowed;
     }
 
-    //    cout << "INPUT COMMAND: %>" << cmd << "<%" << endl;
+    //    cout << "INPUT COMMAND: %>" << endl << cmd << endl << "<%" << endl;
 
     int err = WebGUI::execute(cmd, stdout, true);
+
+    //    cout << "OUTPUT ERROR CODE: " << err << ", " << stdout << endl;
+
     if (err == 0) {
       //      cout << "allowed(OUT): '" << stdout.substr(0,stdout.length()-1) << "', ERROR CODE: " << err << endl;
       //now fill out enumeration now

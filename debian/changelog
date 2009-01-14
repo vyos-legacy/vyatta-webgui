@@ -1,3 +1,36 @@
+vyatta-webgui (0.2.7) unstable; urgency=low
+
+  [ slioch ]
+  * fix for time-zone computed enum values.
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 14 Jan 2009 11:31:27 -0800
+
+vyatta-webgui (0.2.6) unstable; urgency=low
+
+  [ slioch ]
+  * initial checking of working background chunker. chunker in this
+    checkin needs to be started manually, but current version works with
+    current version of browser.
+
+  [ Kevin Choi ]
+  * * add new login images
+
+  [ slioch ]
+  * added init support for chunker daemon and start/stop script.
+  * fix for discard--brings this in line with cli instructions.
+
+  [ Kevin Choi ]
+  * * Fixed discard command failed to update tree due to the null
+    pointer error for case such as
+
+  [ slioch ]
+  * need test head as part of the build tree.
+
+  [ An-Cheng Huang ]
+  * update .gitignore
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 13 Jan 2009 17:18:47 -0800
+
 vyatta-webgui (0.2.5) unstable; urgency=low
 
   [ slioch ]

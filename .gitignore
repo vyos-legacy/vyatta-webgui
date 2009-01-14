@@ -39,4 +39,6 @@ src/xgdaemon/xgdaemon
 src/server/test
 src/server/webgui
 src/server/webgui_chunker
+src/server/chunker
+src/server/chunker_test
 

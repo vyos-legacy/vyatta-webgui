@@ -26,7 +26,6 @@ private:
   void
   reader(std::string token, int (&cp)[2]);
   
-  
   std::string 
   process_chunk(std::string &str, std::string &token, long &chunk_ct, long &last_time);
   

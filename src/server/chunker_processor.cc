@@ -14,12 +14,6 @@
 
 using namespace std;
 
-
-#define EXIT_SUCCESS 0
-#define EXIT_FAILURE 1
-
-
-  
 /**
  *
  **/
@@ -30,13 +24,10 @@ ChunkerProcessor::start_new(string token, const string &cmd)
     cout << "ChunkerProcessor::start_new(): starting new processor" << endl;
   }
 
-
-
   struct sigaction sa;
   sigaction(SIGCHLD, NULL, &sa);
   sa.sa_flags |= SA_NOCLDWAIT;//(since POSIX.1-2001 and Linux 2.6 and later)
   sigaction(SIGCHLD, &sa, NULL);
-
 
   if (fork() != 0) {
     //parent
@@ -44,7 +35,6 @@ ChunkerProcessor::start_new(string token, const string &cmd)
   }
 
   //should detach child process at this point
-
 
   umask(0);
   setsid();
@@ -167,12 +157,12 @@ string
 ChunkerProcessor::process_chunk(string &str, string &token, long &chunk_ct, long &last_time)
 {
   struct sysinfo info;
-  long cur_time = 0;
+  unsigned long cur_time = 0;
   if (sysinfo(&info) == 0) {
     cur_time = info.uptime;
   }
 
-  if ((long)str.size() > _chunk_size || last_time + WebGUI::CHUNKER_MAX_WAIT_TIME < cur_time) {
+  if (str.size() > _chunk_size || last_time + WebGUI::CHUNKER_MAX_WAIT_TIME < cur_time) {
     //OK, let's find a natural break and start processing
     size_t pos = str.rfind('\n');
     string chunk;

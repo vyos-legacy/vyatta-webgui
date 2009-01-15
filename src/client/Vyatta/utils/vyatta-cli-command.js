@@ -65,9 +65,8 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         g_cliCmdObj.m_segmentId = (isSuccess[2] != undefined)?isSuccess[2]:null;
 
         if(sendStr == 'reboot ')
-            isSuccess[1] = 'Server is in process of rebooting the system.\n'+
-                            'Please wait for server completed rebooting then ' +
-                            'refresh the browser for re-log in.';
+            isSuccess[1] = 'System is rebooting. Please wait for reboot to complete\n'+
+                            'then refresh the browser to log in again.';
 
         callbackObj.f_updateOperCmdResponse(headerStr,
                     isSuccess[1], clear);

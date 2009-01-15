@@ -138,8 +138,10 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     }
     else if (validate_op_cmd(cmd)) {
       cmd = WebGUI::mass_replace(cmd,"'","'\\''");
+      //      cmd = string("shopt -s nullglob; ") + cmd;
 
       string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
+
       string stdout;
       err = WebGUI::execute(opmodecmd,stdout,true);
       stdout = WebGUI::mass_replace(stdout, "'", "&apos;");

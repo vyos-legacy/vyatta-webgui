@@ -537,12 +537,12 @@ function f_handleHelpButtonClick(panel, helpbutton, saveCookie)
     }
 }
 
-function f_createComboBox(thisObj)
+function f_createComboBox(values, selVal)
 {
     return new Ext.form.ComboBox(
     {
         mode: 'local',
-        store: thisObj.m_viewerValues,
+        store: values,
         displayField: 'value',
         editable: false,
         triggerAction: 'all',
@@ -552,12 +552,12 @@ function f_createComboBox(thisObj)
         hideLabel: false,
         hideTrigger: false,
         hideParent: false,
-        value: thisObj.m_viewerValues[1]
+        value: values[selVal]
     });
 }
 function f_createTopPanelViewPanel(thisObj)
 {
-    var field = f_createComboBox(thisObj);
+    var field = f_createComboBox(thisObj.m_viewerValues, 1);
 
     return new Ext.Panel(
     {
@@ -623,28 +623,17 @@ function f_createToolbarButton(iconCls, cmdName, treeObj)
         ,iconCls: iconCls
         ,handler: function() 
         {
-            var bt = this;
-            var cb = function(btn)
-            {
-                if(btn == 'yes')
-                    f_sendCLICommand(bt, [cmdName], treeObj);
-            }
-
             if(cmdName == 'save')
             {
-                //f_getUploadDialog().show();
-                //return;
             }
             else if(cmdName == 'load')
             {
-                f_yesNoMessageBox('Re-load Configuration',
-                    'Are you sure you wish to reload configuration?', cb);
-                return;
+                cmdName = "show files '" + V_CONFIG_DIR + "'";
             }
             else if(cmdName == 'view')
                 cmdName = 'show configuration';
 
-            f_sendCLICommand(bt, [cmdName], treeObj);
+            f_sendCLICommand(this, [cmdName], treeObj);
         }
     });
 }
@@ -662,6 +651,74 @@ function f_showConfigurationViewDialog(configData)
         ,width: 600
         ,autoScroll: true
         ,html:'<font face="monospace">' + val + '</font>'
+    });
+
+    dialog.show();
+}
+
+function f_showLoadFileChooserDialog(values, treeObj)
+{
+    ///////////////////////////////////
+    // parse values
+    var val = [];
+    if(values != undefined)
+    {
+        var l = values.split("\n");
+        for(var i=1; i<l.length-1; i++)
+        {
+            var w = l[i].split(' ');
+            val[i-1] = w[w.length-1];
+        }
+    }
+
+    var cb = function(btn)
+    {
+        if(btn == 'yes')
+        {
+            var cmd = "load '" + V_CONFIG_DIR + comb.getValue() + "'";
+            f_sendConfigCLICommand([cmd], treeObj);
+            dialog.hide();
+        }
+    }
+
+    var okButton = new Ext.Button(
+    {
+        text: 'OK'
+        ,minWidth: 70
+        ,handler: function() { f_yesNoMessageBox('Re-load Configuration',
+                  'Are you sure you wish to load the selected ' +
+                  'configuration file: ' + comb.getValue() + '?', cb); }
+    });
+
+    var cancelButton = new Ext.Button(
+    {
+        text: 'Cancel'
+        ,minWidth: 70
+        ,handler: function() { dialog.hide(); }
+    })
+
+    var comb = f_createComboBox(val, 0);
+    var loginFormPanel = new Ext.form.FormPanel(
+    {
+        labelWidth: 100
+        ,frame:false
+        ,border: false
+        ,title: 'Select a configuraton filename to be used for re-load'
+        ,bodyStyle:'padding:10px 10px 5px 10px'
+        ,width: 390
+        ,monitorValid: true
+        ,items: [comb]
+        ,buttons: [okButton, cancelButton]
+    });
+
+    var dialog = new Ext.Window(
+    {
+        title: 'Load Configuration'
+        ,reset_on_hide: true
+        ,height: 150
+        ,width: 405
+        ,autoScroll: true
+        ,items: [loginFormPanel]
     });
 
     dialog.show();

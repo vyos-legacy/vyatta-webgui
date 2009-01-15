@@ -160,6 +160,12 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         {
             f_handleToolbarViewCmdResponse(treeObj.m_parent, isSuccess[1]);
         }
+        /////////////////////////////////////
+        // handle the 'Load' toolbar command
+        else if(cmds == "show files '" + V_CONFIG_DIR + "'")
+        {
+            f_showLoadFileChooserDialog(isSuccess[1], treeObj);
+        }
         else
         {
             if(node == undefined)
@@ -172,7 +178,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                    + "<vyatta><command><id>" + f_getUserLoginedID() + "</id>\n";
 
-    for (var i = 0; i < cmds.length; i++)
+    for(var i = 0; i < cmds.length; i++)
         xmlstr += "<statement>" + cmds[i] + "</statement>\n";
     xmlstr += "</command></vyatta>\n";
 

@@ -1169,10 +1169,17 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 {
                     if(g_cliCmdObj.m_segmentId != undefined &&
                             f.el.dom.textContent != undefined)
-                        values = f.el.dom.textContent + values;
+                    {
+                        if(f.m_val != undefined)
+                            values = f.m_val + values;
+
+                        if(f.m_val > 99999999)
+                            f.m_val = '';
+                    }
 
                     var mlbl = f_createTextAreaField(values, 0,
                                 ePanel.getInnerHeight()-20*i);
+                    mlbl.m_val = values;
                     eForm.remove(f);
                     eForm.insert(i, mlbl);
                     ePanel.m_opTextArea = mlbl;

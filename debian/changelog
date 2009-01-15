@@ -1,3 +1,37 @@
+vyatta-webgui (0.2.8) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Added confirmation information before/after a 'reboot' command
+    sent.
+  * * Fixed bug can't commit. After changing configured value, commit
+    and discard buttons are
+
+  [ slioch ]
+  * added local session support. The command to get session
+    configuration
+  * prevent command from being passed to normal op mode processor if
+    multiresponse fails.
+
+  [ Kevin Choi ]
+  * * Fixed bug for the case of set configure value, commit, then set
+    again, the yellow circle
+  * * add html page to redirect connect to webgui page when connecting
+    to web server
+
+  [ slioch ]
+  * cleanup of chunker and surrounding code.
+  * fix for empty directory query in show command (i.e. show log file)
+
+  [ Kevin Choi ]
+  * * Support a dir list of files for user to select a configure file to
+    be loaded.
+  * * integrated the long/continues command with Mike's new fixed.
+  * * updated reboot message texts.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 15 Jan 2009 14:32:31 -0800
+
 vyatta-webgui (0.2.7) unstable; urgency=low
 
   [ slioch ]

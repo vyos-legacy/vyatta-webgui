@@ -36,12 +36,12 @@ public:
   read();
 
   void
-  process(char *buf);
-
-  void
   kill_all();
   
 private:
+  void
+  process(char *buf);
+
   void
   kill_process(unsigned long key);
 

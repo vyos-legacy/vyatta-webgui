@@ -219,7 +219,5 @@ ChunkerManager::kill_process(unsigned long key)
 
   cmd += string(pid);
 
-  cout << "sending kill cmd: " << cmd << endl;
-  
   system(cmd.c_str());
 }

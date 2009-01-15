@@ -35,7 +35,7 @@ pid_output (const char *path);
  **/
 static void usage()
 {
-  cout << "webgui_chunker -cth" << endl;
+  cout << "chunker -sipkdh" << endl;
   cout << "  -s chunk size" << endl;
   cout << "  -i session pid path" << endl;
   cout << "  -p process pid path" << endl;

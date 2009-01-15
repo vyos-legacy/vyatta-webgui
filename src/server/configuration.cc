@@ -495,6 +495,9 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
   if (allowed.empty() == false) {
     string stdout;
     string cmd;
+
+    allowed = string("shopt -s nullglob; ") + allowed;
+
     if (allowed.find("local ") != string::npos) {
       cmd = "function foo () { " + allowed + " } ; foo;";
     }

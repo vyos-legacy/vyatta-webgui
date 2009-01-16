@@ -103,21 +103,22 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
     {
         if(this.fireEvent("beforeload", this, node, callback) !== false)
         {
-            var cstr = "<vyatta><configuration><id>";
+            var nMode = "<node mode='conf'>";
 
             switch(this.g_loadMode)
             {
-                case V_TREE_ID_config_data:
-                    cstr = "<vyatta><configuration mode='data'><id>";
-                  break;
+                //case V_TREE_ID_config_data:
+                //    nMode = "<node mode='conf'>";
+                //  break;
                 case V_TREE_ID_oper:
-                  cstr = "<vyatta><configuration mode='op'><id>";
+                    nMode = "<node mode='op'>";
                   break;
             }
 
             var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                       + cstr + f_getUserLoginedID() + "</id>\n"
-                       + "<node>" + this.baseParams.nodepath + "</node>\n"
+                       + "<vyatta><configuration><id>" + f_getUserLoginedID()
+                       + "</id>\n" + nMode
+                       + this.baseParams.nodepath + "</node>\n"
                        + "</configuration></vyatta>\n";
 
 

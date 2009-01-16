@@ -28,7 +28,6 @@ Command::execute_command()
   //now parse the request to form: attribute: mode, attribute: depth, value: root
   string req(msg._request);
 
-
   if (msg._command_coll.empty()) {
     _proc->set_response(WebGUI::MALFORMED_REQUEST);
     return;
@@ -39,13 +38,13 @@ Command::execute_command()
     _proc->set_response(WebGUI::SESSION_FAILURE);
     return;
   }
-  
   //strip off additional commands
   vector<string> coll = _proc->get_msg()._command_coll;
   vector<string>::iterator iter = coll.begin();
   while (iter != coll.end()) {
     string err;
     int err_code = WebGUI::SUCCESS;
+
     execute_single_command(*iter, err, err_code);
     if (err_code != WebGUI::SUCCESS) {
       //generate error response for this command and exit
@@ -109,50 +108,54 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     tmp = tmp.substr(0,pos);
   }
 
-  if (strncmp(tmp.c_str(),"set",3) == 0 || strncmp(tmp.c_str(),"delete",6) == 0 || strncmp(tmp.c_str(),"commit",6) == 0) {
-    tmp = "/opt/vyatta/sbin/my_" + cmd;
-  }
-  else if (strncmp(tmp.c_str(),"load",4) == 0) {
-    tmp = "/opt/vyatta/sbin/vyatta-load-config.pl";
-  }
-  else if (strncmp(tmp.c_str(),"save",4) == 0) {
-    tmp = "/opt/vyatta/sbin/vyatta-save-config.pl";
-  }
-  else if (strncmp(tmp.c_str(),"discard",7) == 0) {
-    string tmp = _proc->get_msg().id();
-    WebGUI::discard_session(tmp);
-    resp = "";
-    err = WebGUI::SUCCESS;
-    return;
-  }
-  else if (strncmp(tmp.c_str(),"show session",12) == 0) {
-    tmp = "/opt/vyatta/sbin/vyatta-output-config.pl -all";
-  }
-  else if (strncmp(tmp.c_str(),"reboot",6) == 0) {
-    tmp = "sudo /sbin/reboot";
-  }
-  else {
-    //treat this as an op mode command
-    if (multi_part_op_cmd(cmd)) {
+  if (_proc->get_msg()._conf_mode == WebGUI::CONF) { //configuration mode command
+    if (strncmp(tmp.c_str(),"set",3) == 0 || strncmp(tmp.c_str(),"delete",6) == 0 || strncmp(tmp.c_str(),"commit",6) == 0) {
+      tmp = "/opt/vyatta/sbin/my_" + cmd;
+    }
+    else if (strncmp(tmp.c_str(),"load",4) == 0) {
+      tmp = "/opt/vyatta/sbin/vyatta-load-config.pl";
+    }
+    else if (strncmp(tmp.c_str(),"save",4) == 0) {
+      tmp = "/opt/vyatta/sbin/vyatta-save-config.pl";
+    }
+    else if (strncmp(tmp.c_str(),"discard",7) == 0) {
+      string tmp = _proc->get_msg().id();
+      WebGUI::discard_session(tmp);
+      resp = "";
+      err = WebGUI::SUCCESS;
       return;
     }
-    else if (validate_op_cmd(cmd)) {
-      cmd = WebGUI::mass_replace(cmd,"'","'\\''");
-      //      cmd = string("shopt -s nullglob; ") + cmd;
-
-      string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
-
-      string stdout;
-      err = WebGUI::execute(opmodecmd,stdout,true);
-      stdout = WebGUI::mass_replace(stdout, "'", "&apos;");
-      stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
-      stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
-      resp = stdout;
+    else if (strncmp(tmp.c_str(),"show session",12) == 0) {
+      tmp = "/opt/vyatta/sbin/vyatta-output-config.pl -all";
+    }
+  }
+  else { //operational mode command
+    if (strncmp(tmp.c_str(),"reboot",6) == 0) {
+      tmp = "sudo /sbin/reboot";
     }
     else {
-      _proc->set_response(WebGUI::COMMAND_ERROR);
+      //treat this as an op mode command
+      if (multi_part_op_cmd(cmd)) {
+	return;
+      }
+      else if (validate_op_cmd(cmd)) {
+	cmd = WebGUI::mass_replace(cmd,"'","'\\''");
+	//      cmd = string("shopt -s nullglob; ") + cmd;
+	
+	string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
+
+	string stdout;
+	err = WebGUI::execute(opmodecmd,stdout,true);
+	stdout = WebGUI::mass_replace(stdout, "'", "&apos;");
+	stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
+	stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
+	resp = stdout;
+      }
+      else {
+	_proc->set_response(WebGUI::COMMAND_ERROR);
+      }
+      return;
     }
-    return;
   }
 
   command += ";" + tmp;
@@ -218,7 +221,6 @@ bool
 Command::validate_op_cmd(std::string &cmd)
 {
   //convert to op directory
-
   //first let's replace all 'asdf asdf' with node.tag string
   string tmp = cmd;
   string out_cmd;

@@ -200,6 +200,8 @@ Session::update_session()
   //get timestamp from file
   string file = WebGUI::VYATTA_MODIFY_FILE + _processor->get_msg().id();
   
+  //  cout << "file: " << file << endl;
+
   struct stat buf;
 
   if (stat(file.c_str(), &buf) != 0) {

@@ -4,52 +4,70 @@
  */
 
 function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, 
-                                    forceSend, segmentId)
+                                    forceSend, segmentId, treeObj, wildCard)
 {
     var narr = [ ];
     var n = node;
-
-    while(n.text != 'Operation')
-    {
-        if(n.text == '&lt;value&gt;')
-        {
-            if(n.getValFunc != undefined)
-            {
-                var val = n.getValFunc();
-                if(forceSend && (val == "'Select a valuid value...'" || val == "''"))
-                {
-                    f_promptErrorMessage('Input Error!',
-                                        'Please enter a valid value.');
-                    return "";
-                }
-
-                if(!forceSend || (val == "'Select a valuid value...'" || val == "''"))
-                    return "";  // nothing to send.
-
-                narr.push(val);
-            }
-            else if(!forceSend)
-                return "";  // nothing to send
-            else
-                narr.push("<Value>");
-        }
-        else
-            narr.push(n.text);
-
-        n = n.parentNode;
-    }
-
     var sendStr = '';
     var headerStr = '';
-    while(narr.length > 0)
-    {
-        var c = narr.pop();
-        sendStr += (c + ' ');
 
-        if(headerStr.length > 1)
-            headerStr += '&nbsp;&rArr;&nbsp;';
-        headerStr += c;
+    if(n != undefined)
+    {
+        /////////////////////////////////////////////////
+        // construct a sent command by on the given node
+        while(n.text != 'Operation')
+        {
+            if(n.text == '&lt;value&gt;')
+            {
+                if(n.getValFunc != undefined)
+                {
+                    var val = n.getValFunc();
+                    if(forceSend && (val == "'Select a valuid value...'" ||
+                        val == "''"))
+                    {
+                        f_promptErrorMessage('Input Error!',
+                                            'Please enter a valid value.');
+                        return "";
+                    }
+
+                    if(!forceSend || (val == "'Select a valuid value...'" ||
+                            val == "''"))
+                        return "";  // nothing to send.
+
+                    narr.push(val);
+                }
+                else if(!forceSend)
+                    return "";  // nothing to send
+                else
+                    narr.push("<Value>");
+            }
+            else
+                narr.push(n.text);
+
+            n = n.parentNode;
+        }
+
+        while(narr.length > 0)
+        {
+            var c = narr.pop();
+            sendStr += (c + ' ');
+
+            if(headerStr.length > 1)
+                headerStr += '&nbsp;&rArr;&nbsp;';
+            headerStr += c;
+        }
+        
+        g_cliCmdObj.m_node = node;
+        if(segmentId != undefined)
+            sendStr = segmentId;
+        else
+            g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait(
+                            'Running operational command...', 'Operation');
+        g_cliCmdObj.m_cb = callbackObj;
+        g_cliCmdObj.m_segmentId = undefined;
     }
+    else
+        sendStr = prevXMLStr;
 
 
     //////////////////////////////////////////////////////////////
@@ -67,25 +85,32 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         if(sendStr == 'reboot ')
             isSuccess[1] = 'System is rebooting. Please wait for reboot to complete\n'+
                             'then refresh the browser to log in again.';
+        /////////////////////////////////////
+        // handle the 'View' toolbar command
+        else if(sendStr == 'show configuration')
+        {
+            f_handleToolbarViewCmdResponse(isSuccess[1]);
+            return;
+        }
+        /////////////////////////////////////
+        // handle the 'Load' toolbar command
+        else if(sendStr.indexOf("show files ") >= 0)
+        {
+            f_showFileChooserDialog(wildCard, isSuccess[1], treeObj);
+            return;
+        }
 
+        //////////////////////////////////////////////////////////
+        // update editor view
         callbackObj.f_updateOperCmdResponse(headerStr,
                     isSuccess[1], clear);
     }
-
-    if(segmentId != undefined)
-        sendStr = segmentId;
-    else
-        g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait(
-                        'Running operational command...', 'Operation');
-
-    g_cliCmdObj.m_node = node;
-    g_cliCmdObj.m_cb = callbackObj;
-    g_cliCmdObj.m_segmentId = undefined;
+    
 
     /* send request */
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                + "<vyatta><command><id>" + f_getUserLoginedID() + "</id>\n"
-               + "<statement>" + sendStr + "</statement>\n"
+               + "<statement mode='op'>" + sendStr + "</statement>\n"
                + "</command></vyatta>\n";
 
     //////////////////////////////////////////////////////////////////
@@ -105,7 +130,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
     return xmlstr;
 }
 
-function f_sendConfigCLICommand(cmds, treeObj, node, isCreate, wildCard)
+function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 {
     g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait('Changing configuration...',
                                                       'Configuration');
@@ -155,18 +180,6 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate, wildCard)
             tObj.m_selNodePath = selPath;//node.parentNode;
             tree.getRootNode().reload();
         }
-        /////////////////////////////////////
-        // handle the 'View' toolbar command
-        else if(cmds[0] == 'show configuration')
-        {
-            f_handleToolbarViewCmdResponse(tObj.m_parent, isSuccess[1]);
-        }
-        /////////////////////////////////////
-        // handle the 'Load' toolbar command
-        else if(cmds[0].indexOf("show files ") >= 0)
-        {
-            f_showFileChooserDialog(wildCard, isSuccess[1], tObj);
-        }
         else
         {
             if(node == undefined)
@@ -180,7 +193,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate, wildCard)
                    + "<vyatta><command><id>" + f_getUserLoginedID() + "</id>\n";
 
     for(var i = 0; i < cmds.length; i++)
-        xmlstr += "<statement>" + cmds[i] + "</statement>\n";
+        xmlstr += "<statement mode='conf'>" + cmds[i] + "</statement>\n";
     xmlstr += "</command></vyatta>\n";
 
     g_cliCmdObj.m_segmentId = undefined;

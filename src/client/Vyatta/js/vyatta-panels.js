@@ -627,20 +627,27 @@ function f_createToolbarButton(iconCls, cmdName, treeObj)
         ,iconCls: iconCls
         ,handler: function() 
         {
-            if(cmdName == 'save')
+            var sendCmd = '';
+            if(cmdName == 'save' || cmdName == 'load' || cmdName == 'view')
             {
-                supportCmd = cmdName;
-                cmdName = "show files '" + V_CONFIG_DIR + "'";
+                if(cmdName == 'save')
+                {
+                    supportCmd = cmdName;
+                    sendCmd = "show files '" + V_CONFIG_DIR + "'";
+                }
+                else if(cmdName == 'load')
+                {
+                    supportCmd = cmdName;
+                    sendCmd = "show files '" + V_CONFIG_DIR + "'";
+                }
+                else if(cmdName == 'view')
+                    sendCmd = 'show configuration';
+                
+                f_sendOperationCliCommand(null, null, false, sendCmd,
+                                          true, undefined, treeObj, supportCmd);
             }
-            else if(cmdName == 'load')
-            {
-                supportCmd = cmdName;
-                cmdName = "show files '" + V_CONFIG_DIR + "'";
-            }
-            else if(cmdName == 'view')
-                cmdName = 'show configuration';
-
-            f_sendCLICommand(this, [cmdName], treeObj, supportCmd);
+            else
+                f_sendCLICommand(this, [cmdName], treeObj);
         }
     });
 }
@@ -770,15 +777,15 @@ function f_updateToolbarButtons(tree)
                         'v_redo_button' : 'v_redo_button_no');
 }
 
-function f_sendCLICommand(button, cmds, treeObj, supportCmd)
+function f_sendCLICommand(button, cmds, treeObj)
 {
     if(button.iconCls.indexOf('_no') > 0)
         return;
 
-    f_sendConfigCLICommand(cmds, treeObj, undefined, undefined, supportCmd);
+    f_sendConfigCLICommand(cmds, treeObj, undefined, undefined);
 }
 
-function f_handleToolbarViewCmdResponse(panelObj, responseTxt)
+function f_handleToolbarViewCmdResponse(responseTxt)
 {
     f_showConfigurationViewDialog(responseTxt);
 }

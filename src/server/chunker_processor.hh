@@ -29,6 +29,9 @@ private:
   std::string 
   process_chunk(std::string &str, std::string &token, long &chunk_ct, long &last_time);
   
+  void
+  process_chunk_end(std::string &str, std::string &token, long &chunk_ct);
+  
   void  
   parse(char *line, char **argv);
   

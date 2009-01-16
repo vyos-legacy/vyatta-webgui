@@ -215,18 +215,6 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   Message *m = (Message*)data;
   if (strcmp(el,"configuration") == 0) {
     m->_type = WebGUI::GETCONFIG; 
-
-    //looking for op mode attribute
-    for (int i=0;attr[i];i+=2) {
-      if (strcmp(attr[i],"mode") == 0) {
-	if (strcmp(attr[i+1],"op") == 0) {
-	  m->_conf_mode = WebGUI::OP;
-	}
-	else if (strcmp(attr[i+1],"data") == 0) {
-	  m->_conf_mode = WebGUI::DATA;
-	}
-      }
-    }
   }
   else if (strcmp(el, "command") == 0) {
     m->_type = WebGUI::CLICMD; 
@@ -244,6 +232,18 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
     }
     else if (strcmp(el, "node") == 0) {
       m->_node = WebGUI::GETCONFIG_NODE;
+
+      //looking for op mode attribute
+      for (int i=0;attr[i];i+=2) {
+	if (strcmp(attr[i],"mode") == 0) {
+	  if (strcmp(attr[i+1],"op") == 0) {
+	    m->_conf_mode = WebGUI::OP;
+	  }
+	  else {
+	    m->_conf_mode = WebGUI::CONF;
+	  }
+	}
+      }
     }
   }
   else if (m->_type == WebGUI::NEWSESSION) {
@@ -257,6 +257,19 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   else if (m->_type == WebGUI::CLICMD) {
     if (strcmp(el, "id") == 0) {
       m->_node = WebGUI::CLICMD_ID;
+    }
+    else if (strcmp(el, "statement") == 0) {
+      m->_node = WebGUI::CLICMD_STATEMENT;
+      for (int i=0;attr[i];i+=2) {
+	if (strcmp(attr[i],"mode") == 0) {
+	  if (strcmp(attr[i+1],"op") == 0) {
+	    m->_conf_mode = WebGUI::OP;
+	  }
+	  else {
+	    m->_conf_mode = WebGUI::CONF;
+	  }
+	}
+      }
     }
   }
 }    

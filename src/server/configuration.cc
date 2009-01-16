@@ -46,7 +46,7 @@ Configuration::get_config()
   if (_proc->get_msg()._conf_mode == WebGUI::OP) {
     foobar = get_full_op_level();
   }
-  else if (_proc->get_msg()._conf_mode == WebGUI::DATA) {
+  else if (_proc->get_msg()._conf_mode == WebGUI::CONF) {
     string root_node = _proc->get_msg()._root_node;
     foobar = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->get_msg()._token+"</token>";
     get_full_level(root_node,foobar,true); //make this recursive

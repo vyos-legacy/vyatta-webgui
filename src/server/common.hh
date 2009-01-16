@@ -60,11 +60,12 @@ public:
 		  NEWSESSION_PSWD,
 		  GETCONFIG_ID,
 		  GETCONFIG_NODE,
-		  CLICMD_ID};
+		  CLICMD_ID,
+		  CLICMD_STATEMENT};
 
   enum Attributes {NOATTR = 0,
 		   OP,
-		   DATA};
+		   CONF};
 
   enum NodeType {NONE,
 			 TEXT,

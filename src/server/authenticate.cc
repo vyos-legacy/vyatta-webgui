@@ -112,6 +112,36 @@ Authenticate::create_new_session()
 /**
  *
  **/
+WebGUI::AccessLevel
+Authenticate::get_access_level(const std::string &username)
+{
+  ////////////////////////////////////////////////////
+  //Only allow users who are members of operator or vyattacfg groups to proceed
+  struct group *g = getgrnam("vyattacfg");
+  if (g != NULL) {
+    char **m;
+    for (m = g->gr_mem; *m != (char *)0; m++) {
+      if (strcmp(*m, username.c_str()) == 0) {
+	return WebGUI::ACCESS_ALL;
+      }
+    }
+  }
+  
+  g = getgrnam("operator");
+  if (g != NULL) {
+    char **m;
+    for (m = g->gr_mem; *m != (char *)0; m++) {
+      if (strcmp(*m, username.c_str()) == 0) {
+	return WebGUI::ACCESS_OPER;
+      }
+    }
+  }
+  return WebGUI::ACCESS_NONE; //rejecting as failed check or non vyattacfg member
+}
+
+/**
+ *
+ **/
 bool
 Authenticate::test_auth(const std::string & username, const std::string & password) 
 {
@@ -121,23 +151,11 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
     return false;
   }
 
-  ////////////////////////////////////////////////////
-  //without support for op cmds fail any non vyattacfg group member
-  bool found = false;
-  struct group *g = getgrnam("vyattacfg");
-  if (g != NULL) {
-    char **m;
-    for (m = g->gr_mem; *m != (char *)0; m++) {
-      if (strcmp(*m, username.c_str()) == 0) {
-	found = true;
-	break;
-      }
-    }
+
+  WebGUI::AccessLevel level = get_access_level(username);
+  if (level == WebGUI::ACCESS_NONE) {
+    return false;
   }
-  if (found == false) {
-    return false; //rejecting as failed check or non vyattacfg member
-  }
-  ////////////////////////////////////////////////////
 
   pam_conv conv = { conv_fun, const_cast<void*>((const void*)&password) };
   

@@ -14,6 +14,9 @@ public:
   
   bool
   create_new_session();
+  
+  WebGUI::AccessLevel
+  get_access_level(const std::string &username);
 
 private:
   bool

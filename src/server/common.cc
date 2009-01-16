@@ -44,10 +44,11 @@ const unsigned long WebGUI::CHUNKER_MAX_WAIT_TIME = 5; //seconds
 const string WebGUI::CHUNKER_MSG_FORMAT = "<vyatta><chunker_command><token>%s</token><statement>%s</statement></chunker_command></vyatta>\0\0";
 const string WebGUI::CHUNKER_UPDATE_FORMAT = "<vyatta><chunker_command><token>%s</token><statement></statement></chunker_command></vyatta>\0\0";
 
-char const* WebGUI::ErrorDesc[8] = {" ",
+char const* WebGUI::ErrorDesc[9] = {" ",
 				    "request cannot be parsed",
 				    "authentication error",
 				    "session is not valid",
+				    "permission level is not valid",
 				    "general server failure",
 				    "command failed",
 				    "commit is in progress",

@@ -39,6 +39,7 @@ public:
 	      MALFORMED_REQUEST,
 	      AUTHENTICATION_FAILURE,
 	      SESSION_FAILURE,
+	      SESSION_ACCESS_FAILURE,
 	      SERVER_FAILURE,
 	      COMMAND_ERROR,
 	      COMMIT_IN_PROGRESS,
@@ -82,6 +83,10 @@ public:
 		  DELETE,        //node is deleted in local config
 		  SET};          //node is set in local config
   
+
+  enum AccessLevel {ACCESS_NONE,
+		    ACCESS_ALL,
+		    ACCESS_OPER};
 
   static std::string
   generate_response(std::string &token, Error err);

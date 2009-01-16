@@ -105,11 +105,12 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
     return xmlstr;
 }
 
-function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
+function f_sendConfigCLICommand(cmds, treeObj, node, isCreate, wildCard)
 {
     g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait('Changing configuration...',
                                                       'Configuration');
 
+    var tObj = treeObj;
     var sendCommandCliCb = function(options, success, response)
     {
         f_hideSendWaitMessage();
@@ -120,7 +121,8 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         var isSuccess = f_parseResponseError(xmlRoot);
         if(!isSuccess[0])
         {
-            f_promptErrorMessage('Changing configuration...', isSuccess[1]);
+            var err = f_replace(isSuccess[1], "\r\n", "<br>");
+            f_promptErrorMessage('Changing configuration...', err);
             
             /////////////////////////////////
             // handle input error
@@ -129,14 +131,14 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             return;
         }
 
-        var tree = treeObj.m_tree;
+        var tree = tObj.m_tree;
         var selNode = tree.getSelectionModel().getSelectedNode();
         if(selNode == undefined)
             selNode = tree.getRootNode();
         var selPath = selNode.getPath('text');
 
         /////////////////////////////////////
-        if(cmds == 'save')
+        if(cmds[0].indexOf('save') >= 0)
         {
             f_promptErrorMessage('Save configuration', isSuccess[1],
                                   Ext.MessageBox.INFO);
@@ -144,33 +146,33 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         else if(cmds[0].indexOf('discard') >= 0)
         {
             tree.root.reload();
-            treeObj.m_parent.f_cleanEditorPanel();
+            tObj.m_parent.f_cleanEditorPanel();
         }
         else if(cmds[0].indexOf('commit') >= 0)
         {
-            treeObj.m_parent.f_resetEditorPanel();
+            tObj.m_parent.f_resetEditorPanel();
             f_handlePropagateParentNodes(selNode);
-            treeObj.m_selNodePath = selPath;//node.parentNode;
+            tObj.m_selNodePath = selPath;//node.parentNode;
             tree.getRootNode().reload();
         }
         /////////////////////////////////////
         // handle the 'View' toolbar command
-        else if(cmds == 'show configuration')
+        else if(cmds[0] == 'show configuration')
         {
-            f_handleToolbarViewCmdResponse(treeObj.m_parent, isSuccess[1]);
+            f_handleToolbarViewCmdResponse(tObj.m_parent, isSuccess[1]);
         }
         /////////////////////////////////////
         // handle the 'Load' toolbar command
-        else if(cmds == "show files '" + V_CONFIG_DIR + "'")
+        else if(cmds[0].indexOf("show files ") >= 0)
         {
-            f_showLoadFileChooserDialog(isSuccess[1], treeObj);
+            f_showFileChooserDialog(wildCard, isSuccess[1], tObj);
         }
         else
         {
             if(node == undefined)
-                f_handleNodeExpansion(treeObj, selNode, selPath, cmds);
+                f_handleNodeExpansion(tObj, selNode, selPath, cmds);
             else if(node.parentNode != undefined || selNode.parentNode != undefined)
-                f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCreate);
+                f_handleParentNodeExpansion(tObj, node, selNode, selPath, cmds, isCreate);
         }
     }
 
@@ -194,7 +196,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 
 function f_isResponseOK(response)
 {
-    var msg = 'Please refrsh GUI and try again later.';
+    var msg = 'Please refersh GUI and try again later.';
     var ret = false;
 
     if(response.responseXML == undefined ||

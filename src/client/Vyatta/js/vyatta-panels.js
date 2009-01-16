@@ -537,14 +537,17 @@ function f_handleHelpButtonClick(panel, helpbutton, saveCookie)
     }
 }
 
-function f_createComboBox(values, selVal)
+function f_createComboBox(values, selVal, editable, label)
 {
     return new Ext.form.ComboBox(
     {
         mode: 'local',
+        animCollapse: true,
+        blankText: 'This field cannot be blank',
         store: values,
-        displayField: 'value',
-        editable: false,
+        displayField: 'name',
+        fieldLabel: label,
+        editable: editable,
         triggerAction: 'all',
         selectOnFocus: true,
         height: 23,
@@ -557,7 +560,7 @@ function f_createComboBox(values, selVal)
 }
 function f_createTopPanelViewPanel(thisObj)
 {
-    var field = f_createComboBox(thisObj.m_viewerValues, 1);
+    var field = f_createComboBox(thisObj.m_viewerValues, 1, false, "View");
 
     return new Ext.Panel(
     {
@@ -617,6 +620,7 @@ function f_createToolbar(panelObj)
 
 function f_createToolbarButton(iconCls, cmdName, treeObj)
 {
+    var supportCmd = undefined;
     return new Ext.Action(
     {
         text: ' '
@@ -625,15 +629,18 @@ function f_createToolbarButton(iconCls, cmdName, treeObj)
         {
             if(cmdName == 'save')
             {
+                supportCmd = cmdName;
+                cmdName = "show files '" + V_CONFIG_DIR + "'";
             }
             else if(cmdName == 'load')
             {
+                supportCmd = cmdName;
                 cmdName = "show files '" + V_CONFIG_DIR + "'";
             }
             else if(cmdName == 'view')
                 cmdName = 'show configuration';
 
-            f_sendCLICommand(this, [cmdName], treeObj);
+            f_sendCLICommand(this, [cmdName], treeObj, supportCmd);
         }
     });
 }
@@ -656,7 +663,7 @@ function f_showConfigurationViewDialog(configData)
     dialog.show();
 }
 
-function f_showLoadFileChooserDialog(values, treeObj)
+function f_showFileChooserDialog(command, values, treeObj)
 {
     ///////////////////////////////////
     // parse values
@@ -673,9 +680,12 @@ function f_showLoadFileChooserDialog(values, treeObj)
 
     var cb = function(btn)
     {
-        if(btn == 'yes')
+        var selVal = comb.lastQuery == undefined || comb.lastQuery == "" ?
+                      comb.getValue() : comb.lastQuery;
+        var cmd = command + " '" + V_CONFIG_DIR + selVal + "'";
+
+        if(btn == undefined || btn == 'yes')
         {
-            var cmd = "load '" + V_CONFIG_DIR + comb.getValue() + "'";
             f_sendConfigCLICommand([cmd], treeObj);
             dialog.hide();
         }
@@ -685,9 +695,15 @@ function f_showLoadFileChooserDialog(values, treeObj)
     {
         text: 'OK'
         ,minWidth: 70
-        ,handler: function() { f_yesNoMessageBox('Re-load Configuration',
-                  'Are you sure you wish to load the selected ' +
-                  'configuration file: ' + comb.getValue() + '?', cb); }
+        ,handler: function()
+        {
+            if(command == 'load')
+                f_yesNoMessageBox('Re-load Configuration',
+                      'Are you sure you wish to load the selected ' +
+                      'configuration file: ' + comb.getValue() + '?', cb);
+            else
+                cb.call(null, null, ['save'], true);
+        }
     });
 
     var cancelButton = new Ext.Button(
@@ -697,13 +713,22 @@ function f_showLoadFileChooserDialog(values, treeObj)
         ,handler: function() { dialog.hide(); }
     })
 
-    var comb = f_createComboBox(val, 0);
+    var editable = false;
+    var title = 'Select a configuraton filename to reload';
+    var dlgTitle = 'Reload Configuration';
+    if(command == 'save')
+    {
+        editable = true;
+        title = 'Select or enter a new configuration filename'
+        dlgTitle = 'Save Configuration';
+    }
+    var comb = f_createComboBox(val, 0, editable, 'Filename');
     var loginFormPanel = new Ext.form.FormPanel(
     {
         labelWidth: 100
         ,frame:false
         ,border: false
-        ,title: 'Select a configuraton filename to be used for re-load'
+        ,title: title
         ,bodyStyle:'padding:10px 10px 5px 10px'
         ,width: 390
         ,monitorValid: true
@@ -713,7 +738,7 @@ function f_showLoadFileChooserDialog(values, treeObj)
 
     var dialog = new Ext.Window(
     {
-        title: 'Load Configuration'
+        title: dlgTitle
         ,reset_on_hide: true
         ,height: 150
         ,width: 405
@@ -745,12 +770,12 @@ function f_updateToolbarButtons(tree)
                         'v_redo_button' : 'v_redo_button_no');
 }
 
-function f_sendCLICommand(button, cmds, treeObj)
+function f_sendCLICommand(button, cmds, treeObj, supportCmd)
 {
     if(button.iconCls.indexOf('_no') > 0)
         return;
 
-    f_sendConfigCLICommand(cmds, treeObj);
+    f_sendConfigCLICommand(cmds, treeObj, undefined, undefined, supportCmd);
 }
 
 function f_handleToolbarViewCmdResponse(panelObj, responseTxt)
@@ -1036,9 +1061,13 @@ function f_createButton(treeObj, node, btnText, title)
 
                 if(node.text == 'reboot')
                 {
-                    f_yesNoMessageBox('Reboot Operational',
-                        'Are you sure you wish to reboot the server?', cb);
-                    return;
+                    if(node.parentNode != undefined &&
+                            node.parentNode.text != 'show')
+                    {
+                        f_yesNoMessageBox('Reboot Operational',
+                            'Are you sure you wish to reboot the server?', cb);
+                        return;
+                    }
                 }
 
                 f_sendOperationCliCommand(node, treeObj, true, undefined, true);

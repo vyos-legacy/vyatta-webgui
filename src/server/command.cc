@@ -142,7 +142,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 	cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 	//      cmd = string("shopt -s nullglob; ") + cmd;
 	
-	string opmodecmd = "/bin/bash -i -c '" + cmd + "'";
+	string opmodecmd = "/bin/bash -i -c '" + cmd + " 2>&1'";
 
 	string stdout;
 	err = WebGUI::execute(opmodecmd,stdout,true);

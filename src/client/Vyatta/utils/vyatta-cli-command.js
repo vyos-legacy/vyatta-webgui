@@ -180,6 +180,12 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             tObj.m_selNodePath = selPath;//node.parentNode;
             tree.getRootNode().reload();
         }
+        /////////////////////////////////////
+        // handle the 'View' toolbar command
+        else if(cmds[0] == 'show session')
+        {
+            f_handleToolbarViewCmdResponse(isSuccess[1]);
+        }
         else
         {
             if(node == undefined)

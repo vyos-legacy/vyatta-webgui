@@ -590,17 +590,22 @@ function f_createToolbar(panelObj)
         [ '->',
           helpTipButton,
           '-',
-          panelObj.m_viewBtn = f_createToolbarButton('v_view_button', 'view', panelObj.m_treeObj),
-          panelObj.m_loadBtn = f_createToolbarButton('v_load_button', 'load', panelObj.m_treeObj),
-          panelObj.m_saveBtn = f_createToolbarButton('v_save_button', 'save', panelObj.m_treeObj),
+          panelObj.m_viewBtn = f_createToolbarButton('v_view_button', 
+                'view', panelObj.m_treeObj, 'View configuration file'),
+          panelObj.m_loadBtn = f_createToolbarButton('v_load_button', 
+                'load', panelObj.m_treeObj, 'Reload system'),
+          panelObj.m_saveBtn = f_createToolbarButton('v_save_button',
+                'save', panelObj.m_treeObj, 'Save configuration to file'),
           '-',
           //panelObj.m_undoBtn = f_createToolbarButton('v_undo_button', 'undo', panelObj.m_treeObj),
           //panelObj.m_redoBtn = f_createToolbarButton('v_redo_button', 'redo', panelObj.m_treeObj),
           //'-',
           panelObj.m_discardBtn = f_createToolbarButton('v_discard_button',
-                              'discard', panelObj.m_treeObj),
+                              'discard', panelObj.m_treeObj,
+                              'Discard changed'),
           panelObj.m_commitBtn = f_createToolbarButton('v_commit_button',
-                                'commit', panelObj.m_treeObj)
+                                'commit', panelObj.m_treeObj,
+                                'Commit changed')
         ] :
         [ '->',
           helpTipButton
@@ -618,16 +623,19 @@ function f_createToolbar(panelObj)
     });
 }
 
-function f_createToolbarButton(iconCls, cmdName, treeObj)
+function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
 {
     var supportCmd = undefined;
-    return new Ext.Action(
+    var sendCmd = cmdName;
+
+    return new Ext.Button(
     {
         text: ' '
         ,iconCls: iconCls
+        ,id: cmdName
+        ,tooltip: tooltip
         ,handler: function() 
         {
-            var sendCmd = '';
             if(cmdName == 'save' || cmdName == 'load' || cmdName == 'view')
             {
                 if(cmdName == 'save')
@@ -647,7 +655,9 @@ function f_createToolbarButton(iconCls, cmdName, treeObj)
                                           true, undefined, treeObj, supportCmd);
             }
             else
+            {
                 f_sendCLICommand(this, [cmdName], treeObj);
+            }
         }
     });
 }

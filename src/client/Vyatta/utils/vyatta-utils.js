@@ -141,6 +141,7 @@ function f_createHelpTipsButton(callback)
     {
         handler: callback
         ,text: ' '
+        ,tooltip: 'Show/hide help'
     });
 
     f_updateHelpButtonIcon(helpButton);

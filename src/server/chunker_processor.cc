@@ -84,8 +84,8 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   opmodecmd = "/bin/bash -c '" + opmodecmd + "'";
   //    string opmodecmd = "/bin/bash -i -c " + command;
   //  string opmodecmd = cmd;
-  
-  cout << "op dmc: " << opmodecmd << endl;
+
+  //  syslog(LOG_ERR, "chunker command: %s",opmodecmd.c_str());
 
   char *argv_tmp[64], *argv[64];
   char *tmp = (char*)cmd.c_str();
@@ -119,7 +119,18 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   printf("argv[0]: %s\n",argv[0]);
   printf("argv[1]: %s\n",argv[1]);
   */
+  
+  //let's give the reader a chance to write out a single chunk
+  struct timeval t;
+  gettimeofday(&t,NULL);
+  unsigned long start_time = t.tv_sec;
   execvp(argv[0], argv);
+  gettimeofday(&t,NULL);
+  if (t.tv_sec - start_time < WebGUI::CHUNKER_MAX_WAIT_TIME) {
+    unsigned long delta = WebGUI::CHUNKER_MAX_WAIT_TIME - (t.tv_sec - start_time) + 1;
+    usleep(1000 * 1000 * delta); //wait the delta plus 1 sec
+  }
+
 }
 
 /**
@@ -132,22 +143,65 @@ ChunkerProcessor::reader(string token,int (&cp)[2])
   /* Close what we don't need. */
   char buf[_chunk_size+1];
   long chunk_ct = 0;
-  long last_time = 0;
   string tmp;
   
   struct timeval t;
   gettimeofday(&t,NULL);
+  long last_time = t.tv_sec;
   unsigned long cur_time;
   usleep(1000*1000);
   close(cp[1]);
   while ((read(cp[0], &buf, 1) == 1)) {
     tmp += string(buf);
     tmp = process_chunk(tmp, token, chunk_ct, last_time);
-    
+
     //now update our time
     gettimeofday(&t,NULL);
     cur_time = t.tv_sec;
   }
+  process_chunk_end(tmp,token,chunk_ct);
+}
+
+
+/**
+ * write out remainder and create bumper
+ **/
+void
+ChunkerProcessor::process_chunk_end(string &str, string &token, long &chunk_ct)
+{
+  //OK, let's find a natural break and start processing
+  size_t pos = str.rfind('\n');
+  string chunk;
+  if (pos != string::npos) {
+    chunk = str.substr(0,pos);
+    str = str.substr(pos+1,str.length());
+  }
+  else {
+    chunk = str;
+    str = string("");
+  }
+  
+  char buf[80];
+  sprintf(buf,"%lu",chunk_ct);
+  string file = WebGUI::CHUNKER_RESP_TOK_DIR + WebGUI::CHUNKER_RESP_TOK_BASE + token + "_" + string(buf);
+  FILE *fp = fopen(file.c_str(), "w");
+  if (fp) {
+    fwrite(chunk.c_str(),1,chunk.length(),fp);
+    fclose(fp);
+  }
+  else {
+    syslog(LOG_ERR,"webgui: Failed to write out response chunk");
+  }
+  
+
+  //if we naturally end write out bumper file to common directory...
+  file = WebGUI::CHUNKER_RESP_TOK_DIR + WebGUI::CHUNKER_RESP_TOK_BASE + token + "_end";
+  fp = fopen(file.c_str(), "w");
+  if (fp) {
+    fwrite("end",1,3,fp);
+    fclose(fp);
+  }
+  return;
 }
 
 /**

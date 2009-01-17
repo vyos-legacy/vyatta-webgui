@@ -24,8 +24,10 @@ case $1 in
   		;;
 	stop)
 		log_daemon_msg "Stopping CHUNKER server" "chunker"
-  	        kill -9 $( cat $PIDFILE ) 
-		rm -f $PIDFILE	
+                if [ -f $PIDFILE ] ; then 
+  	          kill -9 $( cat $PIDFILE )
+                fi  
+		rm -f $PIDFILE >/dev/null	
 		;;
 	restart|force-reload)
 		$0 stop && sleep 2 && $0 start

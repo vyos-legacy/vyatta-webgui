@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+#include <syslog.h>
 #include <iostream>
 #include "common.hh"
 #include "multirespcmd.hh"
@@ -36,7 +37,7 @@ MultiResponseCommand::~MultiResponseCommand()
 void
 MultiResponseCommand::init()
 {
-  int servlen,n;
+  int servlen;
   struct sockaddr_un  serv_addr;
 
   bzero((char *)&serv_addr,sizeof(serv_addr));
@@ -78,13 +79,14 @@ MultiResponseCommand::process()
       _next_token = _cmd;
     }
     else {
-      return false; //the only wait this command can pass on this request
+      return false; //the only way this command can pass on this request
     }
   }
 
   if (_next_token.empty() == true) { //want to start a new command
     string id = start_new_proc();
-    _next_token = WebGUI::CHUNKER_RESP_TOK_BASE + id + "_1";
+    _next_token = WebGUI::CHUNKER_RESP_TOK_BASE + id + "_0";
+    return true;
   }
   
   //then check if this matches a mult-part cmd
@@ -104,19 +106,13 @@ MultiResponseCommand::process()
     }
   }
   else { //need to determine if the chunker is done, or the request needs to be resent
-    string pidfile = WebGUI::CHUNKER_RESP_PID + "/" + _session_id;
-    FILE *fp = fopen(pidfile.c_str(),"r"); //can we find the pid file...
-    if (fp) {
-      char buf[1025];
-      if (fgets(buf, 1024, fp)) { //read the pid
-	pid_t pid = (int)strtoul(buf,NULL,10);
-	if (getpgid(pid)) {  //is the pid running?
-	  fclose(fp);
-	  return true; //yes, then return the same token as before
-	}
-      }
-      fclose(fp);
+    //will look for end file, otherwise return true
+    string end_file = WebGUI::CHUNKER_RESP_TOK_DIR + "/" + WebGUI::CHUNKER_RESP_TOK_BASE + _session_id + "_end";
+    if ((lstat(end_file.c_str(), &s) == 0)) {
+      //found chunk now read next
+      _next_token = WebGUI::CHUNKER_RESP_TOK_BASE + _session_id + "_end";
     }
+    return true;
   }
   return true; //want to return true here
 }
@@ -132,7 +128,7 @@ MultiResponseCommand::start_new_proc()
   bzero(buffer,1024);
   sprintf(buffer,WebGUI::CHUNKER_MSG_FORMAT.c_str(),tok.c_str(),_cmd.c_str());
 
-  ssize_t num = write(_sock,buffer,sizeof(buffer));
+  write(_sock,buffer,sizeof(buffer));
   usleep(1000*1000); //give this a 1 second delay on start
   return tok;
 }
@@ -148,7 +144,7 @@ MultiResponseCommand::get_resp(string &token, string &output)
   bzero(buffer,1024);
   sprintf(buffer,WebGUI::CHUNKER_UPDATE_FORMAT.c_str(),tok.c_str());
 
-  ssize_t num = write(_sock,buffer,sizeof(buffer));
+  write(_sock,buffer,sizeof(buffer));
 
   token = _next_token;
   output = _resp;

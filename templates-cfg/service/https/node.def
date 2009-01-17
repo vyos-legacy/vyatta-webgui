@@ -1,5 +1,6 @@
 help: Enable/disable the Web server
 delete: sudo /usr/sbin/invoke-rc.d lighttpd stop
+        sudo /etc/init.d/vyatta-webgui-chunker stop
 update: if [ ! -f /etc/lighttpd/server.pem ]; then
           sudo openssl req -new -x509 -keyout /etc/lighttpd/server.pem \
                 -out /etc/lighttpd/server.pem \
@@ -7,3 +8,4 @@ update: if [ ! -f /etc/lighttpd/server.pem ]; then
                 -subj '/C=US/CN=Vyatta Web GUI/O=Vyatta Inc./ST=CA/L=Belmont'
         fi
         sudo /usr/sbin/invoke-rc.d lighttpd restart
+        sudo /etc/init.d/vyatta-webgui-chunker restart

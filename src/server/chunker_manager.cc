@@ -78,8 +78,7 @@ ChunkerManager::read()
   }
   int n = ::read(clientsock,buf,1024);
   buf[n] = '\0';
-  printf("Read %d bytes from socket: %s\n",n,buf);
-
+  //  printf("Read %d bytes from socket: %s\n",n,buf);
 
   process(buf);
 

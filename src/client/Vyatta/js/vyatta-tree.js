@@ -241,6 +241,10 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             }
         }
 
+        var nMulti = q.selectNode('multi', node);
+        if (nMulti != undefined)
+            str += ",multi:true";
+
         var action = q.selectNode('action', node);
         if(action != undefined)
             str += ",action:'true'";
@@ -248,10 +252,6 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         var nType = q.selectNode('type', node);
         if (nType != undefined)
             str += ",type:'" + nType.getAttribute('name') + "'";
-
-        var nMulti = q.selectNode('multi', node);
-        if (nMulti != undefined)
-            str += ",multi:true";
 
         var tHelp = q.selectValue('help', node);
         if (tHelp != undefined)
@@ -667,20 +667,19 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_interMultiHandler: function(node)
     {
-        /*
-         *   all: "add" field
-         *   configured-active: "delete"
-         *   configured-added: "delete"
-         */
         var nodePath = m_thisObj.f_getNodePathStr(node);
         var cNode = node;
         var callback = function()
         {
             m_thisObj.m_setField = node.getValFieldFunc();
             f_sendConfigCLICommand([ 'set ' + nodePath
-                             + " " + dField.getValue() ], m_thisObj, cNode, true);
+                             + " " + cNode.getValFunc() ], m_thisObj, cNode, true);
         }
 
+        if(node.attributes.enums != undefined)
+            m_thisObj.f_leafSingleEnumHandler(node, node.attributes.enums, 
+                      node.attributes.help, callback);
+        /*
         var field = f_createTextField(undefined, 'Create ' + node.text + ' value',
                       node.attributes.help, 250, callback, node);
         f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.text);
@@ -694,7 +693,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             return dField.getValue();
         }
-
+*/
         m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 
@@ -834,9 +833,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             field1 = f_createCombobox(values, ival,
                       'Select a valid value...', node.text, 250,
                       helpStr, isEditable, callback, node);
-            //field2 = f_createCombobox(values, ival,
-              //        'Select a valid value...', node.text, 250,
-                //      helpStr, isEditable, callback);
         }
 
         node.getValFieldFunc = function()
@@ -1164,18 +1160,26 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(ePanel.m_opTextArea != undefined)
         {
             var eForm = ePanel.items.itemAt(0);
+
+            /////////////////////////////////////////
+            // find text area component then update
+            //its content.
             for(var i=0; i<eForm.items.getCount(); i++)
             {
                 var f = eForm.items.item(i);
                 if(ePanel.m_opTextArea == f)
                 {
                     if(g_cliCmdObj.m_segmentId != undefined &&
+                        values.length == 0)
+                        break;
+
+                    if(g_cliCmdObj.m_segmentId != undefined &&
                             f.el.dom.textContent != undefined)
                     {
                         if(f.m_val != undefined)
                             values = f.m_val + values;
 
-                        if(f.m_val > 99999999)
+                        if(f.m_val != undefined && f.m_val.length > 99999999)
                             f.m_val = '';
                     }
 

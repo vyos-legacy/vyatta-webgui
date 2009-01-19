@@ -408,7 +408,8 @@ function f_startSegmentCommand()
     {
         run: function()
         {
-            if(g_cliCmdObj.m_segmentId != undefined)// &&
+            if(g_cliCmdObj.m_segmentId != undefined &&
+                g_cliCmdObj.m_segmentId.indexOf("end") < 0)
                 //g_cliCmdObj.m_segmentId != g_cliCmdObj.m_prevSegId)
             {
                 g_cliCmdObj.m_prevSegId = g_cliCmdObj.m_segmentId;

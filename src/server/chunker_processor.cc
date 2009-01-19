@@ -145,10 +145,12 @@ ChunkerProcessor::reader(string token,int (&cp)[2])
   long chunk_ct = 0;
   string tmp;
   
-  struct timeval t;
-  gettimeofday(&t,NULL);
-  long last_time = t.tv_sec;
-  unsigned long cur_time;
+  struct sysinfo info;
+  unsigned long cur_time = 0;
+  long last_time = info.uptime = 0;
+  if (sysinfo(&info) == 0) {
+    last_time = info.uptime;
+  }
   usleep(1000*1000);
   close(cp[1]);
   while ((read(cp[0], &buf, 1) == 1)) {
@@ -156,8 +158,9 @@ ChunkerProcessor::reader(string token,int (&cp)[2])
     tmp = process_chunk(tmp, token, chunk_ct, last_time);
 
     //now update our time
-    gettimeofday(&t,NULL);
-    cur_time = t.tv_sec;
+    if (sysinfo(&info) == 0) {
+      cur_time = info.uptime;
+    }
   }
   process_chunk_end(tmp,token,chunk_ct);
 }

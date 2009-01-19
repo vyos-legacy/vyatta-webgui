@@ -40,7 +40,7 @@ const string WebGUI::CHUNKER_RESP_CMDS = "/usr/lib/cgi-bin/webgui.conf";
 const string WebGUI::CHUNKER_RESP_INIT="/usr/lib/cgi-bin/etc/init.d/vyatta-webgui-chunker";
 const string WebGUI::CHUNKER_RESP_PID = "/usr/lib/cgi-bin/var/run";
 const string WebGUI::CHUNKER_SOCKET = "/tmp/chunker_foobar";
-const unsigned long WebGUI::CHUNKER_MAX_WAIT_TIME = 5; //seconds
+const unsigned long WebGUI::CHUNKER_MAX_WAIT_TIME = 2; //seconds
 const string WebGUI::CHUNKER_MSG_FORMAT = "<vyatta><chunker_command><token>%s</token><statement>%s</statement></chunker_command></vyatta>\0\0";
 const string WebGUI::CHUNKER_UPDATE_FORMAT = "<vyatta><chunker_command><token>%s</token><statement></statement></chunker_command></vyatta>\0\0";
 

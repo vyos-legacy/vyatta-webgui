@@ -636,7 +636,7 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
         ,tooltip: tooltip
         ,handler: function() 
         {
-            if(cmdName == 'save' || cmdName == 'load' || cmdName == 'view')
+            if(cmdName == 'save' || cmdName == 'load')
             {
                 if(cmdName == 'save')
                 {
@@ -656,7 +656,10 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
             }
             else
             {
-                f_sendCLICommand(this, [cmdName], treeObj);
+                if(cmdName == 'view')
+                    sendCmd = 'show session';
+
+                f_sendCLICommand(this, [sendCmd], treeObj);
             }
         }
     });
@@ -1113,9 +1116,11 @@ function f_createLabel(value, labelFor)
 
     if(labelFor == V_LABEL_HELP)
     {
+        value = f_replace(value, '<', '&#60;');
+        value = f_replace(value, '>', '&#62;');
         lAlign = 'vlabel_left';
         width = 250;
-        value = value + '.';
+        value = "<small>" + value + '.' + "</small>";
     }
     else if(labelFor == V_LABEL_LABEL)
     {

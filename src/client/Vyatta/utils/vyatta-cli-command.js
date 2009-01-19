@@ -86,13 +86,6 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
             isSuccess[1] = 'System is rebooting. Please wait for reboot to complete\n'+
                             'then refresh the browser to log in again.';
         /////////////////////////////////////
-        // handle the 'View' toolbar command
-        else if(sendStr == 'show configuration')
-        {
-            f_handleToolbarViewCmdResponse(isSuccess[1]);
-            return;
-        }
-        /////////////////////////////////////
         // handle the 'Load' toolbar command
         else if(sendStr.indexOf("show files ") >= 0)
         {

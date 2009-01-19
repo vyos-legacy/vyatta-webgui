@@ -208,7 +208,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 
 function f_isResponseOK(response)
 {
-    var msg = 'Please refersh GUI and try again later.';
+    var msg = 'Please refresh GUI and try again later.';
     var ret = false;
 
     if(response.responseXML == undefined ||

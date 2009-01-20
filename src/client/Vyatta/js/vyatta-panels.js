@@ -1162,7 +1162,7 @@ function f_createLabel(value, labelFor)
 function f_createTextAreaField(values, width, height)
 {
     var val = f_replace(values, "\n", "<br>");
-    val = f_replace(val, ' ', "&nbsp;");
+    //val = f_replace(val, ' ', "&nbsp;");
 
     return new Ext.Panel(
     {

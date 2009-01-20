@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <syslog.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -104,8 +105,31 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   */
 
   
+string shell = "export VYATTA_TEMPLATE_LEVEL=/;\
+export vyatta_datadir=/opt/vyatta/share;\
+export vyatta_op_templates=/opt/vyatta/share/vyatta-op/templates;\
+export vyatta_sysconfdir=/opt/vyatta/etc;\
+export vyatta_sharedstatedir=/opt/vyatta/com;\
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin;\
+export vyatta_sbindir=/opt/vyatta/sbin;export vyatta_bindir=/opt/vyatta/bin;\
+export vyatta_libdir=/opt/vyatta/lib;\
+export vyatta_localstatedir=/opt/vyatta/var;\
+export vyatta_libexecdir=/opt/vyatta/libexec;\
+export vyatta_infodir=/opt/vyatta/share/info;source /etc/bash_completion.d/10vyatta-op; _vyatta_op_run ";
+  
+
+
   opmodecmd = WebGUI::mass_replace(cmd,"'","");
   char tmpcmd[1024];
+
+
+  //  opmodecmd = "/bin/bash -c '" + shell + opmodecmd + "'";
+  //  opmodecmd = shell + opmodecmd;
+
+  //  need to set up the cmd like: argv[0] = /bin/bash, 1 = -c 2 = rest
+
+
+  syslog(LOG_ERR,"command: %s",opmodecmd.c_str());
 
   sprintf(tmpcmd,"%s",opmodecmd.c_str());
   //  printf("%s<end>\n",tmpcmd);
@@ -114,23 +138,32 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   sprintf(tmpcmd,"ping  10.3.0.1");
   printf("%s<end>\n",tmpcmd);
   */
-  parse(tmpcmd,argv);
+  //  parse(tmpcmd,argv);
+  //  syslog(LOG_ERR,"argv[x]: %s, %s, %s",argv[0],argv[1],argv[2]);
   /*
   printf("argv[0]: %s\n",argv[0]);
   printf("argv[1]: %s\n",argv[1]);
   */
   
   //let's give the reader a chance to write out a single chunk
-  struct timeval t;
-  gettimeofday(&t,NULL);
-  unsigned long start_time = t.tv_sec;
-  execvp(argv[0], argv);
-  gettimeofday(&t,NULL);
-  if (t.tv_sec - start_time < WebGUI::CHUNKER_MAX_WAIT_TIME) {
-    unsigned long delta = WebGUI::CHUNKER_MAX_WAIT_TIME - (t.tv_sec - start_time) + 1;
-    usleep(1000 * 1000 * delta); //wait the delta plus 1 sec
-  }
+  //  execvp(argv[0], argv);
+  //  int err = execlp("/bin/ping","/bin/ping", "10.3.0.232",NULL);
+  //  opmodecmd = "'" + opmodecmd + "'";
 
+  int err = execlp("/usr/lib/cgi-bin/chunker_cmd",
+		   "/usr/lib/cgi-bin/chunker_cmd",
+		   opmodecmd.c_str(),
+		   NULL);
+  syslog(LOG_ERR, "ERROR RECEIVED FROM EXECVP(1): %d, %d",err, errno);
+  /*
+  err = execlp("_vyatta_op_run",
+	       "_vyatta_op_run",
+	       "/bin/ping", 
+	       "10.3.0.232",
+	       NULL);
+
+  syslog(LOG_ERR, "ERROR RECEIVED FROM EXECVP(2): %d, %d",err, errno);
+  */
 }
 
 /**

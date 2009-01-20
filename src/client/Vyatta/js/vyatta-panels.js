@@ -345,6 +345,7 @@ function f_createNumberField(value, node, help, width, callback)
     var field = new Ext.form.NumberField(
     {
         width: width,
+        height:22,
         allowNegative: false,
         allowDecimals: false,
         maxValue: (Math.pow(2, 32) - 1),
@@ -379,6 +380,7 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
     {
         labelSeparator: ''
         ,width: width
+        ,height:22
         ,value: value
         ,enableKeyEvents: true
         ,onBlur: callback
@@ -413,6 +415,7 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
 function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
                             isEditable, callback, node)
 {
+
       var field = new Ext.form.ComboBox(
       {
           id: this.m_tabName,

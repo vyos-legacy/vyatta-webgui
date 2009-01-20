@@ -47,7 +47,9 @@ function f_showTab(tabIndex)
     g_baseSystem.m_selTabIndex =tabIndex;
     f_createTabsHTML();
 
-    if(g_baseSystem.m_tabObjects[tabIndex] == undefined)
+    if(g_baseSystem.m_tabObjects[tabIndex] == undefined ||
+        Ext.isIE /* this is a dirty fix for IE browser that when tab change
+                    all the toolbar buttons are disappered*/)
     {
         g_baseSystem.m_tabObjects[tabIndex] = new
                                   VYATTA_panels(g_baseSystem.m_bodyPanel,

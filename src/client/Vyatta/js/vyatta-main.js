@@ -15,6 +15,7 @@ DATA_baseSystem = Ext.extend(Ext.util.Observable,
         this.m_iConf = 0;
         this.m_iOper = 1;
         this.m_selTabIndex = this.m_iConf;
+        this.m_disableTabs = [];
 
         this.m_tabObjects = [];
         for(var i=0; i<this.m_tabNames.length; i++)
@@ -58,6 +59,15 @@ function f_showTab(tabIndex)
         g_baseSystem.m_tabObjects[tabIndex].f_showPanel(true);
 
     f_handleOnBodyPanelResize(tabIndex);
+}
+
+/////////////////////////////////////////////////////
+// disable configurational tab and show operation
+function f_showOperationalTab()
+{
+    g_baseSystem.m_disableTabs[g_baseSystem.m_disableTabs.length] =
+        g_baseSystem.m_iConf;
+    f_handleTabClick(g_baseSystem.m_tabNames[g_baseSystem.m_iOper]);
 }
 
 function f_hideTab(tabIndex)
@@ -113,16 +123,30 @@ function f_startViewPort()
 function f_createTabHTML(tabName)
 {
     var imgId = 'v-tab-' + tabName;
-    var img = (g_baseSystem.f_getTabIndex(tabName) == g_baseSystem.m_selTabIndex) ?
+    var iTab = g_baseSystem.f_getTabIndex(tabName);
+    var img = (iTab == g_baseSystem.m_selTabIndex) ?
               'tab-' + tabName + '-active.gif' : 'tab-' + tabName + '-available.gif';
 
-    return '<td><a href="#" onClick="f_handleTabClick(\'' + tabName + '\')">' +
+    var html = '<td><a href="#" onClick="f_handleTabClick(\'' + tabName + '\')">' +
             '<img class="v_tab_image" src=\'images/' + img + '\' id=\'' + imgId +
             '\' onmouseover="f_handleTabOnMouseAction(\'' + tabName +
             '\', \'over\')" ' +
-            'onmouseout="f_handleTabOnMouseAction(\'' + tabName + 
+            'onmouseout="f_handleTabOnMouseAction(\'' + tabName +
             '\', \'available\')"' +
             '/></a></td>';
+
+    ////////////////////////////////////
+    // handle diable tab
+    for(var i=0; i<g_baseSystem.m_disableTabs.length; i++)
+        if(iTab == g_baseSystem.m_disableTabs[i])
+        {
+            img = 'tab-' + tabName + '-disabled.gif';
+            html = '<td><a href="#" onClick="f_handleTabClick(\'' + tabName + '\')">' +
+            '<img class="v_tab_image" src=\'images/' + img + '\' id=\'' + imgId +
+            '\'/></a></td>';
+        }
+
+    return html;
 }
 
 function f_createTabsHTML()
@@ -139,6 +163,17 @@ function f_createTabsHTML()
 
 function f_handleTabClick(tabName)
 {
+    ////////////////////////////////////
+    // handle diable tab
+    var iTab = g_baseSystem.f_getTabIndex(tabName);
+    for(var i=0; i<g_baseSystem.m_disableTabs.length; i++)
+        if(iTab == g_baseSystem.m_disableTabs[i])
+        {
+            f_promptErrorMessage("User Access Error",
+                "Permission access is not valid.", undefined);
+            return;
+        }
+
     f_showTab(g_baseSystem.f_getTabIndex(tabName));
 }
 

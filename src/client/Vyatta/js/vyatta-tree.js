@@ -162,7 +162,16 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         ///////////////////////////////////////////
         // parse error will redirect to login page
         // if user not login or login timeout
-        f_parseResponseError(xmlRoot);
+        var isSuccess = f_parseResponseError(xmlRoot);
+
+        //////////////////////////////////////////////
+        // conf mode is not allow. force to oper mode
+        if(!isSuccess[0] && isSuccess[1].indexOf("permission") >= 0)
+        {
+            f_showOperationalTab();
+            response.responseText = '[ ]';
+            return MyTreeLoader.superclass.processResponse.apply(this, arguments);
+        }
 
         var nodes = q.select('node', xmlRoot);
         if (nodes.length == 0)
@@ -679,21 +688,23 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(node.attributes.enums != undefined)
             m_thisObj.f_leafSingleEnumHandler(node, node.attributes.enums, 
                       node.attributes.help, callback);
-        /*
-        var field = f_createTextField(undefined, 'Create ' + node.text + ' value',
-                      node.attributes.help, 250, callback, node);
-        f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.text);
-        node.getValFieldFunc = function()
+        else
         {
-            return field;
-        }
-        var dField = field.items.itemAt(V_IF_INDEX_INPUT);
+            var field = f_createTextField(undefined, 'Create ' + node.text + ' value',
+                          node.attributes.help, 250, callback, node);
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.text);
+            node.getValFieldFunc = function()
+            {
+                return field;
+            }
+            var dField = field.items.itemAt(V_IF_INDEX_INPUT);
 
-        node.getValFunc = function()
-        {
-            return dField.getValue();
+            node.getValFunc = function()
+            {
+                return dField.getValue();
+            }
         }
-*/
+
         m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 

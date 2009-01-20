@@ -85,6 +85,19 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         if(sendStr == 'reboot ')
             isSuccess[1] = 'System is rebooting. Please wait for reboot to complete\n'+
                             'then refresh the browser to log in again.';
+        else if(isSuccess[0] && sendStr.indexOf('ping') >= 0)
+        {
+            wildCard.setText('Stop');
+            g_cliCmdObj.m_wildCard = wildCard;
+        }
+        else if(g_cliCmdObj.m_segmentId != undefined &&
+            g_cliCmdObj.m_segmentId.indexOf('end') >= 0 &&
+            g_cliCmdObj.m_wildCard != undefined &&
+            g_cliCmdObj.m_wildCard.text != undefined)
+        {
+            g_cliCmdObj.m_wildCard.setText('Run');
+        }
+
         /////////////////////////////////////
         // handle the 'Load' toolbar command
         else if(sendStr.indexOf("show files ") >= 0)
@@ -98,7 +111,6 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         callbackObj.f_updateOperCmdResponse(headerStr,
                     isSuccess[1], clear);
     }
-    
 
     /* send request */
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -409,13 +421,16 @@ function f_startSegmentCommand()
         run: function()
         {
             if(g_cliCmdObj.m_segmentId != undefined &&
-                g_cliCmdObj.m_segmentId.indexOf("end") < 0)
-                //g_cliCmdObj.m_segmentId != g_cliCmdObj.m_prevSegId)
+                    g_cliCmdObj.m_segmentId.indexOf("end") > 0)
+                g_cliCmdObj.m_segmentId = undefined;  // end this segment
+
+            if(g_cliCmdObj.m_segmentId != undefined)
             {
                 g_cliCmdObj.m_prevSegId = g_cliCmdObj.m_segmentId;
                 f_sendOperationCliCommand(g_cliCmdObj.m_node, g_cliCmdObj.m_cb,
                                     false, undefined, true,
-                                    g_cliCmdObj.m_segmentId);
+                                    g_cliCmdObj.m_segmentId, undefined,
+                                    g_cliCmdObj.m_wildCard);
             }
         }
         ,interval: 1500

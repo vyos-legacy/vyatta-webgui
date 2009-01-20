@@ -1060,6 +1060,8 @@ function f_createButton(treeObj, node, btnText, title)
         cmd = 'set ';
         isDelete = true;
     }
+    else if(btnText == 'Stop')
+        cmd = 'stop';
 
     title = f_replace(title, '&rArr;', '');
     title = f_replace(title, 'Configuration&nbsp;', '');
@@ -1070,13 +1072,20 @@ function f_createButton(treeObj, node, btnText, title)
         ,tooltip: btnText + ' ' + title
         ,handler: function()
         {
-            if(cmd.length == 0)
+            if(this.text == 'Stop')
+            {
+                this.setText('Run');
+                g_cliCmdObj.m_segmentId = undefined;
+                return;
+            }
+            else if(cmd.length == 0)
             {
                 var cb = function send(btn)
                 {
                     if(btn == 'yes')
-                        f_sendOperationCliCommand(node, treeObj,
-                                                  true, undefined, true);
+                        f_sendOperationCliCommand(node, treeObj, false,
+                                                  undefined, true, undefined,
+                                                  treeObj, undefined);
                 };
 
                 if(node.text == 'reboot')
@@ -1089,8 +1098,17 @@ function f_createButton(treeObj, node, btnText, title)
                         return;
                     }
                 }
+                else if(node.parentNode.text == 'ping')
+                {
+                    f_sendOperationCliCommand(node, treeObj, false,
+                                                  undefined, true, undefined,
+                                                  treeObj, this);
+                    return;
+                }
 
-                f_sendOperationCliCommand(node, treeObj, true, undefined, true);
+                f_sendOperationCliCommand(node, treeObj, false,
+                                                  undefined, true, undefined,
+                                                  treeObj, undefined);
             }
             else
                 f_sendConfigCLICommand(

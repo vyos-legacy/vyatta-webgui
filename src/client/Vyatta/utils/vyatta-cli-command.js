@@ -418,6 +418,6 @@ function f_startSegmentCommand()
                                     g_cliCmdObj.m_segmentId);
             }
         }
-        ,interval: 5500
+        ,interval: 1500
     });
 }

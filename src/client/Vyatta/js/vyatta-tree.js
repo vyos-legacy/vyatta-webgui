@@ -164,6 +164,8 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         // if user not login or login timeout
         var isSuccess = f_parseResponseError(xmlRoot);
 
+        //////////////////////////////////////////////
+        // conf mode is not allow. force to oper mode
         if(!isSuccess[0] && isSuccess[1].indexOf("permission") >= 0)
         {
             f_showOperationalTab();

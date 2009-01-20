@@ -141,7 +141,7 @@ function f_createTabHTML(tabName)
         if(iTab == g_baseSystem.m_disableTabs[i])
         {
             img = 'tab-' + tabName + '-disabled.gif';
-            html = '<td><a href="#">' +
+            html = '<td><a href="#" onClick="f_handleTabClick(\'' + tabName + '\')">' +
             '<img class="v_tab_image" src=\'images/' + img + '\' id=\'' + imgId +
             '\'/></a></td>';
         }
@@ -163,6 +163,17 @@ function f_createTabsHTML()
 
 function f_handleTabClick(tabName)
 {
+    ////////////////////////////////////
+    // handle diable tab
+    var iTab = g_baseSystem.f_getTabIndex(tabName);
+    for(var i=0; i<g_baseSystem.m_disableTabs.length; i++)
+        if(iTab == g_baseSystem.m_disableTabs[i])
+        {
+            f_promptErrorMessage("User Access Error",
+                "Permission access is not valid.", undefined);
+            return;
+        }
+
     f_showTab(g_baseSystem.f_getTabIndex(tabName));
 }
 

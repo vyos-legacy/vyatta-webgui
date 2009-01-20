@@ -55,6 +55,7 @@ install-exec-hook:
 	touch $(DESTDIR)$(tmpdir)/dummy
 	mkdir -p $(DESTDIR)/$(initddir)
 	cp scripts/vyatta-webgui-chunker.init $(DESTDIR)/$(initddir)/vyatta-webgui-chunker
+	cp scripts/chunker_cmd $(DESTDIR)/$(cgidir)/chunker_cmd
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/
 	@mkdir -p $(DESTDIR)/var/www

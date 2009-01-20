@@ -1,0 +1,23 @@
+#!/bin/bash
+
+umask 002
+
+export VYATTA_TEMPLATE_LEVEL=/                                                                                                                                    
+export vyatta_datadir=/opt/vyatta/share                                                                                                                                           
+export vyatta_op_templates=/opt/vyatta/share/vyatta-op/templates                                                                                                                  
+export vyatta_sysconfdir=/opt/vyatta/etc                                                                                                                                          
+export vyatta_sharedstatedir=/opt/vyatta/com                                                                                                                                      
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin                                                                                                          
+export vyatta_sbindir=/opt/vyatta/sbin;export vyatta_bindir=/opt/vyatta/bin                                                                                                       
+export vyatta_libdir=/opt/vyatta/lib                                                                                                                                              
+export vyatta_localstatedir=/opt/vyatta/var                                                                                                                                       
+export vyatta_libexecdir=/opt/vyatta/libexec                                                                                                                                      
+export vyatta_infodir=/opt/vyatta/share/info
+
+
+
+source /etc/bash_completion.d/10vyatta-op
+
+_vyatta_op_run $1 
+#_vyatta_op_run show tech-support 
+#ping 10.3.0.232

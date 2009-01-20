@@ -426,3 +426,32 @@ pre.code
     top:auto;
     vertical-align:top;
 }
+.ext-ie .x-form-field-wrap .x-form-trigger
+{
+    position:static;
+    top:auto;
+    vertical-align:top;
+}
+
+
+.ext-ie .x-form-text
+{
+    margin-top:0px;
+    margin-bottom:0px;
+    height:18px;
+    line-height:20px;
+}
+
+/*
+.ext-ie .x-form-field-wrap .x-form-trigger
+{
+    width:17px;
+    height:21px;
+    border:0;
+    background:transparent url(../images/default/form/trigger.gif) no-repeat 0 0;
+    cursor:pointer;
+    border-bottom:1px solid #B5B8C8;
+    position:absolute;
+    top:1px;
+  }
+*/

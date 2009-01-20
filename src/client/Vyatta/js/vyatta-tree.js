@@ -1180,17 +1180,21 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 var f = eForm.items.item(i);
                 if(ePanel.m_opTextArea == f)
                 {
+                    ///////////////////////////////////////////////
+                    // do not update if values is empty
                     if(g_cliCmdObj.m_segmentId != undefined &&
                         values.length == 0)
                         break;
 
+                    /////////////////////////////////////////////
+                    // append new data to the end of textfield
                     if(g_cliCmdObj.m_segmentId != undefined &&
                             f.el.dom.textContent != undefined)
                     {
                         if(f.m_val != undefined)
-                            values = f.m_val + values;
+                            values = f.m_val + "\n" + values;
 
-                        if(f.m_val != undefined && f.m_val.length > 99999999)
+                        if(f.m_val != undefined && f.m_val.length > 9999999)
                             f.m_val = '';
                     }
 

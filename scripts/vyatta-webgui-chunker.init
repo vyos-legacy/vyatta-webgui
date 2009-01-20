@@ -19,11 +19,11 @@ fi
 
 case $1 in
 	start)
-		log_daemon_msg "Starting CHUNKER server"  "chunker"
+		log_daemon_msg "Starting PAGER server"  "pager"
   		start-stop-daemon --start --quiet --oknodo --background -m --pidfile $PIDFILE --startas $DAEMON -- -p $PIDFILE 
   		;;
 	stop)
-		log_daemon_msg "Stopping CHUNKER server" "chunker"
+		log_daemon_msg "Stopping PAGER server" "pager"
                 if [ -f $PIDFILE ] ; then 
   	          kill -9 $( cat $PIDFILE )
                 fi  

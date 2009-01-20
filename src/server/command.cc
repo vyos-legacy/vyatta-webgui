@@ -21,7 +21,7 @@ Command::~Command()
 }
 
 void
-Command::execute_command()
+Command::execute_command(WebGUI::AccessLevel access_level)
 {
   Message msg = _proc->get_msg();
   //parses all template nodes (or until depth to provide full template tree
@@ -45,7 +45,7 @@ Command::execute_command()
     string err;
     int err_code = WebGUI::SUCCESS;
 
-    execute_single_command(*iter, err, err_code);
+    execute_single_command(*iter, access_level, err, err_code);
     if (err_code != WebGUI::SUCCESS) {
       //generate error response for this command and exit
       _proc->set_response(WebGUI::COMMAND_ERROR, err);
@@ -63,7 +63,7 @@ Command::execute_command()
  *
  **/
 void
-Command::execute_single_command(string &cmd, string &resp, int &err)
+Command::execute_single_command(string &cmd, WebGUI::AccessLevel access_level, string &resp, int &err)
 {
   if (cmd.empty()) {
     resp = "";
@@ -137,7 +137,13 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   }
   else { //operational mode command
     if (strncmp(tmp.c_str(),"reboot",6) == 0) {
-      tmp = "sudo /sbin/reboot";
+      if (access_level == WebGUI::ACCESS_ALL) {
+	tmp = "sudo /sbin/reboot";
+      }
+      else {
+	_proc->set_response(WebGUI::COMMAND_ERROR);
+	return;
+      }
     }
     else {
       //treat this as an op mode command

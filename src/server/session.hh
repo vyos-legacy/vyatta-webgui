@@ -81,6 +81,8 @@ public://private:
   unsigned long _id;
   bool _valid;
   bool _debug;
+  WebGUI::AccessLevel _access_level;
+
 };
 
 #endif //__SESSION_HH__

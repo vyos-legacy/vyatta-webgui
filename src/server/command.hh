@@ -11,10 +11,10 @@ public:
   ~Command();
 
   void
-  execute_command();
+  execute_command(WebGUI::AccessLevel access_level);
 
   void
-  execute_single_command(std::string &cmd, std::string &resp, int &err);
+  execute_single_command(std::string &cmd, WebGUI::AccessLevel access_level, std::string &resp, int &err);
 
 private:
   bool

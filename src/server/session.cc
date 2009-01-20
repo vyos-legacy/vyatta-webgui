@@ -123,7 +123,7 @@ Session::process_message()
       if (!update_session()) {
 	return false;
       }
-      _command.execute_command();
+      _command.execute_command(_access_level);
       break;
 
     case WebGUI::GETCONFIG:
@@ -232,8 +232,8 @@ Session::update_session()
   }
 
   //let's check whether the user is currently a member of vyattacfg or operator group
-  WebGUI::AccessLevel level = _authenticate.get_access_level(name_buf);
-  if (_processor->get_msg()._conf_mode == WebGUI::CONF && level != WebGUI::ACCESS_ALL) {
+  _access_level = _authenticate.get_access_level(name_buf);
+  if (_processor->get_msg()._conf_mode == WebGUI::CONF && _access_level != WebGUI::ACCESS_ALL) {
     _processor->set_response(WebGUI::SESSION_ACCESS_FAILURE);
     return false;
   }

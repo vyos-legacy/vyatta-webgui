@@ -325,7 +325,10 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         
         var nnode = sm.getSelectedNode();
         nnode.reload();
-        return;
+
+        treeObj.m_isCommitAvailable = true;
+        f_handlePropagateParentNodes(nnode);
+        treeObj.m_parent.f_onTreeRenderer(treeObj);
     }
 
     var handler = function(narg)

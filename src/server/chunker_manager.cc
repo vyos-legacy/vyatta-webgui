@@ -201,7 +201,7 @@ void
 ChunkerManager::kill_process(unsigned long key)
 {
   char buf[80];
-  string cmd = "kill -9 ";
+  string cmd = "kill -9 -"; //now is expecting to kill group
 
   //need to get pid from pid directory...
   sprintf(buf,"%u",key);

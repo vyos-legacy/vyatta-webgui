@@ -312,7 +312,9 @@ ChunkerProcessor::pid_output (const char *path)
   pid_t pid;
   mode_t oldumask;
 
-  pid = getpid();
+  //  pid = getpid();
+  //switched to pid group!
+  pid = getpgrp();
 
   oldumask = umask(0777 & ~PIDFILE_MASK);
   fp = fopen (path, "w");

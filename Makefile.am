@@ -2,6 +2,7 @@ wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
 opdir = $(datadir)/oa-op/templates
 cfgdir = $(datadir)/vyatta-cfg/templates
+opdir = $(datadir)/vyatta-op/templates
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
@@ -64,4 +65,6 @@ install-exec-hook:
 	@cd src/server/templates; $(cpiop) $(DESTDIR)$(opdir)
 	@mkdir -p $(DESTDIR)$(cfgdir); \
 	cd templates-cfg; $(cpiop) $(DESTDIR)$(cfgdir)
+	@mkdir -p $(DESTDIR)$(opdir); \
+	cd templates-op; $(cpiop) $(DESTDIR)$(opdir)
 

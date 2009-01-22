@@ -199,8 +199,8 @@ function f_createFrameHeaderPanel()
     }
     else
     {
-       id.innerHTML = 'Username:&nbsp; <font color="orange">' + f_getUserLoginName() +
-           '</font>,&nbsp;&nbsp;&nbsp;' +
+       id.innerHTML = 'Username:&nbsp; ' + f_getUserLoginName() +
+           ',&nbsp;&nbsp;&nbsp;' +
             '<a class="anchor-test" valign="top" href="#" onclick="f_userLogout(true, \'' +
             g_baseSystem.m_homePage + '\')">' +
             '<img src="images/logout.gif"/> Log Out</a>';

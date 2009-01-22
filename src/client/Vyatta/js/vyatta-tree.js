@@ -394,6 +394,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     //
     f_handleSelectedNodeExpand: function()
     {
+        //alert('handleSelectedNodeExpand');
         ////////////////////////
         // this = m_tree.
         if(this.m_parent.m_selNodePath != undefined)
@@ -593,13 +594,14 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         });
 
         tree.on('click', nodeClickHandler);
-        tree.on('load', nodeLoadedHandler);
+        //tree.on('load', nodeLoadedHandler);
     },
 
     ////////////////////////////////////////////////////////////////////////////
     // node click handler for configuration tree
     f_HandleNodeConfigClick: function(node, e, dontClear)
     {
+        //alert('handleNodeClick');
         /////////////////////////////////////////////
         // we want to stop segment runs in background
         g_cliCmdObj.m_segmentId = undefined;
@@ -636,6 +638,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             // non-leaf
             node.expand(false, true, function(n)
             {
+                //alert('handle click node - expand');
                 if (n.attributes.multi == undefined || !n.attributes.multi)
                 {
                     // a second chance to add button for case all the child nodes
@@ -855,7 +858,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             isCheckbox = false;
             field1 = f_createCombobox(values, ival,
-                      'Select a valid value...', node.text, 250,
+                      'Select a valid value...', node.text, 244,
                       helpStr, isEditable, callback, node);
         }
 
@@ -905,7 +908,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             values = narr;
         }
 
-        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 250, callback);
+        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 243, callback);
         node.getValFieldFunc = function()
         {
             return grid;
@@ -932,7 +935,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             vala = node.attributes.values;
 
         var GridT = Ext.data.Record.create([{ name: 'value' }]);
-        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 250, callback);
+        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 243, callback);
         node.getValFieldFunc = function()
         {
             return grid;
@@ -965,7 +968,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             { name: 'value' }
         ]);
 
-        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 250, callback);
+        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 243, callback);
         node.getValFieldFunc = function()
         {
             return grid;
@@ -1166,7 +1169,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
                 field = f_createCombobox(values,
                             'Select a valuid value...', undefined,
-                            labelArray[i], 250,
+                            labelArray[i], 244,
                             helpStr, false,
                             inputFieldOnBlur, nNode);
 

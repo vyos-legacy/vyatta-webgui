@@ -615,7 +615,7 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
       out += "<configured>active</configured>";
       break;
     case WebGUI::ACTIVE_PLUS:
-      out += "<configured>active</configured>";
+      out += "<configured>active_plus</configured>";
       break;
     case WebGUI::SET:
       out += "<configured>set</configured>";
@@ -688,6 +688,7 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
     //    return map<string,WebGUI::NodeState>();
   }
 
+
   while ((dirp = readdir(dp)) != NULL) {
     if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
       map<string,WebGUI::NodeState>::iterator iter = coll.find(dirp->d_name);
@@ -696,7 +697,7 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
 	//is this an active or active_plus?
 	//need to check tmp dir
 	struct stat s;
-	string tmp = changes_only_config + string(dirp->d_name);
+	string tmp = changes_only_config + "/" + string(dirp->d_name);
 	lstat(tmp.c_str(), &s);
 	if ((lstat(tmp.c_str(),&s) == 0)) {
 	  iter->second = WebGUI::ACTIVE_PLUS; //DOES THIS SHOW UP IN THE CHANGES ONLY DIR?

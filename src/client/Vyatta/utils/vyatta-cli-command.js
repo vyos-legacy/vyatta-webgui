@@ -167,6 +167,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             selNode = tree.getRootNode();
         var selPath = selNode.getPath('text');
 
+
         /////////////////////////////////////
         if(cmds[0].indexOf('save') >= 0)
         {
@@ -197,6 +198,8 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 f_handleNodeExpansion(tObj, selNode, selPath, cmds);
             else if(node.parentNode != undefined || selNode.parentNode != undefined)
                 f_handleParentNodeExpansion(tObj, node, selNode, selPath, cmds, isCreate);
+
+            //tObj.f_HandleNodeConfigClick(selNode, undefined, true);
         }
     }
 
@@ -301,6 +304,10 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
          * created node).
          */
         f_handlePropagateParentNodes(node);
+        if(node != undefined && typeof node.reload == 'function')
+            node.reload();
+        else if(selNode != undefined && typeof selNode.reload == 'function')
+            selNode.reload();
 
         ////////////////////////////////////////////////////////
         // if spath == scmd, creation is from push button, else
@@ -325,7 +332,6 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         
         var nnode = sm.getSelectedNode();
         nnode.reload();
-
         treeObj.m_isCommitAvailable = true;
         f_handlePropagateParentNodes(nnode);
         treeObj.m_parent.f_onTreeRenderer(treeObj);

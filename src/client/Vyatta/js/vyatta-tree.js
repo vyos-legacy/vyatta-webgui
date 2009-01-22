@@ -101,7 +101,7 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
 
     requestData: function(node, callback)
     {
-        if(this.fireEvent("beforeload", this, node, callback) !== false)
+        if(this.fireEvent("beforeload", this, node, callback) != false)
         {
             var nMode = "<node mode='conf'>";
 
@@ -120,7 +120,6 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                        + "</id>\n" + nMode
                        + this.baseParams.nodepath + "</node>\n"
                        + "</configuration></vyatta>\n";
-
 
             this.transId = Ext.Ajax.request(
             {
@@ -394,7 +393,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     //
     f_handleSelectedNodeExpand: function()
     {
-        //alert('handleSelectedNodeExpand');
         ////////////////////////
         // this = m_tree.
         if(this.m_parent.m_selNodePath != undefined)
@@ -584,7 +582,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             if(node.getPath('text') != ' Configuration' &&
                                     node.getPath('text') != ' Operation')
             {
-                node.reload();
+                //node.reload();
             }
         });
 
@@ -594,14 +592,13 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         });
 
         tree.on('click', nodeClickHandler);
-        //tree.on('load', nodeLoadedHandler);
+        tree.on('load', nodeLoadedHandler);
     },
 
     ////////////////////////////////////////////////////////////////////////////
     // node click handler for configuration tree
     f_HandleNodeConfigClick: function(node, e, dontClear)
     {
-        //alert('handleNodeClick');
         /////////////////////////////////////////////
         // we want to stop segment runs in background
         g_cliCmdObj.m_segmentId = undefined;
@@ -638,7 +635,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             // non-leaf
             node.expand(false, true, function(n)
             {
-                //alert('handle click node - expand');
                 if (n.attributes.multi == undefined || !n.attributes.multi)
                 {
                     // a second chance to add button for case all the child nodes
@@ -852,7 +848,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(values.length == 2 && (values[0] == 'enable' || values[0] == 'disable'))
         {
             isCheckbox = true;
-            field1 = f_createCheckbox(ival, node, helpStr, 250, callback);
+            field1 = f_createCheckbox(ival, node, helpStr, 243, callback);
         }
         else
         {

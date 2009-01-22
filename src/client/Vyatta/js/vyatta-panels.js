@@ -322,7 +322,7 @@ function f_createFieldDirtyIndicatorPanel(node)
     {
         border: false
         ,bodyBorder: true
-        ,width: 20
+        ,width: 18
         ,height: 22
         ,html: V_DIRTY_FLAG
     });
@@ -515,7 +515,7 @@ function f_createCheckbox(value, node, helpStr, width, callback)
         layout: 'column'
         ,border: false
         ,style: 'padding:5px'
-        ,width: 800
+        ,width: 830
         ,items: [ f_createLabel(labelStr, V_LABEL_LABEL), fPanel,
                   f_createFieldDirtyIndicatorPanel(node),
                   f_createLabel(helpStr, V_LABEL_HELP) ]
@@ -1190,7 +1190,7 @@ function f_createTextAreaField(values, width, height)
         ,autoWidth: true
         ,height: height
         ,autoScroll: true
-        ,html: '<font face="monospace">' + val + '</font>'
+        ,html: '<font face="courier new">' + val + '</font>'  // monospace
     });
 }
 

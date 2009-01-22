@@ -327,7 +327,7 @@ function f_createFieldDirtyIndicatorPanel(node)
         ,html: V_DIRTY_FLAG
     });
 
-    var img = getNodeStyleImage(node);
+    var img = getNodeStyleImage(node, false);
     if(img.length > 0) p.show(); else p.hide();
 
     return p;
@@ -335,12 +335,8 @@ function f_createFieldDirtyIndicatorPanel(node)
 
 function f_createNumberField(value, node, help, width, callback)
 {
+    var oldVal = value != undefined ? value : node.attributes.defaultVal;
     var label = node.text;
-
-    var keyupPressHandler = callback == undefined?undefined:function(field, e)
-    {
-        f_enterKeyPressHandler(field, e, callback);
-    }
 
     var field = new Ext.form.NumberField(
     {
@@ -350,13 +346,24 @@ function f_createNumberField(value, node, help, width, callback)
         allowDecimals: false,
         maxValue: (Math.pow(2, 32) - 1),
         maskRe: /^\d+$/,
-        value: value,
-        onChange: keyupPressHandler//function(e, n, o){ },
+        value: oldVal,
+        //onChange: keyupPressHandler//function(e, n, o){ },
+        enableKeyEvents: true
         ,onBlur: callback
     });
+    field.getOriginalValue = function()
+    { return oldVal == undefined ? "" : oldVal; };
+    field.setOriginalValue = function(val)
+    { oldVal = val; }
 
     if(callback != undefined)
+    {
+        var keyupPressHandler = function(field, e)
+        {
+            f_enterKeyPressHandler(field, e, callback);
+        }
         field.on('keyDown', keyupPressHandler);
+    }
 
     var p = new Ext.Panel(
     {
@@ -376,15 +383,20 @@ function f_createNumberField(value, node, help, width, callback)
 
 function f_createTextField(value, labelStr, helpStr, width, callback, node)
 {
+    var oldVal = value != undefined ? value : node.attributes.defaultVal;
     var field = new Ext.form.TextField(
     {
         labelSeparator: ''
         ,width: width
         ,height:22
-        ,value: value
+        ,value: oldVal
         ,enableKeyEvents: true
         ,onBlur: callback
     });
+    field.getOriginalValue = function() 
+    { return oldVal == undefined ? "" : oldVal; };
+    field.setOriginalValue = function(val)
+    { oldVal = val; }
 
     if(callback != undefined)
     {
@@ -415,52 +427,56 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
 function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
                             isEditable, callback, node)
 {
+    var oldiVal = ival != undefined ? ival : node.attributes.defaultVal;
+    var field = new Ext.form.ComboBox(
+    {
+        id: this.m_tabName,
+        mode: 'local',
+        store: values,
+        displayField: 'value',
+        emptyText: emptyText,
+        labelSeparator: '',
+        editable: isEditable,
+        triggerAction: 'all',
+        selectOnFocus: true,
+        width: width,
+        value: oldiVal,
+        hideParent: true
+    });
+    field.getOriginalValue = function()
+    { return oldiVal == undefined ? "" : oldiVal; };
+    field.setOriginalValue = function(val)
+    { oldiVal = val; }
 
-      var field = new Ext.form.ComboBox(
-      {
-          id: this.m_tabName,
-          mode: 'local',
-          store: values,
-          displayField: 'value',
-          emptyText: emptyText,
-          labelSeparator: '',
-          editable: isEditable,
-          triggerAction: 'all',
-          selectOnFocus: true,
-          width: width,
-          value: ival,
-          hideParent: true
-      });
+    if(callback != undefined)
+        field.on('collapse', callback);
 
-      if(callback != undefined)
-          field.on('collapse', callback);
+    ////////////////////////////////////////
+    // for some reasons, a combo box must
+    // another contains in before it can
+    // be put in the 'column' layout panel.
+    // if directly put in a column panel,
+    // the drop down does not work properly
+    var fPanel = new Ext.Panel(
+    {
+        width: width+1
+        ,border: false
+        ,items: [field]
+    });
 
-      ////////////////////////////////////////
-      // for some reasons, a combo box must
-      // another contains in before it can
-      // be put in the 'column' layout panel.
-      // if directly put in a column panel,
-      // the drop down does not work properly
-      var fPanel = new Ext.Panel(
-      {
-          width: width+1
-          ,border: false
-          ,items: [field]
-      });
+    var p = new Ext.Panel(
+    {
+        layout: 'column'
+        ,border: false
+        ,style: 'padding:5px'
+        ,width: 800
+        ,items: [ f_createLabel(labelStr, V_LABEL_LABEL),
+                  fPanel, f_createFieldDirtyIndicatorPanel(node),
+                  f_createLabel(helpStr, V_LABEL_HELP) ]
+    });
+    p.m_node = node;
 
-      var p = new Ext.Panel(
-      {
-          layout: 'column'
-          ,border: false
-          ,style: 'padding:5px'
-          ,width: 800
-          ,items: [ f_createLabel(labelStr, V_LABEL_LABEL),
-                    fPanel, f_createFieldDirtyIndicatorPanel(node),
-                    f_createLabel(helpStr, V_LABEL_HELP) ]
-      });
-      p.m_node = node;
-
-      return p;
+    return p;
 }
 
 function f_getValueForCheckbox(value)
@@ -470,8 +486,9 @@ function f_getValueForCheckbox(value)
 }
 function f_createCheckbox(value, node, helpStr, width, callback)
 {
+    var oldVal = value != undefined ? value : node.attributes.defaultVal;
     var labelStr = node.text;
-    var chk = f_getValueForCheckbox(value);
+    var chk = f_getValueForCheckbox(oldVal);
 
     var field = new Ext.form.Checkbox(
     {
@@ -479,6 +496,10 @@ function f_createCheckbox(value, node, helpStr, width, callback)
         ,checked: chk
         ,onClick: callback
     });
+    field.getOriginalValue = function()
+    { return oldVal == undefined ? "" : oldVal; };
+    field.setOriginalValue = function(val)
+    { oldVal = val; }
 
     //////////////////////////////////////////////
     // need this panel to align the help labels
@@ -840,7 +861,9 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
                 var node = fields.m_node;
                 if(node != undefined && node.attributes.configured == 'set')
                 {
-                    f.items.item(V_IF_INDEX_DIRTY).show();
+                    var nodeVals = node.attributes.values;
+                    if(getNodeStyleImage(node, false).length > 1)
+                        f_updateDirtyIndicatorPanel(f.items.item(V_IF_INDEX_DIRTY), false);
 
                     ///////////////////////////////////////////
                     // update input field value
@@ -850,16 +873,13 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
                         var input = updateF.items.itemAt(0);
                         
                         if(input.getXType() == 'checkbox')
-                            input.setValue(f_getValueForCheckbox(
-                                  fields.m_node.attributes.values[0]));
+                            input.setValue(f_getValueForCheckbox(nodeVals[0]));
                     }
                     else if(updateF.getXType() == 'numberfield' ||
                         updateF.getXType() == 'textfield')
                     {
-                        updateF.setValue(node.attributes.values);
+                        updateF.setValue(nodeVals);
                     }
-
-                    f_updateDirtyIndicatorPanel(f.items.item(V_IF_INDEX_DIRTY), false);
                 }
 
                 return false;
@@ -1162,7 +1182,6 @@ function f_createLabel(value, labelFor)
 function f_createTextAreaField(values, width, height)
 {
     var val = f_replace(values, "\n", "<br>");
-    //val = f_replace(val, ' ', "&nbsp;");
 
     return new Ext.Panel(
     {

@@ -24,7 +24,7 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
 
     getNodeStyleImage: function(node)
     {
-        return getNodeStyleImage(node);
+        return getNodeStyleImage(node, true);
     },
 
     renderElements: function(n, a, targetNode, bulkRender)
@@ -268,6 +268,10 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             tHelp = tHelp.replace(/'/g, "\\'", 'g');
             str += ",help:'" + tHelp + "'";
         }
+
+        var tDefault = q.selectValue('default', node);
+        if(tDefault != undefined)
+            str += ",defaultVal:'" + tDefault + "'";
 
         if(tConfig == undefined)
             tConfig = q.selectValue('configured', node);
@@ -680,30 +684,25 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         var cNode = node;
         var callback = function()
         {
-            m_thisObj.m_setField = node.getValFieldFunc();
-            f_sendConfigCLICommand([ 'set ' + nodePath
+            //////////////////////////////////////////////////
+            // if value had changed, send changed to server
+            if(node.getOriginalValue() != node.getValFunc())
+            {
+                m_thisObj.m_setField = node.getValFieldFunc();
+                node.setOriginalValue(node.getValFunc());
+                f_sendConfigCLICommand([ 'set ' + nodePath
                              + " " + cNode.getValFunc() ], m_thisObj, cNode, true);
+            }
         }
 
         if(node.attributes.enums != undefined)
             m_thisObj.f_leafSingleEnumHandler(node, node.attributes.enums, 
                       node.attributes.help, callback);
+        else if(node.attributes.type == 'u32')
+            m_thisObj.f_leafSingleU32Handler(node, node.attributes.help, callback);
         else
-        {
-            var field = f_createTextField(undefined, 'Create ' + node.text + ' value',
-                          node.attributes.help, 250, callback, node);
-            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.text);
-            node.getValFieldFunc = function()
-            {
-                return field;
-            }
-            var dField = field.items.itemAt(V_IF_INDEX_INPUT);
-
-            node.getValFunc = function()
-            {
-                return dField.getValue();
-            }
-        }
+            m_thisObj.f_leafSingleTxtHandler(node, node.attributes.help, callback)
+        
 
         m_thisObj.m_parent.m_editorPanel.doLayout();
     },
@@ -717,20 +716,26 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         var onBlur = function()
         {
+            //////////////////////////////////////////////////
+            // if value had changed, send changed to server
             var val = cNode.getValFunc();
-            var cmdAction = (val == undefined ||
-                            val.length == 0) ?
-                                'delete ' : 'set ';
-            m_thisObj.m_setField = node.getValFieldFunc();
+            if(val != cNode.getOriginalValue())
+            {
+                cNode.setOriginalValue(val);
+                var cmdAction = (val == undefined ||
+                                val.length == 0) ?
+                                    'delete ' : 'set ';
+                m_thisObj.m_setField = node.getValFieldFunc();
 
-            if(cNode.attributes.type == undefined)
-                // typeless
-                f_sendConfigCLICommand([ cmdAction + nodePath],
-                              m_thisObj, cNode,
-                              cmdAction == 'delete'?false:true);
-            else if(cNode.getValFunc != undefined)
-                f_sendConfigCLICommand([ cmdAction + nodePath + " " + val ],
-                              m_thisObj, cNode, cmdAction == 'delete'?false:true);
+                if(cNode.attributes.type == undefined)
+                    // typeless
+                    f_sendConfigCLICommand([ cmdAction + nodePath],
+                                  m_thisObj, cNode,
+                                  cmdAction == 'delete'?false:true);
+                else if(cNode.getValFunc != undefined)
+                    f_sendConfigCLICommand([ cmdAction + nodePath + " " + val ],
+                                  m_thisObj, cNode, cmdAction == 'delete'?false:true);
+            }
         }
 
         if (node.attributes.enums != undefined)
@@ -814,6 +819,14 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             return vfield.getValue();
         }
+        node.getOriginalValue = function()
+        {
+            return vfield.getOriginalValue();
+        }
+        node.setOriginalValue = function(val)
+        {
+            vfield.setOriginalValue(val);
+        }
     },
 
     f_leafSingleEnumHandler: function(node, values, helpStr, callback)
@@ -852,13 +865,22 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
         f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field1, node.txt);
 
+        var field =  field1.items.itemAt(V_IF_INDEX_INPUT).items.itemAt(0);
         node.getValFunc = function()
         {
-            var val =  field1.items.itemAt(V_IF_INDEX_INPUT).items.itemAt(0).getValue();
+            var val =  field.getValue();
             if(isCheckbox)
                 return (val != undefined && val) ? 'disable' : 'enable';
             else
                 return (val != undefined) ? val : '';
+        }
+        node.getOriginalValue = function()
+        {
+            return field.getOriginalValue();
+        }
+        node.setOriginalValue = function(val)
+        {
+            field.setOriginalValue(val);
         }
     },
 
@@ -876,10 +898,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         var GridT = Ext.data.Record.create([{ name: 'value' }]);
         var narr = filterWildcard(values);
-        var doValidate = true;
+        //var doValidate = true;
         if(narr != undefined)
         {
-            doValidate = false;
+        //    doValidate = false;
             values = narr;
         }
 
@@ -974,6 +996,14 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         node.getValFunc = function()
         {
             return vfield.getValue();
+        }
+        node.getOriginalValue = function()
+        {
+            return vfield.getOriginalValue();
+        }
+        node.setOriginalValue = function(val)
+        {
+            vfield.setOriginalValue(val);
         }
     },
 
@@ -1308,13 +1338,32 @@ function f_isExpandableNode(node)
     return false;
 }
 
-function getNodeStyleImage(node)
+function getNodeStyleImage(node, forTreeView)
 {
     if(node == undefined) return '';
 
     switch(node.attributes.configured)
     {
         case 'set':
+            ////////////////////////////
+            // the checking is for tree view, simply return dirty
+            if(forTreeView)
+                return V_DIRTY_FLAG;
+
+            ///////////////////////////////////////////
+            // if the set val != default val, is dirty
+            var vals = node.attributes.values;
+            var defVal = node.attributes.defaultVal;
+            if(defVal != undefined &&
+                (vals != undefined && vals[0] != undefined) &&
+                defVal != vals[0])
+                return V_DIRTY_FLAG;
+            else if(defVal == undefined)
+                ///////////////////////////
+                // no def val set, is dirty
+                return V_DIRTY_FLAG;
+
+            return '';
         case 'delete':
         case 'active_plus':
             return V_DIRTY_FLAG;

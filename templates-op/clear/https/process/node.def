@@ -1,0 +1,4 @@
+help: Reset https server
+run:    sudo /usr/sbin/invoke-rc.d lighttpd restart
+        sudo /etc/init.d/vyatta-webgui-chunker restart
+

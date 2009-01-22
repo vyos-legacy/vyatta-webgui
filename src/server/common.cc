@@ -160,11 +160,17 @@ WebGUI::discard_session(string &id)
   */
 
   cmd = "sudo umount " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
-  cmd += ";sudo rm -fr " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + " " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
-  cmd += ";mkdir -p " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id;
-  cmd += ";mkdir -p " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+  //  cmd += ";sudo rm -fr " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "/ " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id + "/";
+  cmd += ";sudo rm -fr " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "/{.*,*} >&/dev/null ; /bin/true";
+  cmd += ";mkdir -p " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "/";
+  cmd += ";mkdir -p " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id + "/";
   cmd += ";sudo mount -t "+WebGUI::unionfs()+" -o dirs=" + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "=rw:" + WebGUI::VYATTA_ACTIVE_CONFIGURATION_DIR + "=ro "+WebGUI::unionfs()+" " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+
   execute(cmd,stdout);
+  /*
+  cmd = "echo '" + cmd + "' > /tmp/foo";
+  execute(cmd,stdout);
+  */
 }
 
 /**

@@ -8,6 +8,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <syslog.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <iostream>
 #include <string>
 #include <map>
@@ -46,6 +49,8 @@ ChunkerManager::init()
     //    error("creating socket");
     return;
   }
+
+
   bzero((char *) &serv_addr, sizeof(serv_addr));
   serv_addr.sun_family = AF_UNIX;
   strcpy(serv_addr.sun_path, WebGUI::CHUNKER_SOCKET.c_str());
@@ -55,9 +60,15 @@ ChunkerManager::init()
     return;
   }
 
-  chmod(WebGUI::CHUNKER_SOCKET.c_str(),S_IROTH|S_IWOTH|S_IXOTH|S_IRGRP|S_IWGRP|S_IXGRP|S_IRUSR|S_IWUSR|S_IXUSR);
-  
 
+  //set non-blocking
+  int flags;
+  if (-1 == (flags = fcntl(_listen_sock, F_GETFL, 0)))
+    flags = 0;
+ fcntl(_listen_sock, F_SETFL, flags | O_NONBLOCK);
+
+
+  chmod(WebGUI::CHUNKER_SOCKET.c_str(),S_IROTH|S_IWOTH|S_IXOTH|S_IRGRP|S_IWGRP|S_IXGRP|S_IRUSR|S_IWUSR|S_IXUSR);
 }
 
 /**
@@ -72,18 +83,18 @@ ChunkerManager::read()
   listen(_listen_sock,5);
   int clilen = sizeof(cli_addr);
   int clientsock = accept(_listen_sock,(struct sockaddr *)&cli_addr,(socklen_t*)&clilen);
-  if (clientsock < 0) {
-    cerr << "ChunkerManager::read(): error in accepting socket from listener" << endl;
-    return;
+  if (clientsock > -1) {
+    int n = ::read(clientsock,buf,1024);
+    buf[n] = '\0';
+    process(buf);
+    //done processing now close the socket
+    close(clientsock);
   }
-  int n = ::read(clientsock,buf,1024);
-  buf[n] = '\0';
+  else {
+    process(NULL);
+  }
   //  printf("Read %d bytes from socket: %s\n",n,buf);
 
-  process(buf);
-
-  //done processing now close the socket
-  close(clientsock);
   return;
 }
 
@@ -100,72 +111,76 @@ ChunkerManager::process(char *buf)
   struct timeval t;
   gettimeofday(&t,NULL);
   unsigned long cur_time = t.tv_sec;
-
-  string command = string(buf);
-
-  //grab the token
-  size_t start_pos = command.find("<token>");
-  size_t stop_pos = command.find("</token>");
-  if (start_pos == string::npos || stop_pos == string::npos) {
-    cerr << "ChunkerManager::process(): received empty token message" << endl;
-    return;
-  }
-  string token = command.substr(start_pos+7,stop_pos-start_pos-7);
-  if (token.empty()) {
-    cerr << "ChunkerManager::process(): received empty token message" << endl;
-    return;
-  }
-
-  //now grab the command
-  string statement;
-  start_pos = command.find("<statement>");
-  stop_pos = command.find("</statement>");
-  if (start_pos == string::npos || stop_pos == string::npos) {
-    //do nothing here
-  }
-  else {
-    statement = command.substr(start_pos+11,stop_pos-start_pos-11);
-  }
-  if (_debug) {
-    cout << "ChunkerManager::process(): command received, token: " << token << ", statement: " << statement << endl;
-  }
-
-
-  //finally convert the token to a key
-  int key = strtoul(token.c_str(),NULL,10);
-
-  //ALSO NEED TO MATCH THE COMMAND TO SEE IF THIS IS A NEW OR ONGOING COMMAND
-  ProcIter iter = _proc_coll.find(key);
-  if (iter != _proc_coll.end() && statement.empty()) {
-    iter->second._time = cur_time; //update time
-  }
-  else {
-    ProcessData pd;
-    pd._time = cur_time;
-    pd._token = token;
-    pd._command = statement;
-
-    if (iter != _proc_coll.end()) {
-      //then kill previous process
-      kill_process(key);
-
-      //let's clean out this directory now
-      string clean_cmd = string("rm -f ") + WebGUI::CHUNKER_RESP_TOK_DIR + "/multi_" + pd._token + "* >/dev/null";
-      system(clean_cmd.c_str());
+    
+  if (buf != NULL) {
+    string command = string(buf);
+    
+    //grab the token
+    size_t start_pos = command.find("<token>");
+    size_t stop_pos = command.find("</token>");
+    if (start_pos == string::npos || stop_pos == string::npos) {
+      cerr << "ChunkerManager::process(): received empty token message" << endl;
+      return;
     }
-
-    //now start up the procesor
-    pd._proc.init(_chunk_size,_pid,_debug);
-
-    pd._proc.start_new(token,statement);
-
-    _proc_coll.insert(pair<unsigned long, ProcessData>(key,pd));
+    string token = command.substr(start_pos+7,stop_pos-start_pos-7);
+    if (token.empty()) {
+      cerr << "ChunkerManager::process(): received empty token message" << endl;
+      return;
+    }
+    
+    //now grab the command
+    string statement;
+    start_pos = command.find("<statement>");
+    stop_pos = command.find("</statement>");
+    if (start_pos == string::npos || stop_pos == string::npos) {
+      //do nothing here
+    }
+    else {
+      statement = command.substr(start_pos+11,stop_pos-start_pos-11);
+    }
+    if (_debug) {
+      cout << "ChunkerManager::process(): command received, token: " << token << ", statement: " << statement << endl;
+    }
+    
+    
+    //finally convert the token to a key
+    int key = strtoul(token.c_str(),NULL,10);
+    
+    //ALSO NEED TO MATCH THE COMMAND TO SEE IF THIS IS A NEW OR ONGOING COMMAND
+    ProcIter iter = _proc_coll.find(key);
+    if (iter != _proc_coll.end() && statement.empty()) {
+      iter->second._time = cur_time; //update time
+    }
+    else {
+      ProcessData pd;
+      pd._time = cur_time;
+      pd._token = token;
+      pd._command = statement;
+      
+      if (iter != _proc_coll.end()) {
+	//then kill previous process
+	kill_process(key);
+	
+	//let's clean out this directory now
+	string clean_cmd = string("rm -f ") + WebGUI::CHUNKER_RESP_TOK_DIR + "/multi_" + pd._token + "* >/dev/null";
+	system(clean_cmd.c_str());
+      }
+      
+      //now start up the procesor
+      pd._proc.init(_chunk_size,_pid,_debug);
+      
+      pd._proc.start_new(token,statement);
+      
+      _proc_coll.insert(pair<unsigned long, ProcessData>(key,pd));
+    }
   }
   
+
   //now go through and cull any orphaned processes
-  iter = _proc_coll.begin();
+  ProcIter iter = _proc_coll.begin();
   while (iter != _proc_coll.end()) {
-    if (iter->second._time + _kill_timeout < cur_time) {
+
+    if ((iter->second._time + _kill_timeout) < cur_time) {
       //command might be ended, but just go ahead and clean up anyway
 
       //clean up entries
@@ -173,7 +188,7 @@ ChunkerManager::process(char *buf)
       system(clean_cmd.c_str());
 
       kill_process(iter->first);
-      _proc_coll.erase(++iter);
+      _proc_coll.erase(iter++);
     }
     else {
       ++iter;
@@ -201,7 +216,7 @@ void
 ChunkerManager::kill_process(unsigned long key)
 {
   char buf[80];
-  string cmd = "kill -9 ";
+  string cmd = "kill -9 -"; //now is expecting to kill group
 
   //need to get pid from pid directory...
   sprintf(buf,"%u",key);

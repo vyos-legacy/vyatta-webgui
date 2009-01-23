@@ -142,7 +142,7 @@ WebGUI::remove_session(unsigned long id)
   char buf[40];
   sprintf(buf, "%lu", id);
   string val(buf);
-  remove_session(val);
+  discard_session(val);
 }
 
 /**
@@ -172,23 +172,6 @@ WebGUI::discard_session(string &id)
   execute(cmd,stdout);
   */
 }
-
-/**
- *
- **/
-void
-WebGUI::remove_session(string &id)
-{
-  string cmd,stdout;
-  cmd = "sudo umount " + WebGUI::LOCAL_CONFIG_DIR + id;
-  execute(cmd, stdout);
-  cmd = "rm -fr " + WebGUI::LOCAL_CHANGES_ONLY + id + " 2>/dev/null";
-  cmd += ";rm -fr " + WebGUI::CONFIG_TMP_DIR + id + " 2>/dev/null";
-  cmd += ";rm -fr " + WebGUI::LOCAL_CONFIG_DIR + id + " 2>/dev/null";
-  cmd += ";rm -f " + WebGUI::VYATTA_MODIFY_FILE + id + " 2>/dev/null";
-  execute(cmd, stdout);
-}
-
 
 /**
  * adapted from cli_new.c in vyatta-cfg

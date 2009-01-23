@@ -365,6 +365,9 @@ function f_createNumberField(value, node, help, width, callback)
         field.on('keyDown', keyupPressHandler);
     }
 
+    help = node.attributes.type != undefined ? help+
+                  " ("+node.attributes.type+")" : help;
+
     var p = new Ext.Panel(
     {
         layout: 'column'
@@ -406,6 +409,9 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
         }
         field.on('keyup', keyupPressHandler);
     }
+
+    helpStr = node.attributes.type != undefined ? helpStr+
+                  " ("+node.attributes.type+")" : helpStr;
 
     var p = new Ext.Panel(
     {
@@ -1023,6 +1029,9 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
     });
     grid.on('afteredit', callback );
 
+    helpLabel = node.attributes.type != undefined ? helpLabel+
+                  " ("+node.attributes.type+")" : helpLabel;
+
     var p = new Ext.Panel(
     {
         layout: 'column'
@@ -1161,7 +1170,7 @@ function f_createLabel(value, labelFor)
         value = f_replace(value, '>', '&#62;');
         lAlign = 'vlabel_left';
         width = 250;
-        value = "<small>" + value + '.' + "</small>";
+        value = value + '.';
     }
     else if(labelFor == V_LABEL_LABEL)
     {
@@ -1182,6 +1191,9 @@ function f_createLabel(value, labelFor)
 function f_createTextAreaField(values, width, height)
 {
     var val = f_replace(values, "\n", "<br>");
+
+    if(val.length < 3000)
+        val = f_replace(values, " ", "&nbsp;");
 
     return new Ext.Panel(
     {

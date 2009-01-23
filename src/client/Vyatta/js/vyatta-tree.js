@@ -48,7 +48,8 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
           '<li class="x-tree-node"><div ext:tree-node-id="', n.id,
           '" class="x-tree-node-el x-tree-node-leaf x-unselectable ', a.cls,
           '" unselectable="on">',
-          '<span class="x-tree-node-indent">', this.indentMarkup, "</span>",
+          '<span class="x-tree-node-indent">', this.indentMarkup, 
+          "</span>",
           '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow" />',
           '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon',
           (a.icon ? " x-tree-node-inline-icon" : ""),
@@ -1224,7 +1225,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                             values = f.m_val + "\n" + values;
 
                         if(f.m_val != undefined && f.m_val.length > 9999999)
-                            f.m_val = '';
+                            f.m_val = undefined;
                     }
 
                     var mlbl = f_createTextAreaField(values, 0,

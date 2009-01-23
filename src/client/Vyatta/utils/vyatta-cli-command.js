@@ -198,7 +198,6 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 f_handleNodeExpansion(tObj, selNode, selPath, cmds);
             else if(node.parentNode != undefined || selNode.parentNode != undefined)
                 f_handleParentNodeExpansion(tObj, node, selNode, selPath, cmds, isCreate);
-
             //tObj.f_HandleNodeConfigClick(selNode, undefined, true);
         }
     }

@@ -292,8 +292,8 @@ body
     text-align: left;
     padding-left: 15px;
     padding-top: 3px;
-    font-weight: bold;
-    color: blue;
+    font-weight: normal;
+    color: #666;
 }
 
 .v-panel-with-background-color .x-panel-body

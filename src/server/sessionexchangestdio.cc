@@ -65,6 +65,9 @@ SessionExchangeStdIO::read(Session &session)
     return false;
   }
 
+
+  //  string hack = "echo \"" + req + "\" >> /tmp/foo";system(hack.c_str());
+
   session.set_message(req);
   return true;
 }
@@ -76,6 +79,7 @@ SessionExchangeStdIO::write(Session &session)
   //write to std out here
   if (msg.empty() == false) {
     fputs(msg.c_str(), stdout);
+    //    string hack = "echo \"" + msg + "\" >> /tmp/foo";system(hack.c_str());
     return true;
   }
   return false;

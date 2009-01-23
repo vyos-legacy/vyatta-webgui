@@ -92,19 +92,19 @@ Session::process_message()
     }
 
     Message msg = _processor->get_msg();
+
+    /* 
+       Clean up any dangling sessions here. Makes sense to check 
+       here and nowhere else, as this is the only command that
+       creates new sessions.
+    */
+    clean_up_old_sessions();
+
     switch (msg._type) {
     case WebGUI::NEWSESSION:
       if (_debug) {
 	cout << "Session::process_message(): NEWSESSION" << endl;
       }
-
-      /* 
-	 Clean up any dangling sessions here. Makes sense to check 
-	 here and nowhere else, as this is the only command that
-	 creates new sessions.
-      */
-      clean_up_old_sessions();
-
       //also handles the case where the session is already active
       if (_authenticate.create_new_session() == true) {
 	start_session();
@@ -301,17 +301,12 @@ Session::clean_up_old_sessions()
   if ((dp = opendir(WebGUI::VYATTA_MODIFY_DIR.c_str())) == NULL) {
     return;
   }
-
   while ((dirp = readdir(dp)) != NULL) {
     if (strncmp(dirp->d_name, ".vyattamodify_", 14) == 0) {
       struct stat tmp;
-      if (stat((WebGUI::VYATTA_MODIFY_DIR + string(dirp->d_name)).c_str(), &tmp) == 0) {
-	time_t t = time(NULL);
+      if (lstat((WebGUI::VYATTA_MODIFY_DIR + string(dirp->d_name)).c_str(), &tmp) == 0) {
 	string id_str = string(dirp->d_name).substr(14,24);
-	char buf[80];
-	sprintf(buf,"%lu",tmp.st_mtime);
-	sprintf(buf,"%lu",WebGUI::SESSION_TIMEOUT_WINDOW);
-	sprintf(buf, "%lu",t);
+	time_t t = time(NULL);
 	if ((tmp.st_mtime + WebGUI::SESSION_TIMEOUT_WINDOW) < (unsigned)t) {
 	  WebGUI::remove_session(id_str);
 	  //have to clean up session at this point!!!!!!!!

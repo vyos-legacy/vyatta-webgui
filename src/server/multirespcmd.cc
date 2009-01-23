@@ -63,6 +63,7 @@ bool
 MultiResponseCommand::process()
 {
   //first check if this matches the next token in an ongoing multi-part cmd
+  /*
   CmdIter iter = _cmd_coll.begin();
   bool found = false;
   while (iter != _cmd_coll.end()) {
@@ -72,7 +73,6 @@ MultiResponseCommand::process()
     }
     ++iter;
   }
-
   if (found == false) {
     //OK, is this a request for an ongoing transaction?
     if (strncmp(WebGUI::CHUNKER_RESP_TOK_BASE.c_str(),_cmd.c_str(),WebGUI::CHUNKER_RESP_TOK_BASE.length()) == 0) {
@@ -82,6 +82,12 @@ MultiResponseCommand::process()
       return false; //the only way this command can pass on this request
     }
   }
+  */
+  //we'll take everything now...
+  if (strncmp(WebGUI::CHUNKER_RESP_TOK_BASE.c_str(),_cmd.c_str(),WebGUI::CHUNKER_RESP_TOK_BASE.length()) == 0) {
+    _next_token = _cmd;
+  }
+
 
   if (_next_token.empty() == true) { //want to start a new command
     string id = start_new_proc();

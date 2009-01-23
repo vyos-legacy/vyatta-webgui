@@ -42,6 +42,7 @@ V_STATUS_DOWN = 'down';
 V_STATUS_UNKNOWN = 'unknown';
 
 V_DIRTY_FLAG = '<img src="images/statusUnknown.gif" />';
+V_HIDE_DIRTY_FLAG = '<img src="images/empty.gif" />';
 V_ERROR_FLAG = '<img src="images/statusDown.gif" />'
 
 //////////////////////////////////////////

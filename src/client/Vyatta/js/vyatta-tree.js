@@ -38,7 +38,9 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
             return;
         }
 
+        /// tip for indent
         this.indentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
+
         var cb = typeof a.checked == 'boolean';
         var href = a.href ? a.href : Ext.isGecko ? "" : "#";
         var styleStr = this.getNodeStyle(n);

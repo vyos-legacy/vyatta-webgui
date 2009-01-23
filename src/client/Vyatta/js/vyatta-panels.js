@@ -318,17 +318,39 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 ////////////////////////////////////////////////////////////////////////////////
 function f_createFieldDirtyIndicatorPanel(node)
 {
+    var img = getNodeStyleImage(node, false);
+    var html = img.length > 0 ? V_DIRTY_FLAG : V_HIDE_DIRTY_FLAG;
+
     var p = new Ext.Panel(
     {
         border: false
         ,bodyBorder: true
         ,width: 18
         ,height: 22
-        ,html: V_DIRTY_FLAG
+        ,html: html
     });
 
-    var img = getNodeStyleImage(node, false);
-    if(img.length > 0) p.show(); else p.hide();
+    p.f_show = function(isError)
+    {
+        var html = p.el.dom.innerHTML;
+
+        if(!isError)
+            html = f_replace(html, 'empty', 'statusUnknown');
+        else
+            html =  f_replace(html, 'empty', 'statusDown');
+
+        p.el.dom.innerHTML = html;
+    }
+
+    p.f_hide = function()
+    {
+        var html = p.el.dom.innerHTML;
+
+        html = f_replace(html, 'statusUnknown', 'empty');
+        html =  f_replace(html, 'statusDown', 'empty');
+
+        p.el.dom.innerHTML = html;
+    }
 
     return p;
 }
@@ -1224,12 +1246,21 @@ function f_updateDirtyIndicatorPanel(field, isError)
 {
     var html = field.el.dom.innerHTML;
     if(isError)
-        html = f_replace(html, 'statusUnknown', 'statusDown');
+    {
+        if(html.indexOf('empty') > 0)
+            html = f_replace(html, 'empty', 'statusDown');
+        else
+            html = f_replace(html, 'statusUnknown', 'statusDown');
+    }
     else
-        html =  f_replace(html, 'statusDown', 'statusUnknown');
+    {
+        if(html.indexOf('empty') > 0)
+            html =  f_replace(html, 'empty', 'statusUnknown');
+        else
+            html =  f_replace(html, 'statusDown', 'statusUnknown');
+    }
 
     field.el.dom.innerHTML = html;
-    field.show();
 }
 
 function f_enterKeyPressHandler(field, e, callback)

@@ -1,3 +1,116 @@
+vyatta-webgui (0.2.9) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * removed 'install-system' operation command from GUI
+
+  [ slioch ]
+  * updated gooey protocol. now op|conf needs to be provided as an
+    attribute on both command and configuration requests. the
+    configuration request
+  * fix to allow stderr to be returned as part of op mode cmds. Final
+    fix for 'set date 1234' bug.
+
+  [ Kevin Choi ]
+  * * Fixed user error message typo
+
+  [ slioch ]
+  * added concept of access levels: none|operator|config. operation is
+    limited to op mode commands and the op side of the config tree.
+  * remove recursive data for conf mode.
+
+  [ An-Cheng Huang ]
+  * add "service https"
+
+  [ Kevin Choi ]
+  * * integrate with server's new communication protocol spec changed by
+    adding access control.
+
+  [ slioch ]
+  * added support terminating multichunker response. on command that
+    terminates naturally, the ending chunk will be of the form
+    multi_sessionid_end.
+  * added support for starting background process as part of the
+    set|delete operation on the https node.
+
+  [ Kevin Choi ]
+  * * added tooptip text for all button under toolbar
+
+  [ slioch ]
+  * remove debug statement from chunker
+
+  [ Kevin Choi ]
+  * * Fixed help string for ping op command
+
+  [ slioch ]
+  * adjusted down interval between updates from chunker. response should
+    occur now with apprx 2 seconds.
+
+  [ Kevin Choi ]
+  * * added the multi-node enumerated values handler for leaf node with
+    a drop-down list.
+  * * fixed typo
+
+  [ slioch ]
+  * my bad--left off filename argument for save/load. fixed now.
+
+  [ Kevin Choi ]
+  * * adjust the long/continues command pulling time down to 1.5 seconds
+
+  [ slioch ]
+  * added escape for ampersand in xml. should fix display of show tech
+    support
+
+  [ Kevin Choi ]
+  * * handle user access previledge. This disable the configuration tab
+    if log in user is
+  * * added error message prompt when user click on un-accessable tab.
+  * * added a stop button to stop ping on demand
+  * * fixed for IE browser: 1) adjust combo box trigger to the right. 2)
+    Force to show toolbar
+  * * Removed blank replacement for response data. This fixed will
+    resolved a big chunk of data
+
+  [ slioch ]
+  * changes added to support operational shell cmds. also added show
+    tech-support to conf file, more to be added later.
+  * changed output strings from chunker to pager.
+  * added accesslevel check prior to accepting reboot command
+  * added show ip bgp command to chunker.
+
+  [ Kevin Choi ]
+  * * Fixed No discard/commit commands when only deleting nodes. This
+    fixed enabled
+
+  [ slioch ]
+  * fix for discard behavior.
+  * fix for process mgmt. needed as we moved to support op mode commands
+    via shell script and shell
+  * fixed deadman switch on chunker. make listen socket non-blocking and
+    properly iterate over stl map when killing process and
+
+  [ Kevin Choi ]
+  * * Handle configure node default values.
+
+  [ slioch ]
+  * added clear https process command to cli op cmds
+
+  [ Kevin Choi ]
+  * * adjust field components aligment
+  * * changed login user name color
+
+  [ slioch ]
+  * fix cr on restart process
+  * fix for active_plus mode.
+
+  [ Kevin Choi ]
+  * * changed ops cmd output font to courier new
+
+  [ slioch ]
+  * fix session handling for timeout of session. also converted ALL op
+    mode level commands for chunker to master.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Thu, 22 Jan 2009 16:50:11 -0800
+
 vyatta-webgui (0.2.8) unstable; urgency=low
 
   [ Kevin Choi ]

@@ -38,19 +38,18 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
             return;
         }
 
-        /// tip for indent
-        this.indentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
-
+        this.isIndentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
         var cb = typeof a.checked == 'boolean';
         var href = a.href ? a.href : Ext.isGecko ? "" : "#";
         var styleStr = this.getNodeStyle(n);
         var styleImg = this.getNodeStyleImage(n);
+        styleImg = styleImg == '' ? V_EMPTY_FLAG : styleImg;
         var buf =
         [
           '<li class="x-tree-node"><div ext:tree-node-id="', n.id,
           '" class="x-tree-node-el x-tree-node-leaf x-unselectable ', a.cls,
           '" unselectable="on">',
-          '<span class="x-tree-node-indent">', this.indentMarkup, 
+          '<span class="x-tree-node-indent">', styleImg, this.isIndentMarkup,
           "</span>",
           '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow" />',
           '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon',
@@ -62,7 +61,7 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
           '" tabIndex="1" ',
           a.hrefTarget ? ' target="'+a.hrefTarget+'"' : "",
           '><span unselectable="on"' + styleStr + '>',
-          styleImg, n.text,
+          n.text,
           "</span></a></div>",
           '<ul class="x-tree-node-ct" style="display:none;"></ul>', "</li>"
         ].join('');
@@ -1223,6 +1222,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     if(g_cliCmdObj.m_segmentId != undefined &&
                             f.el.dom.textContent != undefined)
                     {
+                        ///////////////////////////////////////////////
+                        // reset m_val if it is not the same ops command
+                        if(g_cliCmdObj.m_segmentId.indexOf('_0') > 0 ||
+                            g_cliCmdObj.m_segmentId.indexOf('_1') > 0)
+                            f.m_val = undefined;
+
                         if(f.m_val != undefined)
                             values = f.m_val + "\n" + values;
 

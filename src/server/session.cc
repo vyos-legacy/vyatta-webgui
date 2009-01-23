@@ -297,6 +297,8 @@ Session::clean_up_old_sessions()
 	string id_str = string(dirp->d_name).substr(14,24);
 	time_t t = time(NULL);
 	if ((tmp.st_mtime + WebGUI::SESSION_TIMEOUT_WINDOW) < (unsigned)t) {
+
+	  //as requested by justin don't discard changes on timeout expiration!
 	  WebGUI::discard_session(id_str);
 	  //have to clean up session at this point!!!!!!!!
 

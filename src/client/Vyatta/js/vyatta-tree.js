@@ -1230,8 +1230,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     if(g_cliCmdObj.m_segmentId != undefined &&
                         g_cliCmdObj.m_segmentId.indexOf('_0') >= 0 &&
                         values.length == 0)
-                        values = 'Server acknowledges command. ' +
-                                'Please wait for server to response.\n'
+                        values = '';
                     /////////////////////////////////////////////
                     // append new data to the end of textfield
                     else if(g_cliCmdObj.m_segmentId != undefined &&
@@ -1261,8 +1260,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
         else if(g_cliCmdObj.m_segmentId != undefined && values == '')
         {
-            values = 'Server acknowledges command. ' +
-                      'Please wait for server to response.\n'
             m_thisObj.f_addOpTextAreaField(ePanel, values);
         }
 

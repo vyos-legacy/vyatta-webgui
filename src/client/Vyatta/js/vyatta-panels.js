@@ -677,7 +677,7 @@ function f_createToolbar(panelObj)
 
 function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
 {
-    var supportCmd = undefined;
+    var supportCmd = [];
     var sendCmd = cmdName;
 
     return new Ext.Button(
@@ -690,15 +690,18 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
         {
             if(cmdName == 'save' || cmdName == 'load')
             {
+                supportCmd[0] = "show files '";
+                supportCmd[1] = cmdName;
+                supportCmd[2] = undefined;
                 if(cmdName == 'save')
                 {
-                    supportCmd = cmdName;
-                    sendCmd = "show files '" + V_CONFIG_DIR + "'";
+                    supportCmd[1] = cmdName;
+                    sendCmd = supportCmd[0] + V_CONFIG_DIR + "'";
                 }
                 else if(cmdName == 'load')
                 {
-                    supportCmd = cmdName;
-                    sendCmd = "show files '" + V_CONFIG_DIR + "'";
+                    supportCmd[1] = cmdName;
+                    sendCmd = supportCmd[0] + V_CONFIG_DIR + "'";
                 }
                 else if(cmdName == 'view')
                     sendCmd = 'show configuration';
@@ -1129,7 +1132,7 @@ function f_createButton(treeObj, node, btnText, title)
             if(this.text == 'Stop')
             {
                 this.setText('Run');
-                g_cliCmdObj.m_segmentId = undefined;
+                g_cliCmdObj.m_segmentId = 'segment_end';
                 return;
             }
             else if(cmd.length == 0)
@@ -1152,17 +1155,18 @@ function f_createButton(treeObj, node, btnText, title)
                         return;
                     }
                 }
+                    /*
                 else if(node.parentNode.text == 'ping')
                 {
                     f_sendOperationCliCommand(node, treeObj, false,
                                                   undefined, true, undefined,
                                                   treeObj, this);
                     return;
-                }
+                }*/
 
                 f_sendOperationCliCommand(node, treeObj, false,
                                                   undefined, true, undefined,
-                                                  treeObj, undefined);
+                                                  treeObj, this);
             }
             else
                 f_sendConfigCLICommand(

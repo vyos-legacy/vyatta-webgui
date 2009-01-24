@@ -38,7 +38,7 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
             return;
         }
 
-        this.isIndentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
+        this.indentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
         var cb = typeof a.checked == 'boolean';
         var href = a.href ? a.href : Ext.isGecko ? "" : "#";
         var styleStr = this.getNodeStyle(n);
@@ -49,7 +49,7 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
           '<li class="x-tree-node"><div ext:tree-node-id="', n.id,
           '" class="x-tree-node-el x-tree-node-leaf x-unselectable ', a.cls,
           '" unselectable="on">',
-          '<span class="x-tree-node-indent">', styleImg, this.isIndentMarkup,
+          '<span class="x-tree-node-indent">', styleImg, this.indentMarkup,
           "</span>",
           '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow" />',
           '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon',
@@ -191,8 +191,13 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             if(this.g_loadMode == V_TREE_ID_oper)
             {
                 var an = n.getAttribute('name');
+                var tc = n.textContent;
                 if(an == "configure" || an == 'telnet' || an == 'terminal' ||
                     an == "install-system")
+                    continue;
+                else if(tc != undefined &&
+                        (tc.indexOf('Update webproxy') >= 0 ||
+                        tc.indexOf('Visually identify the specified ethernet') >= 0))
                     continue;
 
                 str = this.f_constructNodeDomStr(n, str);
@@ -1212,22 +1217,26 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 if(ePanel.m_opTextArea == f)
                 {
                     ///////////////////////////////////////////////
-                    // do not update if values is empty
-                    if(g_cliCmdObj.m_segmentId != undefined &&
-                        values.length == 0)
-                        break;
+                    // reset m_val if it is not the same ops command
+                    if(g_cliCmdObj.m_newSegmentId)
+                    {
+                        g_cliCmdObj.m_newSegmentId = false;
+                        f.m_val = undefined;
+                    }
 
+                    ///////////////////////////////////////////////
+                    // if segment id == '_0', server ack command.
+                    // update to user.
+                    if(g_cliCmdObj.m_segmentId != undefined &&
+                        g_cliCmdObj.m_segmentId.indexOf('_0') >= 0 &&
+                        values.length == 0)
+                        values = 'Server acknowledges command. ' +
+                                'Please wait for server to response.\n'
                     /////////////////////////////////////////////
                     // append new data to the end of textfield
-                    if(g_cliCmdObj.m_segmentId != undefined &&
+                    else if(g_cliCmdObj.m_segmentId != undefined &&
                             f.el.dom.textContent != undefined)
                     {
-                        ///////////////////////////////////////////////
-                        // reset m_val if it is not the same ops command
-                        if(g_cliCmdObj.m_segmentId.indexOf('_0') > 0 ||
-                            g_cliCmdObj.m_segmentId.indexOf('_1') > 0)
-                            f.m_val = undefined;
-
                         if(f.m_val != undefined)
                             values = f.m_val + "\n" + values;
 
@@ -1237,7 +1246,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
                     var mlbl = f_createTextAreaField(values, 0,
                                 ePanel.getInnerHeight()-20*i);
-                    mlbl.m_val = values;
+                    mlbl.m_val = values.indexOf('Server acknowledges') >= 0 ?
+                                  '':values;
                     eForm.remove(f);
                     eForm.insert(i, mlbl);
                     ePanel.m_opTextArea = mlbl;

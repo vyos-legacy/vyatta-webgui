@@ -66,50 +66,79 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         g_cliCmdObj.m_cb = callbackObj;
         g_cliCmdObj.m_segmentId = undefined;
     }
+    else if(segmentId != undefined)
+    {
+        sendStr = segmentId
+        g_cliCmdObj.m_cb = callbackObj;
+        g_cliCmdObj.m_segmentId = undefined;
+    }
     else
+    {
         sendStr = prevXMLStr;
-
+        g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait(
+                            'Running operational command...', 'Operation');
+    }
 
     //////////////////////////////////////////////////////////////
     // operaction command callback
     var opCmdCb = function(options, success, response)
     {
-        f_hideSendWaitMessage();
         if(!f_isResponseOK(response))
+        {
+            f_hideSendWaitMessage();
             return;
+        }
 
         var xmlRoot = response.responseXML.documentElement;
         var isSuccess = f_parseResponseError(xmlRoot);
         g_cliCmdObj.m_segmentId = (isSuccess[2] != undefined)?isSuccess[2]:null;
+        var sId = g_cliCmdObj.m_segmentId;
 
         if(sendStr == 'reboot ')
             isSuccess[1] = 'System is rebooting. Please wait for reboot to complete\n'+
                             'then refresh the browser to log in again.';
-        else if(isSuccess[0] && sendStr.indexOf('ping') >= 0)
+        /////////////////////////////////////
+        // handle the 'Load' toolbar command
+        if(wildCard != undefined && wildCard[0] != undefined &&
+            wildCard[0].indexOf('show files ') >= 0)
         {
-            wildCard.setText('Stop');
+            g_cliCmdObj.m_wildCard = wildCard;
+            g_cliCmdObj.m_node = null;
+            g_cliCmdObj.m_treeObj = treeObj;
+
+            if(sId.indexOf('_end') >= 0)
+            {
+                f_hideSendWaitMessage();
+                f_showFileChooserDialog(wildCard[1], g_cliCmdObj.m_wildCard[2], treeObj);
+            }
+            else if(g_cliCmdObj.m_wildCard[2] == undefined)
+                g_cliCmdObj.m_wildCard[2] = isSuccess[1];
+            else
+                g_cliCmdObj.m_wildCard[2] += isSuccess[1] + "\n";
+
+            return;
+        }
+        else if(isSuccess[0] && sId != undefined && sId.indexOf('_end') < 0)
+        {
+            if(wildCard != undefined && typeof wildCard.setText == 'function')
+                wildCard.setText('Stop');
             g_cliCmdObj.m_wildCard = wildCard;
         }
-        else if(g_cliCmdObj.m_segmentId != undefined &&
-            g_cliCmdObj.m_segmentId.indexOf('end') >= 0 &&
+        else if(sId != undefined && sId.indexOf('_end') >= 0 &&
             g_cliCmdObj.m_wildCard != undefined &&
             g_cliCmdObj.m_wildCard.text != undefined)
         {
-            g_cliCmdObj.m_wildCard.setText('Run');
+            if(wildCard != undefined && typeof wildCard.setText == 'function')
+                g_cliCmdObj.m_wildCard.setText('Run');
         }
-
-        /////////////////////////////////////
-        // handle the 'Load' toolbar command
-        else if(sendStr.indexOf("show files ") >= 0)
-        {
-            f_showFileChooserDialog(wildCard, isSuccess[1], treeObj);
-            return;
-        }
+        
 
         //////////////////////////////////////////////////////////
         // update editor view
         callbackObj.f_updateOperCmdResponse(headerStr,
                     isSuccess[1], clear);
+
+        f_hideSendWaitMessage();
     }
 
     /* send request */
@@ -117,6 +146,8 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
                + "<vyatta><command><id>" + f_getUserLoginedID() + "</id>\n"
                + "<statement mode='op'>" + sendStr + "</statement>\n"
                + "</command></vyatta>\n";
+
+    g_cliCmdObj.m_newSegmentId = xmlstr.indexOf('multi_') >= 0 ? false : true;
 
     //////////////////////////////////////////////////////////////////
     // avoid to send a duplicate command again
@@ -365,17 +396,17 @@ function f_handlePropagateParentNodes(node)
     {
         /////////////////////////////////////////////
         // mark node as dirty.
-        if(n.ui.anchor != undefined)
+        if(n.ui.elNode != undefined)
         {
-            var inner = n.ui.anchor.innerHTML;
+            var inner = n.ui.elNode.innerHTML;
             if(inner.indexOf(V_DIRTY_FLAG) < 0 &&
                 n.attributes.configured != 'set')
             {
                 if(inner.indexOf("images/statusUnknown.gif") < 0)
-                    inner = inner.replace(n.text, V_DIRTY_FLAG+n.text);
+                    inner = inner.replace("images/empty.gif", "images/statusUnknown.gif");
 
                 inner = inner.replace('="v-node-nocfg"', '="v-node-set"');
-                n.ui.anchor.innerHTML = inner;
+                n.ui.elNode.innerHTML = inner;
             }
         }
 
@@ -429,15 +460,15 @@ function f_startSegmentCommand()
         run: function()
         {
             if(g_cliCmdObj.m_segmentId != undefined &&
-                    g_cliCmdObj.m_segmentId.indexOf("end") > 0)
-                g_cliCmdObj.m_segmentId = undefined;  // end this segment
+                    g_cliCmdObj.m_segmentId.indexOf("_end") >= 0)
+                g_cliCmdObj.m_segmentId = undefined;  // end this segment run
 
             if(g_cliCmdObj.m_segmentId != undefined)
             {
-                g_cliCmdObj.m_prevSegId = g_cliCmdObj.m_segmentId;
                 f_sendOperationCliCommand(g_cliCmdObj.m_node, g_cliCmdObj.m_cb,
                                     false, undefined, true,
-                                    g_cliCmdObj.m_segmentId, undefined,
+                                    g_cliCmdObj.m_segmentId,
+                                    g_cliCmdObj.m_treeObj,
                                     g_cliCmdObj.m_wildCard);
             }
         }

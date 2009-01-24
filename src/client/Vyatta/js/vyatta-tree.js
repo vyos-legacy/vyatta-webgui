@@ -256,10 +256,6 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             }
         }
 
-        var nMulti = q.selectNode('multi', node);
-        if (nMulti != undefined)
-            str += ",multi:true";
-
         var action = q.selectNode('action', node);
         if(action != undefined)
             str += ",action:'true'";
@@ -267,6 +263,10 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         var nType = q.selectNode('type', node);
         if (nType != undefined)
             str += ",type:'" + nType.getAttribute('name') + "'";
+
+        var nMulti = q.selectNode('multi', node);
+        if (nMulti != undefined)
+            str += ",multi:true";
 
         var tHelp = q.selectValue('help', node);
         if (tHelp != undefined)
@@ -277,7 +277,10 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
 
         var tDefault = q.selectValue('default', node);
         if(tDefault != undefined)
+        {
+            if(tDefault.indexOf("\n") >= 0) tDefault = '';
             str += ",defaultVal:'" + tDefault + "'";
+        }
 
         if(tConfig == undefined)
             tConfig = q.selectValue('configured', node);
@@ -642,6 +645,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             // non-leaf
             node.expand(false, true, function(n)
             {
+                var test = node;
                 if (n.attributes.multi == undefined || !n.attributes.multi)
                 {
                     // a second chance to add button for case all the child nodes

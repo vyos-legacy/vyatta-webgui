@@ -1216,10 +1216,10 @@ function f_createLabel(value, labelFor)
 
 function f_createTextAreaField(values, width, height)
 {
-    var val = f_replace(values, "\n", "<br>");
+    //var val = f_replace(values, "\n", "<br>");
 
-    if(val.length < 3000)
-        val = f_replace(values, " ", "&nbsp;");
+    //if(val.length < 3000)
+      //  val = f_replace(values, " ", "&nbsp;");
 
     return new Ext.Panel(
     {
@@ -1228,7 +1228,7 @@ function f_createTextAreaField(values, width, height)
         ,autoWidth: true
         ,height: height
         ,autoScroll: true
-        ,html: '<font face="courier new">' + val + '</font>'  // monospace
+        ,html: '<pre><font face="courier new">' + values + '</font></pre>'  // monospace
     });
 }
 

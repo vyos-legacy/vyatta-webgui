@@ -746,10 +746,14 @@ function f_showFileChooserDialog(command, values, treeObj)
     if(values != undefined)
     {
         var l = values.split("\n");
-        for(var i=1; i<l.length-1; i++)
+        var j=0;
+        for(var i=0; i<l.length; i++)
         {
-            var w = l[i].split(' ');
-            val[i-1] = w[w.length-1];
+            if(l[i].indexOf('rw') >= 0)
+            {
+                var w = l[i].split(' ');
+                val[j++] = w[w.length-1];
+            }
         }
     }
 

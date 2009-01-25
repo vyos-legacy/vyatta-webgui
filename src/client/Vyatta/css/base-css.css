@@ -328,6 +328,17 @@ body
     /*background: #d0def0 !important;*/
     background: orange !important;
 }
+.x-window-tc
+{
+    background-color: #d0def0;
+    overflow:hidden;
+    zoom:1;
+}
+.x-window-bc
+{
+    background: #d0def0;
+    zoom:1;
+}
 
 
 /******************************************************************************/
@@ -377,7 +388,7 @@ root
 /*  footer */
 #v_footer_text
 {
-    color: orange;
+    color: #999;
     font-size: 12px;
     font-weight:bold;
     padding-top: 5px;

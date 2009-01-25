@@ -129,7 +129,11 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
             g_cliCmdObj.m_wildCard.text != undefined)
         {
             if(wildCard != undefined && typeof wildCard.setText == 'function')
+            {
                 g_cliCmdObj.m_wildCard.setText('Run');
+                g_cliCmdObj.m_wildCard.m_pauseBtn.setText('Pause');
+                g_cliCmdObj.m_wildCard.m_pauseBtn.hide();
+            }
         }
         
 
@@ -253,6 +257,8 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 
 function f_isResponseOK(response)
 {
+    if(!f_isLogined) return true;
+
     var msg = 'Please refresh GUI and try again later.';
     var ret = false;
 
@@ -455,15 +461,21 @@ function f_parseResponseError(xmlRoot)
 
 function f_startSegmentCommand()
 {
+    g_cliCmdObj.m_segPause = false;
+
     Ext.TaskMgr.start(
     {
         run: function()
         {
             if(g_cliCmdObj.m_segmentId != undefined &&
                     g_cliCmdObj.m_segmentId.indexOf("_end") >= 0)
+            {
                 g_cliCmdObj.m_segmentId = undefined;  // end this segment run
+                g_cliCmdObj.m_segPause = false;
+            }
 
-            if(g_cliCmdObj.m_segmentId != undefined)
+            if(g_cliCmdObj.m_segmentId != undefined &&
+                !g_cliCmdObj.m_segPause)
             {
                 f_sendOperationCliCommand(g_cliCmdObj.m_node, g_cliCmdObj.m_cb,
                                     false, undefined, true,

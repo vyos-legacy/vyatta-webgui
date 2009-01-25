@@ -119,7 +119,7 @@ function f_startViewPort()
     f_handleMainFramePanelResize();
 
     f_clockTicking();
-    m_clock.render(document.getElementById('v_footer_clock'));
+   //m_clock.render(document.getElementById('v_footer_clock'));
 }
 
 function f_createTabHTML(tabName)
@@ -188,6 +188,31 @@ function f_handleTabOnMouseAction(tabName, action)
     tabId.src = "images/tab-" + tabName + "-" + action + ".gif";
 }
 
+function f_handleLogout()
+{
+    var okToLogout = g_baseSystem.m_tabObjects[
+                    g_baseSystem.m_iConf].m_treeObj.m_isCommitAvailable;
+        okToLogout = okToLogout == undefined ? true : !okToLogout;
+
+    var logout = function(btn)
+    {
+        if(btn == 'yes')
+        {
+            f_sendConfigCLICommand(['discard'], g_baseSystem.m_tabObjects[
+                    g_baseSystem.m_iConf].m_treeObj, undefined, undefined);
+            f_userLogout(true, g_baseSystem.m_homePage);
+        }
+    };
+
+    if(!okToLogout)
+    {
+        f_yesNoMessageBox('Logout', 'Congiguration is modified and has not commit. '+
+                    'Are you still wish to logout?', logout);
+    }
+    else
+        f_userLogout(true, g_baseSystem.m_homePage);
+}
+
 function f_createFrameHeaderPanel()
 {
     var id = document.getElementById('id_header_text');
@@ -199,10 +224,10 @@ function f_createFrameHeaderPanel()
     }
     else
     {
-       id.innerHTML = 'Username:&nbsp; ' + f_getUserLoginName() +
+        
+        id.innerHTML = 'Username:&nbsp; ' + f_getUserLoginName() +
            ',&nbsp;&nbsp;&nbsp;' +
-            '<a class="anchor-test" valign="top" href="#" onclick="f_userLogout(true, \'' +
-            g_baseSystem.m_homePage + '\')">' +
+            '<a class="anchor-test" valign="top" href="#" onclick="f_handleLogout()">' +
             '<img src="images/logout.gif"/> Log Out</a>';
         f_createTabsHTML();
     }

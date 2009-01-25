@@ -1107,7 +1107,46 @@ function f_createEditorTitle(node, title)
     });
 }
 
-function f_createButton(treeObj, node, btnText, title)
+function f_createConfButton(treeObj, node, btnText, title)
+{
+    var buttons = [ ];
+    var btn_id = Ext.id();
+    var cmd = '';
+    var isDelete = false;
+
+    if(btnText == 'Delete')
+        cmd = 'delete ';
+    else if(btnText == 'Create')
+    {
+        cmd = 'set ';
+        isDelete = true;
+    }
+
+    title = f_replace(title, '&rArr;', '');
+    title = f_replace(title, 'Configuration&nbsp;', '');
+    buttons[0] = new Ext.Button(
+    {
+        id: btn_id
+        ,text: btnText
+        ,tooltip: btnText + ' ' + title
+        ,handler: function()
+        {
+            f_sendConfigCLICommand([cmd + treeObj.f_getNodePathStr(node) ],
+                                    treeObj, node, isDelete);
+        }
+    });
+
+    return new Ext.Panel(
+    {
+        items: buttons
+        ,border: false
+        ,bodyStyle: 'padding: 6px 2px 10px 8px'
+        ,height: 55
+        ,html: '<b>' + btnText + '</b> - ' + title + '<br><hr class="hr-editor">'
+    });
+}
+
+function f_createOperButton(treeObj, node, btnText, title)
 {
     var buttons = [ ];
     var btn_id = Ext.id();
@@ -1126,17 +1165,22 @@ function f_createButton(treeObj, node, btnText, title)
 
     title = f_replace(title, '&rArr;', '');
     title = f_replace(title, 'Configuration&nbsp;', '');
-    buttons[buttons.length] = new Ext.Button(
+    buttons[0] = new Ext.Button(
     {
         id: btn_id
         ,text: btnText
         ,tooltip: btnText + ' ' + title
+        ,minWidth: 43
+        ,width:45
+        ,height: 20
         ,handler: function()
         {
             if(this.text == 'Stop')
             {
                 this.setText('Run');
                 g_cliCmdObj.m_segmentId = 'segment_end';
+                this.m_pauseBtn.setText('Pause');
+                this.m_pauseBtn.hide();
                 return;
             }
             else if(cmd.length == 0)
@@ -1159,14 +1203,6 @@ function f_createButton(treeObj, node, btnText, title)
                         return;
                     }
                 }
-                    /*
-                else if(node.parentNode.text == 'ping')
-                {
-                    f_sendOperationCliCommand(node, treeObj, false,
-                                                  undefined, true, undefined,
-                                                  treeObj, this);
-                    return;
-                }*/
 
                 f_sendOperationCliCommand(node, treeObj, false,
                                                   undefined, true, undefined,
@@ -1179,14 +1215,54 @@ function f_createButton(treeObj, node, btnText, title)
         }
     });
 
-    return new Ext.Panel(
+    if(treeObj != undefined && treeObj.m_treeMode == V_TREE_ID_oper)
     {
-        items: buttons
+        buttons[1] = new Ext.Button(
+        {
+            id: btn_id + 'pause'
+            ,text: 'Pause'
+            ,tooltip: "Pause and resume continue respond data."
+            ,minWidth: 65
+            ,width:68
+            ,height: 20
+            ,handler: function()
+            {
+                if(this.text == 'Pause')
+                {
+                    this.setText('Resume');
+                    g_cliCmdObj.m_segPause = true;
+                }
+                else
+                {
+                    this.setText('Pause');
+                    g_cliCmdObj.m_segPause = false;
+                }
+            }
+        });
+        buttons[1].hide();
+        buttons[0].m_pauseBtn = buttons[1];
+    }
+
+    var bPanel = new Ext.Panel(
+    {
+        buttons: buttons
+        ,bodyStyle: 'padding: 0px'
         ,border: false
-        ,bodyStyle: 'padding: 6px 2px 10px 8px'
-        ,height: 55
-        ,html: '<b>' + btnText + '</b> - ' + title + '<br><hr class="hr-editor">'
+        ,buttonAlign: 'left'
     });
+
+    var panel = new Ext.Panel(
+    {
+        items: bPanel
+        ,border: false
+        ,bodyStyle: 'padding: 1px 2px 5px 8px'
+        ,height: 65
+        ,cls: 'v_panel_button_right'
+        ,html: '<b>&nbsp;&nbsp;' + btnText + '</b> - ' + title + '<br><hr class="hr-editor">'
+    });
+
+    panel.m_pauseBtn = buttons[1];
+    return panel;
 }
 
 function f_createLabel(value, labelFor)

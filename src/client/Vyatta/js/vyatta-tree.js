@@ -1107,11 +1107,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             var c = labelArray.pop();
 
             if(c == '&lt;value&gt;')
-            {
                 lArray[lIndex++] = labelStr;
-                //labelStr = '';
-                //continue;
-            }
 
             if(labelStr.length > 1)
             {
@@ -1123,6 +1119,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             header += c;
         }
 
+        //////////////////////////////////////////
+        // return list of nodes, labels and header
         return [nodeArray, lArray, header];
     },
 
@@ -1145,7 +1143,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         // add action button
         if(node.attributes.action != undefined)
         {
-            f_addField2Panel(ePanel, f_createButton(m_thisObj, node, 'Run',
+            f_addField2Panel(ePanel, f_createOperButton(m_thisObj, node, 'Run',
                               node.attributes.help), 'Run Node');
         }
 
@@ -1204,6 +1202,18 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         ePanel.doLayout();
     },
 
+    f_getSegmentIdInNumeric: function()
+    {
+        if(g_cliCmdObj.m_segmentId != undefined)
+        {
+            var si = g_cliCmdObj.m_segmentId.split("_");
+            if(si[2] != undefined && si[2] != 'end')
+                return Number(si[2]);
+        }
+
+        return 0;
+    },
+
     f_updateOperCmdResponse: function(headerStr, values, clear)
     {
         var ePanel = m_thisObj.m_parent.m_editorPanel;
@@ -1211,15 +1221,23 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(ePanel.m_opTextArea != undefined)
         {
             var eForm = ePanel.items.itemAt(0);
-
+            var pauseBtn = undefined;
             /////////////////////////////////////////
             // find text area component then update
             //its content.
             for(var i=0; i<eForm.items.getCount(); i++)
             {
                 var f = eForm.items.item(i);
+
+                if(f.m_pauseBtn != undefined)
+                    pauseBtn = f.m_pauseBtn;
+
                 if(ePanel.m_opTextArea == f)
                 {
+                    var segCount = this.f_getSegmentIdInNumeric();
+                    if(segCount > 3)
+                        pauseBtn.show();
+
                     ///////////////////////////////////////////////
                     // reset m_val if it is not the same ops command
                     if(g_cliCmdObj.m_newSegmentId)
@@ -1243,7 +1261,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                         if(f.m_val != undefined)
                             values = f.m_val + "\n" + values;
 
-                        if(f.m_val != undefined && f.m_val.length > 9999999)
+                        //////////////////////////////////////////////////////
+                        // reset output buffer if segment call is more than 100.
+                        // this avoid to eat up all client memory
+                        if(segCount > 100)
                             f.m_val = undefined;
                     }
 
@@ -1286,7 +1307,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             node.attributes.configured == 'set'))
         {
             f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
-                  f_createButton(m_thisObj, node, 'Delete', title), 'Delete Node');
+                  f_createConfButton(m_thisObj, node, 'Delete', title), 'Delete Node');
         }
         else if((node.attributes.configured == undefined ||
                 node.attributes.configured == 'delete') &&
@@ -1314,7 +1335,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
             if(!hasLeaf)
                 f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
-                                f_createButton(m_thisObj, node, 'Create',
+                                f_createConfButton(m_thisObj, node, 'Create',
                                 title), 'Create Node');
         }
     }

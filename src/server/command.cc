@@ -159,6 +159,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 	string stdout;
 	err = WebGUI::execute(opmodecmd,stdout,true);
 	stdout = WebGUI::mass_replace(stdout, "&", "&amp;");
+	stdout = WebGUI::mass_replace(stdout, "\"", "&quot;");
 	stdout = WebGUI::mass_replace(stdout, "'", "&apos;");
 	stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
 	stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
@@ -219,6 +220,11 @@ Command::multi_part_op_cmd(std::string &cmd)
   }
   string resp,token;
   multi_resp_cmd.get_resp(token,resp);
+  resp = WebGUI::mass_replace(resp, "&", "&amp;");
+  resp = WebGUI::mass_replace(resp, "\"", "&quot;");
+  resp = WebGUI::mass_replace(resp, "'", "&apos;");
+  resp = WebGUI::mass_replace(resp, "<", "&lt;");
+  resp = WebGUI::mass_replace(resp, ">", "&gt;");
 
   //will build out special response here:
   string msg = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->_msg._token+"</token><error><code>0</code><msg segment='"+token+"'>"+resp+"</msg></error></vyatta>";  

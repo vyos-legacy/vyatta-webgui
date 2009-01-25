@@ -1,3 +1,38 @@
+vyatta-webgui (0.2.10) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Changed help text color to dark gray and font size to normal.
+  * * aligned header tabs to line up with tree panel
+
+  [ slioch ]
+  * additional fixes to session managment.
+
+  [ Kevin Choi ]
+  * * Moved the yellow circle to the left of the tree.
+
+  [ slioch ]
+  * as per justin's request--allow session data to remain after session
+    timeout has expired.
+
+  [ Kevin Choi ]
+  * * integrated with server change to ops command using chunker
+  * * removed debug comment.
+  * * Default value == \n would cause tree view to lose leaf node.
+  * * added company logo and user prompted message while index page
+    redirect to main page.
+  * * Added user warning prompt msg before you logout if config changes
+    were not commit.
+
+  [ slioch ]
+  * added xml cleanup to output of chunker resp--fixes problem with show
+    log and show tech support.
+
+  [ Kevin Choi ]
+  * * added user warning msg before discard
+  * * added 'load' and 'save' wait dialog for respond data
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sun, 25 Jan 2009 17:14:05 +0000
+
 vyatta-webgui (0.2.9) unstable; urgency=low
 
   [ Kevin Choi ]

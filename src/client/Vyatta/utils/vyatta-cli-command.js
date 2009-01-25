@@ -76,7 +76,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
     {
         sendStr = prevXMLStr;
         g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait(
-                            'Running operational command...', 'Operation');
+                            'Processing', 'Command');
     }
 
     //////////////////////////////////////////////////////////////

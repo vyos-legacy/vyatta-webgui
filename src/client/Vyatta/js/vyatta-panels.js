@@ -1180,6 +1180,8 @@ function f_createOperButton(treeObj, node, btnText, title)
 
     title = f_replace(title, '&rArr;', '');
     title = f_replace(title, 'Configuration&nbsp;', '');
+    title = f_replace(title, '<', '&#60;');
+    title = f_replace(title, '>', '&#62;');
     buttons[0] = new Ext.Button(
     {
         id: btn_id

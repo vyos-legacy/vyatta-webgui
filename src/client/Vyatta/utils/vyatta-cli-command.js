@@ -257,7 +257,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 
 function f_isResponseOK(response)
 {
-    if(!f_isLogined) return true;
+    if(!f_isLogined()) return true;
 
     var msg = 'Please refresh GUI and try again later.';
     var ret = false;

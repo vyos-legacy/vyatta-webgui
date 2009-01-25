@@ -714,6 +714,19 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
                 if(cmdName == 'view')
                     sendCmd = 'show session';
 
+                var discardCb = function(btn)
+                {
+                    if(btn == 'yes')
+                        f_sendCLICommand(this, ['discard'], treeObj);
+                }
+                if(cmdName == 'discard')
+                {
+                    f_yesNoMessageBox('Discard',
+                      'Are you sure you wish to discard all the new configuration?', +
+                      discardCb);
+                    return;
+                }
+
                 f_sendCLICommand(this, [sendCmd], treeObj);
             }
         }

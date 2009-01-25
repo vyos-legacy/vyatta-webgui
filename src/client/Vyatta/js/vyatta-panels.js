@@ -711,18 +711,20 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
             }
             else
             {
+                var button = this;
+
                 if(cmdName == 'view')
                     sendCmd = 'show session';
 
                 var discardCb = function(btn)
                 {
                     if(btn == 'yes')
-                        f_sendCLICommand(this, ['discard'], treeObj);
+                        f_sendCLICommand(button, ['discard'], treeObj);
                 }
                 if(cmdName == 'discard')
                 {
                     f_yesNoMessageBox('Discard',
-                      'Are you sure you wish to discard all the new configuration?', +
+                      'Are you sure you wish to discard all the new configuration?',
                       discardCb);
                     return;
                 }
@@ -1341,23 +1343,26 @@ function f_handleInputFieldError(node)
 
 function f_updateDirtyIndicatorPanel(field, isError)
 {
-    var html = field.el.dom.innerHTML;
-    if(isError)
+    if(field.el != undefined)
     {
-        if(html.indexOf('empty') > 0)
-            html = f_replace(html, 'empty', 'statusDown');
+        var html = field.el.dom.innerHTML;
+        if(isError)
+        {
+            if(html.indexOf('empty') > 0)
+                html = f_replace(html, 'empty', 'statusDown');
+            else
+                html = f_replace(html, 'statusUnknown', 'statusDown');
+        }
         else
-            html = f_replace(html, 'statusUnknown', 'statusDown');
-    }
-    else
-    {
-        if(html.indexOf('empty') > 0)
-            html =  f_replace(html, 'empty', 'statusUnknown');
-        else
-            html =  f_replace(html, 'statusDown', 'statusUnknown');
-    }
+        {
+            if(html.indexOf('empty') > 0)
+                html =  f_replace(html, 'empty', 'statusUnknown');
+            else
+                html =  f_replace(html, 'statusDown', 'statusUnknown');
+        }
 
-    field.el.dom.innerHTML = html;
+        field.el.dom.innerHTML = html;
+    }
 }
 
 function f_enterKeyPressHandler(field, e, callback)

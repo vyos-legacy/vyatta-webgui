@@ -700,8 +700,14 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             {
                 m_thisObj.m_setField = node.getValFieldFunc();
                 node.setOriginalValue(node.getValFunc());
+
+                //////////////////////////////////////
+                // check for blank space
+                var sVal = cNode.getValFunc();
+                sVal = (sVal != undefined && sVal.indexOf(" ") > 0) ?
+                    "'"+sVal+"'" : sVal;
                 f_sendConfigCLICommand([ 'set ' + nodePath
-                             + " " + cNode.getValFunc() ], m_thisObj, cNode, true);
+                             +  " " + sVal ], m_thisObj, cNode, true);
             }
         }
 
@@ -827,6 +833,11 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         var vfield = field.items.itemAt(V_IF_INDEX_INPUT);
         node.getValFunc = function()
         {
+            if(vfield.getValue() == undefined && vfield.getRawValue() != undefined)
+            {
+                return "'" + vfield.getRawValue() + "'";
+            }
+
             return vfield.getValue();
         }
         node.getOriginalValue = function()
@@ -1194,7 +1205,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             nNode.m_field = field;
             nNode.getValFunc = function()
             {
-                return (this.m_field.getValue() != undefined) ?
+                return (this.m_field.getValue != undefined) ?
                     "'" + this.m_field.getValue() + "'" : null;
             }
         }

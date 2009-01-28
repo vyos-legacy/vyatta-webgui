@@ -1,3 +1,22 @@
+vyatta-webgui (0.2.11) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Fixed to accept space for text field.
+  * * increase browser session id timeout to 1 hr from 10 minutes
+
+  [ slioch ]
+  * mandatory node implementation.
+
+  [ Kevin Choi ]
+  * * block refresh op cmd output textfield.
+  * * changed log out warning message text as suggest by Justin
+  * * keep user's last state after discard configuration. if last state
+    had discard, should
+  * * refresh entire tree after 'load' command executed
+  * * Fixed view configuration immediately after 'discard'
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 28 Jan 2009 02:41:59 +0000
+
 vyatta-webgui (0.2.10) unstable; urgency=low
 
   [ Kevin Choi ]

@@ -206,8 +206,8 @@ function f_handleLogout()
 
     if(!okToLogout)
     {
-        f_yesNoMessageBox('Logout', 'Congiguration is modified and has not commit. '+
-                    'Are you still wish to logout?', logout);
+        f_yesNoMessageBox('Logout', 'Congiguration has been modified and not yet commit. '+
+                    'Continue to log out?', logout);
     }
     else
         f_userLogout(true, g_baseSystem.m_homePage);

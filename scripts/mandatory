@@ -1,0 +1,6 @@
+load-balancing/wan/interface-health/node.tag/ping
+load-balancing/wan/interface-health/node.tag/nexthop
+load-balancing/wan/rule/node.tag/inbound-interface
+load-balancing/wan/rule/node.tag/interface
+firewall/name/node.tag/rule/node.tag/action
+

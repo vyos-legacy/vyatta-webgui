@@ -35,6 +35,8 @@ public:
   const static std::string CHUNKER_MSG_FORMAT;
   const static std::string CHUNKER_UPDATE_FORMAT;
 
+  const static std::string MANDATORY_NODE_FILE;
+
   enum Error {SUCCESS = 0,
 	      MALFORMED_REQUEST,
 	      AUTHENTICATION_FAILURE,

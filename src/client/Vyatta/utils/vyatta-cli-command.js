@@ -196,6 +196,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             return;
         }
 
+
         var tree = tObj.m_tree;
         var selNode = tree.getSelectionModel().getSelectedNode();
         if(selNode == undefined)
@@ -216,10 +217,15 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         }
         else if(cmds[0].indexOf('discard') >= 0)
         {
+            var onReloadHandler = function()
+            {
+                tObj.m_parent.f_cleanEditorPanel();
+                f_handleNodeExpansion(tObj, selNode, selPath, cmds)
+                tObj.m_selNodePath = selPath;//node.parentNode;
+                tree.un('load');
+            }
+            tree.on('load', onReloadHandler);
             tree.root.reload();
-            tObj.m_parent.f_cleanEditorPanel();
-            f_handlePropagateParentNodes(selNode);
-            tObj.m_selNodePath = selPath;//node.parentNode;
         }
         else if(cmds[0].indexOf('commit') >= 0)
         {
@@ -233,6 +239,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         else if(cmds[0] == 'show session')
         {
             f_handleToolbarViewCmdResponse(isSuccess[1]);
+            return;
         }
         else
         {

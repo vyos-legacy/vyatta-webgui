@@ -415,6 +415,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
             ////////////////////////////////////////////////
             // find the selected node by given the path
+            var prevNode = undefined;
             for(var i=0; i<snode.length; i++)
             {
                 if(snode[i] == 'Configuration' || snode[i] == 'Operation')
@@ -432,29 +433,38 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 // drill down to next level
                 if(i+1 < snode.length)
                 {
-                    node.expand();
-                    var cNode = node.firstChild;
-
-                    /////////////////////////////////////////////
-                    // get cNode from server if it's not defined
-                    if(cNode == undefined)
+                    if(node != undefined)
                     {
-                        var isUserClick = false;
+                        node.expand();
+                        var cNode = node.firstChild;
 
-                        /////////////////////////////////////
-                        // cNode could be deleted. if this is
-                        // the case, get its parent instead
-                        if(treeObj.m_cmd != undefined && treeObj.m_cmd == 'delete')
+                        /////////////////////////////////////////////
+                        // get cNode from server if it's not defined
+                        if(cNode == undefined)
                         {
-                            cNode = node;
-                            isUserClick = true;
+                            var isUserClick = false;
+
+                            /////////////////////////////////////
+                            // cNode could be deleted. if this is
+                            // the case, get its parent instead
+                            if(treeObj.m_cmd != undefined && treeObj.m_cmd == 'delete')
+                            {
+                                cNode = node;
+                                isUserClick = true;
+                            }
+
+                            treeObj.f_handleExpandNode(cNode, treeObj, isUserClick);
+                            return;
                         }
 
-                        treeObj.f_handleExpandNode(cNode, treeObj, isUserClick);
+                        prevNode = node;
+                        node = cNode;
+                    }
+                    else
+                    {
+                        treeObj.f_handleExpandNode(prevNode, treeObj, true);
                         return;
                     }
-
-                    node = cNode;
                 }
             }
 

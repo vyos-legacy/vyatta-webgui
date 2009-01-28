@@ -213,6 +213,8 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         {
             tree.root.reload();
             tObj.m_parent.f_cleanEditorPanel();
+            f_handlePropagateParentNodes(selNode);
+            tObj.m_selNodePath = selPath;//node.parentNode;
         }
         else if(cmds[0].indexOf('commit') >= 0)
         {

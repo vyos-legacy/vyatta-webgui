@@ -7,7 +7,7 @@ initddir = /etc/init.d
 cfgdir = $(datadir)/vyatta-cfg/templates
 opdir = $(datadir)/vyatta-op/templates
 
-AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
+AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g -I /usr/include/glib-2.0 -I /usr/lib/glib-2.0/include -I ../vyatta-cfg/src
 
 CLEANFILES = src/server/main.o src/server/manager.o src/server/session.o src/server/processor.o src/server/sessionexchange.o src/server/sessionexchangefile.o src/server/sessionexchangesocket.o src/server/sessionexchangestdio.o src/server/test.o src/server/authenticate.o src/server/common.o src/server/command.o src/server/configuration.o src/server/rl_str_proc.o src/server/multirespcmd.o
 
@@ -38,6 +38,9 @@ src_server_webgui_SOURCES += src/server/multirespcmd.cc
 
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
+src_server_webgui_LDADD += ../vyatta-cfg/src/libvyatta-cfg.la
+src_server_webgui_LDADD += /usr/lib/libglib-2.0.la
+
 
 cgi_PROGRAMS = src/server/webgui
 cgi_PROGRAMS += src/server/chunker
@@ -57,6 +60,7 @@ install-exec-hook:
 	mkdir -p $(DESTDIR)/$(initddir)
 	cp scripts/vyatta-webgui-chunker.init $(DESTDIR)/$(initddir)/vyatta-webgui-chunker
 	cp scripts/chunker_cmd $(DESTDIR)/$(cgidir)/chunker_cmd
+	cp scripts/mandatory $(DESTDIR)/$(cgidir)/mandatory
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/
 	@mkdir -p $(DESTDIR)/var/www

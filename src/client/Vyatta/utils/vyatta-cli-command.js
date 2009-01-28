@@ -204,6 +204,11 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 
 
         /////////////////////////////////////
+        if(cmds[0].indexOf('load') == 0)
+        {
+            tree.root.reload();
+            tObj.m_parent.f_cleanEditorPanel();
+        }
         if(cmds[0].indexOf('save') >= 0)
         {
             f_promptErrorMessage('Save configuration', isSuccess[1],

@@ -220,7 +220,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             var onReloadHandler = function()
             {
                 tObj.m_parent.f_cleanEditorPanel();
-                f_handleNodeExpansion(tObj, selNode, selPath, cmds)
+                treeObj.f_HandleNodeConfigClick(selNode, null, undefined, treeObj);
                 tObj.m_selNodePath = selPath;//node.parentNode;
                 tree.un('load');
             }

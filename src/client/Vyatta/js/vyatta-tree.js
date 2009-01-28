@@ -655,7 +655,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             // non-leaf
             node.expand(false, true, function(n)
             {
-                var test = node;
                 if (n.attributes.multi == undefined || !n.attributes.multi)
                 {
                     // a second chance to add button for case all the child nodes
@@ -1270,7 +1269,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                         // update to user.
                         if(g_cliCmdObj.m_segmentId.indexOf('_0') >= 0 &&
                             values.length == 0)
+                        {
                             values = '';
+                            f.contentEl.innerHTML = '<pre><font face="courier new"></font></pre>';
+                        }
                         /////////////////////////////////////////////
                         // append new data to the end of textfield
                         // if segment is not end
@@ -1346,7 +1348,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 }
             }
 
-            if(!hasLeaf)
+            //if(!hasLeaf)
                 f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
                                 f_createConfButton(m_thisObj, node, 'Create',
                                 title), 'Create Node');

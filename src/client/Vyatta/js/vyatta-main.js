@@ -206,7 +206,7 @@ function f_handleLogout()
 
     if(!okToLogout)
     {
-        f_yesNoMessageBox('Logout', 'Congiguration has been modified and not yet commit. '+
+        f_yesNoMessageBox('Logout', 'Configuration has been modified and not yet committed. '+
                     'Continue to log out?', logout);
     }
     else

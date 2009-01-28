@@ -714,18 +714,19 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
                 if(cmdName == 'view')
                     sendCmd = 'show session';
 
+                /*/
                 var discardCb = function(btn)
                 {
                     if(btn == 'yes')
-                        f_sendCLICommand(this, ['discard'], treeObj);
+                        f_sendCLICommand(button, ['discard'], treeObj);
                 }
                 if(cmdName == 'discard')
                 {
                     f_yesNoMessageBox('Discard',
-                      'Are you sure you wish to discard all the new configuration?', +
+                      'Are you sure you wish to discard all the new configuration?',
                       discardCb);
                     return;
-                }
+                }*/
 
                 f_sendCLICommand(this, [sendCmd], treeObj);
             }
@@ -1178,6 +1179,8 @@ function f_createOperButton(treeObj, node, btnText, title)
 
     title = f_replace(title, '&rArr;', '');
     title = f_replace(title, 'Configuration&nbsp;', '');
+    title = f_replace(title, '<', '&#60;');
+    title = f_replace(title, '>', '&#62;');
     buttons[0] = new Ext.Button(
     {
         id: btn_id
@@ -1309,10 +1312,9 @@ function f_createLabel(value, labelFor)
 
 function f_createTextAreaField(values, width, height)
 {
-    //var val = f_replace(values, "\n", "<br>");
-
-    //if(val.length < 3000)
-      //  val = f_replace(values, " ", "&nbsp;");
+    var el = document.createElement("div");
+    el.id = 'id_op_txt_output'+Ext.id();
+    el.innerHTML = '<pre><font face="courier new">'+values+'</font></pre>';
 
     return new Ext.Panel(
     {
@@ -1321,7 +1323,8 @@ function f_createTextAreaField(values, width, height)
         ,autoWidth: true
         ,height: height
         ,autoScroll: true
-        ,html: '<pre><font face="courier new">' + values + '</font></pre>'  // monospace
+        //,html: '<pre><font face="courier new">' + values + '</font></pre>'  // monospace
+        ,contentEl: el
     });
 }
 
@@ -1341,23 +1344,26 @@ function f_handleInputFieldError(node)
 
 function f_updateDirtyIndicatorPanel(field, isError)
 {
-    var html = field.el.dom.innerHTML;
-    if(isError)
+    if(field.el != undefined)
     {
-        if(html.indexOf('empty') > 0)
-            html = f_replace(html, 'empty', 'statusDown');
+        var html = field.el.dom.innerHTML;
+        if(isError)
+        {
+            if(html.indexOf('empty') > 0)
+                html = f_replace(html, 'empty', 'statusDown');
+            else
+                html = f_replace(html, 'statusUnknown', 'statusDown');
+        }
         else
-            html = f_replace(html, 'statusUnknown', 'statusDown');
-    }
-    else
-    {
-        if(html.indexOf('empty') > 0)
-            html =  f_replace(html, 'empty', 'statusUnknown');
-        else
-            html =  f_replace(html, 'statusDown', 'statusUnknown');
-    }
+        {
+            if(html.indexOf('empty') > 0)
+                html =  f_replace(html, 'empty', 'statusUnknown');
+            else
+                html =  f_replace(html, 'statusDown', 'statusUnknown');
+        }
 
-    field.el.dom.innerHTML = html;
+        field.el.dom.innerHTML = html;
+    }
 }
 
 function f_enterKeyPressHandler(field, e, callback)

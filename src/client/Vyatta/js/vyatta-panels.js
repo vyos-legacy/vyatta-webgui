@@ -711,11 +711,10 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
             }
             else
             {
-                var button = this;
-
                 if(cmdName == 'view')
                     sendCmd = 'show session';
 
+                /*/
                 var discardCb = function(btn)
                 {
                     if(btn == 'yes')
@@ -727,7 +726,7 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
                       'Are you sure you wish to discard all the new configuration?',
                       discardCb);
                     return;
-                }
+                }*/
 
                 f_sendCLICommand(this, [sendCmd], treeObj);
             }
@@ -1313,10 +1312,9 @@ function f_createLabel(value, labelFor)
 
 function f_createTextAreaField(values, width, height)
 {
-    //var val = f_replace(values, "\n", "<br>");
-
-    //if(val.length < 3000)
-      //  val = f_replace(values, " ", "&nbsp;");
+    var el = document.createElement("div");
+    el.id = 'id_op_txt_output'+Ext.id();
+    el.innerHTML = '<pre><font face="courier new">'+values+'</font></pre>';
 
     return new Ext.Panel(
     {
@@ -1325,7 +1323,8 @@ function f_createTextAreaField(values, width, height)
         ,autoWidth: true
         ,height: height
         ,autoScroll: true
-        ,html: '<pre><font face="courier new">' + values + '</font></pre>'  // monospace
+        //,html: '<pre><font face="courier new">' + values + '</font></pre>'  // monospace
+        ,contentEl: el
     });
 }
 

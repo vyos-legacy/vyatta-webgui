@@ -1245,47 +1245,39 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
                 if(ePanel.m_opTextArea == f)
                 {
+                    var sid = g_cliCmdObj.m_segmentId;
                     var segCount = this.f_getSegmentIdInNumeric();
                     if(segCount > 3)
                         pauseBtn.show();
 
-                    ///////////////////////////////////////////////
-                    // reset m_val if it is not the same ops command
                     if(g_cliCmdObj.m_newSegmentId)
-                    {
                         g_cliCmdObj.m_newSegmentId = false;
-                        f.m_val = undefined;
-                    }
 
-                    ///////////////////////////////////////////////
-                    // if segment id == '_0', server ack command.
-                    // update to user.
-                    if(g_cliCmdObj.m_segmentId != undefined &&
-                        g_cliCmdObj.m_segmentId.indexOf('_0') >= 0 &&
-                        values.length == 0)
-                        values = '';
-                    /////////////////////////////////////////////
-                    // append new data to the end of textfield
-                    else if(g_cliCmdObj.m_segmentId != undefined &&
-                            f.el.dom.textContent != undefined)
+                    if(sid != undefined)
                     {
-                        if(f.m_val != undefined)
-                            values = f.m_val + "\n" + values;
+                        ///////////////////////////////////////////////
+                        // if segment id == '_0', server ack command.
+                        // update to user.
+                        if(g_cliCmdObj.m_segmentId.indexOf('_0') >= 0 &&
+                            values.length == 0)
+                            values = '';
+                        /////////////////////////////////////////////
+                        // append new data to the end of textfield
+                        // if segment is not end
+                        else if(sid.indexOf('_end') < 0)
+                        {
+                            ///////////////////////////////////////////
+                            // add the \n if not found
+                            if(segCount > 1 && values != undefined &&
+                                values.indexOf("\n") > 3)
+                                values = "\n" + values;
 
-                        //////////////////////////////////////////////////////
-                        // reset output buffer if segment call is more than 100.
-                        // this avoid to eat up all client memory
-                        if(segCount > 100)
-                            f.m_val = undefined;
+                            var txtc = f.contentEl.innerHTML;
+                            txtc = txtc.substr(0, (txtc.length-13));
+                            f.contentEl.innerHTML = txtc + values + "</font></pre>";
+                            ePanel.m_opTextArea = f;
+                        }
                     }
-
-                    var mlbl = f_createTextAreaField(values, 0,
-                                ePanel.getInnerHeight()-20*i);
-                    mlbl.m_val = values.indexOf('Server acknowledges') >= 0 ?
-                                  '':values;
-                    eForm.remove(f);
-                    eForm.insert(i, mlbl);
-                    ePanel.m_opTextArea = mlbl;
                     break;
                 }
             }

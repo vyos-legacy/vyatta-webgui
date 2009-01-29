@@ -221,11 +221,9 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             {
                 tObj.m_parent.f_cleanEditorPanel();
                 f_handleNodeExpansion(tObj, selNode, selPath, cmds[0]);
-                //treeObj.f_HandleNodeConfigClick(selNode, null, undefined, treeObj);
                 tree.un('load', onReloadHandler);
             }
             tree.on('load', onReloadHandler);
-            tObj.m_parent.f_cleanEditorPanel();
             tree.root.reload();
         }
         else if(cmds[0].indexOf('commit') >= 0)
@@ -445,13 +443,6 @@ function f_handlePropagateParentNodes(node)
     }
 }
 
-function f_findValidSelectedNode(selNode)
-{
-    var sNodes = selNode.split(" ");
-
-
-}
-
 function f_parseResponseError(xmlRoot)
 {
     var success = true;
@@ -467,7 +458,12 @@ function f_parseResponseError(xmlRoot)
         //////////////////////////////////////////////
         // selectValue only can return up to 4096 char
         if(msg.length >= 4096 && xmlRoot.textContent != undefined)
+        {
             msg = xmlRoot.textContent;
+
+            // strip out the first 2 extra chars.
+            msg = msg.substr(2, msg.length);
+        }
 
         var msgNode = q.selectNode('msg', err);
         segment = msgNode.getAttribute('segment');

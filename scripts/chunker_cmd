@@ -7,7 +7,7 @@ export vyatta_datadir=/opt/vyatta/share
 export vyatta_op_templates=/opt/vyatta/share/vyatta-op/templates                                                                                                                  
 export vyatta_sysconfdir=/opt/vyatta/etc                                                                                                                                          
 export vyatta_sharedstatedir=/opt/vyatta/com                                                                                                                                      
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin                                                                                                          
+export PATH=/usr/lib/cgi-bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 export vyatta_sbindir=/opt/vyatta/sbin;export vyatta_bindir=/opt/vyatta/bin                                                                                                       
 export vyatta_libdir=/opt/vyatta/lib                                                                                                                                              
 export vyatta_localstatedir=/opt/vyatta/var                                                                                                                                       

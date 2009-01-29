@@ -26,6 +26,10 @@ ln -sf /etc/lighttpd/conf-available/10-cgi.conf /etc/lighttpd/conf-enabled/
 # enable https
 ln -sf /etc/lighttpd/conf-available/10-ssl.conf /etc/lighttpd/conf-enabled/
 
+# add hook for vtysh to be executed by the chunker
+ln -sf  /usr/bin/vyatta-vtysh /usr/lib/cgi-bin/vtysh
+
+
 # fix debian cgi config file
 sed -i '/^\$HTTP.*127\.0\.0\.1/,/^}$/{s/^\(.*\)$/# \1/}' \
   /etc/lighttpd/conf-enabled/10-cgi.conf

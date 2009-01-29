@@ -129,7 +129,7 @@ export vyatta_infodir=/opt/vyatta/share/info;source /etc/bash_completion.d/10vya
   //  need to set up the cmd like: argv[0] = /bin/bash, 1 = -c 2 = rest
 
 
-  syslog(LOG_ERR,"command: %s",opmodecmd.c_str());
+  syslog(LOG_DEBUG,"command: %s",opmodecmd.c_str());
 
   sprintf(tmpcmd,"%s",opmodecmd.c_str());
   //  printf("%s<end>\n",tmpcmd);

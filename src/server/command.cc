@@ -182,7 +182,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 	resp = stdout;
       }
       else {
-	_proc->set_response(WebGUI::COMMAND_ERROR);
+	err = WebGUI::COMMAND_ERROR;
       }
       return;
     }
@@ -190,19 +190,20 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 
   command += ";" + tmp;
 
-  string stdout;
-  err = WebGUI::execute(command,stdout,true);
-
   //  string hack = "echo \"single_command:A\" >> /tmp/foo";system(hack.c_str());
-  if (validate_commit == true && err != WebGUI::SUCCESS) {
+  if (validate_commit == true) {
     //  string hack = "echo \"single_command:B\" >> /tmp/foo";system(hack.c_str());
     resp = validate_commit_nodes();
     if (resp.empty() == false) {
       resp = WebGUI::mass_replace(resp, "\n", "&#xD;&#xA;");
+      err = WebGUI::COMMAND_ERROR;
       return;
     }
   }
   
+  string stdout;
+  err = WebGUI::execute(command,stdout,true);
+
   stdout = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
   resp = stdout;
 }
@@ -372,7 +373,7 @@ mandatory_func(GNode *node, gpointer data)
   //strip off trailing slashes
   string config_path = ((struct VyattaNode*)gp)->_config._path;
   string data_path = ((struct VyattaNode*)gp)->_data._path;
-  int pos = 1;
+  size_t pos = 1;
   while (config_path.rfind("/") == config_path.length()-pos && pos <= config_path.length()) {
     ++pos;
   }

@@ -117,6 +117,7 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                   break;
             }
 
+            f_saveUserLoginId();
             var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<vyatta><configuration><id>" + f_getUserLoginedID()
                        + "</id>\n" + nMode

@@ -38,7 +38,11 @@ function f_getUserLoginName()
 
 function f_saveUserLoginId(id)
 {
-    g_cookie.f_set(V_COOKIES_USER_ID, id, g_cookie.m_userNameExpire);
+    var sid = id;
+    if(id == undefined)
+        sid = f_getUserLoginedID();
+
+    g_cookie.f_set(V_COOKIES_USER_ID, sid, g_cookie.m_userNameExpire);
 }
 
 function f_getUserLoginedID(cookieP /* cookieP is optional */)

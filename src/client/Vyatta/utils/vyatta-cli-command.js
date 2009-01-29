@@ -145,13 +145,17 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         f_hideSendWaitMessage();
     }
 
+    var sid = f_getUserLoginedID();
+    f_saveUserLoginId(sid);
+
     /* send request */
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-               + "<vyatta><command><id>" + f_getUserLoginedID() + "</id>\n"
+               + "<vyatta><command><id>" + sid + "</id>\n"
                + "<statement mode='op'>" + sendStr + "</statement>\n"
                + "</command></vyatta>\n";
 
     g_cliCmdObj.m_newSegmentId = xmlstr.indexOf('multi_') >= 0 ? false : true;
+
 
     //////////////////////////////////////////////////////////////////
     // avoid to send a duplicate command again
@@ -250,8 +254,10 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         }
     }
 
+    var sid = f_getUserLoginedID();
+    f_saveUserLoginId(sid);
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                   + "<vyatta><command><id>" + f_getUserLoginedID() + "</id>\n";
+                   + "<vyatta><command><id>" + sid + "</id>\n";
 
     for(var i = 0; i < cmds.length; i++)
         xmlstr += "<statement mode='conf'>" + cmds[i] + "</statement>\n";

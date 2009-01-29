@@ -7,7 +7,8 @@ initddir = /etc/init.d
 cfgdir = $(datadir)/vyatta-cfg/templates
 opdir = $(datadir)/vyatta-op/templates
 
-AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g -I /usr/include/glib-2.0 -I /usr/lib/glib-2.0/include -I ../vyatta-cfg/src
+AM_CPPFLAGS = -I src/server -I src/lib -Wall -DDEBUG -g \
+              -I /usr/include/glib-2.0 -I /usr/lib/glib-2.0/include
 
 CLEANFILES = src/server/main.o src/server/manager.o src/server/session.o src/server/processor.o src/server/sessionexchange.o src/server/sessionexchangefile.o src/server/sessionexchangesocket.o src/server/sessionexchangestdio.o src/server/test.o src/server/authenticate.o src/server/common.o src/server/command.o src/server/configuration.o src/server/rl_str_proc.o src/server/multirespcmd.o
 
@@ -38,8 +39,8 @@ src_server_webgui_SOURCES += src/server/multirespcmd.cc
 
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
-src_server_webgui_LDADD += ../vyatta-cfg/src/libvyatta-cfg.la
 src_server_webgui_LDADD += /usr/lib/libglib-2.0.la
+src_server_webgui_LDADD += src/lib/libclibe.a
 
 
 cgi_PROGRAMS = src/server/webgui
@@ -47,6 +48,18 @@ cgi_PROGRAMS += src/server/chunker
 cgi_PROGRAMS += src/server/test
 cgi_PROGRAMS += src/server/chunker_test
 cgi_SCRIPTS = src/server/webgui-wrap
+
+# library
+AM_CFLAGS = -I src/lib -Wall -I /usr/include/glib-2.0 \
+            -I /usr/lib/glib-2.0/include
+AM_YFLAGS = -d --name-prefix=yy_`basename $* .y`_
+AM_LFLAGS = --prefix=yy_`basename $* .l`_ -olex.yy.c
+noinst_LIBRARIES = src/lib/libclibe.a
+src_lib_libclibe_a_SOURCES = src/lib/cli_parse.y src/lib/cli_def.l \
+                             src/lib/cli_val.l src/lib/cli_new.c \
+                             src/lib/cli_path_utils.c src/lib/common/common.c \
+                             src/lib/common/unionfs.c \
+                             src/lib/cli_val_engine.c src/lib/cli_objects.c
 
 cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
 				cpio -0pd

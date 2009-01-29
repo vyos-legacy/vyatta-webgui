@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 extern "C" {
-#include "../../../vyatta-cfg/src/common/common.h"
+#include <common/common.h>
 }
 #include <glib-2.0/glib.h>
 #include <map>

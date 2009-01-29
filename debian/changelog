@@ -1,3 +1,27 @@
+vyatta-webgui (0.2.12) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * update header background image to match logo color.
+  * * Fixed typo for log out warning message.
+
+  [ slioch ]
+  * enforce mandatory nodes prior to commit
+  * updated mandatory file from justin.
+
+  [ An-Cheng Huang ]
+  * merge in cli backend library (for porting to islavista).
+
+  [ Kevin Choi ]
+  * * additional fixed 'discard' to keep user's last page.
+
+  [ slioch ]
+  * check for clear command to not run if https is not configured.
+
+  [ Kevin Choi ]
+  * * removed extra 0 from a large buffer respond.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 29 Jan 2009 02:32:51 +0000
+
 vyatta-webgui (0.2.11) unstable; urgency=low
 
   [ Kevin Choi ]

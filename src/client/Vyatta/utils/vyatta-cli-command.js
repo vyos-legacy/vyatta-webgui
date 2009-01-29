@@ -220,11 +220,12 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             var onReloadHandler = function()
             {
                 tObj.m_parent.f_cleanEditorPanel();
-                treeObj.f_HandleNodeConfigClick(selNode, null, undefined, treeObj);
-                tObj.m_selNodePath = selPath;//node.parentNode;
-                tree.un('load');
+                f_handleNodeExpansion(tObj, selNode, selPath, cmds[0]);
+                //treeObj.f_HandleNodeConfigClick(selNode, null, undefined, treeObj);
+                tree.un('load', onReloadHandler);
             }
             tree.on('load', onReloadHandler);
+            tObj.m_parent.f_cleanEditorPanel();
             tree.root.reload();
         }
         else if(cmds[0].indexOf('commit') >= 0)
@@ -305,10 +306,19 @@ function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
     // expand handler
     var ehandler = function(success, last)
     {
-        if(last.getPath('text') != selPath)
+        var lSelPath = last.getPath('text');
+
+        if(lSelPath != selPath)
         {
+            if(cmds == 'discard')
+            {
+                tree.selectPath(lSelPath, 'text');
+                treeObj.m_selNodePath = lSelPath;
+                selPath = lSelPath;
+            }
+
             // we were at leaf. "last" is parent.
-            tree.selectPath(selPath, 'text', function(success,sel)
+            tree.selectPath(selPath, 'text', function(success, sel)
             {
                 var nnode = treeObj.m_tree.getSelectionModel().getSelectedNode();
                 treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
@@ -433,6 +443,13 @@ function f_handlePropagateParentNodes(node)
         n.attributes.configured = 'set';
         n = n.parentNode;
     }
+}
+
+function f_findValidSelectedNode(selNode)
+{
+    var sNodes = selNode.split(" ");
+
+
 }
 
 function f_parseResponseError(xmlRoot)

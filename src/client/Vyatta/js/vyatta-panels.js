@@ -146,7 +146,8 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
                 ePanel.items.itemAt(0).setSize(w-lp.width-25, h-5);
 
             if(ePanel.m_opTextArea != undefined)
-                ePanel.m_opTextArea.setSize(w-lp.width-30, h-10);
+                ePanel.m_opTextArea.setSize(w-lp.width-30,
+                    h-ePanel.m_opTextArea.m_heightOffset);
         }
     },
 
@@ -247,6 +248,8 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             ep.remove(old);
             delete old;
         }
+
+        ep.doLayout();
     },
 
     f_resetEditorPanel: function()
@@ -1160,22 +1163,46 @@ function f_createConfButton(treeObj, node, btnText, title)
     });
 }
 
+function f_handleOperBtnClick(button, node, treeObj)
+{
+    if(button.text == 'Stop')
+    {
+        button.setText('Run');
+        g_cliCmdObj.m_segmentId = 'segment_end';
+        button.m_pauseBtn.setText('Pause');
+        button.m_pauseBtn.hide();
+    }
+    else
+    {
+        var cb = function send(btn)
+        {
+            if(btn == 'yes')
+                f_sendOperationCliCommand(node, treeObj, false,
+                                          undefined, true, undefined,
+                                          treeObj, undefined);
+        };
+
+        if(node.text == 'reboot')
+        {
+            if(node.parentNode != undefined &&
+                    node.parentNode.text != 'show')
+            {
+                f_yesNoMessageBox('Reboot Operational',
+                    'Are you sure you wish to reboot the system?', cb);
+                return;
+            }
+        }
+
+        f_sendOperationCliCommand(node, treeObj, false,
+                                          undefined, true, undefined,
+                                          treeObj, button);
+    }
+}
+
 function f_createOperButton(treeObj, node, btnText, title)
 {
     var buttons = [ ];
     var btn_id = Ext.id();
-    var cmd = '';
-    var isDelete = false;
-
-    if(btnText == 'Delete')
-        cmd = 'delete ';
-    else if(btnText == 'Create')
-    {
-        cmd = 'set ';
-        isDelete = true;
-    }
-    else if(btnText == 'Stop')
-        cmd = 'stop';
 
     title = f_replace(title, '&rArr;', '');
     title = f_replace(title, 'Configuration&nbsp;', '');
@@ -1191,43 +1218,7 @@ function f_createOperButton(treeObj, node, btnText, title)
         ,height: 20
         ,handler: function()
         {
-            if(this.text == 'Stop')
-            {
-                this.setText('Run');
-                g_cliCmdObj.m_segmentId = 'segment_end';
-                this.m_pauseBtn.setText('Pause');
-                this.m_pauseBtn.hide();
-                return;
-            }
-            else if(cmd.length == 0)
-            {
-                var cb = function send(btn)
-                {
-                    if(btn == 'yes')
-                        f_sendOperationCliCommand(node, treeObj, false,
-                                                  undefined, true, undefined,
-                                                  treeObj, undefined);
-                };
-
-                if(node.text == 'reboot')
-                {
-                    if(node.parentNode != undefined &&
-                            node.parentNode.text != 'show')
-                    {
-                        f_yesNoMessageBox('Reboot Operational',
-                            'Are you sure you wish to reboot the server?', cb);
-                        return;
-                    }
-                }
-
-                f_sendOperationCliCommand(node, treeObj, false,
-                                                  undefined, true, undefined,
-                                                  treeObj, this);
-            }
-            else
-                f_sendConfigCLICommand(
-                                [cmd + treeObj.f_getNodePathStr(node) ],
-                                treeObj, node, isDelete);
+            f_handleOperBtnClick(this, node, treeObj)
         }
     });
 
@@ -1278,6 +1269,7 @@ function f_createOperButton(treeObj, node, btnText, title)
     });
 
     panel.m_pauseBtn = buttons[1];
+    treeObj.m_runButton = buttons[0];
     return panel;
 }
 

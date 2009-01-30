@@ -374,6 +374,10 @@ mandatory_func(GNode *node, gpointer data)
     return false;
   }
 
+  if (IS_DELETE(((struct VyattaNode*)gp)->_data._operation)) {
+    return false;
+  }
+
   //strip off trailing slashes
   string config_path = ((struct VyattaNode*)gp)->_config._path;
   string data_path = ((struct VyattaNode*)gp)->_data._path;
@@ -386,7 +390,7 @@ mandatory_func(GNode *node, gpointer data)
   }
   map< string,set<string> >::iterator iter = md->_mandatory_node_coll->find(config_path);
 
-  //  string hack = "echo \"mandatory_func ENTERED ON PATH:"+config_path+"\" >> /tmp/foo";system(hack.c_str());
+  //  string hack = "echo \"mandatory_func ENTERED ON PATH:"+config_path+"\" >> /tmp/foot";system(hack.c_str());
 
   //match on root, now let's perform explicit checks on nodes in merged local directory
   if (iter != md->_mandatory_node_coll->end()) {
@@ -395,7 +399,7 @@ mandatory_func(GNode *node, gpointer data)
     while (c_iter != children.end()) {
       struct stat s;
       string child_data_path = WebGUI::VYATTA_TEMP_CONFIG_DIR + md->_session_id + data_path + *c_iter;
-      //      string hack = "echo \"mandatory_func TESTING PATH:"+child_data_path+"\" >> /tmp/foo";system(hack.c_str());
+      //      string hack = "echo \"mandatory_func TESTING PATH:"+child_data_path+"\" >> /tmp/foot";system(hack.c_str());
       if (lstat(child_data_path.c_str(),&s) != 0) {
 	md->_err += data_path + *c_iter + "\n";
       }

@@ -14,7 +14,7 @@ export vyatta_localstatedir=/opt/vyatta/var
 export vyatta_libexecdir=/opt/vyatta/libexec                                                                                                                                      
 export vyatta_infodir=/opt/vyatta/share/info
 
-
+export HOME=/root
 
 source /etc/bash_completion.d/10vyatta-op
 

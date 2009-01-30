@@ -244,7 +244,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             f_handleToolbarViewCmdResponse(isSuccess[1]);
             return;
         }
-        else
+        else  // other things else
         {
             if(node == undefined)
                 f_handleNodeExpansion(tObj, selNode, selPath, cmds);
@@ -362,10 +362,9 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         treeObj.m_isCommitAvailable = true;
 
         /*
-         * successfully created a node. now need to propagate the
-         * "configured" status up the tree (since we only reload the
-         * parent node, which only updates all siblings of the newly
-         * created node).
+         * new we need to walk up the tree to flag the yellow cir.
+         * Anything below the parent node automatically took care
+         * by the server.
          */
         f_handlePropagateParentNodes(node);
         if(node != undefined && typeof node.reload == 'function')
@@ -381,7 +380,11 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         spath = f_replace(spath, ' ', '');
         scmd = f_replace(scmd, ' ', '');
         if(spath == scmd)
+        {
             p = node;
+            selNode = p;
+            selPath = p.getPath('text');
+        }
     }
     else if(cmds[0].indexOf("delete", 0) >= 0)
     {
@@ -395,29 +398,31 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         treeObj.m_selNodePath = sm.getSelectedNode().getPath('text');
         
         var nnode = sm.getSelectedNode();
+        selNode = nnode;
+        selPath = nnode.getPath('text');
         nnode.reload();
         treeObj.m_isCommitAvailable = true;
         f_handlePropagateParentNodes(nnode);
         treeObj.m_parent.f_onTreeRenderer(treeObj);
     }
 
+    ////////////////////////////////////////////////////////
+    // refresh the editor panel on the selectioned node
     var handler = function(narg)
     {
         tree.selectPath(selPath, 'text', function(success, sel)
         {
             var nnode = tree.getSelectionModel().getSelectedNode();
+            treeObj.m_parent.f_cleanEditorPanel();
             treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
         });
 
         narg.un('expand', handler);
     }
-
     if(!f_isExpandableNode(p))
         treeObj.m_parent.f_onTreeRenderer(treeObj);
-
     if(p.expanded)
         p.collapse();
-
     p.on('expand', handler);
     p.expand();
         
@@ -467,8 +472,8 @@ function f_parseResponseError(xmlRoot)
         {
             msg = xmlRoot.textContent;
 
-            // strip out the first 2 extra chars.
-            msg = msg.substr(2, msg.length);
+            // strip out the first 1 extra chars.
+            msg = msg.substr(1, msg.length);
         }
 
         var msgNode = q.selectNode('msg', err);

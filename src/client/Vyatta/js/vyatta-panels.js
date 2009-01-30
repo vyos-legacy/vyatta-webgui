@@ -358,7 +358,7 @@ function f_createFieldDirtyIndicatorPanel(node)
     return p;
 }
 
-function f_createNumberField(value, node, help, width, callback)
+function f_createNumberField(value, node, help, width, callback, mode)
 {
     var oldVal = value != undefined ? value : node.attributes.defaultVal;
     var label = node.text;
@@ -374,7 +374,7 @@ function f_createNumberField(value, node, help, width, callback)
         value: oldVal,
         //onChange: keyupPressHandler//function(e, n, o){ },
         enableKeyEvents: true
-        ,onBlur: callback
+        ,onBlur: mode == undefined ? callback : undefined
     });
     field.getOriginalValue = function()
     { return oldVal == undefined ? "" : oldVal; };
@@ -409,7 +409,7 @@ function f_createNumberField(value, node, help, width, callback)
     return p;
 }
 
-function f_createTextField(value, labelStr, helpStr, width, callback, node)
+function f_createTextField(value, labelStr, helpStr, width, callback, node, mode)
 {
     var oldVal = value != undefined ? value : node.attributes.defaultVal;
     var field = new Ext.form.TextField(
@@ -419,8 +419,9 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node)
         ,height:22
         ,value: oldVal
         ,enableKeyEvents: true
-        ,onBlur: callback
+        ,onBlur: mode == undefined ? callback : undefined
     });
+    field.m_mode = mode;
     field.getOriginalValue = function() 
     { return oldVal == undefined ? "" : oldVal; };
     field.setOriginalValue = function(val)

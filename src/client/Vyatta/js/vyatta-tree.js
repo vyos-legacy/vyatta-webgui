@@ -613,7 +613,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         });
 
         tree.on('click', nodeClickHandler);
-        tree.on('load', nodeLoadedHandler);
+        //tree.on('load', nodeLoadedHandler);
     },
 
     f_onConfigTreeNodeClick: function(node, e)
@@ -715,6 +715,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         var cNode = node;
         var callback = function()
         {
+            var cc = node.getValFunc();
             //////////////////////////////////////////////////
             // if value had changed, send changed to server
             if(node.getOriginalValue() != node.getValFunc())
@@ -1215,7 +1216,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                             'Select a valuid value...', undefined,
                             labelArray[i], 244,
                             helpStr, false,
-                            inputFieldOnBlur, nNode);
+                            undefined, nNode);
 
                 f_addField2Panel(ePanel, field, labelArray[i++]);
 
@@ -1224,7 +1225,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             else
             {
                 field = f_createTextField('', labelArray[i++], helpStr,
-                                          250, inputFieldOnBlur, node);
+                                          250, inputFieldOnBlur, node, 'opMode');
                 f_addField2Panel(ePanel, field, helpStr);
 
                 field = field.items.itemAt(V_IF_INDEX_INPUT);
@@ -1315,7 +1316,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
         else if(values != undefined && values.length > 0)
         {
-            m_thisObj.f_addOpTextAreaField(ePanel, values);
+            if(g_cliCmdObj.m_segmentId != undefined)
+                m_thisObj.f_addOpTextAreaField(ePanel, values);
         }
         else if(g_cliCmdObj.m_segmentId != undefined && values == '')
         {
@@ -1328,11 +1330,15 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     f_addOpTextAreaField: function(ePanel, values)
     {
         var eForm = ePanel.items.itemAt(0);
-        var hOffset = (eForm.items.getCount() * 35) + 48;
-        var mlbl = f_createTextAreaField(values, 0, ePanel.getInnerHeight()-hOffset);
-        mlbl.m_heightOffset = hOffset;
-        f_addField2Panel(ePanel, mlbl, undefined);
-        m_thisObj.m_parent.m_editorPanel.m_opTextArea = mlbl;
+
+        if(eForm != undefined)
+        {
+            var hOffset = (eForm.items.getCount() * 35) + 48;
+            var mlbl = f_createTextAreaField(values, 0, ePanel.getInnerHeight()-hOffset);
+            mlbl.m_heightOffset = hOffset;
+            f_addField2Panel(ePanel, mlbl, undefined);
+            m_thisObj.m_parent.m_editorPanel.m_opTextArea = mlbl;
+        }
     },
 
     f_handleButton: function(node, title)

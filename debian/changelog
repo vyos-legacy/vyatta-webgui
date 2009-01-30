@@ -1,3 +1,21 @@
+vyatta-webgui (0.2.12-2) unstable; urgency=low
+
+  [ slioch ]
+  * added fix for check of mandatory nodes when string is empty.
+  * added new error type for missing mandatory nodes and removed
+    descriptive string in front of location--for client to interpret and
+    display.
+  * latest greatest from Justin.
+  * Fixed deletion of mandatory node problem--make sure these nodes are
+    not evaluated.
+
+  [ Kevin Choi ]
+  * * Enhancement fixed. Added an option to op mode text field. By
+    pressing 'enter' key will
+  * * additional fix to 'commit' to keep user's last page.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 30 Jan 2009 02:48:12 +0000
+
 vyatta-webgui (0.2.12-1) unstable; urgency=low
 
   [ slioch ]

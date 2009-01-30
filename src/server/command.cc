@@ -196,7 +196,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     resp = validate_commit_nodes();
     if (resp.empty() == false) {
       resp = WebGUI::mass_replace(resp, "\n", "&#xD;&#xA;");
-      err = WebGUI::COMMAND_ERROR;
+      err = WebGUI::MANDATORY_NODE_ERROR;
       return;
     }
   }
@@ -269,8 +269,6 @@ Command::validate_commit_nodes()
 {
   map< string,set<string> > mandatory_node_coll;
 
-
-
   //let's bring in the new cli code and call 
   string value = "/opt/vyatta/config/tmp/tmp_" + _proc->get_msg().id();
   setenv("VYATTA_CONFIG_TMP",value.c_str(),1);
@@ -326,8 +324,6 @@ Command::validate_commit_nodes()
   //VYATTA_TEMP_CONFIG_DIR
   */
 
-
-
   char buf2[30];
   sprintf(buf2,"%d",mandatory_node_coll.size());
   //  hack = "echo \"validate_commit_nodes:D: "+string(buf2)+"\" >> /tmp/foo";system(hack.c_str());
@@ -370,6 +366,14 @@ mandatory_func(GNode *node, gpointer data)
   struct MandatoryData *md = (struct MandatoryData*)data;
   gpointer gp = ((GNode*)node)->data;
 
+  if (((struct VyattaNode*)gp) == NULL) {
+    return false;
+  }
+  if (((struct VyattaNode*)gp)->_config._path == NULL || 
+      ((struct VyattaNode*)gp)->_data._path == NULL) {
+    return false;
+  }
+
   //strip off trailing slashes
   string config_path = ((struct VyattaNode*)gp)->_config._path;
   string data_path = ((struct VyattaNode*)gp)->_data._path;
@@ -393,7 +397,7 @@ mandatory_func(GNode *node, gpointer data)
       string child_data_path = WebGUI::VYATTA_TEMP_CONFIG_DIR + md->_session_id + data_path + *c_iter;
       //      string hack = "echo \"mandatory_func TESTING PATH:"+child_data_path+"\" >> /tmp/foo";system(hack.c_str());
       if (lstat(child_data_path.c_str(),&s) != 0) {
-	md->_err += "Mandatory node missing: " + data_path + *c_iter + "\n";
+	md->_err += data_path + *c_iter + "\n";
       }
       ++c_iter;
     }

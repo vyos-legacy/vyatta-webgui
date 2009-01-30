@@ -76,94 +76,24 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   }
   /* Child. */
   close(1); /* Close current stdout. */
-  dup( cp[1]); /* Make stdout go to write end of pipe. */
+  dup2( cp[1],1); /* Make stdout go to write end of pipe. */
+  dup2( cp[1],2); /* Make stderr go to write end of pipe. */
   close(0); /* Close current stdin. */
   close( cp[0]);
 
   string opmodecmd;
   opmodecmd = WebGUI::mass_replace(cmd,"'","'\\''");
   opmodecmd = "/bin/bash -c '" + opmodecmd + "'";
-  //    string opmodecmd = "/bin/bash -i -c " + command;
-  //  string opmodecmd = cmd;
-
-  //  syslog(LOG_ERR, "chunker command: %s",opmodecmd.c_str());
-
-  char *argv_tmp[64], *argv[64];
-  char *tmp = (char*)cmd.c_str();
-  //  parse(tmp, argv_tmp);
-  /*
-  argv[0] = "/bin/bash\0";
-  //  argv[1] = "-i\0";
-  argv[1] = "-c\0";
-  string str = string("'") + cmd.c_str() + "'\0";
-  argv[2] = (char*)str.c_str();
-
-  printf("argv[0]: %s, %s\n",argv[0],argv_tmp[0]);
-  printf("argv[1]: %s, %s\n",argv[1],argv_tmp[1]);
-  printf("argv[2]: %s, %s\n",argv[2],argv_tmp[2]);
-  //  printf("argv[3]: %s, %s\n",argv[3],argv_tmp[3]);
-  */
-
-  
-string shell = "export VYATTA_TEMPLATE_LEVEL=/;\
-export vyatta_datadir=/opt/vyatta/share;\
-export vyatta_op_templates=/opt/vyatta/share/vyatta-op/templates;\
-export vyatta_sysconfdir=/opt/vyatta/etc;\
-export vyatta_sharedstatedir=/opt/vyatta/com;\
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin;\
-export vyatta_sbindir=/opt/vyatta/sbin;export vyatta_bindir=/opt/vyatta/bin;\
-export vyatta_libdir=/opt/vyatta/lib;\
-export vyatta_localstatedir=/opt/vyatta/var;\
-export vyatta_libexecdir=/opt/vyatta/libexec;\
-export vyatta_infodir=/opt/vyatta/share/info;source /etc/bash_completion.d/10vyatta-op; _vyatta_op_run ";
-  
-
 
   opmodecmd = WebGUI::mass_replace(cmd,"'","");
-  char tmpcmd[1024];
-
-
-  //  opmodecmd = "/bin/bash -c '" + shell + opmodecmd + "'";
-  //  opmodecmd = shell + opmodecmd;
-
-  //  need to set up the cmd like: argv[0] = /bin/bash, 1 = -c 2 = rest
-
 
   syslog(LOG_DEBUG,"command: %s",opmodecmd.c_str());
-
-  sprintf(tmpcmd,"%s",opmodecmd.c_str());
-  //  printf("%s<end>\n",tmpcmd);
-  /*
-
-  sprintf(tmpcmd,"ping  10.3.0.1");
-  printf("%s<end>\n",tmpcmd);
-  */
-  //  parse(tmpcmd,argv);
-  //  syslog(LOG_ERR,"argv[x]: %s, %s, %s",argv[0],argv[1],argv[2]);
-  /*
-  printf("argv[0]: %s\n",argv[0]);
-  printf("argv[1]: %s\n",argv[1]);
-  */
-  
-  //let's give the reader a chance to write out a single chunk
-  //  execvp(argv[0], argv);
-  //  int err = execlp("/bin/ping","/bin/ping", "10.3.0.232",NULL);
-  //  opmodecmd = "'" + opmodecmd + "'";
 
   int err = execlp("/usr/lib/cgi-bin/chunker_cmd",
 		   "/usr/lib/cgi-bin/chunker_cmd",
 		   opmodecmd.c_str(),
 		   NULL);
   syslog(LOG_ERR, "ERROR RECEIVED FROM EXECVP(1): %d, %d",err, errno);
-  /*
-  err = execlp("_vyatta_op_run",
-	       "_vyatta_op_run",
-	       "/bin/ping", 
-	       "10.3.0.232",
-	       NULL);
-
-  syslog(LOG_ERR, "ERROR RECEIVED FROM EXECVP(2): %d, %d",err, errno);
-  */
 }
 
 /**

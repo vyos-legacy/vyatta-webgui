@@ -1,3 +1,20 @@
+vyatta-webgui (0.2.12-1) unstable; urgency=low
+
+  [ slioch ]
+  * fix for show ipv6 routes--probably fixes other commands as well.
+
+  [ Kevin Choi ]
+  * * save session id to cookies for every command send... .include the
+    command send via
+
+  [ slioch ]
+  * chunker now consumes stderr. fix for op mode cmd 'set date 1234'
+  * added syslog output for lighttpd
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 29 Jan 2009 14:13:12 -0800
+
 vyatta-webgui (0.2.12) unstable; urgency=low
 
   [ Kevin Choi ]

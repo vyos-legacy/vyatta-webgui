@@ -45,7 +45,8 @@ public:
 	      SERVER_FAILURE,
 	      COMMAND_ERROR,
 	      COMMIT_IN_PROGRESS,
-	      CONFIGURATION_CHANGE};
+	      CONFIGURATION_CHANGE,
+              MANDATORY_NODE_ERROR};
 
 
   static char const *ErrorDesc[];

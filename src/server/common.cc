@@ -46,7 +46,7 @@ const string WebGUI::CHUNKER_UPDATE_FORMAT = "<vyatta><chunker_command><token>%s
 
 const string WebGUI::MANDATORY_NODE_FILE = "/usr/lib/cgi-bin/mandatory";
 
-char const* WebGUI::ErrorDesc[9] = {" ",
+char const* WebGUI::ErrorDesc[10] = {" ",
 				    "request cannot be parsed",
 				    "authentication error",
 				    "session is not valid",
@@ -54,7 +54,8 @@ char const* WebGUI::ErrorDesc[9] = {" ",
 				    "general server failure",
 				    "command failed",
 				    "commit is in progress",
-				    "configuration has changed"};
+				    "configuration has changed",
+                                    "commit is missing mandatory nodes"};
 
 /**
  *

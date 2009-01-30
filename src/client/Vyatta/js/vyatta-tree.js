@@ -1,4 +1,4 @@
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -283,10 +283,13 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             str += ",defaultVal:'" + tDefault + "'";
         }
 
+        var tConfig_ = q.selectValue('configured', node);
         if(tConfig == undefined)
-            tConfig = q.selectValue('configured', node);
-        if (tConfig != undefined)
+            tConfig = tConfig_;
+        if(tConfig != undefined)
             str += ",configured:'" + tConfig + "'";
+        str += ",configured_:'" + tConfig_ + "'";
+
 
         var nenums = q.selectNode('enum', node);
         if (nenums != undefined)
@@ -388,13 +391,13 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             this.m_tree.setRootNode(this.f_getConfigRootNode());
             this.initTreeListeners(this.m_tree, this.f_onConfigTreeNodeClick,
-                  this.f_handleSelectedNodeExpand);
+                  undefined);//this.f_handleSelectedNodeExpand);
         }
         else// if(this.m_treeMode == V_TREE_ID_oper)
         {
             this.m_tree.setRootNode(this.f_getOperationRootNode());
-            this.initTreeListeners(this.m_tree, this.f_handleNodeOperClick, 
-                  this.f_handleSelectedNodeExpand);
+            this.initTreeListeners(this.m_tree, this.f_handleNodeOperClick,
+                  undefined)///this.f_handleSelectedNodeExpand);
         }
 
         this.m_tree.getRootNode().expand(false, false);
@@ -402,6 +405,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     /////////////////////////////////////////////////////////////
     //
+    /*
     f_handleSelectedNodeExpand: function()
     {
         ////////////////////////
@@ -477,7 +481,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             // if select node found, expand it
             treeObj.f_handleExpandNode(node, treeObj, true);
         }
-    },
+    },*/
 
     f_handleExpandNode: function(node, treeObj, handleClick)
     {
@@ -495,7 +499,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 {
                     treeObj.m_tree.getSelectionModel().select(node);
                     node.ensureVisible();
-                    
+
                     treeObj.f_HandleNodeConfigClick(node, null, undefined);
                 }
 
@@ -643,9 +647,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             if(m_thisObj.m_parent.f_getEditorTitle() != titlePanel.title)
             {
                 m_thisObj.m_parent.f_cleanEditorPanel();
-                f_addField2Panel(m_thisObj.m_parent.m_editorPanel, titlePanel, node.text);
+                f_addField2Panel(m_thisObj.m_parent.m_editorPanel, titlePanel, node);
             }
             m_thisObj.f_handleButton(node, titlePanel.title);
+                
         }
 
         if(node.leaf)
@@ -663,7 +668,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 if (n.attributes.multi == undefined || !n.attributes.multi)
                 {
                     if(m_thisObj.m_parent.f_getEditorItemCount() < 0)
-                        f_addField2Panel(ePanel, titlePanel, node.text);
+                        f_addField2Panel(ePanel, titlePanel, node);
 
                     // a second chance to add button for case all the child nodes
                     // has not retrieve from server yet.
@@ -676,10 +681,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     m_thisObj.f_interMultiHandler(n);
             });
         }
-
-        //var fPanel = ePanel.items.itemAt(0);
-        //if(fPanel != undefined)
-          //  fPanel.doLayout();
     },
 
     f_interHandler: function(node)
@@ -735,13 +736,13 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
 
         if(node.attributes.enums != undefined)
-            m_thisObj.f_leafSingleEnumHandler(node, node.attributes.enums, 
+            m_thisObj.f_leafSingleEnumHandler(node, node.attributes.enums,
                       node.attributes.help, callback);
         else if(node.attributes.type == 'u32')
             m_thisObj.f_leafSingleU32Handler(node, node.attributes.help, callback);
         else
             m_thisObj.f_leafSingleTxtHandler(node, node.attributes.help, callback)
-        
+
 
         m_thisObj.m_parent.m_editorPanel.doLayout();
     },
@@ -755,9 +756,14 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         var onBlur = function()
         {
+            //////////////////////////////////////
+            // check for blank space
+            var val = cNode.getValFunc();
+            val = (val != undefined && val.indexOf != null &&
+                    val.indexOf(" ") > 0) ? "'"+val+"'" : val;
+
             //////////////////////////////////////////////////
             // if value had changed, send changed to server
-            var val = cNode.getValFunc();
             if(val != cNode.getOriginalValue())
             {
                 cNode.setOriginalValue(val);
@@ -850,7 +856,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             return field;
         }
-        f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.txt);
+
+        if(m_thisObj.m_parent.m_editorPanel.m_showLeaf)
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node);
 
 
         var vfield = field.items.itemAt(V_IF_INDEX_INPUT);
@@ -907,7 +915,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             return field1;
         }
-        f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field1, node.txt);
+        if(m_thisObj.m_parent.m_editorPanel.m_showLeaf)
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field1, node);
 
         var field =  field1.items.itemAt(V_IF_INDEX_INPUT).items.itemAt(0);
         node.getValFunc = function()
@@ -955,7 +964,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             return grid;
         }
 
-        f_addField2Panel(m_thisObj.m_parent.m_editorPanel, grid, node.txt);
+        if(m_thisObj.m_parent.m_editorPanel.m_showLeaf)
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, grid, node);
 
         node.getValsFunc = function()
         {
@@ -982,7 +992,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             return grid;
         }
 
-        f_addField2Panel(m_thisObj.m_parent.m_editorPanel, grid, node.txt);
+        if(m_thisObj.m_parent.m_editorPanel.m_showLeaf)
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, grid, node);
 
         node.getValsFunc = function()
         {
@@ -1014,7 +1025,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             return grid;
         }
-        f_addField2Panel(m_thisObj.m_parent.m_editorPanel, grid, node.txt);
+
+        if(m_thisObj.m_parent.m_editorPanel.m_showLeaf)
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, grid, node);
 
         node.getValsFunc = function()
         {
@@ -1034,7 +1047,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             return field;
         }
-        f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node.txt);
+        if(m_thisObj.m_parent.m_editorPanel.m_showLeaf)
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel, field, node);
 
         var vfield = field.items.itemAt(V_IF_INDEX_INPUT);
         node.getValFunc = function()
@@ -1343,6 +1357,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_handleButton: function(node, title)
     {
+        m_thisObj.m_parent.m_editorPanel.m_showLeaf = true;
+
         if(node.attributes.configured != undefined &&
             (node.attributes.configured == 'add' ||
             node.attributes.configured == 'active' ||
@@ -1377,9 +1393,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             }
 
             //if(!hasLeaf)
-                f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
+            f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
                                 f_createConfButton(m_thisObj, node, 'Create',
                                 title), 'Create Node');
+            m_thisObj.m_parent.m_editorPanel.m_showLeaf = false;
         }
     }
 });
@@ -1432,18 +1449,27 @@ function getNodeStyleImage(node, forTreeView)
             if(forTreeView)
                 return V_DIRTY_FLAG;
 
-            ///////////////////////////////////////////
-            // if the set val != default val, is dirty
-            var vals = node.attributes.values;
-            var defVal = node.attributes.defaultVal;
-            if(defVal != undefined &&
-                (vals != undefined && vals[0] != undefined) &&
-                defVal != vals[0])
-                return V_DIRTY_FLAG;
-            else if(defVal == undefined)
-                ///////////////////////////
-                // no def val set, is dirty
-                return V_DIRTY_FLAG;
+            var conf_ = node.attributes.configured_;
+            if(conf_ != undefined)
+            {
+                if(conf_ == 'set')
+                {
+                    ///////////////////////////////////////////
+                    // if the set val != default val, is dirty
+                    var vals = node.attributes.values;
+                    var defVal = node.attributes.defaultVal;
+                    if(defVal != undefined &&
+                        (vals != undefined && vals[0] != undefined) &&
+                        defVal != vals[0])
+                        return V_DIRTY_FLAG;
+                    else if(defVal == undefined)
+                        ///////////////////////////
+                        // no def val set, is dirty
+                        return V_DIRTY_FLAG;
+                }
+                else if(conf_ == 'active' || conf_ == 'active_plus')
+                    return V_DIRTY_FLAG;
+            }
 
             return '';
         case 'delete':

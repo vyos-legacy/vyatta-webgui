@@ -198,8 +198,8 @@ function f_handleLogout()
     {
         if(btn == 'yes')
         {
-            f_sendConfigCLICommand(['discard'], g_baseSystem.m_tabObjects[
-                    g_baseSystem.m_iConf].m_treeObj, undefined, undefined);
+            //f_sendConfigCLICommand(['discard'], g_baseSystem.m_tabObjects[
+            //        g_baseSystem.m_iConf].m_treeObj, undefined, undefined);
             f_userLogout(true, g_baseSystem.m_homePage);
         }
     };

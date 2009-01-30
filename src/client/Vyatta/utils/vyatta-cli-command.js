@@ -257,7 +257,6 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 f_handleNodeExpansion(tObj, selNode, selPath, cmds);
             else if(node.parentNode != undefined || selNode.parentNode != undefined)
                 f_handleParentNodeExpansion(tObj, node, selNode, selPath, cmds, isCreate);
-            //tObj.f_HandleNodeConfigClick(selNode, undefined, true);
         }
     }
 
@@ -363,6 +362,7 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
     var tree = treeObj.m_tree;
     treeObj.m_selNodePath = selPath;
     var p = node.parentNode;
+    var doNotClear = false;
 
     if(isCreate)
     {
@@ -374,8 +374,12 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
          * by the server.
          */
         f_handlePropagateParentNodes(node);
+        var skipClearChk = false;
         if(node != undefined && typeof node.reload == 'function')
+        {
+            skipClearChk = true;
             node.reload();
+        }
         else if(selNode != undefined && typeof selNode.reload == 'function')
             selNode.reload();
 
@@ -392,6 +396,8 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
             selNode = p;
             selPath = p.getPath('text');
         }
+        else
+            doNotClear = skipClearChk ? doNotClear : true;
     }
     else if(cmds[0].indexOf("delete", 0) >= 0)
     {
@@ -420,7 +426,9 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         tree.selectPath(selPath, 'text', function(success, sel)
         {
             var nnode = tree.getSelectionModel().getSelectedNode();
-            treeObj.m_parent.f_cleanEditorPanel();
+
+            if(!doNotClear)
+                treeObj.m_parent.f_cleanEditorPanel();
             treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
         });
 

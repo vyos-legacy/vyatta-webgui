@@ -255,19 +255,22 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
     f_resetEditorPanel: function()
     {
         var ep = this.m_editorPanel;
-        var ef = ep.items.itemAt(0);
-
-        if(ef != undefined && ef.items != undefined)
+        if(ep.items != undefined)
         {
-            var len = ef.items.getCount();
+            var ef = ep.items.itemAt(0);
 
-            ///////////////////////////////
-            // walk the form editor.
-            for(var i=0; i<len; i++)
+            if(ef != undefined && ef.items != undefined)
             {
-                var f = ef.items.itemAt(i);
-                if(f.items != undefined && f.items.item(V_IF_INDEX_DIRTY) != undefined)
-                    f.items.item(V_IF_INDEX_DIRTY).hide();
+                var len = ef.items.getCount();
+
+                ///////////////////////////////
+                // walk the form editor.
+                for(var i=0; i<len; i++)
+                {
+                    var f = ef.items.itemAt(i);
+                    if(f.items != undefined && f.items.item(V_IF_INDEX_DIRTY) != undefined)
+                        f.items.item(V_IF_INDEX_DIRTY).f_hide();
+                }
             }
         }
 
@@ -883,7 +886,7 @@ function f_handleToolbarViewCmdResponse(responseTxt)
 //////////////////////////////////////////////////////////////////
 // if fields are already in panel, update it and return false. else
 // do nothing and return true
-function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
+function f_updateFieldValues2Panel(editorPanel, fields, node)
 {
     if(editorPanel == undefined || f_isPanelEmpty(editorPanel) || fields == undefined)
         return true;
@@ -911,12 +914,16 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
             {
                 ////////////////////////////////////////
                 // handle field dirty indicator
-                var node = fields.m_node;
-                if(node != undefined && node.attributes.configured == 'set')
+                if(node.attributes.configured == 'set')
+                    //node.attributes.configured_ == 'active_plus')
                 {
                     var nodeVals = node.attributes.values;
                     if(getNodeStyleImage(node, false).length > 1)
-                        f_updateDirtyIndicatorPanel(f.items.item(V_IF_INDEX_DIRTY), false);
+                    {
+                        var dField = f.items.item(V_IF_INDEX_DIRTY);
+                        f_updateDirtyIndicatorPanel(dField, false);
+                        dField.f_show();
+                    }
 
                     ///////////////////////////////////////////
                     // update input field value
@@ -932,6 +939,10 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
                         updateF.getXType() == 'textfield')
                     {
                         updateF.setValue(nodeVals);
+                    }
+                    else
+                    {
+
                     }
                 }
 
@@ -955,13 +966,13 @@ function f_updateFieldValues2Panel(editorPanel, fields, labelTxt)
     return true;
 }
 
-function f_addField2Panel(editorPanel, fields, labelTxt, row)
+function f_addField2Panel(editorPanel, fields, node, row)
 {
     ////////////////////////////////////////////////////
     // let find out if the fields are already existed
     // in editor. If they are, then update the values,
     // else add them to editor panel.
-    if(!f_updateFieldValues2Panel(editorPanel, fields, labelTxt)) return;
+    if(!f_updateFieldValues2Panel(editorPanel, fields, node)) return;
 
     if(editorPanel != undefined && fields != undefined &&
         !f_isPanelEmpty(editorPanel))
@@ -983,7 +994,7 @@ function f_addField2Panel(editorPanel, fields, labelTxt, row)
     {
         var fieldP = new Ext.form.FormPanel(
         {
-            fieldLabel: labelTxt
+            fieldLabel: node.text
             ,autoScroll: true
             ,autoHeight: false
             ,bodyBorder: false

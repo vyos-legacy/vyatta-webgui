@@ -232,9 +232,16 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         }
         else if(cmds[0].indexOf('commit') >= 0)
         {
+            var onReloadHandler = function()
+            {
+                tObj.m_parent.f_cleanEditorPanel();
+                f_handleNodeExpansion(tObj, selNode, selPath, cmds[0]);
+                tree.un('load', onReloadHandler);
+            }
             tObj.m_parent.f_resetEditorPanel();
             f_handlePropagateParentNodes(selNode);
             tObj.m_selNodePath = selPath;//node.parentNode;
+            tree.on('load', onReloadHandler);
             tree.getRootNode().reload();
         }
         /////////////////////////////////////

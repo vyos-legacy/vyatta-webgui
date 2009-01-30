@@ -1,3 +1,18 @@
+vyatta-webgui (0.2.12-3) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * No discard configuration for logout
+
+  [ slioch ]
+  * fix for 'grep: //.bashrc: No such file or directory' error at
+    beginning
+  * renamed pipe from chunker_foobar to browser_pager
+  * no clean up of old sessions.
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 30 Jan 2009 11:43:35 +0000
+
 vyatta-webgui (0.2.12-2) unstable; urgency=low
 
   [ slioch ]

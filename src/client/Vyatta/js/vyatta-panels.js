@@ -532,7 +532,7 @@ function f_createCheckbox(value, node, helpStr, width, callback)
         ,onClick: callback
     });
     field.getOriginalValue = function()
-    { return oldVal == undefined ? "" : oldVal; };
+    { return !field.getValue() };
     field.setOriginalValue = function(val)
     { oldVal = val; }
 
@@ -914,10 +914,10 @@ function f_updateFieldValues2Panel(editorPanel, fields, node)
             {
                 ////////////////////////////////////////
                 // handle field dirty indicator
-                if(node.attributes.configured == 'set')
-                    //node.attributes.configured_ == 'active_plus')
+                var nodeVals = node.attributes.values;
+                if(node.attributes.configured == 'set' ||
+                    node.attributes.configured_ == 'active_plus')
                 {
-                    var nodeVals = node.attributes.values;
                     if(getNodeStyleImage(node, false).length > 1)
                     {
                         var dField = f.items.item(V_IF_INDEX_DIRTY);
@@ -933,16 +933,31 @@ function f_updateFieldValues2Panel(editorPanel, fields, node)
                         var input = updateF.items.itemAt(0);
                         
                         if(input.getXType() == 'checkbox')
-                            input.setValue(f_getValueForCheckbox(nodeVals[0]));
+                        {
+                            var newVal = nodeVals[1] != undefined?nodeVals[1]:
+                                nodeVals[0];
+                            input.setValue(f_getValueForCheckbox(newVal));
+                        }
                     }
                     else if(updateF.getXType() == 'numberfield' ||
                         updateF.getXType() == 'textfield')
                     {
                         updateF.setValue(nodeVals);
                     }
-                    else
+                }
+                else if(node.attributes.configured == 'active')
+                {
+                    var updateF = f.items.itemAt(V_IF_INDEX_INPUT);
+                    if(updateF.items != undefined)
                     {
+                        var input = updateF.items.itemAt(0);
 
+                        if(input.getXType() == 'checkbox')
+                        {
+                            var newVal = nodeVals[1] != undefined?nodeVals[1]:
+                                nodeVals[0];
+                            input.setValue(f_getValueForCheckbox(newVal));
+                        }
                     }
                 }
 
@@ -994,7 +1009,7 @@ function f_addField2Panel(editorPanel, fields, node, row)
     {
         var fieldP = new Ext.form.FormPanel(
         {
-            fieldLabel: node.text
+            fieldLabel: node != undefined ? node.text : undefined
             ,autoScroll: true
             ,autoHeight: false
             ,bodyBorder: false
@@ -1171,7 +1186,10 @@ function f_createConfButton(treeObj, node, btnText, title)
         ,border: false
         ,bodyStyle: 'padding: 6px 2px 10px 8px'
         ,height: 55
-        ,html: '<b>' + btnText + '</b> - ' + title + '<br><hr class="hr-editor">'
+        ,html: '<b>' + btnText + '</b> - ' + title + 
+                '&nbsp;&nbsp;&nbsp;'+ //V_DIRTY_FLAG +
+                '<br><hr class="hr-editor">'
+                 
     });
 }
 

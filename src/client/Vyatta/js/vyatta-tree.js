@@ -109,9 +109,6 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
 
             switch(this.g_loadMode)
             {
-                //case V_TREE_ID_config_data:
-                //    nMode = "<node mode='conf'>";
-                //  break;
                 case V_TREE_ID_oper:
                     nMode = "<node mode='op'>";
                   break;
@@ -256,6 +253,22 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                 str += ",values:[ " + vstr + " ]";
             }
         }
+/*
+        if(tConfig == undefined)
+            tConfig = q.selectValue('configured', node);
+        if(tConfig != undefined)
+            str += ",configured:'" + tConfig + "'";
+  */
+        var tConfig_ = q.selectValue('configured', node);
+        if(tConfig_ != undefined)
+            str += ",configured:'" + tConfig_ + "'";
+        else if(tConfig != undefined)
+            str += ",configured:'" + tConfig + "'";
+
+        if(tConfig_ != undefined)
+            str += ",configured_:'" + tConfig_ + "'";
+        else if(tConfig != undefined)
+            str += ",configured_:'" + tConfig + "'";
 
         var action = q.selectNode('action', node);
         if(action != undefined)
@@ -282,14 +295,6 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             if(tDefault.indexOf("\n") >= 0) tDefault = '';
             str += ",defaultVal:'" + tDefault + "'";
         }
-
-        var tConfig_ = q.selectValue('configured', node);
-        if(tConfig == undefined)
-            tConfig = tConfig_;
-        if(tConfig != undefined)
-            str += ",configured:'" + tConfig + "'";
-        str += ",configured_:'" + tConfig_ + "'";
-
 
         var nenums = q.selectNode('enum', node);
         if (nenums != undefined)
@@ -391,97 +396,17 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             this.m_tree.setRootNode(this.f_getConfigRootNode());
             this.initTreeListeners(this.m_tree, this.f_onConfigTreeNodeClick,
-                  undefined);//this.f_handleSelectedNodeExpand);
+                  undefined);
         }
         else// if(this.m_treeMode == V_TREE_ID_oper)
         {
             this.m_tree.setRootNode(this.f_getOperationRootNode());
             this.initTreeListeners(this.m_tree, this.f_handleNodeOperClick,
-                  undefined)///this.f_handleSelectedNodeExpand);
+                  undefined);
         }
 
         this.m_tree.getRootNode().expand(false, false);
     },
-
-    /////////////////////////////////////////////////////////////
-    //
-    /*
-    f_handleSelectedNodeExpand: function()
-    {
-        ////////////////////////
-        // this = m_tree.
-        if(this.m_parent.m_selNodePath != undefined)
-        {
-            var treeObj = this.m_parent;
-            var len = treeObj.m_selNodePath.length;
-            var snode = treeObj.m_selNodePath.substr(1, len);
-            snode = snode.split(" ");
-            var node = treeObj.m_tree.getRootNode().firstChild;
-
-            ////////////////////////////////////////////////
-            // find the selected node by given the path
-            var prevNode = undefined;
-            for(var i=0; i<snode.length; i++)
-            {
-                if(snode[i] == 'Configuration' || snode[i] == 'Operation')
-                    continue;
-
-                while(node != undefined)
-                {
-                    if(node.text == snode[i])
-                        break;
-
-                    node = node.nextSibling;
-                }
-
-                ////////////////////////////////////////
-                // drill down to next level
-                if(i+1 < snode.length)
-                {
-                    if(node != undefined)
-                    {
-                        node.expand();
-                        var cNode = node.firstChild;
-
-                        /////////////////////////////////////////////
-                        // get cNode from server if it's not defined
-                        if(cNode == undefined)
-                        {
-                            var isUserClick = false;
-
-                            /////////////////////////////////////
-                            // cNode could be deleted. if this is
-                            // the case, get its parent instead
-                            if(treeObj.m_cmd != undefined && treeObj.m_cmd == 'delete')
-                            {
-                                cNode = node;
-                                isUserClick = true;
-                            }
-
-                            treeObj.f_handleExpandNode(cNode, treeObj, isUserClick);
-                            return;
-                        }
-
-                        prevNode = node;
-                        node = cNode;
-                    }
-                    else
-                    {
-                        treeObj.f_handleExpandNode(prevNode, treeObj, true);
-                        return;
-                    }
-                }
-            }
-
-            ///////////////////////////////////////
-            // reset the select node path
-            treeObj.m_selNodePath = undefined;
-
-            ////////////////////////////////////
-            // if select node found, expand it
-            treeObj.f_handleExpandNode(node, treeObj, true);
-        }
-    },*/
 
     f_handleExpandNode: function(node, treeObj, handleClick)
     {
@@ -1318,6 +1243,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                                 values.indexOf("\n") > 3)
                                 values = "\n" + values;
 
+                            values = f_replace(values, "<s", "&lsaquo;s");
                             var txtc = f.contentEl.innerHTML;
                             txtc = txtc.substr(0, (txtc.length-13));
                             f.contentEl.innerHTML = txtc + values + "</font></pre>";
@@ -1444,39 +1370,16 @@ function getNodeStyleImage(node, forTreeView)
     switch(node.attributes.configured)
     {
         case 'set':
-            ////////////////////////////
-            // the checking is for tree view, simply return dirty
-            if(forTreeView)
-                return V_DIRTY_FLAG;
-
-            var conf_ = node.attributes.configured_;
-            if(conf_ != undefined)
-            {
-                if(conf_ == 'set')
-                {
-                    ///////////////////////////////////////////
-                    // if the set val != default val, is dirty
-                    var vals = node.attributes.values;
-                    var defVal = node.attributes.defaultVal;
-                    if(defVal != undefined &&
-                        (vals != undefined && vals[0] != undefined) &&
-                        defVal != vals[0])
-                        return V_DIRTY_FLAG;
-                    else if(defVal == undefined)
-                        ///////////////////////////
-                        // no def val set, is dirty
-                        return V_DIRTY_FLAG;
-                }
-                else if(conf_ == 'active' || conf_ == 'active_plus')
-                    return V_DIRTY_FLAG;
-            }
-
-            return '';
         case 'delete':
         case 'active_plus':
             return V_DIRTY_FLAG;
         case 'active':
+            if(node.attributes.configured_ == 'active_plus')
+                return V_DIRTY_FLAG;
+            return '';
         default:
+            if(node.attributes.defaultVal != undefined)
+                return V_DIRTY_FLAG;
             return '';
     }
 }

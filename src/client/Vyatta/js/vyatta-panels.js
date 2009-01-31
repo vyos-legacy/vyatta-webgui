@@ -1336,7 +1336,7 @@ function f_createTextAreaField(values, width, height)
 {
     var el = document.createElement("div");
     el.id = 'id_op_txt_output'+Ext.id();
-    el.innerHTML = '<pre><font face="courier new">'+values+'</font></pre>';
+    el.innerHTML = '<pre id="id_op_output"><font face="courier new">'+values+'</font></pre>';
 
     return new Ext.Panel(
     {

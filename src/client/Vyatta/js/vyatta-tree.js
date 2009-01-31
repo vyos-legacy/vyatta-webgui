@@ -1230,7 +1230,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                             values.length == 0)
                         {
                             values = '';
-                            f.contentEl.innerHTML = '<pre><font face="courier new"></font></pre>';
+                            f.contentEl.innerHTML = '<pre id="id_op_output">' +
+                                  '<font face="courier new"></font></pre>';
                         }
                         /////////////////////////////////////////////
                         // append new data to the end of textfield
@@ -1247,6 +1248,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                             var txtc = f.contentEl.innerHTML;
                             txtc = txtc.substr(0, (txtc.length-13));
                             f.contentEl.innerHTML = txtc + values + "</font></pre>";
+                            var el = document.getElementById("id_op_output");
+                            el.scrollIntoView(false);
                             ePanel.m_opTextArea = f;
                         }
                     }

@@ -325,7 +325,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 function f_createFieldDirtyIndicatorPanel(node)
 {
     var img = getNodeStyleImage(node, false);
-    var html = img.length > 0 ? V_DIRTY_FLAG : V_HIDE_DIRTY_FLAG;
+    var html = img.length < 1 ? V_HIDE_DIRTY_FLAG : img;
 
     var p = new Ext.Panel(
     {

@@ -197,7 +197,10 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             // handle input error
             f_handleInputFieldError(node);
 
-            return;
+            ///////////////////////////////////////////
+            // if commit error, flag error for tree
+            if(cmds[0].indexOf('commit') < 0)
+                return;
         }
 
 
@@ -221,6 +224,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         }
         else if(cmds[0].indexOf('discard') >= 0)
         {
+            g_cliCmdObj.m_commitErrs = [];
             var onReloadHandler = function()
             {
                 tObj.m_parent.f_cleanEditorPanel();
@@ -239,7 +243,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 tree.un('load', onReloadHandler);
             }
             tObj.m_parent.f_resetEditorPanel();
-            f_handlePropagateParentNodes(selNode);
+            //f_handlePropagateParentNodes(selNode);
             tObj.m_selNodePath = selPath;//node.parentNode;
             tree.on('load', onReloadHandler);
             tree.getRootNode().reload();
@@ -262,6 +266,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 
     var sid = f_getUserLoginedID();
     f_saveUserLoginId(sid);
+    f_updateCommitErrors(node);
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                    + "<vyatta><command><id>" + sid + "</id>\n";
 
@@ -453,15 +458,10 @@ function f_handlePropagateParentNodes(node)
         if(n.ui.elNode != undefined)
         {
             var inner = n.ui.elNode.innerHTML;
+
             if(inner.indexOf(V_DIRTY_FLAG) < 0 &&
                 n.attributes.configured != 'set')
-            {
-                if(inner.indexOf("images/statusUnknown.gif") < 0)
-                    inner = inner.replace("images/empty.gif", "images/statusUnknown.gif");
-
-                inner = inner.replace('="v-node-nocfg"', '="v-node-set"');
-                n.ui.elNode.innerHTML = inner;
-            }
+                f_setNodeFlag(n, V_IMG_DIRTY);
         }
 
         n.attributes.configured = 'set';
@@ -494,22 +494,93 @@ function f_parseResponseError(xmlRoot)
         var msgNode = q.selectNode('msg', err);
         segment = msgNode.getAttribute('segment');
 
-        if(code == 'UNKNOWN' || code != 0)
-            success = false;
-        else if(msg == 'UNKNOWN')
-            msg = '';
-
-        if(code == 3) // server timeout
+        switch(code)
         {
-            f_promptUserNotLoginMessage();
-            if(f_isAutoLogin())
-                f_autoLogin();
-            else
-                f_userLogout(true, g_baseSystem.m_homePage);
+            default:
+                success = false;
+            case "0":
+                success = true;
+                break;
+            case "3":
+                f_promptUserNotLoginMessage();
+                if(f_isAutoLogin())
+                    f_autoLogin();
+                else
+                    f_userLogout(true, g_baseSystem.m_homePage);
+                break;
+            case "6":
+            case "9":
+                success = false;
+                f_parseCommitErrors(msg);
+                msg = "Additional configuration information is required.";
+
+        }
+            
+        if(msg == 'UNKNOWN')
+            msg = '';
+    }
+
+    return [ success, msg, segment];
+}
+
+function f_parseCommitErrors(err)
+{
+    var errs = err.split("\r\n");
+    g_cliCmdObj.m_commitErrs = [];
+
+    for(var i=0; i<errs.length; i++)
+        g_cliCmdObj.m_commitErrs[i] = errs[i].split("/");
+}
+
+function f_updateCommitErrors(node)
+{
+    var errs = g_cliCmdObj.m_commitErrs;
+
+    if(errs != null)
+    {
+        for(var i=0; i<errs.length; i++)
+        {
+            var err = errs[i];
+            for(var j=0; j<err.length; j++)
+                if(node != null && node.text == err[j])
+                {
+                    errs[i] = [];
+                    return;
+                }
+        }
+    }
+}
+
+function f_isCommitError(node)
+{
+    var cErrs = g_cliCmdObj.m_commitErrs;
+    if(cErrs != undefined)
+    {
+        for(var i=0; i<cErrs.length; i++)
+        {
+            var errs = cErrs[i];
+            for(var j=0; j<errs.length; j++)
+            {
+                if(errs[j] == node.text)
+                {
+                    ////////////////////////
+                    // if node is top level
+                    if(j == 0 || j == 1)
+                        return true;
+
+                    ////////////////////////////
+                    // if node is not top level,
+                    // more check to makesure its
+                    // a node we expected.
+                    if(node.parentNode != null)
+                        if(node.parentNode.text == errs[j-1])
+                            return true;
+                }
+            }
         }
     }
 
-    return [ success, msg, segment ];
+    return false;
 }
 
 function f_startSegmentCommand()

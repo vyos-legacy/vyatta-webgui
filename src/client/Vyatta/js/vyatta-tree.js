@@ -395,14 +395,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(this.m_treeMode == V_TREE_ID_config)
         {
             this.m_tree.setRootNode(this.f_getConfigRootNode());
-            this.initTreeListeners(this.m_tree, this.f_onConfigTreeNodeClick,
-                  undefined);
+            this.initTreeListeners(this.m_tree, this.f_onConfigTreeNodeClick);
         }
         else// if(this.m_treeMode == V_TREE_ID_oper)
         {
             this.m_tree.setRootNode(this.f_getOperationRootNode());
-            this.initTreeListeners(this.m_tree, this.f_handleNodeOperClick,
-                  undefined);
+            this.initTreeListeners(this.m_tree, this.f_handleNodeOperClick);
         }
 
         this.m_tree.getRootNode().expand(false, false);
@@ -504,7 +502,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             m_thisObj.m_parent.f_onTreeRenderer(m_thisObj);
     },
 
-    initTreeListeners: function(tree, nodeClickHandler, nodeLoadedHandler)
+    initTreeListeners: function(tree, nodeClickHandler)
     {
         tree.getLoader().on('beforeload', function(loader, node)
         {
@@ -525,24 +523,13 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             }
         });
 
-        tree.on('beforeexpandnode', function(node, deep, anim)
-        {
-            ///////////////////////////////////////////
-            // avoid to reload again on root configuration.
-            if(node.getPath('text') != ' Configuration' &&
-                                    node.getPath('text') != ' Operation')
-            {
-                //node.reload();
-            }
-        });
-
         tree.on('beforecollapsenode', function(node, deep, anim)
         {
             node.collapseChildNodes(true);
         });
 
         tree.on('click', nodeClickHandler);
-        //tree.on('load', nodeLoadedHandler);
+        //tree.on('beforeexpandnode', nodeExpandHandler);
     },
 
     f_onConfigTreeNodeClick: function(node, e)
@@ -641,7 +628,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         var cNode = node;
         var callback = function()
         {
-            var cc = node.getValFunc();
             //////////////////////////////////////////////////
             // if value had changed, send changed to server
             if(node.getOriginalValue() != node.getValFunc())
@@ -1321,7 +1307,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 }
             }
 
-            //if(!hasLeaf)
             f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
                                 f_createConfButton(m_thisObj, node, 'Create',
                                 title), 'Create Node');
@@ -1366,9 +1351,78 @@ function f_isExpandableNode(node)
     return false;
 }
 
+function f_handleNodeFlags(treeObj)
+{
+    var errs = g_cliCmdObj.m_commitErrs;
+    if(errs != null)
+    {
+        var rNode = treeObj.m_tree.getRootNode();
+
+        var f_eachChild = function(node)
+        {
+            if(f_isCommitError(node))
+                f_setNodeFlag(node, V_IMG_ERR);
+
+            node.eachChild(f_eachChild);
+        }
+        rNode.eachChild(f_eachChild);
+    }
+}
+
+function f_setNodeFlag(node, flag)
+{
+    if(node != undefined)
+    {
+        /////////////////////////////////////////////
+        // mark node as dirty.
+        if(node.ui.elNode != undefined)
+        {
+            var inner = node.ui.elNode.innerHTML;
+
+            switch(flag)
+            {
+                case V_IMG_DIRTY:
+                    if(inner.indexOf(V_IMG_ERR) >= 0)
+                        inner = inner.replace(V_IMG_ERR, V_IMG_DIRTY);
+                    else if(inner.indexOf(V_IMG_EMPTY) >= 0)
+                        inner = inner.replace(V_IMG_EMPTY, V_IMG_DIRTY);
+                    break;
+                case V_IMG_ERR:
+                    if(inner.indexOf(V_IMG_DIRTY) >= 0)
+                        inner = inner.replace(V_IMG_DIRTY, V_IMG_ERR);
+                    else if(inner.indexOf(V_IMG_EMPTY) >= 0)
+                        inner = inner.replace(V_IMG_EMPTY, V_IMG_ERR);
+                    break;
+                case V_IMG_EMPTY:
+                    if(inner.indexOf(V_IMG_DIRTY) >= 0)
+                        inner = inner.replace(V_IMG_DIRTY, V_IMG_EMPTY);
+                    else if(inner.indexOf(V_IMG_ERR) >= 0)
+                        inner = inner.replace(V_IMG_ERR, V_IMG_EMPTY);
+                    break;
+            }
+
+            inner = inner.replace('="v-node-nocfg"', '="v-node-set"');
+            node.ui.elNode.innerHTML = inner;
+        }
+    }
+}
+
 function getNodeStyleImage(node, forTreeView)
 {
     if(node == undefined) return '';
+
+    if(f_isCommitError(node))
+    {
+        //////////////////////////////////
+        // skip the multi parent node
+        if(node.attributes.multi && !forTreeView)
+        {
+            if(node.childNodes.length == 0)
+                return V_ERROR_FLAG;
+        }
+        else
+            return V_ERROR_FLAG;
+    }
 
     switch(node.attributes.configured)
     {

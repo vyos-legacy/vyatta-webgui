@@ -1427,7 +1427,9 @@ function getNodeStyleImage(node, forTreeView)
     switch(node.attributes.configured)
     {
         case 'set':
+            return V_DIRTY_FLAG;
         case 'delete':
+            return V_DIRTY_FLAG_DEL;
         case 'active_plus':
             return V_DIRTY_FLAG;
         case 'active':

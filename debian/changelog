@@ -1,3 +1,18 @@
+vyatta-webgui (0.2.12-5) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Always scroll to the bottom of page for all operation show output.
+    Means, data incoming
+  * * Added mandatory configuration fields error handling.
+
+  [ slioch ]
+  * final fix for show tech-support (or for other scripts that call the
+    op mode show cmd).
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sun, 01 Feb 2009 05:39:45 +0000
+
 vyatta-webgui (0.2.12-4) unstable; urgency=low
 
   * * Flag as configuration modified for delete value from table

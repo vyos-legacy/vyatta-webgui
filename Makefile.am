@@ -73,6 +73,7 @@ install-exec-hook:
 	mkdir -p $(DESTDIR)/$(initddir)
 	cp scripts/vyatta-webgui-chunker.init $(DESTDIR)/$(initddir)/vyatta-webgui-chunker
 	cp scripts/chunker_cmd $(DESTDIR)/$(cgidir)/chunker_cmd
+	cp scripts/show $(DESTDIR)/$(cgidir)/show
 	cp scripts/mandatory $(DESTDIR)/$(cgidir)/mandatory
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/

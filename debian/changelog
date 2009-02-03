@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.12+islavista1) unstable; urgency=low
+
+  * Merge to islavista
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 03 Feb 2009 11:29:26 -0800
+
 vyatta-webgui (0.2.12-6) unstable; urgency=low
 
   * * Added deleted node indicator for delete node instead of using the

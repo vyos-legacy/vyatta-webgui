@@ -25,7 +25,7 @@ public:
   execute_command(WebGUI::AccessLevel access_level);
 
   void
-  execute_single_command(std::string &cmd, WebGUI::AccessLevel access_level, std::string &resp, int &err);
+  execute_single_command(std::string &cmd, WebGUI::AccessLevel access_level, std::string &resp, WebGUI::Error &err);
 
 private:
   std::string

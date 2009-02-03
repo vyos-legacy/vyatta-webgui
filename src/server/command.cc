@@ -53,11 +53,11 @@ Command::execute_command(WebGUI::AccessLevel access_level)
   vector<string>::iterator iter = coll.begin();
   while (iter != coll.end()) {
     string err;
-    int err_code = WebGUI::SUCCESS;
+    WebGUI::Error err_code = WebGUI::SUCCESS;
     execute_single_command(*iter, access_level, err, err_code);
     if (err_code != WebGUI::SUCCESS) {
       //generate error response for this command and exit
-      _proc->set_response(WebGUI::COMMAND_ERROR, err);
+      _proc->set_response(err_code, err);
       return;
     }
     else {
@@ -72,8 +72,10 @@ Command::execute_command(WebGUI::AccessLevel access_level)
  *
  **/
 void
-Command::execute_single_command(string &cmd, WebGUI::AccessLevel access_level, string &resp, int &err)
+Command::execute_single_command(string &cmd, WebGUI::AccessLevel access_level, string &resp, WebGUI::Error &err)
 {
+  err = WebGUI::SUCCESS;
+
   if (cmd.empty()) {
     resp = "";
     err = WebGUI::MALFORMED_REQUEST;
@@ -157,6 +159,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 	tmp = "sudo /sbin/reboot";
       }
       else {
+	err = WebGUI::COMMAND_ERROR;
 	_proc->set_response(WebGUI::COMMAND_ERROR);
 	return;
       }
@@ -164,6 +167,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     else {
       //treat this as an op mode command
       if (multi_part_op_cmd(cmd)) {
+	//success
 	return;
       }
       else if (validate_op_cmd(cmd)) {
@@ -173,7 +177,12 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 	string opmodecmd = "/bin/bash -i -c '" + cmd + " 2>&1'";
 
 	string stdout;
-	err = WebGUI::execute(opmodecmd,stdout,true);
+	if (WebGUI::execute(opmodecmd,stdout,true) == 0) {
+	  err = WebGUI::SUCCESS;
+	}
+	else {
+	  err = WebGUI::COMMAND_ERROR;
+	}
 	stdout = WebGUI::mass_replace(stdout, "&", "&amp;");
 	stdout = WebGUI::mass_replace(stdout, "\"", "&quot;");
 	stdout = WebGUI::mass_replace(stdout, "'", "&apos;");
@@ -202,7 +211,12 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   }
   
   string stdout;
-  err = WebGUI::execute(command,stdout,true);
+  if (WebGUI::execute(command,stdout,true) == 0) {
+    err = WebGUI::SUCCESS;
+  }
+  else {
+    err = WebGUI::COMMAND_ERROR;
+  }
 
   stdout = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
   resp = stdout;

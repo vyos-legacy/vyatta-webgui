@@ -1198,6 +1198,7 @@ function f_handleOperBtnClick(button, node, treeObj)
     if(button.text == 'Stop')
     {
         button.setText('Run');
+        button.el.dom.className = V_STOP_CSS;
         g_cliCmdObj.m_segmentId = 'segment_end';
         button.m_pauseBtn.setText('Pause');
         button.m_pauseBtn.hide();
@@ -1242,9 +1243,10 @@ function f_createOperButton(treeObj, node, btnText, title)
     {
         id: btn_id
         ,text: btnText
+        ,cls: V_STOP_CSS
         ,tooltip: btnText + ' ' + title
-        ,minWidth: 43
-        ,width:45
+        ,minWidth: 52
+        ,width:55
         ,height: 20
         ,handler: function()
         {

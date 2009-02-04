@@ -1,3 +1,21 @@
+vyatta-webgui (0.2.12-7) unstable; urgency=low
+
+  [ slioch ]
+  * fixed error return code to reflect mandatory error code.
+
+  [ Kevin Choi ]
+  * * provide op cmd running indicator while getting data from server
+  * * new image
+
+  [ slioch ]
+  * fix for bug 4097
+
+  [ Kevin Choi ]
+  * * Display login hostname to upper right corner next to username.
+  * * Fixed interface ethernet default value.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 04 Feb 2009 02:26:30 +0000
+
 vyatta-webgui (0.2.12-6) unstable; urgency=low
 
   * * Added deleted node indicator for delete node instead of using the

@@ -224,8 +224,8 @@ function f_createFrameHeaderPanel()
     }
     else
     {
-        
-        id.innerHTML = 'Username:&nbsp; ' + f_getUserLoginName() +
+        id.innerHTML = 'Hostname:&nbsp; ' + document.domain +
+            ',&nbsp;&nbsp;Username:&nbsp; ' + f_getUserLoginName() +
            ',&nbsp;&nbsp;&nbsp;' +
             '<a class="anchor-test" valign="top" href="#" onclick="f_handleLogout()">' +
             '<img src="images/logout.gif"/> Log Out</a>';

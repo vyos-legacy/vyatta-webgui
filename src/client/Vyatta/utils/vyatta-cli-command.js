@@ -121,7 +121,10 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         else if(isSuccess[0] && sId != undefined && sId.indexOf('_end') < 0)
         {
             if(wildCard != undefined && typeof wildCard.setText == 'function')
+            {
                 wildCard.setText('Stop');
+                wildCard.el.dom.className = V_WAIT_CSS;
+            }
             g_cliCmdObj.m_wildCard = wildCard;
         }
         else if(sId != undefined && sId.indexOf('_end') >= 0 &&
@@ -130,9 +133,11 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         {
             if(wildCard != undefined && typeof wildCard.setText == 'function')
             {
-                g_cliCmdObj.m_wildCard.setText('Run');
-                g_cliCmdObj.m_wildCard.m_pauseBtn.setText('Pause');
-                g_cliCmdObj.m_wildCard.m_pauseBtn.hide();
+                var wc = g_cliCmdObj.m_wildCard;
+                wc.setText('Run');
+                wc.el.dom.className = V_STOP_CSS;
+                wc.m_pauseBtn.setText('Pause');
+                wc.m_pauseBtn.hide();
             }
         }
         
@@ -451,17 +456,20 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
 function f_handlePropagateParentNodes(node)
 {
     var n = node;
-    while (n != undefined)
+    while(n != undefined)
     {
         /////////////////////////////////////////////
         // mark node as dirty.
         if(n.ui.elNode != undefined)
         {
             var inner = n.ui.elNode.innerHTML;
-
-            if(inner.indexOf(V_DIRTY_FLAG) < 0 &&
-                n.attributes.configured != 'set')
-                f_setNodeFlag(n, V_IMG_DIRTY);
+            if(inner.indexOf(V_DIRTY_FLAG) < 0)
+            {
+                if(f_isCommitError(n))
+                    f_setNodeFlag(n, V_IMG_ERR);
+                else
+                    f_setNodeFlag(n, V_IMG_DIRTY);
+            }
         }
 
         n.attributes.configured = 'set';
@@ -508,7 +516,7 @@ function f_parseResponseError(xmlRoot)
                 else
                     f_userLogout(true, g_baseSystem.m_homePage);
                 break;
-            case "6":
+            //case "6":
             case "9":
                 success = false;
                 f_parseCommitErrors(msg);

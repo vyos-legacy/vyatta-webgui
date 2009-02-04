@@ -18,4 +18,4 @@ export HOME=/root
 
 source /etc/bash_completion.d/10vyatta-op
 
-_vyatta_op_run show $1 
+_vyatta_op_run show $* 

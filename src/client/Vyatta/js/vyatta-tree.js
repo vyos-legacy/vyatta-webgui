@@ -253,12 +253,6 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                 str += ",values:[ " + vstr + " ]";
             }
         }
-/*
-        if(tConfig == undefined)
-            tConfig = q.selectValue('configured', node);
-        if(tConfig != undefined)
-            str += ",configured:'" + tConfig + "'";
-  */
         var tConfig_ = q.selectValue('configured', node);
         if(tConfig_ != undefined)
             str += ",configured:'" + tConfig_ + "'";
@@ -795,8 +789,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     f_leafSingleEnumHandler: function(node, values, helpStr, callback)
     {
         var ival = undefined;
-        if (node.attributes.values != undefined)
-            ival = node.attributes.values[0];
+        if(values != undefined)
+            ival = values[0];
 
         var narr = filterWildcard(values);
         var isEditable = false;

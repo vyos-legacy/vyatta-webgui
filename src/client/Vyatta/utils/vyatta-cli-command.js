@@ -505,7 +505,9 @@ function f_parseResponseError(xmlRoot)
         switch(code)
         {
             default:
+            case "6":
                 success = false;
+                break;
             case "0":
                 success = true;
                 break;
@@ -516,7 +518,10 @@ function f_parseResponseError(xmlRoot)
                 else
                     f_userLogout(true, g_baseSystem.m_homePage);
                 break;
-            //case "6":
+            case "4":  //permission level is not valid
+                msg = 'operator permission';
+                success = true;
+                break;
             case "9":
                 success = false;
                 f_parseCommitErrors(msg);

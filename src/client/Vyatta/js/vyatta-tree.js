@@ -165,8 +165,9 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
 
         //////////////////////////////////////////////
         // conf mode is not allow. force to oper mode
-        if(!isSuccess[0] && isSuccess[1].indexOf("permission") >= 0)
+        if(isSuccess[1] == 'operator permission')
         {
+            g_baseSystem.m_userLevel = 0;
             f_showOperationalTab();
             response.responseText = '[ ]';
             return MyTreeLoader.superclass.processResponse.apply(this, arguments);
@@ -196,6 +197,9 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                 else if(tc != undefined &&
                         (tc.indexOf('Update webproxy') >= 0 ||
                         tc.indexOf('Visually identify the specified ethernet') >= 0))
+                    continue;
+                else if(f_isLoginOperator() &&
+                    tc == ' Reboot the system')
                     continue;
 
                 str = this.f_constructNodeDomStr(n, str);
@@ -789,8 +793,16 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     f_leafSingleEnumHandler: function(node, values, helpStr, callback)
     {
         var ival = undefined;
-        if(values != undefined)
-            ival = values[0];
+        if(m_thisObj.m_parent.m_editorPanel.m_hasButton)
+        {
+            if(values != undefined)
+                ival = values[0];
+        }
+        else
+        {
+            if(node.attributes.values != undefined)
+                ival = node.attributes.values;
+        }
 
         var narr = filterWildcard(values);
         var isEditable = false;
@@ -1267,6 +1279,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     f_handleButton: function(node, title)
     {
         m_thisObj.m_parent.m_editorPanel.m_showLeaf = true;
+        m_thisObj.m_parent.m_editorPanel.m_hasButton = true;
 
         if(node.attributes.configured != undefined &&
             (node.attributes.configured == 'add' ||
@@ -1306,6 +1319,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                                 title), 'Create Node');
             m_thisObj.m_parent.m_editorPanel.m_showLeaf = false;
         }
+        else
+            m_thisObj.m_parent.m_editorPanel.m_hasButton = false;
     }
 });
 

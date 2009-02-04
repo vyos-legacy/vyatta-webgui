@@ -15,6 +15,7 @@ DATA_baseSystem = Ext.extend(Ext.util.Observable,
         this.m_iConf = 0;
         this.m_iOper = 1;
         this.m_selTabIndex = this.m_iConf;
+        this.m_userLevel = 1; // 0: operator; 1: admin
         this.m_disableTabs = [];
 
         this.m_tabObjects = [];
@@ -70,6 +71,11 @@ function f_showOperationalTab()
     g_baseSystem.m_disableTabs[g_baseSystem.m_disableTabs.length] =
         g_baseSystem.m_iConf;
     f_handleTabClick(g_baseSystem.m_tabNames[g_baseSystem.m_iOper]);
+}
+
+function f_isLoginOperator()
+{
+    return g_baseSystem.m_userLevel == 0 ? true : false;
 }
 
 function f_hideTab(tabIndex)

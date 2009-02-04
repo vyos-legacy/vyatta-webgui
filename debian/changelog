@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.12-8) unstable; urgency=low
+
+  * update Build-Depends
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 03 Feb 2009 20:42:42 -0800
+
 vyatta-webgui (0.2.12-7) unstable; urgency=low
 
   [ slioch ]

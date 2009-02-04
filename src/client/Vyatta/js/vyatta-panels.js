@@ -650,7 +650,7 @@ function f_createToolbar(panelObj)
           helpTipButton,
           '-',
           panelObj.m_viewBtn = f_createToolbarButton('v_view_button', 
-                'view', panelObj.m_treeObj, 'View configuration file'),
+                'view', panelObj.m_treeObj, 'Show configuration file'),
           panelObj.m_loadBtn = f_createToolbarButton('v_load_button', 
                 'load', panelObj.m_treeObj, 'Reload system'),
           panelObj.m_saveBtn = f_createToolbarButton('v_save_button',

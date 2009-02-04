@@ -456,17 +456,20 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
 function f_handlePropagateParentNodes(node)
 {
     var n = node;
-    while (n != undefined)
+    while(n != undefined)
     {
         /////////////////////////////////////////////
         // mark node as dirty.
         if(n.ui.elNode != undefined)
         {
             var inner = n.ui.elNode.innerHTML;
-
-            if(inner.indexOf(V_DIRTY_FLAG) < 0 &&
-                n.attributes.configured != 'set')
-                f_setNodeFlag(n, V_IMG_DIRTY);
+            if(inner.indexOf(V_DIRTY_FLAG) < 0)
+            {
+                if(f_isCommitError(n))
+                    f_setNodeFlag(n, V_IMG_ERR);
+                else
+                    f_setNodeFlag(n, V_IMG_DIRTY);
+            }
         }
 
         n.attributes.configured = 'set';

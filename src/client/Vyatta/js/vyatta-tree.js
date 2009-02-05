@@ -201,6 +201,8 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                 else if(f_isLoginOperator() &&
                     tc == ' Reboot the system')
                     continue;
+                else if(tc == ' Clear screen')
+                    continue;
 
                 str = this.f_constructNodeDomStr(n, str);
             }
@@ -793,15 +795,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     f_leafSingleEnumHandler: function(node, values, helpStr, callback)
     {
         var ival = undefined;
-        if(m_thisObj.m_parent.m_editorPanel.m_hasButton)
+        if(node.attributes.values != undefined)
+            ival = node.attributes.values;
+        else if(m_thisObj.m_parent.m_editorPanel.m_hasButton)
         {
             if(values != undefined)
                 ival = values[0];
-        }
-        else
-        {
-            if(node.attributes.values != undefined)
-                ival = node.attributes.values;
         }
 
         var narr = filterWildcard(values);
@@ -1378,8 +1377,28 @@ function f_handleNodeFlags(treeObj)
     }
 }
 
+/*
+ * match the str to fFlags (from flags). if match found, replace to tFlag (to flag)
+ */
+function f_setFlag(str, fFlags, tFlag)
+{
+    var retStr=str;
+
+    for(var i=0; i<fFlags.length; i++)
+    {
+        if(str.indexOf(fFlags[i]) >= 0)
+        {
+            retStr = str.replace(fFlags[i], tFlag);
+            break;
+        }
+    }
+
+    return retStr;
+}
+
 function f_setNodeFlag(node, flag)
 {
+
     if(node != undefined)
     {
         /////////////////////////////////////////////
@@ -1387,29 +1406,8 @@ function f_setNodeFlag(node, flag)
         if(node.ui.elNode != undefined)
         {
             var inner = node.ui.elNode.innerHTML;
-
-            switch(flag)
-            {
-                case V_IMG_DIRTY:
-                    if(inner.indexOf(V_IMG_ERR) >= 0)
-                        inner = inner.replace(V_IMG_ERR, V_IMG_DIRTY);
-                    else if(inner.indexOf(V_IMG_EMPTY) >= 0)
-                        inner = inner.replace(V_IMG_EMPTY, V_IMG_DIRTY);
-                    break;
-                case V_IMG_ERR:
-                    if(inner.indexOf(V_IMG_DIRTY) >= 0)
-                        inner = inner.replace(V_IMG_DIRTY, V_IMG_ERR);
-                    else if(inner.indexOf(V_IMG_EMPTY) >= 0)
-                        inner = inner.replace(V_IMG_EMPTY, V_IMG_ERR);
-                    break;
-                case V_IMG_EMPTY:
-                    if(inner.indexOf(V_IMG_DIRTY) >= 0)
-                        inner = inner.replace(V_IMG_DIRTY, V_IMG_EMPTY);
-                    else if(inner.indexOf(V_IMG_ERR) >= 0)
-                        inner = inner.replace(V_IMG_ERR, V_IMG_EMPTY);
-                    break;
-            }
-
+            inner = f_setFlag(inner, [V_IMG_ERR, V_IMG_DIRTY, V_IMG_DIRTY_DEL,
+                        V_IMG_DIRTY_ADD, V_IMG_EMPTY], flag);
             inner = inner.replace('="v-node-nocfg"', '="v-node-set"');
             node.ui.elNode.innerHTML = inner;
         }
@@ -1433,10 +1431,16 @@ function getNodeStyleImage(node, forTreeView)
             return V_ERROR_FLAG;
     }
 
+    if(node.attributes.multi && !forTreeView)
+        if(node.childNodes.length != 0)  return "";
+
     switch(node.attributes.configured)
     {
         case 'set':
-            return V_DIRTY_FLAG;
+            if(node.attributes.configured_ == 'active_plus' ||
+                node.attributes.configured_ == 'active')
+                return V_DIRTY_FLAG;
+            return V_DIRTY_FLAG_ADD;
         case 'delete':
             return V_DIRTY_FLAG_DEL;
         case 'active_plus':

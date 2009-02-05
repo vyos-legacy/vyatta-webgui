@@ -248,7 +248,6 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 tree.un('load', onReloadHandler);
             }
             tObj.m_parent.f_resetEditorPanel();
-            //f_handlePropagateParentNodes(selNode);
             tObj.m_selNodePath = selPath;//node.parentNode;
             tree.on('load', onReloadHandler);
             tree.getRootNode().reload();
@@ -267,7 +266,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             else if(node.parentNode != undefined || selNode.parentNode != undefined)
                 f_handleParentNodeExpansion(tObj, node, selNode, selPath, cmds, isCreate);
         }
-    }
+    } // end of callback
 
     var sid = f_getUserLoginedID();
     f_saveUserLoginId(sid);
@@ -378,6 +377,12 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
     {
         treeObj.m_isCommitAvailable = true;
 
+        ////////////////////////////////////////////////
+        // if 'node' has not fresh from server, we flag
+        // it as 'set' here to sync with server
+        //if(node.attributes.configured == undefined)
+        node.attributes.configured = 'set'
+
         /*
          * new we need to walk up the tree to flag the yellow cir.
          * Anything below the parent node automatically took care
@@ -423,6 +428,10 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         var nnode = sm.getSelectedNode();
         selNode = nnode;
         selPath = nnode.getPath('text');
+
+        if(nnode.attributes != undefined)
+            nnode.attributes.configured = 'active_plus';
+
         nnode.reload();
         treeObj.m_isCommitAvailable = true;
         f_handlePropagateParentNodes(nnode);
@@ -456,6 +465,7 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
 function f_handlePropagateParentNodes(node)
 {
     var n = node;
+
     while(n != undefined)
     {
         /////////////////////////////////////////////
@@ -463,17 +473,42 @@ function f_handlePropagateParentNodes(node)
         if(n.ui.elNode != undefined)
         {
             var inner = n.ui.elNode.innerHTML;
+            
             if(inner.indexOf(V_DIRTY_FLAG) < 0)
             {
-                if(f_isCommitError(n))
-                    f_setNodeFlag(n, V_IMG_ERR);
-                else
-                    f_setNodeFlag(n, V_IMG_DIRTY);
+                var flag = V_IMG_EMPTY;
+                //var f = getNodeStyleImage(n, true);
+                //alert(n.text + '=' + f + '=' + n.attributes.configured)
+                switch(getNodeStyleImage(n, true))
+                {
+                    case V_DIRTY_FLAG_ADD:
+                        flag = V_IMG_DIRTY_ADD;
+                        break;
+                    case V_DIRTY_FLAG_DEL:
+                        flag = V_IMG_DIRTY_DEL;
+                        break;
+                    case V_DIRTY_FLAG:
+                        flag = V_IMG_DIRTY;
+                        break;
+                    case V_ERROR_FLAG:
+                        flag = V_IMG_ERR;
+                        break;
+                }
+                f_setNodeFlag(n, flag);
             }
         }
 
+        var prev = n;
         n.attributes.configured = 'set';
         n = n.parentNode;
+
+        ////////////////////////////////////////////////
+        // if child is dirty, flag parent as dirty as well.
+        if(n != undefined && n.attributes.configured != undefined &&
+            n.attributes.configured == 'active')
+            n.attributes.configured = 'active_plus';
+        else if(n != undefined && n.attributes.configured == undefined)
+            n.attributes.configured = 'set';
     }
 }
 
@@ -505,7 +540,7 @@ function f_parseResponseError(xmlRoot)
         switch(code)
         {
             default:
-            case "6":
+            case "6": // input error
                 success = false;
                 break;
             case "0":

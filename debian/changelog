@@ -1,3 +1,11 @@
+vyatta-webgui (0.2.12-9) unstable; urgency=low
+
+  * * block op 'reboot' command from operator user level.
+  * * Handled add new nodes and fields indicator addition to modify and
+    delete nodes.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 05 Feb 2009 02:57:56 +0000
+
 vyatta-webgui (0.2.12-8) unstable; urgency=low
 
   * update Build-Depends

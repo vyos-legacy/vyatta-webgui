@@ -81,6 +81,12 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
                 f_handleHelpButtonClick(this, this.m_helpTipButton, false);
 
             this.m_treeObj.f_setThisTreeObj(this.m_treeObj);
+
+            //////////////////////////////////
+            // end background segment process.
+            g_cliCmdObj.m_segmentId = 'tabChanged';
+            f_resetOperButton(this.m_treeObj.m_runButton);
+
             this.m_parentPanel.show();
             this.f_resizePanels();
         }
@@ -1227,6 +1233,17 @@ function f_handleOperBtnClick(button, node, treeObj)
         f_sendOperationCliCommand(node, treeObj, false,
                                           undefined, true, undefined,
                                           treeObj, button);
+    }
+}
+
+function f_resetOperButton(btn)
+{
+    if(btn != null)
+    {
+        btn.setText('Run');
+        btn.el.dom.className = V_STOP_CSS;
+        btn.m_pauseBtn.setText('Pause');
+        btn.m_pauseBtn.hide();
     }
 }
 

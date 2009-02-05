@@ -135,13 +135,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
             g_cliCmdObj.m_wildCard.text != undefined)
         {
             if(wildCard != undefined && typeof wildCard.setText == 'function')
-            {
-                var wc = g_cliCmdObj.m_wildCard;
-                wc.setText('Run');
-                wc.el.dom.className = V_STOP_CSS;
-                wc.m_pauseBtn.setText('Pause');
-                wc.m_pauseBtn.hide();
-            }
+                f_resetOperButton(g_cliCmdObj.m_wildCard);
         }
         
 

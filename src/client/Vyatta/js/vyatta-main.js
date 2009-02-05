@@ -44,6 +44,7 @@ function f_startLogin()
 
 function f_showTab(tabIndex)
 {
+    // hide not availble tabs
     f_hideTab(g_baseSystem.m_selTabIndex);
     g_baseSystem.m_selTabIndex =tabIndex;
     f_createTabsHTML();
@@ -171,6 +172,10 @@ function f_createTabsHTML()
 
 function f_handleTabClick(tabName)
 {
+    //////////////////////////////////
+    // end background segment process.
+    g_cliCmdObj.m_segmentId = 'tabChanged';
+
     ////////////////////////////////////
     // handle diable tab
     var iTab = g_baseSystem.f_getTabIndex(tabName);

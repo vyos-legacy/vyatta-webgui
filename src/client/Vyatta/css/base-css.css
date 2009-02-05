@@ -81,6 +81,11 @@
     background-image: url("../images/wait.gif");
     margin-bottom:2px;
 }
+.v_pause_image .x-btn-text
+{
+    background-image: url("../images/done.gif");
+    margin-bottom:2px;
+}
 
 .v_empty_image
 {

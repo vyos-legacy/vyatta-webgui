@@ -89,6 +89,9 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
             return;
         }
 
+        // if tab had changed, we ingore respond
+        if(g_cliCmdObj.m_segmentId == 'tabChanged') return;
+
         var xmlRoot = response.responseXML.documentElement;
         var isSuccess = f_parseResponseError(xmlRoot);
         g_cliCmdObj.m_segmentId = (isSuccess[2] != undefined)?isSuccess[2]:null;
@@ -573,7 +576,14 @@ function f_parseResponseError(xmlRoot)
 
 function f_parseCommitErrors(err)
 {
-    var errs = err.split("\r\n");
+    var reg = "\r\n";
+    var errs = '';
+    if(Ext.isIE)
+    {
+        errs = f_replace(errs, "\r", "");
+        reg = "\n";
+    }
+    errs = err.split(reg);
     g_cliCmdObj.m_commitErrs = [];
 
     for(var i=0; i<errs.length; i++)
@@ -592,7 +602,11 @@ function f_updateCommitErrors(node)
             for(var j=0; j<err.length; j++)
                 if(node != null && node.text == err[j])
                 {
-                    errs[i] = [];
+                    if(Ext.isIE)
+                        g_cliCmdObj.m_commitErrs[i] = "";
+                    else
+                        g_cliCmdObj.m_commitErrs[i] = [];
+
                     return;
                 }
         }
@@ -640,7 +654,8 @@ function f_startSegmentCommand()
         run: function()
         {
             if(g_cliCmdObj.m_segmentId != undefined &&
-                    g_cliCmdObj.m_segmentId.indexOf("_end") >= 0)
+                    (g_cliCmdObj.m_segmentId.indexOf("_end") >= 0 ||
+                    g_cliCmdObj.m_segmentId == 'tabChanged'))
             {
                 g_cliCmdObj.m_segmentId = undefined;  // end this segment run
                 g_cliCmdObj.m_segPause = false;

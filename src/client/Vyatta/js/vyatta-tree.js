@@ -561,7 +561,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 m_thisObj.m_parent.f_cleanEditorPanel();
                 f_addField2Panel(m_thisObj.m_parent.m_editorPanel, titlePanel, node);
             }
-            m_thisObj.f_handleButton(node, titlePanel.title);
+            m_thisObj.m_btnPanel = m_thisObj.f_handleButton(node, titlePanel.title);
                 
         }
 
@@ -585,12 +585,18 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     // a second chance to add button for case all the child nodes
                     // has not retrieve from server yet.
                     if(m_thisObj.m_parent.f_getEditorItemCount() < 2)
-                        m_thisObj.f_handleButton(n, titlePanel.title);
+                        m_thisObj.m_btnPanel = m_thisObj.f_handleButton(
+                                            n, titlePanel.title);
 
                     m_thisObj.f_interHandler(n);
                 }
                 else
+                {
                     m_thisObj.f_interMultiHandler(n);
+
+                    //if(m_thisObj.m_btnPanel != null)
+                      //  m_thisObj.m_btnPanel.f_show();
+                }
             });
         }
     },
@@ -647,8 +653,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
 
         if(node.attributes.enums != undefined)
-            m_thisObj.f_leafSingleEnumHandler(node, node.attributes.enums,
-                      node.attributes.help, callback);
+            //m_thisObj.f_leafSingleEnumHandler(node, node.attributes.enums,
+              //        node.attributes.help, callback, true);
+            m_thisObj.f_leafSingleTxtHandler(node, node.attributes.help, callback);
         else if(node.attributes.type == 'u32')
             m_thisObj.f_leafSingleU32Handler(node, node.attributes.help, callback);
         else
@@ -792,7 +799,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
     },
 
-    f_leafSingleEnumHandler: function(node, values, helpStr, callback)
+    f_leafSingleEnumHandler: function(node, values, helpStr, callback, isEditable)
     {
         var ival = undefined;
         if(node.attributes.values != undefined)
@@ -804,10 +811,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
 
         var narr = filterWildcard(values);
-        var isEditable = false;
-        if (narr != undefined)
+        var editable = isEditable == null ? false : isEditable;
+        if(narr != undefined)
         {
-            isEditable = true;
+            editable = true;
             values = narr;
         }
 
@@ -824,7 +831,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             isCheckbox = false;
             field1 = f_createCombobox(values, ival,
                       'Select a valid value...', node.text, 244,
-                      helpStr, isEditable, callback, node);
+                      helpStr, editable, callback, node);
         }
 
         node.getValFieldFunc = function()
@@ -867,12 +874,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         var GridT = Ext.data.Record.create([{ name: 'value' }]);
         var narr = filterWildcard(values);
-        //var doValidate = true;
         if(narr != undefined)
-        {
-        //    doValidate = false;
             values = narr;
-        }
 
         var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 243, callback);
         node.getValFieldFunc = function()
@@ -1287,12 +1290,14 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             node.attributes.configured == 'set'))
         {
             f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
-                  f_createConfButton(m_thisObj, node, 'Delete', title), 'Delete Node');
+                         f_createConfButton(m_thisObj, node, 'Delete', title),
+                         'Delete Node');
         }
         else if((node.attributes.configured == undefined ||
                 node.attributes.configured == 'delete') &&
                 node.attributes.type == undefined)
         {
+            /*
             /////////////////////////////////////////////////////////
             // add 'create' button if and only if node type is not
             // define and has no leaf child.
@@ -1311,11 +1316,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     }
                     n = n.nextSibling;
                 }
-            }
+            }*/
 
             f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
-                                f_createConfButton(m_thisObj, node, 'Create',
-                                title), 'Create Node');
+                f_createConfButton(m_thisObj, node, 'Create', title), 'Create Node');
             m_thisObj.m_parent.m_editorPanel.m_showLeaf = false;
         }
         else

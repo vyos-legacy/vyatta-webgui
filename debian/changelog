@@ -1,3 +1,11 @@
+vyatta-webgui (0.2.13-1) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Fixed bug 4106: command window not match tab. ops and conf
+    responds mixed up.
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 05 Feb 2009 14:23:37 -0800
+
 vyatta-webgui (0.2.12-9) unstable; urgency=low
 
   * * block op 'reboot' command from operator user level.

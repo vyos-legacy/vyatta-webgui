@@ -42,6 +42,7 @@ V_STATUS_DOWN = 'down';
 V_STATUS_UNKNOWN = 'unknown';
 
 V_WAIT_CSS = 'x-btn-wrap x-btn x-btn-text-icon v_wait_image';
+V_PAUSE_CSS = 'x-btn-wrap x-btn x-btn-text-icon v_pause_image';
 V_STOP_CSS = 'x-btn-wrap x-btn x-btn-text';
 V_IMG_ERR = "images/statusDown.gif";
 V_IMG_DIRTY = "images/statusUnknown.gif";

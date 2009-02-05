@@ -1187,7 +1187,7 @@ function f_createConfButton(treeObj, node, btnText, title)
         ,bodyStyle: 'padding: 6px 2px 10px 8px'
         ,height: 55
         ,html: '<b>' + btnText + '</b> - ' + title + 
-                '&nbsp;&nbsp;&nbsp;'+ //V_DIRTY_FLAG +
+                '&nbsp;&nbsp;&nbsp;'+
                 '<br><hr class="hr-editor">'
                  
     });
@@ -1270,11 +1270,13 @@ function f_createOperButton(treeObj, node, btnText, title)
                 {
                     this.setText('Resume');
                     g_cliCmdObj.m_segPause = true;
+                    buttons[0].el.dom.className = V_PAUSE_CSS;
                 }
                 else
                 {
                     this.setText('Pause');
                     g_cliCmdObj.m_segPause = false;
+                    buttons[0].el.dom.className = V_WAIT_CSS;
                 }
             }
         });

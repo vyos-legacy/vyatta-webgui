@@ -15,6 +15,7 @@ DATA_baseSystem = Ext.extend(Ext.util.Observable,
         this.m_iConf = 0;
         this.m_iOper = 1;
         this.m_selTabIndex = this.m_iConf;
+        this.m_userLevel = 1; // 0: operator; 1: admin
         this.m_disableTabs = [];
 
         this.m_tabObjects = [];
@@ -43,6 +44,7 @@ function f_startLogin()
 
 function f_showTab(tabIndex)
 {
+    // hide not availble tabs
     f_hideTab(g_baseSystem.m_selTabIndex);
     g_baseSystem.m_selTabIndex =tabIndex;
     f_createTabsHTML();
@@ -70,6 +72,11 @@ function f_showOperationalTab()
     g_baseSystem.m_disableTabs[g_baseSystem.m_disableTabs.length] =
         g_baseSystem.m_iConf;
     f_handleTabClick(g_baseSystem.m_tabNames[g_baseSystem.m_iOper]);
+}
+
+function f_isLoginOperator()
+{
+    return g_baseSystem.m_userLevel == 0 ? true : false;
 }
 
 function f_hideTab(tabIndex)
@@ -165,6 +172,10 @@ function f_createTabsHTML()
 
 function f_handleTabClick(tabName)
 {
+    //////////////////////////////////
+    // end background segment process.
+    g_cliCmdObj.m_segmentId = 'tabChanged';
+
     ////////////////////////////////////
     // handle diable tab
     var iTab = g_baseSystem.f_getTabIndex(tabName);

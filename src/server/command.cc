@@ -154,7 +154,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     }
   }
   else { //operational mode command
-    if (strncmp(tmp.c_str(),"reboot",6) == 0) {
+    if (strcmp(tmp.c_str(),"reboot") == 0) {
       if (access_level == WebGUI::ACCESS_ALL) {
 	tmp = "sudo /sbin/reboot";
       }

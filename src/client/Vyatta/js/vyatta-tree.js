@@ -1148,7 +1148,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                   }*/
 
                 field = f_createCombobox(values,
-                            'Select a valuid value...', undefined,
+                            'Select a valid value...', undefined,
                             labelArray[i], 244,
                             helpStr, false,
                             undefined, nNode);

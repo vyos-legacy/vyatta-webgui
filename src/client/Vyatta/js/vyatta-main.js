@@ -124,7 +124,6 @@ function f_startViewPort()
                 function() {f_handleMainFramePanelResize()}}});
 
     f_handleMainFramePanelResize();
-
     f_clockTicking();
    //m_clock.render(document.getElementById('v_footer_clock'));
 }

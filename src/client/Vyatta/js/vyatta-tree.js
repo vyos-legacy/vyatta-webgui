@@ -203,6 +203,8 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                     continue;
                 else if(tc == ' Clear screen')
                     continue;
+                else if(an == 'at' && tc.indexOf('Reboot at') > 0)
+                    continue;
 
                 str = this.f_constructNodeDomStr(n, str);
             }

@@ -87,7 +87,7 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
               if(id == V_NOT_FOUND)
               {
                   f_promptErrorMessage('Login Failed',
-                    'Invalid User Name and/or Password. Please try again.');
+                    'Invalid username or password. Please try again.');
               }
               else
               {
@@ -244,6 +244,7 @@ function f_createLoginPasswordField(pw)
         ,enableKeyEvents: true
         ,allowBlank:false
         ,blankText: 'Please enter Password'
+        ,selectOnFocus: true
     });
 }
 

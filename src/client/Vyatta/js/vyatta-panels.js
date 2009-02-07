@@ -1141,7 +1141,10 @@ function f_createEditorTitle(node, title)
             if(n.text != 'Configuration')
             {
                 titleName =  n.text + arrow + titleName;
-                arrow = '&nbsp;&rArr;&nbsp;';
+                if(Ext.isIE)
+                    arrow = '&nbsp;&rarr;&nbsp;';
+                else
+                    arrow = '&nbsp;&rArr;&nbsp;';
             }
             n = n.parentNode;
         }
@@ -1159,6 +1162,7 @@ function f_createEditorTitle(node, title)
 
 function f_createConfButton(treeObj, node, btnText, title)
 {
+    var height = 55;
     var buttons = [ ];
     var btn_id = Ext.id();
     var cmd = '';
@@ -1172,7 +1176,13 @@ function f_createConfButton(treeObj, node, btnText, title)
         isDelete = true;
     }
 
-    title = f_replace(title, '&rArr;', '');
+    if(Ext.isIE)
+    {
+        title = f_replace(title, '&rarr;&nbsp;', '');
+        height = 62;
+    }
+    else
+        title = f_replace(title, '&rArr;&nbsp;', '');
     title = f_replace(title, 'Configuration&nbsp;', '');
     buttons[0] = new Ext.Button(
     {
@@ -1191,7 +1201,7 @@ function f_createConfButton(treeObj, node, btnText, title)
         items: buttons
         ,border: false
         ,bodyStyle: 'padding: 6px 2px 10px 8px'
-        ,height: 55
+        ,height: height
         ,html: '<b>' + btnText + '</b> - ' + title + 
                 '&nbsp;&nbsp;&nbsp;'+
                 '<br><hr class="hr-editor">'

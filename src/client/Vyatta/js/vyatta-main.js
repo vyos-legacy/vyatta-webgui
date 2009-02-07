@@ -234,7 +234,7 @@ function f_createFrameHeaderPanel()
             ',&nbsp;&nbsp;Username:&nbsp; ' + f_getUserLoginName() +
            ',&nbsp;&nbsp;&nbsp;' +
             '<a class="anchor-test" valign="top" href="#" onclick="f_handleLogout()">' +
-            '<img src="images/logout.gif"/> Log Out</a>';
+            'Log Out</a>';
         f_createTabsHTML();
     }
 

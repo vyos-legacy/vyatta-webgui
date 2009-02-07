@@ -1087,7 +1087,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             if(labelStr.length > 1)
             {
                 labelStr += ' ';
-                header += '&nbsp;&rArr;&nbsp;';
+                if(Ext.isIE)
+                    header += '&nbsp;&rarr;&nbsp;';
+                else
+                    header += '&nbsp;&rArr;&nbsp;';
             }
 
             labelStr += c;

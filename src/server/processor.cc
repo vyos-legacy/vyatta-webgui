@@ -122,9 +122,11 @@ TemplateParams::get_xml(const string &value)
   if (_help.empty() == false) {
     out += _help;
   }
+  /*
   if (_comp_help.empty() == false) {
     out += _comp_help;
   }
+  */
   out += "</help>";
 
   if (_default.empty() == false) {

@@ -400,6 +400,23 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  params._type = WebGUI::MACADDR;
 	}
       }
+      else if (strncmp(line.c_str(),"comp_help:",10) == 0 || mode == "comp_help:") {
+	//need to escape out '<' and '>'
+	string comp_help;
+	if (mode.empty()) {
+	  comp_help = line.substr(10,line.length()-11);
+	}
+	else {
+	  comp_help = line;
+	}
+	mode = "comp_help:";
+	comp_help = WebGUI::mass_replace(comp_help, "&", "&#38;");
+	comp_help = WebGUI::mass_replace(comp_help, "<", "&#60;");
+	comp_help = WebGUI::mass_replace(comp_help, ">", "&#62;");
+	comp_help = WebGUI::mass_replace(comp_help, "\n", "&#xD;&#xA;");
+
+	params._comp_help += comp_help;
+      }
       else if (strncmp(line.c_str(),"help:",5) == 0 || mode == "help:") {
 	//need to escape out '<' and '>'
 	string help;
@@ -410,9 +427,9 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  help = line;
 	}
 	mode = "help:";
+	help = WebGUI::mass_replace(help, "&", "&#38;");
 	help = WebGUI::mass_replace(help, "<", "&#60;");
 	help = WebGUI::mass_replace(help, ">", "&#62;");
-	help = WebGUI::mass_replace(help, " & ", " &#38; ");
 	help = WebGUI::mass_replace(help, "\n", "");
 
 	params._help += help;

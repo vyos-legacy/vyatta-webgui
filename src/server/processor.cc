@@ -118,9 +118,14 @@ TemplateParams::get_xml(const string &value)
     break;
   }
 
+  out += "<help>";
   if (_help.empty() == false) {
-    out += "<help>" + _help + "</help>";
+    out += _help;
   }
+  if (_comp_help.empty() == false) {
+    out += _comp_help;
+  }
+  out += "</help>";
 
   if (_default.empty() == false) {
     out += "<default>" + _default + "</default>";

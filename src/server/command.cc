@@ -164,6 +164,11 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 	return;
       }
     }
+    else if (strncmp(tmp.c_str(),"set",3) == 0) {
+      err = WebGUI::COMMAND_ERROR;
+      _proc->set_response(WebGUI::COMMAND_ERROR);
+      return;
+    }
     else {
       //treat this as an op mode command
       if (multi_part_op_cmd(cmd)) {

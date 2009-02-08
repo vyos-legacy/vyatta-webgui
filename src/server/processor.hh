@@ -45,6 +45,7 @@ public:
   WebGUI::NodeType _type;
   WebGUI::Attributes _conf_mode;
   std::string _help;
+  std::string _comp_help;
   std::string _default;
   std::vector<std::string> _enum;
   std::string _allowed; //matches the allowed in node.def

@@ -17,17 +17,11 @@
     <link href="css/base-css.css" rel="stylesheet" type="text/css" />
 
     <script type="text/javascript">
-
-        function resize()
-        {
-            //alert("resize event detected!");
-        }
-
-        window.onresize = resize;
-
-        
+        var thisURL = document.URL;
+        thisURL = thisURL.substr(0, (thisURL.length-9));
+        Ext.BLANK_IMAGE_URL = thisURL + 'blank.gif';
+        Ext.SSL_URL = thisURL + 'blank.html';
     </script>
-
 </head>
 
 <body>
@@ -63,11 +57,11 @@
     <td id="id_header_tab" border="1" valign="bottom" halign="left"
             colspan="2" width="100%">
         <div id="id_header_tab">
-        
+
         </div>
     </td>
 
-    
+
 
     </tr></table>
   </div>

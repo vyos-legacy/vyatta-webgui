@@ -585,19 +585,30 @@ function f_handleHelpButtonClick(panel, helpbutton, saveCookie)
         panel.m_editorPanel.items == undefined) return;
 
     var fPanel = panel.m_editorPanel.items.itemAt(0);
+    var hState = f_getHelpTipsState();
     for(var i=0; i<fPanel.items.getCount(); i++)
     {
         var rPanel = fPanel.items.itemAt(i);
         if(rPanel == undefined) return;
 
-        var helpLabel = rPanel.items == undefined ? undefined :
-                        rPanel.items.itemAt(panel.m_helpIndex);
-        if(helpLabel != undefined)
+        if(rPanel.m_helpLabel != undefined)
         {
-            if(f_getHelpTipsState() == V_HELP_OFF)
-                helpLabel.show();
+            if(hState == V_HELP_OFF)
+                rPanel.m_helpLabel.show();
             else
-                helpLabel.hide();
+                rPanel.m_helpLabel.hide();
+        }
+        else
+        {
+            var helpLabel = rPanel.items == undefined ? undefined :
+                            rPanel.items.itemAt(panel.m_helpIndex);
+            if(helpLabel != undefined)
+            {
+                if(hState == V_HELP_OFF)
+                    helpLabel.show();
+                else
+                    helpLabel.hide();
+            }
         }
     }
 }
@@ -1029,7 +1040,9 @@ function f_addField2Panel(editorPanel, fields, node, row)
 
     if(f_getHelpTipsState() == V_HELP_ON)
     {
-        if(fields.items != undefined)
+        if(fields.m_helpLabel != undefined)
+            fields.m_helpLabel.hide();
+        else if(fields.items != undefined)
         {
           var helpLabel = fields.items.itemAt(V_IF_INDEX_TIP);
           if(helpLabel != undefined)
@@ -1162,7 +1175,7 @@ function f_createEditorTitle(node, title)
 
 function f_createConfButton(treeObj, node, btnText, title)
 {
-    var height = 55;
+    var height = 70;
     var buttons = [ ];
     var btn_id = Ext.id();
     var cmd = '';
@@ -1179,7 +1192,7 @@ function f_createConfButton(treeObj, node, btnText, title)
     if(Ext.isIE)
     {
         title = f_replace(title, '&rarr;&nbsp;', '');
-        height = 62;
+        height = 70;
     }
     else
         title = f_replace(title, '&rArr;&nbsp;', '');
@@ -1189,6 +1202,7 @@ function f_createConfButton(treeObj, node, btnText, title)
         id: btn_id
         ,text: btnText
         ,tooltip: btnText + ' ' + title
+        ,height: 20
         ,handler: function()
         {
             f_sendConfigCLICommand([cmd + treeObj.f_getNodePathStr(node) ],
@@ -1196,9 +1210,18 @@ function f_createConfButton(treeObj, node, btnText, title)
         }
     });
 
-    return new Ext.Panel(
+    buttons[1] = f_createLabel(node.attributes.help, V_LABEL_HELP);
+    var bPanel = new Ext.Panel(
     {
-        items: buttons
+        buttons: buttons
+        ,bodyStyle: 'padding: 0px'
+        ,border: false
+        ,buttonAlign: 'left'
+    });
+
+    var panel = new Ext.Panel(
+    {
+        items: bPanel
         ,border: false
         ,bodyStyle: 'padding: 6px 2px 10px 8px'
         ,height: height
@@ -1207,6 +1230,9 @@ function f_createConfButton(treeObj, node, btnText, title)
                 '<br><hr class="hr-editor">'
                  
     });
+    panel.m_helpLabel = buttons[1];
+
+    return panel;
 }
 
 function f_handleOperBtnClick(button, node, treeObj)
@@ -1262,10 +1288,11 @@ function f_createOperButton(treeObj, node, btnText, title)
     var buttons = [ ];
     var btn_id = Ext.id();
 
-    title = f_replace(title, '&rArr;', '');
+    if(Ext.isIE)
+        title = f_replace(title, '&rarr;&nbsp;', '');
+    else
+        title = f_replace(title, '&rArr;&nbsp;', '');
     title = f_replace(title, 'Configuration&nbsp;', '');
-    title = f_replace(title, '<', '&#60;');
-    title = f_replace(title, '>', '&#62;');
     buttons[0] = new Ext.Button(
     {
         id: btn_id
@@ -1309,6 +1336,7 @@ function f_createOperButton(treeObj, node, btnText, title)
         });
         buttons[1].hide();
         buttons[0].m_pauseBtn = buttons[1];
+        buttons[2] = f_createLabel(node.attributes.help, V_LABEL_HELP);
     }
 
     var bPanel = new Ext.Panel(
@@ -1330,6 +1358,7 @@ function f_createOperButton(treeObj, node, btnText, title)
     });
 
     panel.m_pauseBtn = buttons[1];
+    panel.m_helpLabel = buttons[2];
     treeObj.m_runButton = buttons[0];
     return panel;
 }
@@ -1341,11 +1370,16 @@ function f_createLabel(value, labelFor)
 
     if(labelFor == V_LABEL_HELP)
     {
-        value = f_replace(value, '<', '&#60;');
-        value = f_replace(value, '>', '&#62;');
-        lAlign = 'vlabel_left';
-        width = 250;
-        value = value + '.';
+        if(value == undefined)
+            value = "";
+        else
+        {
+            value = f_replace(value, '<', '&#60;');
+            value = f_replace(value, '>', '&#62;');
+            lAlign = 'vlabel_left';
+            width = 250;
+            value = value + '.';
+        }
     }
     else if(labelFor == V_LABEL_LABEL)
     {

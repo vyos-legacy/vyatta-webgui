@@ -1122,7 +1122,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(node.attributes.action != undefined)
         {
             f_addField2Panel(ePanel, f_createOperButton(m_thisObj, node, 'Run',
-                              node.attributes.help), 'Run Node');
+                              header), 'Run Node');
         }
 
         //////////////////////////////////////////////
@@ -1275,7 +1275,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         if(eForm != undefined)
         {
-            var hOffset = (eForm.items.getCount() * 35) + 48;
+            var hOffset = (eForm.items.getCount() * 35) + 60;
             var mlbl = f_createTextAreaField(values, 0, ePanel.getInnerHeight()-hOffset);
             mlbl.m_heightOffset = hOffset;
             f_addField2Panel(ePanel, mlbl, undefined);

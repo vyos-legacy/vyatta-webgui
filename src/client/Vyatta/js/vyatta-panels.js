@@ -169,14 +169,14 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         {
             autoWidth: true
             ,layout: 'column'
-            ,height: 26
+            ,height: 30
             ,boder: false
             ,bodyBorder: false
             ,bodyStyle: 'padding: 2px'
             ,cls: 'v-panel-with-background-color'
             ,items: items
         });
-        topPanel.height = 26;
+        topPanel.height = 30;
         topPanel.cbpanel = cbpanel;
 
         var tp = this.m_toolbar;
@@ -689,7 +689,7 @@ function f_createToolbar(panelObj)
 
     return new Ext.Panel(
     {
-        margins: '5 5 5 0'
+        margins: '5 5 5 5'
         ,bodyStyle: 'padding:10px 2% 0px 2%'
         ,cls: 'v-border-less'
         ,collapsible: false

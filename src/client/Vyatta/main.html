@@ -17,10 +17,13 @@
     <link href="css/base-css.css" rel="stylesheet" type="text/css" />
 
     <script type="text/javascript">
-        var thisURL = document.URL;
-        thisURL = thisURL.substr(0, (thisURL.length-9));
-        Ext.BLANK_IMAGE_URL = thisURL + 'blank.gif';
-        Ext.SSL_URL = thisURL + 'blank.html';
+        if(Ext.isIE)
+        {
+            var thisURL = document.URL;
+            thisURL = thisURL.substr(0, (thisURL.length-9));
+            Ext.BLANK_IMAGE_URL = thisURL + 'blank.gif';
+            Ext.SSL_URL = thisURL + 'blank.html';
+        }
     </script>
 </head>
 

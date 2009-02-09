@@ -872,11 +872,13 @@ function f_updateToolbarButtons(tree)
 
     if(m.m_commitBtn != undefined)
         tree.m_parent.m_commitBtn.setIconClass(tree.m_isCommitAvailable ?
-                        'v_commit_button' : 'v_commit_button_no');
+                        'v_commit_button' :
+                        'v_commit_button_no x-toolbar x-item-disabled');
 
     if(m.m_discardBtn != undefined)
         tree.m_parent.m_discardBtn.setIconClass(tree.m_isCommitAvailable ?
-                        'v_discard_button' : 'v_discard_button_no');
+                        'v_discard_button' : 
+                        'v_discard_button_no x-toolbar x-item-disabled');
 
     if(m.m_undoBtn != undefined)
         tree.m_parent.m_undoBtn.setIconClass(tree.m_isCommitAvailable ?
@@ -922,6 +924,11 @@ function f_updateFieldValues2Panel(editorPanel, fields, node)
         {
             var label = f.items.itemAt(V_IF_INDEX_LABEL);
             var cLabel = fields.items.itemAt(V_IF_INDEX_LABEL);
+
+            //////////////////////////////
+            // if true, we updating the button fields
+            if(fields.m_buttons != undefined && f.m_buttons != undefined)
+                return false;   // button fields already exist.
 
             ///////////////////////////////////////////////////////
             // if the below statement is true, the fields already
@@ -1230,6 +1237,7 @@ function f_createConfButton(treeObj, node, btnText, title)
                 '<br><hr class="hr-editor">'
                  
     });
+    panel.m_buttons = buttons;
     panel.m_helpLabel = buttons[1];
 
     return panel;

@@ -178,6 +178,7 @@
     height: 18px !important;
     width: 84px !important;
     cursor:pointer;
+    cursor:default;
     white-space: nowrap;
 }
 
@@ -257,7 +258,7 @@
     background:  url('../images/discard_disabled.gif') no-repeat left !important;
     height: 18px !important;
     width: 83px !important;
-    cursor:pointer;
+    cursor:default;
     white-space: nowrap;
 }
 

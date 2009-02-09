@@ -6,6 +6,7 @@
  */
 #include <string>
 #include <iostream>
+#include <ctype.h>
 #include <sys/types.h>
 #include <string.h>
 #include <dirent.h>
@@ -431,6 +432,16 @@ Processor::set_response(WebGUI::Error err, std::string &msg)
 void
 Processor::set_response(std::string &resp)
 {
+  //will need to optimize this, remove string iteration
+
+  //hook to remove control characters from response
+  string::iterator iter = resp.begin();
+  while (iter != resp.end()) {
+    if (isprint(*iter) != 0 && isspace(*iter) != 0) {
+      *iter = ' ';
+    }
+    ++iter;
+  }
   _msg._custom_response = resp;
 }
 

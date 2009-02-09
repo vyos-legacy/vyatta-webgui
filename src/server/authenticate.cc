@@ -47,12 +47,14 @@ bool
 Authenticate::create_new_session()
 {
   unsigned long id = 0;
+  bool init_session = false;
 
   Message msg = _proc->get_msg();
   if (test_auth(msg._user, msg._pswd) == true) {
     //check for current session
     if ((id = reuse_session()) == 0) {
       id = create_new_id();
+      init_session = true;
     }
   }
   else {
@@ -67,32 +69,33 @@ Authenticate::create_new_session()
     string stdout;
     sprintf(buf, "%lu", id);
 
-    WebGUI::mkdir_p(WebGUI::ACTIVE_CONFIG_DIR.c_str());
-    WebGUI::mkdir_p((WebGUI::LOCAL_CHANGES_ONLY + string(buf)).c_str());
-    WebGUI::mkdir_p((WebGUI::LOCAL_CONFIG_DIR + string(buf)).c_str());
-
-    string unionfs = WebGUI::unionfs();
-
-    cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+string(buf)+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ string(buf);
-
-    if (WebGUI::execute(cmd, stdout) != 0) {
-      //syslog here
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
+    if (init_session == true) {
+      WebGUI::mkdir_p(WebGUI::ACTIVE_CONFIG_DIR.c_str());
+      WebGUI::mkdir_p((WebGUI::LOCAL_CHANGES_ONLY + string(buf)).c_str());
+      WebGUI::mkdir_p((WebGUI::LOCAL_CONFIG_DIR + string(buf)).c_str());
+      
+      string unionfs = WebGUI::unionfs();
+      
+      cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+string(buf)+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ string(buf);
+      
+      if (WebGUI::execute(cmd, stdout) != 0) {
+	//syslog here
+	_proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
+	return false;
+      }
+      
+      WebGUI::mkdir_p((WebGUI::CONFIG_TMP_DIR+string(buf)).c_str());
+      
+      //write the username here to modify file
+      string file = WebGUI::VYATTA_MODIFY_FILE + buf;
+      FILE *fp = fopen(file.c_str(), "w");
+      if (!fp) {
+	_proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
+	return false;
+      }
+      fputs(msg._user.c_str(), fp);
+      fclose(fp);
     }
-    
-    WebGUI::mkdir_p((WebGUI::CONFIG_TMP_DIR+string(buf)).c_str());
-
-    //write the username here to modify file
-    string file = WebGUI::VYATTA_MODIFY_FILE + buf;
-    FILE *fp = fopen(file.c_str(), "w");
-    if (!fp) {
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
-    }
-    fputs(msg._user.c_str(), fp);
-    fclose(fp);
-
 
     //now generate successful response
     sprintf(buf, "%d", WebGUI::SUCCESS);

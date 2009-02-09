@@ -190,7 +190,7 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             if(this.g_loadMode == V_TREE_ID_oper)
             {
                 var an = n.getAttribute('name');
-                var tc = n.textContent;
+                var tc = n.text == undefined ? n.textContent : n.text;
                 if(an == "configure" || an == 'telnet' || an == 'terminal' ||
                     an == "install-system")
                     continue;
@@ -199,13 +199,13 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                         tc.indexOf('Visually identify the specified ethernet') >= 0))
                     continue;
                 else if(f_isLoginOperator() &&
-                    tc == ' Reboot the system')
+                    tc.indexOf('Reboot the system') >= 0)
                     continue;
-                else if(tc == ' Clear screen')
+                else if(tc != undefined && tc.indexOf('Clear screen') >= 0)
                     continue;
-                else if(an == 'at' && tc.indexOf('Reboot at') > 0)
+                else if(an == 'at' && tc.indexOf('Reboot at') >= 0)
                     continue;
-                else if(an == 'set' && tc.indexOf('Set system or') > 0)
+                else if(an == 'set' && tc.indexOf('Set system or') >= 0)
                     continue;
 
                 str = this.f_constructNodeDomStr(n, str);

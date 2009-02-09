@@ -3,6 +3,50 @@
  * and open the template in the editor.
  */
 
+function f_sendSpecialCliCommand(cmd, segmentId, cb)
+{
+    var opCmdCb = function(options, success, response)
+    {
+        if(!f_isResponseOK(response))
+            return;
+
+        var xmlRoot = response.responseXML.documentElement;
+        var isSuccess = f_parseResponseError(xmlRoot);
+        var localSegmentId = (isSuccess[2] != undefined)?isSuccess[2]:null;
+
+        // segment is not end, continue to send
+        if(localSegmentId.indexOf('_end') < 0)
+        {
+            if(cmd.indexOf('host name') > 0 && isSuccess[1].length > 1)
+            {
+                g_baseSystem.m_hostname = isSuccess[1];
+                f_updateHostname();
+                return;
+            }
+
+            f_sendSpecialCliCommand(cmd, localSegmentId, cb);
+        }
+    }
+
+    /* send request */
+    var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+               + "<vyatta><command><id>" + f_getUserLoginedID()
+               + "</id>\n"
+               + "<statement mode='op'>"
+               + segmentId != undefined? segmentId : cmd
+               + "</statement>\n"
+               + "</command></vyatta>\n";
+
+    var conn = new Ext.data.Connection({});
+    conn.request(
+    {
+        url: '/cgi-bin/webgui-wrap',
+        method: 'POST',
+        xmlData: xmlstr,
+        callback: opCmdCb
+    });
+}
+
 function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, 
                                     forceSend, segmentId, treeObj, wildCard)
 {
@@ -155,8 +199,6 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
                + "<vyatta><command><id>" + sid + "</id>\n"
                + "<statement mode='op'>" + sendStr + "</statement>\n"
                + "</command></vyatta>\n";
-
-    g_cliCmdObj.m_newSegmentId = xmlstr.indexOf('multi_') >= 0 ? false : true;
 
 
     //////////////////////////////////////////////////////////////////

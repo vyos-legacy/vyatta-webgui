@@ -205,6 +205,8 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                     continue;
                 else if(an == 'at' && tc.indexOf('Reboot at') > 0)
                     continue;
+                else if(an == 'set' && tc.indexOf('Set system or') > 0)
+                    continue;
 
                 str = this.f_constructNodeDomStr(n, str);
             }
@@ -1216,9 +1218,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     var segCount = this.f_getSegmentIdInNumeric();
                     if(segCount > 3)
                         pauseBtn.show();
-
-                    if(g_cliCmdObj.m_newSegmentId)
-                        g_cliCmdObj.m_newSegmentId = false;
 
                     if(sid != undefined)
                     {

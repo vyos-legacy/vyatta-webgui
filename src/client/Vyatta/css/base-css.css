@@ -104,6 +104,11 @@
     zoom:1;
 }
 
+#v-tab-configuration-disabled
+{
+    cursor:default;
+}
+
 #v_tab_table
 {
     float: left;

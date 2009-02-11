@@ -37,6 +37,9 @@ public:
 
   void
   kill_all();
+
+  void
+  shutdown();
   
 private:
   void

@@ -1063,11 +1063,11 @@ function f_addField2Panel(editorPanel, fields, node, mode)
 
         eFormPanel.doLayout();
 
-        if(eFormPanel.items.getCount() == 2 &&
-              fields.items.item(V_IF_INDEX_INPUT).getXType() != 'panel')
+        if(mode == V_TREE_ID_config)
         {
-
-            fields.items.item(V_IF_INDEX_INPUT).focus(true, 500);
+            if(eFormPanel.items.getCount() == 2 &&
+                  fields.items.item(V_IF_INDEX_INPUT).getXType() != 'panel')
+                fields.items.item(V_IF_INDEX_INPUT).focus(true, 500);
         }
     }
     else  // editor panel is empty. create a form and add fields into it

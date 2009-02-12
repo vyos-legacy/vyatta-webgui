@@ -652,6 +652,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     sVal = (sVal != undefined && sVal.indexOf != null &&
                             sVal.indexOf(" ") > 0) ?
                         "'"+sVal+"'" : sVal;
+                    m_thisObj.m_fdSent = cNode.getValFieldFunc();
                     f_sendConfigCLICommand([ 'set ' + nodePath
                                  +  " " + sVal ], m_thisObj, cNode, true);
                 }
@@ -697,6 +698,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                                     val.length == 0) ?
                                         'delete ' : 'set ';
 
+                    m_thisObj.m_fdSent = cNode.getValFieldFunc();
                     if(cNode.attributes.type == undefined)
                         // typeless
                         f_sendConfigCLICommand([ cmdAction + nodePath],
@@ -754,6 +756,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     for(var i=0; i<values.length; i++)
                         varr[i+jj] = 'set ' + nodePath + " " + values[i];
 
+                    m_thisObj.m_fdSent = node.getValFieldFunc();
                     f_sendConfigCLICommand(varr, m_thisObj, node, true);
                 }
             }

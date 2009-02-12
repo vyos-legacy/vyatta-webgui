@@ -257,6 +257,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             delete old;
         }
 
+        this.m_treeObj.m_fdSent = undefined;
         ep.doLayout();
     },
 
@@ -999,6 +1000,24 @@ function f_updateFieldValues2Panel(editorPanel, fields, node, mode)
                     }
                 }
 
+                //////////////////////////////
+                // set focus field
+                if(i > 0)
+                {
+                    var fd = eFormPanel.items.itemAt(i-1);
+                    if(fd.items.itemAt(V_IF_INDEX_INPUT) == editorPanel.m_treeObj.m_fdSent)
+                    {
+                        fd = f.items.itemAt(V_IF_INDEX_INPUT);
+
+                        if(fd.getXType() == 'editorgrid')
+                        {
+                            fd.startEditing(0,0);
+                        }
+                        else
+                            fd.focus(true, 550);
+                    }
+                }
+
                 return false;
             }
             ///////////////////////////////////////
@@ -1273,6 +1292,7 @@ function f_createConfButton(treeObj, node, btnText, title)
         ,height: 20
         ,handler: function()
         {
+            treeObj.m_fdSent = undefined;
             f_sendConfigCLICommand([cmd + treeObj.f_getNodePathStr(node) ],
                                     treeObj, node, isDelete);
         }

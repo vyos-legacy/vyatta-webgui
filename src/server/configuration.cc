@@ -132,8 +132,10 @@ Configuration::get_full_op_level()
   TemplateParams multi_params;
   //only do this once!!!
   string tmp = WebGUI::OP_TEMPLATE_DIR + "/" + rel_tmpl_path + "/node.tag";
+
   get_template_node(tmp, multi_params);
   string tag_node_str = multi_params.get_xml();
+
   if (tag_node_str.empty() == false) {
     //escape out "%2F" here for non-terminal multi-nodes
     /*
@@ -501,6 +503,9 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       }
     }
     fclose(fp);
+  }
+  else {
+    return; //file does not exist return here
   }
 
   //infer end node from leaf

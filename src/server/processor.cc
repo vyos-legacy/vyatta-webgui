@@ -420,10 +420,21 @@ Processor::set_response(WebGUI::Error err)
  *
  **/
 void
-Processor::set_response(WebGUI::Error err, std::string &msg)
+Processor::set_response(WebGUI::Error err, std::string &resp)
 {
+  //will need to optimize this, remove string iteration
+
+  //hook to remove control characters from response
+  string::iterator iter = resp.begin();
+  while (iter != resp.end()) {
+    if (iscntrl(*iter) != 0) {
+      *iter = ' ';
+    }
+    ++iter;
+  }
+
   _msg._error_code = err;
-  _msg._custom_error_msg = msg;
+  _msg._custom_error_msg = resp;
 }
 
 /**
@@ -437,7 +448,7 @@ Processor::set_response(std::string &resp)
   //hook to remove control characters from response
   string::iterator iter = resp.begin();
   while (iter != resp.end()) {
-    if (isprint(*iter) != 0 && isspace(*iter) != 0) {
+    if (iscntrl(*iter) != 0 && (*iter != '\n' && *iter != '\t' && *iter != '\r')) {
       *iter = ' ';
     }
     ++iter;

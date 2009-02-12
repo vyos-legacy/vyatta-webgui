@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
     usleep(1000 * 1000); //1 second
   }
 
-  mgr.kill_all();
+  mgr.shutdown();
   usleep(2 * 1000 * 1000); //lets give these guys a bit of time to shut down
   exit(0);
 }

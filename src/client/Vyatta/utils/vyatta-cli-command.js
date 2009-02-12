@@ -33,7 +33,7 @@ function f_sendSpecialCliCommand(cmd, segmentId, cb)
                + "<vyatta><command><id>" + f_getUserLoginedID()
                + "</id>\n"
                + "<statement mode='op'>"
-               + segmentId != undefined? segmentId : cmd
+               + (segmentId != undefined? segmentId : cmd)
                + "</statement>\n"
                + "</command></vyatta>\n";
 

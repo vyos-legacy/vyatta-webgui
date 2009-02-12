@@ -213,6 +213,18 @@ ChunkerManager::kill_all()
  *
  **/
 void
+ChunkerManager::shutdown()
+{
+  kill_all();
+  //clean up output directory on startup
+  string clean_cmd = string("rm -f ") + WebGUI::CHUNKER_RESP_TOK_DIR + "/* >/dev/null";
+  system(clean_cmd.c_str());
+}
+
+/**
+ *
+ **/
+void
 ChunkerManager::kill_process(unsigned long key)
 {
   char buf[80];

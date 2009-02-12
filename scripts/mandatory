@@ -14,6 +14,10 @@ content-inspection/traffic-filter
 firewall/name/node.tag/rule/node.tag/action
 interfaces/ethernet/node.tag/vif/node.tag/vrrp/vrrp-group/node.tag/virtual-address
 interfaces/ethernet/node.tag/vrrp/vrrp-group/node.tag/virtual-address
+interfaces/serial/node.tag/cisco-hdlc/vif/node.tag/address/local-address
+interfaces/serial/node.tag/cisco-hdlc/vif/node.tag/address/prefix-length
+interfaces/serial/node.tag/cisco-hdlc/vif/node.tag/address/remote-address
+interfaces/serial/node.tag/encapsulation
 interfaces/tunnel/node.tag/encapsulation
 interfaces/tunnel/node.tag/local-ip
 interfaces/tunnel/node.tag/remote-ip

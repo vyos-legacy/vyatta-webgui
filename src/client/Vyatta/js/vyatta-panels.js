@@ -151,6 +151,8 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             if(ePanel.items != undefined && ePanel.items.itemAt(0) != undefined)
                 ePanel.items.itemAt(0).setSize(w-lp.width-25, h-5);
 
+            //////////////////////////////////////
+            // oper text output panel
             if(ePanel.m_opTextArea != undefined)
                 ePanel.m_opTextArea.setSize(w-lp.width-30,
                     h-ePanel.m_opTextArea.m_heightOffset);
@@ -289,7 +291,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         {
             var ep = this.m_editorPanel;
             var eFormPanel = ep.items.itemAt(0);
-            return eFormPanel.items.itemAt(0).title;
+            return eFormPanel.items.itemAt(0).m_title;
         }
 
         return '';
@@ -566,7 +568,7 @@ function f_createCheckbox(value, node, helpStr, width, callback)
     return p;
 }
 
-function f_isPanelEmpty(panel)
+function f_isPanelEmpty(panel, mode)
 {
     if(panel.items != undefined && panel.items.getCount() > 0)
         return false;
@@ -905,14 +907,15 @@ function f_handleToolbarViewCmdResponse(responseTxt)
 //////////////////////////////////////////////////////////////////
 // if fields are already in panel, update it and return false. else
 // do nothing and return true
-function f_updateFieldValues2Panel(editorPanel, fields, node)
+function f_updateFieldValues2Panel(editorPanel, fields, node, mode)
 {
-    if(editorPanel == undefined || f_isPanelEmpty(editorPanel) || fields == undefined)
+    if(editorPanel == undefined || f_isPanelEmpty(editorPanel, mode) ||
+            fields == undefined)
         return true;
 
     var eFormPanel = editorPanel.items.itemAt(0);
 
-    if(eFormPanel.items == undefined) return true;
+    if(eFormPanel == undefined || eFormPanel.items == undefined) return true;
     var len = eFormPanel.items.getCount();
 
     ///////////////////////////////
@@ -966,7 +969,18 @@ function f_updateFieldValues2Panel(editorPanel, fields, node)
                     else if(updateF.getXType() == 'numberfield' ||
                         updateF.getXType() == 'textfield')
                     {
+                        var cn = updateF.el.dom.className;
+                        updateF.el.dom.className = f_replace(cn, 'v-textfield-unsubmit', '');
                         updateF.setValue(nodeVals);
+                    }
+                    else if(updateF.getXType() == 'editorgrid' &&
+                          updateF.m_unsubmitRows != null)
+                    {
+                        for(var i=0; i<updateF.m_unsubmitRows; i++)
+                        {
+                            updateF.getView().addRowClass(
+                                updateF.m_unsubmitRows[i], "v-textfield-submit");
+                        }
                     }
                 }
                 else if(node.attributes.configured == 'active')
@@ -1005,16 +1019,16 @@ function f_updateFieldValues2Panel(editorPanel, fields, node)
     return true;
 }
 
-function f_addField2Panel(editorPanel, fields, node, row)
+function f_addField2Panel(editorPanel, fields, node, mode)
 {
     ////////////////////////////////////////////////////
     // let find out if the fields are already existed
     // in editor. If they are, then update the values,
     // else add them to editor panel.
-    if(!f_updateFieldValues2Panel(editorPanel, fields, node)) return;
+    if(!f_updateFieldValues2Panel(editorPanel, fields, node, mode)) return;
 
     if(editorPanel != undefined && fields != undefined &&
-        !f_isPanelEmpty(editorPanel))
+        !f_isPanelEmpty(editorPanel, mode))
     {
         var eFormPanel = editorPanel.items.itemAt(0);
 
@@ -1102,6 +1116,27 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
     for(var i=0; i<50-count; i++)
         gridStore.loadData([ '' ], true);
 
+    if(callback != undefined)
+    {
+        var keypressHandler = function(e)
+        {
+            f_enterKeyPressHandler(grid, e, callback);
+        }
+    }
+    var tf = new Ext.form.TextField(
+    {
+        listeners: 
+        {
+            render: function(c) 
+            {
+                c.getEl().on({
+                keypress: keypressHandler
+                ,scope: c
+                });
+            }
+        }
+    });
+
     var gv = new VYATTA_gridview();
     var grid = new Ext.grid.EditorGridPanel(
     {
@@ -1122,11 +1157,11 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
             width: width-20,
             sortable: false,
             dataIndex: 'value',
-            editor: new Ext.form.TextField({ })
+            editor: tf
           }
         ]
     });
-    grid.on('afteredit', callback );
+    grid.on('afteredit', callback);
 
     helpLabel = node.attributes.type != undefined ? helpLabel+
                   " ("+node.attributes.type+")" : helpLabel;
@@ -1147,7 +1182,7 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
     return p;
 }
 
-function f_createEditorTitle(node, title)
+function f_createConfEditorTitle(node, btnPanel)
 {
     var titleName = '';
 
@@ -1169,20 +1204,46 @@ function f_createEditorTitle(node, title)
             n = n.parentNode;
         }
     }
-    else
-        titleName = title;
 
-
-    return new Ext.Panel(
+    var title  = new Ext.Panel(
     {
-        title: titleName
+        html: '<div valian="center"><b>' + titleName + '</b></div>'
+        ,position: 'fixed'
+        ,cls: 'v-border-less'
+        ,border: false
+        ,bodyStyle: 'padding: 15px 5px 5px 5px'
+        ,width: "90%"
+    });
+
+    var items = btnPanel != null ? [title, btnPanel] : [title];
+
+    var panel = new Ext.Panel(
+    {
+        layout: 'column'
+        ,items: items
+        ,height: 45
+        ,cls: 'v-border-bottom'
+        ,border: false
+    });
+    panel.m_title = titleName;
+
+    return panel;
+}
+
+function f_createOperEditorTitle(title)
+{
+    var panel = new Ext.Panel(
+    {
+        title: title
         ,height: 0
     });
+    panel.m_title = title;
+
+    return panel;
 }
 
 function f_createConfButton(treeObj, node, btnText, title)
 {
-    var height = 70;
     var buttons = [ ];
     var btn_id = Ext.id();
     var cmd = '';
@@ -1199,11 +1260,11 @@ function f_createConfButton(treeObj, node, btnText, title)
     if(Ext.isIE)
     {
         title = f_replace(title, '&rarr;&nbsp;', '');
-        height = 70;
     }
     else
         title = f_replace(title, '&rArr;&nbsp;', '');
     title = f_replace(title, 'Configuration&nbsp;', '');
+
     buttons[0] = new Ext.Button(
     {
         id: btn_id
@@ -1217,28 +1278,24 @@ function f_createConfButton(treeObj, node, btnText, title)
         }
     });
 
-    buttons[1] = f_createLabel(node.attributes.help, V_LABEL_HELP);
     var bPanel = new Ext.Panel(
     {
         buttons: buttons
         ,bodyStyle: 'padding: 0px'
         ,border: false
-        ,buttonAlign: 'left'
+        ,height: 0
+        ,buttonAlign: 'right'
     });
 
     var panel = new Ext.Panel(
     {
-        items: bPanel
+        buttons: [bPanel]
         ,border: false
-        ,bodyStyle: 'padding: 6px 2px 10px 8px'
-        ,height: height
-        ,html: '<b>' + btnText + '</b> - ' + title + 
-                '&nbsp;&nbsp;&nbsp;'+
-                '<br><hr class="hr-editor">'
-                 
+        ,bodyStyle: 'padding: 0px'
+        ,height: 0
+        ,minWidth: 40
     });
     panel.m_buttons = buttons;
-    panel.m_helpLabel = buttons[1];
 
     return panel;
 }
@@ -1467,5 +1524,8 @@ function f_enterKeyPressHandler(field, e, callback)
     // check for ENTER key to trigger the 'login'
     // button
     if(e.getKey() == 13)
+    {
+        if(field != undefined) field.m_enterPress = true;
         callback.call();
+    }
 }

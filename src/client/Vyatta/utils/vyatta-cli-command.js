@@ -356,6 +356,34 @@ function f_isResponseOK(response)
     return ret;
 }
 
+function f_handleNodeExpansion2(treeObj, selPath, node, doNotClear)
+{
+    var tree = treeObj.m_tree;
+
+    ////////////////////////////////////////////////////////
+    // refresh the editor panel on the selectioned node
+    var handler = function(narg)
+    {
+        tree.selectPath(selPath, 'text', function(success, sel)
+        {
+            var nnode = tree.getSelectionModel().getSelectedNode();
+
+            if(!doNotClear)
+                treeObj.m_parent.f_cleanEditorPanel();
+            treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
+        });
+
+        narg.un('expand', handler);
+    }
+
+    if(!f_isExpandableNode(node))
+        treeObj.m_parent.f_onTreeRenderer(treeObj);
+
+    if(node.expanded)
+        node.collapse();
+    node.on('expand', handler);
+    node.expand();
+}
 function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
 {
     var tree = treeObj.m_tree;
@@ -432,6 +460,31 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         if(node != undefined && typeof node.reload == 'function')
         {
             skipClearChk = true;
+
+            var onReloadHandler = function()
+            {
+                if(treeObj.m_fdSent != undefined)
+                {
+                    if(node.hasChildNodes())
+                    {
+                        var n = node.firstChild;
+                        while(n != undefined)
+                        {
+                            if(n.attributes.text == treeObj.m_fdSent.getValue())
+                            {
+                                selPath = n.getPath('text');
+                                treeObj.m_parent.f_cleanEditorPanel();
+                                f_handleNodeExpansion2(treeObj, selPath,
+                                                        n, doNotClear);
+                                break;
+                            }
+                            n = n.nextSibling;
+                        }
+                    }
+                }
+                tree.un('load', onReloadHandler);
+            }
+            tree.on('load', onReloadHandler);
             node.reload();
         }
         else if(selNode != undefined && typeof selNode.reload == 'function')
@@ -477,28 +530,7 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         treeObj.m_parent.f_onTreeRenderer(treeObj);
     }
 
-    ////////////////////////////////////////////////////////
-    // refresh the editor panel on the selectioned node
-    var handler = function(narg)
-    {
-        tree.selectPath(selPath, 'text', function(success, sel)
-        {
-            var nnode = tree.getSelectionModel().getSelectedNode();
-
-            if(!doNotClear)
-                treeObj.m_parent.f_cleanEditorPanel();
-            treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
-        });
-
-        narg.un('expand', handler);
-    }
-    if(!f_isExpandableNode(p))
-        treeObj.m_parent.f_onTreeRenderer(treeObj);
-    if(p.expanded)
-        p.collapse();
-    p.on('expand', handler);
-    p.expand();
-        
+    f_handleNodeExpansion2(treeObj, selPath, p, doNotClear);
 }
 
 function f_handlePropagateParentNodes(node)

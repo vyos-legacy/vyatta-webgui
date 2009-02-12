@@ -1012,6 +1012,7 @@ function f_updateFieldValues2Panel(editorPanel, fields, node, mode)
                         if(fd.getXType() == 'editorgrid')
                         {
                             fd.startEditing(0,0);
+                            fd.m_textField.focus(true, 500);
                         }
                         else
                             fd.focus(true, 550);
@@ -1181,6 +1182,7 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
         ]
     });
     grid.on('afteredit', callback);
+    grid.m_textField = tf;
 
     helpLabel = node.attributes.type != undefined ? helpLabel+
                   " ("+node.attributes.type+")" : helpLabel;

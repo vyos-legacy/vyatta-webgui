@@ -1031,6 +1031,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         }
         else if(fType == 'editorgrid')
         {
+            if(Ext.isIE) return true;
             if(field.m_enterPress == undefined || !field.m_enterPress)
             {
                 var view = field.getView();

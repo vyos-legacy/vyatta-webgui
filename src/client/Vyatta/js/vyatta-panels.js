@@ -1063,8 +1063,12 @@ function f_addField2Panel(editorPanel, fields, node, mode)
 
         eFormPanel.doLayout();
 
-        if(eFormPanel.items.getCount() == 2)
+        if(eFormPanel.items.getCount() == 2 &&
+              fields.items.item(V_IF_INDEX_INPUT).getXType() != 'panel')
+        {
+
             fields.items.item(V_IF_INDEX_INPUT).focus(true, 500);
+        }
     }
     else  // editor panel is empty. create a form and add fields into it
     {
@@ -1248,9 +1252,23 @@ function f_createConfEditorTitle(node, btnPanel)
         ,height: 45
         ,cls: 'v-border-bottom'
         ,border: false
+        ,autoWidth: true
     });
     panel.m_title = titleName;
+/*/
+    panel.resizePanels = function(comp)
+    {
+        if(Ext.isIE)
+            title.setSize(comp.getSize().width - 150);
+        else
+            title.setSize(comp.getSize().width - 70);
+    }
 
+    panel.on( {'resize':
+    {
+        fn: function() {panel.resizePanels(this)}}
+    });
+*/
     return panel;
 }
 
@@ -1310,6 +1328,7 @@ function f_createConfButton(treeObj, node, btnText, title)
         ,border: false
         ,height: 0
         ,buttonAlign: 'right'
+        ,autoWidth: true
     });
 
     var panel = new Ext.Panel(

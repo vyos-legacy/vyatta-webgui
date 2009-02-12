@@ -1062,6 +1062,9 @@ function f_addField2Panel(editorPanel, fields, node, mode)
             eFormPanel.add(fields);
 
         eFormPanel.doLayout();
+
+        if(eFormPanel.items.getCount() == 2)
+            fields.items.item(V_IF_INDEX_INPUT).focus(true, 500);
     }
     else  // editor panel is empty. create a form and add fields into it
     {
@@ -1311,10 +1314,11 @@ function f_createConfButton(treeObj, node, btnText, title)
 
     var panel = new Ext.Panel(
     {
-        buttons: [bPanel]
+        tbar: bPanel
         ,border: false
         ,bodyStyle: 'padding: 0px'
         ,height: 0
+        ,width: '10%'
         ,minWidth: 40
     });
     panel.m_buttons = buttons;

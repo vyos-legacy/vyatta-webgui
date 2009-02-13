@@ -1,4 +1,4 @@
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -47,7 +47,7 @@ function f_sendSpecialCliCommand(cmd, segmentId, cb)
     });
 }
 
-function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, 
+function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
                                     forceSend, segmentId, treeObj, wildCard)
 {
     var narr = [ ];
@@ -100,7 +100,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
                 headerStr += '&nbsp;&rArr;&nbsp;';
             headerStr += c;
         }
-        
+
         g_cliCmdObj.m_node = node;
         if(segmentId != undefined)
             sendStr = segmentId;
@@ -181,7 +181,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
             if(wildCard != undefined && typeof wildCard.setText == 'function')
                 f_resetOperButton(g_cliCmdObj.m_wildCard);
         }
-        
+
 
         //////////////////////////////////////////////////////////
         // update editor view
@@ -234,31 +234,32 @@ function f_saveConfFormCommandSentError(treeObj, response)
 
 function f_handleConfFormCommandDone(treeObj, node)
 {
-    f_hideSendWaitMessage();
-
-    var tree = treeObj.m_tree;
-
-    treeObj.m_parent.f_onTreeRenderer(treeObj);
-    var onReloadHandler = function()
+    if(treeObj.m_numSent > 0)
     {
-        node.attributes.configured = 'set';
-        treeObj.f_HandleNodeConfigClick(node, null, undefined, treeObj);
+        f_hideSendWaitMessage();
+        treeObj.m_isCommitAvailable = true;
 
-        //////////////////////////////////////////////
-        // load it's childnode if is multi node is set
-        if(node.attributes.multi != undefined)
-            f_loadChildNode(treeObj, node);
+        var tree = treeObj.m_tree;
 
-        f_handlePropagateParentNodes(node);
-        tree.un('load', onReloadHandler);
+        var onReloadHandler = function()
+        {
+            node.attributes.configured = 'set';
+            treeObj.f_HandleNodeConfigClick(node, null, undefined, treeObj);
 
-        
-    }
-    tree.on('load', onReloadHandler);
-    node.reload();
+            //////////////////////////////////////////////
+            // load it's childnode if is multi node is set
+            if(node.attributes.multi != undefined)
+                f_loadChildNode(treeObj, node);
 
-    ///////////////////////////////////////////
-        // handler errors
+            f_handlePropagateParentNodes(node);
+            tree.un('load', onReloadHandler);
+            treeObj.m_parent.f_onTreeRenderer(treeObj);
+        }
+        tree.on('load', onReloadHandler);
+        node.reload();
+
+        ///////////////////////////////////////////
+        // handler errors to display flag indicators & prompt user a err dialog
         if(g_cliCmdObj.m_errors.length > 0)
         {
             var err="";
@@ -271,6 +272,28 @@ function f_handleConfFormCommandDone(treeObj, node)
             }
             f_promptErrorMessage('Changing configuration...', err);
         }
+        //////////////////////////////////////
+        //clear previous error if any
+        else
+        {
+            var form = treeObj.m_parent.m_editorPanel.m_formPanel;
+            for(var i=1; i<treeObj.m_fdIndexSent; i++)
+            {
+                var fp = form.items.item(i);
+                f_clearFieldError(fp.m_node);
+            }
+        }
+    }
+}
+
+function f_prepareConfFormCommandSend(treeObj)
+{
+    treeObj.m_fdSent = undefined;
+    treeObj.m_fdIndexSent = 1;
+    treeObj.m_numSent = 0;
+    g_cliCmdObj.m_errors = [];
+
+    f_sendConfFormCommand(treeObj);
 }
 
 function f_sendConfFormCommand(treeObj)
@@ -297,6 +320,7 @@ function f_sendConfFormCommand(treeObj)
         f_handleConfFormCommandDone(treeObj, selNode);
         return;
     }
+
     var label = fp.items.item(V_IF_INDEX_LABEL);
     var fd = fp.items.item(V_IF_INDEX_INPUT);
     var type = fd.getXType();
@@ -321,7 +345,6 @@ function f_sendConfFormCommand(treeObj)
             value = (value != undefined && value.indexOf != null &&
                         value.indexOf(" ") > 0) ? "'"+value+"'" : value;
             treeObj.m_fdSentVal = value;
-            cmds = ['set' + selPath + ' ' + label + value];
 
             /////////////////////////////////////
             // skip this node
@@ -330,12 +353,18 @@ function f_sendConfFormCommand(treeObj)
                 f_sendConfFormCommand(treeObj);
                 return;
             }
+
+            if(value.length == 0)
+                cmds = ['delete' + selPath + ' ' + label + value];
+            else
+                cmds = ['set' + selPath + ' ' + label + value];
+
+            fd.setOriginalValue(value);
             break;
         case 'numberfield':
         case 'combo':
             value = fd.getValue();
             treeObj.m_fdSentVal = value;
-            cmds = ['set' + selPath + ' ' + label + value];
 
             /////////////////////////////////////
             // skip this node
@@ -344,6 +373,13 @@ function f_sendConfFormCommand(treeObj)
                 f_sendConfFormCommand(treeObj);
                 return;
             }
+
+            if(value.length == 0)
+                cmds = ['delete' + selPath + ' ' + label + value];
+            else
+                cmds = ['set' + selPath + ' ' + label + value];
+
+            fd.setOriginalValue(value);
             break;
         case 'editorgrid':
             if(!f_isEditGridDirty(fp.m_store))
@@ -388,7 +424,12 @@ function f_sendConfFormCommand(treeObj)
         xmlstr += "<statement mode='conf'>" + cmds[i] + "</statement>\n";
     xmlstr += "</command></vyatta>\n";
 
+    if(treeObj.m_numSent == 0)
+        g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait('Changing configuration...',
+                                              'Configuration');
+
     g_cliCmdObj.m_segmentId = undefined;
+    treeObj.m_numSent++;
     var conn = new Ext.data.Connection({});
     conn.request(
     {
@@ -417,7 +458,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         {
             var err = f_replace(isSuccess[1], "\r\n", "<br>");
             f_promptErrorMessage('Changing configuration...', err);
-            
+
             /////////////////////////////////
             // handle input error
             f_handleFieldError(node);
@@ -739,7 +780,7 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         var sm = tree.getSelectionModel();
         sm.select(selNode.parentNode);
         treeObj.m_selNodePath = sm.getSelectedNode().getPath('text');
-        
+
         var nnode = sm.getSelectedNode();
         selNode = nnode;
         selPath = nnode.getPath('text');
@@ -767,7 +808,7 @@ function f_handlePropagateParentNodes(node)
         if(n.ui.elNode != undefined)
         {
             var inner = n.ui.elNode.innerHTML;
-            
+
             if(inner.indexOf(V_DIRTY_FLAG) < 0)
             {
                 var flag = V_IMG_EMPTY;
@@ -857,7 +898,7 @@ function f_parseResponseError(xmlRoot)
                 msg = "Additional configuration information is required.";
 
         }
-            
+
         if(msg == 'UNKNOWN')
             msg = '';
     }

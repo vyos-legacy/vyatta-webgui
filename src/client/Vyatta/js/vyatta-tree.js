@@ -797,7 +797,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(node.attributes.values != undefined)
             ival = node.attributes.values[0];
 
-        var field = f_createTextField(m_thisObj, ival, node.text, hlabel, 250, callback, node);
+        var field = f_createTextField(m_thisObj, ival, node.text, hlabel, 250, callback, node, 'confMode');
         var vfield = field.items.itemAt(V_IF_INDEX_INPUT);
         node.getValFieldFunc = function()
         {
@@ -1023,6 +1023,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_okToSubmitConfField: function(field)
     {
+        if(field == undefined || field.getXType == undefined) return;
+
         var fType = field.getXType();
         if(fType == 'textfield' || fType == 'numberfield' || fType == 'combo')
         {

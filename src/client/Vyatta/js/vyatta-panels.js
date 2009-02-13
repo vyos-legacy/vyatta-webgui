@@ -401,7 +401,7 @@ function f_createNumberField(treeObj, value, node, help, width, callback, mode)
         var keyupPressHandler = function(field, e)
         {
             if(e.getKey() == 13)
-                f_submitConfFields(treeObj);
+                f_prepareConfFormCommandSend(treeObj);
         }
         field.on('keyup', keyupPressHandler);
     }
@@ -454,8 +454,10 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
     {
         var keyupPressHandler = function(field, e)
         {
-            if(e.getKey() == 13)
-                f_submitConfFields(treeObj);
+            if(e.getKey() == 13 && mode == 'opMode')
+                callback.call();
+            else if(e.getKey() == 13 && mode == 'confMode')
+                f_prepareConfFormCommandSend(treeObj);
         }
         field.on('keyup', keyupPressHandler);
     }
@@ -1371,16 +1373,6 @@ function f_createOperEditorTitle(title)
     return panel;
 }
 
-function f_submitConfFields(treeObj)
-{
-    treeObj.m_fdSent = undefined;
-    treeObj.m_fdIndexSent = 1;
-    g_cliCmdObj.m_errors = [];
-    g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait('Changing configuration...',
-                                              'Configuration');
-    f_sendConfFormCommand(treeObj);
-}
-
 function f_createConfSubButton(treeObj)
 {
     var buttons = [ ];
@@ -1396,7 +1388,7 @@ function f_createConfSubButton(treeObj)
         ,minWidth: 75
         ,handler: function()
         {
-            f_submitConfFields(treeObj);
+            f_prepareConfFormCommandSend(treeObj);
         }
     });
 
@@ -1665,6 +1657,20 @@ function f_createTextAreaField(values, width, height)
     });
 }
 
+function f_clearFieldError(node)
+{
+    if(node == undefined || node.m_inputPanel == undefined) return;
+
+    var inputField = node.m_inputPanel.items.itemAt(V_IF_INDEX_INPUT);
+    var type = inputField.getXType();
+
+    //if(type == 'editorgrid')
+      //  f_setGridViewError(inputField);
+
+    var error = node.m_inputPanel.items.itemAt(V_IF_INDEX_DIRTY);
+    f_updateDirtyIndicatorPanel(error, V_DIRTY_FLAG);
+}
+
 function f_handleFieldError(node)
 {
     if(node == undefined || node.m_inputPanel == undefined) return;
@@ -1717,7 +1723,7 @@ function f_createFlagIndicator(html, flag)
 {
     if(html.indexOf('empty') > 0 && flag != 'empty')
         html = f_replace(html, 'empty', flag);
-    else if(html.indexOf('statusUnknow') > 0 && flag != 'statusUnknow')
+    else if(html.indexOf('statusUnknown') > 0 && flag != 'statusUnknown')
         html = f_replace(html, 'statusUnknown', flag);
     else if(html.indexOf('statusPlus') > 0 && flag != 'statusPlus')
         html = f_replace(html, 'statusPlus', flag);

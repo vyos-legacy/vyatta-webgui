@@ -599,12 +599,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     m_thisObj.f_interHandler(n);
                 }
                 else
-                {
                     m_thisObj.f_interMultiHandler(n);
-
-                    //if(m_thisObj.m_btnPanel != null)
-                      //  m_thisObj.m_btnPanel.f_show();
-                }
             });
 
             f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
@@ -642,31 +637,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_interMultiHandler: function(node)
     {
-        var nodePath = m_thisObj.f_getNodePathStr(node);
-        var cNode = node;
         var callback = function(field)
         {
-            m_thisObj.f_okToSubmitConfField(field);
-            return;
-            if(m_thisObj.f_okToSubmitConfField(cNode, cbType))
-            {
-                //////////////////////////////////////////////////
-                // if value had changed, send changed to server
-                if(node.getOriginalValue() != node.getValFunc())
-                {
-                    node.setOriginalValue(node.getValFunc());
-
-                    //////////////////////////////////////
-                    // check for blank space
-                    var sVal = cNode.getValFunc();
-                    sVal = (sVal != undefined && sVal.indexOf != null &&
-                            sVal.indexOf(" ") > 0) ?
-                        "'"+sVal+"'" : sVal;
-                    m_thisObj.m_fdSent = cNode.getValFieldFunc();
-                    f_sendConfigCLICommand([ 'set ' + nodePath
-                                 +  " " + sVal ], m_thisObj, cNode, true);
-                }
-            }
+            m_thisObj.f_handleConfFieldOffFocus(field);
         }
 
         if(node.attributes.enums != undefined)
@@ -686,41 +659,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     {
         // help string
         var helpStr = node.attributes.help;
-        var nodePath = m_thisObj.f_getNodePathStr(node);
-        var cNode = node;
 
         var onBlur = function(field)
         {
-            m_thisObj.f_okToSubmitConfField(field);
-            return;
-            if(m_thisObj.f_okToSubmitConfField(cNode, cbType))
-            {
-                //////////////////////////////////////
-                // check for blank space
-                var val = cNode.getValFunc();
-                val = (val != undefined && val.indexOf != null &&
-                        val.indexOf(" ") > 0) ? "'"+val+"'" : val;
-
-                //////////////////////////////////////////////////
-                // if value had changed, send changed to server
-                if(val != cNode.getOriginalValue())
-                {
-                    cNode.setOriginalValue(val);
-                    var cmdAction = (val == undefined ||
-                                    val.length == 0) ?
-                                        'delete ' : 'set ';
-
-                    m_thisObj.m_fdSent = cNode.getValFieldFunc();
-                    if(cNode.attributes.type == undefined)
-                        // typeless
-                        f_sendConfigCLICommand([ cmdAction + nodePath],
-                                      m_thisObj, cNode,
-                                      cmdAction == 'delete'?false:true);
-                    else if(cNode.getValFunc != undefined)
-                        f_sendConfigCLICommand([ cmdAction + nodePath + " " + val ],
-                                      m_thisObj, cNode, cmdAction == 'delete'?false:true);
-                }
-            }
+            m_thisObj.f_handleConfFieldOffFocus(field);
         }
 
         if (node.attributes.enums != undefined)
@@ -747,33 +689,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         //////////////////////////////
         // help string
         var hlabel = node.attributes.help;
-        var nodePath = m_thisObj.f_getNodePathStr(node);
 
         var onBlur = function(field)
         {
-            m_thisObj.f_okToSubmitConfField(field);
-            return;
-            if(m_thisObj.f_okToSubmitConfField(node, cbType))
-            {
-                if(node.getValsFunc != undefined)
-                {
-                    var varr = [ ];
-
-                    ////////////////////////////////////////////
-                    // make sure delete prev node before set
-                    //if(node.valuesCount != undefined && node.valuesCount > 0)
-                    varr = [ 'delete ' + nodePath ];
-
-                    var values = node.getValsFunc();
-                    var jj = (varr.length != undefined) ? varr.length : 0;
-
-                    for(var i=0; i<values.length; i++)
-                        varr[i+jj] = 'set ' + nodePath + " " + values[i];
-
-                    m_thisObj.m_fdSent = node.getValFieldFunc();
-                    f_sendConfigCLICommand(varr, m_thisObj, node, true);
-                }
-            }
+            m_thisObj.f_handleConfFieldOffFocus(field);
         }
 
         if(node.attributes.enums != undefined)
@@ -1021,7 +940,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         m_thisObj.f_leafSingleEnumHandler(node, ['true', 'false'], hlabel, callback);
     },
 
-    f_okToSubmitConfField: function(field)
+    f_handleConfFieldOffFocus: function(field)
     {
         if(field == undefined || field.getXType == undefined) return;
 
@@ -1040,15 +959,16 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         else if(fType == 'editorgrid')
         {
             var view = field.getView();
-            var rec = field.getAt(view.m_row);
+            var row = view.m_row;
+            var rec = field.getAt(row);
             if(rec.dirty)
-                view.addRowClass(view.m_row, "v-textfield-unsubmit");
+                view.addRowClass(row, "v-textfield-unsubmit");
             else
-                view.addRowClass(view.m_row, "v-textfield-submit");
+                view.addRowClass(row, "v-textfield-submit");
 
             if(field.m_unsubmitRows == null)
                 field.m_unsubmitRows = [];
-            field.m_unsubmitRows[field.m_unsubmitRows.length] = view.m_row;
+            field.m_unsubmitRows[field.m_unsubmitRows.length] = row;
         }
         else if(fType == 'checkbox')
         {
@@ -1061,6 +981,11 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             else
                 field.el.dom.className = cn + ' v-textfield-submit';
         }
+
+        /////////////////////////////////////
+        // set grid focus
+        if(field.m_nextFd != undefined && field.m_nextFd.getXType() == 'editorgrid')
+            field.m_nextFd.startEditing(0,0);
     },
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1364,9 +1289,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             node.attributes.configured == 'active_plus' ||
             node.attributes.configured == 'set'))
         {
-            //f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
-              //           f_createConfButton(m_thisObj, node, 'Delete', title),
-                //         'Delete Node');
             btnPanel = f_createConfButton(m_thisObj, node, 'Delete', title)
         }
         else if((node.attributes.configured == undefined ||
@@ -1395,8 +1317,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             }*/
 
             btnPanel = f_createConfButton(m_thisObj, node, 'Create', title);
-            //f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
-              //  f_createConfButton(m_thisObj, node, 'Create', title), 'Create Node');
             m_thisObj.m_parent.m_editorPanel.m_showLeaf = false;
         }
         else

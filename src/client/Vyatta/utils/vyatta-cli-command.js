@@ -276,26 +276,23 @@ function f_handleConfFormCommandDone(treeObj, node)
         //clear previous error if any
         else
         {
-            var form = treeObj.m_parent.m_editorPanel.m_formPanel;
-            for(var i=1; i<treeObj.m_fdIndexSent; i++)
-            {
-                var fp = form.items.item(i);
-                f_clearFieldError(fp.m_node);
-            }
+            for(var i=0; i<g_cliCmdObj.m_fdSent.length; i++)
+                f_clearFieldError(g_cliCmdObj.m_fdSent[i].m_node);
         }
     }
 }
 
 function f_prepareConfFormCommandSend(treeObj)
 {
-    treeObj.m_fdSent = undefined;
     treeObj.m_fdIndexSent = 1;
     treeObj.m_numSent = 0;
     g_cliCmdObj.m_errors = [];
+    g_cliCmdObj.m_fdSent = [];
 
     f_sendConfFormCommand(treeObj);
 }
 
+// DO NOT call this function before call f_prepareConfFormCommandSend()
 function f_sendConfFormCommand(treeObj)
 {
     var confCmdCb = function(options, success, response)
@@ -428,8 +425,10 @@ function f_sendConfFormCommand(treeObj)
         g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait('Changing configuration...',
                                               'Configuration');
 
+    g_cliCmdObj.m_fdSent[g_cliCmdObj.m_fdSent.length] = fp;
     g_cliCmdObj.m_segmentId = undefined;
     treeObj.m_numSent++;
+
     var conn = new Ext.data.Connection({});
     conn.request(
     {

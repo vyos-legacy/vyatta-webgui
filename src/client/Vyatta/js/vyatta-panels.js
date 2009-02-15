@@ -441,7 +441,7 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
         ,height:22
         ,value: oldVal
         ,enableKeyEvents: true
-        ,onBlur: mode == undefined ? onBlurHandler : undefined
+        ,onBlur: mode == 'confMode' ? onBlurHandler : undefined
     });
     field.m_mode = mode;
     field.getOriginalValue = function()
@@ -1097,22 +1097,9 @@ function f_addField2Panel(editorPanel, fields, node, mode)
                 if(submitPanel != undefined && !submitPanel.isVisible())
                     submitPanel.show();
             }
-
-            if(sf != undefined && sf.items != undefined)  // submit btn
-            {
-                if(fields.items != undefined)
-                    sf.items.item(V_IF_INDEX_INPUT).m_nextFd =
-                        fields.items.item(V_IF_INDEX_INPUT);
-            }
-            else if(ssf != undefined && ssf.items != undefined)// not submit btn
-            {
-                if(ssf != undefined && ssf.items != undefined && fields.items !=
-                    undefined) // submit btn
-                    ssf.items.item(V_IF_INDEX_INPUT).m_nextFd =
-                            fields.items.item(V_IF_INDEX_INPUT);
-            }
         }
         eFormPanel.doLayout();
+        f_linkFormField(eFormPanel);
 
         if(fields != undefined && fields.items != undefined)
         {
@@ -1133,7 +1120,7 @@ function f_addField2Panel(editorPanel, fields, node, mode)
                 else
                 {
                     if(eFormPanel.items.getCount() == 3 && ifield.getXType() != 'panel')
-                    {
+                      {
                         ifield.focus(true, 500);
                         ifield.tabIndex = 0;
                     }
@@ -1163,7 +1150,6 @@ function f_addField2Panel(editorPanel, fields, node, mode)
         form.m_subBtnAdd = false;
         form.m_fdIndex = 0;
 
-
         editorPanel.add(form);
         editorPanel.m_formPanel = form;
         form.setSize(editorPanel.getSize().width, editorPanel.getSize().height-7);
@@ -1178,6 +1164,27 @@ function f_addField2Panel(editorPanel, fields, node, mode)
           var helpLabel = fields.items.itemAt(V_IF_INDEX_TIP);
           if(helpLabel != undefined)
             helpLabel.hide();
+        }
+    }
+}
+
+function f_linkFormField(form)
+{
+    for(var i=1; i<form.items.getCount(); i++)
+    {
+        if(form.items.itemAt(i).items != undefined)
+        {
+            var fd = form.items.itemAt(i).items.itemAt(V_IF_INDEX_INPUT);
+            if(fd != undefined)
+            {
+                var nextFd = form.items.itemAt(i+1);
+                if(nextFd != undefined && nextFd.items != undefined)
+                {
+                    nextFd = nextFd.items.itemAt(V_IF_INDEX_INPUT);
+                    if(nextFd != undefined)
+                        fd.m_nextFd = nextFd;
+                }
+            }
         }
     }
 }

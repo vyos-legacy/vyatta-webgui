@@ -985,7 +985,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         /////////////////////////////////////
         // set grid focus
         if(field.m_nextFd != undefined && field.m_nextFd.getXType() == 'editorgrid')
+        {
             field.m_nextFd.startEditing(0,0);
+        }
     },
 
     ////////////////////////////////////////////////////////////////////////////

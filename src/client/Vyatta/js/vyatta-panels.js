@@ -573,11 +573,23 @@ function f_createCheckbox(value, node, helpStr, width, callback)
         style: 'anchor: 0%, text-align:right, padding:20px'
         ,checked: chk
         ,onClick: onClickHandler
+        ,bodyStyle: 'padding:0px 0px 3px 0px'
     });
     field.getOriginalValue = function()
     { return chk };
     field.setOriginalValue = function(val)
     { oldVal = val; }
+
+    var wrapPanel = new Ext.Panel(
+    {
+        border: false
+        ,cls: 'v-bg-white'
+        ,bodyStyle: 'padding:0px 2px 2px 3px'
+        ,items:[field]
+        ,width: 18
+        ,height: 22
+    });
+    field.m_wp = wrapPanel;
 
     //////////////////////////////////////////////
     // need this panel to align the help labels
@@ -585,7 +597,8 @@ function f_createCheckbox(value, node, helpStr, width, callback)
     {
         width: width+1
         ,border: false
-        ,items: [field]
+        ,bodyStyle: 'padding:0px 1px 3px 0px'
+        ,items: [wrapPanel]
     });
     fPanel.m_fd = field;
 
@@ -600,6 +613,7 @@ function f_createCheckbox(value, node, helpStr, width, callback)
                   f_createLabel(helpStr, V_LABEL_HELP) ]
     });
     p.m_node = node;
+    node.m_inputPanel = p;
 
     return p;
 }
@@ -974,70 +988,7 @@ function f_updateFieldValues2Panel(editorPanel, fields, node, mode)
             // exist. Update the dirty flag and values if neccessary
             if(label != undefined && label.getXType() == 'label' &&
                 label.html == cLabel.html)
-            {
-                ////////////////////////////////////////
-                // handle field dirty indicator
-                var nodeVals = node.attributes.values;
-                if(node.attributes.configured == 'set' ||
-                    node.attributes.configured_ == 'active_plus')
-                {
-                    var flag = getNodeStyleImage(node, false);
-                    if(flag.length > 1)
-                    {
-                        var dField = f.items.item(V_IF_INDEX_DIRTY);
-                        f_updateDirtyIndicatorPanel(dField, flag);
-                        dField.f_show();
-                    }
-
-                    ///////////////////////////////////////////
-                    // update input field value
-                    var updateF = f.items.itemAt(V_IF_INDEX_INPUT);
-                    if(updateF.items != undefined)
-                    {
-                        var input = updateF.items.itemAt(0);
-
-                        if(input.getXType() == 'checkbox')
-                        {
-                            var newVal = nodeVals[1] != undefined?nodeVals[1]:
-                                nodeVals[0];
-                            input.setValue(f_getValueForCheckbox(newVal));
-                        }
-                    }
-                    else if(updateF.getXType() == 'numberfield' ||
-                        updateF.getXType() == 'textfield')
-                    {
-                        var cn = updateF.el.dom.className;
-                        updateF.el.dom.className = f_replace(cn, 'v-textfield-unsubmit', '');
-                        updateF.setValue(nodeVals);
-                    }
-                    else if(updateF.getXType() == 'editorgrid' &&
-                          updateF.m_unsubmitRows != null)
-                    {
-                        for(var i=0; i<updateF.m_unsubmitRows; i++)
-                        {
-                            updateF.getView().addRowClass(
-                                updateF.m_unsubmitRows[i], "v-textfield-submit");
-                        }
-                    }
-                }
-                else if(node.attributes.configured == 'active')
-                {
-                    var updateF = f.items.itemAt(V_IF_INDEX_INPUT);
-                    if(updateF.items != undefined)
-                    {
-                        var input = updateF.items.itemAt(0);
-
-                        if(input.getXType() == 'checkbox')
-                        {
-                            var newVal = nodeVals[1] != undefined?nodeVals[1]:
-                                nodeVals[0];
-                            input.setValue(f_getValueForCheckbox(newVal));
-                        }
-                    }
-                }
-
                 return false;
-            }
             ///////////////////////////////////////
             // if true, let handle the button issue
             else if(label != undefined && label.getXType() == 'button')
@@ -1104,6 +1055,12 @@ function f_addField2Panel(editorPanel, fields, node, mode)
         if(fields != undefined && fields.items != undefined)
         {
             var ifield = fields.items.itemAt(V_IF_INDEX_INPUT);
+            var type = ifield.getXType();
+            if(type == 'panel')
+            {
+                ifield = ifield.m_fd;
+                type = ifield.getXType();
+            }
 
             if(mode == V_TREE_ID_config)
             {
@@ -1111,7 +1068,7 @@ function f_addField2Panel(editorPanel, fields, node, mode)
                 // set focus field
                 if(!eFormPanel.m_subBtnAdd)
                 {
-                    if(eFormPanel.items.getCount() == 2 && ifield.getXType() != 'panel')
+                    if(eFormPanel.items.getCount() == 2)
                     {
                         ifield.focus(true, 500);
                         ifield.tabIndex = 0;
@@ -1119,10 +1076,10 @@ function f_addField2Panel(editorPanel, fields, node, mode)
                 }
                 else
                 {
-                    if(eFormPanel.items.getCount() == 3 && ifield.getXType() != 'panel')
+                    if(eFormPanel.items.getCount() == 3)
                       {
-                        ifield.focus(true, 500);
-                        ifield.tabIndex = 0;
+                          ifield.focus(true, 500);
+                          ifield.tabIndex = 0;
                     }
                 }
             }
@@ -1186,21 +1143,6 @@ function f_linkFormField(form)
                 }
             }
         }
-    }
-}
-
-function f_insertField2Panel(editorPanel, fields, labelTxt, index, check4Exist)
-{
-    if(!check4Exist)
-        editorPanel.insert(index, fields);
-    else
-    {
-        var f = editorPanel.items.itemAt(0);
-        if(f.getXType() == 'panel' && f.title != undefined &&
-            fields.title != undefined)
-            f.title = fields.title;
-        else
-            editorPanel.insert(index, fields);
     }
 }
 
@@ -1655,16 +1597,85 @@ function f_createTextAreaField(values, width, height)
     });
 }
 
-function f_clearFieldError(node)
+function f_handleConfFieldOffFocus(field)
+{
+    if(field == undefined || field.getXType == undefined) return;
+
+    var fType = field.getXType();
+    if(fType == 'textfield' || fType == 'numberfield' || fType == 'combo')
+    {
+        var cn = field.el.dom.className;
+        cn = f_replace(cn, 'v-textfield-unsubmit', '');
+        cn = f_replace(cn, 'v-textfield-submit', '');
+
+        if(field.getOriginalValue() != field.getValue())
+            field.el.dom.className = cn + ' v-textfield-unsubmit';
+        else
+            field.el.dom.className = cn + ' v-textfield-submit';
+    }
+    else if(fType == 'editorgrid')
+    {
+        var view = field.getView();
+        var row = view.m_row;
+        var rec = field.getAt(row);
+        if(rec.dirty)
+            view.addRowClass(row, "v-textfield-unsubmit");
+        else
+            view.addRowClass(row, "v-textfield-submit");
+    }
+    else if(fType == 'checkbox')
+    {
+        var cn = field.m_wp.el.dom.className;
+        if(field.getOriginalValue() != field.getValue())
+            cn = f_replace(cn, 'v-bg-white', 'v-bg-yellow');
+        else
+            cn = f_replace(cn, 'v-bg-yellow', 'v-bg-white');
+        field.m_wp.el.dom.className = cn;
+    }
+
+    /////////////////////////////////////
+    // set grid focus
+    if(field.m_nextFd != undefined && field.m_nextFd.getXType() == 'editorgrid')
+    {
+        field.focus(true, 100);
+        field.m_nextFd.startEditing(0,0);
+    }
+}
+
+function f_handleFormIndicators(node)
 {
     if(node == undefined || node.m_inputPanel == undefined) return;
 
-    var inputField = node.m_inputPanel.items.itemAt(V_IF_INDEX_INPUT);
-    var type = inputField.getXType();
+    var fd = node.m_inputPanel.items.itemAt(V_IF_INDEX_INPUT);
+    var type = fd.getXType();
+    if(type == 'panel')
+    {
+        fd = fd.m_fd;
+        type = fd.getXType();
+    }
 
-    //if(type == 'editorgrid')
-      //  f_setGridViewError(inputField);
+    /////////////////////////
+    // handle field indicator
+    switch(type)
+    {
+        case 'textfield':
+        case 'numberfield':
+        case 'combo':
+            var cn = fd.el.dom.className;
+            fd.el.dom.className = f_replace(cn, 'v-textfield-unsubmit', '');
+            break;
+        case 'editorgrid':
+            f_setGridViewClear(fd);
+            break;
+        case 'checkbox':
+            var cn = fd.m_wp.el.dom.className;
+            cn = f_replace(cn, 'v-bg-yellow', 'v-bg-white');
+            fd.m_wp.el.dom.className = cn;
+            break;
+    }
 
+    //////////////////////////
+    // handle panel indicator
     var error = node.m_inputPanel.items.itemAt(V_IF_INDEX_DIRTY);
     f_updateDirtyIndicatorPanel(error, V_DIRTY_FLAG);
 }

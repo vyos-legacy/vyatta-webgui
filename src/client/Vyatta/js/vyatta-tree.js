@@ -639,7 +639,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     {
         var callback = function(field)
         {
-            m_thisObj.f_handleConfFieldOffFocus(field);
+            f_handleConfFieldOffFocus(field);
         }
 
         if(node.attributes.enums != undefined)
@@ -662,7 +662,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         var onBlur = function(field)
         {
-            m_thisObj.f_handleConfFieldOffFocus(field);
+            f_handleConfFieldOffFocus(field);
         }
 
         if (node.attributes.enums != undefined)
@@ -692,7 +692,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         var onBlur = function(field)
         {
-            m_thisObj.f_handleConfFieldOffFocus(field);
+            f_handleConfFieldOffFocus(field);
         }
 
         if(node.attributes.enums != undefined)
@@ -938,56 +938,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     f_leafSingleBoolHandler: function(node, hlabel, callback)
     {
         m_thisObj.f_leafSingleEnumHandler(node, ['true', 'false'], hlabel, callback);
-    },
-
-    f_handleConfFieldOffFocus: function(field)
-    {
-        if(field == undefined || field.getXType == undefined) return;
-
-        var fType = field.getXType();
-        if(fType == 'textfield' || fType == 'numberfield' || fType == 'combo')
-        {
-            var cn = field.el.dom.className;
-            cn = f_replace(cn, 'v-textfield-unsubmit', '');
-            cn = f_replace(cn, 'v-textfield-submit', '');
-
-            if(field.getOriginalValue() != field.getValue())
-                field.el.dom.className = cn + ' v-textfield-unsubmit';
-            else
-                field.el.dom.className = cn + ' v-textfield-submit';
-        }
-        else if(fType == 'editorgrid')
-        {
-            var view = field.getView();
-            var row = view.m_row;
-            var rec = field.getAt(row);
-            if(rec.dirty)
-                view.addRowClass(row, "v-textfield-unsubmit");
-            else
-                view.addRowClass(row, "v-textfield-submit");
-
-            if(field.m_unsubmitRows == null)
-                field.m_unsubmitRows = [];
-            field.m_unsubmitRows[field.m_unsubmitRows.length] = row;
-        }
-        else if(fType == 'checkbox')
-        {
-            var cn = field.el.dom.className;
-            cn = f_replace(cn, 'v-textfield-unsubmit', '');
-            cn = f_replace(cn, 'v-textfield-submit', '');
-
-            if(field.isDirty())
-                field.el.dom.className = cn + ' v-textfield-unsubmit';
-            else
-                field.el.dom.className = cn + ' v-textfield-submit';
-        }
-
-        /////////////////////////////////////
-        // set grid focus
-        if(field.m_nextFd != undefined && field.m_nextFd.getXType() == 'editorgrid')
-        {
-            field.m_nextFd.startEditing(0,0);
-        }
     },
 
     ////////////////////////////////////////////////////////////////////////////

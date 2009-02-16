@@ -270,11 +270,13 @@
 /*  body */
 .x-grid3-modify-cell
 {
-    background: transparent url('../images/grid_modify.gif') no-repeat 0 0;
+    background: transparent url('../images/empty.gif') no-repeat 0 0;
+    background-color: #ffff99 !important;
 }
 .x-grid3-error-cell
 {
     background: transparent url('../images/grid_error.gif') no-repeat 0 0;
+    background-color: #fff;
 }
 
 .v-data-panel-body
@@ -391,6 +393,14 @@ body
     background-color: #fff;
     border-top: none;
     border-bottom: solid 2px #e8e8e8 !important;
+}
+.v-bg-yellow .x-panel-body
+{
+    background-color: #ffff99 !important;
+}
+.v-bg-white .x-panel-body
+{
+    background-color: #fff !important;
 }
 .x-panel-noborder .x-panel-tbar-noborder .x-toolbar
 {

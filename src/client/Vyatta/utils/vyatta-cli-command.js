@@ -258,6 +258,10 @@ function f_handleConfFormCommandDone(treeObj, node)
         tree.on('load', onReloadHandler);
         node.reload();
 
+
+        for(var i=0; i<g_cliCmdObj.m_fdSent.length; i++)
+            f_handleFormIndicators(g_cliCmdObj.m_fdSent[i].m_node);
+
         ///////////////////////////////////////////
         // handler errors to display flag indicators & prompt user a err dialog
         if(g_cliCmdObj.m_errors.length > 0)
@@ -276,8 +280,7 @@ function f_handleConfFormCommandDone(treeObj, node)
         //clear previous error if any
         else
         {
-            for(var i=0; i<g_cliCmdObj.m_fdSent.length; i++)
-                f_clearFieldError(g_cliCmdObj.m_fdSent[i].m_node);
+            
         }
     }
 }
@@ -521,9 +524,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         }
         else  // other things else
         {
-            if(node == undefined)
-                f_handleNodeExpansion(tObj, selNode, selPath, cmds);
-            else if(node.parentNode != undefined || selNode.parentNode != undefined)
+            if(node.parentNode != undefined || selNode.parentNode != undefined)
                 f_handleParentNodeExpansion(tObj, node, selNode, selPath, cmds, isCreate);
         }
     } // end of callback
@@ -643,9 +644,6 @@ function f_loadChildNode(treeObj, node)
 
     tree.on('load', onReloadHandler);
     node.reload();
-
-
-
 }
 function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
 {
@@ -719,55 +717,12 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
          * by the server.
          */
         f_handlePropagateParentNodes(node);
-        var skipClearChk = false;
-        if(node != undefined && typeof node.reload == 'function')
-        {
-            skipClearChk = true;
-
-            var onReloadHandler = function()
-            {
-                if(treeObj.m_fdSent != undefined)
-                {
-                    if(node.hasChildNodes())
-                    {
-                        var n = node.firstChild;
-                        while(n != undefined)
-                        {
-                            if(n.attributes.text == treeObj.m_fdSent.getValue())
-                            {
-                                selPath = n.getPath('text');
-                                treeObj.m_parent.f_cleanEditorPanel();
-                                f_handleNodeExpansion2(treeObj, selPath,
-                                                        n, doNotClear);
-                                break;
-                            }
-                            n = n.nextSibling;
-                        }
-                    }
-                }
-                tree.un('load', onReloadHandler);
-            }
-            tree.on('load', onReloadHandler);
-            node.reload();
-        }
-        else if(selNode != undefined && typeof selNode.reload == 'function')
+        if(selNode != undefined && typeof selNode.reload == 'function')
             selNode.reload();
 
-        ////////////////////////////////////////////////////////
-        // if spath == scmd, creation is from push button, else
-        // creation is from input fields.
-        var spath = selPath.replace('Configuration', '');
-        var scmd = cmds[0].replace('set', '');
-        spath = f_replace(spath, ' ', '');
-        scmd = f_replace(scmd, ' ', '');
-        if(spath == scmd)
-        {
-            p = node;
-            selNode = p;
-            selPath = p.getPath('text');
-        }
-        else
-            doNotClear = skipClearChk ? doNotClear : true;
+        p = node;
+        selNode = p;
+        selPath = p.getPath('text');
     }
     else if(cmds[0].indexOf("delete", 0) >= 0)
     {
@@ -811,8 +766,6 @@ function f_handlePropagateParentNodes(node)
             if(inner.indexOf(V_DIRTY_FLAG) < 0)
             {
                 var flag = V_IMG_EMPTY;
-                //var f = getNodeStyleImage(n, true);
-                //alert(n.text + '=' + f + '=' + n.attributes.configured)
                 switch(getNodeStyleImage(n, true))
                 {
                     case V_DIRTY_FLAG_ADD:

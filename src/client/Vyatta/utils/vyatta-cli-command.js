@@ -244,7 +244,7 @@ function f_handleConfFormCommandDone(treeObj, node)
         var onReloadHandler = function()
         {
             node.attributes.configured = 'set';
-            treeObj.f_HandleNodeConfigClick(node, null, undefined, treeObj);
+            treeObj.f_HandleNodeConfigClick(node, null, undefined);
 
             //////////////////////////////////////////////
             // load it's childnode if is multi node is set
@@ -417,6 +417,8 @@ function f_sendConfFormCommand(treeObj)
     var sid = f_getUserLoginedID();
     f_saveUserLoginId(sid);
 
+    ///////////////////////////////////
+    // construction cmd xml string
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                    + "<vyatta><command><id>" + sid + "</id>\n";
 
@@ -424,6 +426,7 @@ function f_sendConfFormCommand(treeObj)
         xmlstr += "<statement mode='conf'>" + cmds[i] + "</statement>\n";
     xmlstr += "</command></vyatta>\n";
 
+    // show wait msg once only
     if(treeObj.m_numSent == 0)
         g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait('Changing configuration...',
                                               'Configuration');
@@ -470,7 +473,6 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             if(cmds[0].indexOf('commit') < 0)
                 return;
         }
-
 
         var tree = tObj.m_tree;
         var selNode = tree.getSelectionModel().getSelectedNode();
@@ -589,10 +591,7 @@ function f_handleNodeExpansion2(treeObj, selPath, node, doNotClear)
         tree.selectPath(selPath, 'text', function(success, sel)
         {
             var nnode = tree.getSelectionModel().getSelectedNode();
-
-            if(!doNotClear)
-                treeObj.m_parent.f_cleanEditorPanel();
-            treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
+            treeObj.f_HandleNodeConfigClick(nnode, null, false);
         });
 
         narg.un('expand', handler);
@@ -617,7 +616,7 @@ function f_loadChildNode(treeObj, node)
         tree.selectPath(selNode.getPath('text'), 'text', function(success, sel)
         {
             var nnode = treeObj.m_tree.getSelectionModel().getSelectedNode();
-            treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
+            treeObj.f_HandleNodeConfigClick(nnode, null, undefined);
         });
         tree.un('load', onReloadChildHandler);
     }
@@ -668,13 +667,13 @@ function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
             tree.selectPath(selPath, 'text', function(success, sel)
             {
                 var nnode = treeObj.m_tree.getSelectionModel().getSelectedNode();
-                treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
+                treeObj.f_HandleNodeConfigClick(nnode, null, undefined);
             });
         }
         else
         {
             tree.selectPath(selPath, 'text');
-            treeObj.f_HandleNodeConfigClick(last, null, undefined, treeObj);
+            treeObj.f_HandleNodeConfigClick(last, null, undefined);
         }
     }
 
@@ -700,11 +699,10 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
     treeObj.m_selNodePath = selPath;
     var p = node.parentNode;
     var doNotClear = false;
+    treeObj.m_isCommitAvailable = true;
 
     if(isCreate)
     {
-        treeObj.m_isCommitAvailable = true;
-
         ////////////////////////////////////////////////
         // if 'node' has not fresh from server, we flag
         // it as 'set' here to sync with server
@@ -734,16 +732,30 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         var sm = tree.getSelectionModel();
         sm.select(selNode.parentNode);
         treeObj.m_selNodePath = sm.getSelectedNode().getPath('text');
-
         var nnode = sm.getSelectedNode();
-        selNode = nnode;
-        selPath = nnode.getPath('text');
-
+        
         if(nnode.attributes != undefined)
             nnode.attributes.configured = 'active_plus';
 
+        // if selected node is root, select the selNode
+        if(nnode.text.indexOf('Configuration') >= 0)
+        {
+            var sPath = selPath;
+            
+            var handleReload = function()
+            {
+                tree.selectPath(sPath, 'text', function(success, sel)
+                {
+                    var nnode = tree.getSelectionModel().getSelectedNode();
+                    treeObj.f_HandleNodeConfigClick(nnode, null, false);
+                });
+                tree.un('load', handleReload);
+            }
+            tree.on('load', handleReload);
+        }
+
+        selPath = nnode.getPath('text');
         nnode.reload();
-        treeObj.m_isCommitAvailable = true;
         f_handlePropagateParentNodes(nnode);
         treeObj.m_parent.f_onTreeRenderer(treeObj);
     }

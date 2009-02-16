@@ -576,9 +576,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             else
                 m_thisObj.f_leafMultiHandler(node);
 
-            f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
-                          f_createConfSubButton(m_thisObj),
-                          node, V_TREE_ID_config);
+            if(node.nextSibling == undefined) // end of leaf node
+                f_addConfiSetButton(m_thisObj, node,
+                                        m_thisObj.m_parent.m_editorPanel)
         }
         else
         {
@@ -590,21 +590,15 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     if(m_thisObj.m_parent.f_getEditorItemCount() < 0)
                         f_addField2Panel(ePanel, titlePanel, node, V_TREE_ID_config);
 
-                    // a second chance to add button for case all the child nodes
-                    // has not retrieve from server yet.
-                    //if(m_thisObj.m_parent.f_getEditorItemCount() < 2)
-                      //  m_thisObj.m_btnPanel = m_thisObj.f_handleConfButton(
-                        //                    n, titlePanel.title);
-
                     m_thisObj.f_interHandler(n);
                 }
                 else
                     m_thisObj.f_interMultiHandler(n);
-            });
 
-            f_addField2Panel(m_thisObj.m_parent.m_editorPanel,
-                          f_createConfSubButton(m_thisObj),
-                          node, V_TREE_ID_config);
+                if(node.attributes.multi)
+                    f_addConfiSetButton(m_thisObj, node,
+                                        m_thisObj.m_parent.m_editorPanel)
+            });
         }
     },
 

@@ -954,6 +954,21 @@ function f_handleToolbarViewCmdResponse(responseTxt)
     f_showConfigurationViewDialog(responseTxt);
 }
 
+function f_addConfiSetButton(treeObj, node, editorPanel)
+{
+    var ePanel = editorPanel;
+    var eForm = ePanel.m_formPanel;
+
+    if(!eForm.m_subBtnAdd && eForm.items.getCount() > 1)
+    {
+        f_addField2Panel(ePanel,
+                  f_createConfSubButton(treeObj), node, V_TREE_ID_config);
+        eForm.m_subBtnAdd = true;
+    }
+
+    eForm.doLayout();
+    f_linkFormField(eForm);
+}
 //////////////////////////////////////////////////////////////////
 // if fields are already in panel, update it and return false. else
 // do nothing and return true
@@ -1027,46 +1042,23 @@ function f_addField2Panel(editorPanel, fields, node, mode)
                 fields.items.item(V_IF_INDEX_LABEL).getXType() == 'button')
             eFormPanel.insert(1, fields);
         else
-        {
-            var fCount = eFormPanel.items.getCount();
-            var sf = eFormPanel.items.item(fCount-1);
-            var ssf = eFormPanel.items.item(fCount-2);
-
-            if(fields.m_isSubmitBtn != undefined)
-                eFormPanel.m_subBtnAdd = true;
-
-            if(sf.m_isSubmitBtn == undefined)
-            {
-                eFormPanel.add(fields);
-                if(fCount > 1) fields.show();
-            }
-            else if(fields.m_isSubmitBtn == undefined)
-            {
-                eFormPanel.insert(fCount-1, fields);
-
-                var submitPanel = eFormPanel.items.itemAt(fCount);
-                if(submitPanel != undefined && !submitPanel.isVisible())
-                    submitPanel.show();
-            }
-        }
-        eFormPanel.doLayout();
-        f_linkFormField(eFormPanel);
+            eFormPanel.add(fields);
 
         if(fields != undefined && fields.items != undefined)
         {
+            ///////////////////////////////////////
+            // set focus field
             var ifield = fields.items.itemAt(V_IF_INDEX_INPUT);
-            var type = ifield.getXType();
-            if(type == 'panel')
+            if(ifield != undefined)
             {
-                ifield = ifield.m_fd;
-                type = ifield.getXType();
-            }
+                var type = ifield.getXType();
+                if(type == 'panel')
+                {
+                    ifield = ifield.m_fd;
+                    type = ifield.getXType();
+                }
 
-            if(mode == V_TREE_ID_config)
-            {
-                ///////////////////////////////////////
-                // set focus field
-                if(!eFormPanel.m_subBtnAdd)
+                if(mode == V_TREE_ID_config)
                 {
                     if(eFormPanel.items.getCount() == 2)
                     {
@@ -1074,21 +1066,13 @@ function f_addField2Panel(editorPanel, fields, node, mode)
                         ifield.tabIndex = 0;
                     }
                 }
-                else
+                else if(mode == V_TREE_ID_oper)
                 {
                     if(eFormPanel.items.getCount() == 3)
-                      {
-                          ifield.focus(true, 500);
-                          ifield.tabIndex = 0;
+                    {
+                        ifield.focus(true, 500);
+                        ifield.tabIndex = 0;
                     }
-                }
-            }
-            else
-            {
-                if(eFormPanel.items.getCount() == 3)
-                {
-                    ifield.focus(true, 500);
-                    ifield.tabIndex = 0;
                 }
             }
         }
@@ -1190,7 +1174,6 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
     {
         var keypressHandler = function(e)
         {
-            //f_enterKeyPressHandler(grid, e, callback);
         }
     }
     var tf = new Ext.form.TextField(
@@ -1353,7 +1336,6 @@ function f_createConfSubButton(treeObj)
     });
     panel.m_buttons = buttons;
     panel.m_isSubmitBtn = true;
-    panel.hide();
 
     return panel;
 }
@@ -1637,7 +1619,7 @@ function f_handleConfFieldOffFocus(field)
     // set grid focus
     if(field.m_nextFd != undefined && field.m_nextFd.getXType() == 'editorgrid')
     {
-        field.focus(true, 100);
+        field.m_nextFd.focus(true, 100);
         field.m_nextFd.startEditing(0,0);
     }
 }

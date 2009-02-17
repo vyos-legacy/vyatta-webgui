@@ -368,6 +368,11 @@ function f_createFieldDirtyIndicatorPanel(node)
     return p;
 }
 
+function f_handleFieldTab(field)
+{
+    if(field.m_nextFd != undefined && field.m_nextFd.getXType() == 'editorgrid')
+        field.m_nextFd.startEditing(0,0);
+}
 function f_createNumberField(treeObj, value, node, help, width, callback, mode)
 {
     var oldVal = value != undefined ? value : node.attributes.defaultVal;
@@ -399,10 +404,13 @@ function f_createNumberField(treeObj, value, node, help, width, callback, mode)
     {
         var keyupPressHandler = function(field, e)
         {
+            if(e.getKey() == 9)
+                f_handleFieldTab(field);
+
             if(e.getKey() == 13)
                 f_prepareConfFormCommandSend(treeObj);
         }
-        field.on('keyup', keyupPressHandler);
+        field.on('keydown', keyupPressHandler);
     }
 
     help = node.attributes.type != undefined ? help+
@@ -453,12 +461,15 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
     {
         var keyupPressHandler = function(field, e)
         {
+            if(e.getKey() == 9)
+                f_handleFieldTab(field);
+
             if(e.getKey() == 13 && mode == 'opMode')
                 callback.call();
             else if(e.getKey() == 13 && mode == 'confMode')
                 f_prepareConfFormCommandSend(treeObj);
         }
-        field.on('keyup', keyupPressHandler);
+        field.on('keydown', keyupPressHandler);
     }
 
     helpStr = node.attributes.type != undefined ? helpStr+
@@ -482,7 +493,7 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
 }
 
 function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
-                            isEditable, callback, node)
+                            isEditable, callback, node, treeObj)
 {
     var oldiVal = ival != undefined ? ival : node.attributes.defaultVal;
     var field = new Ext.form.ComboBox(
@@ -511,12 +522,16 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
     }
     var onKeyHandler = function(f, e)
     {
-        alert('got it')
+        if(e.getKey() == 9)
+            f_handleFieldTab(f);
+
+        if(e.getKey() == 13)
+                f_prepareConfFormCommandSend(treeObj);
     }
     if(callback != undefined)
         field.on('collapse', onCollapseHandler);
 
-    field.on('keyup', onKeyHandler);
+    field.on('keydown', onKeyHandler);
 
     ////////////////////////////////////////
     // for some reasons, a combo box must
@@ -1156,7 +1171,8 @@ function f_getEditGridValues(gridStore)
     return ret;
 }
 
-function f_createEditGrid(values, gridStore, record, node, helpLabel, width, callback)
+function f_createEditGrid(values, gridStore, record, node, 
+                          helpLabel, width, callback, treeObj)
 {
     var label = node.text;
 
@@ -1174,6 +1190,8 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
     {
         var keypressHandler = function(e)
         {
+            if(e.getKey() == 13)
+                f_prepareConfFormCommandSend(treeObj);
         }
     }
     var tf = new Ext.form.TextField(
@@ -1183,7 +1201,7 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
             render: function(c)
             {
                 c.getEl().on({
-                keypress: keypressHandler
+                keydown: keypressHandler
                 ,scope: c
                 });
             }
@@ -1268,9 +1286,7 @@ function f_createConfEditorTitle(node, btnPanel)
         ,cls: 'v-border-less'
         ,border: false
         ,bodyStyle: 'padding: 15px 5px 5px 5px'
-        ,width: "90%"
     });
-
     var items = btnPanel != null ? [title, btnPanel] : [title];
 
     var panel = new Ext.Panel(
@@ -1280,10 +1296,13 @@ function f_createConfEditorTitle(node, btnPanel)
         ,height: 45
         ,cls: 'v-border-bottom'
         ,border: false
-        ,autoWidth: true
     });
     panel.m_title = titleName;
 
+    var onResize = function()
+    {
+    }
+    panel.on('resize', onResize);
     return panel;
 }
 
@@ -1392,8 +1411,9 @@ function f_createConfButton(treeObj, node, btnText, title)
         ,border: false
         ,bodyStyle: 'padding: 0px'
         ,height: 0
-        ,width: '10%'
+        ,width: 60
         ,minWidth: 40
+        ,cls: 'v-panel-float-right'
     });
     panel.m_buttons = buttons;
 
@@ -1615,13 +1635,6 @@ function f_handleConfFieldOffFocus(field)
         field.m_wp.el.dom.className = cn;
     }
 
-    /////////////////////////////////////
-    // set grid focus
-    if(field.m_nextFd != undefined && field.m_nextFd.getXType() == 'editorgrid')
-    {
-        field.m_nextFd.focus(true, 100);
-        field.m_nextFd.startEditing(0,0);
-    }
 }
 
 function f_handleFormIndicators(node)

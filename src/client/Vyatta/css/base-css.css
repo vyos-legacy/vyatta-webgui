@@ -402,6 +402,10 @@ body
 {
     background-color: #fff !important;
 }
+.v-panel-float-right
+{
+    float: right !important;
+}
 .x-panel-noborder .x-panel-tbar-noborder .x-toolbar
 {
     border-width:0;

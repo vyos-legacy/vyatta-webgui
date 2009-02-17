@@ -772,7 +772,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             isCheckbox = false;
             field1 = f_createCombobox(values, ival,
                       'Select a valid value...', node.text, 244,
-                      helpStr, editable, callback, node);
+                      helpStr, editable, callback, node, m_thisObj);
         }
 
         node.getValFieldFunc = function()
@@ -819,7 +819,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(narr != undefined)
             values = narr;
 
-        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 243, callback);
+        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 
+                  243, callback, m_thisObj);
         grid.m_store = gridStore;
         node.getValFieldFunc = function()
         {
@@ -848,7 +849,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             vala = node.attributes.values;
 
         var GridT = Ext.data.Record.create([{ name: 'value' }]);
-        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 243, callback);
+        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel,
+                    243, callback, m_thisObj);
         grid.m_store = gridStore;
         node.getValFieldFunc = function()
         {
@@ -883,7 +885,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             { name: 'value' }
         ]);
 
-        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 243, callback);
+        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 
+                    243, callback, m_thisObj);
         grid.m_store = gridStore;
         node.getValFieldFunc = function()
         {
@@ -1097,7 +1100,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                             'Select a valid value...', undefined,
                             labelArray[i], 244,
                             helpStr, false,
-                            undefined, nNode);
+                            undefined, nNode, m_thisObj);
 
                 f_addField2Panel(ePanel, field, labelArray[i++], V_TREE_ID_oper);
 

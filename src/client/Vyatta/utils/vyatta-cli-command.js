@@ -715,6 +715,7 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         p = node;
         selNode = p;
         selPath = p.getPath('text');
+        treeObj.m_parent.f_cleanEditorPanel();
     }
     else if(cmds[0].indexOf("delete", 0) >= 0)
     {

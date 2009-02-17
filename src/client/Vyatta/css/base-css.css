@@ -265,6 +265,22 @@
     cursor:default;
     white-space: nowrap;
 }
+.v-delete-button
+{
+    background:  transparent url('../images/delete.png') no-repeat left !important;
+    height: 22px !important;
+    width: 60px !important;
+    cursor:pointer;
+    /*white-space: nowrap;*/
+}
+.v-create-button
+{
+    background:  transparent url('../images/create.png') no-repeat left !important;
+    height: 22px !important;
+    width: 60px !important;
+    cursor:pointer;
+    /*white-space: nowrap;*/
+}
 
 /******************************************************************************/
 /*  body */
@@ -434,7 +450,6 @@ body
     border-width:0;
     border-bottom:1px solid #fff;
 }
-
 
 .v-node-nocfg {
   font-size: 13px;

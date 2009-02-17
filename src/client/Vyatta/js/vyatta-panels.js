@@ -1087,7 +1087,7 @@ function f_addField2Panel(editorPanel, fields, node, mode)
                 }
                 else if(mode == V_TREE_ID_oper)
                 {
-                    if(eFormPanel.items.getCount() == 3)
+                    if(eFormPanel.items.getCount() == 2)
                     {
                         ifield.focus(true, 500);
                         ifield.tabIndex = 0;
@@ -1103,6 +1103,8 @@ function f_addField2Panel(editorPanel, fields, node, mode)
             html: '&nbsp;'
             ,position: 'fixed'
         });
+        var items = mode == V_TREE_ID_oper ? null : [dummy];
+
         var form = new Ext.form.FormPanel(
         {
             fieldLabel: node != undefined ? node.text : undefined
@@ -1112,7 +1114,7 @@ function f_addField2Panel(editorPanel, fields, node, mode)
             ,align: 'center'
             ,tbar: fields
             ,cls: 'v-panel-tbar'
-            ,items: [dummy]
+            ,items: items
         });
         form.m_subBtn = null;
         form.m_count = 0;
@@ -1302,7 +1304,6 @@ function f_createConfEditorTitle(node, btnPanel)
         ,border: false
         ,bodyStyle: 'padding: 10px 5px 5px 5px'
     });
-    //title = '<div valian="center"><b>' + titleName + '</b></div>';
     var items = btnPanel != null ? [title, "->", btnPanel] : [title];
     items.m_title = titleName;
 
@@ -1332,7 +1333,7 @@ function f_createConfSubButton(treeObj)
         ,text: 'Set'
         ,tooltip: 'Set configuration'
         ,height: 20
-        ,minWidth: 75
+        ,minWidth: 60
         ,handler: function()
         {
             f_prepareConfFormCommandSend(treeObj);
@@ -1368,6 +1369,7 @@ function f_createConfButton(treeObj, node, btnText, title)
     var btn_id = Ext.id();
     var cmd = '';
     var isDelete = false;
+    var iconCls = 'v-delete-button';
 
     if(btnText == 'Delete')
         cmd = 'delete ';
@@ -1375,44 +1377,25 @@ function f_createConfButton(treeObj, node, btnText, title)
     {
         cmd = 'set ';
         isDelete = true;
+        iconCls = 'v-create-button';
     }
 
     buttons[0] = new Ext.Button(
     {
         id: btn_id
-        ,text: btnText
+        ,text: ''
+        ,iconCls: iconCls
         ,tooltip: btnText + ' configuration node'
-        ,height: 20
         ,handler: function()
         {
             f_sendConfigCLICommand([cmd + treeObj.f_getNodePathStr(node) ],
                                     treeObj, node, isDelete);
         }
     });
+    buttons[0].on('mouseover', function(){});
+    buttons.m_buttons = buttons;
 
-    var bPanel = new Ext.Panel(
-    {
-        buttons: buttons
-        ,bodyStyle: 'padding: 0px'
-        ,border: false
-        ,height: 0
-        ,buttonAlign: 'right'
-        ,autoWidth: true
-    });
-
-    var panel = new Ext.Panel(
-    {
-        tbar: bPanel
-        ,border: false
-        ,bodyStyle: 'padding: 0px'
-        ,height: 0
-        ,width: 60
-        ,minWidth: 40
-        ,cls: 'v-panel-float-right'
-    });
-    panel.m_buttons = buttons;
-
-    return panel;
+    return buttons;
 }
 
 function f_handleOperBtnClick(button, node, treeObj)
@@ -1524,7 +1507,8 @@ function f_createOperButton(treeObj, node, btnText, title)
         buttons: buttons
         ,bodyStyle: 'padding: 0px'
         ,border: false
-        ,buttonAlign: 'left'
+        ,buttonAlign: 'left',
+        height: 0
     });
 
     var panel = new Ext.Panel(

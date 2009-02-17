@@ -526,12 +526,12 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
             f_handleFieldTab(f);
 
         if(e.getKey() == 13)
-                f_prepareConfFormCommandSend(treeObj);
+            f_prepareConfFormCommandSend(treeObj);
     }
     if(callback != undefined)
         field.on('collapse', onCollapseHandler);
 
-    field.on('keydown', onKeyHandler);
+    field.on('specialkey', onKeyHandler);
 
     ////////////////////////////////////////
     // for some reasons, a combo box must
@@ -981,8 +981,12 @@ function f_addConfiSetButton(treeObj, node, editorPanel)
         eForm.m_subBtnAdd = true;
     }
 
-    eForm.doLayout();
-    f_linkFormField(eForm);
+    if(eForm.m_count == 0)
+    {
+        eForm.doLayout();
+        f_linkFormField(eForm);
+        eForm.m_count = eForm.items.getCount();
+    }
 }
 //////////////////////////////////////////////////////////////////
 // if fields are already in panel, update it and return false. else
@@ -1015,7 +1019,7 @@ function f_updateFieldValues2Panel(editorPanel, fields, node, mode)
 
             ///////////////////////////////////////////////////////
             // if the below statement is true, the fields already
-            // exist. Update the dirty flag and values if neccessary
+            // exist.
             if(label != undefined && label.getXType() == 'label' &&
                 label.html == cLabel.html)
                 return false;
@@ -1104,7 +1108,7 @@ function f_addField2Panel(editorPanel, fields, node, mode)
             ,items: fields
         });
         form.m_subBtnAdd = false;
-        form.m_fdIndex = 0;
+        form.m_count = 0;
 
         editorPanel.add(form);
         editorPanel.m_formPanel = form;
@@ -1374,19 +1378,11 @@ function f_createConfButton(treeObj, node, btnText, title)
         isDelete = true;
     }
 
-    if(Ext.isIE)
-    {
-        title = f_replace(title, '&rarr;&nbsp;', '');
-    }
-    else
-        title = f_replace(title, '&rArr;&nbsp;', '');
-    title = f_replace(title, 'Configuration&nbsp;', '');
-
     buttons[0] = new Ext.Button(
     {
         id: btn_id
         ,text: btnText
-        ,tooltip: btnText + ' ' + title
+        ,tooltip: btnText + ' configuration node'
         ,height: 20
         ,handler: function()
         {

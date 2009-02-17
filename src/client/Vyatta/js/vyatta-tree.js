@@ -24,6 +24,9 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
 
     getNodeStyleImage: function(node)
     {
+        if(node.getOwnerTree().m_parent.m_treeMode == 'operation')
+            return "";
+
         return getNodeStyleImage(node, true);
     },
 

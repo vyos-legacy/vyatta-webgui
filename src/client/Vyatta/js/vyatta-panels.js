@@ -1393,6 +1393,7 @@ function f_createConfButton(treeObj, node, btnText, title)
         }
     });
     buttons[0].on('mouseover', function(){});
+    buttons[0].on('mouseout', function(){alert('out')});
     buttons.m_buttons = buttons;
 
     return buttons;

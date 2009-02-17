@@ -288,9 +288,8 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
     {
         if(this.f_getEditorItemCount() > 0)
         {
-            var ep = this.m_editorPanel;
-            var eFormPanel = ep.items.itemAt(0);
-            return eFormPanel.items.itemAt(0).m_title;
+            var ef = this.m_editorPanel.m_formPanel;
+            return ef.m_title;
         }
 
         return '';
@@ -974,14 +973,15 @@ function f_addConfiSetButton(treeObj, node, editorPanel)
     var ePanel = editorPanel;
     var eForm = ePanel.m_formPanel;
 
-    if(!eForm.m_subBtnAdd && eForm.items.getCount() > 1)
+    if(eForm.m_subBtn == null && eForm.items != undefined &&
+        eForm.items.getCount() > 1)
     {
-        f_addField2Panel(ePanel,
-                  f_createConfSubButton(treeObj), node, V_TREE_ID_config);
-        eForm.m_subBtnAdd = true;
+        var btn = f_createConfSubButton(treeObj)
+        f_addField2Panel(ePanel, btn, node, V_TREE_ID_config);
+        eForm.m_subBtn = btn.m_buttons;
     }
 
-    if(eForm.m_count == 0)
+    if(eForm.m_count == 0 && eForm.items != undefined)
     {
         eForm.doLayout();
         f_linkFormField(eForm);
@@ -1098,6 +1098,11 @@ function f_addField2Panel(editorPanel, fields, node, mode)
     }
     else  // editor panel is empty. create a form and add fields into it
     {
+        var dummy = new Ext.form.Label(
+        {
+            html: '&nbsp;'
+            ,position: 'fixed'
+        });
         var form = new Ext.form.FormPanel(
         {
             fieldLabel: node != undefined ? node.text : undefined
@@ -1105,10 +1110,14 @@ function f_addField2Panel(editorPanel, fields, node, mode)
             ,autoHeight: false
             ,bodyBorder: false
             ,align: 'center'
-            ,items: fields
+            ,tbar: fields
+            ,cls: 'v-panel-tbar'
+            ,items: [dummy]
         });
-        form.m_subBtnAdd = false;
+        form.m_subBtn = null;
         form.m_count = 0;
+        form.dummy = dummy;
+        form.m_title = fields.m_title;
 
         editorPanel.add(form);
         editorPanel.m_formPanel = form;
@@ -1130,6 +1139,8 @@ function f_addField2Panel(editorPanel, fields, node, mode)
 
 function f_linkFormField(form)
 {
+    if(form.items == undefined) return;
+
     for(var i=1; i<form.items.getCount(); i++)
     {
         if(form.items.itemAt(i).items != undefined)
@@ -1289,25 +1300,13 @@ function f_createConfEditorTitle(node, btnPanel)
         ,position: 'fixed'
         ,cls: 'v-border-less'
         ,border: false
-        ,bodyStyle: 'padding: 15px 5px 5px 5px'
+        ,bodyStyle: 'padding: 10px 5px 5px 5px'
     });
-    var items = btnPanel != null ? [title, btnPanel] : [title];
+    //title = '<div valian="center"><b>' + titleName + '</b></div>';
+    var items = btnPanel != null ? [title, "->", btnPanel] : [title];
+    items.m_title = titleName;
 
-    var panel = new Ext.Panel(
-    {
-        layout: 'column'
-        ,items: items
-        ,height: 45
-        ,cls: 'v-border-bottom'
-        ,border: false
-    });
-    panel.m_title = titleName;
-
-    var onResize = function()
-    {
-    }
-    panel.on('resize', onResize);
-    return panel;
+    return items;
 }
 
 function f_createOperEditorTitle(title)

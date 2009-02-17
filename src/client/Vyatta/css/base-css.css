@@ -394,6 +394,22 @@ body
     border-top: none;
     border-bottom: solid 2px #e8e8e8 !important;
 }
+.v-border-top
+{
+    border: 2 none;
+    border-style: none;
+    background-color: #fff;
+    border-bottom: none;
+    border-top: solid 2px #e8e8e8 !important;
+}
+.v-border-top
+{
+    border: 2 none;
+    border-style: none;
+    background-color: #fff;
+    border-bottom: none;
+    border-top: solid 2px #e8e8e8 !important;
+}
 .v-bg-yellow .x-panel-body
 {
     background-color: #ffff99 !important;
@@ -405,6 +421,13 @@ body
 .v-panel-float-right
 {
     float: right !important;
+}
+.v-panel-tbar .x-toolbar
+{
+  border-top: none !important;
+  border-right: none;
+  border-left: none;
+  border-bottom: 2px solid #e8e8e8 !important;
 }
 .x-panel-noborder .x-panel-tbar-noborder .x-toolbar
 {

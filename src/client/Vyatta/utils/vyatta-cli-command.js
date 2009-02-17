@@ -276,12 +276,6 @@ function f_handleConfFormCommandDone(treeObj, node)
             }
             f_promptErrorMessage('Changing configuration...', err);
         }
-        //////////////////////////////////////
-        //clear previous error if any
-        else
-        {
-            
-        }
     }
 }
 

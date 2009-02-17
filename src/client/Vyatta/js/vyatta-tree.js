@@ -600,6 +600,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                                         m_thisObj.m_parent.m_editorPanel)
             });
         }
+
+        if(m_thisObj.m_parent.m_editorPanel.m_formPanel != undefined)
+            m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 
     f_interHandler: function(node)
@@ -625,8 +628,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 text: node.attributes.help
             });
         }
-
-        m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 
     f_interMultiHandler: function(node)
@@ -645,8 +646,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         else
             m_thisObj.f_leafSingleTxtHandler(node, node.attributes.help, callback)
 
-
-        m_thisObj.m_parent.m_editorPanel.doLayout();
+        //if(m_thisObj.m_parent.m_editorPanel.m_formPanel != undefined)
+          //  m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 
     f_leafSingleHandler: function(node)
@@ -675,7 +676,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             // XXX treat everything else as text for now
             m_thisObj.f_leafSingleTxtHandler(node, helpStr, onBlur);
 
-        m_thisObj.m_parent.m_editorPanel.doLayout();
+        //if(m_thisObj.m_parent.m_editorPanel.m_formPanel != undefined)
+         //   m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 
     f_leafMultiHandler: function(node)
@@ -698,7 +700,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             // XXX treat everything else as text for now
             m_thisObj.f_leafMultiTxtHandler(node, hlabel, onBlur);
 
-        m_thisObj.m_parent.m_editorPanel.doLayout();
+        //if(m_thisObj.m_parent.m_editorPanel.m_formPanel != undefined)
+          //  m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 
     ////////////////////////////////////////////////////////////////////////////

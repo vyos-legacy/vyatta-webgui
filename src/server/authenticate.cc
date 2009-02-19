@@ -200,7 +200,7 @@ Authenticate::create_new_id()
   FILE *fp = fopen("/dev/urandom", "r");
   if (fp) {
     char *ptr = (char*)&val;
-
+    
     do {
       *ptr = fgetc(fp); if (*ptr == EOF) return 0;
       *(ptr+1) = fgetc(fp); if (*(ptr+1) == EOF) return 0;
@@ -215,6 +215,8 @@ Authenticate::create_new_id()
       file = WebGUI::VYATTA_MODIFY_FILE + string(buf);
     }
     while (stat(file.c_str(), &tmp) == 0);
+
+    fclose(fp);
   }
   return id;  
 }

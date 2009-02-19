@@ -4,6 +4,7 @@
 class WebGUI
 {
 public:
+  const static unsigned long ID_MAX;
   const static unsigned long ID_START;
   const static unsigned long ID_RANGE;
 

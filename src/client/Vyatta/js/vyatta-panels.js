@@ -501,7 +501,7 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
         mode: 'local',
         store: values,
         displayField: 'value',
-        emptyText: emptyText,
+        emptyText: '',//emptyText,
         labelSeparator: '',
         editable: isEditable,
         triggerAction: 'all',
@@ -1298,7 +1298,8 @@ function f_createConfEditorTitle(node, btnPanel)
 
     var title  = new Ext.Panel(
     {
-        html: '<div valian="center"><b>' + titleName + '</b></div>'
+        html: '<div valian="center" id="v-header-font"><b>' +
+                  titleName + '</b></div>'
         ,position: 'fixed'
         ,cls: 'v-border-less'
         ,border: false
@@ -1380,9 +1381,17 @@ function f_createConfButton(treeObj, node, btnText, title)
         iconCls = 'v-create-button';
     }
 
+    var imgButtonTpl = new Ext.Template(
+        '<table border="0" cellpadding="0" cellspacing="0" class="x-btn-wrap"><tbody><tr>' +
+        '<td class="x-btn-left"><i>&amp; </i></td><td class="x-btn-center">' +
+        '<button type="button"><img src="../images/delete.png"></button>' +
+        '</td><td class="x-btn-right"><i> </i></td>' +
+        '</tr></tbody></table>');
+
     buttons[0] = new Ext.Button(
     {
         id: btn_id
+        //,template: imgButtonTpl
         ,text: ''
         ,iconCls: iconCls
         ,tooltip: btnText + ' configuration node'
@@ -1463,9 +1472,10 @@ function f_createOperButton(treeObj, node, btnText, title)
         ,text: btnText
         ,cls: V_STOP_CSS
         ,tooltip: btnText + ' ' + title
-        ,minWidth: 52
-        ,width:55
-        ,height: 20
+        ,minWidth: 58
+        ,width:60
+        ,minHeight: 22
+        ,height: 22
         ,handler: function()
         {
             f_handleOperBtnClick(this, node, treeObj)
@@ -1481,20 +1491,20 @@ function f_createOperButton(treeObj, node, btnText, title)
             ,tooltip: "Pause and resume continue respond data."
             ,minWidth: 65
             ,width:68
-            ,height: 20
+            ,height: 22
             ,handler: function()
             {
                 if(this.text == 'Pause')
                 {
+                    buttons[0].el.dom.className = V_PAUSE_CSS;
                     this.setText('Resume');
                     g_cliCmdObj.m_segPause = true;
-                    buttons[0].el.dom.className = V_PAUSE_CSS;
                 }
                 else
                 {
+                    buttons[0].el.dom.className = V_WAIT_CSS;
                     this.setText('Pause');
                     g_cliCmdObj.m_segPause = false;
-                    buttons[0].el.dom.className = V_WAIT_CSS;
                 }
             }
         });
@@ -1566,9 +1576,10 @@ function f_createTextAreaField(values, width, height)
 {
     var el = document.createElement("div");
     el.id = 'id_op_txt_output'+Ext.id();
-    el.innerHTML = '<pre id="id_op_output"><font face="courier new">'+values+'</font></pre>';
+    var id = 'id_op_output' + Ext.id();
+    el.innerHTML = '<pre id="' + id + '"><font face="courier new">'+values+'</font></pre>';
 
-    return new Ext.Panel(
+    var pPanel = new Ext.Panel(
     {
         border: true
         ,style: 'padding:5px'
@@ -1577,6 +1588,9 @@ function f_createTextAreaField(values, width, height)
         ,autoScroll: true
         ,contentEl: el
     });
+    pPanel.m_outputId = id;
+
+    return pPanel
 }
 
 function f_handleConfFieldOffFocus(field)
@@ -1631,6 +1645,7 @@ function f_handleFormIndicators(node)
 
     /////////////////////////
     // handle field indicator
+    var panelFlag = V_DIRTY_FLAG;
     switch(type)
     {
         case 'textfield':
@@ -1638,6 +1653,14 @@ function f_handleFormIndicators(node)
         case 'combo':
             var cn = fd.el.dom.className;
             fd.el.dom.className = f_replace(cn, 'v-textfield-unsubmit', '');
+
+            if(node.attributes.value != undefined)
+            {
+                if(fd.getValue() == node.attributes.value)
+                    panelFlag = V_EMPTY_FLAG;
+            }
+            else if(fd.getValue() != undefined && fd.getValue().length == 0)
+                panelFlag = V_EMPTY_FLAG;
             break;
         case 'editorgrid':
             f_setGridViewClear(fd);
@@ -1652,7 +1675,7 @@ function f_handleFormIndicators(node)
     //////////////////////////
     // handle panel indicator
     var error = node.m_inputPanel.items.itemAt(V_IF_INDEX_DIRTY);
-    f_updateDirtyIndicatorPanel(error, V_DIRTY_FLAG);
+    f_updateDirtyIndicatorPanel(error, panelFlag);
 }
 
 function f_handleFieldError(node)
@@ -1680,6 +1703,8 @@ function f_updateDirtyIndicatorPanel(field, errType)
         err = 'add';
     else if(errType.indexOf('statusMinus') > 0)
         err = 'del';
+    else if(errType.indexOf('empty') > 0)
+        err = 'empty';
 
     if(field.el != undefined)
     {
@@ -1697,6 +1722,9 @@ function f_updateDirtyIndicatorPanel(field, errType)
                 break;
             case 'del':
                 html = f_createFlagIndicator(html, 'statusMinus');
+                break;
+            case 'empty':
+                html = f_createFlagIndicator(html, 'empty');
         }
 
         field.el.dom.innerHTML = html;

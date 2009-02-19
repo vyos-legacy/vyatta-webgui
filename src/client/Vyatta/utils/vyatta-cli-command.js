@@ -97,7 +97,12 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
             sendStr += (c + ' ');
 
             if(headerStr.length > 1)
-                headerStr += '&nbsp;&rArr;&nbsp;';
+            {
+                if(Ext.isIE)
+                    headerStr += '&nbsp;&rarr;&nbsp;';
+                else
+                    headerStr += '&nbsp;&rArr;&nbsp;';
+            }
             headerStr += c;
         }
 
@@ -169,8 +174,8 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         {
             if(wildCard != undefined && typeof wildCard.setText == 'function')
             {
-                wildCard.setText('Stop');
                 wildCard.el.dom.className = V_WAIT_CSS;
+                wildCard.setText('Stop');
             }
             g_cliCmdObj.m_wildCard = wildCard;
         }

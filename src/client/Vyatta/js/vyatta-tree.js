@@ -751,11 +751,11 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         var ival = undefined;
         if(node.attributes.values != undefined)
             ival = node.attributes.values;
-        else if(m_thisObj.m_parent.m_editorPanel.m_hasButton)
-        {
-            if(values != undefined)
-                ival = values[0];
-        }
+        //else if(m_thisObj.m_parent.m_editorPanel.m_hasButton)
+        //{
+        //    if(values != undefined)
+        //        ival = values[0];
+        //}
 
         var narr = filterWildcard(values);
         var editable = isEditable == null ? false : isEditable;
@@ -1169,7 +1169,10 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     if(segCount > 3)
                         pauseBtn.show();
 
-                    if(sid != undefined)
+                    ////////////////////////////////////////
+                    // before we update the text fd, let
+                    // see if user stop it first.
+                    if(sid != undefined && sid != 'segment_end')
                     {
                         ///////////////////////////////////////////////
                         // if segment id == '_0', server ack command.
@@ -1178,7 +1181,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                             values.length == 0)
                         {
                             values = '';
-                            f.contentEl.innerHTML = '<pre id="id_op_output">' +
+                            var id = f.pPanel.m_outputId;
+                            f.contentEl.innerHTML = '<pre id="' + id + '">' +
                                   '<font face="courier new"></font></pre>';
                         }
                         /////////////////////////////////////////////
@@ -1196,7 +1200,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                             var txtc = f.contentEl.innerHTML;
                             txtc = txtc.substr(0, (txtc.length-13));
                             f.contentEl.innerHTML = txtc + values + "</font></pre>";
-                            var el = document.getElementById("id_op_output");
+                            var el = document.getElementById(f.m_outputId);
                             el.scrollIntoView(false);
                             ePanel.m_opTextArea = f;
                         }
@@ -1209,13 +1213,14 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             if(g_cliCmdObj.m_segmentId != undefined)
                 m_thisObj.f_addOpTextAreaField(ePanel, values);
+
+            ePanel.doLayout();
         }
         else if(g_cliCmdObj.m_segmentId != undefined && values == '')
         {
             m_thisObj.f_addOpTextAreaField(ePanel, values);
+            ePanel.doLayout();
         }
-
-        ePanel.doLayout();
     },
 
     f_addOpTextAreaField: function(ePanel, values)
@@ -1224,7 +1229,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         if(eForm != undefined)
         {
-            var hOffset = (eForm.items.getCount() * 35) + 60;
+            var hOffset = (eForm.items.getCount() * 41) + 72;
             var mlbl = f_createTextAreaField(values, 0, ePanel.getInnerHeight()-hOffset);
             mlbl.m_heightOffset = hOffset;
             f_addField2Panel(ePanel, mlbl, undefined, V_TREE_ID_oper);

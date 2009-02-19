@@ -79,12 +79,12 @@
 .v_wait_image .x-btn-text
 {
     background-image: url("../images/wait.gif");
-    margin-bottom:2px;
+    margin-bottom:1px;
 }
 .v_pause_image .x-btn-text
 {
     background-image: url("../images/done.gif");
-    margin-bottom:2px;
+    margin-bottom:1px;
 }
 
 .v_empty_image
@@ -92,6 +92,17 @@
     width: 52 !important;
 }
 
+#v-header-font
+{
+    color:#000000;
+    font-family:arial;
+    font-size:14px;
+    font-size-adjust:none;
+    font-style:normal;
+    font-variant:normal;
+    font-weight:bold;
+    line-height:15px;
+}
 .x-toolbar
 {
     border-color:#fff;
@@ -271,7 +282,7 @@
     height: 22px !important;
     width: 60px !important;
     cursor:pointer;
-    /*white-space: nowrap;*/
+    white-space: nowrap;
 }
 .v-create-button
 {
@@ -279,8 +290,16 @@
     height: 22px !important;
     width: 60px !important;
     cursor:pointer;
-    /*white-space: nowrap;*/
+    white-space: nowrap;
 }
+/*
+.x-toolbar .xbtn-over .x-btn-left
+{
+    background: url(../images/tb-btn-sprite.gif) no-repeat 0 2px !important;
+}
+.x-btn-over .tbButton .x-btn-left { background: none; }
+.x-btn-over .tbButton .x-btn-right { background: none; }
+*/
 
 /******************************************************************************/
 /*  body */

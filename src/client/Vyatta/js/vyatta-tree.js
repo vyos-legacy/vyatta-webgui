@@ -1181,7 +1181,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                             values.length == 0)
                         {
                             values = '';
-                            var id = f.pPanel.m_outputId;
+                            var id = ePanel.m_opTextArea.m_outputId;
                             f.contentEl.innerHTML = '<pre id="' + id + '">' +
                                   '<font face="courier new"></font></pre>';
                         }
@@ -1200,7 +1200,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                             var txtc = f.contentEl.innerHTML;
                             txtc = txtc.substr(0, (txtc.length-13));
                             f.contentEl.innerHTML = txtc + values + "</font></pre>";
-                            var el = document.getElementById(f.m_outputId);
+                            var el = document.getElementById(ePanel.m_opTextArea.m_outputId);
                             el.scrollIntoView(false);
                             ePanel.m_opTextArea = f;
                         }
@@ -1221,6 +1221,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             m_thisObj.f_addOpTextAreaField(ePanel, values);
             ePanel.doLayout();
         }
+
+        //ePanel.doLayout();
     },
 
     f_addOpTextAreaField: function(ePanel, values)

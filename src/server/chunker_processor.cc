@@ -3,6 +3,7 @@
 #include <sys/sysinfo.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <pwd.h>
 #include <signal.h>
 #include <syslog.h>
 #include <errno.h>
@@ -69,6 +70,41 @@ ChunkerProcessor::start_new(string token, const string &cmd)
 void
 ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
 {
+  //set up to run as user id...
+
+  string file = WebGUI::VYATTA_MODIFY_FILE + token;
+  struct stat buf;
+  if (stat(file.c_str(), &buf) != 0) {
+    return;
+  }
+  FILE *fp = fopen(file.c_str(), "r");
+  if (!fp) {
+    return;
+  }
+  char name_buf[1025];
+  if (fgets(name_buf, 1024, fp) == NULL) {
+    fclose(fp);
+    return;
+  }
+  fclose(fp);
+  struct passwd *pw;
+  pw = getpwnam(name_buf);
+  if (pw == NULL) {
+    return;
+  }
+
+  //move this up the timeline in the future, but this is where we will initially set the uid/gid
+  //retreive username, then use getpwnam() from here to populate below
+  if (setgid(pw->pw_gid) != 0) {
+    return;
+  }
+  if (setuid(pw->pw_uid) != 0) {
+    return;
+  }
+
+  //now we are ready to do some real work....
+
+
   //use child pid to allow cleanup of parent
   if (_pid_path.empty() == false) {
     _pid_path += "/" + token;

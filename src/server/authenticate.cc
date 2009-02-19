@@ -207,7 +207,7 @@ Authenticate::create_new_id()
       *(ptr+2) = fgetc(fp); if (*(ptr+2) == EOF) return 0;
       *(ptr+3) = fgetc(fp); if (*(ptr+3) == EOF) return 0;
       
-      id = WebGUI::ID_START + (float(val) / float(4294967296.)) * WebGUI::ID_RANGE;
+      id = WebGUI::ID_START + (float(val) / float(WebGUI::ID_MAX)) * WebGUI::ID_RANGE;
       
       //now check for collision
       char buf[40];

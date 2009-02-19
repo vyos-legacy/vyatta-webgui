@@ -9,7 +9,7 @@
 
 using namespace std;
 
-const unsigned long WebGUI::ID_MAX =   4294967296UL;
+const unsigned long WebGUI::ID_MAX =   4294967295UL;
 const unsigned long WebGUI::ID_START = 2147483648UL;
 const unsigned long WebGUI::ID_RANGE = 2147483647UL;
 

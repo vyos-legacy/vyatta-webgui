@@ -451,6 +451,10 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         cmds[0].indexOf('discard') >= 0 || cmds[0].indexOf('commit') >= 0)
         msg = 'Changing configuration...';
 
+    ///////////////////////////////
+    // clear commit error buffer
+    if(cmds[0].indexOf('commit') >= 0) g_cliCmdObj.m_commitErrs = [];
+
     g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait(msg, 'Configuration');
 
     var tObj = treeObj;
@@ -515,6 +519,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 tObj.m_parent.f_cleanEditorPanel();
                 f_handleNodeExpansion(tObj, selNode, selPath, cmds[0]);
                 tree.un('load', onReloadHandler);
+                f_handlePropagateParentNodes(selNode);
             }
             tObj.m_parent.f_resetEditorPanel();
             tObj.m_selNodePath = selPath;//node.parentNode;

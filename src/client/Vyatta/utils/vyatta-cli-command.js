@@ -832,10 +832,24 @@ function f_parseResponseError(xmlRoot)
         // selectValue only can return up to 4096 char
         if(msg.length >= 4096 && xmlRoot.textContent != undefined)
         {
+            //////////////////////////
+            // somehow the textContent some returns addition chars.
+            // so the following code are to strip them out.
+            var f5 = msg.substr(0, 5);
             msg = xmlRoot.textContent;
 
-            // strip out the first 1 extra chars.
-            msg = msg.substr(1, msg.length);
+            var s5 = msg.substr(0, 5);
+            var i=0;
+            while(f5 != s5)
+            {
+                s5 = msg.substr(++i, 5);
+                if(i > 5) // ensure to escape loop
+                {
+                    i=0; break;
+                }
+            }
+            // strip out the i extra chars.
+            msg = msg.substr(i, msg.length-i);
         }
 
         var msgNode = q.selectNode('msg', err);

@@ -124,12 +124,12 @@ Authenticate::is_grp_member(struct group *grp, const std::string &username)
 }
 
 bool
-Authenticate::is_group_member(char *grpname, const std::string &username)
+Authenticate::is_group_member(const char *grpname, const std::string &username)
 {
   setgrent();
   struct group *grp = NULL;
   bool ret = false;
-  while (grp = getgrent()) {
+  while ((grp = getgrent())) {
     if (strcmp(grpname, grp->gr_name) != 0) {
       continue;
     }
@@ -146,18 +146,29 @@ Authenticate::is_group_member(char *grpname, const std::string &username)
  *
  **/
 WebGUI::AccessLevel
-Authenticate::get_access_level(const std::string &username)
+Authenticate::get_access_level(const std::string &username, gid_t &gid)
 {
   ////////////////////////////////////////////////////
   //Only allow users who are members of operator or vyattacfg groups to proceed
+  WebGUI::AccessLevel ret = WebGUI::ACCESS_NONE;
+  const char *gname = NULL;
   if (is_group_member("vyattacfg", username)) {
-    return WebGUI::ACCESS_ALL;
+    gname = "vyattacfg";
+    ret = WebGUI::ACCESS_ALL;
   }
   if (is_group_member("operator", username)) {
-    return WebGUI::ACCESS_ALL;
+    gname = "operator";
+    ret = WebGUI::ACCESS_OPER;
   }
-  //rejecting as failed check or non vyattacfg member
-  return WebGUI::ACCESS_NONE;
+  if (ret != WebGUI::ACCESS_NONE) {
+    struct group *gr = getgrnam(gname);
+    if (gr) {
+      gid = gr->gr_gid;
+    } else {
+      ret = WebGUI::ACCESS_NONE;
+    }
+  }
+  return ret;
 }
 
 /**
@@ -172,8 +183,8 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
     return false;
   }
 
-
-  WebGUI::AccessLevel level = get_access_level(username);
+  gid_t dummy = 0;
+  WebGUI::AccessLevel level = get_access_level(username, dummy);
   if (level == WebGUI::ACCESS_NONE) {
     return false;
   }

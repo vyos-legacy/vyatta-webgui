@@ -25,7 +25,7 @@ case $1 in
 	stop)
 		echo "Stopping PAGER server"
                 if [ -f $PIDFILE ] ; then 
-  	          kill -9 $( cat $PIDFILE )
+  		    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE 
                 fi  
 		rm -f $PIDFILE >/dev/null	
 		;;

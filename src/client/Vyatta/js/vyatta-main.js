@@ -7,6 +7,7 @@ DATA_baseSystem = Ext.extend(Ext.util.Observable,
 {
     constructor: function()
     {
+        this.m_hostname = undefined;
         this.m_tabNames = //[V_TREE_ID_status, V_TREE_ID_diag,
                             [ V_TREE_ID_config, V_TREE_ID_oper];
         
@@ -44,6 +45,9 @@ function f_startLogin()
 
 function f_showTab(tabIndex)
 {
+    if(g_baseSystem.m_hostname == undefined)
+        f_sendSpecialCliCommand('show host name ', undefined, undefined);
+
     // hide not availble tabs
     f_hideTab(g_baseSystem.m_selTabIndex);
     g_baseSystem.m_selTabIndex =tabIndex;
@@ -124,7 +128,6 @@ function f_startViewPort()
                 function() {f_handleMainFramePanelResize()}}});
 
     f_handleMainFramePanelResize();
-
     f_clockTicking();
    //m_clock.render(document.getElementById('v_footer_clock'));
 }
@@ -150,6 +153,7 @@ function f_createTabHTML(tabName)
         if(iTab == g_baseSystem.m_disableTabs[i])
         {
             img = 'tab-' + tabName + '-disabled.gif';
+            imgId += '-disabled';
             html = '<td><a href="#" onClick="f_handleTabClick(\'' + tabName + '\')">' +
             '<img class="v_tab_image" src=\'images/' + img + '\' id=\'' + imgId +
             '\'/></a></td>';
@@ -172,10 +176,6 @@ function f_createTabsHTML()
 
 function f_handleTabClick(tabName)
 {
-    //////////////////////////////////
-    // end background segment process.
-    g_cliCmdObj.m_segmentId = 'tabChanged';
-
     ////////////////////////////////////
     // handle diable tab
     var iTab = g_baseSystem.f_getTabIndex(tabName);
@@ -224,6 +224,16 @@ function f_handleLogout()
         f_userLogout(true, g_baseSystem.m_homePage);
 }
 
+function f_updateHostname()
+{
+    var id = document.getElementById('id_header_text');
+    id.innerHTML = 'Hostname:&nbsp; ' + g_baseSystem.m_hostname +
+            ',&nbsp;&nbsp;Username:&nbsp; ' + f_getUserLoginName() +
+           ',&nbsp;&nbsp;&nbsp;' +
+            '<a class="anchor-test" valign="top" href="#" onclick="f_handleLogout()">' +
+            'Log Out</a>';
+}
+
 function f_createFrameHeaderPanel()
 {
     var id = document.getElementById('id_header_text');
@@ -239,7 +249,7 @@ function f_createFrameHeaderPanel()
             ',&nbsp;&nbsp;Username:&nbsp; ' + f_getUserLoginName() +
            ',&nbsp;&nbsp;&nbsp;' +
             '<a class="anchor-test" valign="top" href="#" onclick="f_handleLogout()">' +
-            '<img src="images/logout.gif"/> Log Out</a>';
+            'Log Out</a>';
         f_createTabsHTML();
     }
 

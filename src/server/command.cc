@@ -154,7 +154,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     }
   }
   else { //operational mode command
-    if (strncmp(tmp.c_str(),"reboot",6) == 0) {
+    if (strcmp(tmp.c_str(),"reboot") == 0) {
       if (access_level == WebGUI::ACCESS_ALL) {
 	tmp = "sudo /sbin/reboot";
       }
@@ -163,6 +163,11 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 	_proc->set_response(WebGUI::COMMAND_ERROR);
 	return;
       }
+    }
+    else if (strncmp(tmp.c_str(),"set",3) == 0) {
+      err = WebGUI::COMMAND_ERROR;
+      _proc->set_response(WebGUI::COMMAND_ERROR);
+      return;
     }
     else {
       //treat this as an op mode command

@@ -132,8 +132,10 @@ Configuration::get_full_op_level()
   TemplateParams multi_params;
   //only do this once!!!
   string tmp = WebGUI::OP_TEMPLATE_DIR + "/" + rel_tmpl_path + "/node.tag";
+
   get_template_node(tmp, multi_params);
   string tag_node_str = multi_params.get_xml();
+
   if (tag_node_str.empty() == false) {
     //escape out "%2F" here for non-terminal multi-nodes
     /*
@@ -400,6 +402,23 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  params._type = WebGUI::MACADDR;
 	}
       }
+      else if (strncmp(line.c_str(),"comp_help:",10) == 0 || mode == "comp_help:") {
+	//need to escape out '<' and '>'
+	string comp_help;
+	if (mode.empty()) {
+	  comp_help = line.substr(10,line.length()-11);
+	}
+	else {
+	  comp_help = line;
+	}
+	mode = "comp_help:";
+	comp_help = WebGUI::mass_replace(comp_help, "&", "&#38;");
+	comp_help = WebGUI::mass_replace(comp_help, "<", "&#60;");
+	comp_help = WebGUI::mass_replace(comp_help, ">", "&#62;");
+	comp_help = WebGUI::mass_replace(comp_help, "\n", "&#xD;&#xA;");
+
+	params._comp_help += comp_help;
+      }
       else if (strncmp(line.c_str(),"help:",5) == 0 || mode == "help:") {
 	//need to escape out '<' and '>'
 	string help;
@@ -410,9 +429,9 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  help = line;
 	}
 	mode = "help:";
+	help = WebGUI::mass_replace(help, "&", "&#38;");
 	help = WebGUI::mass_replace(help, "<", "&#60;");
 	help = WebGUI::mass_replace(help, ">", "&#62;");
-	help = WebGUI::mass_replace(help, " & ", " &#38; ");
 	help = WebGUI::mass_replace(help, "\n", "");
 
 	params._help += help;
@@ -484,6 +503,9 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       }
     }
     fclose(fp);
+  }
+  else {
+    return; //file does not exist return here
   }
 
   //infer end node from leaf

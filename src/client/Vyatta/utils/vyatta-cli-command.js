@@ -1,9 +1,53 @@
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
-function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr, 
+function f_sendSpecialCliCommand(cmd, segmentId, cb)
+{
+    var opCmdCb = function(options, success, response)
+    {
+        if(!f_isResponseOK(response))
+            return;
+
+        var xmlRoot = response.responseXML.documentElement;
+        var isSuccess = f_parseResponseError(xmlRoot);
+        var localSegmentId = (isSuccess[2] != undefined)?isSuccess[2]:null;
+
+        // segment is not end, continue to send
+        if(localSegmentId.indexOf('_end') < 0)
+        {
+            if(cmd.indexOf('host name') > 0 && isSuccess[1].length > 1)
+            {
+                g_baseSystem.m_hostname = isSuccess[1];
+                f_updateHostname();
+                return;
+            }
+
+            f_sendSpecialCliCommand(cmd, localSegmentId, cb);
+        }
+    }
+
+    /* send request */
+    var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+               + "<vyatta><command><id>" + f_getUserLoginedID()
+               + "</id>\n"
+               + "<statement mode='op'>"
+               + (segmentId == undefined? cmd : segmentId)
+               + "</statement>\n"
+               + "</command></vyatta>\n";
+
+    var conn = new Ext.data.Connection({});
+    conn.request(
+    {
+        url: '/cgi-bin/webgui-wrap',
+        method: 'POST',
+        xmlData: xmlstr,
+        callback: opCmdCb
+    });
+}
+
+function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
                                     forceSend, segmentId, treeObj, wildCard)
 {
     var narr = [ ];
@@ -53,10 +97,15 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
             sendStr += (c + ' ');
 
             if(headerStr.length > 1)
-                headerStr += '&nbsp;&rArr;&nbsp;';
+            {
+                if(Ext.isIE)
+                    headerStr += '&nbsp;&rarr;&nbsp;';
+                else
+                    headerStr += '&nbsp;&rArr;&nbsp;';
+            }
             headerStr += c;
         }
-        
+
         g_cliCmdObj.m_node = node;
         if(segmentId != undefined)
             sendStr = segmentId;
@@ -125,8 +174,8 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         {
             if(wildCard != undefined && typeof wildCard.setText == 'function')
             {
-                wildCard.setText('Stop');
                 wildCard.el.dom.className = V_WAIT_CSS;
+                wildCard.setText('Stop');
             }
             g_cliCmdObj.m_wildCard = wildCard;
         }
@@ -135,15 +184,9 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
             g_cliCmdObj.m_wildCard.text != undefined)
         {
             if(wildCard != undefined && typeof wildCard.setText == 'function')
-            {
-                var wc = g_cliCmdObj.m_wildCard;
-                wc.setText('Run');
-                wc.el.dom.className = V_STOP_CSS;
-                wc.m_pauseBtn.setText('Pause');
-                wc.m_pauseBtn.hide();
-            }
+                f_resetOperButton(g_cliCmdObj.m_wildCard);
         }
-        
+
 
         //////////////////////////////////////////////////////////
         // update editor view
@@ -162,8 +205,6 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
                + "<statement mode='op'>" + sendStr + "</statement>\n"
                + "</command></vyatta>\n";
 
-    g_cliCmdObj.m_newSegmentId = xmlstr.indexOf('multi_') >= 0 ? false : true;
-
 
     //////////////////////////////////////////////////////////////////
     // avoid to send a duplicate command again
@@ -180,6 +221,227 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
     });
 
     return xmlstr;
+}
+
+function f_saveConfFormCommandSentError(treeObj, response)
+{
+    if(!f_isResponseOK(response))
+            return;
+
+    var xmlRoot = response.responseXML.documentElement;
+    var isSuccess = f_parseResponseError(xmlRoot);
+    if(!isSuccess[0])
+    {
+        var err = [f_replace(isSuccess[1], "\r\n", "")+"<br>", treeObj.m_fdIndexSent-1];
+        g_cliCmdObj.m_errors[g_cliCmdObj.m_errors.length] = err;
+    }
+}
+
+function f_handleConfFormCommandDone(treeObj, node)
+{
+    if(treeObj.m_numSent > 0)
+    {
+        f_hideSendWaitMessage();
+        treeObj.m_isCommitAvailable = true;
+
+        var tree = treeObj.m_tree;
+
+        var onReloadHandler = function()
+        {
+            node.attributes.configured = 'set';
+            treeObj.f_HandleNodeConfigClick(node, null, undefined);
+
+            //////////////////////////////////////////////
+            // load it's childnode if is multi node is set
+            if(node.attributes.multi != undefined)
+                f_loadChildNode(treeObj, node);
+
+            f_handlePropagateParentNodes(node);
+            tree.un('load', onReloadHandler);
+            treeObj.m_parent.f_onTreeRenderer(treeObj);
+        }
+        tree.on('load', onReloadHandler);
+        node.reload();
+
+
+        for(var i=0; i<g_cliCmdObj.m_fdSent.length; i++)
+            f_handleFormIndicators(g_cliCmdObj.m_fdSent[i].m_node);
+
+        ///////////////////////////////////////////
+        // handler errors to display flag indicators & prompt user a err dialog
+        if(g_cliCmdObj.m_errors.length > 0)
+        {
+            var err="";
+            var form = treeObj.m_parent.m_editorPanel.m_formPanel;
+            for(var i=0; i<g_cliCmdObj.m_errors.length; i++)
+            {
+                err += g_cliCmdObj.m_errors[i][0];
+                var fp = form.items.item(g_cliCmdObj.m_errors[i][1]);
+                f_handleFieldError(fp.m_node);
+            }
+            f_promptErrorMessage('Changing configuration...', err);
+        }
+    }
+}
+
+function f_prepareConfFormCommandSend(treeObj)
+{
+    treeObj.m_fdIndexSent = 1;
+    treeObj.m_numSent = 0;
+    g_cliCmdObj.m_errors = [];
+    g_cliCmdObj.m_fdSent = [];
+
+    f_sendConfFormCommand(treeObj);
+}
+
+// DO NOT call this function before call f_prepareConfFormCommandSend()
+function f_sendConfFormCommand(treeObj)
+{
+    var confCmdCb = function(options, success, response)
+    {
+        f_saveConfFormCommandSentError(treeObj, response);
+
+        if(selNode.attributes.multi != undefined)
+            selNode.reload();
+
+        f_sendConfFormCommand(treeObj);
+    }
+
+    var form = treeObj.m_parent.m_editorPanel.m_formPanel;
+    var fp = form.items.item(treeObj.m_fdIndexSent++);
+    var selNode = treeObj.m_tree.getSelectionModel().getSelectedNode();
+    var selPath = selNode.getPath('text').replace(' Configuration', '');
+
+    /////////////////////////////
+    // done sending
+    if(fp.m_isSubmitBtn)
+    {
+        f_handleConfFormCommandDone(treeObj, selNode);
+        return;
+    }
+
+    var label = fp.items.item(V_IF_INDEX_LABEL);
+    var fd = fp.items.item(V_IF_INDEX_INPUT);
+    var type = fd.getXType();
+    if(type == 'panel')
+    {
+        fd = fd.m_fd;
+        type = fd.getXType();
+    }
+    var value = '';
+    if(selNode.attributes.multi != undefined)
+        label = '';
+    else
+      label = label.html.replace(":", " ");
+
+    ///////////////////////////////////////
+    // get field values
+    var cmds = [ ];
+    switch(type)
+    {
+        case 'textfield':
+            value = fd.getValue();
+            value = (value != undefined && value.indexOf != null &&
+                        value.indexOf(" ") > 0) ? "'"+value+"'" : value;
+            treeObj.m_fdSentVal = value;
+
+            /////////////////////////////////////
+            // skip this node
+            if(fd.getOriginalValue() == value)
+            {
+                f_sendConfFormCommand(treeObj);
+                return;
+            }
+
+            if(value.length == 0)
+                cmds = ['delete' + selPath + ' ' + label + value];
+            else
+                cmds = ['set' + selPath + ' ' + label + value];
+
+            fd.setOriginalValue(value);
+            break;
+        case 'numberfield':
+        case 'combo':
+            value = fd.getValue();
+            treeObj.m_fdSentVal = value;
+
+            /////////////////////////////////////
+            // skip this node
+            if(fd.getOriginalValue() == value)
+            {
+                f_sendConfFormCommand(treeObj);
+                return;
+            }
+
+            if(value.length == 0)
+                cmds = ['delete' + selPath + ' ' + label + value];
+            else
+                cmds = ['set' + selPath + ' ' + label + value];
+
+            fd.setOriginalValue(value);
+            break;
+        case 'editorgrid':
+            if(!f_isEditGridDirty(fp.m_store))
+            {
+                f_sendConfFormCommand(treeObj);
+                return;
+            }
+            value = f_getEditGridValues(fp.m_store);
+
+            ////////////////////////////////////////////
+            // make sure delete prev node before set
+            //if(node.valuesCount != undefined && node.valuesCount > 0)
+            cmds = [ 'delete ' + selPath + ' ' + label];
+            var jj = (cmds.length != undefined) ? cmds.length : 0;
+
+            for(var i=0; i<value.length; i++)
+                cmds[i+jj] = 'set ' + selPath + " " + label + value[i];
+            break;
+        case 'checkbox':
+            value =  fd.getValue();
+
+            /////////////////////////////////////
+            // skip this node
+            if(fd.getOriginalValue() == value)
+            {
+                f_sendConfFormCommand(treeObj);
+                return;
+            }
+
+            value = value != undefined && value ? 'enable':'disable';
+            cmds = ['set' + selPath + ' ' + label + value];
+            break;
+    }
+
+    var sid = f_getUserLoginedID();
+    f_saveUserLoginId(sid);
+
+    ///////////////////////////////////
+    // construction cmd xml string
+    var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                   + "<vyatta><command><id>" + sid + "</id>\n";
+
+    for(var i = 0; i < cmds.length; i++)
+        xmlstr += "<statement mode='conf'>" + cmds[i] + "</statement>\n";
+    xmlstr += "</command></vyatta>\n";
+
+    // show wait msg once only
+    if(treeObj.m_numSent == 0)
+        g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait('Changing configuration...',
+                                              'Configuration');
+
+    g_cliCmdObj.m_fdSent[g_cliCmdObj.m_fdSent.length] = fp;
+    g_cliCmdObj.m_segmentId = undefined;
+    treeObj.m_numSent++;
+
+    var conn = new Ext.data.Connection({});
+    conn.request(
+    {
+        url: '/cgi-bin/webgui-wrap',
+        method: 'POST',
+        xmlData: xmlstr,
+        callback: confCmdCb
+    });
 }
 
 function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
@@ -200,17 +462,16 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         {
             var err = f_replace(isSuccess[1], "\r\n", "<br>");
             f_promptErrorMessage('Changing configuration...', err);
-            
+
             /////////////////////////////////
             // handle input error
-            f_handleInputFieldError(node);
+            f_handleFieldError(node);
 
             ///////////////////////////////////////////
             // if commit error, flag error for tree
             if(cmds[0].indexOf('commit') < 0)
                 return;
         }
-
 
         var tree = tObj.m_tree;
         var selNode = tree.getSelectionModel().getSelectedNode();
@@ -264,9 +525,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         }
         else  // other things else
         {
-            if(node == undefined)
-                f_handleNodeExpansion(tObj, selNode, selPath, cmds);
-            else if(node.parentNode != undefined || selNode.parentNode != undefined)
+            if(node.parentNode != undefined || selNode.parentNode != undefined)
                 f_handleParentNodeExpansion(tObj, node, selNode, selPath, cmds, isCreate);
         }
     } // end of callback
@@ -320,6 +579,70 @@ function f_isResponseOK(response)
     return ret;
 }
 
+function f_handleNodeExpansion2(treeObj, selPath, node, doNotClear)
+{
+    var tree = treeObj.m_tree;
+
+    ////////////////////////////////////////////////////////
+    // refresh the editor panel on the selectioned node
+    var handler = function(narg)
+    {
+        tree.selectPath(selPath, 'text', function(success, sel)
+        {
+            var nnode = tree.getSelectionModel().getSelectedNode();
+            treeObj.f_HandleNodeConfigClick(nnode, null, false);
+        });
+
+        narg.un('expand', handler);
+    }
+
+    if(!f_isExpandableNode(node))
+        treeObj.m_parent.f_onTreeRenderer(treeObj);
+
+    if(node.expanded)
+        node.collapse();
+    node.on('expand', handler);
+    node.expand();
+}
+
+function f_loadChildNode(treeObj, node)
+{
+    var tree = treeObj.m_tree;
+    var selNode = node;
+
+    var onReloadChildHandler = function()
+    {
+        tree.selectPath(selNode.getPath('text'), 'text', function(success, sel)
+        {
+            var nnode = treeObj.m_tree.getSelectionModel().getSelectedNode();
+            treeObj.f_HandleNodeConfigClick(nnode, null, undefined);
+        });
+        tree.un('load', onReloadChildHandler);
+    }
+
+    var onReloadHandler = function()
+    {
+        if(node.hasChildNodes())
+        {
+            var n = node.firstChild;
+            while(n != undefined)
+            {
+                if(n.text == treeObj.m_fdSentVal)
+                {
+                    tree.on('load', onReloadChildHandler);
+                    selNode = n;
+                    n.reload();
+                    break;
+                }
+                n = n.nextSibling;
+            }
+        }
+        tree.un('load', onReloadHandler);
+    }
+
+    tree.on('load', onReloadHandler);
+    node.reload();
+}
 function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
 {
     var tree = treeObj.m_tree;
@@ -343,13 +666,13 @@ function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
             tree.selectPath(selPath, 'text', function(success, sel)
             {
                 var nnode = treeObj.m_tree.getSelectionModel().getSelectedNode();
-                treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
+                treeObj.f_HandleNodeConfigClick(nnode, null, undefined);
             });
         }
         else
         {
             tree.selectPath(selPath, 'text');
-            treeObj.f_HandleNodeConfigClick(last, null, undefined, treeObj);
+            treeObj.f_HandleNodeConfigClick(last, null, undefined);
         }
     }
 
@@ -375,11 +698,10 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
     treeObj.m_selNodePath = selPath;
     var p = node.parentNode;
     var doNotClear = false;
+    treeObj.m_isCommitAvailable = true;
 
     if(isCreate)
     {
-        treeObj.m_isCommitAvailable = true;
-
         ////////////////////////////////////////////////
         // if 'node' has not fresh from server, we flag
         // it as 'set' here to sync with server
@@ -392,30 +714,13 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
          * by the server.
          */
         f_handlePropagateParentNodes(node);
-        var skipClearChk = false;
-        if(node != undefined && typeof node.reload == 'function')
-        {
-            skipClearChk = true;
-            node.reload();
-        }
-        else if(selNode != undefined && typeof selNode.reload == 'function')
+        if(selNode != undefined && typeof selNode.reload == 'function')
             selNode.reload();
 
-        ////////////////////////////////////////////////////////
-        // if spath == scmd, creation is from push button, else
-        // creation is from input fields.
-        var spath = selPath.replace('Configuration', '');
-        var scmd = cmds[0].replace('set', '');
-        spath = f_replace(spath, ' ', '');
-        scmd = f_replace(scmd, ' ', '');
-        if(spath == scmd)
-        {
-            p = node;
-            selNode = p;
-            selPath = p.getPath('text');
-        }
-        else
-            doNotClear = skipClearChk ? doNotClear : true;
+        p = node;
+        selNode = p;
+        selPath = p.getPath('text');
+        treeObj.m_parent.f_cleanEditorPanel();
     }
     else if(cmds[0].indexOf("delete", 0) >= 0)
     {
@@ -427,42 +732,35 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         var sm = tree.getSelectionModel();
         sm.select(selNode.parentNode);
         treeObj.m_selNodePath = sm.getSelectedNode().getPath('text');
-        
         var nnode = sm.getSelectedNode();
-        selNode = nnode;
-        selPath = nnode.getPath('text');
-
+        
         if(nnode.attributes != undefined)
             nnode.attributes.configured = 'active_plus';
 
+        // if selected node is root, select the selNode
+        if(nnode.text.indexOf('Configuration') >= 0)
+        {
+            var sPath = selPath;
+            
+            var handleReload = function()
+            {
+                tree.selectPath(sPath, 'text', function(success, sel)
+                {
+                    var nnode = tree.getSelectionModel().getSelectedNode();
+                    treeObj.f_HandleNodeConfigClick(nnode, null, false);
+                });
+                tree.un('load', handleReload);
+            }
+            tree.on('load', handleReload);
+        }
+
+        selPath = nnode.getPath('text');
         nnode.reload();
-        treeObj.m_isCommitAvailable = true;
         f_handlePropagateParentNodes(nnode);
         treeObj.m_parent.f_onTreeRenderer(treeObj);
     }
 
-    ////////////////////////////////////////////////////////
-    // refresh the editor panel on the selectioned node
-    var handler = function(narg)
-    {
-        tree.selectPath(selPath, 'text', function(success, sel)
-        {
-            var nnode = tree.getSelectionModel().getSelectedNode();
-
-            if(!doNotClear)
-                treeObj.m_parent.f_cleanEditorPanel();
-            treeObj.f_HandleNodeConfigClick(nnode, null, undefined, treeObj);
-        });
-
-        narg.un('expand', handler);
-    }
-    if(!f_isExpandableNode(p))
-        treeObj.m_parent.f_onTreeRenderer(treeObj);
-    if(p.expanded)
-        p.collapse();
-    p.on('expand', handler);
-    p.expand();
-        
+    f_handleNodeExpansion2(treeObj, selPath, p, doNotClear);
 }
 
 function f_handlePropagateParentNodes(node)
@@ -476,12 +774,10 @@ function f_handlePropagateParentNodes(node)
         if(n.ui.elNode != undefined)
         {
             var inner = n.ui.elNode.innerHTML;
-            
+
             if(inner.indexOf(V_DIRTY_FLAG) < 0)
             {
                 var flag = V_IMG_EMPTY;
-                //var f = getNodeStyleImage(n, true);
-                //alert(n.text + '=' + f + '=' + n.attributes.configured)
                 switch(getNodeStyleImage(n, true))
                 {
                     case V_DIRTY_FLAG_ADD:
@@ -566,7 +862,7 @@ function f_parseResponseError(xmlRoot)
                 msg = "Additional configuration information is required.";
 
         }
-            
+
         if(msg == 'UNKNOWN')
             msg = '';
     }

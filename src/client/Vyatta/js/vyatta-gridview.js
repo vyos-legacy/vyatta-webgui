@@ -30,6 +30,23 @@ VYATTA_gridview = Ext.extend(Ext.grid.GridView,
     }
 });
 
+function f_setGridViewClear(field)
+{
+    var gv = field.getView();
+
+    for(var i=0; i<50; i++)
+    {
+        var row = gv.getRow(i);
+        //var rec = field.getStore().getAt(i);
+        var html = row.innerHTML;
+        //fd.getView().addRowClass(i, "v-textfield-submit");
+
+        //rec.error = false;
+        html = f_replace(html , 'x-grid3-modify-cell', '');
+        row.innerHTML = f_replace(html , 'x-grid3-error-cell', '');
+    }
+}
+
 function f_setGridViewError(inputField)
 {
     var gv = inputField.getView();
@@ -38,6 +55,6 @@ function f_setGridViewError(inputField)
     var rec = inputField.getStore().getAt(r);
     var html = row.innerHTML;
 
-    rec.error = true;
+    //rec.error = true;
     row.innerHTML = f_replace(html , 'x-grid3-modify-cell', 'x-grid3-error-cell');
 }

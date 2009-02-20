@@ -6,6 +6,7 @@
  */
 #include <string>
 #include <iostream>
+#include <ctype.h>
 #include <sys/types.h>
 #include <string.h>
 #include <dirent.h>
@@ -119,8 +120,15 @@ TemplateParams::get_xml(const string &value)
   }
 
   if (_help.empty() == false) {
-    out += "<help>" + _help + "</help>";
+    out += "<help>";
+    out += _help;
+    out += "</help>";
   }
+  /*
+  if (_comp_help.empty() == false) {
+    out += _comp_help;
+  }
+  */
 
   if (_default.empty() == false) {
     out += "<default>" + _default + "</default>";
@@ -412,10 +420,21 @@ Processor::set_response(WebGUI::Error err)
  *
  **/
 void
-Processor::set_response(WebGUI::Error err, std::string &msg)
+Processor::set_response(WebGUI::Error err, std::string &resp)
 {
+  //will need to optimize this, remove string iteration
+
+  //hook to remove control characters from response
+  string::iterator iter = resp.begin();
+  while (iter != resp.end()) {
+    if (iscntrl(*iter) != 0) {
+      *iter = ' ';
+    }
+    ++iter;
+  }
+
   _msg._error_code = err;
-  _msg._custom_error_msg = msg;
+  _msg._custom_error_msg = resp;
 }
 
 /**
@@ -424,6 +443,16 @@ Processor::set_response(WebGUI::Error err, std::string &msg)
 void
 Processor::set_response(std::string &resp)
 {
+  //will need to optimize this, remove string iteration
+
+  //hook to remove control characters from response
+  string::iterator iter = resp.begin();
+  while (iter != resp.end()) {
+    if (iscntrl(*iter) != 0 && (*iter != '\n' && *iter != '\t' && *iter != '\r')) {
+      *iter = ' ';
+    }
+    ++iter;
+  }
   _msg._custom_response = resp;
 }
 

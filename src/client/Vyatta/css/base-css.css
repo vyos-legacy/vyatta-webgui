@@ -79,12 +79,12 @@
 .v_wait_image .x-btn-text
 {
     background-image: url("../images/wait.gif");
-    margin-bottom:2px;
+    margin-bottom:1px;
 }
 .v_pause_image .x-btn-text
 {
     background-image: url("../images/done.gif");
-    margin-bottom:2px;
+    margin-bottom:1px;
 }
 
 .v_empty_image
@@ -92,18 +92,33 @@
     width: 52 !important;
 }
 
+#v-header-font
+{
+    color:#000000;
+    font-family:arial;
+    font-size:14px;
+    font-size-adjust:none;
+    font-style:normal;
+    font-variant:normal;
+    font-weight:bold;
+    line-height:15px;
+}
 .x-toolbar
 {
     border-color:#fff;
     border-style:none;
     border-width:0 0 0px 0;
     /*display: block;*/
-    padding:2px;
+    padding:0px;
     background:#fff url("../images/default/toolbar/bg.gif") repeat-x top left;
     position:relative;
     zoom:1;
 }
 
+#v-tab-configuration-disabled
+{
+    cursor:default;
+}
 
 #v_tab_table
 {
@@ -140,79 +155,72 @@
 {
     background: url('../images/show_tips_available.gif') no-repeat left !important;
     height: 18px !important;
-    width: 79px !important;
+    width: 95px !important;
     cursor:pointer;
-    left: 3px !important;
-    padding-left: 3px !important;
-    
+    left: 0px !important;
+    padding-left: 0px !important;
 }
 
 .v_help_button_hide
 {
     background:  url('../images/hide_tips_available.gif') no-repeat left !important;
     height: 18px !important;
-    width: 79px !important;
+    width: 92px !important;
     cursor:pointer;
     white-space: nowrap;
-    margin-bottom:38px;
 }
 
 .v_view_button
 {
-    background:  url('../images/view_available.gif') no-repeat left !important;
+    background:  url('../images/show_available.gif') no-repeat left !important;
     height: 18px !important;
-    width: 60px !important;
+    width: 72px !important;
     cursor:pointer;
     white-space: nowrap;
-    margin-bottom:38px;
 }
 
 .v_commit_button
 {
     background:  url('../images/commit_available.gif') no-repeat left !important;
     height: 18px !important;
-    width: 63px !important;
+    width: 84px !important;
     cursor:pointer;
     white-space: nowrap;
-    margin-bottom:38px;
 }
 .v_commit_button_no
 {
     background:  url('../images/commit_disabled.gif') no-repeat left !important;
     height: 18px !important;
-    width: 63px !important;
+    width: 84px !important;
     cursor:pointer;
+    cursor:default;
     white-space: nowrap;
-    margin-bottom:38px;
 }
 
 .v_load_button
 {
     background:  url('../images/load_available.gif') no-repeat left !important;
     height: 18px !important;
-    width: 60px !important;
+    width: 74px !important;
     cursor:pointer;
     white-space: nowrap;
-    margin-bottom:38px;
 }
 
 .v_save_button
 {
     background:  url('../images/save_available.gif') no-repeat left !important;
     height: 18px !important;
-    width: 56px !important;
+    width: 74px !important;
     cursor:pointer;
     white-space: nowrap;
-    margin-bottom:38px;
 }
 .v_save_button_no
 {
     background:  url('../images/save_disabled.gif') no-repeat left !important;
     height: 18px !important;
-    width: 56px !important;
+    width: 75px !important;
     cursor:pointer;
     white-space: nowrap;
-    margin-bottom:38px;
 }
 
 .v_undo_button
@@ -256,30 +264,54 @@
 {
     background:  url('../images/discard_available.gif') no-repeat left !important;
     height: 18px !important;
-    width: 68px !important;
+    width: 83px !important;
     cursor:pointer;
     white-space: nowrap;
-    margin-bottom:38px;
 }
 .v_discard_button_no
 {
     background:  url('../images/discard_disabled.gif') no-repeat left !important;
     height: 18px !important;
-    width: 68px !important;
+    width: 83px !important;
+    cursor:default;
+    white-space: nowrap;
+}
+.v-delete-button
+{
+    background:  transparent url('../images/delete.png') no-repeat left !important;
+    height: 22px !important;
+    width: 60px !important;
     cursor:pointer;
     white-space: nowrap;
-    margin-bottom:38px;
 }
+.v-create-button
+{
+    background:  transparent url('../images/create.png') no-repeat left !important;
+    height: 22px !important;
+    width: 60px !important;
+    cursor:pointer;
+    white-space: nowrap;
+}
+/*
+.x-toolbar .xbtn-over .x-btn-left
+{
+    background: url(../images/tb-btn-sprite.gif) no-repeat 0 2px !important;
+}
+.x-btn-over .tbButton .x-btn-left { background: none; }
+.x-btn-over .tbButton .x-btn-right { background: none; }
+*/
 
 /******************************************************************************/
 /*  body */
 .x-grid3-modify-cell
 {
-    background: transparent url('../images/grid_modify.gif') no-repeat 0 0;
+    background: transparent url('../images/empty.gif') no-repeat 0 0;
+    background-color: #ffff99 !important;
 }
 .x-grid3-error-cell
 {
     background: transparent url('../images/grid_error.gif') no-repeat 0 0;
+    background-color: #fff;
 }
 
 .v-data-panel-body
@@ -312,6 +344,15 @@ body
     color: #666;
 }
 
+.v-textfield-unsubmit
+{
+  background-color: #ffff99 !important;
+  background-image:none ! important;
+}
+.v-textfield-submit
+{
+  background-color: #fff !important;
+}
 .v-panel-with-background-color .x-panel-body
 {
     background-color:#fff !important;
@@ -378,7 +419,57 @@ body
     border-style: none;
     background-color: #fff;
     border-top: none;
+    border-bottom: none;
 }
+.v-border-bottom
+{
+    border: 2 none;
+    border-style: none;
+    background-color: #fff;
+    border-top: none;
+    border-bottom: solid 2px #e8e8e8 !important;
+}
+.v-border-top
+{
+    border: 2 none;
+    border-style: none;
+    background-color: #fff;
+    border-bottom: none;
+    border-top: solid 2px #e8e8e8 !important;
+}
+.v-border-top
+{
+    border: 2 none;
+    border-style: none;
+    background-color: #fff;
+    border-bottom: none;
+    border-top: solid 2px #e8e8e8 !important;
+}
+.v-bg-yellow .x-panel-body
+{
+    background-color: #ffff99 !important;
+}
+.v-bg-white .x-panel-body
+{
+    background-color: #fff !important;
+}
+.v-panel-float-right
+{
+    float: right !important;
+}
+.v-panel-tbar .x-toolbar
+{
+  border-top: none !important;
+  border-right: none;
+  border-left: none;
+  border-bottom: 2px solid #e8e8e8 !important;
+}
+.x-panel-noborder .x-panel-tbar-noborder .x-toolbar
+{
+    border-width:0;
+    border-bottom:1px solid #fff;
+}
+
 .v-node-nocfg {
   font-size: 13px;
   font-weight: normal;

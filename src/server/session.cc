@@ -98,7 +98,7 @@ Session::process_message()
        here and nowhere else, as this is the only command that
        creates new sessions.
     */
-    //    clean_up_old_sessions();
+    clean_up_old_sessions();
 
     switch (msg._type) {
     case WebGUI::NEWSESSION:

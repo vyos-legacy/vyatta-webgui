@@ -81,6 +81,12 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
                 f_handleHelpButtonClick(this, this.m_helpTipButton, false);
 
             this.m_treeObj.f_setThisTreeObj(this.m_treeObj);
+
+            //////////////////////////////////
+            // end background segment process.
+            g_cliCmdObj.m_segmentId = 'tabChanged';
+            f_resetOperButton(this.m_treeObj.m_runButton);
+
             this.m_parentPanel.show();
             this.f_resizePanels();
         }
@@ -145,6 +151,8 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             if(ePanel.items != undefined && ePanel.items.itemAt(0) != undefined)
                 ePanel.items.itemAt(0).setSize(w-lp.width-25, h-5);
 
+            //////////////////////////////////////
+            // oper text output panel
             if(ePanel.m_opTextArea != undefined)
                 ePanel.m_opTextArea.setSize(w-lp.width-30,
                     h-ePanel.m_opTextArea.m_heightOffset);
@@ -163,14 +171,14 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         {
             autoWidth: true
             ,layout: 'column'
-            ,height: 26
+            ,height: 30
             ,boder: false
             ,bodyBorder: false
             ,bodyStyle: 'padding: 2px'
             ,cls: 'v-panel-with-background-color'
             ,items: items
         });
-        topPanel.height = 26;
+        topPanel.height = 30;
         topPanel.cbpanel = cbpanel;
 
         var tp = this.m_toolbar;
@@ -214,7 +222,6 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         this.f_createEditorPanel();
         this.m_editorPanel.setSize(500, 250);
 
-        //var showBorder = (panelName == 'login') ? undefined : 'v-data-panel-body';
         return new Ext.Panel(
         {
             border: false
@@ -281,9 +288,8 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
     {
         if(this.f_getEditorItemCount() > 0)
         {
-            var ep = this.m_editorPanel;
-            var eFormPanel = ep.items.itemAt(0);
-            return eFormPanel.items.itemAt(0).title;
+            var ef = this.m_editorPanel.m_formPanel;
+            return ef.m_title;
         }
 
         return '';
@@ -361,11 +367,20 @@ function f_createFieldDirtyIndicatorPanel(node)
     return p;
 }
 
-function f_createNumberField(value, node, help, width, callback, mode)
+function f_handleFieldTab(field)
+{
+    if(field.m_nextFd != undefined && field.m_nextFd.getXType() == 'editorgrid')
+        field.m_nextFd.startEditing(0,0);
+}
+function f_createNumberField(treeObj, value, node, help, width, callback, mode)
 {
     var oldVal = value != undefined ? value : node.attributes.defaultVal;
     var label = node.text;
 
+    var onBlurHandler = function()
+    {
+        callback(field);
+    }
     var field = new Ext.form.NumberField(
     {
         width: width,
@@ -375,9 +390,9 @@ function f_createNumberField(value, node, help, width, callback, mode)
         maxValue: (Math.pow(2, 32) - 1),
         maskRe: /^\d+$/,
         value: oldVal,
-        //onChange: keyupPressHandler//function(e, n, o){ },
         enableKeyEvents: true
-        ,onBlur: mode == undefined ? callback : undefined
+        ,onBlur: mode == undefined ? onBlurHandler : undefined
+        ,invalidClass: ""
     });
     field.getOriginalValue = function()
     { return oldVal == undefined ? "" : oldVal; };
@@ -388,9 +403,13 @@ function f_createNumberField(value, node, help, width, callback, mode)
     {
         var keyupPressHandler = function(field, e)
         {
-            f_enterKeyPressHandler(field, e, callback);
+            if(e.getKey() == 9)
+                f_handleFieldTab(field);
+
+            if(e.getKey() == 13)
+                f_prepareConfFormCommandSend(treeObj);
         }
-        field.on('keyDown', keyupPressHandler);
+        field.on('keydown', keyupPressHandler);
     }
 
     help = node.attributes.type != undefined ? help+
@@ -408,13 +427,20 @@ function f_createNumberField(value, node, help, width, callback, mode)
                   , V_LABEL_HELP) ]
     });
     p.m_node = node;
+    node.m_inputPanel = p;
 
     return p;
 }
 
-function f_createTextField(value, labelStr, helpStr, width, callback, node, mode)
+function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, node, mode)
 {
     var oldVal = value != undefined ? value : node.attributes.defaultVal;
+
+    var onBlurHandler = function()
+    {
+        callback(field);
+    }
+
     var field = new Ext.form.TextField(
     {
         labelSeparator: ''
@@ -422,10 +448,10 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node, mode
         ,height:22
         ,value: oldVal
         ,enableKeyEvents: true
-        ,onBlur: mode == undefined ? callback : undefined
+        ,onBlur: mode == 'confMode' ? onBlurHandler : undefined
     });
     field.m_mode = mode;
-    field.getOriginalValue = function() 
+    field.getOriginalValue = function()
     { return oldVal == undefined ? "" : oldVal; };
     field.setOriginalValue = function(val)
     { oldVal = val; }
@@ -434,9 +460,15 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node, mode
     {
         var keyupPressHandler = function(field, e)
         {
-            f_enterKeyPressHandler(field, e, callback);
+            if(e.getKey() == 9)
+                f_handleFieldTab(field);
+
+            if(e.getKey() == 13 && mode == 'opMode')
+                callback.call();
+            else if(e.getKey() == 13 && mode == 'confMode')
+                f_prepareConfFormCommandSend(treeObj);
         }
-        field.on('keyup', keyupPressHandler);
+        field.on('keydown', keyupPressHandler);
     }
 
     helpStr = node.attributes.type != undefined ? helpStr+
@@ -460,7 +492,7 @@ function f_createTextField(value, labelStr, helpStr, width, callback, node, mode
 }
 
 function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
-                            isEditable, callback, node)
+                            isEditable, callback, node, treeObj)
 {
     var oldiVal = ival != undefined ? ival : node.attributes.defaultVal;
     var field = new Ext.form.ComboBox(
@@ -469,7 +501,7 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
         mode: 'local',
         store: values,
         displayField: 'value',
-        emptyText: emptyText,
+        emptyText: '',//emptyText,
         labelSeparator: '',
         editable: isEditable,
         triggerAction: 'all',
@@ -483,8 +515,22 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
     field.setOriginalValue = function(val)
     { oldiVal = val; }
 
+    var onCollapseHandler = function()
+    {
+        callback(field);
+    }
+    var onKeyHandler = function(f, e)
+    {
+        if(e.getKey() == 9)
+            f_handleFieldTab(f);
+
+        if(e.getKey() == 13)
+            f_prepareConfFormCommandSend(treeObj);
+    }
     if(callback != undefined)
-        field.on('collapse', callback);
+        field.on('collapse', onCollapseHandler);
+
+    field.on('specialkey', onKeyHandler);
 
     ////////////////////////////////////////
     // for some reasons, a combo box must
@@ -498,6 +544,7 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
         ,border: false
         ,items: [field]
     });
+    fPanel.m_fd = field;
 
     var p = new Ext.Panel(
     {
@@ -510,6 +557,7 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
                   f_createLabel(helpStr, V_LABEL_HELP) ]
     });
     p.m_node = node;
+    node.m_inputPanel = p;
 
     return p;
 }
@@ -525,16 +573,37 @@ function f_createCheckbox(value, node, helpStr, width, callback)
     var labelStr = node.text;
     var chk = f_getValueForCheckbox(oldVal);
 
+    var onClickHandler = function()
+    {
+        field.setValue(!field.getValue());
+
+        if(field.getValue() == f_getValueForCheckbox(oldVal))
+            field.reset();
+
+        callback(field);
+    }
     var field = new Ext.form.Checkbox(
     {
         style: 'anchor: 0%, text-align:right, padding:20px'
         ,checked: chk
-        ,onClick: callback
+        ,onClick: onClickHandler
+        ,bodyStyle: 'padding:0px 0px 3px 0px'
     });
     field.getOriginalValue = function()
-    { return !field.getValue() };
+    { return chk };
     field.setOriginalValue = function(val)
     { oldVal = val; }
+
+    var wrapPanel = new Ext.Panel(
+    {
+        border: false
+        ,cls: 'v-bg-white'
+        ,bodyStyle: 'padding:0px 2px 2px 3px'
+        ,items:[field]
+        ,width: 18
+        ,height: 22
+    });
+    field.m_wp = wrapPanel;
 
     //////////////////////////////////////////////
     // need this panel to align the help labels
@@ -542,8 +611,10 @@ function f_createCheckbox(value, node, helpStr, width, callback)
     {
         width: width+1
         ,border: false
-        ,items: [field]
+        ,bodyStyle: 'padding:0px 1px 3px 0px'
+        ,items: [wrapPanel]
     });
+    fPanel.m_fd = field;
 
     var p = new Ext.Panel(
     {
@@ -556,11 +627,12 @@ function f_createCheckbox(value, node, helpStr, width, callback)
                   f_createLabel(helpStr, V_LABEL_HELP) ]
     });
     p.m_node = node;
+    node.m_inputPanel = p;
 
     return p;
 }
 
-function f_isPanelEmpty(panel)
+function f_isPanelEmpty(panel, mode)
 {
     if(panel.items != undefined && panel.items.getCount() > 0)
         return false;
@@ -579,19 +651,30 @@ function f_handleHelpButtonClick(panel, helpbutton, saveCookie)
         panel.m_editorPanel.items == undefined) return;
 
     var fPanel = panel.m_editorPanel.items.itemAt(0);
+    var hState = f_getHelpTipsState();
     for(var i=0; i<fPanel.items.getCount(); i++)
     {
         var rPanel = fPanel.items.itemAt(i);
         if(rPanel == undefined) return;
 
-        var helpLabel = rPanel.items == undefined ? undefined :
-                        rPanel.items.itemAt(panel.m_helpIndex);
-        if(helpLabel != undefined)
+        if(rPanel.m_helpLabel != undefined)
         {
-            if(f_getHelpTipsState() == V_HELP_OFF)
-                helpLabel.show();
+            if(hState == V_HELP_OFF)
+                rPanel.m_helpLabel.show();
             else
-                helpLabel.hide();
+                rPanel.m_helpLabel.hide();
+        }
+        else
+        {
+            var helpLabel = rPanel.items == undefined ? undefined :
+                            rPanel.items.itemAt(panel.m_helpIndex);
+            if(helpLabel != undefined)
+            {
+                if(hState == V_HELP_OFF)
+                    helpLabel.show();
+                else
+                    helpLabel.hide();
+            }
         }
     }
 }
@@ -649,9 +732,9 @@ function f_createToolbar(panelObj)
         [ '->',
           helpTipButton,
           '-',
-          panelObj.m_viewBtn = f_createToolbarButton('v_view_button', 
+          panelObj.m_viewBtn = f_createToolbarButton('v_view_button',
                 'view', panelObj.m_treeObj, 'Show configuration file'),
-          panelObj.m_loadBtn = f_createToolbarButton('v_load_button', 
+          panelObj.m_loadBtn = f_createToolbarButton('v_load_button',
                 'load', panelObj.m_treeObj, 'Reload system'),
           panelObj.m_saveBtn = f_createToolbarButton('v_save_button',
                 'save', panelObj.m_treeObj, 'Save configuration to file'),
@@ -672,7 +755,7 @@ function f_createToolbar(panelObj)
 
     return new Ext.Panel(
     {
-        margins: '5 5 5 0'
+        margins: '5 5 5 5'
         ,bodyStyle: 'padding:10px 2% 0px 2%'
         ,cls: 'v-border-less'
         ,collapsible: false
@@ -693,7 +776,7 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
         ,iconCls: iconCls
         ,id: cmdName
         ,tooltip: tooltip
-        ,handler: function() 
+        ,handler: function()
         {
             if(cmdName == 'save' || cmdName == 'load')
             {
@@ -712,7 +795,7 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
                 }
                 else if(cmdName == 'view')
                     sendCmd = 'show configuration';
-                
+
                 f_sendOperationCliCommand(null, null, false, sendCmd,
                                           true, undefined, treeObj, supportCmd);
             }
@@ -855,11 +938,13 @@ function f_updateToolbarButtons(tree)
 
     if(m.m_commitBtn != undefined)
         tree.m_parent.m_commitBtn.setIconClass(tree.m_isCommitAvailable ?
-                        'v_commit_button' : 'v_commit_button_no');
+                        'v_commit_button' :
+                        'v_commit_button_no x-toolbar x-item-disabled');
 
     if(m.m_discardBtn != undefined)
         tree.m_parent.m_discardBtn.setIconClass(tree.m_isCommitAvailable ?
-                        'v_discard_button' : 'v_discard_button_no');
+                        'v_discard_button' :
+                        'v_discard_button_no x-toolbar x-item-disabled');
 
     if(m.m_undoBtn != undefined)
         tree.m_parent.m_undoBtn.setIconClass(tree.m_isCommitAvailable ?
@@ -883,17 +968,38 @@ function f_handleToolbarViewCmdResponse(responseTxt)
     f_showConfigurationViewDialog(responseTxt);
 }
 
+function f_addConfiSetButton(treeObj, node, editorPanel)
+{
+    var ePanel = editorPanel;
+    var eForm = ePanel.m_formPanel;
+
+    if(eForm.m_subBtn == null && eForm.items != undefined &&
+        eForm.items.getCount() > 1)
+    {
+        var btn = f_createConfSubButton(treeObj)
+        f_addField2Panel(ePanel, btn, node, V_TREE_ID_config);
+        eForm.m_subBtn = btn.m_buttons;
+    }
+
+    if(eForm.m_count == 0 && eForm.items != undefined)
+    {
+        eForm.doLayout();
+        f_linkFormField(eForm);
+        eForm.m_count = eForm.items.getCount();
+    }
+}
 //////////////////////////////////////////////////////////////////
 // if fields are already in panel, update it and return false. else
 // do nothing and return true
-function f_updateFieldValues2Panel(editorPanel, fields, node)
+function f_updateFieldValues2Panel(editorPanel, fields, node, mode)
 {
-    if(editorPanel == undefined || f_isPanelEmpty(editorPanel) || fields == undefined)
+    if(editorPanel == undefined || f_isPanelEmpty(editorPanel, mode) ||
+            fields == undefined)
         return true;
 
-    var eFormPanel = editorPanel.items.itemAt(0);
+    var eFormPanel = editorPanel.m_formPanel;
 
-    if(eFormPanel.items == undefined) return true;
+    if(eFormPanel == undefined || eFormPanel.items == undefined) return true;
     var len = eFormPanel.items.getCount();
 
     ///////////////////////////////
@@ -906,63 +1012,17 @@ function f_updateFieldValues2Panel(editorPanel, fields, node)
             var label = f.items.itemAt(V_IF_INDEX_LABEL);
             var cLabel = fields.items.itemAt(V_IF_INDEX_LABEL);
 
+            //////////////////////////////
+            // if true, we updating the button fields
+            if(fields.m_buttons != undefined && f.m_buttons != undefined)
+                return false;   // button fields already exist.
+
             ///////////////////////////////////////////////////////
             // if the below statement is true, the fields already
-            // exist. Update the dirty flag and values if neccessary
+            // exist.
             if(label != undefined && label.getXType() == 'label' &&
                 label.html == cLabel.html)
-            {
-                ////////////////////////////////////////
-                // handle field dirty indicator
-                var nodeVals = node.attributes.values;
-                if(node.attributes.configured == 'set' ||
-                    node.attributes.configured_ == 'active_plus')
-                {
-                    if(getNodeStyleImage(node, false).length > 1)
-                    {
-                        var dField = f.items.item(V_IF_INDEX_DIRTY);
-                        f_updateDirtyIndicatorPanel(dField, false);
-                        dField.f_show();
-                    }
-
-                    ///////////////////////////////////////////
-                    // update input field value
-                    var updateF = f.items.itemAt(V_IF_INDEX_INPUT);
-                    if(updateF.items != undefined)
-                    {
-                        var input = updateF.items.itemAt(0);
-                        
-                        if(input.getXType() == 'checkbox')
-                        {
-                            var newVal = nodeVals[1] != undefined?nodeVals[1]:
-                                nodeVals[0];
-                            input.setValue(f_getValueForCheckbox(newVal));
-                        }
-                    }
-                    else if(updateF.getXType() == 'numberfield' ||
-                        updateF.getXType() == 'textfield')
-                    {
-                        updateF.setValue(nodeVals);
-                    }
-                }
-                else if(node.attributes.configured == 'active')
-                {
-                    var updateF = f.items.itemAt(V_IF_INDEX_INPUT);
-                    if(updateF.items != undefined)
-                    {
-                        var input = updateF.items.itemAt(0);
-
-                        if(input.getXType() == 'checkbox')
-                        {
-                            var newVal = nodeVals[1] != undefined?nodeVals[1]:
-                                nodeVals[0];
-                            input.setValue(f_getValueForCheckbox(newVal));
-                        }
-                    }
-                }
-
                 return false;
-            }
             ///////////////////////////////////////
             // if true, let handle the button issue
             else if(label != undefined && label.getXType() == 'button')
@@ -981,18 +1041,18 @@ function f_updateFieldValues2Panel(editorPanel, fields, node)
     return true;
 }
 
-function f_addField2Panel(editorPanel, fields, node, row)
+function f_addField2Panel(editorPanel, fields, node, mode)
 {
     ////////////////////////////////////////////////////
     // let find out if the fields are already existed
     // in editor. If they are, then update the values,
     // else add them to editor panel.
-    if(!f_updateFieldValues2Panel(editorPanel, fields, node)) return;
+    if(!f_updateFieldValues2Panel(editorPanel, fields, node, mode)) return;
 
     if(editorPanel != undefined && fields != undefined &&
-        !f_isPanelEmpty(editorPanel))
+        !f_isPanelEmpty(editorPanel, mode))
     {
-        var eFormPanel = editorPanel.items.itemAt(0);
+        var eFormPanel = editorPanel.m_formPanel;
 
         ///////////////////////////////////////////////
         // all button should add right after the title
@@ -1003,27 +1063,74 @@ function f_addField2Panel(editorPanel, fields, node, row)
         else
             eFormPanel.add(fields);
 
-        eFormPanel.doLayout();
+        if(fields != undefined && fields.items != undefined)
+        {
+            ///////////////////////////////////////
+            // set focus field
+            var ifield = fields.items.itemAt(V_IF_INDEX_INPUT);
+            if(ifield != undefined)
+            {
+                var type = ifield.getXType();
+                if(type == 'panel')
+                {
+                    ifield = ifield.m_fd;
+                    type = ifield.getXType();
+                }
+
+                if(mode == V_TREE_ID_config)
+                {
+                    if(eFormPanel.items.getCount() == 2)
+                    {
+                        ifield.focus(true, 500);
+                        ifield.tabIndex = 0;
+                    }
+                }
+                else if(mode == V_TREE_ID_oper)
+                {
+                    if(eFormPanel.items.getCount() == 2)
+                    {
+                        ifield.focus(true, 500);
+                        ifield.tabIndex = 0;
+                    }
+                }
+            }
+        }
     }
     else  // editor panel is empty. create a form and add fields into it
     {
-        var fieldP = new Ext.form.FormPanel(
+        var dummy = new Ext.form.Label(
+        {
+            html: '&nbsp;'
+            ,position: 'fixed'
+        });
+        var items = mode == V_TREE_ID_oper ? null : [dummy];
+
+        var form = new Ext.form.FormPanel(
         {
             fieldLabel: node != undefined ? node.text : undefined
             ,autoScroll: true
             ,autoHeight: false
             ,bodyBorder: false
             ,align: 'center'
-            ,items: fields
+            ,tbar: fields
+            ,cls: 'v-panel-tbar'
+            ,items: items
         });
+        form.m_subBtn = null;
+        form.m_count = 0;
+        form.dummy = dummy;
+        form.m_title = fields.m_title;
 
-        editorPanel.add(fieldP);
-        fieldP.setSize(editorPanel.getSize().width, editorPanel.getSize().height-7);
+        editorPanel.add(form);
+        editorPanel.m_formPanel = form;
+        form.setSize(editorPanel.getSize().width, editorPanel.getSize().height-7);
     }
 
     if(f_getHelpTipsState() == V_HELP_ON)
     {
-        if(fields.items != undefined)
+        if(fields.m_helpLabel != undefined)
+            fields.m_helpLabel.hide();
+        else if(fields.items != undefined)
         {
           var helpLabel = fields.items.itemAt(V_IF_INDEX_TIP);
           if(helpLabel != undefined)
@@ -1032,21 +1139,40 @@ function f_addField2Panel(editorPanel, fields, node, row)
     }
 }
 
-function f_insertField2Panel(editorPanel, fields, labelTxt, index, check4Exist)
+function f_linkFormField(form)
 {
-    if(!check4Exist)
-        editorPanel.insert(index, fields);
-    else
+    if(form.items == undefined) return;
+
+    for(var i=1; i<form.items.getCount(); i++)
     {
-        var f = editorPanel.items.itemAt(0);
-        if(f.getXType() == 'panel' && f.title != undefined &&
-            fields.title != undefined)
-            f.title = fields.title;
-        else
-            editorPanel.insert(index, fields);
+        if(form.items.itemAt(i).items != undefined)
+        {
+            var fd = form.items.itemAt(i).items.itemAt(V_IF_INDEX_INPUT);
+            if(fd != undefined)
+            {
+                var nextFd = form.items.itemAt(i+1);
+                if(nextFd != undefined && nextFd.items != undefined)
+                {
+                    nextFd = nextFd.items.itemAt(V_IF_INDEX_INPUT);
+                    if(nextFd != undefined)
+                        fd.m_nextFd = nextFd;
+                }
+            }
+        }
     }
 }
 
+function f_isEditGridDirty(gridStore)
+{
+    for (var i = 0; i < gridStore.getCount(); i++)
+    {
+        var rec = gridStore.getAt(i);
+        if(rec.dirty)
+            return true;
+    }
+
+    return false;
+}
 function f_getEditGridValues(gridStore)
 {
     var ret = [ ];
@@ -1062,7 +1188,8 @@ function f_getEditGridValues(gridStore)
     return ret;
 }
 
-function f_createEditGrid(values, gridStore, record, node, helpLabel, width, callback)
+function f_createEditGrid(values, gridStore, record, node, 
+                          helpLabel, width, callback, treeObj)
 {
     var label = node.text;
 
@@ -1076,7 +1203,30 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
     for(var i=0; i<50-count; i++)
         gridStore.loadData([ '' ], true);
 
+    if(callback != undefined)
+    {
+        var keypressHandler = function(e)
+        {
+            if(e.getKey() == 13)
+                f_prepareConfFormCommandSend(treeObj);
+        }
+    }
+    var tf = new Ext.form.TextField(
+    {
+        listeners:
+        {
+            render: function(c)
+            {
+                c.getEl().on({
+                keydown: keypressHandler
+                ,scope: c
+                });
+            }
+        }
+    });
+
     var gv = new VYATTA_gridview();
+    var sm = new Ext.grid.RowSelectionModel({ singleSelect: true });
     var grid = new Ext.grid.EditorGridPanel(
     {
         store: gridStore,
@@ -1084,9 +1234,10 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
         border: true,
         autoScroll: true,
         clicksToEdit: 1,
+        enableHdMenu: false,
         width: width,
-        height: 200,
-        sm: new Ext.grid.RowSelectionModel({ singleSelect: true }),
+        height: 180,
+        sm: sm,
         stripeRows: true,
         view: gv,
         columns:
@@ -1096,11 +1247,12 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
             width: width-20,
             sortable: false,
             dataIndex: 'value',
-            editor: new Ext.form.TextField({ })
+            editor: tf
           }
         ]
     });
-    grid.on('afteredit', callback );
+    grid.on('afteredit', callback);
+    grid.m_textField = tf;
 
     helpLabel = node.attributes.type != undefined ? helpLabel+
                   " ("+node.attributes.type+")" : helpLabel;
@@ -1121,7 +1273,7 @@ function f_createEditGrid(values, gridStore, record, node, helpLabel, width, cal
     return p;
 }
 
-function f_createEditorTitle(node, title)
+function f_createConfEditorTitle(node, btnPanel)
 {
     var titleName = '';
 
@@ -1135,20 +1287,81 @@ function f_createEditorTitle(node, title)
             if(n.text != 'Configuration')
             {
                 titleName =  n.text + arrow + titleName;
-                arrow = '&nbsp;&rArr;&nbsp;';
+                if(Ext.isIE)
+                    arrow = '&nbsp;&rarr;&nbsp;';
+                else
+                    arrow = '&nbsp;&rArr;&nbsp;';
             }
             n = n.parentNode;
         }
     }
-    else
-        titleName = title;
 
-
-    return new Ext.Panel(
+    var title  = new Ext.Panel(
     {
-        title: titleName
+        html: '<div valian="center" id="v-header-font"><b>' +
+                  titleName + '</b></div>'
+        ,position: 'fixed'
+        ,cls: 'v-border-less'
+        ,border: false
+        ,bodyStyle: 'padding: 10px 5px 5px 5px'
+    });
+    var items = btnPanel != null ? [title, "->", btnPanel] : [title];
+    items.m_title = titleName;
+
+    return items;
+}
+
+function f_createOperEditorTitle(title)
+{
+    var panel = new Ext.Panel(
+    {
+        title: title
         ,height: 0
     });
+    panel.m_title = title;
+
+    return panel;
+}
+
+function f_createConfSubButton(treeObj)
+{
+    var buttons = [ ];
+    var btn_id = Ext.id();
+
+    buttons[0] = new Ext.Button(
+    {
+        id: btn_id
+        ,text: 'Set'
+        ,tooltip: 'Set configuration'
+        ,height: 20
+        ,minWidth: 60
+        ,handler: function()
+        {
+            f_prepareConfFormCommandSend(treeObj);
+        }
+    });
+
+    var bPanel = new Ext.Panel(
+    {
+        buttons: buttons
+        ,bodyStyle: 'padding: 0px'
+        ,border: false
+        ,height: 0
+        ,buttonAlign: 'right'
+    });
+
+    var panel = new Ext.Panel(
+    {
+        buttons: [bPanel]
+        ,border: false
+        ,bodyStyle: 'padding: 0px'
+        ,height: 0
+        ,width: 550
+    });
+    panel.m_buttons = buttons;
+    panel.m_isSubmitBtn = true;
+
+    return panel;
 }
 
 function f_createConfButton(treeObj, node, btnText, title)
@@ -1157,6 +1370,7 @@ function f_createConfButton(treeObj, node, btnText, title)
     var btn_id = Ext.id();
     var cmd = '';
     var isDelete = false;
+    var iconCls = 'v-delete-button';
 
     if(btnText == 'Delete')
         cmd = 'delete ';
@@ -1164,33 +1378,34 @@ function f_createConfButton(treeObj, node, btnText, title)
     {
         cmd = 'set ';
         isDelete = true;
+        iconCls = 'v-create-button';
     }
 
-    title = f_replace(title, '&rArr;', '');
-    title = f_replace(title, 'Configuration&nbsp;', '');
+    var imgButtonTpl = new Ext.Template(
+        '<table border="0" cellpadding="0" cellspacing="0" class="x-btn-wrap"><tbody><tr>' +
+        '<td class="x-btn-left"><i>&amp; </i></td><td class="x-btn-center">' +
+        '<button type="button"><img src="../images/delete.png"></button>' +
+        '</td><td class="x-btn-right"><i> </i></td>' +
+        '</tr></tbody></table>');
+
     buttons[0] = new Ext.Button(
     {
         id: btn_id
-        ,text: btnText
-        ,tooltip: btnText + ' ' + title
+        //,template: imgButtonTpl
+        ,text: ''
+        ,iconCls: iconCls
+        ,tooltip: btnText + ' configuration node'
         ,handler: function()
         {
             f_sendConfigCLICommand([cmd + treeObj.f_getNodePathStr(node) ],
                                     treeObj, node, isDelete);
         }
     });
+    buttons[0].on('mouseover', function(){});
+    buttons[0].on('mouseout', function(){alert('out')});
+    buttons.m_buttons = buttons;
 
-    return new Ext.Panel(
-    {
-        items: buttons
-        ,border: false
-        ,bodyStyle: 'padding: 6px 2px 10px 8px'
-        ,height: 55
-        ,html: '<b>' + btnText + '</b> - ' + title + 
-                '&nbsp;&nbsp;&nbsp;'+
-                '<br><hr class="hr-editor">'
-                 
-    });
+    return buttons;
 }
 
 function f_handleOperBtnClick(button, node, treeObj)
@@ -1230,24 +1445,37 @@ function f_handleOperBtnClick(button, node, treeObj)
     }
 }
 
+function f_resetOperButton(btn)
+{
+    if(btn != null)
+    {
+        btn.setText('Run');
+        btn.el.dom.className = V_STOP_CSS;
+        btn.m_pauseBtn.setText('Pause');
+        btn.m_pauseBtn.hide();
+    }
+}
+
 function f_createOperButton(treeObj, node, btnText, title)
 {
     var buttons = [ ];
     var btn_id = Ext.id();
 
-    title = f_replace(title, '&rArr;', '');
+    if(Ext.isIE)
+        title = f_replace(title, '&rarr;&nbsp;', '');
+    else
+        title = f_replace(title, '&rArr;&nbsp;', '');
     title = f_replace(title, 'Configuration&nbsp;', '');
-    title = f_replace(title, '<', '&#60;');
-    title = f_replace(title, '>', '&#62;');
     buttons[0] = new Ext.Button(
     {
         id: btn_id
         ,text: btnText
         ,cls: V_STOP_CSS
         ,tooltip: btnText + ' ' + title
-        ,minWidth: 52
-        ,width:55
-        ,height: 20
+        ,minWidth: 58
+        ,width:60
+        ,minHeight: 22
+        ,height: 22
         ,handler: function()
         {
             f_handleOperBtnClick(this, node, treeObj)
@@ -1263,25 +1491,26 @@ function f_createOperButton(treeObj, node, btnText, title)
             ,tooltip: "Pause and resume continue respond data."
             ,minWidth: 65
             ,width:68
-            ,height: 20
+            ,height: 22
             ,handler: function()
             {
                 if(this.text == 'Pause')
                 {
+                    buttons[0].el.dom.className = V_PAUSE_CSS;
                     this.setText('Resume');
                     g_cliCmdObj.m_segPause = true;
-                    buttons[0].el.dom.className = V_PAUSE_CSS;
                 }
                 else
                 {
+                    buttons[0].el.dom.className = V_WAIT_CSS;
                     this.setText('Pause');
                     g_cliCmdObj.m_segPause = false;
-                    buttons[0].el.dom.className = V_WAIT_CSS;
                 }
             }
         });
         buttons[1].hide();
         buttons[0].m_pauseBtn = buttons[1];
+        buttons[2] = f_createLabel(node.attributes.help, V_LABEL_HELP);
     }
 
     var bPanel = new Ext.Panel(
@@ -1289,7 +1518,8 @@ function f_createOperButton(treeObj, node, btnText, title)
         buttons: buttons
         ,bodyStyle: 'padding: 0px'
         ,border: false
-        ,buttonAlign: 'left'
+        ,buttonAlign: 'left',
+        height: 0
     });
 
     var panel = new Ext.Panel(
@@ -1303,6 +1533,7 @@ function f_createOperButton(treeObj, node, btnText, title)
     });
 
     panel.m_pauseBtn = buttons[1];
+    panel.m_helpLabel = buttons[2];
     treeObj.m_runButton = buttons[0];
     return panel;
 }
@@ -1314,11 +1545,16 @@ function f_createLabel(value, labelFor)
 
     if(labelFor == V_LABEL_HELP)
     {
-        value = f_replace(value, '<', '&#60;');
-        value = f_replace(value, '>', '&#62;');
-        lAlign = 'vlabel_left';
-        width = 250;
-        value = value + '.';
+        if(value == undefined)
+            value = "";
+        else
+        {
+            value = f_replace(value, '<', '&#60;');
+            value = f_replace(value, '>', '&#62;');
+            lAlign = 'vlabel_left';
+            width = 250;
+            value = value + '.';
+        }
     }
     else if(labelFor == V_LABEL_LABEL)
     {
@@ -1340,21 +1576,109 @@ function f_createTextAreaField(values, width, height)
 {
     var el = document.createElement("div");
     el.id = 'id_op_txt_output'+Ext.id();
-    el.innerHTML = '<pre id="id_op_output"><font face="courier new">'+values+'</font></pre>';
+    var id = 'id_op_output' + Ext.id();
+    el.innerHTML = '<pre id="' + id + '"><font face="courier new">'+values+'</font></pre>';
 
-    return new Ext.Panel(
+    var pPanel = new Ext.Panel(
     {
         border: true
         ,style: 'padding:5px'
         ,autoWidth: true
         ,height: height
         ,autoScroll: true
-        //,html: '<pre><font face="courier new">' + values + '</font></pre>'  // monospace
         ,contentEl: el
     });
+    pPanel.m_outputId = id;
+
+    return pPanel
 }
 
-function f_handleInputFieldError(node)
+function f_handleConfFieldOffFocus(field)
+{
+    if(field == undefined || field.getXType == undefined) return;
+
+    var fType = field.getXType();
+    if(fType == 'textfield' || fType == 'numberfield' || fType == 'combo')
+    {
+        var cn = field.el.dom.className;
+        cn = f_replace(cn, 'v-textfield-unsubmit', '');
+        cn = f_replace(cn, 'v-textfield-submit', '');
+
+        if(field.getOriginalValue() != field.getValue())
+            field.el.dom.className = cn + ' v-textfield-unsubmit';
+        else
+            field.el.dom.className = cn + ' v-textfield-submit';
+    }
+    else if(fType == 'editorgrid')
+    {
+        var view = field.getView();
+        var row = view.m_row;
+        var rec = field.getAt(row);
+        if(rec.dirty)
+            view.addRowClass(row, "v-textfield-unsubmit");
+        else
+            view.addRowClass(row, "v-textfield-submit");
+    }
+    else if(fType == 'checkbox')
+    {
+        var cn = field.m_wp.el.dom.className;
+        if(field.getOriginalValue() != field.getValue())
+            cn = f_replace(cn, 'v-bg-white', 'v-bg-yellow');
+        else
+            cn = f_replace(cn, 'v-bg-yellow', 'v-bg-white');
+        field.m_wp.el.dom.className = cn;
+    }
+
+}
+
+function f_handleFormIndicators(node)
+{
+    if(node == undefined || node.m_inputPanel == undefined) return;
+
+    var fd = node.m_inputPanel.items.itemAt(V_IF_INDEX_INPUT);
+    var type = fd.getXType();
+    if(type == 'panel')
+    {
+        fd = fd.m_fd;
+        type = fd.getXType();
+    }
+
+    /////////////////////////
+    // handle field indicator
+    var panelFlag = V_DIRTY_FLAG;
+    switch(type)
+    {
+        case 'textfield':
+        case 'numberfield':
+        case 'combo':
+            var cn = fd.el.dom.className;
+            fd.el.dom.className = f_replace(cn, 'v-textfield-unsubmit', '');
+
+            if(node.attributes.value != undefined)
+            {
+                if(fd.getValue() == node.attributes.value)
+                    panelFlag = V_EMPTY_FLAG;
+            }
+            else if(fd.getValue() != undefined && fd.getValue().length == 0)
+                panelFlag = V_EMPTY_FLAG;
+            break;
+        case 'editorgrid':
+            f_setGridViewClear(fd);
+            break;
+        case 'checkbox':
+            var cn = fd.m_wp.el.dom.className;
+            cn = f_replace(cn, 'v-bg-yellow', 'v-bg-white');
+            fd.m_wp.el.dom.className = cn;
+            break;
+    }
+
+    //////////////////////////
+    // handle panel indicator
+    var error = node.m_inputPanel.items.itemAt(V_IF_INDEX_DIRTY);
+    f_updateDirtyIndicatorPanel(error, panelFlag);
+}
+
+function f_handleFieldError(node)
 {
     if(node == undefined || node.m_inputPanel == undefined) return;
 
@@ -1365,38 +1689,60 @@ function f_handleInputFieldError(node)
         f_setGridViewError(inputField);
 
     var error = node.m_inputPanel.items.itemAt(V_IF_INDEX_DIRTY);
-    f_updateDirtyIndicatorPanel(error, true);
+    f_updateDirtyIndicatorPanel(error, V_ERROR_FLAG);
 }
 
-function f_updateDirtyIndicatorPanel(field, isError)
+function f_updateDirtyIndicatorPanel(field, errType)
 {
+    var err = V_ERROR_FLAG;
+    if(errType.indexOf('statusDown') > 0)
+        err = 'error';
+    else if(errType.indexOf('statusUnknown') > 0)
+        err = 'mod';
+    else if(errType.indexOf('statusPlus') > 0)
+        err = 'add';
+    else if(errType.indexOf('statusMinus') > 0)
+        err = 'del';
+    else if(errType.indexOf('empty') > 0)
+        err = 'empty';
+
     if(field.el != undefined)
     {
         var html = field.el.dom.innerHTML;
-        if(isError)
+        switch(err)
         {
-            if(html.indexOf('empty') > 0)
-                html = f_replace(html, 'empty', 'statusDown');
-            else
-                html = f_replace(html, 'statusUnknown', 'statusDown');
-        }
-        else
-        {
-            if(html.indexOf('empty') > 0)
-                html =  f_replace(html, 'empty', 'statusUnknown');
-            else
-                html =  f_replace(html, 'statusDown', 'statusUnknown');
+            case 'error':
+                html = f_createFlagIndicator(html, 'statusDown');
+                break;
+            case 'mod':
+                html = f_createFlagIndicator(html, 'statusUnknown');
+                break;
+            case 'add':
+                html = f_createFlagIndicator(html, 'statusPlus');
+                break;
+            case 'del':
+                html = f_createFlagIndicator(html, 'statusMinus');
+                break;
+            case 'empty':
+                html = f_createFlagIndicator(html, 'empty');
         }
 
         field.el.dom.innerHTML = html;
     }
 }
 
-function f_enterKeyPressHandler(field, e, callback)
+function f_createFlagIndicator(html, flag)
 {
-    //////////////////////////////////////////////////
-    // check for ENTER key to trigger the 'login'
-    // button
-    if(e.getKey() == 13)
-        callback.call();
+    if(html.indexOf('empty') > 0 && flag != 'empty')
+        html = f_replace(html, 'empty', flag);
+    else if(html.indexOf('statusUnknown') > 0 && flag != 'statusUnknown')
+        html = f_replace(html, 'statusUnknown', flag);
+    else if(html.indexOf('statusPlus') > 0 && flag != 'statusPlus')
+        html = f_replace(html, 'statusPlus', flag);
+    else if(html.indexOf('statusMinus') > 0 && flag != 'statusMinus')
+        html = f_replace(html, 'statusMinus', flag);
+    else if(html.indexOf('statusDown') > 0 && flag != 'statusDown')
+        html = f_replace(html, 'statusDown', flag);
+
+    return html;
 }

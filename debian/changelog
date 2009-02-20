@@ -14,6 +14,12 @@ vyatta-webgui (0.2.12-9) unstable; urgency=low
 
  -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 05 Feb 2009 02:57:56 +0000
 
+vyatta-webgui (0.2.12+islavista2) unstable; urgency=low
+
+  * Merge from jenner
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 03 Feb 2009 20:46:18 -0800
+
 vyatta-webgui (0.2.12-8) unstable; urgency=low
 
   * update Build-Depends
@@ -37,6 +43,12 @@ vyatta-webgui (0.2.12-7) unstable; urgency=low
   * * Fixed interface ethernet default value.
 
  -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 04 Feb 2009 02:26:30 +0000
+
+vyatta-webgui (0.2.12+islavista1) unstable; urgency=low
+
+  * Merge to islavista
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 03 Feb 2009 11:29:26 -0800
 
 vyatta-webgui (0.2.12-6) unstable; urgency=low
 

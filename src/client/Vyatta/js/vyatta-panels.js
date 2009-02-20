@@ -394,7 +394,6 @@ function f_createNumberField(treeObj, value, node, help, width, callback, mode)
         ,onBlur: mode == undefined ? onBlurHandler : undefined
         ,invalidClass: ""
     });
-    field.on('focus', function(f){ f_handleGridLostFocus(f, false); });
     field.getOriginalValue = function()
     { return oldVal == undefined ? "" : oldVal; };
     field.setOriginalValue = function(val)
@@ -433,24 +432,6 @@ function f_createNumberField(treeObj, value, node, help, width, callback, mode)
     return p;
 }
 
-///////////////////////////////////////////////////
-// When grid row has focus, user clicks on text field.
-// the focus jumps back to the grid instead of the
-// field user clicked. This function gives the focus
-// back the clicked field. It's not a very clear method
-// but it works.
-var g_focusFd = undefined;  // field current has focus
-function f_handleGridLostFocus(focus, isFromGrid)
-{
-    if(!isFromGrid)
-    {
-        g_focusFd = focus;
-        g_focusFd.m_isGrid = false;
-    }
-    else
-        if(g_focus != undefined && !g_focus.m_isGrid)
-            g_fous.focus(false,10);
-}
 function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, node, mode)
 {
     var oldVal = value != undefined ? value : node.attributes.defaultVal;
@@ -469,7 +450,6 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
         ,enableKeyEvents: true
         ,onBlur: mode == 'confMode' ? onBlurHandler : undefined
     });
-    field.on('focus', function(f){ f_handleGridLostFocus(f, false); });
     field.m_mode = mode;
     field.getOriginalValue = function()
     { return oldVal == undefined ? "" : oldVal; };
@@ -609,7 +589,7 @@ function f_createCheckbox(value, node, helpStr, width, callback)
     { return chkOrigVal };
     field.setOriginalValue = function(val)
     { chkOrigVal = val; }
-    
+
     var wrapPanel = new Ext.Panel(
     {
         border: false
@@ -1249,7 +1229,7 @@ function f_createEditGrid(values, gridStore, record, node,
             }
         }
     });
-    tf.on('blur', function(f) { f_handleGridLostFocus(f, true); });
+
     var gv = new VYATTA_gridview();
     var sm = new Ext.grid.RowSelectionModel({ singleSelect: true });
     var grid = new Ext.grid.EditorGridPanel(

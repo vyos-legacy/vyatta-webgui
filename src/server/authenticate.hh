@@ -16,7 +16,7 @@ public:
   create_new_session();
   
   WebGUI::AccessLevel
-  get_access_level(const std::string &username);
+  get_access_level(const std::string &username, gid_t &gid);
 
 private:
   bool
@@ -32,7 +32,7 @@ private:
   bool is_grp_member(struct group *g, const std::string &username);
   
   // is the user a member of the "named group"?
-  bool is_group_member(char *grpname, const std::string &username);
+  bool is_group_member(const char *grpname, const std::string &username);
 };
 
 #endif //__AUTHENTICATE_HH__

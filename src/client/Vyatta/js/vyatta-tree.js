@@ -210,6 +210,8 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                     continue;
                 else if(an == 'set' && tc.indexOf('Set system or') >= 0)
                     continue;
+                else if(an == 'https')
+                    continue;
 
                 str = this.f_constructNodeDomStr(n, str);
             }

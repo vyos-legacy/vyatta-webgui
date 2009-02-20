@@ -257,12 +257,12 @@ function f_handleConfFormCommandDone(treeObj, node)
                 f_loadChildNode(treeObj, node);
 
             f_handlePropagateParentNodes(node);
-            tree.un('load', onReloadHandler);
+            treeObj.m_isCommitAvailable = true;
             treeObj.m_parent.f_onTreeRenderer(treeObj);
+            tree.un('load', onReloadHandler);
         }
         tree.on('load', onReloadHandler);
         node.reload();
-
 
         for(var i=0; i<g_cliCmdObj.m_fdSent.length; i++)
             f_handleFormIndicators(g_cliCmdObj.m_fdSent[i].m_node);
@@ -446,8 +446,12 @@ function f_sendConfFormCommand(treeObj)
 
 function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 {
-    g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait('Changing configuration...',
-                                                      'Configuration');
+    var msg = 'Configuration...';
+    if(cmds[0].indexOf('set ') >= 0 || cmds[0].indexOf('delete ') >= 0 ||
+        cmds[0].indexOf('discard') >= 0 || cmds[0].indexOf('commit') >= 0)
+        msg = 'Changing configuration...';
+
+    g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait(msg, 'Configuration');
 
     var tObj = treeObj;
     var sendCommandCliCb = function(options, success, response)
@@ -502,6 +506,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             }
             tree.on('load', onReloadHandler);
             tree.root.reload();
+            f_handlePropagateParentNodes(selNode);
         }
         else if(cmds[0].indexOf('commit') >= 0)
         {

@@ -1,3 +1,113 @@
+vyatta-webgui (0.2.13-2) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * 0.2.12+islavista1
+  * 0.2.12+islavista2
+  * 0.2.12+islavista3
+
+  [ Kevin Choi ]
+  * * additional changed for fixing bug 4106; tab changed mixed up.
+
+  [ slioch ]
+  * allow other forms of reboot through hacked reboot support in server.
+  * should alleviate occasional problem with single character on first
+    line of output.
+
+  [ Kevin Choi ]
+  * * Block out the ops command 'reboot/at'
+  * * add new header background image. This will fixed for IE to match
+    the background and
+  * * fixed typo
+  * * Fixed typo : invaluid to invalid
+
+  [ slioch ]
+  * partial fix for bug 4119.
+  * remove comp_help from entering configuration data until front-end
+    processing works with additional data.
+
+  [ Kevin Choi ]
+  * * Fixed IE problem of popup a warning message about http and https
+    were shared in the same
+  * * update button images and tab images.
+  * * changed cursor image for mouseover on a disable button.
+
+  [ slioch ]
+  * fix for bug 4118. conditionally set up unionfs mount on new auth,
+    and
+
+  [ Kevin Choi ]
+  * * fixed bug: 4119. block op mode 'set' node from user.
+  * * updated tab images to round off all corners
+
+  [ slioch ]
+  * iterate through string response and compare for non-printable
+    characters and convert to spaces.
+
+  [ Justin Fletcher ]
+  * Update mandatory fields
+
+  [ Kevin Choi ]
+  * * update vyatta logo image and adjust image contain size and
+    padding.
+
+  [ slioch ]
+  * fixed extra node.tag entries--introduced by additional parsing of
+    comp_help
+
+  [ Kevin Choi ]
+  * * remove unsued images
+  * * additional fixed to display hostname.
+
+  [ slioch ]
+  * fixed character scanner to properly exlude form feed characters (all
+    control characters other than \n,\r,\t)
+  * modified shutdown of chunker process to clean up op files on
+    shutdown rather than on startup. Should resolve bug 4125 which was
+    the result of a race condition between a
+
+  [ Justin Fletcher ]
+  * Additional mandatory nodes
+
+  [ Kevin Choi ]
+  * * Moved conf mode button to far top-right
+  * * set focus for next input field after sent set value to server
+  * * selected the new created tree node and populate all input fields
+  * * changed un-submit field background color to light yellow
+  * * align button to text for conf mode
+  * * block focus for checkbox field. IE rejected it
+  * * fixed missing op mode 'run' button
+  * * Changed the behavior of submit config values eighter press 'set'
+    button or press 'enter'
+  * * Con't checked in for using 'set' button to submit configuration
+    values
+  * * Improved user data entry for the new user layout.
+  * * Work around to get focus for multi text fields
+  * * support gird fields to handle un-submit values
+  * * Fixed browser compatible for IE to align input fields.
+  * * fixed input fields 'tab' character handler for grid fields
+  * * fixed bug 4137: tooltip on configuration mode delete button
+  * * Removed input/output panel's title from form and made the title
+    look&feel like a toolbar.
+  * * added 'create' and 'delete' buttons for config mode
+  * * blocked all red/yellow dot from operation tree nodes
+
+  [ slioch ]
+  * added back session timeout. currently set to 30 minutes. also added
+    code to set uid/gid for background op mode cmd writer process.
+
+  [ Kevin Choi ]
+  * * Fixed font to be consistent for both conf and op mode headers
+  * * con't fixed to op output command should clear up the old values
+
+  [ slioch ]
+  * added missing fclose call on /dev/urandom file access for key
+    generation.
+  * ditto from previous comment
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 19 Feb 2009 17:56:12 -0800
+
 vyatta-webgui (0.2.13-1) unstable; urgency=low
 
   [ Kevin Choi ]

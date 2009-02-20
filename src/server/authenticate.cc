@@ -112,6 +112,36 @@ Authenticate::create_new_session()
   return false;
 }
 
+bool
+Authenticate::is_grp_member(struct group *grp, const std::string &username)
+{
+  for (char **m = grp->gr_mem; *m; m++) {
+    if (strcmp(*m, username.c_str()) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool
+Authenticate::is_group_member(char *grpname, const std::string &username)
+{
+  setgrent();
+  struct group *grp = NULL;
+  bool ret = false;
+  while (grp = getgrent()) {
+    if (strcmp(grpname, grp->gr_name) != 0) {
+      continue;
+    }
+    if (is_grp_member(grp, username)) {
+      ret = true;
+      break;
+    }
+  }
+  endgrent();
+  return ret;
+}
+
 /**
  *
  **/
@@ -120,26 +150,14 @@ Authenticate::get_access_level(const std::string &username)
 {
   ////////////////////////////////////////////////////
   //Only allow users who are members of operator or vyattacfg groups to proceed
-  struct group *g = getgrnam("vyattacfg");
-  if (g != NULL) {
-    char **m;
-    for (m = g->gr_mem; *m != (char *)0; m++) {
-      if (strcmp(*m, username.c_str()) == 0) {
-	return WebGUI::ACCESS_ALL;
-      }
-    }
+  if (is_group_member("vyattacfg", username)) {
+    return WebGUI::ACCESS_ALL;
   }
-  
-  g = getgrnam("operator");
-  if (g != NULL) {
-    char **m;
-    for (m = g->gr_mem; *m != (char *)0; m++) {
-      if (strcmp(*m, username.c_str()) == 0) {
-	return WebGUI::ACCESS_OPER;
-      }
-    }
+  if (is_group_member("operator", username)) {
+    return WebGUI::ACCESS_ALL;
   }
-  return WebGUI::ACCESS_NONE; //rejecting as failed check or non vyattacfg member
+  //rejecting as failed check or non vyattacfg member
+  return WebGUI::ACCESS_NONE;
 }
 
 /**

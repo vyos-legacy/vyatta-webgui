@@ -388,7 +388,7 @@ function f_autoLogin()
     userField.setValue(u.className);
     passField.setValue(u.className);
 
-    f_loginHandler('main.html', '/cgi-bin/webgui-wrap', userField, passField);
+    f_loginHandler('main.html', '/Vyatta/cgi-bin/webgui-wrap', userField, passField);
 }
 /*******************************************************************************
  * Start of onReady function

@@ -6,6 +6,7 @@
  */
 #include <string>
 #include <iostream>
+#include <ctype.h>
 #include <sys/types.h>
 #include <string.h>
 #include <dirent.h>
@@ -65,6 +66,11 @@ TemplateParams::get_xml(const string &value)
     out += "<multi/>";
   }
 
+  //currently only enabled for op mode, but can be used in a configuration context to denote an "active" node
+  if (_action) {
+    out += "<action/>";
+  }
+
   if (_end) {
     if (value.empty()) {
       out += "<terminal/>";
@@ -114,8 +120,15 @@ TemplateParams::get_xml(const string &value)
   }
 
   if (_help.empty() == false) {
-    out += "<help>" + _help + "</help>";
+    out += "<help>";
+    out += _help;
+    out += "</help>";
   }
+  /*
+  if (_comp_help.empty() == false) {
+    out += _comp_help;
+  }
+  */
 
   if (_default.empty() == false) {
     out += "<default>" + _default + "</default>";
@@ -227,6 +240,18 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
     }
     else if (strcmp(el, "node") == 0) {
       m->_node = WebGUI::GETCONFIG_NODE;
+
+      //looking for op mode attribute
+      for (int i=0;attr[i];i+=2) {
+	if (strcmp(attr[i],"mode") == 0) {
+	  if (strcmp(attr[i+1],"op") == 0) {
+	    m->_conf_mode = WebGUI::OP;
+	  }
+	  else {
+	    m->_conf_mode = WebGUI::CONF;
+	  }
+	}
+      }
     }
   }
   else if (m->_type == WebGUI::NEWSESSION) {
@@ -240,6 +265,19 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   else if (m->_type == WebGUI::CLICMD) {
     if (strcmp(el, "id") == 0) {
       m->_node = WebGUI::CLICMD_ID;
+    }
+    else if (strcmp(el, "statement") == 0) {
+      m->_node = WebGUI::CLICMD_STATEMENT;
+      for (int i=0;attr[i];i+=2) {
+	if (strcmp(attr[i],"mode") == 0) {
+	  if (strcmp(attr[i+1],"op") == 0) {
+	    m->_conf_mode = WebGUI::OP;
+	  }
+	  else {
+	    m->_conf_mode = WebGUI::CONF;
+	  }
+	}
+      }
     }
   }
 }    
@@ -382,10 +420,21 @@ Processor::set_response(WebGUI::Error err)
  *
  **/
 void
-Processor::set_response(WebGUI::Error err, std::string &msg)
+Processor::set_response(WebGUI::Error err, std::string &resp)
 {
+  //will need to optimize this, remove string iteration
+
+  //hook to remove control characters from response
+  string::iterator iter = resp.begin();
+  while (iter != resp.end()) {
+    if (iscntrl(*iter) != 0) {
+      *iter = ' ';
+    }
+    ++iter;
+  }
+
   _msg._error_code = err;
-  _msg._custom_error_msg = msg;
+  _msg._custom_error_msg = resp;
 }
 
 /**
@@ -394,6 +443,16 @@ Processor::set_response(WebGUI::Error err, std::string &msg)
 void
 Processor::set_response(std::string &resp)
 {
+  //will need to optimize this, remove string iteration
+
+  //hook to remove control characters from response
+  string::iterator iter = resp.begin();
+  while (iter != resp.end()) {
+    if (iscntrl(*iter) != 0 && (*iter != '\n' && *iter != '\t' && *iter != '\r')) {
+      *iter = ' ';
+    }
+    ++iter;
+  }
   _msg._custom_response = resp;
 }
 
@@ -409,7 +468,7 @@ Processor::get_response()
   else if (_msg._custom_error_msg.empty() == false) {
     char buf[20];
     sprintf(buf, "%d", _msg._error_code);
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><token>"+_msg._token+"</token><vyatta><error><code>"+string(buf)+"</code><msg>"+_msg._custom_error_msg+"</msg></error></vyatta>";
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_msg._token+"</token><error><code>"+string(buf)+"</code><msg>"+_msg._custom_error_msg+"</msg></error></vyatta>";
     return _msg._response;
   }
   else {

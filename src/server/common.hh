@@ -4,28 +4,50 @@
 class WebGUI
 {
 public:
+  const static unsigned long ID_MAX;
   const static unsigned long ID_START;
   const static unsigned long ID_RANGE;
 
   const static unsigned long SESSION_TIMEOUT_WINDOW;
 
+  const static std::string VYATTA_TEMP_CONFIG_DIR;
+  const static std::string VYATTA_CHANGES_ONLY_DIR;
+  const static std::string VYATTA_ACTIVE_CONFIGURATION_DIR;
+
+
+  const static std::string OP_COMMAND_DIR;
   const static std::string ACTIVE_CONFIG_DIR;
   const static std::string CONFIG_TMP_DIR;
   const static std::string LOCAL_CHANGES_ONLY;
   const static std::string LOCAL_CONFIG_DIR;
   const static std::string CFG_TEMPLATE_DIR;
+  const static std::string OP_TEMPLATE_DIR;
   const static std::string COMMIT_LOCK_FILE;
   const static std::string VYATTA_MODIFY_DIR;
   const static std::string VYATTA_MODIFY_FILE;
 
+  const static std::string CHUNKER_RESP_CMDS;
+  const static std::string CHUNKER_RESP_INIT;
+  const static std::string CHUNKER_RESP_TOK_DIR;
+  const static std::string CHUNKER_RESP_TOK_BASE;
+  const static std::string CHUNKER_RESP_PID;
+  const static std::string CHUNKER_SOCKET;
+  const static unsigned long CHUNKER_MAX_WAIT_TIME;
+  const static std::string CHUNKER_MSG_FORMAT;
+  const static std::string CHUNKER_UPDATE_FORMAT;
+
+  const static std::string MANDATORY_NODE_FILE;
+
   enum Error {SUCCESS = 0,
-		      MALFORMED_REQUEST,
-		      AUTHENTICATION_FAILURE,
-		      SESSION_FAILURE,
-		      SERVER_FAILURE,
-		      COMMAND_ERROR,
-		      COMMIT_IN_PROGRESS,
-		      CONFIGURATION_CHANGE};
+	      MALFORMED_REQUEST,
+	      AUTHENTICATION_FAILURE,
+	      SESSION_FAILURE,
+	      SESSION_ACCESS_FAILURE,
+	      SERVER_FAILURE,
+	      COMMAND_ERROR,
+	      COMMIT_IN_PROGRESS,
+	      CONFIGURATION_CHANGE,
+              MANDATORY_NODE_ERROR};
 
 
   static char const *ErrorDesc[];
@@ -39,11 +61,16 @@ public:
 		TOKEN};
 
   enum ParseNode {EMPTY = 0,
-			  NEWSESSION_USER,
-			  NEWSESSION_PSWD,
-			  GETCONFIG_ID,
-			  GETCONFIG_NODE,
-			  CLICMD_ID};
+		  NEWSESSION_USER,
+		  NEWSESSION_PSWD,
+		  GETCONFIG_ID,
+		  GETCONFIG_NODE,
+		  CLICMD_ID,
+		  CLICMD_STATEMENT};
+
+  enum Attributes {NOATTR = 0,
+		   OP,
+		   CONF};
 
   enum NodeType {NONE,
 			 TEXT,
@@ -55,10 +82,15 @@ public:
 			 BOOL,
 			 MACADDR};
 
-  enum NodeState {ACTIVE,
-			  DELETE,
-			  SET};
+  enum NodeState {ACTIVE,        //node is in active config
+		  ACTIVE_PLUS,   //node contains a child in set/delete state
+		  DELETE,        //node is deleted in local config
+		  SET};          //node is set in local config
+  
 
+  enum AccessLevel {ACCESS_NONE,
+		    ACCESS_ALL,
+		    ACCESS_OPER};
 
   static std::string
   generate_response(std::string &token, Error err);
@@ -91,9 +123,13 @@ public:
   static void
   remove_session(unsigned long id);
   static void
-  remove_session(std::string &id);
-  static void
   discard_session(std::string &id);
+  
+  static int 
+  mkdir_p(const char *path);
+
+  static std::string
+  unionfs(void);
 
 };
 

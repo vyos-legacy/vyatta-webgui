@@ -42,7 +42,22 @@ Configuration::get_config()
   }
 
   //new combined mode here
-  string foobar = get_full_level();
+  string foobar;
+  if (_proc->get_msg()._conf_mode == WebGUI::OP) {
+    foobar = get_full_op_level();
+  }/*
+  else if (_proc->get_msg()._conf_mode == WebGUI::CONF) {
+    string root_node = _proc->get_msg()._root_node;
+    foobar = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->get_msg()._token+"</token>";
+    get_full_level(root_node,foobar,true); //make this recursive
+    foobar += "</vyatta>";
+    }*/
+  else {
+    string root_node = _proc->get_msg()._root_node;
+    foobar = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->get_msg()._token+"</token>";
+    get_full_level(root_node,foobar,false);
+    foobar += "</vyatta>";
+  }
   _proc->set_response(foobar);
 }
 
@@ -50,7 +65,7 @@ Configuration::get_config()
  *
  **/
 string
-Configuration::get_full_level()
+Configuration::get_full_op_level()
 {
   string rel_tmpl_path;
   DIR *dp;
@@ -59,6 +74,104 @@ Configuration::get_full_level()
 
   //first convert root request into template path
   StrProc str_proc(_proc->get_msg()._root_node, "/");
+  vector<string> coll = str_proc.get();
+  vector<string>::iterator iter = coll.begin();
+  while (iter != coll.end()) {
+    string tmp = WebGUI::OP_TEMPLATE_DIR + "/" + rel_tmpl_path + "/" + *iter;
+    struct stat stmp;
+    if (stat(tmp.c_str(), &stmp) != 0) {
+      rel_tmpl_path += "/node.tag";
+    }
+    else {
+      rel_tmpl_path += "/" + *iter;
+    }
+    ++iter;
+  }
+
+  //NOW WE HAVE OUR CURRENT WORKING DIRECTORY STRUCTURE
+    string rel_config_path = _proc->get_msg()._root_node;
+
+
+  //rework get_conf_dir to work off of get_templ_dir...
+
+  //get_conf_dir collection
+  //iterate over template directory
+  //call get_template_node on each node
+  //build out response...
+
+  string tmpl_path = WebGUI::OP_TEMPLATE_DIR + "/" + rel_tmpl_path;
+  if ((dp = opendir(tmpl_path.c_str())) == NULL) {
+    out += "</vyatta>";
+    return out;
+  }
+
+  while ((dirp = readdir(dp)) != NULL) {
+    if (dirp->d_name[0] != '.' && 
+	strcmp(dirp->d_name,"node.def") != 0 &&
+	strcmp(dirp->d_name,"node.tag") != 0) {
+      //now build out response...
+      out += string("<node name='") + string(dirp->d_name) + string("'>");
+
+      //now add template parameters
+      TemplateParams tmpl_params;
+      string tmp = WebGUI::OP_TEMPLATE_DIR + "/" + rel_tmpl_path + "/" + dirp->d_name;
+      get_template_node(tmp, tmpl_params);
+      string value;
+      if (tmpl_params._end == true) {
+	tmp = rel_config_path + "/" + dirp->d_name + "/node.val";
+	string node_name("value");
+	parse_value(tmp, node_name, value);
+      }
+      out += tmpl_params.get_xml(value);
+      out += "</node>";
+    }
+
+  }
+
+  //now handle multinodes here!
+  TemplateParams multi_params;
+  //only do this once!!!
+  string tmp = WebGUI::OP_TEMPLATE_DIR + "/" + rel_tmpl_path + "/node.tag";
+
+  get_template_node(tmp, multi_params);
+  string tag_node_str = multi_params.get_xml();
+
+  if (tag_node_str.empty() == false) {
+    //escape out "%2F" here for non-terminal multi-nodes
+    /*
+    string str = string(m_iter->first);
+    str = WebGUI::mass_replace(str, "%2F", "/");
+    out += string("<node name='") + str + string("'>");
+    */
+    out += string("<node name='node.tag'>");
+    out += tag_node_str;
+    /*
+    string value;
+    if (multi_params._end == true) {
+      string tmp = rel_config_path + "/" + m_iter->first + "/node.val";
+      string node_name("value");
+      parse_value(tmp, node_name, value);
+      }*/
+    out += "</node>";
+  }
+
+  closedir(dp);
+  out += "</vyatta>";
+  return out;
+}
+
+/**
+ *
+ **/
+void
+Configuration::get_full_level(const std::string &root_node, std::string &out, bool recursive)
+{
+  string rel_tmpl_path;
+  DIR *dp;
+  struct dirent *dirp;
+
+  //first convert root request into template path
+  StrProc str_proc(root_node, "/");
   vector<string> coll = str_proc.get();
   vector<string>::iterator iter = coll.begin();
   while (iter != coll.end()) {
@@ -73,8 +186,7 @@ Configuration::get_full_level()
     ++iter;
   }
 
-  string rel_config_path = _proc->get_msg()._root_node;
-
+  string rel_config_path = root_node;
 
   //rework get_conf_dir to work off of get_templ_dir...
 
@@ -87,7 +199,7 @@ Configuration::get_full_level()
   string tmpl_path = WebGUI::CFG_TEMPLATE_DIR + "/" + rel_tmpl_path;
   if ((dp = opendir(tmpl_path.c_str())) == NULL) {
     out += "</vyatta>";
-    return out;
+    return;
   }
 
   while ((dirp = readdir(dp)) != NULL) {
@@ -104,6 +216,9 @@ Configuration::get_full_level()
 	case WebGUI::ACTIVE:
 	  out += "<configured>active</configured>";
 	  break;
+	case WebGUI::ACTIVE_PLUS:
+	  out += "<configured>active_plus</configured>";
+	  break;
 	case WebGUI::SET:
 	  out += "<configured>set</configured>";
 	  break;
@@ -115,7 +230,7 @@ Configuration::get_full_level()
       }	
       //now add template parameters
       TemplateParams tmpl_params;
-      string tmp = "/" + rel_tmpl_path + "/" + dirp->d_name;
+      string tmp = WebGUI::CFG_TEMPLATE_DIR + "/" + rel_tmpl_path + "/" + dirp->d_name;
       get_template_node(tmp, tmpl_params);
       string value;
       if (tmpl_params._end == true) {
@@ -123,7 +238,16 @@ Configuration::get_full_level()
 	string node_name("value");
 	parse_value(tmp, node_name, value);
       }
-      out += tmpl_params.get_xml(value);
+      else {
+	if (recursive == true) {
+	  tmp = rel_config_path + "/" + dirp->d_name;
+	  get_full_level(tmp,out,true);
+	}
+      }
+      //skip the parameters on a recursive walkthrough
+      if (recursive == false) {
+	out += tmpl_params.get_xml(value);
+      }
       out += "</node>";
     }  
   }    
@@ -134,7 +258,7 @@ Configuration::get_full_level()
   map<string,WebGUI::NodeState>::iterator m_iter = dir_coll.begin();
   if (m_iter != dir_coll.end()) {
     //only do this once!!!
-    string tmp = "/" + rel_tmpl_path + "/node.tag";
+    string tmp = WebGUI::CFG_TEMPLATE_DIR + "/" + rel_tmpl_path + "/node.tag";
 
     get_template_node(tmp, multi_params);
   }
@@ -150,6 +274,9 @@ Configuration::get_full_level()
     case WebGUI::ACTIVE:
       out += "<configured>active</configured>";
       break;
+    case WebGUI::ACTIVE_PLUS:
+      out += "<configured>active_plus</configured>";
+      break;
     case WebGUI::SET:
       out += "<configured>set</configured>";
       break;
@@ -157,21 +284,23 @@ Configuration::get_full_level()
       out += "<configured>delete</configured>";
       break;
     }
-    out += multi_params.get_xml();
-
+    if (recursive == false) {
+      out += multi_params.get_xml();
+    }
     string value;
     if (multi_params._end == true) {
       string tmp = rel_config_path + "/" + m_iter->first + "/node.val";
       string node_name("value");
       parse_value(tmp, node_name, value);
     }
-    out += multi_params.get_xml(value);
+    if (recursive == false) {
+      out += multi_params.get_xml(value);
+    }
     out += "</node>";
+
     ++m_iter;
   }
-
-  out += "</vyatta>";
-  return out;
+  return;
 }
 
 /**
@@ -181,8 +310,7 @@ void
 Configuration::get_template_node(const string &path, TemplateParams &params)
 {
   string allowed, mode;
-  string root_template(WebGUI::CFG_TEMPLATE_DIR);
-  string tmpl_file = root_template + path + "/node.def";
+  string tmpl_file = path + "/node.def";
 
   //open the file here and parse
   FILE *fp = fopen(tmpl_file.c_str(), "r");
@@ -200,20 +328,21 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       line = WebGUI::trim_whitespace(line);
 
       if (line.find("default:") != string::npos || 
-	       line.find("delete:") != string::npos || 
-	       line.find("commit:") != string::npos || 
-	       line.find("create:") != string::npos || 
-	       line.find("update:") != string::npos || 
-	       line.find("activate:") != string::npos ||
-	       line.find("begin:") != string::npos ||
-	       line.find("end:") != string::npos ||
-	       line.find("tag:") != string::npos ||
-	       line.find("multi:") != string::npos ||
-	       line.find("type:") != string::npos ||
-	       line.find("help:") != string::npos ||
-	       line.find("syntax:") != string::npos ||
-	       line.find("allowed:") != string::npos ||
-	       line.find("comp_help:") != string::npos) {
+	  line.find("delete:") != string::npos || 
+	  line.find("commit:") != string::npos || 
+	  line.find("create:") != string::npos || 
+	  line.find("update:") != string::npos || 
+	  line.find("activate:") != string::npos ||
+	  line.find("begin:") != string::npos ||
+	  line.find("end:") != string::npos ||
+	  line.find("tag:") != string::npos ||
+	  line.find("multi:") != string::npos ||
+	  line.find("type:") != string::npos ||
+	  line.find("help:") != string::npos ||
+	  line.find("syntax:") != string::npos ||
+	  line.find("allowed:") != string::npos ||
+	  line.find("run:") != string::npos || //for op mode, drop right now
+	  line.find("comp_help:") != string::npos) {
 	mode = "";
       }
 
@@ -272,7 +401,23 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	else if (line.find("macaddr") != string::npos) {
 	  params._type = WebGUI::MACADDR;
 	}
+      }
+      else if (strncmp(line.c_str(),"comp_help:",10) == 0 || mode == "comp_help:") {
+	//need to escape out '<' and '>'
+	string comp_help;
+	if (mode.empty()) {
+	  comp_help = line.substr(10,line.length()-11);
+	}
+	else {
+	  comp_help = line;
+	}
+	mode = "comp_help:";
+	comp_help = WebGUI::mass_replace(comp_help, "&", "&#38;");
+	comp_help = WebGUI::mass_replace(comp_help, "<", "&#60;");
+	comp_help = WebGUI::mass_replace(comp_help, ">", "&#62;");
+	comp_help = WebGUI::mass_replace(comp_help, "\n", "&#xD;&#xA;");
 
+	params._comp_help += comp_help;
       }
       else if (strncmp(line.c_str(),"help:",5) == 0 || mode == "help:") {
 	//need to escape out '<' and '>'
@@ -284,9 +429,9 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  help = line;
 	}
 	mode = "help:";
+	help = WebGUI::mass_replace(help, "&", "&#38;");
 	help = WebGUI::mass_replace(help, "<", "&#60;");
 	help = WebGUI::mass_replace(help, ">", "&#62;");
-	help = WebGUI::mass_replace(help, " & ", " &#38; ");
 	help = WebGUI::mass_replace(help, "\n", "");
 
 	params._help += help;
@@ -342,18 +487,26 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	if (!line.empty()) {
 	  if (mode.empty()) {
 	    allowed += line.substr(8,line.length()-9) + "\n";
+	    //	    allowed += line.substr(8,line.length()-9);
 	  }
 	  else {
-	    allowed += line + "\n";
+	    //	    allowed += line + "\n";
+	    allowed += line;
 	  }
 	}
 	mode = "allowed:";
 
       }
+      //at some point expand this to conf mode to denote a node with an action associated with it.
+      else if (strncmp(line.c_str(),"run:",4) == 0) {
+	params._action = true;
+      }
     }
     fclose(fp);
   }
-
+  else {
+    return; //file does not exist return here
+  }
 
   //infer end node from leaf
   if (params._type != WebGUI::NONE && params._multi == false) {
@@ -364,6 +517,9 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
   if (allowed.empty() == false) {
     string stdout;
     string cmd;
+
+    allowed = string("shopt -s nullglob; ") + allowed;
+
     if (allowed.find("local ") != string::npos) {
       cmd = "function foo () { " + allowed + " } ; foo;";
     }
@@ -371,9 +527,12 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       cmd = allowed;
     }
 
-    //    cout << "INPUT COMMAND: %>" << cmd << "<%" << endl;
+    //    cout << "INPUT COMMAND: %>" << endl << cmd << endl << "<%" << endl;
 
     int err = WebGUI::execute(cmd, stdout, true);
+
+    //    cout << "OUTPUT ERROR CODE: " << err << ", " << stdout << endl;
+
     if (err == 0) {
       //      cout << "allowed(OUT): '" << stdout.substr(0,stdout.length()-1) << "', ERROR CODE: " << err << endl;
       //now fill out enumeration now
@@ -394,6 +553,14 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 
 	if (iter->empty() == false) {
 	  string tmp = WebGUI::mass_replace(*iter, "<>", "*"); //handle special case for wildcard
+
+	  //strip out all values enclosed in <*>
+	  string::size_type start_pos = 0;
+	  while ((start_pos = tmp.find("<")) != string::npos) {
+	    int end_pos = tmp.find(">");
+	    tmp = tmp.substr(0,start_pos) + tmp.substr(end_pos+1,tmp.length());
+	  }
+
 	  tmp = WebGUI::mass_replace(tmp, "<", "&#60;");
 	  tmp = WebGUI::mass_replace(tmp, ">", "&#62;");
 	  tmp = WebGUI::mass_replace(tmp, " & ", " &#38; ");
@@ -403,9 +570,10 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  if (tmp[0] == '"') {
 	    tmp = tmp.substr(1,tmp.length()-2);
 	  }
-
-
-	  params._enum.push_back(tmp);
+	  
+	  if (tmp.empty() == false) {
+	    params._enum.push_back(tmp);
+	  }
 	}
 	++iter;
       }
@@ -468,6 +636,9 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
     case WebGUI::ACTIVE:
       out += "<configured>active</configured>";
       break;
+    case WebGUI::ACTIVE_PLUS:
+      out += "<configured>active_plus</configured>";
+      break;
     case WebGUI::SET:
       out += "<configured>set</configured>";
       break;
@@ -513,6 +684,7 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
 {
   string active_config = WebGUI::ACTIVE_CONFIG_DIR + "/" + rel_config_path;
   string local_config = WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id() + "/" + rel_config_path;
+  string changes_only_config = WebGUI::LOCAL_CHANGES_ONLY + _proc->get_msg().id() + "/" + rel_config_path;
   map<string,WebGUI::NodeState> coll;
   
 
@@ -529,7 +701,6 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
     }
     closedir(dp);
   }
-  //  cout << "Configruation::get_conf_dir(): " << active_config << ", " << coll.size() << endl;
 
   //iterate over changes only dir and identify set/delete states
   //iterate over temporary configuration
@@ -538,18 +709,24 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
     return coll;
     //    return map<string,WebGUI::NodeState>();
   }
-  //
-  //
-  // NOTE: NEED TO HANDLE MULTIPLE VALUES IN THE NODE.VAL FILE HERE!!!
-  //
-  //
+
 
   while ((dirp = readdir(dp)) != NULL) {
     if (dirp->d_name[0] != '.' && strcmp(dirp->d_name,"def") != 0) {
       map<string,WebGUI::NodeState>::iterator iter = coll.find(dirp->d_name);
       if (iter != coll.end()) {
 	//correct handling of delete is if it is only present in the active config
-	iter->second = WebGUI::ACTIVE;
+	//is this an active or active_plus?
+	//need to check tmp dir
+	struct stat s;
+	string tmp = changes_only_config + "/" + string(dirp->d_name);
+	lstat(tmp.c_str(), &s);
+	if ((lstat(tmp.c_str(),&s) == 0)) {
+	  iter->second = WebGUI::ACTIVE_PLUS; //DOES THIS SHOW UP IN THE CHANGES ONLY DIR?
+	}
+	else {
+	  iter->second = WebGUI::ACTIVE;
+	}
       }
       else {
 	//this means this is a new node
@@ -557,11 +734,6 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
       }
     }
   }
-
-  
-
   closedir(dp);
-  //  cout << "Configruation::get_conf_dir(): " << local_config << ", " << coll.size() << endl;
-
   return coll;
 }

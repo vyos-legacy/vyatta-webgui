@@ -24,6 +24,7 @@ public:
   write(Session &session);
 
 private:
+  const static unsigned long _request_limit;
 };
 
 #endif //__SESSIONEXCHANGESTDIO_HH__

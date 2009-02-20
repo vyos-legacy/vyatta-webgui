@@ -1,0 +1,11 @@
+cli_parse.tab.c
+cli_parse.tab.h
+cli_def.lex.c
+cli_def.tab.c
+cli_def.tab.h
+cli_val.lex.c
+cli_parse.c
+cli_parse.h
+cli_def.c
+cli_val.c
+libclibe.a

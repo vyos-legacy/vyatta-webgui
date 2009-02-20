@@ -17,7 +17,6 @@ config.log
 config.status
 config.sub
 debian/vyatta-webgui
-debian/vyatta-webgui.postinst
 debian/vyatta-webgui.postrm
 debian/files
 debian/vyatta-webgui.debhelper.log
@@ -39,4 +38,7 @@ src/xgcgi2/xgcgi2
 src/xgdaemon/xgdaemon
 src/server/test
 src/server/webgui
+src/server/webgui_chunker
+src/server/chunker
+src/server/chunker_test
 

@@ -1,9 +1,9 @@
 Source: vyatta-webgui
 Section: contrib/net
 Priority: extra
-Maintainer: Marat Nepomnyashy <marat@vyatta.com>
+Maintainer: Vyatta Package Maintainers <maintainers@vyatta.com>
 Build-Depends: debhelper (>= 5), autotools-dev,
- libexpat1-dev (>= 1.95.8-4), wget, unzip
+ libexpat1-dev (>= 1.95.8-4), wget, unzip, libglib2.0-dev
 Standards-Version: 3.7.2
 
 Package: vyatta-webgui

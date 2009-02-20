@@ -19,6 +19,8 @@ AC_PROG_CC
 AM_PROG_AS
 AM_PROG_CC_C_O
 AC_PROG_LIBTOOL
+AC_PROG_LEX
+AC_PROG_YACC
 
 AC_ARG_ENABLE([nostrip],
 	AC_HELP_STRING([--enable-nostrip],
@@ -26,9 +28,7 @@ AC_ARG_ENABLE([nostrip],
 	[NOSTRIP=-nostrip], [NOSTRIP=])
 
 AC_CONFIG_FILES(
-	[Makefile]
-  [debian/vyatta-webgui.postinst]
-  [debian/vyatta-webgui.postrm])
+	[Makefile])
 
 AC_SUBST(NOSTRIP)
 

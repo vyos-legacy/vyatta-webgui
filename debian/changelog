@@ -1,3 +1,634 @@
+vyatta-webgui (0.2.13-2) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * 0.2.12+islavista1
+  * 0.2.12+islavista2
+  * 0.2.12+islavista3
+
+  [ Kevin Choi ]
+  * * additional changed for fixing bug 4106; tab changed mixed up.
+
+  [ slioch ]
+  * allow other forms of reboot through hacked reboot support in server.
+  * should alleviate occasional problem with single character on first
+    line of output.
+
+  [ Kevin Choi ]
+  * * Block out the ops command 'reboot/at'
+  * * add new header background image. This will fixed for IE to match
+    the background and
+  * * fixed typo
+  * * Fixed typo : invaluid to invalid
+
+  [ slioch ]
+  * partial fix for bug 4119.
+  * remove comp_help from entering configuration data until front-end
+    processing works with additional data.
+
+  [ Kevin Choi ]
+  * * Fixed IE problem of popup a warning message about http and https
+    were shared in the same
+  * * update button images and tab images.
+  * * changed cursor image for mouseover on a disable button.
+
+  [ slioch ]
+  * fix for bug 4118. conditionally set up unionfs mount on new auth,
+    and
+
+  [ Kevin Choi ]
+  * * fixed bug: 4119. block op mode 'set' node from user.
+  * * updated tab images to round off all corners
+
+  [ slioch ]
+  * iterate through string response and compare for non-printable
+    characters and convert to spaces.
+
+  [ Justin Fletcher ]
+  * Update mandatory fields
+
+  [ Kevin Choi ]
+  * * update vyatta logo image and adjust image contain size and
+    padding.
+
+  [ slioch ]
+  * fixed extra node.tag entries--introduced by additional parsing of
+    comp_help
+
+  [ Kevin Choi ]
+  * * remove unsued images
+  * * additional fixed to display hostname.
+
+  [ slioch ]
+  * fixed character scanner to properly exlude form feed characters (all
+    control characters other than \n,\r,\t)
+  * modified shutdown of chunker process to clean up op files on
+    shutdown rather than on startup. Should resolve bug 4125 which was
+    the result of a race condition between a
+
+  [ Justin Fletcher ]
+  * Additional mandatory nodes
+
+  [ Kevin Choi ]
+  * * Moved conf mode button to far top-right
+  * * set focus for next input field after sent set value to server
+  * * selected the new created tree node and populate all input fields
+  * * changed un-submit field background color to light yellow
+  * * align button to text for conf mode
+  * * block focus for checkbox field. IE rejected it
+  * * fixed missing op mode 'run' button
+  * * Changed the behavior of submit config values eighter press 'set'
+    button or press 'enter'
+  * * Con't checked in for using 'set' button to submit configuration
+    values
+  * * Improved user data entry for the new user layout.
+  * * Work around to get focus for multi text fields
+  * * support gird fields to handle un-submit values
+  * * Fixed browser compatible for IE to align input fields.
+  * * fixed input fields 'tab' character handler for grid fields
+  * * fixed bug 4137: tooltip on configuration mode delete button
+  * * Removed input/output panel's title from form and made the title
+    look&feel like a toolbar.
+  * * added 'create' and 'delete' buttons for config mode
+  * * blocked all red/yellow dot from operation tree nodes
+
+  [ slioch ]
+  * added back session timeout. currently set to 30 minutes. also added
+    code to set uid/gid for background op mode cmd writer process.
+
+  [ Kevin Choi ]
+  * * Fixed font to be consistent for both conf and op mode headers
+  * * con't fixed to op output command should clear up the old values
+
+  [ slioch ]
+  * added missing fclose call on /dev/urandom file access for key
+    generation.
+  * ditto from previous comment
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 19 Feb 2009 17:56:12 -0800
+
+vyatta-webgui (0.2.13-1) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Fixed bug 4106: command window not match tab. ops and conf
+    responds mixed up.
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 05 Feb 2009 14:23:37 -0800
+
+vyatta-webgui (0.2.12-9) unstable; urgency=low
+
+  * * block op 'reboot' command from operator user level.
+  * * Handled add new nodes and fields indicator addition to modify and
+    delete nodes.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 05 Feb 2009 02:57:56 +0000
+
+vyatta-webgui (0.2.12+islavista2) unstable; urgency=low
+
+  * Merge from jenner
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 03 Feb 2009 20:46:18 -0800
+
+vyatta-webgui (0.2.12-8) unstable; urgency=low
+
+  * update Build-Depends
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 03 Feb 2009 20:42:42 -0800
+
+vyatta-webgui (0.2.12-7) unstable; urgency=low
+
+  [ slioch ]
+  * fixed error return code to reflect mandatory error code.
+
+  [ Kevin Choi ]
+  * * provide op cmd running indicator while getting data from server
+  * * new image
+
+  [ slioch ]
+  * fix for bug 4097
+
+  [ Kevin Choi ]
+  * * Display login hostname to upper right corner next to username.
+  * * Fixed interface ethernet default value.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 04 Feb 2009 02:26:30 +0000
+
+vyatta-webgui (0.2.12+islavista1) unstable; urgency=low
+
+  * Merge to islavista
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 03 Feb 2009 11:29:26 -0800
+
+vyatta-webgui (0.2.12-6) unstable; urgency=low
+
+  * * Added deleted node indicator for delete node instead of using the
+    same as modify (yellow
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sun, 01 Feb 2009 06:27:35 +0000
+
+vyatta-webgui (0.2.12-5) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Always scroll to the bottom of page for all operation show output.
+    Means, data incoming
+  * * Added mandatory configuration fields error handling.
+
+  [ slioch ]
+  * final fix for show tech-support (or for other scripts that call the
+    op mode show cmd).
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sun, 01 Feb 2009 05:39:45 +0000
+
+vyatta-webgui (0.2.12-4) unstable; urgency=low
+
+  * * Flag as configuration modified for delete value from table
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sat, 31 Jan 2009 21:23:11 +0000
+
+vyatta-webgui (0.2.12-3) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * No discard configuration for logout
+
+  [ slioch ]
+  * fix for 'grep: //.bashrc: No such file or directory' error at
+    beginning
+  * renamed pipe from chunker_foobar to browser_pager
+  * no clean up of old sessions.
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 30 Jan 2009 11:43:35 +0000
+
+vyatta-webgui (0.2.12-2) unstable; urgency=low
+
+  [ slioch ]
+  * added fix for check of mandatory nodes when string is empty.
+  * added new error type for missing mandatory nodes and removed
+    descriptive string in front of location--for client to interpret and
+    display.
+  * latest greatest from Justin.
+  * Fixed deletion of mandatory node problem--make sure these nodes are
+    not evaluated.
+
+  [ Kevin Choi ]
+  * * Enhancement fixed. Added an option to op mode text field. By
+    pressing 'enter' key will
+  * * additional fix to 'commit' to keep user's last page.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 30 Jan 2009 02:48:12 +0000
+
+vyatta-webgui (0.2.12-1) unstable; urgency=low
+
+  [ slioch ]
+  * fix for show ipv6 routes--probably fixes other commands as well.
+
+  [ Kevin Choi ]
+  * * save session id to cookies for every command send... .include the
+    command send via
+
+  [ slioch ]
+  * chunker now consumes stderr. fix for op mode cmd 'set date 1234'
+  * added syslog output for lighttpd
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 29 Jan 2009 14:13:12 -0800
+
+vyatta-webgui (0.2.12) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * update header background image to match logo color.
+  * * Fixed typo for log out warning message.
+
+  [ slioch ]
+  * enforce mandatory nodes prior to commit
+  * updated mandatory file from justin.
+
+  [ An-Cheng Huang ]
+  * merge in cli backend library (for porting to islavista).
+
+  [ Kevin Choi ]
+  * * additional fixed 'discard' to keep user's last page.
+
+  [ slioch ]
+  * check for clear command to not run if https is not configured.
+
+  [ Kevin Choi ]
+  * * removed extra 0 from a large buffer respond.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 29 Jan 2009 02:32:51 +0000
+
+vyatta-webgui (0.2.11) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Fixed to accept space for text field.
+  * * increase browser session id timeout to 1 hr from 10 minutes
+
+  [ slioch ]
+  * mandatory node implementation.
+
+  [ Kevin Choi ]
+  * * block refresh op cmd output textfield.
+  * * changed log out warning message text as suggest by Justin
+  * * keep user's last state after discard configuration. if last state
+    had discard, should
+  * * refresh entire tree after 'load' command executed
+  * * Fixed view configuration immediately after 'discard'
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 28 Jan 2009 02:41:59 +0000
+
+vyatta-webgui (0.2.10) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Changed help text color to dark gray and font size to normal.
+  * * aligned header tabs to line up with tree panel
+
+  [ slioch ]
+  * additional fixes to session managment.
+
+  [ Kevin Choi ]
+  * * Moved the yellow circle to the left of the tree.
+
+  [ slioch ]
+  * as per justin's request--allow session data to remain after session
+    timeout has expired.
+
+  [ Kevin Choi ]
+  * * integrated with server change to ops command using chunker
+  * * removed debug comment.
+  * * Default value == \n would cause tree view to lose leaf node.
+  * * added company logo and user prompted message while index page
+    redirect to main page.
+  * * Added user warning prompt msg before you logout if config changes
+    were not commit.
+
+  [ slioch ]
+  * added xml cleanup to output of chunker resp--fixes problem with show
+    log and show tech support.
+
+  [ Kevin Choi ]
+  * * added user warning msg before discard
+  * * added 'load' and 'save' wait dialog for respond data
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sun, 25 Jan 2009 17:14:05 +0000
+
+vyatta-webgui (0.2.9) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * removed 'install-system' operation command from GUI
+
+  [ slioch ]
+  * updated gooey protocol. now op|conf needs to be provided as an
+    attribute on both command and configuration requests. the
+    configuration request
+  * fix to allow stderr to be returned as part of op mode cmds. Final
+    fix for 'set date 1234' bug.
+
+  [ Kevin Choi ]
+  * * Fixed user error message typo
+
+  [ slioch ]
+  * added concept of access levels: none|operator|config. operation is
+    limited to op mode commands and the op side of the config tree.
+  * remove recursive data for conf mode.
+
+  [ An-Cheng Huang ]
+  * add "service https"
+
+  [ Kevin Choi ]
+  * * integrate with server's new communication protocol spec changed by
+    adding access control.
+
+  [ slioch ]
+  * added support terminating multichunker response. on command that
+    terminates naturally, the ending chunk will be of the form
+    multi_sessionid_end.
+  * added support for starting background process as part of the
+    set|delete operation on the https node.
+
+  [ Kevin Choi ]
+  * * added tooptip text for all button under toolbar
+
+  [ slioch ]
+  * remove debug statement from chunker
+
+  [ Kevin Choi ]
+  * * Fixed help string for ping op command
+
+  [ slioch ]
+  * adjusted down interval between updates from chunker. response should
+    occur now with apprx 2 seconds.
+
+  [ Kevin Choi ]
+  * * added the multi-node enumerated values handler for leaf node with
+    a drop-down list.
+  * * fixed typo
+
+  [ slioch ]
+  * my bad--left off filename argument for save/load. fixed now.
+
+  [ Kevin Choi ]
+  * * adjust the long/continues command pulling time down to 1.5 seconds
+
+  [ slioch ]
+  * added escape for ampersand in xml. should fix display of show tech
+    support
+
+  [ Kevin Choi ]
+  * * handle user access previledge. This disable the configuration tab
+    if log in user is
+  * * added error message prompt when user click on un-accessable tab.
+  * * added a stop button to stop ping on demand
+  * * fixed for IE browser: 1) adjust combo box trigger to the right. 2)
+    Force to show toolbar
+  * * Removed blank replacement for response data. This fixed will
+    resolved a big chunk of data
+
+  [ slioch ]
+  * changes added to support operational shell cmds. also added show
+    tech-support to conf file, more to be added later.
+  * changed output strings from chunker to pager.
+  * added accesslevel check prior to accepting reboot command
+  * added show ip bgp command to chunker.
+
+  [ Kevin Choi ]
+  * * Fixed No discard/commit commands when only deleting nodes. This
+    fixed enabled
+
+  [ slioch ]
+  * fix for discard behavior.
+  * fix for process mgmt. needed as we moved to support op mode commands
+    via shell script and shell
+  * fixed deadman switch on chunker. make listen socket non-blocking and
+    properly iterate over stl map when killing process and
+
+  [ Kevin Choi ]
+  * * Handle configure node default values.
+
+  [ slioch ]
+  * added clear https process command to cli op cmds
+
+  [ Kevin Choi ]
+  * * adjust field components aligment
+  * * changed login user name color
+
+  [ slioch ]
+  * fix cr on restart process
+  * fix for active_plus mode.
+
+  [ Kevin Choi ]
+  * * changed ops cmd output font to courier new
+
+  [ slioch ]
+  * fix session handling for timeout of session. also converted ALL op
+    mode level commands for chunker to master.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Thu, 22 Jan 2009 16:50:11 -0800
+
+vyatta-webgui (0.2.8) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Added confirmation information before/after a 'reboot' command
+    sent.
+  * * Fixed bug can't commit. After changing configured value, commit
+    and discard buttons are
+
+  [ slioch ]
+  * added local session support. The command to get session
+    configuration
+  * prevent command from being passed to normal op mode processor if
+    multiresponse fails.
+
+  [ Kevin Choi ]
+  * * Fixed bug for the case of set configure value, commit, then set
+    again, the yellow circle
+  * * add html page to redirect connect to webgui page when connecting
+    to web server
+
+  [ slioch ]
+  * cleanup of chunker and surrounding code.
+  * fix for empty directory query in show command (i.e. show log file)
+
+  [ Kevin Choi ]
+  * * Support a dir list of files for user to select a configure file to
+    be loaded.
+  * * integrated the long/continues command with Mike's new fixed.
+  * * updated reboot message texts.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 15 Jan 2009 14:32:31 -0800
+
+vyatta-webgui (0.2.7) unstable; urgency=low
+
+  [ slioch ]
+  * fix for time-zone computed enum values.
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 14 Jan 2009 11:31:27 -0800
+
+vyatta-webgui (0.2.6) unstable; urgency=low
+
+  [ slioch ]
+  * initial checking of working background chunker. chunker in this
+    checkin needs to be started manually, but current version works with
+    current version of browser.
+
+  [ Kevin Choi ]
+  * * add new login images
+
+  [ slioch ]
+  * added init support for chunker daemon and start/stop script.
+  * fix for discard--brings this in line with cli instructions.
+
+  [ Kevin Choi ]
+  * * Fixed discard command failed to update tree due to the null
+    pointer error for case such as
+
+  [ slioch ]
+  * need test head as part of the build tree.
+
+  [ An-Cheng Huang ]
+  * update .gitignore
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 13 Jan 2009 17:18:47 -0800
+
+vyatta-webgui (0.2.5) unstable; urgency=low
+
+  [ slioch ]
+  * added support for reboot option via the cli--needs to be sent with
+    command 'reboot'
+
+  [ Kevin Choi ]
+  * * Fixe bug commit doen't appear to commit. The yellow circles are
+    still display and
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@build-vm.localdomain>  Mon, 12 Jan 2009 18:50:48 -0800
+
+vyatta-webgui (0.2.4) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Fix the cut off data for the large data response from server which
+    DomQuery
+  * * Update active tab images for the new layout
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@build-vm.localdomain>  Fri, 09 Jan 2009 16:08:31 -0800
+
+vyatta-webgui (0.2.3) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Fixed typo on login page
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 09 Jan 2009 15:08:58 -0800
+
+vyatta-webgui (0.2.2) unstable; urgency=low
+
+  [ slioch ]
+  * added same parsing code for op cmd on argument, i.e. escape single
+    quotes and quote whole command. Also added syslog output in chunker
+    in place of stderr output. Finally,
+
+  [ An-Cheng Huang ]
+  * fix typo
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 08 Jan 2009 11:37:01 -0800
+
+vyatta-webgui (0.2.1) unstable; urgency=low
+
+  Checkpoint release
+
+  [ root ]
+  * initial support for node name and help for operational command
+    structure. behavior is similar to configuration request. op mode
+    data can be retrieved with mode="op" attribute.
+  * fixed permission on touch gui file. added op configuration support
+    for dynamic and static enumeration values and for multinode node
+    types.
+  * added support for op mode commands. now return unmodified (except
+    for '\n' conversion) output from op mode shell.
+  * changed op mode node name from multi to node.tag for multinodes.
+
+  [ An-Cheng Huang ]
+  * fix backend op mode detection
+  * fix backend op response format
+  * fix backend op response special character escaping
+  * add basic op commands support in gui front-end
+
+  [ root ]
+  * added <action> tag to op mode node that contains a "run" action in
+    the template. Note that this definition can be expanded to config
+    mode, but currently only sets this node for an op mode configuration
+    request.
+  * strip out comments in allowed template keyword--these are values
+    that are enclosed by "<" and ">". will need to have these statements
+    migrated to help in the operational mode template files.
+  * modified error return code for op mode commands, now based on error
+    value returned from popen call rather than response string.
+
+  [ slioch ]
+  * convert shell mkdir commands to system mkdir calls.
+
+  [ An-Cheng Huang ]
+  * clean up unused files
+
+  [ Stephen Hemminger ]
+  * Add support for either unionfs or aufs
+
+  [ An-Cheng Huang ]
+  * fix signedness for geline return value
+  * more 64-bit fixes
+  * remove compiler warning
+  * add extjs 2.2 to package
+
+  [ slioch ]
+  * added validation for op mode commands. Arguments are required to be
+    enclosed within single quotes. Validation is against operation mode
+    template. currently arguments are
+  * initialize variable being compared--caused failure in validation of
+    op command.wq
+
+  [ An-Cheng Huang ]
+  * remove compiler warning
+
+  [ slioch ]
+  * added more single quotes to protect against rogue hidden cmds. also
+    modified mass replace to allow for replacement=victim value.
+  * limit incoming request size to 8192 bytes. On requests exceeding
+    8192 bytes the request is dropped and the binary exits with no
+    response
+
+  [ An-Cheng Huang ]
+  * 64-bit fix for gui backend
+  * fix debian lighttpd cgi config file
+  * merge Kevin's Vyatta GUI work from phuket
+  * remove obsolete files
+  * correct the CGI URL used in the front-end, resolving permission
+    problems
+
+  [ Kevin Choi ]
+  * changed tree view to display parent leaf only
+  * retrack meraged
+  * fixed mereged conflicts
+  * Improved tree and editor views to display the set values indicator
+    correctly
+  * Minor changed to discard command.
+
+  [ slioch ]
+  * added recursive data mode to getconfig command. This allows a full
+    get of the configuration tree
+
+  [ Kevin Choi ]
+  * add comment text to all action buttons
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 15 Dec 2008 17:20:00 -0800
+
 vyatta-webgui (0.2) unstable; urgency=low
 
 	  3.1.3

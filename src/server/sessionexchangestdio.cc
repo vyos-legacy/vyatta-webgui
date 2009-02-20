@@ -10,6 +10,8 @@
 
 using namespace std;
 
+const unsigned long SessionExchangeStdIO::_request_limit = 8192;
+
 /**
  *
  **/
@@ -59,6 +61,13 @@ SessionExchangeStdIO::read(Session &session)
     string tmp(buf);
     req += tmp.substr(0,tmp.length()-1);
   }
+  if (req.length() > _request_limit) {
+    return false;
+  }
+
+
+  string hack = "echo \"" + req + "\" >> /tmp/foo";system(hack.c_str());
+
   session.set_message(req);
   return true;
 }
@@ -70,6 +79,7 @@ SessionExchangeStdIO::write(Session &session)
   //write to std out here
   if (msg.empty() == false) {
     fputs(msg.c_str(), stdout);
+    string hack = "echo \"" + msg + "\" >> /tmp/foo";system(hack.c_str());
     return true;
   }
   return false;

@@ -47,12 +47,14 @@ bool
 Authenticate::create_new_session()
 {
   unsigned long id = 0;
+  bool init_session = false;
 
   Message msg = _proc->get_msg();
   if (test_auth(msg._user, msg._pswd) == true) {
     //check for current session
     if ((id = reuse_session()) == 0) {
       id = create_new_id();
+      init_session = true;
     }
   }
   else {
@@ -67,62 +69,33 @@ Authenticate::create_new_session()
     string stdout;
     sprintf(buf, "%lu", id);
 
-    cmd = "mkdir -p " + WebGUI::ACTIVE_CONFIG_DIR;
-    if (WebGUI::execute(cmd, stdout) != 0) {
-      //syslog here
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
+    if (init_session == true) {
+      WebGUI::mkdir_p(WebGUI::ACTIVE_CONFIG_DIR.c_str());
+      WebGUI::mkdir_p((WebGUI::LOCAL_CHANGES_ONLY + string(buf)).c_str());
+      WebGUI::mkdir_p((WebGUI::LOCAL_CONFIG_DIR + string(buf)).c_str());
+      
+      string unionfs = WebGUI::unionfs();
+      
+      cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+string(buf)+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ string(buf);
+      
+      if (WebGUI::execute(cmd, stdout) != 0) {
+	//syslog here
+	_proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
+	return false;
+      }
+      
+      WebGUI::mkdir_p((WebGUI::CONFIG_TMP_DIR+string(buf)).c_str());
+      
+      //write the username here to modify file
+      string file = WebGUI::VYATTA_MODIFY_FILE + buf;
+      FILE *fp = fopen(file.c_str(), "w");
+      if (!fp) {
+	_proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
+	return false;
+      }
+      fputs(msg._user.c_str(), fp);
+      fclose(fp);
     }
-
-    cmd = "mkdir -p " + WebGUI::LOCAL_CHANGES_ONLY + string(buf);
-    if (WebGUI::execute(cmd, stdout) != 0) {
-      //syslog here
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
-    }
-    //exec
-
-    cmd = "mkdir -p " + WebGUI::LOCAL_CONFIG_DIR + string(buf);
-    if (WebGUI::execute(cmd, stdout) != 0) {
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
-    }
-    //exec
-
-    //    cmd = "grep -q union=aufs /proc/cmdline || grep -q aufs /proc/filesystems";
-    string unionfs = "unionfs";
-    //CRAJ@--ADD SUPPORT FOR AUSF
-    /*
-    if (WebGUI::execute(cmd, true)) {
-      unionfs = "aufs";
-    }
-    */
-
-    cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+string(buf)+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ string(buf);
-
-    if (WebGUI::execute(cmd, stdout) != 0) {
-      //syslog here
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
-    }
-
-    cmd = "mkdir -p " +WebGUI::CONFIG_TMP_DIR+ string(buf);
-    if (WebGUI::execute(cmd, stdout) != 0) {
-      //syslog here
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
-    }
-
-    //write the username here to modify file
-    string file = WebGUI::VYATTA_MODIFY_FILE + buf;
-    FILE *fp = fopen(file.c_str(), "w");
-    if (!fp) {
-      _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
-      return false;
-    }
-    fputs(msg._user.c_str(), fp);
-    fclose(fp);
-
 
     //now generate successful response
     sprintf(buf, "%d", WebGUI::SUCCESS);
@@ -142,6 +115,36 @@ Authenticate::create_new_session()
 /**
  *
  **/
+WebGUI::AccessLevel
+Authenticate::get_access_level(const std::string &username)
+{
+  ////////////////////////////////////////////////////
+  //Only allow users who are members of operator or vyattacfg groups to proceed
+  struct group *g = getgrnam("vyattacfg");
+  if (g != NULL) {
+    char **m;
+    for (m = g->gr_mem; *m != (char *)0; m++) {
+      if (strcmp(*m, username.c_str()) == 0) {
+	return WebGUI::ACCESS_ALL;
+      }
+    }
+  }
+  
+  g = getgrnam("operator");
+  if (g != NULL) {
+    char **m;
+    for (m = g->gr_mem; *m != (char *)0; m++) {
+      if (strcmp(*m, username.c_str()) == 0) {
+	return WebGUI::ACCESS_OPER;
+      }
+    }
+  }
+  return WebGUI::ACCESS_NONE; //rejecting as failed check or non vyattacfg member
+}
+
+/**
+ *
+ **/
 bool
 Authenticate::test_auth(const std::string & username, const std::string & password) 
 {
@@ -151,23 +154,11 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
     return false;
   }
 
-  ////////////////////////////////////////////////////
-  //without support for op cmds fail any non vyattacfg group member
-  bool found = false;
-  struct group *g = getgrnam("vyattacfg");
-  if (g != NULL) {
-    char **m;
-    for (m = g->gr_mem; *m != (char *)0; m++) {
-      if (strcmp(*m, username.c_str()) == 0) {
-	found = true;
-	break;
-      }
-    }
+
+  WebGUI::AccessLevel level = get_access_level(username);
+  if (level == WebGUI::ACCESS_NONE) {
+    return false;
   }
-  if (found == false) {
-    return false; //rejecting as failed check or non vyattacfg member
-  }
-  ////////////////////////////////////////////////////
 
   pam_conv conv = { conv_fun, const_cast<void*>((const void*)&password) };
   
@@ -212,14 +203,14 @@ Authenticate::create_new_id()
   FILE *fp = fopen("/dev/urandom", "r");
   if (fp) {
     char *ptr = (char*)&val;
-
+    
     do {
       *ptr = fgetc(fp); if (*ptr == EOF) return 0;
       *(ptr+1) = fgetc(fp); if (*(ptr+1) == EOF) return 0;
       *(ptr+2) = fgetc(fp); if (*(ptr+2) == EOF) return 0;
       *(ptr+3) = fgetc(fp); if (*(ptr+3) == EOF) return 0;
       
-      id = WebGUI::ID_START + (float(val) / float(4294967296.)) * WebGUI::ID_RANGE;
+      id = WebGUI::ID_START + (float(val) / float(WebGUI::ID_MAX)) * WebGUI::ID_RANGE;
       
       //now check for collision
       char buf[40];
@@ -227,6 +218,8 @@ Authenticate::create_new_id()
       file = WebGUI::VYATTA_MODIFY_FILE + string(buf);
     }
     while (stat(file.c_str(), &tmp) == 0);
+
+    fclose(fp);
   }
   return id;  
 }

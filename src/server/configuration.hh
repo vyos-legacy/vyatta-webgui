@@ -25,8 +25,11 @@ private:
   std::string
   get_configuration();
 
+  void
+  get_full_level(const std::string &root_node, std::string &out, bool recursive);
+
   std::string
-  get_full_level();
+  get_full_op_level();
 
   std::map<std::string,WebGUI::NodeState>
   get_conf_dir(const std::string &root);

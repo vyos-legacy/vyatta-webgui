@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-3) unstable; urgency=low
+
+  * make authentication scheme work with NSS and split groups.
+  * setgid according to access level
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 20 Feb 2009 18:57:00 -0800
+
 vyatta-webgui (0.2.13-2) unstable; urgency=low
 
   [ An-Cheng Huang ]

@@ -80,11 +80,13 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
               var xmlRoot = response.responseXML.documentElement;
               var q = Ext.DomQuery;
               var id = q.selectValue(V_COOKIES_USER_ID, xmlRoot, V_NOT_FOUND);
+              var uname = q.selectValue(V_COOKIES_USER_NAME, xmlRoot,
+                                        V_NOT_FOUND);
 
               f_saveUserLoginId(id);
-              f_saveUserLoginName(userField.getValue());
+              f_saveUserLoginName(uname);
 
-              if(id == V_NOT_FOUND)
+              if ((id == V_NOT_FOUND) || (uname == V_NOT_FOUND))
               {
                   f_promptErrorMessage('Login Failed',
                     'Invalid username or password. Please try again.');

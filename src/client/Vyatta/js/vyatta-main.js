@@ -37,10 +37,15 @@ DATA_baseSystem = Ext.extend(Ext.util.Observable,
 
 function f_startLogin()
 {
-    var loginObj = new VYATTA_LoginObject(g_baseSystem.m_bodyPanel,
-                                          V_TREE_ID_login);
-    loginObj.f_initDataType();
-    loginObj.f_initLoginPanel();
+  // single sign on: no longer do the actual login. the user will need to
+  // authenticate with dom0 first. actual authentication is done between
+  // dom0 and domU.
+  var userField = f_createLoginUserNameField();
+  var passField = f_createLoginPasswordField();
+  userField.setValue('dummy');
+  passField.setValue('dummy');
+  f_loginHandler('main.html', '/Vyatta/cgi-bin/webgui-wrap',
+                 userField, passField);
 }
 
 function f_showTab(tabIndex)

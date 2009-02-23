@@ -101,7 +101,7 @@ Authenticate::create_new_session()
     sprintf(buf, "%d", WebGUI::SUCCESS);
     char buf1[40];
     sprintf(buf1, "%lu", id);
-    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->_msg._token+"</token><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code><msg/></error></vyatta>";
+    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->_msg._token+"</token><id>"+string(buf1)+"</id><userName>"+msg._user+"</userName><error><code>"+string(buf)+"</code><msg/></error></vyatta>";
     _proc->set_response(tmpstr);
     
     //need to verify that system is set up correctly here to provide proper return code.

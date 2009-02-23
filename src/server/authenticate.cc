@@ -189,32 +189,11 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
     return false;
   }
 
-  pam_conv conv = { conv_fun, const_cast<void*>((const void*)&password) };
-  
-  pam_handle_t *pam = NULL;
-  int result = pam_start("login", passwd->pw_name, &conv, &pam);
-  if (result != PAM_SUCCESS) {
-    cerr << "pam_start" << endl;
-    return false;
-  }
-  
-  result = pam_authenticate(pam, 0);
-  if (result != PAM_SUCCESS) {
-    cerr << "failed on pam_authenticate for: " << username << ", " << password << ", " << result << endl;
-    return false;
-  }
-  
-  result = pam_acct_mgmt(pam, 0);
-  if (result != PAM_SUCCESS) {
-    cerr << "pam_acct_mgmt" << endl;
-    return false;
-  }
-  
-  result = pam_end(pam, result);
-  if (result != PAM_SUCCESS) {
-    cerr << "pam_end" << endl;
-    return false;
-  }
+  // instead of pam_authenticate/etc. the user, we need to authenticate the
+  // request, i.e., make sure it is from dom0.
+  // TODO: authenticate request, e.g., using information from cgi environment
+  //       (e.g., remote host, etc.) and request headers (e.g., extra headers
+  //       added by dom0).
   return true;
 }
 

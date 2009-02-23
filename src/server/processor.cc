@@ -12,6 +12,7 @@
 #include <dirent.h>
 #include <expat.h>
 #include <assert.h>
+#include <glib.h>
 #include "authenticate.hh"
 #include "processor.hh"
 
@@ -178,10 +179,47 @@ data_hndl(void *data, const XML_Char *s, int len) {
     str = WebGUI::trim_whitespace(str);
 
     if (m->_node == WebGUI::NEWSESSION_USER) {
+      // dom0/domU authentication scheme: dom0 performs user authentication.
+      // username is passed to domU in the HTTP Authorization header.
+      char *http_auth = getenv("HTTP_AUTHORIZATION");
+      gchar *b64 = NULL;
+      guchar *d64 = NULL;
+      str = "";
+      do {
+        if (!http_auth || strncmp(http_auth, "Basic ", 6) != 0) {
+          break;
+        }
+        // got the header
+        b64 = g_strdup((gchar *) http_auth);
+        if (!b64) {
+          break;
+        }
+        // decode the part after "Basic "
+        gsize len = 0;
+        d64 = g_base64_decode(b64 + 6, &len);
+        if (!d64) {
+          break;
+        }
+        gchar *delim = g_strstr_len((const gchar *) d64, len, ":");
+        if (!delim) {
+          break;
+        }
+        // truncate the string at first ":"
+        *delim = 0;
+        str = (char *) d64;
+      } while (false);
+      // set the user name. it will be empty string if there was any error.
       m->_user = str;
+      // clean up
+      if (d64) {
+        g_free(d64);
+      }
+      if (b64) {
+        g_free(b64);
+      }
     }
     else if (m->_node == WebGUI::NEWSESSION_PSWD) {
-      m->_pswd = str;
+      m->_pswd = "";
     }
     m->_root_node = str;
     free(buf);

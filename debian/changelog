@@ -1,3 +1,20 @@
+vyatta-webgui (0.2.13-4) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Changed show command popup dialog box msg from 'Changing
+    configuration...' to
+  * * strip out the extra characters from op command respond a large
+    string
+  * * additional fixed to commit error indicators
+  * * Multi-text field does not give up the focus when single click on
+    other input field. This
+  * Revert "* Multi-text field does not give up the focus when single
+    click on other input field. This"
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 24 Feb 2009 14:27:03 -0800
+
 vyatta-webgui (0.2.13-3) unstable; urgency=low
 
   * make authentication scheme work with NSS and split groups.

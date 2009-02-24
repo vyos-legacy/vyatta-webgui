@@ -73,5 +73,17 @@ var g_cookie =
         this.f_set(pName, '', -1);
 
         return cookie;
+    },
+
+    f_remove_all: function()
+    {
+      var str = document.cookie;
+      var keys = str.split(';');
+      for (var i = 0; i < keys.length; i++) {
+        var avp = keys[i].match(new RegExp('^\\s*([^\\s]+)=([^\\s]*)\\s*$'));
+        if (avp[0] != undefined) {
+          this.f_set_raw(avp[0], '', -1);
+        }
+      }
     }
 }

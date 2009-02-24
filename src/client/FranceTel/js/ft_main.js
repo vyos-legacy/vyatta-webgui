@@ -105,9 +105,7 @@ g_vyattaURL = null;
 g_dummy = null;
 function f_startVyattaApplication()
 {
-    window.open(g_vyattaURL);
-
-    if(g_dummy != null)
+    if(true)
     {
         if(this.m_vyattaPanel == undefined)
         {
@@ -115,7 +113,6 @@ function f_startVyattaApplication()
             {
                 tag: 'iframe',
                 frameBorder:0,
-                //src: 'http://192.168.94.131/Vyatta/main.html',//g_vyattaURL,
                 src: g_vyattaURL,
                 width: '100%',
                 height: '100%'
@@ -134,7 +131,10 @@ function f_startVyattaApplication()
         bp.doLayout();
     }
     else
+    {
+        window.open(g_vyattaURL);
         f_startEmptyApplication();
+    }
 
     f_onBodyPanelResize(bp);
 }

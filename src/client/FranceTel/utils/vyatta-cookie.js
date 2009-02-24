@@ -10,8 +10,9 @@ var g_cookie =
     m_namePrefix: 'dom0_',
 
     /**
-     * pName - the naem for the cookie to be set
-     * pValue - the vallue for the cookie to be set
+     * pName - the name for the cookie to be set
+     *         (which will be prepended with dom0 prefix)
+     * pValue - the value for the cookie to be set
      * pExpires - the time before the cookies to be set expires
      *            (in milliseconds)
      * pPath - the path for the cookie ('/' if not specified)
@@ -19,8 +20,13 @@ var g_cookie =
      */
     f_set: function(pName, pValue, pExpires, pPath)
     {
-        var expires = V_NOT_FOUND;
         pName = this.m_namePrefix + pName;
+        return this.f_set_raw(pName, pValue, pExpires, pPath);
+    },
+
+    f_set_raw: function(pName, pValue, pExpires, pPath)
+    {
+        var expires = V_NOT_FOUND;
 
         if(pExpires != undefined)
         {
@@ -45,6 +51,13 @@ var g_cookie =
         ////////////////////////////////////////
         // get the matching cookie
         pName = this.m_namePrefix + pName;
+        return this.f_get_raw(pName);
+    },
+
+    f_get_raw: function(pName)
+    {
+        ////////////////////////////////////////
+        // get the matching cookie
         var cookie = document.cookie.match(new RegExp('(^|;)\\s*' +
                       escape(pName) + '=([^;\\s]*)'));
 

@@ -51,6 +51,12 @@ function f_userLogout(isRedirectToHomePage, toPage)
 {
     g_cookie.f_remove(V_COOKIES_USER_ID);
 
+    // TODO remove all domU cookies
+    // XXX hard-code UTM domU cookies for now
+    g_cookie.f_set_raw(V_COOKIES_USER_ID, '', -1, '/Vyatta/');
+    g_cookie.f_set_raw(V_COOKIES_USER_NAME, '', -1, '/Vyatta/');
+    g_cookie.f_set_raw(V_COOKIES_ISLOGIN, '', -1, '/Vyatta/');
+
     if(isRedirectToHomePage != undefined && isRedirectToHomePage)
     {
         g_cookie.f_set(V_COOKIES_ISLOGIN, 'no', g_cookie.m_userNameExpire);

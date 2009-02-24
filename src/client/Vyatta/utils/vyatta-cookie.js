@@ -7,6 +7,7 @@ var g_cookie =
 {
     m_userNameExpire: (5* 60*60*1000),
     m_helpExpire: (5 * 60 * 60 * 1000),
+    m_namePrefix: 'Vyatta_',
 
     /**
      * pName - the naem for the cookie to be set
@@ -16,6 +17,8 @@ var g_cookie =
      */
     f_set: function(pName, pValue, pExpires)
     {
+        pName = this.m_namePrefix + pName;
+
         var expires = V_NOT_FOUND;
 
         if(pExpires != undefined)
@@ -27,14 +30,16 @@ var g_cookie =
             expires = '; expires=' + expDate.toGMTString();
         }
 
-        return (document.cookie = escape(pName) + '=' + escape(pValue || '') +
-                expires);
+        return (document.cookie = escape(pName) + '=' + escape(pValue || '')
+                + '; path=/' + expires);
     },
 
     f_get: function(pName)
     {
         ////////////////////////////////////////
         // get the matching cookie
+        pName = this.m_namePrefix + pName;
+
         var cookie = document.cookie.match(new RegExp('(^|;)\\s*' +
                       escape(pName) + '=([^;\\s]*)'));
 

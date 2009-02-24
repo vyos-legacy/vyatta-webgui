@@ -257,12 +257,12 @@ function f_handleConfFormCommandDone(treeObj, node)
                 f_loadChildNode(treeObj, node);
 
             f_handlePropagateParentNodes(node);
-            tree.un('load', onReloadHandler);
+            treeObj.m_isCommitAvailable = true;
             treeObj.m_parent.f_onTreeRenderer(treeObj);
+            tree.un('load', onReloadHandler);
         }
         tree.on('load', onReloadHandler);
         node.reload();
-
 
         for(var i=0; i<g_cliCmdObj.m_fdSent.length; i++)
             f_handleFormIndicators(g_cliCmdObj.m_fdSent[i].m_node);
@@ -446,8 +446,16 @@ function f_sendConfFormCommand(treeObj)
 
 function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 {
-    g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait('Changing configuration...',
-                                                      'Configuration');
+    var msg = 'Configuration...';
+    if(cmds[0].indexOf('set ') >= 0 || cmds[0].indexOf('delete ') >= 0 ||
+        cmds[0].indexOf('discard') >= 0 || cmds[0].indexOf('commit') >= 0)
+        msg = 'Changing configuration...';
+
+    ///////////////////////////////
+    // clear commit error buffer
+    if(cmds[0].indexOf('commit') >= 0) g_cliCmdObj.m_commitErrs = [];
+
+    g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait(msg, 'Configuration');
 
     var tObj = treeObj;
     var sendCommandCliCb = function(options, success, response)
@@ -502,6 +510,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             }
             tree.on('load', onReloadHandler);
             tree.root.reload();
+            f_handlePropagateParentNodes(selNode);
         }
         else if(cmds[0].indexOf('commit') >= 0)
         {
@@ -510,6 +519,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 tObj.m_parent.f_cleanEditorPanel();
                 f_handleNodeExpansion(tObj, selNode, selPath, cmds[0]);
                 tree.un('load', onReloadHandler);
+                f_handlePropagateParentNodes(selNode);
             }
             tObj.m_parent.f_resetEditorPanel();
             tObj.m_selNodePath = selPath;//node.parentNode;
@@ -827,10 +837,24 @@ function f_parseResponseError(xmlRoot)
         // selectValue only can return up to 4096 char
         if(msg.length >= 4096 && xmlRoot.textContent != undefined)
         {
+            //////////////////////////
+            // somehow the textContent some returns addition chars.
+            // so the following code are to strip them out.
+            var f5 = msg.substr(0, 5);
             msg = xmlRoot.textContent;
 
-            // strip out the first 1 extra chars.
-            msg = msg.substr(1, msg.length);
+            var s5 = msg.substr(0, 5);
+            var i=0;
+            while(f5 != s5)
+            {
+                s5 = msg.substr(++i, 5);
+                if(i > 5) // ensure to escape loop
+                {
+                    i=0; break;
+                }
+            }
+            // strip out the i extra chars.
+            msg = msg.substr(i, msg.length-i);
         }
 
         var msgNode = q.selectNode('msg', err);

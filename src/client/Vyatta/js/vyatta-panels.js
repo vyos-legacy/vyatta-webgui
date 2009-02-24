@@ -569,30 +569,26 @@ function f_getValueForCheckbox(value)
 }
 function f_createCheckbox(value, node, helpStr, width, callback)
 {
-    var oldVal = value != undefined ? value : node.attributes.defaultVal;
+    var cliVal = value != undefined ? value : node.attributes.defaultVal;
     var labelStr = node.text;
-    var chk = f_getValueForCheckbox(oldVal);
+    var chkOrigVal = f_getValueForCheckbox(cliVal);
 
     var onClickHandler = function()
     {
         field.setValue(!field.getValue());
-
-        if(field.getValue() == f_getValueForCheckbox(oldVal))
-            field.reset();
-
         callback(field);
     }
     var field = new Ext.form.Checkbox(
     {
         style: 'anchor: 0%, text-align:right, padding:20px'
-        ,checked: chk
+        ,checked: chkOrigVal
         ,onClick: onClickHandler
         ,bodyStyle: 'padding:0px 0px 3px 0px'
     });
     field.getOriginalValue = function()
-    { return chk };
+    { return chkOrigVal };
     field.setOriginalValue = function(val)
-    { oldVal = val; }
+    { chkOrigVal = val; }
 
     var wrapPanel = new Ext.Panel(
     {
@@ -735,7 +731,7 @@ function f_createToolbar(panelObj)
           panelObj.m_viewBtn = f_createToolbarButton('v_view_button',
                 'view', panelObj.m_treeObj, 'Show configuration file'),
           panelObj.m_loadBtn = f_createToolbarButton('v_load_button',
-                'load', panelObj.m_treeObj, 'Reload system'),
+                'load', panelObj.m_treeObj, 'Load configuration file'),
           panelObj.m_saveBtn = f_createToolbarButton('v_save_button',
                 'save', panelObj.m_treeObj, 'Save configuration to file'),
           '-',
@@ -744,10 +740,10 @@ function f_createToolbar(panelObj)
           //'-',
           panelObj.m_discardBtn = f_createToolbarButton('v_discard_button',
                               'discard', panelObj.m_treeObj,
-                              'Discard changed'),
+                              'Discard configuration changes'),
           panelObj.m_commitBtn = f_createToolbarButton('v_commit_button',
                                 'commit', panelObj.m_treeObj,
-                                'Commit changed')
+                                'Commit configuration changes')
         ] :
         [ '->',
           helpTipButton
@@ -1094,6 +1090,7 @@ function f_addField2Panel(editorPanel, fields, node, mode)
                     }
                 }
             }
+            fields.m_form = eFormPanel;
         }
     }
     else  // editor panel is empty. create a form and add fields into it
@@ -1203,12 +1200,20 @@ function f_createEditGrid(values, gridStore, record, node,
     for(var i=0; i<50-count; i++)
         gridStore.loadData([ '' ], true);
 
+    var tId = null;
+    var setField = function()
+    {
+        window.clearTimeout(tId);
+        f_prepareConfFormCommandSend(treeObj);
+    }
     if(callback != undefined)
     {
         var keypressHandler = function(e)
         {
             if(e.getKey() == 13)
-                f_prepareConfFormCommandSend(treeObj);
+            {
+                tId = window.setTimeout(setField, 100);
+            }
         }
     }
     var tf = new Ext.form.TextField(
@@ -1251,7 +1256,7 @@ function f_createEditGrid(values, gridStore, record, node,
           }
         ]
     });
-    grid.on('afteredit', callback);
+    //grid.on('afteredit', callback);
     grid.m_textField = tf;
 
     helpLabel = node.attributes.type != undefined ? helpLabel+
@@ -1608,9 +1613,10 @@ function f_handleConfFieldOffFocus(field)
             field.el.dom.className = cn + ' v-textfield-unsubmit';
         else
             field.el.dom.className = cn + ' v-textfield-submit';
-    }
+    }/*
     else if(fType == 'editorgrid')
     {
+        var ff = f_getFormFocusField(field.m_form);
         var view = field.getView();
         var row = view.m_row;
         var rec = field.getAt(row);
@@ -1618,7 +1624,7 @@ function f_handleConfFieldOffFocus(field)
             view.addRowClass(row, "v-textfield-unsubmit");
         else
             view.addRowClass(row, "v-textfield-submit");
-    }
+    }*/
     else if(fType == 'checkbox')
     {
         var cn = field.m_wp.el.dom.className;
@@ -1651,6 +1657,7 @@ function f_handleFormIndicators(node)
         case 'textfield':
         case 'numberfield':
         case 'combo':
+            if(fd.el == undefined) break;
             var cn = fd.el.dom.className;
             fd.el.dom.className = f_replace(cn, 'v-textfield-unsubmit', '');
 
@@ -1669,6 +1676,7 @@ function f_handleFormIndicators(node)
             var cn = fd.m_wp.el.dom.className;
             cn = f_replace(cn, 'v-bg-yellow', 'v-bg-white');
             fd.m_wp.el.dom.className = cn;
+            fd.setOriginalValue(fd.getValue());
             break;
     }
 

@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <grp.h>
 #include <pwd.h>
 #include <unistd.h>
 #include <dirent.h>
@@ -240,7 +241,19 @@ Session::update_session()
 
   //move this up the timeline in the future, but this is where we will initially set the uid/gid
   //retreive username, then use getpwnam() from here to populate below
-  if (setgid(pw->pw_gid) != 0) {
+  struct group *gr = NULL;
+  if (_access_level == WebGUI::ACCESS_ALL) {
+    gr = getgrnam("vyattacfg");
+  } 
+  else if (_access_level == WebGUI::ACCESS_OPER) {
+    gr = getgrnam("operator");
+  }
+  if (gr == NULL) {
+    _processor->set_response(WebGUI::SESSION_FAILURE);
+    return false;
+  }
+
+  if (setgid(gr->gr_gid) != 0) {
     _processor->set_response(WebGUI::SESSION_FAILURE);
     return false;
   }

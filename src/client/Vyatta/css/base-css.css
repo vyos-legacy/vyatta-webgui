@@ -284,6 +284,10 @@
     cursor:pointer;
     white-space: nowrap;
 }
+.v-tb-btn-over
+{
+    background:  transparent url('../images/create.png') no-repeat left !important;
+}
 .v-create-button
 {
     background:  transparent url('../images/create.png') no-repeat left !important;
@@ -291,6 +295,16 @@
     width: 60px !important;
     cursor:pointer;
     white-space: nowrap;
+}
+.v-create-button .x-btn-icon .x-btn-center .x-btn-text
+{
+background-position:center center;
+background-repeat:no-repeat;
+cursor:pointer;
+height:22px;
+padding:0;
+white-space:nowrap;
+width:22px !important;
 }
 /*
 .x-toolbar .xbtn-over .x-btn-left
@@ -415,7 +429,7 @@ body
 
 .v-border-less
 {
-    border: 0 none;
+    border: 0 none !important;
     border-style: none;
     background-color: #fff;
     border-top: none;

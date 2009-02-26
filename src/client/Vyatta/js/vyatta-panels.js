@@ -84,7 +84,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
 
             //////////////////////////////////
             // end background segment process.
-            g_cliCmdObj.m_segmentId = 'tabChanged';
+            g_cliCmdObj.m_segmentId = 'segment_end';
             f_resetOperButton(this.m_treeObj.m_runButton);
 
             this.m_parentPanel.show();
@@ -92,6 +92,27 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
         }
         else
             this.m_parentPanel.hide();
+    },
+
+    f_showLeftPanel: function(f)
+    {
+        if(f.getValue() == 'Completed Hierarchical')
+        {
+            this.m_treeObj.m_tree.show();
+            this.f_resizePanels();
+            this.m_compTreeObj.m_tree.hide();
+        }
+        else if(f.getValue() == 'Key Components')
+        {
+            if(this.m_leftPanel.items.getCount() == 1)
+            {
+                this.m_leftPanel.add(this.m_compTreeObj.m_tree);
+                this.m_leftPanel.doLayout();
+            }
+            this.m_treeObj.m_tree.hide();
+            this.m_compTreeObj.m_tree.show();
+            this.f_resizePanels();
+        }
     },
 
     f_updatePanels: function()
@@ -313,10 +334,15 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
     f_initTree: function()
     {
         /////////////////////////////////////////////////
-        // init tree object
+        // init hierachical tree object
         this.m_treeObj = new VYATTA_tree(this.m_tabName);
         this.m_treeObj.f_createTree(this);
         this.m_treeObj.m_tree.show();
+
+        //////////////////////////////////
+        // init component tree obj
+        this.m_compTreeObj = new VYATTA_components_tree(this.m_tabName);
+        this.m_compTreeObj.f_createTree(this);
     },
 
     f_onTreeRenderer: function(tree)
@@ -394,6 +420,7 @@ function f_createNumberField(treeObj, value, node, help, width, callback, mode)
         ,onBlur: mode == undefined ? onBlurHandler : undefined
         ,invalidClass: ""
     });
+    field.on('focus', function(f){ f_handleGridLostFocus(f, false); });
     field.getOriginalValue = function()
     { return oldVal == undefined ? "" : oldVal; };
     field.setOriginalValue = function(val)
@@ -427,11 +454,35 @@ function f_createNumberField(treeObj, value, node, help, width, callback, mode)
                   , V_LABEL_HELP) ]
     });
     p.m_node = node;
+    p.m_parentNode = node.parentNode;
     node.m_inputPanel = p;
 
     return p;
 }
 
+///////////////////////////////////////////////////
+// When grid row has focus, user clicks on text field.
+// the focus jumps back to the grid instead of the
+// field user clicked. This function gives the focus
+// back the clicked field. It's not a very clear method
+// but it works.
+var g_focusFd = undefined;  // field current has focus
+function f_handleGridLostFocus(focus, isFromGrid)
+{
+    if(!Ext.isIE)
+    {
+        if(!isFromGrid)
+        {
+            g_focusFd = focus;
+            g_focusFd.m_isGrid = false;
+        }
+        else if(g_focusFd != undefined && g_focusFd.m_isGrid != undefined &&
+                !g_focusFd.m_isGrid)
+                g_focusFd.focus(false,10);
+    }
+    else if(!isFromGrid)
+            focus.focus(false, 100);
+}
 function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, node, mode)
 {
     var oldVal = value != undefined ? value : node.attributes.defaultVal;
@@ -450,6 +501,7 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
         ,enableKeyEvents: true
         ,onBlur: mode == 'confMode' ? onBlurHandler : undefined
     });
+    field.on('focus', function(f){ f_handleGridLostFocus(f, false); });
     field.m_mode = mode;
     field.getOriginalValue = function()
     { return oldVal == undefined ? "" : oldVal; };
@@ -486,6 +538,7 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
                     f_createLabel(helpStr, V_LABEL_HELP) ]
     });
     p.m_node = node;
+    p.m_parentNode = node.parentNode;
     node.m_inputPanel = p;
 
     return p;
@@ -557,6 +610,7 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
                   f_createLabel(helpStr, V_LABEL_HELP) ]
     });
     p.m_node = node;
+    p.m_parentNode = node.parentNode;
     node.m_inputPanel = p;
 
     return p;
@@ -589,7 +643,7 @@ function f_createCheckbox(value, node, helpStr, width, callback)
     { return chkOrigVal };
     field.setOriginalValue = function(val)
     { chkOrigVal = val; }
-
+    
     var wrapPanel = new Ext.Panel(
     {
         border: false
@@ -623,6 +677,7 @@ function f_createCheckbox(value, node, helpStr, width, callback)
                   f_createLabel(helpStr, V_LABEL_HELP) ]
     });
     p.m_node = node;
+    p.m_parentNode = node.parentNode;
     node.m_inputPanel = p;
 
     return p;
@@ -698,20 +753,30 @@ function f_createComboBox(values, selVal, editable, label)
 }
 function f_createTopPanelViewPanel(thisObj)
 {
+    var onCollapseHandler = function(f)
+    {
+        thisObj.f_showLeftPanel(f);
+    }
+
     var field = f_createComboBox(thisObj.m_viewerValues, 1, false, "View");
+    field.on('collapse', onCollapseHandler);
+    var toolbar = new Ext.Toolbar(
+    {
+        border: false
+        ,cls: 'v-border-less'
+        //,items: [ 'View: ', field]
+    });
 
     return new Ext.Panel(
     {
-        //autoWidth: true
         height: 28
         ,width: 192
         ,maxWidth: 250
         ,boder: false
         ,bodyBorder: false
         ,collapsible: false
-        ,cls: 'v-panel-with-background-color'
-        ,html: '&nbsp;'
-        //,tbar: [ 'View: ', field ]
+        ,cls: 'v-border-less'
+        ,tbar: toolbar
     });
 }
 
@@ -893,13 +958,13 @@ function f_showFileChooserDialog(command, values, treeObj)
     })
 
     var editable = false;
-    var title = 'Select a configuraton filename to reload';
-    var dlgTitle = 'Reload Configuration';
+    var title = 'Select a configuraton filename to be loaded';
+    var dlgTitle = 'Load Configuration File';
     if(command == 'save')
     {
         editable = true;
         title = 'Select or enter a new configuration filename'
-        dlgTitle = 'Save Configuration';
+        dlgTitle = 'Save Configuration File';
     }
     var comb = f_createComboBox(val, 0, editable, 'Filename');
     var loginFormPanel = new Ext.form.FormPanel(
@@ -1073,22 +1138,18 @@ function f_addField2Panel(editorPanel, fields, node, mode)
                     type = ifield.getXType();
                 }
 
-                if(mode == V_TREE_ID_config)
+                if(mode == V_TREE_ID_config || mode == V_TREE_ID_oper)
                 {
                     if(eFormPanel.items.getCount() == 2)
                     {
                         ifield.focus(true, 500);
-                        ifield.tabIndex = 0;
+                        //ifield.el.dom.focus()
+                        ifield.tabIndex = eFormPanel.m_fdIndex++;
                     }
                 }
-                else if(mode == V_TREE_ID_oper)
-                {
-                    if(eFormPanel.items.getCount() == 2)
-                    {
-                        ifield.focus(true, 500);
-                        ifield.tabIndex = 0;
-                    }
-                }
+
+                if(eFormPanel.items.getCount() > 2)
+                    ifield.tabIndex = eFormPanel.m_fdIndex++;
             }
             fields.m_form = eFormPanel;
         }
@@ -1117,6 +1178,7 @@ function f_addField2Panel(editorPanel, fields, node, mode)
         form.m_count = 0;
         form.dummy = dummy;
         form.m_title = fields.m_title;
+        form.m_fdIndex = 0;
 
         editorPanel.add(form);
         editorPanel.m_formPanel = form;
@@ -1229,7 +1291,7 @@ function f_createEditGrid(values, gridStore, record, node,
             }
         }
     });
-
+    tf.on('blur', function(f) { f_handleGridLostFocus(f, true); });
     var gv = new VYATTA_gridview();
     var sm = new Ext.grid.RowSelectionModel({ singleSelect: true });
     var grid = new Ext.grid.EditorGridPanel(
@@ -1273,6 +1335,7 @@ function f_createEditGrid(values, gridStore, record, node,
                 f_createLabel(helpLabel, V_LABEL_HELP) ]
     });
     p.m_node = node;
+    p.m_parentNode = node.parentNode;
     node.m_inputPanel = p;
 
     return p;
@@ -1386,17 +1449,10 @@ function f_createConfButton(treeObj, node, btnText, title)
         iconCls = 'v-create-button';
     }
 
-    var imgButtonTpl = new Ext.Template(
-        '<table border="0" cellpadding="0" cellspacing="0" class="x-btn-wrap"><tbody><tr>' +
-        '<td class="x-btn-left"><i>&amp; </i></td><td class="x-btn-center">' +
-        '<button type="button"><img src="../images/delete.png"></button>' +
-        '</td><td class="x-btn-right"><i> </i></td>' +
-        '</tr></tbody></table>');
-
     buttons[0] = new Ext.Button(
     {
         id: btn_id
-        //,template: imgButtonTpl
+        ,overCls: 'v-tb-btn-over'
         ,text: ''
         ,iconCls: iconCls
         ,tooltip: btnText + ' configuration node'
@@ -1409,6 +1465,7 @@ function f_createConfButton(treeObj, node, btnText, title)
     buttons[0].on('mouseover', function(){});
     buttons[0].on('mouseout', function(){alert('out')});
     buttons.m_buttons = buttons;
+    buttons[0].indexTab = 0;
 
     return buttons;
 }
@@ -1613,18 +1670,7 @@ function f_handleConfFieldOffFocus(field)
             field.el.dom.className = cn + ' v-textfield-unsubmit';
         else
             field.el.dom.className = cn + ' v-textfield-submit';
-    }/*
-    else if(fType == 'editorgrid')
-    {
-        var ff = f_getFormFocusField(field.m_form);
-        var view = field.getView();
-        var row = view.m_row;
-        var rec = field.getAt(row);
-        if(rec.dirty)
-            view.addRowClass(row, "v-textfield-unsubmit");
-        else
-            view.addRowClass(row, "v-textfield-submit");
-    }*/
+    }
     else if(fType == 'checkbox')
     {
         var cn = field.m_wp.el.dom.className;
@@ -1637,9 +1683,13 @@ function f_handleConfFieldOffFocus(field)
 
 }
 
-function f_handleFormIndicators(node)
+function f_handleFormIndicators(node, parentNode)
 {
     if(node == undefined || node.m_inputPanel == undefined) return;
+
+    ///////////////////////////////////////
+    // handle commit error buffer to sure if node is clear from the buffer
+    f_updateCommitErrors(node, parentNode);
 
     var fd = node.m_inputPanel.items.itemAt(V_IF_INDEX_INPUT);
     var type = fd.getXType();

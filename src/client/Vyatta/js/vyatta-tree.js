@@ -100,7 +100,7 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
+VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
 {
     m_tree: undefined,
 
@@ -132,7 +132,6 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                 failure: this.handleFailure,
                 scope: this,
                 argument: {callback: callback, node: node},
-                //params: this.baseParams
                 xmlData: xmlstr
             });
 
@@ -164,7 +163,7 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         ///////////////////////////////////////////
         // parse error will redirect to login page
         // if user not login or login timeout
-        var isSuccess = f_parseResponseError(xmlRoot);
+        var isSuccess = f_parseServerCallback(xmlRoot);
 
         //////////////////////////////////////////////
         // conf mode is not allow. force to oper mode
@@ -173,14 +172,14 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             g_baseSystem.m_userLevel = 0;
             f_showOperationalTab();
             response.responseText = '[ ]';
-            return MyTreeLoader.superclass.processResponse.apply(this, arguments);
+            return VYATTA_hierTreeLoader.superclass.processResponse.apply(this, arguments);
         }
 
         var nodes = q.select('node', xmlRoot);
         if (nodes.length == 0)
         {
             response.responseText = '[ ]';
-            return MyTreeLoader.superclass.processResponse.apply(this, arguments);
+            return VYATTA_hierTreeLoader.superclass.processResponse.apply(this, arguments);
         }
 
         var str = '';
@@ -224,14 +223,14 @@ MyTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             case V_TREE_ID_config:
             {
                 response.responseText = '[' + str + ']';
-                return MyTreeLoader.superclass.processResponse.apply(this, arguments);
+                return VYATTA_hierTreeLoader.superclass.processResponse.apply(this, arguments);
             }
             case V_TREE_ID_oper:
             {
                 var rootNode = node.getOwnerTree().getRootNode();
                 rootNode.setText('Operation');
                 response.responseText = '[' + str + ']';
-                return MyTreeLoader.superclass.processResponse.apply(this, arguments);
+                return VYATTA_hierTreeLoader.superclass.processResponse.apply(this, arguments);
             }
         }
     },
@@ -361,7 +360,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
         //////////////////////////////////////////////////////////
         // create tree loader
-        this.m_treeLoader = new MyTreeLoader(
+        this.m_treeLoader = new VYATTA_hierTreeLoader(
         {
             clearOnLoad: true
             ,requestMethod: 'POST'
@@ -650,9 +649,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             m_thisObj.f_leafSingleU32Handler(node, node.attributes.help, callback);
         else
             m_thisObj.f_leafSingleTxtHandler(node, node.attributes.help, callback)
-
-        //if(m_thisObj.m_parent.m_editorPanel.m_formPanel != undefined)
-          //  m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 
     f_leafSingleHandler: function(node)
@@ -680,9 +676,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             //if (node.attributes.type == 'text') {
             // XXX treat everything else as text for now
             m_thisObj.f_leafSingleTxtHandler(node, helpStr, onBlur);
-
-        //if(m_thisObj.m_parent.m_editorPanel.m_formPanel != undefined)
-         //   m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 
     f_leafMultiHandler: function(node)
@@ -704,9 +697,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             //if (node.attributes.type == 'text') {
             // XXX treat everything else as text for now
             m_thisObj.f_leafMultiTxtHandler(node, hlabel, onBlur);
-
-        //if(m_thisObj.m_parent.m_editorPanel.m_formPanel != undefined)
-          //  m_thisObj.m_parent.m_editorPanel.doLayout();
     },
 
     ////////////////////////////////////////////////////////////////////////////

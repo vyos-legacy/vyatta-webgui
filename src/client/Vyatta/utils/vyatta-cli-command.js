@@ -3,6 +3,10 @@
  * and open the template in the editor.
  */
 
+/**
+ * currently use to get host name after the login.
+ */
+
 function f_sendSpecialCliCommand(cmd, segmentId, cb)
 {
     var opCmdCb = function(options, success, response)
@@ -11,7 +15,7 @@ function f_sendSpecialCliCommand(cmd, segmentId, cb)
             return;
 
         var xmlRoot = response.responseXML.documentElement;
-        var isSuccess = f_parseResponseError(xmlRoot);
+        var isSuccess = f_parseServerCallback(xmlRoot);
         var localSegmentId = (isSuccess[2] != undefined)?isSuccess[2]:null;
 
         // segment is not end, continue to send
@@ -47,6 +51,10 @@ function f_sendSpecialCliCommand(cmd, segmentId, cb)
     });
 }
 
+/**
+ * All commands under Operation tab are used this function to send op mode
+ * command and handle the respond.
+ */
 function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
                                     forceSend, segmentId, treeObj, wildCard)
 {
@@ -55,10 +63,10 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
     var sendStr = '';
     var headerStr = '';
 
-    if(n != undefined)
+    if(n != undefined)  // function invoke by user's action
     {
         /////////////////////////////////////////////////
-        // construct a sent command by on the given node
+        // construct a sent command base on the given node
         while(n.text != 'Operation')
         {
             if(n.text == '&lt;value&gt;')
@@ -115,7 +123,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         g_cliCmdObj.m_cb = callbackObj;
         g_cliCmdObj.m_segmentId = undefined;
     }
-    else if(segmentId != undefined)
+    else if(segmentId != undefined) // function  invokes from background
     {
         sendStr = segmentId
         g_cliCmdObj.m_cb = callbackObj;
@@ -138,19 +146,20 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
             return;
         }
 
-        // if tab had changed, we ingore respond
-        if(g_cliCmdObj.m_segmentId == 'tabChanged') return;
+        // ingore respond. process either stop by click on 'stop' button
+        // or click on tab
+        if(g_cliCmdObj.m_segmentId == 'segment_end') return;
 
         var xmlRoot = response.responseXML.documentElement;
-        var isSuccess = f_parseResponseError(xmlRoot);
-        g_cliCmdObj.m_segmentId = (isSuccess[2] != undefined)?isSuccess[2]:null;
-        var sId = g_cliCmdObj.m_segmentId;
+        var isSuccess = f_parseServerCallback(xmlRoot);
+        var sId = (isSuccess[2] != undefined)?isSuccess[2]:null;
+        g_cliCmdObj.m_segmentId = sId;
 
+        // handle reboot command
         if(sendStr == 'reboot ')
             isSuccess[1] = 'System is rebooting. Please wait for reboot to complete\n'+
                             'then refresh the browser to log in again.';
-        /////////////////////////////////////
-        // handle the 'Load' toolbar command
+
         if(wildCard != undefined && wildCard[0] != undefined &&
             wildCard[0].indexOf('show files ') >= 0)
         {
@@ -172,10 +181,13 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         }
         else if(isSuccess[0] && sId != undefined && sId.indexOf('_end') < 0)
         {
-            if(wildCard != undefined && typeof wildCard.setText == 'function')
+            if(!g_cliCmdObj.m_segPause)
             {
-                wildCard.el.dom.className = V_WAIT_CSS;
-                wildCard.setText('Stop');
+                if(wildCard != undefined && typeof wildCard.setText == 'function')
+                {
+                    wildCard.el.dom.className = V_WAIT_CSS;
+                    wildCard.setText('Stop');
+                }
             }
             g_cliCmdObj.m_wildCard = wildCard;
         }
@@ -229,7 +241,7 @@ function f_saveConfFormCommandSentError(treeObj, response)
             return;
 
     var xmlRoot = response.responseXML.documentElement;
-    var isSuccess = f_parseResponseError(xmlRoot);
+    var isSuccess = f_parseServerCallback(xmlRoot);
     if(!isSuccess[0])
     {
         var err = [f_replace(isSuccess[1], "\r\n", "")+"<br>", treeObj.m_fdIndexSent-1];
@@ -265,7 +277,8 @@ function f_handleConfFormCommandDone(treeObj, node)
         node.reload();
 
         for(var i=0; i<g_cliCmdObj.m_fdSent.length; i++)
-            f_handleFormIndicators(g_cliCmdObj.m_fdSent[i].m_node);
+            f_handleFormIndicators(g_cliCmdObj.m_fdSent[i].m_node,
+                                    g_cliCmdObj.m_fdSent[i].m_parentNode);
 
         ///////////////////////////////////////////
         // handler errors to display flag indicators & prompt user a err dialog
@@ -465,7 +478,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             return;
 
         var xmlRoot = response.responseXML.documentElement;
-        var isSuccess = f_parseResponseError(xmlRoot);
+        var isSuccess = f_parseServerCallback(xmlRoot);
         if(!isSuccess[0])
         {
             var err = f_replace(isSuccess[1], "\r\n", "<br>");
@@ -542,7 +555,8 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 
     var sid = f_getUserLoginedID();
     f_saveUserLoginId(sid);
-    f_updateCommitErrors(node);
+    if(node != undefined)
+        f_updateCommitErrors(node, node.parentNode);
     var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                    + "<vyatta><command><id>" + sid + "</id>\n";
 
@@ -821,7 +835,7 @@ function f_handlePropagateParentNodes(node)
     }
 }
 
-function f_parseResponseError(xmlRoot)
+function f_parseServerCallback(xmlRoot)
 {
     var success = true;
     var q = Ext.DomQuery;
@@ -910,7 +924,7 @@ function f_parseCommitErrors(err)
         g_cliCmdObj.m_commitErrs[i] = errs[i].split("/");
 }
 
-function f_updateCommitErrors(node)
+function f_updateCommitErrors(node, parentNode)
 {
     var errs = g_cliCmdObj.m_commitErrs;
 
@@ -920,7 +934,8 @@ function f_updateCommitErrors(node)
         {
             var err = errs[i];
             for(var j=0; j<err.length; j++)
-                if(node != null && node.text == err[j])
+                if(node != null && node.text == err[j] && // match leaf node
+                  (parentNode != null && parentNode.text == err[j-1])) // match parent node
                 {
                     if(Ext.isIE)
                         g_cliCmdObj.m_commitErrs[i] = "";
@@ -975,7 +990,7 @@ function f_startSegmentCommand()
         {
             if(g_cliCmdObj.m_segmentId != undefined &&
                     (g_cliCmdObj.m_segmentId.indexOf("_end") >= 0 ||
-                    g_cliCmdObj.m_segmentId == 'tabChanged'))
+                    g_cliCmdObj.m_segmentId == 'segment_end'))
             {
                 g_cliCmdObj.m_segmentId = undefined;  // end this segment run
                 g_cliCmdObj.m_segPause = false;

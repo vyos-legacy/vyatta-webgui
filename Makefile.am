@@ -2,7 +2,6 @@ wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
 opdir = $(datadir)/oa-op/templates
 cfgdir = $(datadir)/vyatta-cfg/templates
-opdir = $(datadir)/vyatta-op/templates
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 

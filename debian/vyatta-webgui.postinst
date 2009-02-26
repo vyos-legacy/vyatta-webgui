@@ -5,6 +5,9 @@ prefix=/opt/vyatta
 # enable CGI for lighttpd
 ln -sf /etc/lighttpd/conf-available/10-cgi.conf /etc/lighttpd/conf-enabled/
 
+# enable https
+ln -sf /etc/lighttpd/conf-available/10-ssl.conf /etc/lighttpd/conf-enabled/
+
 # fix debian cgi config file
 sed -i '/^\$HTTP.*127\.0\.0\.1/,/^}$/{s/^\(.*\)$/# \1/}' \
   /etc/lighttpd/conf-enabled/10-cgi.conf
@@ -13,13 +16,36 @@ if ! grep -q '^alias.url' /etc/lighttpd/conf-enabled/10-cgi.conf; then
     >>/etc/lighttpd/conf-enabled/10-cgi.conf
 fi
 
+# enable mod_redirect
+if grep -q '^#.*mod_redirect' /etc/lighttpd/lighttpd.conf; then
+  sed -i 's/^#\(.*mod_redirect.*\)$/ \1/' /etc/lighttpd/lighttpd.conf
+fi
+
+# redirect http to https
+if ! grep -q '^# redirect all http to https$' /etc/lighttpd/lighttpd.conf; then
+  cat <<'EOF' >>/etc/lighttpd/lighttpd.conf
+
+# redirect all http to https
+$HTTP["scheme"] == "http" {
+  $HTTP["host"] =~ "^(.*)$" {
+    url.redirect = (
+      "^(.*)$" => "https://%1$1"
+    )
+  }
+}
+EOF
+fi
+
 # XXX webgui needs suid for now
 chmod u+s /usr/lib/cgi-bin/webgui
 
 # XXX www-data user needs to be in these groups for now
 for g in adm sudo users quaggavty vyattacfg; do
-  adduser www-data $g
+  adduser www-data $g >&/dev/null
 done
+
+# remove init links
+update-rc.d -f lighttpd remove
 
 exit 0
 

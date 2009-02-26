@@ -12,6 +12,10 @@
         <link href="css/ft_style.css" rel="stylesheet" type="text/css" />
         <link href="css/ft_login.css" rel="stylesheet" type="text/css" />
         <link href="css/ft_confPanels.css" rel="stylesheet" type="text/css" />
+		<!--[if IE]>  
+		<link href="css/ft_style_ie.css" rel="stylesheet" type="text/css" />
+		<![endif]--> 		
+		
         <script type="text/javascript" src="utils/ft_allUtils.js">
         </script>
         <script type="text/javascript" src="js/businessLayer/ft_allBusLayers.js">
@@ -113,22 +117,22 @@
                 <div id="oa_2_nav">
                     <ul id="oa_2_nav_ul">
                         <li id="app_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Applications</a>
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;applications</a>
                         </li>
                         <li id="user_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Users</a>
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;users</a>
                         </li>
                         <li id="mon_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Monitoring</a>
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;monitoring</a>
                         </li>
                         <li id="backup_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Backup</a>
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;backup</a>
                         </li>
                         <li id="config_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Configuration</a>
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;configuration</a>
                         </li>
                         <li id="myprof_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;My Profile</a>
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;my profile</a>
                         </li>
                     </ul>
                     <div class="liner">
@@ -138,114 +142,138 @@
                 <div id="sub_menu_container">
                     <div id="sm_applications" class="left_sub_menu">
                         <ul id="sm_applications_ul">
-                            <li>
-                                <h3>&nbsp;Applications</h3>
+                            <li class="left_sub_menu_header">
+                                <h3>&nbsp;applications</h3>
+                            </li>
+                            <li class="left_sub_menu_liner">
                             </li>
                             <li id="dashboard_l2">
-                                <a href="#" desc="Dashboard"><img border="0" src="images/fleche_off.gif">&nbsp;Dashboard</a>
+                                <a href="#" desc="dashboard"><img border="0" src="images/fleche_off.gif">&nbsp;dashboard</a>
                             </li>
                             <li id="update_l2">
-                                <a href="#" desc="Updates planning and history"><img border="0" src="images/fleche_off.gif">&nbsp;Updates</a>
+                                <a href="#" desc="updates planning and history"><img border="0" src="images/fleche_off.gif">&nbsp;updates</a>
                             </li>
                             <li id="restart_l2">
-                                <a href="#" desc="Restart Application or Open appliance"><img border="0" src="images/fleche_off.gif">&nbsp;Restart</a>
+                                <a href="#" desc="restart Application or Open appliance"><img border="0" src="images/fleche_off.gif">&nbsp;restart</a>
                             </li>
                             <li id="subscribe_l2">
-                                <a href="#" desc="Subscription"><img border="0" src="images/fleche_off.gif">&nbsp;Subscribe</a>
+                                <a href="#" desc="subscription"><img border="0" src="images/fleche_off.gif">&nbsp;subscribe</a>
+                            </li>
+                            <li class="left_sub_menu_liner">
                             </li>
                         </ul>
                     </div>
                     <div id="sm_users" class="left_sub_menu">
                         <ul id="sm_users_ul">
-                            <li>
-                                <h3>&nbsp;Users</h3>
+                            <li class="left_sub_menu_header">
+                                <h3>&nbsp;users</h3>
                             </li>
-                            <li id="user_l2"> 
-                                <a href="#" desc="User list"><img border="0" src="images/fleche_off.gif">&nbsp;Users</a>
+                            <li class="left_sub_menu_liner">
+                            </li>
+                            <li id="user_l2">
+                                <a href="#" desc="user list"><img border="0" src="images/fleche_off.gif">&nbsp;users</a>
                             </li>
                             <li id="user_right_l2">
-                                <a href="#" desc="User rights"><img border="0" src="images/fleche_off.gif">&nbsp;Users rights</a>
+                                <a href="#" desc="user rights"><img border="0" src="images/fleche_off.gif">&nbsp;users rights</a>
+                            </li>
+                            <li class="left_sub_menu_liner">
                             </li>
                         </ul>
                     </div>
                     <div id="sm_monitoring" class="left_sub_menu">
                         <ul id="sm_monitoring_ul">
-                            <li>
-                                <h3>&nbsp;Monitoring</h3>
+                            <li class="left_sub_menu_header">
+                                <h3>&nbsp;monitoring</h3>
+                            </li>
+                            <li class="left_sub_menu_liner">
                             </li>
                             <li id="hardware_l2">
-                                <a href="#" desc="Hardware monitor"><img border="0" src="images/fleche_off.gif">&nbsp;Hardware</a>
+                                <a href="#" desc="hardware monitor"><img border="0" src="images/fleche_off.gif">&nbsp;hardware</a>
                             </li>
                             <li id="network_l2">
-                                <a href="#" desc="Network monitor"><img border="0" src="images/fleche_off.gif">&nbsp;Network</a>
+                                <a href="#" desc="network monitor"><img border="0" src="images/fleche_off.gif">&nbsp;network</a>
+                            </li>
+                            <li class="left_sub_menu_liner">
                             </li>
                         </ul>
                     </div>
                     <div id="sm_backup" class="left_sub_menu">
                         <ul id="sm_backup_ul">
-                            <li>
-                                <h3>&nbsp;Backup</h3>
+                            <li class="left_sub_menu_header">
+                                <h3>&nbsp;backup</h3>
+                            </li>
+                            <li class="left_sub_menu_liner">
                             </li>
                             <li id="backup_l2">
-                                <a href="#" desc="Configuration backup"><img border="0" src="images/fleche_off.gif">&nbsp;Configuration backup</a>
+                                <a href="#" desc="configuration backup"><img border="0" src="images/fleche_off.gif">&nbsp;configuration backup</a>
                             </li>
                             <li id="restore_l2">
-                                <a href="#" desc="Configuration restore"><img border="0" src="images/fleche_off.gif">&nbsp;Configuration restore</a>
+                                <a href="#" desc="configuration restore"><img border="0" src="images/fleche_off.gif">&nbsp;configuration restore</a>
+                            </li>
+                            <li class="left_sub_menu_liner">
                             </li>
                         </ul>
                     </div>
                     <div id="sm_config" class="left_sub_menu">
                         <ul id="sm_config_ul">
-                            <li>
-                                <h3>&nbsp;Configuration</h3>
+                            <li class="left_sub_menu_header">
+                                <h3>&nbsp;configuration</h3>
+                            </li>
+                            <li class="left_sub_menu_liner">
                             </li>
                             <li id="email_serv_l2">
-                                <a href="#" desc="Email server configuration"><img border="0" src="images/fleche_off.gif">&nbsp;Email server</a>
+                                <a href="#" desc="email server configuration"><img border="0" src="images/fleche_off.gif">&nbsp;email server</a>
                             </li>
                             <li id="time_serv_l2">
-                                <a href="#" desc="Time server configuration"><img border="0" src="images/fleche_off.gif">&nbsp;Time server</a>
+                                <a href="#" desc="time server configuration"><img border="0" src="images/fleche_off.gif">&nbsp;time server</a>
                             </li>
                             <li id="user_dir_l2">
-                                <a href="#" desc="LDAP server configuration"><img border="0" src="images/fleche_off.gif">&nbsp;User directory</a>
+                                <a href="#" desc="LDAP server configuration"><img border="0" src="images/fleche_off.gif">&nbsp;user directory</a>
                             </li>
                             <li id="blb_l2">
-                                <a href="#" desc="BLB Association"><img border="0" src="images/fleche_off.gif">&nbsp;BLB Association</a>
+                                <a href="#" desc="BLB Association"><img border="0" src="images/fleche_off.gif">&nbsp;BLB association</a>
                             </li><!-- Remove 3rd_party_l2 link.  OSGi is not applicable.
                             <li id="3rd_party_l2">
                             <a href="#" desc="OSGi"><img border="0" src="images/fleche_off.gif">&nbsp;3rd Parties</a>
                             </li>
                             -->
                             <li id="password_l2">
-                                <a href="#" desc="Password Policy"><img border="0" src="images/fleche_off.gif">&nbsp;Password Policy</a>
+                                <a href="#" desc="password policy"><img border="0" src="images/fleche_off.gif">&nbsp;password policy</a>
+                            </li>
+                            <li class="left_sub_menu_liner">
                             </li>
                         </ul>
                     </div>
                     <div id="sm_myprof" class="left_sub_menu">
                         <ul id="sm_myprof_ul">
-                            <li>
-                                <h3>&nbsp;My profile</h3>
+                            <li class="left_sub_menu_header">
+                                <h3>&nbsp;my profile</h3>
+                            </li>
+                            <li class="left_sub_menu_liner">
                             </li>
                             <li id="myprof_l2">
-                                <a href="#" desc="My profile"><img border="0" src="images/fleche_off.gif">&nbsp;My profile</a>
+                                <a href="#" desc="my profile"><img border="0" src="images/fleche_off.gif">&nbsp;my profile</a>
+                            </li>
+                            <li class="left_sub_menu_liner">
                             </li>
                         </ul>
                     </div>
-                </div><!-- **** 3nd nav end **** -->
+                </div>
+                <!-- **** 3nd nav end **** -->
                 <div id="dyn_sub_menu" class="dyn_sub_menu">
                     <ul id="sm_users_dyn_ul">
                         <li id="user_add_l2">
-                            <a href="#" desc="Add user" virtual="true"><img border="0" src="images/fleche_off.gif">&nbsp;Add user</a>
+                            <a href="#" desc="add user" virtual="true"><img border="0" src="images/fleche_off.gif">&nbsp;add user</a>
                         </li>
                         <li id="user_update_l2">
-                            <a href="#" desc="Update user" virtual="true"><img border="0" src="images/fleche_off.gif">&nbsp;Update user</a>
+                            <a href="#" desc="update user" virtual="true"><img border="0" src="images/fleche_off.gif">&nbsp;update user</a>
                         </li>
                     </ul>
                 </div>
                 <div id="ft_container" valign="top">
                     <h3 id="config_panel_title">Place Holder</h3>
                 </div>
-				
-				<!-- **** footer start **** -->				
+                <!-- **** footer start **** -->
                 <div id="footer">
                     <div id="footer_left">
                         <ul>

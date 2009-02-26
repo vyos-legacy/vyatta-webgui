@@ -76,7 +76,10 @@ function FT_2ndNavigation(){
 			if (parentNode.nodeName == 'A') {
 				target = parentNode;
 			}
-			target.style.color = VYA.DYN_STYLE.SEC_NAV_ACT_ITEM_COLOR;
+			var id = f_elemGetAttribute(target.parentNode, 'id');
+			if (id != thisObj.m_selectedItem) {
+				target.style.color = VYA.DYN_STYLE.SEC_HOVER_ITEM_COLOR;
+			}	
 		}
     }
     

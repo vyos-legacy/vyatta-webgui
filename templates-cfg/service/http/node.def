@@ -1,0 +1,5 @@
+help: Enable/disable the Web server
+delete: sudo /usr/sbin/invoke-rc.d lighttpd stop
+        sudo /etc/init.d/vyatta-webgui-chunker stop
+update: sudo /usr/sbin/invoke-rc.d lighttpd restart
+        sudo /etc/init.d/vyatta-webgui-chunker restart

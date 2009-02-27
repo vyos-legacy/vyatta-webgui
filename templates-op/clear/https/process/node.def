@@ -1,7 +1,0 @@
-help: Reset https server
-run:   if [ -x  /opt/vyatta/config/active/service/https ]; then 
-	sudo /usr/sbin/invoke-rc.d lighttpd restart
-        sudo /etc/init.d/vyatta-webgui-chunker restart
-       else
-	echo "https server is not running"
-       fi

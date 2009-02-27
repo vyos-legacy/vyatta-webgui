@@ -1,0 +1,7 @@
+help: Reset HTTP server
+run: if [ -x  /opt/vyatta/config/active/service/http ]; then 
+       sudo /usr/sbin/invoke-rc.d lighttpd restart
+       sudo /etc/init.d/vyatta-webgui-chunker restart
+     else
+       echo "HTTP server is not running"
+     fi

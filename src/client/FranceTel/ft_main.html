@@ -1,311 +1,257 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<HTML>
- <HEAD>
-  <TITLE>Open Appliance Configuration</TITLE>
-  <link rel="stylesheet" type="text/css" href="/ext-2.2/resources/css/ext-all.css" />
-  <link href="css/style.css" rel="stylesheet" type="text/css" />
-  <link href="css/oaStyle.css" rel="stylesheet" type="text/css" />
-  <script type="text/javascript" src="/ext-2.2/adapter/ext/ext-base.js"></script>
-  <script type="text/javascript" src="/ext-2.2/ext-all.js"></script>
-
-  <style type="text/css">
-    .x-window-body
-    {
-        background:transparent #ff6600 repeat scroll 0 0 !important;
-        color:#ff6600;
-    }
-    .x-window-header-text
-    {
-        cursor:pointer;
-        color: #ff6600;
-    }
-    
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <title>Open Appliance</title>
+        <link rel="stylesheet" type="text/css" href="/ext-2.2/resources/css/ext-all.css" />
+	 <!--BEGIN EXT JS INCLUDE -->
+        <script type="text/javascript" src="/ext-2.2/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="/ext-2.2/ext-all.js"></script>
+	 <!-- DONE EXT JS INCLUDE -->
 
 
-    .x-panel-header
-    {
-        overflow:hidden;
-        zoom:1;
-        font:bold 14px arial;
-	color:#FFF;
-        padding:5px;
-        border:1px solid #efefef;
-        line-height: 15px;
-        background: #ff6600
-    }
-    .v-panel-body
-    {
-        border:1px solid #efefef;
-        /*border-top:0 none;*/
-        overflow:hidden;
-        background: white;
-        position: relative; /* added for item scroll positioning */
-    }
-
-    .status
-    {
-        color:#555;
-    }
-    .x-progress-wrap.left-align .x-progress-text
-    {
-        text-align:left;
-    }
-    .x-progress-wrap.custom
-    {
-        height:15px;
-        border:1px solid #000;
-        overflow:hidden;
-        padding:0 2px;
-    }
-    .ext-ie .x-progress-wrap.custom
-    {
-        height:19px;
-    }
-    .custom_red .x-progress-inner
-    {
-        height:15px;
-        background: white;
-    }
-    .custom_red .x-progress-bar {
-        height:15px;
-        background: #D60000;
-        border:1px solid #FFFFFF;
-    }
-    .x-progress-wrap
-    {
-        border: 1px solid #000000;
-        overflow: hidden;
-    }
-    .custom_green .x-progress-inner {
-        height:15px;
-        background: white;
-    }
-    .custom_green .x-progress-bar {
-        height:15px;
-        background: #009933;
-        border:1px solid #FFFFFF;
-    }
-    .x-progress-text
-    {
-        font-size:11px;
-        font-weight:bold;
-        color:#fff;
-        padding:1px 5px;
-        overflow:hidden;
-        position:absolute;
-        left:0;
-        text-align:center;
-    }
-
-    .x-progress-text-back
-    {
-        color:#000;
-        line-height:16px;
-    }
-    .ext-ie .x-progress-text-back
-    {
-        line-height:15px;
-    }
-
-    .x-grid-panel .x-panel-body
-    {
-        overflow:hidden !important;
-        border: 1px solid #efefef
-    }
-
-    #messageContactServiceCustomer
-    {
-	clear:both;
-	color:#FF6600;
-	height:50px;
-	margin-top: 30px;
-	margin-bottom: 20px;
-    }
-    .tf_wait_message .x-progress-bar
-    {
-        background: #ff6600;
-        text-color: #000;
-    }
-    .tf_wait_message_panel .x-panel-body
-    {
-        background: transparent;
-    }
-
-    /**************************************************************************
-     FT
-    ***************************************************************************/
-    .ft_popup_menu
-    {
-        background:#fff;
-        border: 1px solid #FF6600;
-        width: 200px;
-    }
-
-    #logon_content
-    {
-	width: 760px;
-	padding-top:30px;
-	padding-bottom:20px;
-	text-align:center;
-    }
-
-    #logon_content td
-    {
-        width:50%;
-        line-height:25px;
-        border:0px;
-        padding:10px;
-    }
-
-    #logon_content td.alignRight
-    {
-        text-align:right;
-    }
-
-    #logon_content td.alignLeft
-    {
-        text-align:left;
-    }
-
-    #logon_content input
-    {
-        background:#FFF;
-        font-size:11px;
-    }
-
-    #ft_table
-    {
-	font-family:arial;
-	font-size: 11px;
-	border:1px;
-	border-collapse:collapse;
-	width:100%;
-	margin-left:0px;
-    }
-
-    #id_add_delete_vm
-    {
-        margin-top:5px;
-        float: right;
-        width:100%;
-    }
-    #id_add_delete_vm ul li
-    {
-        display : inline;
-        margin-right: 12px;
-        padding-left:15px;
-        background: url(images/carre.gif) no-repeat 3px;
-        list-style-type: none;
-    }
-
-    #id_add_delete_vm ul li a:hover
-    {
-        color: #ff6600;
-    }
-
-    .off
-    {
-        font-family: arial;
-        font-size: 15px;
-    }
-  </style>
-
-  <!-- javascript start here... -->
-  <script type="text/javascript" src="utils/vyatta-constant-values.js"></script>
-  <script type="text/javascript" src="utils/vyatta-cookie.js"></script>
-  <script type="text/javascript" src="utils/vyatta-utils.js"></script>
-  <script type="text/javascript" src="utils/vyatta_grid_checkColumn.js"></script>
-  <script type="text/javascript" src="js/panel.js"></script>
-  <script type="text/javascript" src="js/loginPanel.js"></script>
-  <script type="text/javascript" src="js/ft_opPanel.js"></script>
-  <script type="text/javascript" src="js/ft_main.js"></script>
-
- </HEAD>
-<body>
-<!-- ------------------------- main header --------------------------------- -->
-<div id="id_header">
-    <nobr>
-        <div id="logo"><img src="images/Logo_OBS-Web.gif" alt="logo Orange Business Services" border="0"></div>
-
-        <div id="toolbar">
-          <select id="ft_language" name="language" size="1" STYLE="width: 87px" onChange="onLanguageChange();">
-                  <option value="en" selected="selected">English</option>
-                  <option value="fr">Fran�ais</option>
-          </select>
-        </div>
-    </nobr>
+        <link href="css/ft_style.css" rel="stylesheet" type="text/css" />
+        <link href="css/ft_login.css" rel="stylesheet" type="text/css" />
+	 <link href="css/ft_confPanels.css" rel="stylesheet" type="text/css" />
 
 
-    <div id="barre_etat">
-      <span>welcome admin you are connected to the Open Appliance admin service</span>
-      <a href="#" onclick="logOff()" class="dec" onfocus="this.blur();">log out</a>
-   </div>
+        <script type="text/javascript" src="utils/ft_allUtils.js">
+        </script>
+        <script type="text/javascript" src="js/businessLayer/ft_allBusLayers.js">
+        </script>
+        <script type="text/javascript" src="js/ui/ft_allUI.js">
+        </script>
+	<script type="text/javascript" src="js/ui/config/ft_allConfigPanels.js">
+        </script>
+    </head>
+    <body>
+        <center>
+            <div id="main">
+                <div id="header">
+                    <nobr>
+                        <div class="logo">
+                            <a href="#" onclick="home()"><img src="images/Logo_OBS-Web.gif" alt="logo Orange Business Services" border="0"></a>
+                        </div>
+                        <div id="lang_bar">
+                            <select id="ft_language" name="language" size="1" STYLE="width: 87px; background-color: #EFEFEF; font-size: 8pt; border-style: solid; margin-top: 0.5em; border-color: #CCC;" onChange="onLanguageChange();">
+                                <option value="en" selected="selected">English</option>
+                                <option value="fr">Fran�ais</option>
+                            </select>
+                        </div>
+                    </nobr>
 
-    <div id="nav_primaire">
-        <table id="nav_primaire1">
-            <tr>
-                <td><a href="#" onClick="f_handleOnTabClick('0')" onfocus="this.blur();">
-                        <img src="images/tabnav_blb_off.png"></a></td>
-                <td><a href="#" onClick="f_handleOnTabClick('1')" onfocus="this.blur();">
-                        <img src="images/tabnav_oa_on.png"></a></td>
-                <td><a href="#" onfocus="this.blur();"
-                        onClick="f_handleOnTabClick('2')">
-                        <img src="images/tabnav_utm_off.png"></a></td>
-                <td><a href="#" onfocus="this.blur();"
-                        onClick="f_handleOnTabClick('3')">
-                        <img src="images/tabnav_pbx_off.png"></a></td>
-                <td><a href="#" onfocus="this.blur();"
-                        onClick="f_handleOnTabClick('4')">
-                        <img src="images/tabnav_3pa_off.png"></a></td>
-            </tr>
-        </table>
-    </div>
-
-    <div id="id_header_nav">
-    </div>
-</div> <!-- fin header-->
-
-
-<!-- ------------------------ left menu ------------------------- -->
-<div id="id_leftMenu">
-
-</div>
-
-
-<!--------------- Content -------------------------->
-<div id="id_center_panel">
-<!-- DO NOT MODIFY -->
-</div>
-
-
-<!-- -------------------------- footer -------------------------------------- -->
-<div id="id_footer">
-    <div id="footer">
-        <div id="footer_left">
-            <ul>
-                <li><a href="http://orange.com/en_EN/tools/contact/index.html" >contact</a></li>
-                <li><a href="http://orange.com/en_EN/tools/map/index.html">site map</a></li>
-          </ul>
-        </div>
-
-        <div id="footer_center">
-            Copyright France Telecom <font color="#ff6600">&copy;</font> 2008
-        </div>
-
-        <div id="footer_clock">
-        </div>
-
-    </div>
- </div>
-
-<!-- -------------------------------------------------------------------- -->
-<div id="id_add_delete_vm">
-    
-</div>
-
-<form id="id_my_pc_backup" method="POST">
-  <a href="images/test.zip"></a>
-</form>
-<div id="vm_popup_menu"></div>
-</body>
-</HTML>
+                    <div id="login_background">
+                        <br>
+                        <br>
+                        <div id="login_page">
+                            <div id="ft_login_container" align="center">
+                                <div id="bar">
+                                    <div id="labeltext">
+                                        Login
+                                    </div>
+                                </div>
+                                <div id="login_content" align="center">
+                                    <div id="login_form">
+                                        <table id="ft_table" align="center" width="100%">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="alignRight">
+                                                        User name:
+                                                    </td>
+                                                    <td class="alignLeft">
+                                                        <input id="username" name="username" type="text" onkeydown="f_LoginKeyPressHandler(event)">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="alignRight">
+                                                        Password:
+                                                    </td>
+                                                    <td class="alignLeft">
+                                                        <input id="password" name="password" type="password" onkeydown="f_LoginKeyPressHandler(event)">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <br>
+                                        <br>
+                                        <div align="center">
+                                            <input name="goto2" id="goto22" value="OK" onclick="f_submit()" class="OneButton" type="button">
+                                        </div>
+                                    </div>
+                                    <div id='messageContactServiceCustomer' align='center'>
+                                        <p>
+                                            If you have no username and password, contact your Customer Service Center.
+                                            Warning: to connect to the Open Appliance program your browser must accept pop-ups and cookies.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+						<br><br>
+                    </div>
+                    <div id="welcome">
+                        <span>welcome admin, you are connected to
+                            the Open Appliance admin service</span>
+                        <a href="#" id="logoff" class="logoff" onfocus="this.blur();"><img border="0" src="images/puce_simple.gif">&nbsp;log out</a>
+                    </div>
+                    <div id="pri_nav">
+                        <table class="nav1" cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr id="nav1_tr">
+                                    <!--<th class="divider"></th>-->
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+                <div id="tab_content">
+                </div>
+                <div id="oa_container">
+                </div>
+                <div id="oa_2_nav">
+                    <ul id="oa_2_nav_ul">
+                        <li id="app_l1">
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Applications</a>
+                        </li>
+                        <li id="user_l1">
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Users</a>
+                        </li>
+                        <li id="mon_l1">
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Monitoring</a>
+                        </li>
+                        <li id="backup_l1">
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Backup</a>
+                        </li>
+                        <li id="config_l1">
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Configuration</a>
+                        </li>
+                        <li id="myprof_l1">
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;My Profile</a>
+                        </li>
+                    </ul>
+                    <div class="liner">
+                    </div>
+                </div>
+                <div id="sub_menu_container">
+                    <div id="sm_applications" class="left_sub_menu">
+                        <ul id="sm_applications_ul">
+                            <li>
+                                <h3>&nbsp;Applications</h3>
+                            </li>
+                            <li id="dashboard_l2">
+                                <a href="#" desc="Dashboard"><img border="0" src="images/fleche_off.gif">&nbsp;Dashboard</a>
+                            </li>
+                            <li id="update_l2">
+                                <a href="#" desc="Updates planning and history"><img border="0" src="images/fleche_off.gif">&nbsp;Updates</a>
+                            </li>
+                            <li id="restart_l2">
+                                <a href="#" desc="Restart Application or Open appliance"><img border="0" src="images/fleche_off.gif">&nbsp;Restart</a>
+                            </li>
+                            <li id="subscribe_l2">
+                                <a href="#" desc="Subscription"><img border="0" src="images/fleche_off.gif">&nbsp;Subscribe</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="sm_users" class="left_sub_menu">
+                        <ul id="sm_users_ul">
+                            <li>
+                                <h3>&nbsp;Users</h3>
+                            </li>
+                            <li id="user_l2">
+                                <a href="#" desc="User list"><img border="0" src="images/fleche_off.gif">&nbsp;Users</a>
+                            </li>
+                            <li id="user_right_l2">
+                                <a href="#" desc="User rights"><img border="0" src="images/fleche_off.gif">&nbsp;Users rights</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="sm_monitoring" class="left_sub_menu">
+                        <ul id="sm_monitoring_ul">
+                            <li>
+                                <h3>&nbsp;Monitoring</h3>
+                            </li>
+                            <li id="hardware_l2">
+                                <a href="#" desc="Hardware monitor"><img border="0" src="images/fleche_off.gif">&nbsp;Hardware</a>
+                            </li>
+                            <li id="network_l2">
+                                <a href="#" desc="Network monitor"><img border="0" src="images/fleche_off.gif">&nbsp;Network</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="sm_backup" class="left_sub_menu">
+                        <ul id="sm_backup_ul">
+                            <li>
+                                <h3>&nbsp;Backup</h3>
+                            </li>
+                            <li id="backup_l2">
+                                <a href="#" desc="Configuration backup"><img border="0" src="images/fleche_off.gif">&nbsp;Configuration backup</a>
+                            </li>
+                            <li id="restore_l2">
+                                <a href="#" desc="Configuration restore"><img border="0" src="images/fleche_off.gif">&nbsp;Configuration restore</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="sm_config" class="left_sub_menu">
+                        <ul id="sm_config_ul">
+                            <li>
+                                <h3>&nbsp;Configuration</h3>
+                            </li>
+                            <li id="email_serv_l2">
+                                <a href="#" desc="Email server configuration"><img border="0" src="images/fleche_off.gif">&nbsp;Email server</a>
+                            </li>
+                            <li id="time_serv_l2">
+                                <a href="#" desc="Time server configuration"><img border="0" src="images/fleche_off.gif">&nbsp;Time server</a>
+                            </li>
+                            <li id="user_dir_l2">
+                                <a href="#" desc="LDAP server configuration"><img border="0" src="images/fleche_off.gif">&nbsp;User directory</a>
+                            </li>
+                            <li id="blb_l2">
+                                <a href="#" desc="BLB Association"><img border="0" src="images/fleche_off.gif">&nbsp;BLB Association</a>
+                            </li>
+                            <li id="3rd_party_l2">
+                                <a href="#" desc="OSGi"><img border="0" src="images/fleche_off.gif">&nbsp;3rd Parties</a>
+                            </li>
+                            <li id="password_l2">
+                                <a href="#" desc="Password Policy"><img border="0" src="images/fleche_off.gif">&nbsp;Password Policy</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="sm_myprof" class="left_sub_menu">
+                        <ul id="sm_myprof_ul">
+                            <li>
+                                <h3>&nbsp;My profile</h3>
+                            </li>
+                            <li id="myprof_l2">
+                                <a href="#" desc="My profile"><img border="0" src="images/fleche_off.gif">&nbsp;My profile</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="ft_container" valign="top">
+                    <h3 id="config_panel_title">Place Holder</h3>
+                </div>
+                <div id="footer">
+                    <div id="footer_left">
+                        <ul>
+                            <li>
+                                <a href="http://orange.com/en_EN/tools/contact/index.html">contact</a>
+                            </li>
+                            <li>
+                                <a href="http://orange.com/en_EN/tools/map/index.html">site map</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="footer_center">
+                        Copyright France Telecom
+                        <font color="#ff6600">
+                            &copy;
+                        </font>
+                        2008
+                    </div>
+                    <div id="footer_clock">
+                        v2.1.0.OS V4 1R5B6
+                    </div>
+                </div>
+            </div>
+        </center>
+    </body>
+</html>

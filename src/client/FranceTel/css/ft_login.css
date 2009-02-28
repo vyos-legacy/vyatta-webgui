@@ -1,0 +1,65 @@
+#welcome_login {
+    height: 18px;
+    color: #666666;
+    width: 100%;
+    font-size: 8pt;
+    background: #EFEFEF;
+} 
+
+#login_background {
+    clear: both;
+    background: #E7E7E7;
+	margin: 5px 0px 5px 0px; 
+} 
+
+#login_page {
+	width: 604px;
+    background: #FFFFFF;
+	margin: 5px 0px 5px 0px; 
+} 
+
+div#bar {
+    background-image: url("../images/bar.PNG");
+    background-repeat: no-repeat;
+    width: 604px;
+    margin: 0;
+    padding: 5px;
+}
+
+div#labeltext {
+    position: relative;
+    width: auto;
+    left: -220px;
+    padding: 0;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: "Arial";
+    color: #FFFFFF;
+} 
+
+#login_content {
+    margin-top: -45px;
+    width: 602px;
+    border: 1px solid #CCC;
+    display: block;
+} 
+
+#login_form {
+    margin-top: 60px;
+    font-size: 12px;
+    font-weight: bold;
+} 
+
+#messageContactServiceCustomer {
+    padding: 20px 10px 20px 10px;
+    color:#FF6600;	
+} 
+
+.alignRight {
+    padding-right: 40px;
+    text-align: right;
+} 
+
+.alignLeft {
+    text-align: left;
+}

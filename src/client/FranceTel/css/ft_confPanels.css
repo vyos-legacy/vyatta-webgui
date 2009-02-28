@@ -1,0 +1,102 @@
+/* 
+    Document   : ft_confPanels
+    Created on : Mar 3, 2009, 2:33:52 PM
+    Author     : Kevin.Choi
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+.v-border-less .x-panel
+{
+    border: 0 none;
+    border-style: none;
+    background: #fff !important;
+    border-top: none !important;
+}
+.v-border-less .x-panel-body
+{
+    border: 0 none;
+    border-style: none;
+    background: #fff !important;
+    border-top: none !important;
+}
+.v-border-less .x-panel-header
+{
+    border: 0 none;
+    border-style: none;
+    background: #fff !important;
+    border-top: none !important;
+    border-bottom: none !important;
+}
+.v-border-less .x-toolbar
+{
+    border: 0 none !important;
+    border-style: none !important;
+    background: #fff !important;
+    border-bottom: none !important;
+    padding: 0px !important;
+}
+
+
+.x-progress-wrap.left-align .x-progress-text
+{
+    text-align:left;
+}
+.x-progress-wrap.custom
+{
+    height:15px;
+    border:1px solid #000;
+    overflow:hidden;
+    padding:0 2px;
+}
+.ext-ie .x-progress-wrap.custom
+{
+    height:19px;
+}
+.custom_red .x-progress-inner
+{
+    height:15px;
+    background: white;
+}
+.custom_red .x-progress-bar {
+    height:15px;
+    background: #D60000;
+    border:1px solid #FFFFFF;
+}
+.x-progress-wrap
+{
+    border: 1px solid #000000;
+    overflow: hidden;
+}
+.custom_green .x-progress-inner {
+    height:15px;
+    background: white;
+}
+.custom_green .x-progress-bar {
+    height:15px;
+    background: #009933;
+    border:1px solid #FFFFFF;
+}
+.x-progress-text
+{
+    font-size:11px;
+    font-weight:bold;
+    color:#fff;
+    padding:1px 5px;
+    overflow:hidden;
+    position:absolute;
+    left:0;
+    text-align:center;
+}
+
+.x-progress-text-back
+{
+    color:#000;
+    line-height:16px;
+}
+

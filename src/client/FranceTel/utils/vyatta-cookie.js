@@ -1,7 +1,9 @@
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/*
+    Document   : ft_vyatta-cookie.js
+    Created on : Feb 25, 2009, 3:19:25 PM
+    Author     : Kevin.Choi
+    Description:
+*/
 
 var g_cookie =
 {
@@ -26,7 +28,7 @@ var g_cookie =
 
     f_set_raw: function(pName, pValue, pExpires, pPath)
     {
-        var expires = V_NOT_FOUND;
+        var expires = g_consObj.V_NOT_FOUND;
 
         if(pExpires != undefined)
         {
@@ -61,7 +63,7 @@ var g_cookie =
         var cookie = document.cookie.match(new RegExp('(^|;)\\s*' +
                       escape(pName) + '=([^;\\s]*)'));
 
-        return (cookie ? unescape(cookie[2]) : V_NOT_FOUND);
+        return (cookie ? unescape(cookie[2]) : g_consObj.V_NOT_FOUND);
     },
 
     f_remove: function(pName)

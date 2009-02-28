@@ -4,20 +4,23 @@
  Author     : Loi.Vo
  Description:
  */
-FT_confBLB = Ext.extend(FT_confFormObj, {
-    thisObjName: 'ft_confBLB',
+function FT_confBLB(name, callback, busLayer)  {
+    var thisObjName = 'ft_confBLB';
     
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
      * @param busLayer - business object
      */
-    constructor: function(name, callback, busLayer)
+    this.constructor = function(name, callback, busLayer)
     {
         FT_confBLB.superclass.constructor(name, callback, busLayer);
-    },	
+    }	
+
+	this.constructor(name, callback, busLayer);
+
 		
-    f_init: function()
+    this.f_init = function()
     {
         this.f_setConfig( {
 			id : 'conf_blb',
@@ -50,17 +53,17 @@ FT_confBLB = Ext.extend(FT_confFormObj, {
 				onclick: this.f_handleClick
 			}]
 		})  
-    },
+    }
 	
-    f_loadVMData: function(element)
+    this.f_loadVMData = function(element)
     {
-    },
+    }
     
-    f_stopLoadVMData: function()
+    this.f_stopLoadVMData = function()
     {
-    },
+    }
     
-    f_handleClick: function(e)
+    this.f_handleClick = function(e)
     {
         var target = g_xbObj.f_xbGetEventTarget(e);
         if (target != undefined) {
@@ -73,4 +76,6 @@ FT_confBLB = Ext.extend(FT_confFormObj, {
         }
     }	
     
-});
+}
+
+FT_extend(FT_confBLB, FT_confFormObj);

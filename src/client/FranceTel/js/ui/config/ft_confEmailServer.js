@@ -4,20 +4,22 @@
  Author     : Loi.Vo
  Description:
  */
-FT_confEmailServer = Ext.extend(FT_confFormObj, {
-    thisObjName: 'FT_confEmailServer',
+function FT_confEmailServer(name, callback, busLayer) {
+    var thisObjName = 'FT_confEmailServer';
     
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
      * @param busLayer - business object
      */
-    constructor: function(name, callback, busLayer)
+    this.constructor = function(name, callback, busLayer)
     {
         FT_confEmailServer.superclass.constructor(name, callback, busLayer);
-    },
+    }
+
+	this.constructor(name, callback, busLayer);
     	
-    f_init: function()
+    this.f_init = function()
     {
         this.f_setConfig( {
 			id : 'conf_email_srv',
@@ -29,7 +31,7 @@ FT_confEmailServer = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'text',
 				id: 'conf_email_srv_stmp',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
@@ -39,7 +41,7 @@ FT_confEmailServer = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'text',
 				id : 'conf_email_srv_local_machine',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
@@ -49,7 +51,7 @@ FT_confEmailServer = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'text',
 				id: 'conf_email_srv_local_email',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
@@ -59,7 +61,7 @@ FT_confEmailServer = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'text',
 				id: 'conf_email_srv_auth_name',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'				
 			}, {
 				v_type: 'label',
@@ -69,7 +71,7 @@ FT_confEmailServer = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'password',
 				id: 'conf_email_srv_auth_passwd',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'
 			}],				
 			buttons: [ {
@@ -82,17 +84,17 @@ FT_confEmailServer = Ext.extend(FT_confFormObj, {
 				onclick: this.f_handleClick
 			}]
 		})  
-    },
+    }
 	
-    f_loadVMData: function(element)
+    this.f_loadVMData = function(element)
     {
-    },
+    }
     
-    f_stopLoadVMData: function()
+    this.f_stopLoadVMData = function()
     {
-    },
+    }
     
-    f_handleClick: function(e)
+    this.f_handleClick = function(e)
     {
         var target = g_xbObj.f_xbGetEventTarget(e);
         if (target != undefined) {
@@ -105,4 +107,6 @@ FT_confEmailServer = Ext.extend(FT_confFormObj, {
         }
     }	
     
-});
+}
+
+FT_extend(FT_confEmailServer, FT_confFormObj);

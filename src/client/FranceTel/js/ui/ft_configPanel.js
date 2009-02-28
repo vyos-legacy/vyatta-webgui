@@ -21,7 +21,8 @@ function FT_configPanel()
     this.m_selectCmp = undefined; //the component being selected (but not yet displayed)
     this.m_selectObj = undefined; //the object that its component is being selected
     this.m_dynSubMenu = undefined; //the dynamic inner sub menu (class=dyn_sub_menu) for user add/ user update
-    ///////////////////////////////////////
+    
+	///////////////////////////////////////
     // functions
     /**
      * A initialization method
@@ -71,11 +72,12 @@ function FT_configPanel()
     this.f_stopPolling = function()
     {
         if (thisObj.m_activeObj != undefined) {
+			thisObj.m_activeObj.f_distructor();
             thisObj.m_activeObj.f_stopLoadVMData();
         }
     }
     
-    this.f_showPage = function(id)
+    this.f_showPage = function(id, obj)
     {
         //Lookup the id2desc in the hidden link first
         var desc = thisObj.m_dynSubMenu.f_get(id);
@@ -84,25 +86,25 @@ function FT_configPanel()
             desc = thisObj.m_parent.m_3navMenu.f_getDescById(id);
         }
         if (desc != undefined) {
-            thisObj.f_show(id, desc);
+            thisObj.f_show(id, desc, obj);
         } else {
             alert('cannot find description for id: ' + id);
         }
     }
     
-    this.f_show = function(id, desc)
+    this.f_show = function(id, desc, obj)
     {
         thisObj.f_stopPolling();
         thisObj.f_showHeader(id, desc);
         
-        var cmp = thisObj.f_getComponent(id);
+        var cmp = thisObj.f_getComponent(id, obj);
         if (cmp == null) {
             cmp = thisObj.f_createEmptyComponent();
         }
         thisObj.f_render(cmp);
     }
     
-    this.f_getComponent = function(id)
+    this.f_getComponent = function(id, obj)
     {
         switch (id) {
         
@@ -150,11 +152,12 @@ function FT_configPanel()
                 var dbcb = function(){
 
                 }
-                var db = new FT_confBackup('db', dbcb, g_busObj);
-                return db.f_getConfigurationPage();			
+                thisObj.m_selectObj = new FT_confBackup('db', dbcb, g_busObj);
+                return thisObj.m_selectObj.f_getConfigurationPage();			
 			
             case VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID:
-                return thisObj.f_createEmptyComponent();
+                thisObj.m_selectObj	= new FT_confEmptyComponent();			
+                return thisObj.m_selectObj.f_getConfigurationPage();
                 
             case VYA.FT_CONST.DOM_3_NAV_SUB_EMAIL_SRV_ID:
                 var mpCb = function(){
@@ -209,33 +212,21 @@ function FT_configPanel()
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confUserUpdate('Update user', mpCb, g_busObj);
-                thisObj.m_selectObj.f_init();
+                thisObj.m_selectObj.f_init(obj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
         }
-        return thisObj.f_createEmptyComponent();
+        return (new FT_confEmptyComponent()).f_getConfigurationPage();
     }
-    
-    this.f_createEmptyComponent = function()
-    {
-        thisObj.m_selectObj = undefined;
-        var div = document.createElement('div');
-        div.style.display = 'block';
-        div.style.background = '#FFCC99';
-        div.style.color = '#000000';
-        div.style.fontFamily = 'Arial, san serif';
-        div.style.fontSize = '20px';
-        div.style.width = "100%";
-        div.style.height = "400";
-        var text = document.createElement('h1');
-        text.innerHTML = 'Not Implemented';
-        div.appendChild(text);
-        return div;
-    }
-    
+        
     this.f_load = function(component)
     {
         if (thisObj.m_selectObj != undefined) {
-            thisObj.m_configTempHolder.removeChild(component);
+			try {
+				thisObj.m_configTempHolder.removeChild(component);
+			} catch (e) {
+				; //this is ok for now because the empty component doesn't get put to the temp holder
+			}		
+			
         }
         thisObj.m_container.appendChild(component);
     }

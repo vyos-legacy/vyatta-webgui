@@ -4,9 +4,10 @@
  Author     : Loi.Vo
  Description: Base class for all configuration panel that uses form layout
  */
-FT_confFormObj = Ext.extend(FT_confBaseObj, {
-    thisObjName: 'FT_confFormObj',
-    m_config: undefined,
+function FT_confFormObj(name, callback, busLayer) {
+    var thisObjName = 'FT_confFormObj';
+    this.m_config = undefined;
+	var thisObj = this;
     
     
     /**
@@ -14,18 +15,26 @@ FT_confFormObj = Ext.extend(FT_confBaseObj, {
      * @param callback - a container callback
      * @param busLayer - business object
      */
-    constructor: function(name, callback, busLayer)
+    this.constructor = function(name, callback, busLayer)
     {
         FT_confFormObj.superclass.constructor(name, callback, busLayer);
-    },
+    }
     
+	this.constructor(name, callback, busLayer);
+	
+    this.f_distructor = function()
+    {
+        this.f_detachEventListener();
+        FT_confFormObj.superclass.f_distructor();
+    }	
+	
     /*
      * This should be called from the sub class to initialize the fields.
      */
-    f_setConfig: function(config)
+    this.f_setConfig = function(config)
     {
         this.m_config = config;
-    },
+    }
     
     /**
      * Set up configuration page, taking config object to initialize the page.
@@ -56,7 +65,7 @@ FT_confFormObj = Ext.extend(FT_confBaseObj, {
      *         ]
      *     }
      */
-    f_getConfigurationPage: function()
+    this.f_getConfigurationPage = function()
     {
         var div = document.createElement('div');
         div.setAttribute('id', this.m_config.id);
@@ -79,9 +88,9 @@ FT_confFormObj = Ext.extend(FT_confBaseObj, {
         this.f_loadVMData(div);
         
         return div;
-    },
+    }
     
-    f_doLayout: function()
+    this.f_doLayout = function()
     {
         if (this.m_config == undefined) {
             return;
@@ -144,6 +153,10 @@ FT_confFormObj = Ext.extend(FT_confBaseObj, {
             }
             if (this.m_config.items[i].text != undefined) {
                 html = html + this.m_config.items[i].text;
+				if ((this.m_config.items[i].require != undefined) && 
+				    (this.m_config.items[i].require == 'true')) {
+				    html = html + '</label><label style="color: #FF5500; font-weight: bold; font-size:14px;padding-left: 20px; text-align:right;">*';
+				}
             }
             
             html = html + enclosing;
@@ -176,37 +189,67 @@ FT_confFormObj = Ext.extend(FT_confBaseObj, {
         html = html + '<br/><br/>';
         
         return html;
-    },
+    }
     
-    f_attachEventListener: function()
+    this.f_attachEventListener = function()
     {
         for (var i = 0; i < this.m_config.buttons.length; i++) {
             var id = this.m_config.buttons[i].id;
             var b = document.getElementById(id);
             g_xbObj.f_xbAttachEventListener(b, 'click', this.m_config.buttons[i].onclick, true);
         }
-    },
+    }
     
-    f_detachEventListener: function()
+    this.f_detachEventListener = function()
     {
         for (var i = 0; i < this.m_config.buttons.length; i++) {
             var id = this.m_config.buttons[i].id;
             var b = document.getElementById(id);
-            g_xbObj.f_xbAttachEventListener(b, 'click', this.m_config.buttons[i].onclick, true);
+            g_xbObj.f_xbDetachEventListener(b, 'click', this.m_config.buttons[i].onclick, true);
         }
-    },
+    }
     
-    f_onUnload: function()
+    this.f_onUnload = function()
     {
-        f_detachEventListener();
-    },
+        this.f_detachEventListener();
+    }
     
-    f_loadVMData: function(element)
-    {
-    },
-    
-    f_stopLoadVMData: function()
+    this.f_loadVMData = function(element)
     {
     }
     
-});
+    this.f_stopLoadVMData = function()
+    {
+    }
+    
+}
+
+FT_extend(FT_confFormObj, FT_confBaseObj);
+
+function FT_confEmptyComponent()
+{
+    var thisObj = this;
+
+    this.f_distructor = function(){ }	
+	this.f_loadVMData = function() { }
+	this.f_stopVMData = function() { }
+	this.f_onUnload = function() { }	
+	
+	this.f_getConfigurationPage =  function() 
+	{
+        thisObj.m_selectObj = undefined;
+        var div = document.createElement('div');
+        div.style.display = 'block';
+        div.style.background = '#FFCC99';
+        div.style.color = '#000000';
+        div.style.fontFamily = 'Arial, san serif';
+        div.style.fontSize = '20px';
+        div.style.width = "100%";
+        div.style.height = "400";
+        var text = document.createElement('h1');
+        text.innerHTML = 'Not Implemented';
+        div.appendChild(text);
+        return div;		
+	}
+
+}

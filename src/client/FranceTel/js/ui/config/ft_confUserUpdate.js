@@ -48,7 +48,8 @@ function FT_confUserUpdate(name, callback, busLayer)
             }, {
                 v_type: 'text',
                 id: 'conf_user_update_username',
-                size: '32'
+                size: '32',
+				readonly: 'true'
             }, {
                 v_type: 'html',
                 v_end_row: 'true',

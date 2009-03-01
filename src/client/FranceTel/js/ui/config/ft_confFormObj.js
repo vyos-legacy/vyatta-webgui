@@ -133,9 +133,15 @@ function FT_confFormObj(name, callback, busLayer) {
                     break;
                 case 'password':
                     html = html + '<input type="password" id="' + this.m_config.items[i].id + '" class="v_form_input"';
+					if ((this.m_config.items[i].readonly != undefined) && (this.m_config.items[i].readonly=='true')) {
+						html = html + ' readonly style="background-color: #EFEFEF;"';
+					}
                     break;
                 case 'text':
                     html = html + '<input type="text" id="' + this.m_config.items[i].id + '" class="v_form_input"';
+					if ((this.m_config.items[i].readonly != undefined) && (this.m_config.items[i].readonly=='true')) {
+						html = html + ' readonly style="background-color: #EFEFEF;"';
+					}					
                     break;
                 case 'empty':
                     html = html + '<br';

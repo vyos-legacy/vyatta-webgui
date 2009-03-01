@@ -10,6 +10,7 @@ function FT_confUserAdd (name, callback, busLayer)
 	var thisObj = this;
 	this.override = true;
 	this.form = undefined;
+	this.m_clickable = true;
 	
 	/**
 	 * @param name - name of configuration screens.
@@ -115,6 +116,10 @@ function FT_confUserAdd (name, callback, busLayer)
 	{
         thisObj.form = document.getElementById('conf_user_add' + "_form");		
 		thisObj.f_registerOnKeyUpHandler();
+		if (!g_xbObj.m_isSafari) {
+			var e = document.getElementById('conf_user_add_surname');
+			e.focus();
+		}
 	} 
 	
 	this.f_stopLoadVMData = function()
@@ -123,11 +128,36 @@ function FT_confUserAdd (name, callback, busLayer)
 	
 	this.f_validate = function()
 	{
-		return true;
+		var error = 'Please fix the following errors:<br>';
+		var errorInner = '';
+		var valid = true;
+		if (thisObj.form.conf_user_add_username.value.trim().length <=0 ) {
+			errorInner = errorInner + '<li style="list-style-type:square;">username cannot be empty</li>';
+			valid = false;
+		}
+		if (!thisObj.f_checkEmail(thisObj.form.conf_user_add_email.value.trim())) {
+			errorInner = errorInner + '<li style="list-style-type:square">email address: ' +
+			   thisObj.form.conf_user_add_email.value + ' is invalid</li>';
+			valid = false;
+		}
+		if (!valid) {
+			error = error + '<ul style="padding-left:30px;">';
+			error = error + errorInner + '</ul>';
+			thisObj.f_enableClick(false);
+			g_utils.f_popupMessage(error, 'error', 'Error!','f_confUserAddError()');
+		}
+		return valid;
+	}
+	
+	this.f_enableClick = function(b) {
+	    thisObj.m_clickable= b;
 	}
 	
 	this.f_handleClick = function(e)
 	{
+		if (!thisObj.m_clickable) {
+			return;
+		}
 		var target = g_xbObj.f_xbGetEventTarget(e);
 		if (target != undefined) {
 			var id = target.getAttribute('id');
@@ -176,6 +206,13 @@ function FT_confUserAdd (name, callback, busLayer)
 			default:
 				break;
 		}
+		/*
+		alert('username: ' + thisObj.form.conf_user_add_username.value + ' surname:'
+		  + thisObj.form.conf_user_add_surname.value + ' givenname: ' +
+		  thisObj.form.conf_user_add_givenname.value + ' passwd: ' +
+		  thisObj.form.conf_user_add_username.value + ' role: ' + role + ' type: add' +
+		  ' email: ' + thisObj.form.conf_user_add_email.value);
+		*/  
 		var user = new FT_userRecObj(thisObj.form.conf_user_add_username.value, 
 		    thisObj.form.conf_user_add_surname.value, 
 			thisObj.form.conf_user_add_givenname.value, 
@@ -183,26 +220,34 @@ function FT_confUserAdd (name, callback, busLayer)
 			role, 
 			'add', 
 			thisObj.form.conf_user_add_email.value, 
-			new Array()
+			'right'
 			);
 		g_busObj.f_addUserToServer(user, thisObj.f_addUserCb);
 		//Here we need to popup a waiting message dialog
 	}
 	
-	this.f_addUserCb = function()
+	this.f_addUserCb = function(eventObj)
 	{
 		//Here we will need to:
 		//    1. Close  the waiting message dialog
 		//    2. Display error messsage from server if any.  
 		//    3. Take user to user list screen when no error.
-		g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID);
+		if (eventObj.f_isError()) {
+		    g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error');			    
+		} else {
+			g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID);
+		}
 	}
 }    
 
 
 FT_extend(FT_confUserAdd, FT_confFormObj);
 
-
+function f_confUserAddError(e)
+{
+    g_utils.f_hidePopupMessage();	
+	g_configPanelObj.m_activeObj.f_enableClick(true);
+}
 
 
 

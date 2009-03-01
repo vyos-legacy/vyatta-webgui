@@ -46,9 +46,13 @@ div#labeltext {
 
 #login_form {
     margin-top: 60px;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 11px;
 } 
+
+#login_form.input {
+	color: #444444;
+	border: 1px solid #CCCCCC;	
+}
 
 #messageContactServiceCustomer {
     padding: 20px 10px 20px 10px;
@@ -56,10 +60,11 @@ div#labeltext {
 } 
 
 .alignRight {
-    padding-right: 40px;
+    padding-right: 20px;
     text-align: right;
 } 
 
 .alignLeft {
     text-align: left;
+	padding-left: 35px;
 }

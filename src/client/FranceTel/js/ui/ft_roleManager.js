@@ -21,6 +21,7 @@ function FT_roleManager()
 	{
 		thisObj.m_user = g_busObj.f_getLoginUserObj();
 		//hard-coded for now because the business object doesn't initialize it.
+		//alert ('login role: ' + thisObj.m_user.m_role);
 		thisObj.m_user.m_role = thisObj.m_user.V_ROLE_INSTALL;
 		
 		switch (thisObj.m_user.m_role) {

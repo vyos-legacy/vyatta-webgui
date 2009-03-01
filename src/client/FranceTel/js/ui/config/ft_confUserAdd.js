@@ -244,8 +244,7 @@ function FT_confUserAdd (name, callback, busLayer)
 FT_extend(FT_confUserAdd, FT_confFormObj);
 
 function f_confUserAddError(e)
-{
-    g_utils.f_hidePopupMessage();	
+{    
 	g_configPanelObj.m_activeObj.f_enableClick(true);
 }
 

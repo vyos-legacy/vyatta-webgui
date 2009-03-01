@@ -37,11 +37,6 @@ function FT_confUserUpdate(name, callback, busLayer)
     this.f_init = function(obj)
     {
         thisObj.m_user = g_busObj.f_getUserFromLocal(obj);
-        ///////////////////////////////////////////////////////////////////////////////
-        //dummy user.  will be removed after backend is ready.
-        ///////////////////////////////////////////////////////////////////////////////
-        thisObj.m_user = thisObj.f_getDummyUser(obj);
-        ///////////////////////////////////////////////////////////////////////////////
         
         this.f_setConfig({
             id: 'conf_user_update',
@@ -123,22 +118,31 @@ function FT_confUserUpdate(name, callback, busLayer)
     }
     
     this.f_updateUser = function()
-    {
-        var form = document.getElementById('conf_user_update' + "_form");
-        var role = thisObj.m_user.m_role;
-        
-        var user = new FT_userRecObj(form.conf_user_update_username.value, form.conf_user_update_surname.value, form.conf_user_update_givenname.value, thisObj.m_user.m_pw, role, 'change', form.conf_user_update_email.value, new Array());
-        g_busObj.f_addUserToServer(user, thisObj.f_updateUserCb);
+    {       
+        var user = new FT_userRecObj(thisObj.form.conf_user_update_username.value, 
+		    thisObj.form.conf_user_update_surname.value, 
+			thisObj.form.conf_user_update_givenname.value,null, null, 'change', 
+			thisObj.form.conf_user_update_email.value,null);
+		/*	
+	    alert('User: username:' + user.m_user + ' last: ' + user.m_last + ' first: ' + user.m_first +
+		      ' email: ' + user.m_email + ' role: ' + user.m_role + ' type: ' + user.m_type + ' password: ' +
+			  user.m_pw + ' right: ' + user.m_right);
+		*/
+        g_busObj.f_modifyUserFromServer(user, thisObj.f_updateUserCb);
         //Here we need to popup a waiting message dialog
     }
     
-    this.f_updateUserCb = function()
+    this.f_updateUserCb = function(eventObj)
     {
         //Here we will need to:
         //    1. Close  the waiting message dialog
         //    2. Display error messsage from server if any.  
         //    3. Take user to user list screen when no error.
-        g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID);
+		if (eventObj.f_isError()) {
+		    g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error');			    
+		} else {
+			g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID);
+		}		
     }
     
     this.f_resetPasswd = function()
@@ -152,8 +156,8 @@ function FT_confUserUpdate(name, callback, busLayer)
     
     this.f_resetPasswdConfirmCb = function()
     {
-        this.m_user.m_pw = this.m_user.username;
-        g_busObj.f_addUserToServer(this.m_user, thisObj.f_resetPasswordCb);
+		var user = new FT_userRecObj(this.m_user.m_user, null, null, this.m_user.m_user, null, null, null, null);
+        g_busObj.f_modifyUserFromServer(user, thisObj.f_resetPasswordCb);
     }
     
     /**
@@ -229,7 +233,6 @@ FT_extend(FT_confUserUpdate, FT_confFormObj);
 
 function f_confUserUpdateApply(e)
 {
-    g_utils.f_hidePopupMessage();
     g_configPanelObj.m_activeObj.f_enableClick(true);
     //check to see if the apply or cancel button clicked.
     if (e != undefined) {
@@ -242,6 +245,5 @@ function f_confUserUpdateApply(e)
 
 function f_confUserUpdateMakeModal(e)
 {
-    g_utils.f_hidePopupMessage();
     g_configPanelObj.m_activeObj.f_enableClick(true);
 }

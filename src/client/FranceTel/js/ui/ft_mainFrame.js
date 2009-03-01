@@ -102,6 +102,11 @@ function FT_mainFrame(){
 // new FT_mainFrame object
 g_mainFrameObj = new FT_mainFrame();
 
-
+function f_onLanguageChange() 
+{
+	var e = document.getElementById('ft_language');
+	alert('language selected: ' + e.value);
+	
+}
 
 

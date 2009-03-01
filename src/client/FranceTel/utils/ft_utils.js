@@ -90,13 +90,13 @@ var g_utils =
         switch(type)
         {
             case 'confirm': // yes/no or apply/cancel
-                cb = cb == undefined ? "f_utilsPopupApply()" : 
-                                cb + "; f_utilsPopupApply()";
-                buttonsDiv = '<div align="center"><img src="images/ft_apply.PNG" ' +
+                var cancelCb = cb == undefined ? "f_utilsPopupCancel()" : "f_utilsPopupCancel();" + cb;                            
+                cb = cb == undefined ? "f_utilsPopupApply()" : "f_utilsPopupApply();" + cb;
+                buttonsDiv = '<div align="center"><img id="ft_popup_message_apply" src="images/ft_apply.PNG" ' +
                           'onclick="' + cb + '">&nbsp;&nbsp;' +
                           '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-                          '<img src="images/ft_cancel.PNG" ' +
-                          'onclick="f_utilsPopupCancel()"></div>';
+                          '<img id="ft_popup_message_cancel" src="images/ft_cancel.PNG" ' +
+                          'onclick="' + cancelCb + '"></div>';
                 innerHtml += '<tbody><tr height="55">' +
                       '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="250"><p ' +
@@ -120,7 +120,7 @@ var g_utils =
                         message + '</p></td>';
                 break;
             case 'ok':    // ok only
-                cb = cb == undefined ? "f_utilsPopupOk()" : cb;
+                cb = cb == undefined ? "f_utilsPopupOk()" : "f_utilsPopupOk();" + cb;
                 div.style.width = '350px';
                 if(title != undefined)
                 {
@@ -137,6 +137,24 @@ var g_utils =
                         'style="padding-left:5px; font:normal 10pt arial;">' +
                         message + '</p></td>';
                 break;
+            case 'error':    // ok only
+                cb = cb == undefined ? "f_utilsPopupOk()" : "f_utilsPopupOk();" + cb;
+                div.style.width = '350px';
+                if(title != undefined)
+                {
+                    div.style.height = '';
+                    message = '<b>' + title + '</b><br><br>' + message;
+                }
+
+                buttonsDiv = '<div align="center" style="padding-top:8px;">' +
+                              '<img src="images/ft_apply.PNG" ' +
+                              'onclick="' + cb + '"></div>';
+                innerHtml += '<tbody><tr height="73">' +
+                        '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
+                        '<td style="text-align:left;" width="300"><p ' +
+                        'style="padding-left:5px; font:normal 10pt arial;">' +
+                        message + '</p></td>';
+                break;						
         }
 
         innerHtml += '</tr><tr height="28">' +

@@ -33,53 +33,66 @@ use Getopt::Long;
 
 my ($list,$delete,$modify,$add,$password,$lastname,$firstname,$email,$role,$rights);
 
+#
+# Add user <account>
+# Add user rights
+#
 sub add_user {
     #write temp file.
-    my $conf_file = "/tmp/user-".$$;
 
-    print "$conf_file\n";
+    if (defined($password) && $password ne NULL && defined($email) && $email ne NULL && defined($lastname) && $lastname ne NULL && defined($firstname) && $firstname ne NULL) {
 
-    open(FILE, ">$conf_file") or die "Can't open temp user file"; 
-
-    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
-    print FILE "changetype: modify\n";
-    print FILE "replace: userPassword\n";
-    print FILE "userPassword: ".$password."\n";
-    print FILE "\n";
-    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
-    print FILE "changetype: modify\n";
-    print FILE "replace: mail\n";
-    print FILE "mail: ".$email."\n";
-    print FILE "\n";
-    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
-    print FILE "changetype: modify\n";
-    print FILE "replace: surname\n";
-    print FILE "surname: ".$lastname."\n";
-    print FILE "\n";
-    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
-    print FILE "changetype: modify\n";
-    print FILE "replace: commonname\n";
-    print FILE "commonname: ".$firstname."\n";
-
-    #todo: lastname,firstname
-
-
-
-    close FILE;
-
-    #first add the user
-    system("ldapadduser $add vyattacfg");
-
-    #post message to all registered VMs:
-    #POST /notifications/users/[username]
-
-
-    #now modify the account
-    system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
-    #clean up temp file here.
-    unlink($conf_file);
+	my $conf_file = "/tmp/user-".$$;
+	
+#    print "$conf_file\n";
+	
+	open(FILE, ">$conf_file") or die "Can't open temp user file"; 
+	
+	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+	print FILE "changetype: modify\n";
+	print FILE "replace: userPassword\n";
+	print FILE "userPassword: ".$password."\n";
+	print FILE "\n";
+	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+	print FILE "changetype: modify\n";
+	print FILE "replace: mail\n";
+	print FILE "mail: ".$email."\n";
+	print FILE "\n";
+	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+	print FILE "changetype: modify\n";
+	print FILE "replace: surname\n";
+	print FILE "surname: ".$lastname."\n";
+	print FILE "\n";
+	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+	print FILE "changetype: modify\n";
+	print FILE "replace: commonname\n";
+	print FILE "commonname: ".$firstname."\n";
+	
+	close FILE;
+	
+	#first add the user
+	system("ldapadduser $add vyattacfg");
+	
+	#post message to all registered VMs:
+	#POST /notifications/users/[username]
+	
+	#now modify the account
+	system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
+	#clean up temp file here.
+	unlink($conf_file);
+    }
+    elsif (defined($rights) && $rights ne NULL){
+	#modify rights on local system
+	system("usermod -a -G $rights $add");
+    }
 }
 
+#
+# Modify user password
+# Modify user email
+# Modify user lastname
+# Modify user firstname
+#
 sub modify_user {
     #write temp file.
     my $conf_file = "/tmp/user-".$$;
@@ -88,10 +101,24 @@ sub modify_user {
 
     open(FILE, ">$conf_file") or die "Can't open temp user file"; 
 
-    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+    print FILE "dn: uid=".$modify.",ou=People,dc=localhost,dc=localdomain\n";
     print FILE "changetype: modify\n";
-    print FILE "add: gidNumber\n";
-    print FILE "gidNumber: ".$rights."\n";
+    if (defined($email) && $email ne NULL) {
+	print FILE "replace: mail\n";
+	print FILE "mail: ".$email."\n";
+    }
+    elsif (defined($lastname) && $lastname ne NULL) {
+	print FILE "replace: surname\n";
+	print FILE "surname: ".$lastname."\n";
+    }
+    elsif (defined($firstname) && $firstname ne NULL) {
+	print FILE "replace: commonname\n";
+	print FILE "commonname: ".$firstname."\n";
+    }
+    elsif (defined($password) && $password ne NULL) {
+	print FILE "add: password\n";
+	print FILE "password: ".$password."\n";
+    }
     print FILE "\n";
 
     close FILE;
@@ -102,11 +129,27 @@ sub modify_user {
     unlink($conf_file);
 }
 
+#
+# delete user <account>
+# delete user rights
+#
 sub del_user {
     # post notification to VMs: 
     # DELETE /notifications/users/[username]
-
-    system("ldapdeleteuser $delete");
+    my @groups;
+    my $grp;
+    if ($rights != NULL) {
+	#how to remove???
+	#get group list and modify
+	@groups = system("id -G $delete");
+	#now remove $rights from $groups--probably need to eat a comma....
+	$grp = $groups[0];
+	$grp =~ s/$rights/''/; 
+	system("usermod -G $grp $delete");
+    }
+    else {
+	system("ldapdeleteuser $delete");
+    }
 }
 
 sub list_user {
@@ -162,10 +205,15 @@ sub list_user {
 		print "<first>$o[1]</first>";
 	    }
 	    
+	    my @groups;
 	    if ($open_entry == 1 && $o[0] eq '#') {
 		print "</name>";
-		
-		print "<rights></rights>";
+
+		#use system call to retrieve rights
+		print "<rights>";
+		@groups = system("id -G $list");
+		#will need to convert to strings.
+		print "</rights>";
 		print "<role>user</role>";
 		
 		print "</user>";
@@ -192,10 +240,24 @@ sub usage() {
 
 my @delete_user = ();
 
+# Here are the forms of the command:
+#
+# modify [user] [password]
+# modify [user] [email]
+# modify [user] [lastname]
+# modify [user] [firstname]
+# add [user] [password] [lastname] [firstname] [email] [role] [rights]
+# add [user] [rights]
+# delete [user] [rights]
+# delete [user]
+# list 
+# list [user]
+
+
 #pull commands and call command
 GetOptions(
     "add=s"           => \$add,
-    "modify:s"        => \$modify,
+    "modify=s"        => \$modify,
     "password=s"      => \$password,
     "lastname=s"      => \$lastname,
     "firstname=s"     => \$firstname,
@@ -207,16 +269,16 @@ GetOptions(
     ) or usage();
 
 
-if ( defined $delete ) {
-    del_user();
-    exit 0;
-}
 if ( defined $modify ) {
     modify_user();
     exit 0;
 }
 if ( defined $add ) {
     add_user();
+    exit 0;
+}
+if ( defined $delete ) {
+    del_user();
     exit 0;
 }
 if ( defined $list ) {

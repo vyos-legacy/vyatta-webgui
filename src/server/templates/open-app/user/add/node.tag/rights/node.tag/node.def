@@ -1,1 +1,1 @@
-run: sudo perl /opt/vyatta/sbin/openapp-user.pl --modify -add "$4" --rights "$6"
+run: sudo perl /opt/vyatta/sbin/openapp-user.pl -add "$4" --rights "$6"

@@ -19,24 +19,25 @@ function FT_roleManager()
 	 */
 	this.f_getMenu = function () 
 	{
-		thisObj.m_user = g_busObj.f_getLoginUserObj();
-		//hard-coded for now because the business object doesn't initialize it.
-		//alert ('login role: ' + thisObj.m_user.m_role);
-		thisObj.m_user.m_role = thisObj.m_user.V_ROLE_INSTALL;
-		
+		var uo = g_busObj.f_getLoginUserObj();
+		thisObj.m_user = g_busObj.f_getLoginUserRec();
+//		alert ('login: ' + thisObj.m_user.m_user + ' role: ' + thisObj.m_user.m_role
+//		   + ' ADMIN: ' + uo.V_ROLE_ADMIN + ' INSTALL: ' + uo.V_ROLE_INSTALL +
+//		   ' USER: ' + uo.V_ROLE_USER);
+
 		switch (thisObj.m_user.m_role) {
-			case thisObj.m_user.V_ROLE_ADMIN:
+			case uo.V_ROLE_ADMIN:
 			    thisObj.f_hideConfig();
 				break;
-			case thisObj.m_user.V_ROLE_INSTALL:
+			case uo.V_ROLE_INSTALL:
 			    break;
-			case thisObj.m_user.V_ROLE_USER:
+			case uo.V_ROLE_USER:
 				thisObj.f_showOnlyMyProfile();
 				break;
 			default:
 			    break;
 		}	
-		
+                				
         return (document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_2_NAV_ID));				
 	}
 		
@@ -57,6 +58,10 @@ function FT_roleManager()
 	
 	this.f_isUser = function() {
 		return (thisObj.m_user.m_role == thisObj.m_user.V_ROLE_USER);
+	}
+	
+	this.f_isInstaller = function() {
+		return (thisObj.m_user.m_role == thisObj.m_user.V_ROLE_INSTALL);		
 	}
 }
 

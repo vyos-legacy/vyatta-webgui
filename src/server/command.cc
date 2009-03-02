@@ -127,8 +127,11 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     }
   }
   if (_proc->get_msg()._conf_mode == WebGUI::CONF) { //configuration mode command
-    if (strncmp(tmp.c_str(),"set",3) == 0 || strncmp(tmp.c_str(),"delete",6) == 0 || strncmp(tmp.c_str(),"commit",6) == 0) {
+    if (strncmp(tmp.c_str(),"set",3) == 0 || strncmp(tmp.c_str(),"delete",6) == 0) {
       tmp = "/opt/vyatta/sbin/my_" + cmd;
+    }
+    else if (strncmp(tmp.c_str(),"commit",6) == 0) {
+      tmp = "/opt/vyatta/sbin/my_" + cmd + " -e"; //add error location flag
     }
     else if (strncmp(tmp.c_str(),"load",4) == 0) {
       tmp = "/opt/vyatta/sbin/vyatta-load-config.pl";
@@ -204,27 +207,45 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 
   command += ";" + tmp;
 
-  //  string hack = "echo \"single_command:A\" >> /tmp/foo";system(hack.c_str());
-  if (validate_commit == true) {
-    //  string hack = "echo \"single_command:B\" >> /tmp/foo";system(hack.c_str());
-    resp = validate_commit_nodes();
-    if (resp.empty() == false) {
-      resp = WebGUI::mass_replace(resp, "\n", "&#xD;&#xA;");
-      err = WebGUI::MANDATORY_NODE_ERROR;
-      return;
-    }
-  }
-  
   string stdout;
+  /*
   if (WebGUI::execute(command,stdout,true) == 0) {
     err = WebGUI::SUCCESS;
   }
   else {
     err = WebGUI::COMMAND_ERROR;
+    //now evaluate mandatory nodes
+    if (validate_commit == true) {
+      resp += "\n"; 
+      resp += validate_commit_nodes();
+      if (resp.empty() == false) {
+	resp = WebGUI::mass_replace(resp, "\n", "&#xD;&#xA;");
+	err = WebGUI::MANDATORY_NODE_ERROR;
+	return;
+      }
+    }
+  }
+  */
+  //NOTE error codes are not currently being returned via the popen call--temp fix until later investigation
+  WebGUI::execute(command,stdout,true);
+  if (stdout.empty() == true) {
+    err = WebGUI::SUCCESS;
+  }
+  else {
+    //    err = WebGUI::COMMAND_ERROR;
+    //now evaluate mandatory nodes
+    if (validate_commit == true) {
+      string mandatory = validate_commit_nodes();
+      if (mandatory.empty() == false) {
+	resp = stdout + "\n" + mandatory;
+	resp = WebGUI::mass_replace(resp, "\n", "&#xD;&#xA;");
+	err = WebGUI::MANDATORY_NODE_ERROR;
+	return;
+      }
+    }
   }
 
-  stdout = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
-  resp = stdout;
+  resp = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
 }
 
 /**

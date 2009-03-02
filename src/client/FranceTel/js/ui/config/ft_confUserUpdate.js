@@ -152,7 +152,7 @@ function FT_confUserUpdate(name, callback, busLayer)
         var type = 'confirm';
         var title = 'Reset password confirmation';
         thisObj.f_enableClick(false);
-        g_utils.f_popupMessage(message, type, title, 'f_confUserUpdateApply(this)');
+        g_utils.f_popupMessage(message, type, title, 'f_confUserUpdateApply(this)','f_confUserUpdateApply(this)');
     }
     
     this.f_resetPasswdConfirmCb = function()

@@ -1,3 +1,29 @@
+vyatta-webgui (0.2.13-5) unstable; urgency=low
+
+  [ slioch ]
+  * added explicit set of operation and vyattacfg group for access
+    levels.
+  * accomodate problem with config directory permissions by add sudo and
+    umask command prior to saving configuration.
+
+  [ Mark O'Brien ]
+  * 3.3.1
+
+  [ Kevin Choi ]
+  * * Fixed bug 4145 - 'stop' button may be ineffective
+
+  [ slioch ]
+  * added new cli -e flag to return command error locations, and
+    mandatory errors to be evaluated on commit error
+
+  [ Kevin Choi ]
+  * * removed vyatta-components then added -component-tree.js for
+    component tree view.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 04 Mar 2009 11:17:00 -0800
+
 vyatta-webgui (0.2.13-4) unstable; urgency=low
 
   [ Kevin Choi ]

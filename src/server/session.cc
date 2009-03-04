@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <grp.h>
 #include <pwd.h>
 #include <unistd.h>
 #include <dirent.h>

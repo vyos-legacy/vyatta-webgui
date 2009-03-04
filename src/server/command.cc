@@ -140,7 +140,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       tmp += " " + str_proc.get(1);
     }
     else if (strncmp(tmp.c_str(),"save",4) == 0) {
-      tmp = "/opt/vyatta/sbin/vyatta-save-config.pl";
+      tmp = "umask 0002 ; sudo /opt/vyatta/sbin/vyatta-save-config.pl";
       //grab filename is present
       StrProc str_proc(cmd, " ");
       tmp += " " + str_proc.get(1);

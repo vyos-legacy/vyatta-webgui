@@ -40,14 +40,12 @@ my ($list,$delete,$modify,$add,$password,$lastname,$firstname,$email,$role,$righ
 sub add_user {
     #write temp file.
 
+    my $conf_file = "/tmp/user-".$$;
+#    print "$conf_file\n";
+    open(FILE, ">$conf_file") or die "Can't open temp user file"; 
+	
     if (defined($password) && $password ne NULL && defined($email) && $email ne NULL && defined($lastname) && $lastname ne NULL && defined($firstname) && $firstname ne NULL) {
 
-	my $conf_file = "/tmp/user-".$$;
-	
-#    print "$conf_file\n";
-	
-	open(FILE, ">$conf_file") or die "Can't open temp user file"; 
-	
 	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
 	print FILE "changetype: modify\n";
 	print FILE "replace: userPassword\n";
@@ -71,20 +69,23 @@ sub add_user {
 	close FILE;
 	
 	#first add the user
-	system("ldapadduser $add vyattacfg");
+	system("ldapadduser $add operator");
 	
 	#post message to all registered VMs:
 	#POST /notifications/users/[username]
 	
-	#now modify the account
-	system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
-	#clean up temp file here.
-	unlink($conf_file);
     }
     elsif (defined($rights) && $rights ne NULL){
 	#modify rights on local system
-	system("usermod -a -G $rights $add");
+	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+	print FILE "changetype: modify\n";
+	print FILE "add: member\n";
+	print FILE "member: ".$rights."\n";
     }
+    #now modify the account
+    system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
+    #clean up temp file here.
+    unlink($conf_file);
 }
 
 #
@@ -136,16 +137,21 @@ sub modify_user {
 sub del_user {
     # post notification to VMs: 
     # DELETE /notifications/users/[username]
-    my @groups;
-    my $grp;
-    if ($rights != NULL) {
-	#how to remove???
-	#get group list and modify
-	@groups = system("id -G $delete");
-	#now remove $rights from $groups--probably need to eat a comma....
-	$grp = $groups[0];
-	$grp =~ s/$rights/''/; 
-	system("usermod -G $grp $delete");
+    if (defined($rights) && $rights ne NULL) {
+	my $conf_file = "/tmp/user-".$$;
+#    print "$conf_file\n";
+	open(FILE, ">$conf_file") or die "Can't open temp user file"; 
+	
+	#modify rights on local system
+	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+	print FILE "changetype: modify\n";
+	print FILE "delete: member\n";
+	print FILE "member: ".$rights."\n";
+
+	close FILE;
+	
+	#first add the user
+	system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
     }
     else {
 	system("ldapdeleteuser $delete");
@@ -183,6 +189,7 @@ sub list_user {
 
     #iterate by line
     my $open_entry = 0;
+    my $hash_arr = {};
     print "VERBATIM_OUTPUT\n";
     for $output (@output) {
 #	print $output;
@@ -190,33 +197,42 @@ sub list_user {
 	if (defined $o[0] && defined $o[1]) {
 	    if ($o[0] eq "uid:") {
 		$open_entry = 1;
-		print "<user name='$o[1]'>";
+		$hash_arr->{'name'} = $o[1];
 	    }
 	    if ($o[0] eq 'mail:') {
-		print "<email>$o[1]</email>";
+		$hash_arr->{'mail'} = $o[1];
 	    }
 	    #The assumption is that mail is the last entry per user
 #	    print "<first>$o[1]</first>";
 	    if ($o[0] eq 'sn:') {
-		print "<name>";
-		print "<last>$o[1]</last>";
+		$hash_arr->{'last'} = $o[1];
 	    }
 	    if ($o[0] eq 'cn:') {
-		print "<first>$o[1]</first>";
+		$hash_arr->{'first'} = $o[1];
 	    }
 	    
 	    my @groups;
 	    if ($open_entry == 1 && $o[0] eq '#') {
+		#now squirt out everything.
+		print "<user name='$hash_arr->{'name'}'>";
+		print "<name>";
+		print "<first>$hash_arr->{'first'}</first>";
+		print "<last>$hash_arr->{'last'}</last>";
 		print "</name>";
-
-		#use system call to retrieve rights
+		print "<email>$hash_arr->{'mail'}</email>";
 		print "<rights>";
 		@groups = system("id -G $list");
 		#will need to convert to strings.
 		print "</rights>";
 		print "<role>user</role>";
-		
 		print "</user>";
+
+		#let's clear the entry now
+		$hash_arr->{'name'} = "";
+		$hash_arr->{'first'} = "";
+		$hash_arr->{'last'} = "";
+		$hash_arr->{'mail'} = "";
+
 		$open_entry = 0;
 	    }
 	}

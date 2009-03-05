@@ -129,7 +129,9 @@ FT_extend(FT_confDashboard, FT_confBaseObj);
 
 function f_dbHandleUpdate(vm)
 {
-    g_utils.f_popupMessage('testing tseting testing', 'confirm');
+    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_SCHED_UPDATE_ID);	
+    /*
+	g_utils.f_popupMessage('testing tseting testing', 'confirm');
     /////////////////////////////////////////////////////
         // for testing
         var cb = function(evt)
@@ -141,6 +143,7 @@ function f_dbHandleUpdate(vm)
                     'email@add.com', 'right')
         g_busObj.f_addUserToServer(us, cb);
         //g_busObj.f_getUserListFromServer(cb);
+	*/
 }
 var counter = 110;
 

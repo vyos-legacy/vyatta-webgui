@@ -23,3 +23,4 @@ document.write('<script type="text/javascript" src="js/ui/config/ft_confTimeServ
 document.write('<script type="text/javascript" src="js/ui/config/ft_confLDAPserver.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confBLB.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confPassword.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/ft_confSchedUpdate.js"></script>');

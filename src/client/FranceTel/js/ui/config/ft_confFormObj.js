@@ -98,15 +98,28 @@ function FT_confFormObj(name, callback, busLayer) {
         var html = '<form id="' + this.m_config.id + '_form" class="v_form" border="0"><br/><br/>' +
         '<table border="0" align="center">';
         for (var i = 0; i < this.m_config.items.length; i++) {
+			var input_class = 'v_form_input';
+			
+			if ((this.m_config.items[i].no_left_margin != undefined) &&
+            (this.m_config.items[i].no_left_margin == 'true')) {
+                input_class = 'v_form_input_no_left_margin';
+            }
+			
             if ((this.m_config.items[i].v_new_row != undefined) &&
             (this.m_config.items[i].v_new_row == 'true')) {
                 html = html + '<tr>';
             }
 			
-			if ((this.m_config.items[i].padding != undefined)) {
-				html = html + '<td style="padding-left: ' + this.m_config.items[i].padding + ';">';
+			if ((this.m_config.items[i].colspan != undefined)) {
+				html = html + '<td colspan="' + this.m_config.items[i].colspan + '"';
 			} else {
-                html = html + '<td>';
+                html = html + '<td';
+			}
+						
+			if ((this.m_config.items[i].padding != undefined)) {
+				html = html + ' style="padding-left: ' + this.m_config.items[i].padding + ';">';
+			} else {
+                html = html + '>';
 			}
             
             var enclosing = '';
@@ -132,13 +145,13 @@ function FT_confFormObj(name, callback, busLayer) {
                     }
                     break;
                 case 'password':
-                    html = html + '<input type="password" id="' + this.m_config.items[i].id + '" class="v_form_input"';
+                    html = html + '<input type="password" id="' + this.m_config.items[i].id + '" class="' + input_class + '"';
 					if ((this.m_config.items[i].readonly != undefined) && (this.m_config.items[i].readonly=='true')) {
 						html = html + ' readonly style="background-color: #EFEFEF;"';
 					}
                     break;
                 case 'text':
-                    html = html + '<input type="text" id="' + this.m_config.items[i].id + '" class="v_form_input"';
+                    html = html + '<input type="text" id="' + this.m_config.items[i].id + '" class="' + input_class + '"';
 					if ((this.m_config.items[i].readonly != undefined) && (this.m_config.items[i].readonly=='true')) {
 						html = html + ' readonly style="background-color: #EFEFEF;"';
 					}					

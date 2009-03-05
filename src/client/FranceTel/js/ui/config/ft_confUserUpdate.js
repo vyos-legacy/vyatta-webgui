@@ -168,12 +168,12 @@ function FT_confUserUpdate(name, callback, busLayer)
         //    2. Display error messsage from server if any.  
         //    3. Take user to user list screen when no error.
         if (eventObj.f_isError()) {
-			thisObj.f_enableClick(true);
-			thisObj.m_transaction.length = 0;
-			g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error');
-		} else if (thisObj.m_transaction.length > 0) {
-			thisObj.f_processTransaction();
-		} else {	
+            thisObj.f_enableClick(true);
+            thisObj.m_transaction.length = 0;
+            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error');
+        } else if (thisObj.m_transaction.length > 0) {
+            thisObj.f_processTransaction();
+        } else {
             g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID);
         }
     }
@@ -216,11 +216,11 @@ function FT_confUserUpdate(name, callback, busLayer)
         var errorInner = '';
         var valid = true;
         if (thisObj.form.conf_user_update_username.value.trim().length <= 0) {
-            errorInner = errorInner + '<li style="list-style-type:square;">username cannot be empty</li>';
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif)">username cannot be empty</li>';
             valid = false;
         }
         if (!thisObj.f_checkEmail(thisObj.form.conf_user_update_email.value.trim())) {
-            errorInner = errorInner + '<li style="list-style-type:square">email address: ' +
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif)">email address: ' +
             thisObj.form.conf_user_update_email.value +
             ' is invalid</li>';
             valid = false;

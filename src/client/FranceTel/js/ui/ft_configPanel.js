@@ -141,7 +141,12 @@ function FT_configPanel()
                 return thisObj.m_selectObj.f_getConfigurationPage();
                 
             case VYA.FT_CONST.DOM_3_NAV_SUB_SUBCRIBE_ID:
-                
+                var mpCb = function(){
+                }
+                thisObj.m_selectObj = new FT_confSubscribe('Subscription', mpCb, g_busObj);
+                thisObj.m_selectObj.f_init();
+                return thisObj.m_selectObj.f_getConfigurationPage();
+				                
             case VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID:
                 var dbcb = function(){
                 

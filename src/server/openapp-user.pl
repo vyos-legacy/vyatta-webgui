@@ -24,9 +24,6 @@
 #
 
 use lib "/opt/vyatta/share/perl5/";
-use Vyatta::Config;
-use Vyatta::Misc;
-use Vyatta::TypeChecker;
 
 use warnings;
 use strict;
@@ -51,13 +48,13 @@ sub add_user {
     #todo: email,role,rights,lastname,firstname
     close FILE;
 
-    system "ldapadd -x -D \"cn=admin,dc=nodomain\" -W -f ".$conf_file;
+    system('ldapadd -x -D \"cn=admin,dc=nodomain\" -W -f $conf_file');
     #clean up temp file here.
     unlink($conf_file);
 }
 
 sub del_user {
-    system "ldapdelete -x -W -D \"cn=admin,dc=nodomain\" \"cn=".$delete.",dc=nodomain";
+    system('ldapdelete -x -D \"cn=admin,dc=nodomain\" \"cn=$delete,dc=nodomain');
 }
 
 ####main
@@ -78,14 +75,14 @@ my @delete_user = ();
 
 #pull commands and call command
 GetOptions(
-           "add!"           => \$add,
+           "add=s"           => \$add,
            "password=s"      => \$password,
            "lastname=s"      => \$lastname,
            "firstname=s"     => \$firstname,
            "email=s"         => \$email,
            "role=s"          => \$role,
            "rights=s"        => \$rights,
-           "delete!"        => \$delete,
+           "delete=s"        => \$delete,
 
     ) or usage();
 

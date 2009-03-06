@@ -57,11 +57,20 @@ sub del_user {
     system('ldapdelete -x -D \"cn=admin,dc=nodomain\" \"cn=$delete,dc=nodomain');
 }
 
+sub list_user {
+    #if $list is empty then list all
+#
+    system('ldapsearch -x -b \"dc=nodomain\" \"cn=$list,dc=nodomain');
+
+#   now construct and print out xml response
+}
+
 ####main
 
 sub usage() {
     print "Usage: $0 --delete=<username>\n";
     print "       $0 --add=<username>\n";
+    print "       $0 --list=<username>\n";
     print "       $0 --password=<password>\n";
     print "       $0 --lastname=<lastname>\n";
     print "       $0 --firstname=<firstname>\n";
@@ -77,6 +86,7 @@ my @delete_user = ();
 GetOptions(
            "add=s"           => \$add,
            "password=s"      => \$password,
+           "list=s"          => \$list,
            "lastname=s"      => \$lastname,
            "firstname=s"     => \$firstname,
            "email=s"         => \$email,
@@ -89,7 +99,13 @@ GetOptions(
 
 if ( defined $delete ) {
     del_user();
+    exit 0;
 }
-else {
+if ( defined $add ) {
     add_user();
+    exit 0;
+}
+if ( defined $list ) {
+    list_user();
+    exit 0;
 }

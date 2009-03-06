@@ -34,7 +34,7 @@ use POSIX;
 use File::Copy;
 use Getopt::Long;
 
-my ($user,$password,$lastname,$firstname,$email,$role,$rights);
+my ($delete,$add,$password,$lastname,$firstname,$email,$role,$rights);
 
 sub add_user {
     #write temp file.
@@ -44,10 +44,10 @@ sub add_user {
 
     open(FILE, ">$conf_file") or die "Can't open temp user file"; 
 
-    print "dn: cn=".$user.",dc=nodomain\n";
-    print "changetype: modify\n";
-    print "add: userPassword\n";
-    print "userPassword: ".$password."\n";
+    print FILE "dn: cn=".$add.",dc=nodomain\n";
+    print FILE "changetype: modify\n";
+    print FILE "add: userPassword\n";
+    print FILE "userPassword: ".$password."\n";
     #todo: email,role,rights,lastname,firstname
     close FILE;
 
@@ -57,11 +57,7 @@ sub add_user {
 }
 
 sub del_user {
-    my $conf_file = "/tmp/user-".$$;
-
-    system "ldapdelete -x -W -D \"cn=admin,dc=nodomain\" \"cn=".$user.",dc=nodomain";
-
-    unlink($conf_file);
+    system "ldapdelete -x -W -D \"cn=admin,dc=nodomain\" \"cn=".$delete.",dc=nodomain";
 }
 
 ####main
@@ -82,20 +78,19 @@ my @delete_user = ();
 
 #pull commands and call command
 GetOptions(
-#           "add=s"           => \$user,
-#           "password=s"      => \$password,
-#           "lastname=s"      => \$lastname,
-#           "firstname=s"     => \$firstname,
-#           "email=s"         => \$email,
-#           "role=s"          => \$role,
-#           "rights=s"        => \$rights,
-
-           "delete=s{1}"        => \@delete_user,
+           "add!"           => \$add,
+           "password=s"      => \$password,
+           "lastname=s"      => \$lastname,
+           "firstname=s"     => \$firstname,
+           "email=s"         => \$email,
+           "role=s"          => \$role,
+           "rights=s"        => \$rights,
+           "delete!"        => \$delete,
 
     ) or usage();
 
 
-if ( $#delete_user == 1 ) {
+if ( defined $delete ) {
     del_user();
 }
 else {

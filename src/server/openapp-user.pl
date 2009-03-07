@@ -89,9 +89,11 @@ sub list_user {
     #iterate by line
     for $output (@output) {
 	print $output;
-	#my $o = explode($output);
-	#if ($o[0] == 'cn:') {
-    #}
+	my @o = split(' ',$output);
+	if ($o[0] eq "cn:") {
+	    print "<user name='$o[1]'>";
+	}
+	print "</user>";
     }
 
 

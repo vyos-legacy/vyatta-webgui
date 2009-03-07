@@ -31,7 +31,7 @@ use POSIX;
 use File::Copy;
 use Getopt::Long;
 
-my ($delete,$add,$password,$lastname,$firstname,$email,$role,$rights);
+my ($list,$delete,$add,$password,$lastname,$firstname,$email,$role,$rights);
 
 sub add_user {
     #write temp file.
@@ -60,9 +60,42 @@ sub del_user {
 sub list_user {
     #if $list is empty then list all
 #
-    system('ldapsearch -x -b \"dc=nodomain\" \"cn=$list,dc=nodomain');
-
+    my @output;
+    my $output;
+    if ($list eq '') {
+	@output = `ldapsearch -x -b "dc=nodomain" "uid=*"`;
+    }
+    else {
+	@output = `ldapsearch -x -b "dc=nodomain" "uid=$list"`;
+    }
 #   now construct and print out xml response
+# foo, People, nodomain
+#dn: uid=foo,ou=People,dc=nodomain
+#objectClass: account
+#objectClass: posixAccount
+#cn: foo
+#uid: foo
+#uidNumber: 1001
+#gidNumber: 1001
+#homeDirectory: /home/foo
+#loginShell: /bin/bash
+#gecos: foo
+#description: User account
+
+#how to parse the stdout
+
+# cn: foo
+
+    #iterate by line
+    for $output (@output) {
+	print $output;
+	#my $o = explode($output);
+	#if ($o[0] == 'cn:') {
+    #}
+    }
+
+
+
 }
 
 ####main

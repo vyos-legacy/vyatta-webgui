@@ -51,6 +51,7 @@ function FT_primaryNavigation(){
 		newVM.setAttribute("urlPath", thisObj.f_getUrlPath(vm));
         newVM.appendChild(document.createTextNode(vm));		
         newVM.style.width = VYA.DYN_STYLE.PRI_NAV_ITEM_WIDTH;
+		newVM.style.height = '40px';
         newVM.style.border = VYA.DYN_STYLE.PRI_NAV_ITEM_BORDER;
 		newVM.style.fontWeight = VYA.DYN_STYLE.PRI_NAV_ITEM_FONT_WEIGHT;
 		newVM.style.textAlign = VYA.DYN_STYLE.PRI_NAV_ITEM_TEXT_ALIGN;

@@ -33,6 +33,7 @@ function FT_mainPanel(){
         thisObj.m_3navMenu = new FT_3rdNavigation();
         thisObj.m_3navMenu.f_init(thisObj);
 		thisObj.m_configPanel = new FT_configPanel();
+		g_configPanelObj = thisObj.m_configPanel;
 		thisObj.m_configPanel.f_init(thisObj);
     }
 	
@@ -41,7 +42,7 @@ function FT_mainPanel(){
             thisObj.m_container.removeChild(thisObj.m_container.childNodes[0]);
         }
     }
-    
+    		
 	this.f_show = function(vmId, urlPath) {
 		thisObj.f_reset();
 		thisObj.m_2navSelectedItem = vmId;

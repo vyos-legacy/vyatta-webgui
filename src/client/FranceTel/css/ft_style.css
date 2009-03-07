@@ -134,6 +134,10 @@ body {
 	display: none;
 }
 
+.dyn_sub_menu {
+	display: none;
+}
+
 .liner {
     border-top: 2px solid #DEDEDE;
     width: 100%;
@@ -197,7 +201,7 @@ body {
     outline-style: none;
 } 
 
-#config_panel_container {
+#ft_container {
     display: none;
     margin-top: 1em;
     width: 782px;

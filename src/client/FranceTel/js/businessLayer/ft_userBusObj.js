@@ -28,6 +28,7 @@ function FT_userBusObj(busObj)
     this.m_sid = null;
     this.m_guiCb = null;
     this.m_role = null;   // user role: admin=0, installer=1, user=2
+    this.m_userList;
 
     /////////////////////////////////////////
     /**
@@ -52,7 +53,7 @@ function FT_userBusObj(busObj)
 
             var ulist = response.getElementsByTagName('vmuser')
             if(ulist != undefined && ulist[0] != undefined)
-                thisObj.f_parseUserListResponse(ulist);
+                thisObj.m_userList = thisObj.f_parseUserListResponse(ulist);
 
             /////////////////////////////////////////
             // create an event then send back to ui
@@ -131,11 +132,14 @@ function FT_userBusObj(busObj)
 
     this.f_parseUserListResponse = function(ulist)
     {
+        var ul = [];
         for(var i=0; i<ulist.length; i++)
         {
-            alert(ulist[i].getAttribute('user'));
-            alert(ulist[i].getAttribute('last'));
-            alert(ulist[i].getAttribute('first'));
+            ul[i] = new FT_userRecObj(ulist[i].getAttribute('user'),
+                        ulist[i].getAttribute('last'),
+                        ulist[i].getAttribute('first'), '*', 'level', 'type');
         }
+
+        return ul;
     }
 }

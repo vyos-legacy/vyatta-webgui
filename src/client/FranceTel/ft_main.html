@@ -1,31 +1,30 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
         <title>Open Appliance</title>
         <link rel="stylesheet" type="text/css" href="/ext-2.2/resources/css/ext-all.css" />
-	 <!--BEGIN EXT JS INCLUDE -->
-        <script type="text/javascript" src="/ext-2.2/adapter/ext/ext-base.js"></script>
-        <script type="text/javascript" src="/ext-2.2/ext-all.js"></script>
-	 <!-- DONE EXT JS INCLUDE -->
-
-
+        <!--BEGIN EXT JS INCLUDE -->
+        <script type="text/javascript" src="/ext-2.2/adapter/ext/ext-base.js">
+        </script>
+        <script type="text/javascript" src="/ext-2.2/ext-all.js">
+        </script>
+        <!-- DONE EXT JS INCLUDE -->
         <link href="css/ft_style.css" rel="stylesheet" type="text/css" />
         <link href="css/ft_login.css" rel="stylesheet" type="text/css" />
-	 <link href="css/ft_confPanels.css" rel="stylesheet" type="text/css" />
-
-
+        <link href="css/ft_confPanels.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="utils/ft_allUtils.js">
         </script>
         <script type="text/javascript" src="js/businessLayer/ft_allBusLayers.js">
         </script>
         <script type="text/javascript" src="js/ui/ft_allUI.js">
         </script>
-	<script type="text/javascript" src="js/ui/config/ft_allConfigPanels.js">
+        <script type="text/javascript" src="js/ui/config/ft_allConfigPanels.js">
         </script>
     </head>
     <body>
         <center>
             <div id="main">
+                <!-- **** header start **** -->
                 <div id="header">
                     <nobr>
                         <div class="logo">
@@ -38,7 +37,7 @@
                             </select>
                         </div>
                     </nobr>
-
+                    <!-- **** login start **** -->
                     <div id="login_background">
                         <br>
                         <br>
@@ -86,27 +85,31 @@
                                 </div>
                             </div>
                         </div>
-						<br><br>
+                        <br>
+                        <br>
                     </div>
+                    <!-- **** login end **** --><!-- **** welcome start **** -->
                     <div id="welcome">
                         <span>welcome admin, you are connected to
                             the Open Appliance admin service</span>
                         <a href="#" id="logoff" class="logoff" onfocus="this.blur();"><img border="0" src="images/puce_simple.gif">&nbsp;log out</a>
-                    </div>
+                    </div><!-- ****  welcome end **** --><!-- **** pri nav start **** -->
                     <div id="pri_nav">
                         <table class="nav1" cellpadding="0" cellspacing="0">
                             <thead>
                                 <tr id="nav1_tr">
-                                    <!--<th class="divider"></th>-->
                                 </tr>
                             </thead>
                         </table>
                     </div>
+                    <!-- **** pri nav end **** -->
                 </div>
+                <!-- **** header end **** -->
                 <div id="tab_content">
                 </div>
                 <div id="oa_container">
                 </div>
+                <!-- **** 2nd nav start **** -->
                 <div id="oa_2_nav">
                     <ul id="oa_2_nav_ul">
                         <li id="app_l1">
@@ -131,6 +134,7 @@
                     <div class="liner">
                     </div>
                 </div>
+                <!-- **** 2nd nav end **** --><!-- **** 3nd nav start **** -->
                 <div id="sub_menu_container">
                     <div id="sm_applications" class="left_sub_menu">
                         <ul id="sm_applications_ul">
@@ -156,7 +160,7 @@
                             <li>
                                 <h3>&nbsp;Users</h3>
                             </li>
-                            <li id="user_l2">
+                            <li id="user_l2"> 
                                 <a href="#" desc="User list"><img border="0" src="images/fleche_off.gif">&nbsp;Users</a>
                             </li>
                             <li id="user_right_l2">
@@ -206,10 +210,11 @@
                             </li>
                             <li id="blb_l2">
                                 <a href="#" desc="BLB Association"><img border="0" src="images/fleche_off.gif">&nbsp;BLB Association</a>
-                            </li>
+                            </li><!-- Remove 3rd_party_l2 link.  OSGi is not applicable.
                             <li id="3rd_party_l2">
-                                <a href="#" desc="OSGi"><img border="0" src="images/fleche_off.gif">&nbsp;3rd Parties</a>
+                            <a href="#" desc="OSGi"><img border="0" src="images/fleche_off.gif">&nbsp;3rd Parties</a>
                             </li>
+                            -->
                             <li id="password_l2">
                                 <a href="#" desc="Password Policy"><img border="0" src="images/fleche_off.gif">&nbsp;Password Policy</a>
                             </li>
@@ -225,10 +230,22 @@
                             </li>
                         </ul>
                     </div>
+                </div><!-- **** 3nd nav end **** -->
+                <div id="dyn_sub_menu" class="dyn_sub_menu">
+                    <ul id="sm_users_dyn_ul">
+                        <li id="user_add_l2">
+                            <a href="#" desc="Add user" virtual="true"><img border="0" src="images/fleche_off.gif">&nbsp;Add user</a>
+                        </li>
+                        <li id="user_update_l2">
+                            <a href="#" desc="Update user" virtual="true"><img border="0" src="images/fleche_off.gif">&nbsp;Update user</a>
+                        </li>
+                    </ul>
                 </div>
                 <div id="ft_container" valign="top">
                     <h3 id="config_panel_title">Place Holder</h3>
                 </div>
+				
+				<!-- **** footer start **** -->				
                 <div id="footer">
                     <div id="footer_left">
                         <ul>
@@ -241,7 +258,7 @@
                         </ul>
                     </div>
                     <div id="footer_center">
-                        Copyright France Telecom
+                        Copyright France Telecom 
                         <font color="#ff6600">
                             &copy;
                         </font>
@@ -251,6 +268,7 @@
                         v2.1.0.OS V4 1R5B6
                     </div>
                 </div>
+                <!-- **** footer end **** -->
             </div>
         </center>
     </body>

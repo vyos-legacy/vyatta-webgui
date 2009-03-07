@@ -100,3 +100,53 @@
     line-height:16px;
 }
 
+/***********************************************************
+ * HTML_BASED COMPONENT START
+************************************************************/
+.conf_html_base_cls {
+	display: none;	
+}
+
+.v_form {
+	border: 0;
+}
+		
+.v_form tr td {
+	text-align: left;
+}	
+
+.v_label_bold {
+	font-size: 12px;
+	font-weight: bold;
+	text-align: left;
+}
+
+.v_label_bold_right {
+	font-size: 12px;
+	font-weight: bold;		
+	margin-left: 30px;
+}
+			
+.v_form_label {
+	font-size: 11px;
+}
+
+.v_form_input {
+	color: #444444;
+	display: block;
+	border: 1px solid #CCCCCC;
+	margin-left: 30px;
+}
+
+.v_button_container {
+	clear: both;
+}
+
+.v_button {
+	width: 80px;
+	margin-right: 5px;
+}
+
+/***********************************************************
+ * HTML_BASED COMPONENT END
+************************************************************/

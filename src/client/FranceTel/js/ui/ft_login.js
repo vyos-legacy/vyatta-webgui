@@ -44,13 +44,15 @@ function FT_login(busObj)
         document.getElementById('ft_container').appendChild(div);
         */
 		
-		var div = document.getElementById('ft_container');
+		var div = document.getElementById('ft_login_container');
 		
         ///////////////////////////////////
         // set initial focus
         var el = document.getElementById('username');
-        el.focus();
-     
+		if (!g_xbObj.m_isSafari) {
+			el.focus();
+		}
+		
         return div;
     }
 

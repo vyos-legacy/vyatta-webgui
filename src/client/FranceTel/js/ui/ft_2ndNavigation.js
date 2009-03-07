@@ -29,7 +29,9 @@ function FT_2ndNavigation(){
             sid = f_elemGetAttribute(menu.childNodes[i], 'id');
             if ((sid != undefined) && (sid != null)) {
                 var node = f_elemGetFirstChildByNodeName(menu.childNodes[i], 'A');
-                g_xbObj.f_xbAttachEventListener(node, 'click', thisObj.f_handleClick, true);			
+                g_xbObj.f_xbAttachEventListener(node, 'click', thisObj.f_handleClick, true);	
+				g_xbObj.f_xbAttachEventListener(node, 'mouseover', thisObj.f_handleMouseover, true);	
+                g_xbObj.f_xbAttachEventListener(node, 'mouseout', thisObj.f_handleMouseout, true);									
             }
         }
     }
@@ -64,6 +66,37 @@ function FT_2ndNavigation(){
         return false;
     }
     
+    /*
+     * Mouseover handler for the primary navigation bar items.
+     */
+    this.f_handleMouseover = function(e){
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if ((target != undefined) && (target.parentNode != undefined) && (target.parentNode != null)) {
+		    var parentNode = target.parentNode;
+			if (parentNode.nodeName == 'A') {
+				target = parentNode;
+			}
+			target.style.color = VYA.DYN_STYLE.SEC_NAV_ACT_ITEM_COLOR;
+		}
+    }
+    
+    /*
+     * Mouseout handler for the primary navigation bar items.
+     */
+    this.f_handleMouseout = function(e){
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if ((target != undefined) && (target.parentNode != undefined) && (target.parentNode != null)) {
+		    var parentNode = target.parentNode;
+			if (parentNode.nodeName == 'A') {
+				target = parentNode;
+			}			
+			var id = f_elemGetAttribute(target.parentNode, 'id');
+			if (id != thisObj.m_selectedItem) {
+				target.style.color = VYA.DYN_STYLE.SEC_NAV_NOT_ACT_ITEM_COLOR;
+			}			
+		}        
+    }	
+	
     this.f_selectItem = function(id){
 		//alert('2_nav_f_selectItem called');
         thisObj.m_selectedItem = id;

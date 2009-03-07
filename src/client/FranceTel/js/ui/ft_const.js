@@ -16,6 +16,9 @@ VYA.FT_CONST = {
 	OA_ID : 'Open Applicance',
 	BLB_ID : 'Business Livebox',
 	
+	//-----Main
+	DOM_MAIN_ID : 'main',
+	
 	//-----Logoff Button
 	DOM_LOGOFF_ID : 'logoff',
 	
@@ -57,8 +60,10 @@ VYA.FT_CONST = {
 	DOM_3_NAV_SUB_RESTART_ID : 'restart_l2',	
 	DOM_3_NAV_SUB_SUBCRIBE_ID : 'subscribe_l2',
     //-----Users
-    DOM_3_NAV_SUB_USER_ID : 'user_l2',
+    DOM_3_NAV_SUB_USER_ID : 'user_l2', 
     DOM_3_NAV_SUB_USER_RIGHT_ID : 'user_right_l2',	
+    DOM_3_NAV_SUB_USER_ADD_ID : 'user_add_l2',	
+    DOM_3_NAV_SUB_USER_UPDATE_ID : 'user_update_l2',		
 	//-----Monitoring
     DOM_3_NAV_SUB_HARDWARE_ID : 'hardware_l2',
     DOM_3_NAV_SUB_NETWORK_ID : 'network_l2',
@@ -74,19 +79,18 @@ VYA.FT_CONST = {
 	DOM_3_NAV_SUB_PASSWORD_ID : 'password_l2',
 	//----My Profile
     DOM_3_NAV_SUB_MYPROFILE_ID : 'myprof_l2',	
-	
-	
+		
 	//-----Configuration Panel
-	DOM_3_CONFIG_PANEL_ID : 'config_panel_container',
+	DOM_3_CONFIG_PANEL_ID : 'ft_container',
 	DOM_3_CONFIG_PANEL_TITLE_ID : 'config_panel_title',
-
+    DOM_DYN_SUB_MENU_ID: 'dyn_sub_menu',	
 	
     
     ///////////////////////////////////////////////////
     // Defines the DOM class attribute		
     DOM_MAIN_FRM_NAV_BAR_CLS: 'nav2',
-	DOM_MAIN_PANEL_SUB_MENU_CLS: 'left_sub_menu'
-
+	DOM_MAIN_PANEL_SUB_MENU_CLS: 'left_sub_menu',
+    DOM_DYN_SUB_MENU_CLS: 'dyn_sub_menu'	
 
 
 

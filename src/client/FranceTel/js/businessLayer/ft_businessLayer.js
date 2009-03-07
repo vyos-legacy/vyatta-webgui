@@ -53,7 +53,6 @@ function FT_thread(busObj)
 {
     this.m_busObj = busObj;
     this.m_isRun = false;
-    this.m_timerId = null;
 
     ////////////////////////////////////////////////////
     this.f_start = function(runFunction)
@@ -62,16 +61,15 @@ function FT_thread(busObj)
             this.f_stop();
 
         this.m_isRun = true;
-        this.m_timerId = window.setInterval(runFunction, 8000 /* 8 sec */)
+        var timerId = window.setInterval(runFunction, 8000 /* 8 sec */)
+
+        return timerId;
     }
 
     this.f_stop = function(threadId)
     {
-        var tId = threadId != undefined ? threadId : this.m_timerId;
-
         this.m_isRun = false;
-        window.clearInterval(tId);
-        this.m_timerId = null;
+        window.clearInterval(threadId);
     }
 }
 
@@ -172,6 +170,8 @@ function FT_businessLayer()
     // f_isLogin() - find out if user is login
     // f_userLoginRequest() - user provide username and pw to request login
     // f_userLogout() - user logout.
+    // f_getLoginUserObj -
+    // f_getUserListFromServer()
 
     /**
      * check to see if user is login
@@ -201,6 +201,11 @@ function FT_businessLayer()
     this.f_getLoginUserObj = function()
     {
         return this.m_userObj;
+    }
+
+    this.f_getUserListFromServer = function(guiCb)
+    {
+
     }
 
     /**
@@ -235,7 +240,7 @@ function FT_businessLayer()
         thisObj.m_vm.m_vmRecObj[1] = new FT_vmRecObj('Open Applicance');
         thisObj.m_vm.m_vmRecObj[2] = new FT_vmRecObj('UTM Configuration');
         thisObj.m_vm.m_vmRecObj[3] = new FT_vmRecObj('PBX Configuration');
-        thisObj.m_vm.m_vmRecObj[4] = new FT_vmRecObj('3rd Parties Application');
+        //thisObj.m_vm.m_vmRecObj[4] = new FT_vmRecObj('3rd Parties Application');
 
         var evt = new FT_eventObj(0, thisObj.m_vm.m_vmRecObj, '');
         cb(evt);
@@ -277,20 +282,17 @@ function FT_businessLayer()
         }
 
         // start to run
-        thisObj.m_reqThread.f_start(callback);
+        var threadId = thisObj.m_reqThread.f_start(callback);
 
-        return thisObj.m_reqThread.m_timerId;
+        return threadId;
     }
     /**
      * stop VM request thread run in background and destroy the thread
      */
     this.f_stopVMRequestThread = function(threadId)
     {
-        if(thisObj.m_reqThread != null)
-        {
+        if(threadId != null)
             thisObj.m_reqThread.f_stop(threadId);
-            thisObj.m_reqThread = null;
-        }
     }
     /**
      * stop VM request

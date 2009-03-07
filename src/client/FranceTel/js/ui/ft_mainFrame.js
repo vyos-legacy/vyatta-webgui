@@ -13,6 +13,7 @@ function FT_mainFrame(){
     this.m_mainPanel = undefined;
     this.m_priNavigation = undefined;
     this.m_mainPanel = undefined;
+	this.m_doneInitComponent = false;
     
     ///////////////////////////////////////
     // functions
@@ -22,10 +23,14 @@ function FT_mainFrame(){
     this.f_init = function(){
         var logoff = document.getElementById(VYA.FT_CONST.DOM_LOGOFF_ID);
         g_xbObj.f_xbAttachEventListener(logoff, 'click', thisObj.f_handleClickLogoff, true);			
-        thisObj.m_mainPanel = new FT_mainPanel();
+        thisObj.m_mainPanel = new FT_mainPanel();		
         thisObj.m_priNavigation = new FT_primaryNavigation();
     }
     
+	this.f_getMainPanel = function() {
+		return thisObj.m_mainPanel;
+	}
+	
 	this.f_login = function (loginPage) {
 		var welcome = document.getElementById(VYA.FT_CONST.DOM_WELCOME_ID);
 		welcome.style.display = 'none';
@@ -47,10 +52,13 @@ function FT_mainFrame(){
      */
     this.f_initComponent = function(vmList){
     
+	    if (thisObj.m_doneInitComponent == true) {
+			return; //fix for safari, where this function is called multiple times.
+		} else {
+			thisObj.m_doneInitComponent = true;
+		}
         var oa_2nav = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_2_NAV_ID);
         oa_2nav.style.display = 'none';
-        //oa_2nav.width = '0';
-        //oa_2nav.height = '0';
         thisObj.m_mainPanel.f_init();
         
         thisObj.m_vmList = vmList;

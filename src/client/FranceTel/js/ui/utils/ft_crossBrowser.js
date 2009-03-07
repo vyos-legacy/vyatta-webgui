@@ -13,6 +13,7 @@ function FT_crossBrowser(){
     this.m_isOpera = false;
     this.m_isKDE = false;
     this.m_isIE5mac = false;
+	this.m_isSafari = false;
     this.m_browserVer = undefined;
     this.m_domReadyCb = undefined;
     

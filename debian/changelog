@@ -1,3 +1,17 @@
+vyatta-webgui (0.2+fxd0+2) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * add support for development build
+
+  [ slioch ]
+  * added list hook
+  * first parsing for list
+
+  [ An-Cheng Huang ]
+  * add dependency on LDAP server and utils
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 06 Mar 2009 18:47:15 -0800
+
 vyatta-webgui (0.2+fxd0+1) unstable; urgency=low
 
   [ root ]

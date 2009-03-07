@@ -9,6 +9,8 @@ Standards-Version: 3.7.2
 Package: vyatta-webgui
 Architecture: any
 Depends: libexpat1 (>= 1.95.8-4),
+ slapd,
+ ldap-utils,
  lighttpd,
  libc6,
  adduser,

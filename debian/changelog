@@ -1,3 +1,233 @@
+vyatta-webgui (0.2+fxd0+2) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * add support for development build
+
+  [ slioch ]
+  * added list hook
+  * first parsing for list
+
+  [ An-Cheng Huang ]
+  * add dependency on LDAP server and utils
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 06 Mar 2009 18:47:15 -0800
+
+vyatta-webgui (0.2+fxd0+1) unstable; urgency=low
+
+  [ root ]
+  * initial support for node name and help for operational command
+    structure. behavior is similar to configuration request. op mode
+    data can be retrieved with mode="op" attribute.
+  * fixed permission on touch gui file. added op configuration support
+    for dynamic and static enumeration values and for multinode node
+    types.
+  * added support for op mode commands. now return unmodified (except
+    for '\n' conversion) output from op mode shell.
+  * changed op mode node name from multi to node.tag for multinodes.
+
+  [ An-Cheng Huang ]
+  * fix backend op mode detection
+  * fix backend op response format
+  * fix backend op response special character escaping
+  * add basic op commands support in gui front-end
+
+  [ root ]
+  * added <action> tag to op mode node that contains a "run" action in
+    the template. Note that this definition can be expanded to config
+    mode, but currently only sets this node for an op mode configuration
+    request.
+  * strip out comments in allowed template keyword--these are values
+    that are enclosed by "<" and ">". will need to have these statements
+    migrated to help in the operational mode template files.
+  * modified error return code for op mode commands, now based on error
+    value returned from popen call rather than response string.
+
+  [ slioch ]
+  * convert shell mkdir commands to system mkdir calls.
+
+  [ An-Cheng Huang ]
+  * clean up unused files
+
+  [ Stephen Hemminger ]
+  * Add support for either unionfs or aufs
+
+  [ An-Cheng Huang ]
+  * "open appliance GUI": add backend support for "vmstatus" request.
+  * fix signedness for geline return value
+  * more 64-bit fixes
+  * add "down" vm status for vmstatus request
+  * add backend support for vm start/stop/restart
+  * remove extra newline on stdout
+  * remove compiler warning
+  * openappliance gui: add backend support for user management.
+  * * separate "openappliance gui" from "vyatta gui".
+  * openappliance gui: add backend support for hardware monitoring page.
+  * allow space-delimited group member list
+
+  [ Kevin Choi ]
+  * France init version check in.
+
+  [ An-Cheng Huang ]
+  * add oa front-end files to the package
+
+  [ Kevin Choi ]
+  * cosmetic touch up
+
+  [ An-Cheng Huang ]
+  * remove derived file
+  * get correct command exit status
+
+  [ Kevin Choi ]
+  * refresh restart screen after commit
+  * remove custom.js from ft_main.html
+  * fix missing single quote
+  * Update GUI layouts for all pages to meet FT requested.
+
+  [ An-Cheng Huang ]
+  * rework vm stop and restart commands
+  * terminate vm queries if status query fails
+  * * handle start command return status.
+  * make vm stop/restart commands synchronous
+  * add extjs 2.2 to package
+
+  [ Kevin Choi ]
+  * new images files
+  * fixed window background and foreground color, show empty screen for
+    backup, fixed user UI
+  * fixed add/delete/change user, added tooltips
+  * 1) fixed unknown status image, 2) integrate 3rd party application,
+    3) user input validation,
+
+  [ An-Cheng Huang ]
+  * add more input validation
+  * add backend support for domU GUIs
+
+  [ Kevin Choi ]
+  * fixed typo
+
+  [ An-Cheng Huang ]
+  * rework VM operations to use the new command validation scheme.
+  * * change frontend to use new vm commands.
+
+  [ Kevin Choi ]
+  * integrate 3rd
+
+  [ slioch ]
+  * added validation for op mode commands. Arguments are required to be
+    enclosed within single quotes. Validation is against operation mode
+    template. currently arguments are
+  * initialize variable being compared--caused failure in validation of
+    op command.wq
+
+  [ An-Cheng Huang ]
+  * remove compiler warning
+
+  [ slioch ]
+  * added more single quotes to protect against rogue hidden cmds. also
+    modified mass replace to allow for replacement=victim value.
+
+  [ An-Cheng Huang ]
+  * restore accidentally removed change
+
+  [ slioch ]
+  * limit incoming request size to 8192 bytes. On requests exceeding
+    8192 bytes the request is dropped and the binary exits with no
+    response
+
+  [ Kevin Choi ]
+  * integrated vyatta web gui, fixed password to convert xml special
+    char.
+
+  [ An-Cheng Huang ]
+  * 64-bit fix for gui backend
+  * add oa gui users to "users" group
+  * fix debian lighttpd cgi config file
+  * add backend support for returning verbatim output from op commands.
+  * add backend vm "backup" and "backup-list" command support for
+  * compare the whole constant string
+
+  [ Kevin Choi ]
+  * added configuration backup feature
+
+  [ An-Cheng Huang ]
+  * add backend vm "restore" support for openappliance gui.
+
+  [ Kevin Choi ]
+  * add configuration restore files from op, and added vyatta GUI images
+
+  [ An-Cheng Huang ]
+  * use proper permissions for backup/restore
+  * restore accidentally removed change
+
+  [ Kevin Choi ]
+  * supported ft backup and restore. misc bugs fixed.
+  * fixed not to push password field to server if password isn't
+    changed.
+  * block user to change username
+
+  [ An-Cheng Huang ]
+  * add support for optional password in user mod requests.
+
+  [ Kevin Choi ]
+  * removed vyatta project from ft project
+  * add utils dir to ft
+
+  [ An-Cheng Huang ]
+  * remove vyatta gui from oa package
+  * remove vyatta gui support from backend
+  * implement automatic reload for domU restore
+  * add vm deployment support
+  * add logging for vm deployment
+  * reorder domU backup during deployment
+
+  [ Kevin Choi ]
+  * add drop-down menu for OA anchor and some misc bug fixed.
+
+  [ An-Cheng Huang ]
+  * add domU deployment scheduling/cancelling operations.
+  * add op templates for deployment scheduling/cancelling.
+  * * add request for vm deploy log.
+  * return correct error code for deployment scheduling/cancellation.
+  * add deployment info to vmstatus response
+  * remove job file after deployment is completed
+
+  [ Kevin Choi ]
+  * support vm software deploy feature.
+
+  [ An-Cheng Huang ]
+  * use time returned by at in response
+
+  [ Kevin Choi ]
+  * open a new browaser for vyatta gui.
+  * changed button comfirm callback function.
+  * changed Update VM screen to display only VM which has update is
+    available.
+  * integrate server time with backend
+  * small fix to display server time.
+
+  [ An-Cheng Huang ]
+  * return backend localtime to frond-end in status response.
+
+  [ Kevin Choi ]
+  * small fix to server time... again:)
+  * added buttons images
+  * added pbx launch container
+
+  [ An-Cheng Huang ]
+  * * fix processing of vm deployment scheduling output.
+  * add script for backing up all VMs
+
+  [ Kevin Choi ]
+  * added auto refresh to VM-Dashboard page and VM-Restart page
+  * added auto refresh to monitoring hardware screen
+  * Enhanced logon screen to accept Enter key to sent login
+  * fixed refresh memory leak
+  * minus changed to grid header for VM Dashboard screen
+  * minus fixed to anchor links
+  * Avoid background auto fresh to override the current display page
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 06 Mar 2009 15:23:14 -0800
+
 vyatta-webgui (0.2) unstable; urgency=low
 
 	  3.1.3

@@ -1,0 +1,1 @@
+run: sudo perl /opt/vyatta/sbin/openapp-user.pl --add "$4" --password "$6" --lastname "$8" --firstname "$10" --email "$12" --rights "$14" --role "$16"

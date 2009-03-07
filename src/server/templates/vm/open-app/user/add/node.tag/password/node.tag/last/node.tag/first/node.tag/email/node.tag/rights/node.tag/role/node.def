@@ -1,1 +1,0 @@
-run: ${vyatta_bindir}/openapp-user.pl --add "$1" --password "$2" --last-name "$3" --first-name "$4" --email "$5" --rights "$6" --role "$7"

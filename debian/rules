@@ -77,6 +77,7 @@ install: build
 
 # Build architecture-independent files here.
 binary-indep: build install
+	rm -f debian/files
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs ChangeLog
@@ -88,7 +89,11 @@ binary-indep: build install
 	dh_compress
 	dh_fixperms
 	dh_installdeb
-	dh_gencontrol
+	if [ -f "../.VYATTA_DEV_BUILD" ]; then \
+		dh_gencontrol -- -v999.dev; \
+	else \
+		dh_gencontrol; \
+	fi
 	dh_md5sums
 	dh_builddeb
 

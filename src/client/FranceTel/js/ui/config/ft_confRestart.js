@@ -5,28 +5,29 @@
     Description:
 */
 
-FT_confRestart = Ext.extend(FT_confBaseObj,
+function FT_confRestart(name, callback, busLayer)
 {
-    thisObjName: 'FT_confRestart',
+    this.thisObjName = 'FT_confRestart';
 
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
      * @param busLayer - business object
      */
-    constructor: function(name, callback, busLayer)
+    this.constructor = function(name, callback, busLayer)
     {
         FT_confRestart.superclass.constructor(name, callback, busLayer);
-    },
+    }
+    this.constructor(name, callback, busLayer);
 
-    f_getConfigurationPage: function()
+    this.f_getConfigurationPage = function()
     {
         var page = this.f_getNewPanelDiv(this.f_init());
 
         return page;
-    },
+    }
 
-    f_createColumns: function()
+    this.f_createColumns = function()
     {
         var cols = [];
 
@@ -37,9 +38,9 @@ FT_confRestart = Ext.extend(FT_confBaseObj,
         cols[4] = this.f_createColumn('', 100, 'button', '25');
 
         return cols;
-    },
+    }
 
-    f_loadVMData: function()
+    this.f_loadVMData = function()
     {
         var thisObj = this;
         var hd = this.f_createColumns();
@@ -103,15 +104,15 @@ FT_confRestart = Ext.extend(FT_confBaseObj,
 
         g_utils.f_cursorWait();
         this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
-    },
+    }
 
-    f_stopLoadVMData: function()
+    this.f_stopLoadVMData = function()
     {
         this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
         this.m_threadId = null;
-    },
+    }
 
-    f_init: function()
+    this.f_init = function()
     {
         var hd = this.f_createColumns();
         this.m_header = this.f_createGridHeader(hd);
@@ -120,9 +121,9 @@ FT_confRestart = Ext.extend(FT_confBaseObj,
         this.f_loadVMData();
 
         return [this.m_header, this.m_body, this.m_button];
-    },
+    }
 
-    f_createOARestart: function()
+    this.f_createOARestart = function()
     {
         var handleFunc = "f_handleRestart('OpenAppliance')";
         var div = document.createElement('div');
@@ -150,7 +151,8 @@ FT_confRestart = Ext.extend(FT_confBaseObj,
 
         return div;
     }
-});
+}
+FT_extend(FT_confRestart, FT_confBaseObj);
 
 function f_vmHandleStop(vm)
 {

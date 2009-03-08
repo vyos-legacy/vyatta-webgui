@@ -5,29 +5,30 @@
     Description:
 */
 
-FT_confUserList = Ext.extend(FT_confBaseObj,
+function FT_confUserList(name, callback, busLayer)
 {
-    thisObjName: 'FT_confUserList',
+    this.thisObjName = 'FT_confUserList';
 
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
      * @param busLayer - business object
      */
-    constructor: function(name, callback, busLayer)
+    this.constructor = function(name, callback, busLayer)
     {
         FT_confUserList.superclass.constructor(name, callback, busLayer);
-    },
+    }
+    this.constructor(name, callback, busLayer);
 
-    f_getConfigurationPage: function()
+    this.f_getConfigurationPage = function()
     {
         return this.f_getNewPanelDiv(this.f_init());
-    },
+    }
 
     /**
      * define your column header here....
      */
-    f_createColumns: function()
+    this.f_createColumns = function()
     {
         var cols = [];
 
@@ -37,9 +38,9 @@ FT_confUserList = Ext.extend(FT_confBaseObj,
         cols[3] = this.f_createColumn('Delete', 80, 'button', '35');
 
         return cols;
-    },
+    }
 
-    f_loadVMData: function()
+    this.f_loadVMData = function()
     {
         var thisObj = this;
         var hd = this.f_createColumns();
@@ -142,15 +143,15 @@ FT_confUserList = Ext.extend(FT_confBaseObj,
 
         g_utils.f_cursorWait();
         this.m_busLayer.f_getUserListFromServer(cb);
-    },
+    }
 
-    f_stopLoadVMData: function()
+    this.f_stopLoadVMData = function()
     {
         this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
         this.m_threadId = null;
-    },
+    }
 
-    f_init: function()
+    this.f_init = function()
     {
         var hd = this.f_createColumns();
         this.m_header = this.f_createGridHeader(hd);
@@ -162,7 +163,8 @@ FT_confUserList = Ext.extend(FT_confBaseObj,
 
         return [this.m_header, this.m_body, this.m_buttons];
     }
-});
+}
+FT_extend(FT_confUserList, FT_confBaseObj);
 
 function f_userListAddUserCallback()
 {

@@ -41,7 +41,7 @@ sub add_user {
 
     open(FILE, ">$conf_file") or die "Can't open temp user file"; 
 
-    print FILE "dn: uid=".$add.",ou=People,dc=nodomain\n";
+    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
     print FILE "changetype: modify\n";
     print FILE "replace: userPassword\n";
     print FILE "userPassword: ".$password."\n";
@@ -55,13 +55,13 @@ sub add_user {
     system("ldapadduser $add vyattacfg");
 
     #now modify the account
-    system("ldapmodify -x -D \"cn=admin,dc=nodomain\" -w admin -f $conf_file");
+    system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
     #clean up temp file here.
     unlink($conf_file);
 }
 
 sub del_user {
-    system("ldapdelete -x -D \"cn=admin,dc=nodomain\" -w admin \"cn=$delete,dc=nodomain\"");
+    system("ldapdeleteuser $delete");
 }
 
 sub list_user {
@@ -70,10 +70,10 @@ sub list_user {
     my @output;
     my $output;
     if ($list eq '') {
-	@output = `ldapsearch -x -b "dc=nodomain" "uid=*"`;
+	@output = `ldapsearch -x -b "dc=localhost,dc=localdomain" "uid=*"`;
     }
     else {
-	@output = `ldapsearch -x -b "dc=nodomain" "uid=$list"`;
+	@output = `ldapsearch -x -b "dc=localhost,dc=localdomain" "uid=$list"`;
     }
 #   now construct and print out xml response
 # foo, People, nodomain
@@ -95,12 +95,12 @@ sub list_user {
 
     #iterate by line
     for $output (@output) {
-	print $output;
+#	print $output;
 	my @o = split(' ',$output);
-	if ($o[0] eq "cn:") {
+	if (defined $o[0] && $o[0] eq "cn:") {
 	    print "<user name='$o[1]'>";
 	    #parse gecos field
-	    if ($(o[0] eq 'gecos:') {
+	    if ($o[0] eq 'gecos:') {
 		print "<email>$o[1]</email>";
 		print "<name>";
 		print "<first>$o[1]</first>";
@@ -109,8 +109,8 @@ sub list_user {
 	    }
 	    print "<rights></rights>";
 	    print "<role></role>";
+	    print "</user>";
 	}
-	print "</user>";
     }
     
 
@@ -144,7 +144,7 @@ GetOptions(
            "role=s"          => \$role,
            "rights=s"        => \$rights,
            "delete=s"        => \$delete,
-           "list=s"          => \$list,
+           "list:s"          => \$list,
 
     ) or usage();
 

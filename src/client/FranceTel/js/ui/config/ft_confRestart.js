@@ -46,13 +46,18 @@ FT_confRestart = Ext.extend(FT_confBaseObj,
 
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
                 // handle error code
                 if(evt.f_isError())
                 {
                     thisObj.f_stopLoadVMData();
-                    alert(evt.m_errMsg);
+
+                    if(evt.m_errCode == 3)
+                        g_utils.f_popupMessage('timeout', 'timeout');
+                    else
+                        alert(evt.m_errMsg);
 
                     return;
                 }
@@ -80,14 +85,14 @@ FT_confRestart = Ext.extend(FT_confBaseObj,
 
                     var img = thisObj.f_renderStatus(v.m_status);
                     var restart = thisObj.f_renderButton(
-                                'Restart', enabled, "f_handleRestart('" +
-                                v.m_name + "')");
+                                'Restart', enabled, "f_vmHandleRestart('" +
+                                v.m_name + "')", 'Restart ' + v.m_name);
                     var stop = thisObj.f_renderButton(
-                                'Stop', enabled, "f_handleStop('" +
-                                v.m_name + "')");
+                                'Stop', enabled, "f_vmHandleStop('" +
+                                v.m_name + "')", 'Stop ' + v.m_name);
                     var start = thisObj.f_renderButton(
-                                'Start', !enabled, "f_handleStart('" +
-                                v.m_name + "')");
+                                'Start', !enabled, "f_vmHandleStart('" +
+                                v.m_name + "')", 'Start ' + v.m_name);
                     vmData[i] = [v.m_name, img, restart, stop, start];
 
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData[i]);
@@ -96,6 +101,7 @@ FT_confRestart = Ext.extend(FT_confBaseObj,
             }
         }
 
+        g_utils.f_cursorWait();
         this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
     },
 
@@ -131,7 +137,7 @@ FT_confRestart = Ext.extend(FT_confBaseObj,
                       'padding-top:30px;"><b>Open Appliance:</b></div></td>';
 
         innerHtml += '<td width="110">' +
-                    '<div style="height:30px; ' +
+                    '<div title="Restart Open Appliance" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<img src="images/vm_restart.PNG" name="OpenAppl" ' +
                     'style="cursor:pointer;" ' +
@@ -146,17 +152,17 @@ FT_confRestart = Ext.extend(FT_confBaseObj,
     }
 });
 
-function f_handleStop(vm)
+function f_vmHandleStop(vm)
 {
-    alert('stop ' + vm)
+    g_busObj.f_stopVM(vm);
 }
 
-function f_handleRestart(vm)
+function f_vmHandleRestart(vm)
 {
-    alert('restart ' + vm)
+    g_busObj.f_restart(vm);
 }
 
-function f_handleStart(vm)
+function f_vmHandleStart(vm)
 {
-    alert('start ' + vm)
+    g_busObj.f_start(vm);
 }

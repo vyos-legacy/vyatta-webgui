@@ -45,14 +45,18 @@ FT_confDashboard = Ext.extend(FT_confBaseObj,
 
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
                 // handle error code
                 if(evt.f_isError())
                 {
                     thisObj.f_stopLoadVMData();
-                    thisObj.m_t
-                    alert(evt.m_errMsg);
+
+                    if(evt.m_errCode == 3)
+                        g_utils.f_popupMessage('timeout', 'timeout');
+                    else
+                        alert(evt.m_errMsg);
 
                     return;
                 }
@@ -73,9 +77,14 @@ FT_confDashboard = Ext.extend(FT_confBaseObj,
 
                     if(v == undefined) break;
                     var img = thisObj.f_renderStatus(v.m_status);
-                    var cpu = thisObj.f_renderProgressBar(v.m_cpu);
-                    var mem = thisObj.f_renderProgressBar(v.f_getMemPercentage());
-                    var disk = thisObj.f_renderProgressBar(v.f_getDiskPercentage());
+                    var cpu = thisObj.f_renderProgressBar(v.m_cpu,
+                            'CPU Used: ' + v.m_cpu + '%');
+                    var mem = thisObj.f_renderProgressBar(v.f_getMemPercentage(),
+                            'RAM Used: Total = ' + v.m_memTotal +
+                            ', Free = ' + v.m_memFree);
+                    var disk = thisObj.f_renderProgressBar(v.f_getDiskPercentage(),
+                            'Disk Used: Total = ' + v.m_diskTotal +
+                            ', Free = ' + v.m_diskFree);
                     vmData[i] = [v.m_name, img, cpu, mem, disk, ''];
 
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData[i]);
@@ -84,6 +93,7 @@ FT_confDashboard = Ext.extend(FT_confBaseObj,
             }
         }
 
+        g_utils.f_cursorWait();
         this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
     },
 
@@ -99,8 +109,8 @@ FT_confDashboard = Ext.extend(FT_confBaseObj,
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
-        var btns = [['Update', "f_dbHandleUpdate('vm')"],
-                    ['Cancel', "f_dbHandleCancel()"]];
+        var btns = [['Update', "f_dbHandleUpdate('vm')", 'Update selected VM(s)'],
+                    ['Cancel', "f_dbHandleCancel()", '']];
         this.m_buttons = this.f_createButtons(btns);
 
         return [this.m_header, this.m_body, this.m_buttons];
@@ -109,7 +119,7 @@ FT_confDashboard = Ext.extend(FT_confBaseObj,
 
 function f_dbHandleUpdate(vm)
 {
-
+    g_utils.f_popupMessage('testing tseting testing', 'confirm');
 }
 
 function f_dbHandelCancel()

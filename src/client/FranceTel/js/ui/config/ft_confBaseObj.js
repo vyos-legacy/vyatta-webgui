@@ -36,34 +36,6 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         }
     },
 
-    f_getPanelDiv: function(panel)
-    {
-        var div = document.createElement('div');
-        div.setAttribute('id', 'ft_confpanel_'+panel.id);
-        div.setAttribute('align', 'center');
-
-        /////////////////////////////////////////
-        // set inner styling of the div tag
-        //div.style.position = 'absolute';
-        div.style.overflow = 'scroll';
-        div.style.backgroundColor = 'white';
-
-        document.getElementById('ft_container').appendChild(div);
-        panel.render('ft_confpanel_'+panel.id);
-
-        var hd = panel.m_colHeader;
-        if(hd != undefined)
-        {
-            var view = panel.m_grid.getView();
-            for(var i=0; i<hd.length; i++)
-            {
-                view.getHeaderCell(i).innerHTML = hd[i];
-            }
-        }
-
-        return div;
-    },
-
     f_getNewPanelDiv: function(children)
     {
         var div = document.createElement('div');
@@ -77,6 +49,7 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         div.style.backgroundColor = 'white';
         div.style.height = '300px';
         div.style.overflow = 'auto';
+        div.style.fontFamily = 'Arial';
 
         document.getElementById('ft_container').appendChild(div);
 
@@ -92,7 +65,8 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         var div = document.createElement('div');
         div.style.position = 'relative';
         div.style.border = '1px solid #CCC';
-        div.style.backgroundColor = '#EFEFEF';
+        div.style.backgroundColor = '#FF6600'//'#EFEFEF';
+        div.style.color = '#fff'
 
         var width = 0;
         var inner = "";
@@ -126,6 +100,7 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         div.style.height = '150px';
         div.style.overflow = 'auto';
         div.style.border = '1px solid #CCC';
+        div.style.color = '#000';
 
         var width = 0;
         for(var i=0; i<header.length; i++)
@@ -157,8 +132,9 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
             width += h[1];
             var fWidth = i == 0 || i == data.length-1 ? h[1] : h[1];
             var lBorder = i == -1 ? 'border-left:1px solid #CCC; ' : '';
-            var rBorder = i == data.length-1 ? ' ' :
-                                'border-right:1px dotted #ccc; ';
+            //var rBorder = i == data.length-1 ? ' ' :
+            //                    'border-right:1px dotted #ccc; ';
+            var rBorder = '';
             var lPadding = h[3] == undefined ? "padding-left:5px; " :
                           'padding-left:' + h[3] + 'px; ';
             var tPadding = '8px';
@@ -173,7 +149,7 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
                     tPadding = '3px';
                     break;
                 case 'progress':
-                    tPadding = '6px';
+                    tPadding = '4px';
                     break;
             }
 
@@ -212,13 +188,35 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         {
             var btn = buttons[i];
 
-            innerHtml += '<td width="' + btn[0].length * 18 +
+            switch(btn[0])
+            {
+                case 'AddUser':
+                innerHtml += '<td width="110">' +
+                    '<div title="' + btn[2] + '" style="height:30px; ' +
+                    'padding-top:15px;" >' +
+                    '<img src="images/add_user.PNG" name="addUser" ' +
+                    'style="cursor:pointer;" ' +
+                    'value="addUser" onclick="' + btn[1] +
+                    '></div></td>';
+                break;
+                case 'Cancel':
+                    innerHtml += '<td width="110">' +
+                    '<div title="' + btn[2] + '" style="height:30px; ' +
+                    'padding-top:15px;" >' +
+                    '<img src="images/ft_cancel.PNG" name="cancel" ' +
+                    'style="cursor:pointer;" ' +
+                    'value="Cancel" onclick="' + btn[1] +
+                    '></div></td>';
+                break;
+                default:
+                innerHtml += '<td width="' + btn[0].length * 18 +
                         '"><div style="height:30px; ' +
                         'padding-top:15px;" >' +
                         '<input type="button" name="' + btn[0] +
                         '" value="' + btn[0] + '" onclick="' +
-                        btn[1] + '">' +
+                        btn[1] + '" title="' + btn[2] + '">' +
                         '</div></td>';
+            }
         }
 
         innerHtml += '</tr></tbody></table>';
@@ -256,11 +254,14 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         switch(val)
         {
             default:
-                return "<span align='center'><img src='images/statusUnknown.gif'/></span>";
+                return '<span title="Status is unknow" align="center">' +
+                        '<img src="images/statusUnknown.gif" </span>';
             case 'down':
-                return "<span align='center'><img src='images/statusDown.gif'/></span>";
+                return '<span title="Status is down" align="center">' +
+                        '<img src="images/statusDown.gif" </span>';
             case 'up':
-                return "<span align='center'><img src='images/statusUp.gif'/></span>";
+                return '<span title="Status is up" align="center">' +
+                        '<img src="images/statusUp.gif"/> </span>';
         }
     },
 
@@ -289,12 +290,13 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         return cb;
     },
 
-    f_renderAnchor: function(text, link)
+    f_renderAnchor: function(text, link, tooltip)
     {
-        return '<a href="#" onclick="' + link + '">' + text + '</a>';
+        return '<a title="' + tooltip + '" href="#" onclick="' + link + '">' +
+                text + '</a>';
     },
 
-    f_renderButton: function(text, enable, cb)
+    f_renderButton: function(text, enable, cb, tooltip)
     {
         var imgSrc = '';
         switch(text)
@@ -308,22 +310,25 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
             case 'Start':
                 imgSrc = enable ? 'images/vm_start.PNG' : 'images/vm_start2.PNG';
                 break;
+            case 'deleteUser':
+                imgSrc = 'images/ft_delete.PNG';
         }
 
-        return '<img height="21" name="' + text +
+        return '<img title="' + tooltip + '" height="21" name="' + text +
                         '" src="' + imgSrc + '" style="cursor:pointer;" ' +
                         ' onclick="' + cb + '">';
     },
 
-    f_renderProgressBar: function(val)
+    f_renderProgressBar: function(val, tooltip)
     {
         var bgColor = val >= 80 ? 'red' : 'green';
 
-        return '<div style="position:relative; width:100px; height:16px;' +
+        return '<div title="' + tooltip + '" style="position:relative; ' +
+              'width:102px; height:18px;' +
               'border:1px solid #000; background-color:white;" >'+
-              '<div style="left:0px; width:' + val +
+              '<div style="border:1px solid #fff; left:0px; width:' + val +
               'px; height:16px; background-color:'+ bgColor +
-              ';"></div><div style="position:relative; top:-15px; left:40px;">'+
+              ';"></div><div style="position:relative; top:-16px; left:40px;">'+
               '<b>' + val +'%</b></div></div>';
     }
 });

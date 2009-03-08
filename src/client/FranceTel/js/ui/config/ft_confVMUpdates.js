@@ -46,8 +46,20 @@ FT_confVMUpdates = Ext.extend(FT_confBaseObj,
 
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
+                if(evt.f_isError())
+                {
+                    if(evt.m_errCode == 3)
+                        g_utils.f_popupMessage('timeout', 'timeout');
+                    else
+                        alert(evt.m_errMsg);
+
+                    return;
+                }
+
+
                 var vmData = [];
 
                 thisObj.f_removeDivChildren(thisObj.m_div);
@@ -62,6 +74,7 @@ FT_confVMUpdates = Ext.extend(FT_confBaseObj,
             }
         }
 
+        g_utils.f_cursorWait();
         this.m_busLayer.f_getVMDataFromServer(cb);
     },
 

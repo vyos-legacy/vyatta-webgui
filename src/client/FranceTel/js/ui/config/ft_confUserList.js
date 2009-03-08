@@ -34,7 +34,7 @@ FT_confUserList = Ext.extend(FT_confBaseObj,
         cols[0] = this.f_createColumn('Name', 200, 'text', '6');
         cols[1] = this.f_createColumn('Login', 150, 'text', '6');
         cols[2] = this.f_createColumn('Email', 100, 'checkbox', '40');
-        cols[3] = this.f_createColumn('Delete', 100, 'checkbox', '40');
+        cols[3] = this.f_createColumn('Delete', 80, 'button', '35');
 
         return cols;
     },
@@ -46,8 +46,31 @@ FT_confUserList = Ext.extend(FT_confBaseObj,
 
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
+                var ul = evt.m_value;
+
+                if(ul != undefined)
+                {
+                    thisObj.m_userList = ul;
+
+                    for(var i=0; i<ul.length; i++)
+                    {
+                        var fName = ul[i].m_last + ' ' + ul[i].m_first;
+                        var anchor = thisObj.f_renderAnchor(ul[i].m_user,
+                                "f_userListEditUser('" + ul[i].m_user + "')",
+                                'Click here to edit ' + "(smith john)");
+                        var del = thisObj.f_renderButton(
+                                'deleteUser', true, "f_userListDeleteUser('" +
+                                ul[i].user + "')", 'Delete user (' + fName + ')');
+                        var data = [fName, anchor, 'email', del];
+
+                        var bodyDiv = thisObj.f_createGridRow(hd, data);
+                        thisObj.m_body.appendChild(bodyDiv);
+                    }
+                }
+
                 var vmData = [];
 
                 thisObj.f_removeDivChildren(thisObj.m_div);
@@ -57,25 +80,39 @@ FT_confUserList = Ext.extend(FT_confBaseObj,
 
 
                 vmData[0] = ["smith john",
-                    thisObj.f_renderAnchor('jsmith', "f_userListEditUser('jsmith')"),
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
+                    thisObj.f_renderAnchor('jsmith', "f_userListEditUser('jsmith')",
+                            'Click here to edit ' + "'smith john'"),
+                    'button',
+                    thisObj.f_renderButton(
+                                'deleteUser', true, "f_userListDeleteUser('" +
+                                "jsmith" + "')", 'Delete user ' + "smith john")];
                 vmData[1] = ["dupont pual",
-                    thisObj.f_renderAnchor('testing', "f_userListEditUser('testing')"),
+                    thisObj.f_renderAnchor('testing', "f_userListEditUser('testing')",
+                            'Click here to edit ' + "'dupon pual'"),
                     thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
+                    thisObj.f_renderButton(
+                                'deleteUser', true, "f_userListDeleteUser('" +
+                                "jsmith" + "')", 'Delete user ' + "dupon pual")];
                 vmData[2] = ["smith john", 'jsmith',
                     thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
+                    thisObj.f_renderButton(
+                                'deleteUser', true, "f_userListDeleteUser('" +
+                                "jsmith" + "')", 'Delete user ' + "smith john")];
                 vmData[3] = ["dupont pual", 'pdupont',
                     thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
+                    thisObj.f_renderButton(
+                                'deleteUser', true, "f_userListDeleteUser('" +
+                                "jsmith" + "')", 'Delete user ' + "smith john")];
                 vmData[4] = ["smith john", 'jsmith',
                     thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
+                    thisObj.f_renderButton(
+                                'deleteUser', true, "f_userListDeleteUser('" +
+                                "jsmith" + "')", 'Delete user ' + "smith john")];
                 vmData[5] = ["dupont pual", 'pdupont',
                     thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
+                    thisObj.f_renderButton(
+                                'deleteUser', true, "f_userListDeleteUser('" +
+                                "jsmith" + "')", 'Delete user ' + "smith john")];
                 vmData[6] = ["smith john", 'jsmith',
                     thisObj.f_renderCheckbox('yes'),
                     thisObj.f_renderCheckbox('no')];
@@ -103,7 +140,8 @@ FT_confUserList = Ext.extend(FT_confBaseObj,
             }
         }
 
-        this.m_busLayer.f_getVMDataFromServer(cb);
+        g_utils.f_cursorWait();
+        this.m_busLayer.f_getUserListFromServer(cb);
     },
 
     f_stopLoadVMData: function()
@@ -119,7 +157,7 @@ FT_confUserList = Ext.extend(FT_confBaseObj,
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
-        var btns = [['Add', 'f_userListAddUserCallback()']];
+        var btns = [['AddUser', 'f_userListAddUserCallback()', 'Add new user account']];
         this.m_buttons = this.f_createButtons(btns);
 
         return [this.m_header, this.m_body, this.m_buttons];
@@ -137,3 +175,7 @@ function f_userListEditUser(text)
     g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_UPDATE_ID);
 }
 
+function f_userListDeleteUser(username)
+{
+
+}

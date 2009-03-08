@@ -5,14 +5,34 @@
     Description:
 */
 
-function FT_userRecObj(user, last, first, pw, level, type)
+function FT_userRecObj(user, last, first, pw, role, type, email, right)
 {
     this.m_user = user;    // login username
     this.m_last = last;
     this.m_first = first;
+    this.m_email = email;
     this.m_pw = pw;
-    this.m_level = level;
+    this.m_role = role; // user role: admin=0, installer=1, user=2
+    this.m_right = right;
     this.m_type = type;    // add, change, delete, list
+
+    /**
+     * set user name from server node
+     */
+    this.f_setUserName = function(node)
+    {
+        if(node == undefined || node.childNodes == undefined) return;
+
+        var s=0;
+        for(var i=0; i<node.childNodes.length; i++)
+        {
+            if(node.childNodes.nodeName == 'first')
+                this.m_first = node.childNodes.firstChild.nodeValue;
+
+            if(node.childNodes.nodeName == 'last')
+                this.m_last = node.childNodes.firstChild.nodeValue;
+        }
+    }
 }
 
 function FT_userBusObj(busObj)
@@ -23,16 +43,14 @@ function FT_userBusObj(busObj)
 
     var thisObj = this;
     this.m_busObj = busObj;
-    this.m_username = null; // login username
-    this.m_pw = null;
     this.m_sid = null;
     this.m_guiCb = null;
-    this.m_role = null;   // user role: admin=0, installer=1, user=2
     this.m_userList;
+    this.m_loginUser;
 
     /////////////////////////////////////////
     /**
-     * A callback function for request.
+     * A callback function for all user management requests.
      */
     this.f_respondRequestCallback = function()
     {
@@ -51,9 +69,9 @@ function FT_userBusObj(busObj)
             if(sid != undefined && sid[0] != undefined)
                 thisObj.m_sid = sid[0].firstChild.nodeValue;
 
-            var ulist = response.getElementsByTagName('vmuser')
-            if(ulist != undefined && ulist[0] != undefined)
-                thisObj.m_userList = thisObj.f_parseUserListResponse(ulist);
+            var user = response.getElementsByTagName('user');
+            if(user != undefined && user.length > 0)
+                thisObj.m_userList = this.f_parseUserResponse(user);
 
             /////////////////////////////////////////
             // create an event then send back to ui
@@ -62,6 +80,11 @@ function FT_userBusObj(busObj)
         }
     }
 
+    /**
+     * logout current login user. This end the user session, clean up cookie
+     * and load the login page.
+     * @param cb - is optional. (it is not use right now)
+     */
     this.f_logout = function(cb)
     {
         thisObj.m_sid = undefined;
@@ -69,32 +92,44 @@ function FT_userBusObj(busObj)
         g_utils.f_gotoHomePage();
     }
 
+    /**
+     * set user's request login data before send to server.
+     */
     this.f_setLogin = function(u, p, cb)
     {
-        thisObj.m_username = u;
-        thisObj.m_pw = p;
         thisObj.m_guiCb = cb;
+        thisObj.m_loginUser = new FT_userRecObj(u, null, null, p, null, null, null, null);
 
         switch(u)
         {
             case 'admin':
-                thisObj.m_role = thisObj.V_ROLE_ADMIN;
+                thisObj.m_loginUser.m_role = thisObj.V_ROLE_ADMIN;
                 break;
             case 'installer':
-                thisObj.m_role = thisObj.V_ROLE_INSTALL;
+                thisObj.m_loginUser.m_role = thisObj.V_ROLE_INSTALL;
                 break;
             default:
-                thisObj.m_role = thisObj.V_ROLE_USER;
+                thisObj.m_loginUser.m_role = thisObj.V_ROLE_USER;
         }
     }
 
+    /**
+     * call this fuction to find out is current user login.
+     */
     this.f_isLogin = function()
     {
         return g_cookie.f_get(g_consObj.V_COOKIES_USER_ID) ==
                               g_consObj.V_NOT_FOUND ? false : true;
     }
 
+    this.f_getUserListFromServer = function(guiCb)
+    {
+        this.m_guiCb = guiCb;
+        var xmlstr = 'open-app user list';
+        thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
+    }
     /**
+     * set user record to server.
      * To set username, last, first, pw to server. Use userObj.m_type to
      * specify the operation to be exceuted.
      */
@@ -103,16 +138,19 @@ function FT_userBusObj(busObj)
         thisObj.m_guiCb = guiCb;
         var ur = userRec;
         var sid = f_getUserLoginedID();
-        var xmlstr = "<vmuser op='" + userRec.type + "' ";
+        var xmlstr = "<open-app user add '" + userRec.type + "' ";
 
         if(ur.m_user != undefined && ur.m_user.length > 0)
-            xmlstr += "user='" + ur.m_user + "' ";
+            xmlstr += "username '" + ur.m_user + "' ";
         if(ur.m_last != undefined && ur.m_last.length > 0)
-            xmlstr += "last='" + ur.m_last + "' ";
+            xmlstr += "last '" + ur.m_last + "' ";
         if(ur.m_first != undefined && ur.m_first.length > 0)
-            xmlstr += "first='" + ur.m_first + "' ";
+            xmlstr += "first '" + ur.m_first + "' ";
         if(ur.m_password != undefined && ur.m_password.length > 0)
-            xmlstr += "password='" + ur.m_password+ "' ";
+            xmlstr += "password '" + ur.m_password+ "' ";
+        if(ur.m_email != undefined && ur.m_email.length > 0)
+            xmlstr += "email '" + ur.m_email+ "' ";
+
 
         xmlstr += ">\n<id>" + sid + "</id></vmuser>";
         thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
@@ -130,16 +168,36 @@ function FT_userBusObj(busObj)
         thisObj.f_setUser(uRec);
     }
 
-    this.f_parseUserListResponse = function(ulist)
+    this.f_deleteUser = function(user, guiCb)
+    {
+        thisObj.m_guiCb = guiCb;
+        var xmlstr = 'open-app user delete ' + user;
+        thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
+    }
+
+    this.f_parseUserResponse = function(user)
     {
         var ul = [];
-        for(var i=0; i<ulist.length; i++)
+        for(var i=0; i<user.length; i++)
         {
-            ul[i] = new FT_userRecObj(ulist[i].getAttribute('user'),
-                        ulist[i].getAttribute('last'),
-                        ulist[i].getAttribute('first'), '*', 'level', 'type');
-        }
+            ul[i] = new FT_userRecObj(user[i].getAttribute('user'));
 
+            for(var j=0; j<user[i].childNodes.length; j++)
+            {
+                if(user[i].childNodes[j].nodeName == 'email')
+                    ul[i].m_email = user[i].childNodes[j].firstChild.nodeValue;
+
+                if(user[i].childNodes[j].nodeName == 'role')
+                    ul[i].m_role = user[i].childNodes[j].firstChild.nodeValue;
+
+                if(user[i].childNodes[j].nodeName == 'right')
+                    ul[i].m_right = user[i].childNodes[j].firstChild.nodeValue;
+
+                if(user[i].childNodes[j].nodeName == 'name')
+                    ul[i].f_setUserName(user[i].childNodes[j]);
+            }
+        }
+ 
         return ul;
     }
 }

@@ -42,13 +42,18 @@ FT_confHwMonitor = Ext.extend(FT_confBaseObj,
 
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
                 // handle error code
                 if(evt.f_isError())
                 {
                     thisObj.f_stopLoadVMData();
-                    alert(evt.m_errMsg);
+
+                    if(evt.m_errCode == 3)
+                        g_utils.f_popupMessage('timeout', 'timeout');
+                    else
+                        alert(evt.m_errMsg);
 
                     return;
                 }
@@ -73,6 +78,7 @@ FT_confHwMonitor = Ext.extend(FT_confBaseObj,
             }
         }
 
+        g_utils.f_cursorWait();
         this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
     },
 

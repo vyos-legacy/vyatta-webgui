@@ -182,7 +182,7 @@ function FT_businessLayer()
     }
 
     /**
-     * request a login from server.
+     * user requests a login to server.
      * @param username -
      * @param pw -
      * @param guiCb - business layer call this cb upon completion of
@@ -205,7 +205,22 @@ function FT_businessLayer()
 
     this.f_getUserListFromServer = function(guiCb)
     {
+        thisObj.m_userObj.f_getUserListFromServer(guiCb);
+    }
 
+    this.f_getUserFromServer = function(username, guiCb)
+    {
+        var xmlstr = 'open-app user list [' + username + ']';
+    }
+
+    this.f_addUserToServer = function(userRec, guiCb)
+    {
+        thisObj.m_userObj.f_setUser(userRec, guiCb);
+    }
+
+    this.f_deleteUserFromServer = function(username, guiCb)
+    {
+        thisObj.m_userObj.f_deleteUser(username, guiCb);
     }
 
     /**
@@ -299,21 +314,33 @@ function FT_businessLayer()
      */
     this.f_stopVM = function(vmName, guiCb)
     {
+        var sid = g_utils.f_getUserLoginedID();
+        var content = "<command><id>" + sid + "</id>" +
+                    "<statement>vm stop '" + vmName + "'</statement></command>";
 
+        this.f_sendRequest(content, guiCb);
     }
     /**
      * start VM request
      */
     this.f_startVM = function(vmName, guiCb)
     {
+          var sid = g_utils.f_getUserLoginedID();
+        var content = "<command><id>" + sid + "</id>" +
+                    "<statement>vm start '" + vmName + "'</statement></command>";
 
+        this.f_sendRequest(content, guiCb);
     }
     /**
      * restart VM request
      */
     this.f_restartVM = function(vmName, guiCb)
     {
+          var sid = g_utils.f_getUserLoginedID();
+        var content = "<command><id>" + sid + "</id>" +
+                    "<statement>vm restart '" + vmName + "'</statement></command>";
 
+        this.f_sendRequest(content, guiCb);
     }
 }
 

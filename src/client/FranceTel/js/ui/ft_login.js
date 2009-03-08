@@ -107,7 +107,8 @@ function f_submit()
 
     if(un.length == 0 || pw.length == 0)
     {
-        alert("Please enter username and password to login.");
+        g_utils.f_popupMessage("Please enter username and password to login.",
+                              "ok", "Login error");
         return;
     }
 
@@ -115,7 +116,8 @@ function f_submit()
     {
         if(event.f_isError())
         {
-            alert('Unable to login: ' + event.m_errMsg);
+            g_utils.f_popupMessage('Unable to login: ' + event.m_errMsg,
+                            "ok", "Login error");
         }
         else
         {

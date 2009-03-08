@@ -46,9 +46,15 @@ sub add_user {
     print FILE "replace: userPassword\n";
     print FILE "userPassword: ".$password."\n";
     print FILE "\n";
-    print FILE "replace: gecos\n";
-    print FILE "gecos: ".$lastname.",".$firstname.",".$email."\n";
-    #todo: email,role,rights,lastname,firstname
+    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+    print FILE "changetype: modify\n";
+    print FILE "replace: mail\n";
+    print FILE "mail: ".$email."\n";
+
+    #todo: lastname,firstname
+
+
+
     close FILE;
 
     #first add the user
@@ -106,16 +112,19 @@ sub list_user {
 	my @o = split(' ',$output);
 	if (defined $o[0] && $o[0] eq "cn:") {
 	    print "<user name='$o[1]'>";
-	    #parse gecos field
-	    if ($o[0] eq 'gecos:') {
-		print "<email>$o[1]</email>";
-		print "<name>";
-		print "<first>$o[1]</first>";
-		print "<last>$o[1]</last>";
-		print "</name>";
-	    }
+	}
+	if ($o[0] eq 'mail:') {
+	    print "<email>$o[1]</email>";
+
+	    #The assumption is that mail is the last entry per user
+	    print "<name>";
+#	    print "<first>$o[1]</first>";
+#	    print "<last>$o[1]</last>";
+	    print "</name>";
+	    
 	    print "<rights></rights>";
 	    print "<role></role>";
+	    
 	    print "</user>";
 	}
     }

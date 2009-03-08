@@ -110,6 +110,16 @@ function FT_confDashboard(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
+
+        /////////////////////////////////////////////////////
+        // for testing
+        var cb = function()
+        {
+            alert('got user list');
+        }
+        g_busObj.f_getUserListFromServer(cb);
+
+
         var btns = [['Update', "f_dbHandleUpdate('vm')", 'Update selected VM(s)'],
                     ['Cancel', "f_dbHandleCancel()", '']];
         this.m_buttons = this.f_createButtons(btns);

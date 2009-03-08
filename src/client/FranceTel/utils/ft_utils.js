@@ -60,7 +60,7 @@ var g_utils =
         body.className = 'ft_default_cursor';
     },
 
-    f_popupMessage: function(message, type, title)
+    f_popupMessage: function(message, type, title, cb)
     {
         var div = document.createElement('div');
         div.setAttribute('id', 'ft_popup_div');
@@ -79,7 +79,7 @@ var g_utils =
         div.style.borderLeft = '2px solid #CCC';
         div.style.borderBottom = '2px solid #000';
         div.style.borderRight = '2px solid #000';
-        div.style.padding = '20px';
+        div.style.padding = '15px';
 
         document.getElementById('ft_popup_message').appendChild(div);
 
@@ -90,8 +90,9 @@ var g_utils =
         switch(type)
         {
             case 'confirm': // yes/no or apply/cancel
+                cb = cb == undefined ? "f_utilsPopupApply()" : cb;
                 buttonsDiv = '<div align="center"><img src="images/ft_apply.PNG" ' +
-                          'onclick="f_utilsPopupApply()">&nbsp;&nbsp;' +
+                          'onclick="' + cb + '">&nbsp;&nbsp;' +
                           '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
                           '<img src="images/ft_cancel.PNG" ' +
                           'onclick="f_utilsPopupCancel()"></div>';
@@ -102,7 +103,7 @@ var g_utils =
                         message + '</p></td>';
                 break;
             case 'timeout':
-                div.style.width = '350px';
+                div.style.width = '380px';
                 div.style.height = '90px';
                 message = '<b>Session Time Out</b><br><br>' +
                       'For security reasons, your session is no longer active.' +
@@ -113,11 +114,12 @@ var g_utils =
                               'onclick="f_utilsPopupTimeout()"></div>';
                 innerHtml += '<tbody><tr height="73">' +
                         '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
-                        '<td style="text-align:left;" width="300"><p ' +
+                        '<td style="text-align:left;" width="350"><p ' +
                         'style="padding-left:5px; font:normal 10pt arial;">' +
                         message + '</p></td>';
                 break;
             case 'ok':    // ok only
+                cb = cb == undefined ? "f_utilsPopupOk()" : cb;
                 div.style.width = '350px';
                 if(title != undefined)
                 {
@@ -127,7 +129,7 @@ var g_utils =
 
                 buttonsDiv = '<div align="center" style="padding-top:8px;">' +
                               '<img src="images/ft_apply.PNG" ' +
-                              'onclick="f_utilsPopupOk()"></div>';
+                              'onclick="' + cb + '"></div>';
                 innerHtml += '<tbody><tr height="73">' +
                         '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="300"><p ' +

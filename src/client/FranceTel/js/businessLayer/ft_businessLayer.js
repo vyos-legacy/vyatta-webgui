@@ -203,14 +203,23 @@ function FT_businessLayer()
         return this.m_userObj;
     }
 
+    /**
+     * Find the user from the local cache. Returns a user record
+     * object that match the username.
+     * @return the a FT_userRecObj if username is found in from the local cache
+     *          return null if not found.
+     */
+    this.f_getUserFromLocal = function(username)
+    {
+        return thisObj.m_userObj.f_getUserFromLocal(username);
+    }
+
+    /**
+     * retrieve a fresh user list from server.
+     */
     this.f_getUserListFromServer = function(guiCb)
     {
         thisObj.m_userObj.f_getUserListFromServer(guiCb);
-    }
-
-    this.f_getUserFromServer = function(username, guiCb)
-    {
-        var xmlstr = 'open-app user list [' + username + ']';
     }
 
     this.f_addUserToServer = function(userRec, guiCb)
@@ -244,9 +253,9 @@ function FT_businessLayer()
      */
     this.f_getVMSummaryDataFromServer = function(cb)
     {
-        //var sid = g_utils.f_getUserLoginedID();
-        //var xmlstr = "<vmstatus><id>" + sid + "</id>\n"
-        //              + "</vmstatus>";
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<vmstatus><id>" + sid + "</id>\n"
+                      + "</vmstatus>";
 
         thisObj.m_vm.m_guiCb = cb;
         //this.f_sendRequest(xmlstr, this.m_vm.f_respondRequestCallback);

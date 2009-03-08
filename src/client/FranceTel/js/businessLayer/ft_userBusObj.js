@@ -122,10 +122,28 @@ function FT_userBusObj(busObj)
                               g_consObj.V_NOT_FOUND ? false : true;
     }
 
+    this.f_getUserFromLocal = function(username)
+    {
+        if(this.m_userList != undefined && this.m_userList.length > 0)
+        {
+            for(var i=0; i<this.m_userList.length; i++)
+            {
+                var uRec = this.m_userList[i];
+                if(uRec.m_user == username)
+                    return uRec;
+            }
+        }
+
+        return null;
+    }
+
     this.f_getUserListFromServer = function(guiCb)
     {
         this.m_guiCb = guiCb;
-        var xmlstr = 'open-app user list';
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='op'>" +
+                      "open-app user list</statement></command>";
+
         thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
     }
     /**

@@ -35,7 +35,7 @@ function FT_confUserList(name, callback, busLayer)
         cols[0] = this.f_createColumn('Name', 200, 'text', '6');
         cols[1] = this.f_createColumn('Login', 150, 'text', '6');
         cols[2] = this.f_createColumn('Email', 100, 'checkbox', '40');
-        cols[3] = this.f_createColumn('Delete', 80, 'button', '35');
+        cols[3] = this.f_createColumn('Delete', 100, 'button', '35');
 
         return cols;
     }
@@ -62,10 +62,15 @@ function FT_confUserList(name, callback, busLayer)
                         var anchor = thisObj.f_renderAnchor(ul[i].m_user,
                                 "f_userListEditUser('" + ul[i].m_user + "')",
                                 'Click here to edit ' + "(smith john)");
+                        var email = ul[i].m_email != undefined ?
+                                thisObj.f_renderAnchorHref(
+                                '<img src="images/ft_email.PNG">',
+                                "mailto:" + ul[i].m_email,
+                                'Send email to ' + fName) : "";
                         var del = thisObj.f_renderButton(
                                 'deleteUser', true, "f_userListDeleteUser('" +
                                 ul[i].user + "')", 'Delete user (' + fName + ')');
-                        var data = [fName, anchor, 'email', del];
+                        var data = [fName, anchor, email, del];
 
                         var bodyDiv = thisObj.f_createGridRow(hd, data);
                         thisObj.m_body.appendChild(bodyDiv);
@@ -80,10 +85,13 @@ function FT_confUserList(name, callback, busLayer)
                 thisObj.m_div.appendChild(thisObj.m_buttons);
 
 
+                var img = '<img src="images/ft_email.PNG">';
                 vmData[0] = ["smith john",
                     thisObj.f_renderAnchor('jsmith', "f_userListEditUser('jsmith')",
                             'Click here to edit ' + "'smith john'"),
-                    'button',
+                    thisObj.f_renderAnchorHref(img,
+                                "mailto:kevin.choi@vyatta.com",
+                                'Send email to ' + "Choi Kevin"),
                     thisObj.f_renderButton(
                                 'deleteUser', true, "f_userListDeleteUser('" +
                                 "jsmith" + "')", 'Delete user ' + "smith john")];
@@ -158,7 +166,7 @@ function FT_confUserList(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
-        var btns = [['AddUser', 'f_userListAddUserCallback()', 'Add new user account']];
+        var btns = [['AddUser', 'f_userListAddUserCallback()', 'Create new user account']];
         this.m_buttons = this.f_createButtons(btns);
 
         return [this.m_header, this.m_body, this.m_buttons];
@@ -174,7 +182,12 @@ function f_userListAddUserCallback()
 
 function f_userListEditUser(text)
 {
-    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_UPDATE_ID);
+    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_UPDATE_ID, text);
+}
+
+function f_userListEmail(eAddr)
+{
+
 }
 
 function f_userListDeleteUser(username)

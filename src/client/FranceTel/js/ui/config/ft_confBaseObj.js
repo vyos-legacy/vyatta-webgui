@@ -296,6 +296,12 @@ function FT_confBaseObj(name, callback, busLayer)
                 text + '</a>';
     }
 
+    this.f_renderAnchorHref = function(text, link, tooltip)
+    {
+        return '<a title="' + tooltip + '" href="' + link + '">' +
+                text + '</a>';
+    }
+
     this.f_renderButton = function(text, enable, cb, tooltip)
     {
         var imgSrc = '';

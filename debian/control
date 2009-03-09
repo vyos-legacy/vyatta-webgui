@@ -11,6 +11,8 @@ Architecture: any
 Depends: libexpat1 (>= 1.95.8-4),
  slapd,
  ldap-utils,
+ libpam-ldap,
+ libnss-ldap,
  lighttpd,
  libc6,
  adduser,

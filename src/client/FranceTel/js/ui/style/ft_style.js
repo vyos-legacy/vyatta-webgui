@@ -46,6 +46,10 @@ VYA.DYN_STYLE = {
 	// Inactive
 	SEC_NAV_NOT_ACT_ITEM_COLOR : '#000000',
 	SEC_NAV_NOT_ACT_ITEM_FONT_WEIGHT : 'normal',
+	//
+	// hover
+	SEC_NAV_HOVER_ITEM_COLOR : '#000000',
+	SEC_NAV_HOVER_ITEM_FONT_WEIGHT : 'normal',	
 	
 	/////////// THIRD NAVIGATION ////////////////////////////////
 	//

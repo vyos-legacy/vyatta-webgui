@@ -61,7 +61,7 @@ sub add_user {
 }
 
 sub del_user {
-    system('ldapdelete -x -D \"cn=admin,dc=nodomain\" \"cn=$delete,dc=nodomain');
+    system("ldapdelete -x -D \"cn=admin,dc=nodomain\" -w admin \"cn=$delete,dc=nodomain\"");
 }
 
 sub list_user {
@@ -99,6 +99,16 @@ sub list_user {
 	my @o = split(' ',$output);
 	if ($o[0] eq "cn:") {
 	    print "<user name='$o[1]'>";
+	    #parse gecos field
+	    if ($(o[0] eq 'gecos:') {
+		print "<email>$o[1]</email>";
+		print "<name>";
+		print "<first>$o[1]</first>";
+		print "<last>$o[1]</last>";
+		print "</name>";
+	    }
+	    print "<rights></rights>";
+	    print "<role></role>";
 	}
 	print "</user>";
     }

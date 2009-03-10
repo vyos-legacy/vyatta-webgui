@@ -1,3 +1,29 @@
+vyatta-webgui (0.2+fxd0+3) unstable; urgency=low
+
+  [ kchoi ]
+  * * changed code to eleminate ExtJs lib
+
+  [ root ]
+  * 1. Move ft_allConfigPanels.js to the sub directory under: ui/config
+
+  [ Loi Vo ]
+  * Re-style the primary, secondary, and the third navigation menu
+    according to
+  * 1. Add ft_style_ie.css
+
+  [ An-Cheng Huang ]
+  * add dependency on libpam-ldap and libnss-ldap
+  * add dependency on ldapscripts
+
+  [ slioch ]
+  * bugfixes on ldap perl script.
+  * more details on search returned.
+
+  [ An-Cheng Huang ]
+  * update build dependency
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 09 Mar 2009 18:53:54 -0700
+
 vyatta-webgui (0.2+fxd0+2) unstable; urgency=low
 
   [ An-Cheng Huang ]

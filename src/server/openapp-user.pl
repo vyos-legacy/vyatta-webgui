@@ -41,14 +41,21 @@ sub add_user {
 
     open(FILE, ">$conf_file") or die "Can't open temp user file"; 
 
-    print FILE "dn: cn=".$add.",dc=nodomain\n";
+    print FILE "dn: uid=".$add.",ou=People,dc=nodomain\n";
     print FILE "changetype: modify\n";
-    print FILE "add: userPassword\n";
+    print FILE "replace: userPassword\n";
     print FILE "userPassword: ".$password."\n";
+    print FILE "\n";
+    print FILE "replace: gecos\n";
+    print FILE "gecos: ".$lastname.",".$firstname.",".$email."\n";
     #todo: email,role,rights,lastname,firstname
     close FILE;
 
-    system('ldapadd -x -D \"cn=admin,dc=nodomain\" -W -f $conf_file');
+    #first add the user
+    system("ldapadduser $add vyattacfg");
+
+    #now modify the account
+    system("ldapmodify -x -D \"cn=admin,dc=nodomain\" -w admin -f $conf_file");
     #clean up temp file here.
     unlink($conf_file);
 }
@@ -95,7 +102,7 @@ sub list_user {
 	}
 	print "</user>";
     }
-
+    
 
 
 }
@@ -121,13 +128,13 @@ my @delete_user = ();
 GetOptions(
            "add=s"           => \$add,
            "password=s"      => \$password,
-           "list=s"          => \$list,
            "lastname=s"      => \$lastname,
            "firstname=s"     => \$firstname,
            "email=s"         => \$email,
            "role=s"          => \$role,
            "rights=s"        => \$rights,
            "delete=s"        => \$delete,
+           "list=s"          => \$list,
 
     ) or usage();
 

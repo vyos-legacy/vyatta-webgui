@@ -60,7 +60,7 @@ var g_utils =
         body.className = 'ft_default_cursor';
     },
 
-    f_popupMessage: function(message, type)
+    f_popupMessage: function(message, type, title)
     {
         var div = document.createElement('div');
         div.setAttribute('id', 'ft_popup_div');
@@ -74,7 +74,7 @@ var g_utils =
         div.style.height = '70px';
         div.style.width = '300px';
         div.style.overflow = 'visible';
-        div.style.fontFamily = 'Arial';
+        div.style.font = 'normal 10pt arial';
         div.style.borderTop = '2px solid #CCC';
         div.style.borderLeft = '2px solid #CCC';
         div.style.borderBottom = '2px solid #000';
@@ -89,7 +89,7 @@ var g_utils =
         var buttonsDiv = '';
         switch(type)
         {
-            case 'confirm':
+            case 'confirm': // yes/no or apply/cancel
                 buttonsDiv = '<div align="center"><img src="images/ft_apply.PNG" ' +
                           'onclick="f_utilsPopupApply()">&nbsp;&nbsp;' +
                           '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
@@ -98,7 +98,7 @@ var g_utils =
                 innerHtml += '<tbody><tr height="55">' +
                       '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="250"><p ' +
-                        'style="padding-left:5px;">' +
+                        'style="padding-left:5px; font:normal 10pt arial;">' +
                         message + '</p></td>';
                 break;
             case 'timeout':
@@ -114,10 +114,25 @@ var g_utils =
                 innerHtml += '<tbody><tr height="73">' +
                         '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="300"><p ' +
-                        'style="padding-left:5px;">' +
+                        'style="padding-left:5px; font:normal 10pt arial;">' +
                         message + '</p></td>';
                 break;
-            case 'ok':
+            case 'ok':    // ok only
+                div.style.width = '350px';
+                if(title != undefined)
+                {
+                    div.style.height = '90px';
+                    message = '<b>' + title + '</b><br><br>' + message;
+                }
+
+                buttonsDiv = '<div align="center" style="padding-top:8px;">' +
+                              '<img src="images/ft_apply.PNG" ' +
+                              'onclick="f_utilsPopupOk()"></div>';
+                innerHtml += '<tbody><tr height="73">' +
+                        '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
+                        '<td style="text-align:left;" width="300"><p ' +
+                        'style="padding-left:5px; font:normal 10pt arial;">' +
+                        message + '</p></td>';
                 break;
         }
 
@@ -144,6 +159,11 @@ function f_utilsPopupTimeout()
 }
 
 function f_utilsPopupApply()
+{
+    g_utils.f_hidePopupMessage();
+}
+
+function f_utilsPopupOk()
 {
     g_utils.f_hidePopupMessage();
 }

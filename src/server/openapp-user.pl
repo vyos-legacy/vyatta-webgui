@@ -144,7 +144,7 @@ GetOptions(
            "role=s"          => \$role,
            "rights=s"        => \$rights,
            "delete=s"        => \$delete,
-           "list=s"          => \$list,
+           "list:s"          => \$list,
 
     ) or usage();
 

@@ -5,28 +5,29 @@
     Description:
 */
 
-FT_confBackup = Ext.extend(FT_confBaseObj,
+function FT_confBackup(name, callback, busLayer)
 {
-    thisObjName: 'FT_confBackup',
+    this.thisObjName = 'FT_confBackup',
 
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
      * @param busLayer - business object
      */
-    constructor: function(name, callback, busLayer)
+    this.constructor = function(name, callback, busLayer)
     {
         FT_confBackup.superclass.constructor(name, callback, busLayer);
-    },
+    }
+    this.constructor(name, callback, busLayer);
 
-    f_getConfigurationPage: function()
+    this.f_getConfigurationPage = function()
     {
         var page = this.f_getNewPanelDiv(this.f_init());
 
         return page;
-    },
+    }
 
-    f_createColumns: function()
+    this.f_createColumns = function()
     {
         var cols = [];
 
@@ -35,9 +36,9 @@ FT_confBackup = Ext.extend(FT_confBaseObj,
         cols[2] = this.f_createColumn('Config.', 80, 'checkbox', '35');
 
         return cols;
-    },
+    }
 
-    f_loadVMData: function()
+    this.f_loadVMData = function()
     {
         var thisObj = this;
         var hd = this.f_createColumns();
@@ -71,14 +72,14 @@ FT_confBackup = Ext.extend(FT_confBaseObj,
         }
 
         this.m_treadId = this.m_busLayer.f_startVMRequestThread(cb);
-    },
+    }
 
-    f_stopLoadVMData: function()
+    this.f_stopLoadVMData = function()
     {
         this.m_busLayer.f_stopVMRequestThread(this.m_treadId);
-    },
+    }
 
-    f_init: function()
+    this.f_init = function()
     {
         var hd = this.f_createColumns();
         this.m_header = this.f_createGridHeader(hd);
@@ -90,7 +91,8 @@ FT_confBackup = Ext.extend(FT_confBaseObj,
 
         return [this.m_header, this.m_body, this.m_buttons];
     }
-});
+}
+FT_extend(FT_confBackup, FT_confBaseObj);
 
 function f_handleStop(vm)
 {

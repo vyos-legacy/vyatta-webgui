@@ -5,6 +5,17 @@
     Description:
 */
 
+FT_extend = function(subClass, baseClass)
+{
+   function inheritance() {}
+   inheritance.prototype = baseClass.prototype;
+
+   subClass.prototype = new inheritance();
+   subClass.prototype.constructor = subClass;
+   subClass.baseConstructor = baseClass;
+   subClass.superclass = baseClass.prototype;
+}
+
 var g_utils =
 {
     f_findPercentage: function(total, free)
@@ -86,7 +97,8 @@ var g_utils =
                           'onclick="f_utilsPopupCancel()"></div>';
                 innerHtml += '<tbody><tr height="55">' +
                       '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
-                        '<td style="text-align:left;" width="250"><p>' +
+                        '<td style="text-align:left;" width="250"><p ' +
+                        'style="padding-left:5px;">' +
                         message + '</p></td>';
                 break;
             case 'timeout':
@@ -96,39 +108,47 @@ var g_utils =
                       'For security reasons, your session is no longer active.' +
                       '<br>Please re-login again.';
 
-                buttonsDiv = '<div align="center"><img src="images/ft_apply.PNG" ' +
+                buttonsDiv = '<div align="center" style="padding-top:8px;">' +
+                              '<img src="images/ft_apply.PNG" ' +
                               'onclick="f_utilsPopupTimeout()"></div>';
                 innerHtml += '<tbody><tr height="73">' +
                         '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
-                        '<td style="text-align:left;" width="300"><p>' +
+                        '<td style="text-align:left;" width="300"><p ' +
+                        'style="padding-left:5px;">' +
                         message + '</p></td>';
                 break;
             case 'ok':
                 break;
         }
 
-        innerHtml += '</tr><tr height="22">' +
+        innerHtml += '</tr><tr height="28">' +
                       '<td colspan="2">' + buttonsDiv + '</td>' +
                       '</tr></table>';
 
         div.innerHTML = innerHtml;
         return div;
+    },
+
+    f_hidePopupMessage: function()
+    {
+        var div = document.getElementById('ft_popup_message');
+        var cDiv = document.getElementById('ft_popup_div');
+        div.removeChild(cDiv);
     }
 };
 
 function f_utilsPopupTimeout()
 {
+    g_utils.f_hidePopupMessage();
     g_busObj.f_userLogout();
 }
 
 function f_utilsPopupApply()
 {
-    var div = document.getElementById('ft_popup_message');
-    var cDiv = document.getElementById('ft_popup_div');
-    div.removeChild(cDiv);
+    g_utils.f_hidePopupMessage();
 }
 
 function f_utilsPopupCancel()
 {
-    f_utilsPopupApply();
+    g_utils.f_hidePopupMessage();
 }

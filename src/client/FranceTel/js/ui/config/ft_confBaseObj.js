@@ -6,37 +6,37 @@
 */
 
 
-FT_confBaseObj = Ext.extend(Ext.util.Observable,
+function FT_confBaseObj(name, callback, busLayer)
 {
-    thisObj: this,
+    var thisObj = this;
 
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
      */
-    constructor: function(name, callback, busLayer)
+    this.constructor = function(name, callback, busLayer)
     {
-        this.thisObj = this;
         this.m_busLayer = busLayer;
         this.m_name = name;
         this.m_containerCb = callback;
         this.m_treadId = null;
-    },
+    }
+    this.constructor(name, callback, busLayer);
 
     /**
      * call this function when this object is no longer used. it will
      * do all the clean up and stop the thread.
      */
-    f_distructor: function()
+    this.f_distructor = function()
     {
         if(this.m_treadId != null)
         {
             this.m_busLayer.f_stopVMRequestThread(this.m_treadId);
             this.m_threadId = null;
         }
-    },
+    }
 
-    f_getNewPanelDiv: function(children)
+    this.f_getNewPanelDiv = function(children)
     {
         var div = document.createElement('div');
         div.setAttribute('id', 'ft_confpanel_');
@@ -58,9 +58,9 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
 
         this.m_div = div;
         return this.m_div;
-    },
+    }
 
-    f_createGridHeader: function(header)
+    this.f_createGridHeader = function(header)
     {
         var div = document.createElement('div');
         div.style.position = 'relative';
@@ -90,9 +90,9 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         div.innerHTML = innerHtml;
 
         return div;
-    },
+    }
 
-    f_createGridView: function(header)
+    this.f_createGridView = function(header)
     {
         var div = document.createElement('div');
         div.style.display = 'block';
@@ -111,9 +111,9 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
 
         div.style.width = (width) + 'px';
         return div;
-    },
+    }
 
-    f_createGridRow: function(header, data)
+    this.f_createGridRow = function(header, data)
     {
         var div = document.createElement('div');
         div.style.position = 'relative';
@@ -167,7 +167,7 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         div.innerHTML = innerHtml;
 
         return div;
-    },
+    }
 
     /**
      * create a div for push buttons.
@@ -175,7 +175,7 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
      *                  callback.
      *                  [ [btn1, btn1Callback], [btn2, btn2Callback], []...]
      */
-    f_createButtons: function(buttons)
+    this.f_createButtons = function(buttons)
     {
         var div = document.createElement('div');
         div.style.display = 'block';
@@ -224,13 +224,13 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         div.innerHTML = innerHtml;
 
         return div;
-    },
+    }
 
-    f_removeDivChildren: function(div)
+    this.f_removeDivChildren = function(div)
     {
         while(div.hasChildNodes())
             div.removeChild(div.childNodes[0])
-    },
+    }
 
     /**
      * define column field
@@ -240,16 +240,16 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
      *                text input, combobox)
      * @param paddLeft - number of pixel to be padding left
      */
-    f_createColumn: function(colName, width, type, paddLeft)
+    this.f_createColumn = function(colName, width, type, paddLeft)
     {
         var header = colName.length > 2 ?
             "<p valign='center' align='center'><b>" + colName + "<br></b></p>" :
             "";
 
         return [header, width, type, paddLeft];
-    },
+    }
 
-    f_renderStatus: function(val)
+    this.f_renderStatus = function(val)
     {
         switch(val)
         {
@@ -263,17 +263,17 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
                 return '<span title="Status is up" align="center">' +
                         '<img src="images/statusUp.gif"/> </span>';
         }
-    },
+    }
 
-    f_renderCheckbox: function(val)
+    this.f_renderCheckbox = function(val)
     {
         if(val == 'yes')
             return '<input type="checkbox" checked/>';
         else
             return '<input type="checkbox"/>';
-    },
+    }
 
-    f_renderCombobox: function(options, val)
+    this.f_renderCombobox = function(options, val)
     {
         var cb = '<select>';
 
@@ -288,15 +288,15 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         }
 
         return cb;
-    },
+    }
 
-    f_renderAnchor: function(text, link, tooltip)
+    this.f_renderAnchor = function(text, link, tooltip)
     {
         return '<a title="' + tooltip + '" href="#" onclick="' + link + '">' +
                 text + '</a>';
-    },
+    }
 
-    f_renderButton: function(text, enable, cb, tooltip)
+    this.f_renderButton = function(text, enable, cb, tooltip)
     {
         var imgSrc = '';
         switch(text)
@@ -317,9 +317,9 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
         return '<img title="' + tooltip + '" height="21" name="' + text +
                         '" src="' + imgSrc + '" style="cursor:pointer;" ' +
                         ' onclick="' + cb + '">';
-    },
+    }
 
-    f_renderProgressBar: function(val, tooltip)
+    this.f_renderProgressBar = function(val, tooltip)
     {
         var bgColor = val >= 80 ? 'red' : 'green';
 
@@ -331,4 +331,4 @@ FT_confBaseObj = Ext.extend(Ext.util.Observable,
               ';"></div><div style="position:relative; top:-16px; left:40px;">'+
               '<b>' + val +'%</b></div></div>';
     }
-});
+}

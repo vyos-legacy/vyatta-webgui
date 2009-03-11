@@ -137,7 +137,7 @@ function FT_userBusObj(busObj)
     {
         thisObj.m_guiCb = guiCb;
         var ur = userRec;
-        var sid = f_getUserLoginedID();
+        var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<open-app user add '" + userRec.type + "' ";
 
         if(ur.m_user != undefined && ur.m_user.length > 0)
@@ -197,7 +197,12 @@ function FT_userBusObj(busObj)
                     ul[i].f_setUserName(user[i].childNodes[j]);
             }
         }
- 
+
+        for(var i=0; i<10; i++)
+        {
+            ul[i] = new FT_userRecObj('user'+i, 'last'+i, 'first'+i,
+                      'pw'+i, 'role'+i, 'type'+i, 'kevin.choi@vyatta.com', 'right');
+        }
         return ul;
     }
 }

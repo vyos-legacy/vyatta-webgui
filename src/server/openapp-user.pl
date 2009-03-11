@@ -54,6 +54,10 @@ sub add_user {
     #first add the user
     system("ldapadduser $add vyattacfg");
 
+    #post message to all registered VMs:
+    #POST /notifications/users/[username]
+
+
     #now modify the account
     system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
     #clean up temp file here.
@@ -61,6 +65,9 @@ sub add_user {
 }
 
 sub del_user {
+    # post notification to VMs: 
+    # DELETE /notifications/users/[username]
+
     system("ldapdeleteuser $delete");
 }
 
@@ -112,9 +119,6 @@ sub list_user {
 	    print "</user>";
 	}
     }
-    
-
-
 }
 
 ####main

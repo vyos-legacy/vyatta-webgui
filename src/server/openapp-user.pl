@@ -100,7 +100,7 @@ sub list_user {
 	if ($o[0] eq "cn:") {
 	    print "<user name='$o[1]'>";
 	    #parse gecos field
-	    if ($(o[0] eq 'gecos:') {
+	    if ($o[0] eq 'gecos:') {
 		print "<email>$o[1]</email>";
 		print "<name>";
 		print "<first>$o[1]</first>";
@@ -109,8 +109,8 @@ sub list_user {
 	    }
 	    print "<rights></rights>";
 	    print "<role></role>";
+	    print "</user>";
 	}
-	print "</user>";
     }
     
 

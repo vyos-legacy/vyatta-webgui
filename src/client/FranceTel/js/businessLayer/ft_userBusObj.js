@@ -69,9 +69,9 @@ function FT_userBusObj(busObj)
             if(sid != undefined && sid[0] != undefined)
                 thisObj.m_sid = sid[0].firstChild.nodeValue;
 
-            var user = response.getElementsByTagName('user');
+            var user = response.getElementsByTagName('msg');
             if(user != undefined && user.length > 0)
-                thisObj.m_userList = this.f_parseUserResponse(user);
+                thisObj.m_userList = thisObj.f_parseUserResponse(user);
 
             /////////////////////////////////////////
             // create an event then send back to ui
@@ -156,21 +156,16 @@ function FT_userBusObj(busObj)
         thisObj.m_guiCb = guiCb;
         var ur = userRec;
         var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<open-app user add '" + userRec.type + "' ";
+        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+                    "open-app user add '" + ur.m_user;
+        xmlstr += "' password '" + ur.m_pw;
+        xmlstr += "' last '" + ur.m_last;
+        xmlstr += "' first '" + ur.m_first;
+        xmlstr += "' email '" + ur.m_email;
+        xmlstr += "' rights '" + ur.m_right;
+        xmlstr += "' role '" + ur.m_role + "'";
 
-        if(ur.m_user != undefined && ur.m_user.length > 0)
-            xmlstr += "username '" + ur.m_user + "' ";
-        if(ur.m_last != undefined && ur.m_last.length > 0)
-            xmlstr += "last '" + ur.m_last + "' ";
-        if(ur.m_first != undefined && ur.m_first.length > 0)
-            xmlstr += "first '" + ur.m_first + "' ";
-        if(ur.m_password != undefined && ur.m_password.length > 0)
-            xmlstr += "password '" + ur.m_password+ "' ";
-        if(ur.m_email != undefined && ur.m_email.length > 0)
-            xmlstr += "email '" + ur.m_email+ "' ";
-
-
-        xmlstr += ">\n<id>" + sid + "</id></vmuser>";
+        xmlstr += "</statement></command>";
         thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
     }
     /**
@@ -186,10 +181,19 @@ function FT_userBusObj(busObj)
         thisObj.f_setUser(uRec);
     }
 
+    /**
+     * delete user from server.
+     * @param user - username
+     * @param guiCb - callback function
+     */
     this.f_deleteUser = function(user, guiCb)
     {
         thisObj.m_guiCb = guiCb;
-        var xmlstr = 'open-app user delete ' + user;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+                    "open-app user delete '" + user + "'" +
+                    "</statement></command>";
+
         thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
     }
 
@@ -216,11 +220,6 @@ function FT_userBusObj(busObj)
             }
         }
 
-        for(var i=0; i<10; i++)
-        {
-            ul[i] = new FT_userRecObj('user'+i, 'last'+i, 'first'+i,
-                      'pw'+i, 'role'+i, 'type'+i, 'kevin.choi@vyatta.com', 'right');
-        }
         return ul;
     }
 }

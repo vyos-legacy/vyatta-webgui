@@ -222,14 +222,24 @@ function FT_businessLayer()
         thisObj.m_userObj.f_getUserListFromServer(guiCb);
     }
 
+    /**
+     * add new user to server.
+     * @param userRec - an FT_userRecObj to be added
+     * @param guiCb = callback function
+     */
     this.f_addUserToServer = function(userRec, guiCb)
     {
         thisObj.m_userObj.f_setUser(userRec, guiCb);
     }
 
-    this.f_deleteUserFromServer = function(username, guiCb)
+    /**
+     * delete user from server.
+     * @param user - username to be deleted
+     * @param guiCb - callback function
+     */
+    this.f_deleteUserFromServer = function(user, guiCb)
     {
-        thisObj.m_userObj.f_deleteUser(username, guiCb);
+        thisObj.m_userObj.f_deleteUser(user, guiCb);
     }
 
     /**

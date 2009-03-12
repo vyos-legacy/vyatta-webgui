@@ -140,6 +140,7 @@ sub list_user {
 
     #iterate by line
     my $open_entry = 0;
+    print "VERBATIM_OUTPUT\n";
     for $output (@output) {
 #	print $output;
 	my @o = split(' ',$output);

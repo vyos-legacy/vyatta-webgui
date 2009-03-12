@@ -1,1 +1,1 @@
-run: sudo perl /opt/vyatta/sbin/openapp-user.pl --delete "$4" --rights "$6"
+run: sudo perl /opt/vyatta/sbin/openapp-user.pl --modify --delete "$4" --rights "$6"

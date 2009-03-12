@@ -195,7 +195,7 @@ my @delete_user = ();
 #pull commands and call command
 GetOptions(
     "add=s"           => \$add,
-    "modify=s"        => \$modify,
+    "modify:s"        => \$modify,
     "password=s"      => \$password,
     "lastname=s"      => \$lastname,
     "firstname=s"     => \$firstname,
@@ -211,12 +211,12 @@ if ( defined $delete ) {
     del_user();
     exit 0;
 }
-if ( defined $add ) {
-    add_user();
-    exit 0;
-}
 if ( defined $modify ) {
     modify_user();
+    exit 0;
+}
+if ( defined $add ) {
+    add_user();
     exit 0;
 }
 if ( defined $list ) {

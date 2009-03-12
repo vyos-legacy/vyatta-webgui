@@ -240,6 +240,19 @@ function FT_businessLayer()
     }
 
     /**
+     * modify user data.
+     * @param userRec - userRecObj. this function modified only the provided
+     *                  field specified in the userRecObj.
+     *                  etc: if userRecObj.m_email field is specified, then
+     *                  only this field will be sent to server for updated.
+     * @param guiCb - callback function
+     */
+    this.f_modifyUserFromServer = function(userRec, guiCb)
+    {
+        thisObj.m_userObj.f_modifyUser(userRec, guiCb);
+    }
+
+    /**
      * delete user from server.
      * @param user - username to be deleted
      * @param guiCb - callback function

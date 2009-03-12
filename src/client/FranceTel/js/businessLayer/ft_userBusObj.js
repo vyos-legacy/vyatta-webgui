@@ -222,6 +222,41 @@ function FT_userBusObj(busObj)
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
+
+    this.f_modifyUser(userRec, guiCb)
+    {
+        thisObj.m_guiCb = guiCb;
+
+        if(!this.f_isThisUserExist(userRec.m_user))
+        {
+            var evt = new FT_eventObj(9, '', "User is not existed");
+            guiCb(evt);
+            return;
+        }
+
+        var ur = userRec;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+                    "open-app user modify '" + ur.m_user + "' ";
+
+        if(ur.m_pw != undefined && ur.m_pw.length > 0)
+            xmlstr += "password '" + ur.m_pw + "' ";
+        else if(ur.m_last != undefined && ur.m_last.length > 0)
+            xmlstr += "last '" + ur.m_last + "' ";
+        else if(ur.m_first != undefined && ur.m_first.length > 0)
+            xmlstr += "first '" + ur.m_first + "' ";
+        else if(ur.m_email != undefined && ur.m_email.length > 0)
+            xmlstr += "email '" + ur.m_email + "' ";
+        else if(ur.m_right != undefined && ur.m_email.length > 0)
+            xmlstr += "rights '" + ur.m_right + "' ";
+        else if(ur.m_role != undefined && ur.m_role.llength > 0)
+            xmlstr += "role '" + ur.m_role + "'";
+
+        xmlstr += "</statement></command>";
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
     /**
      * get a user profile by username.
      * @param user - a username of profile to be returned. if user == null,

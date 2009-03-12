@@ -31,7 +31,7 @@ use POSIX;
 use File::Copy;
 use Getopt::Long;
 
-my ($list,$delete,$add,$password,$lastname,$firstname,$email,$role,$rights);
+my ($list,$delete,$modify,$add,$password,$lastname,$firstname,$email,$role,$rights);
 
 sub add_user {
     #write temp file.
@@ -50,6 +50,16 @@ sub add_user {
     print FILE "changetype: modify\n";
     print FILE "replace: mail\n";
     print FILE "mail: ".$email."\n";
+    print FILE "\n";
+    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+    print FILE "changetype: modify\n";
+    print FILE "replace: surname\n";
+    print FILE "surname: ".$lastname."\n";
+    print FILE "\n";
+    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+    print FILE "changetype: modify\n";
+    print FILE "replace: commonname\n";
+    print FILE "commonname: ".$firstname."\n";
 
     #todo: lastname,firstname
 
@@ -63,6 +73,28 @@ sub add_user {
     #post message to all registered VMs:
     #POST /notifications/users/[username]
 
+
+    #now modify the account
+    system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
+    #clean up temp file here.
+    unlink($conf_file);
+}
+
+sub modify_user {
+    #write temp file.
+    my $conf_file = "/tmp/user-".$$;
+
+    print "$conf_file\n";
+
+    open(FILE, ">$conf_file") or die "Can't open temp user file"; 
+
+    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+    print FILE "changetype: modify\n";
+    print FILE "replace: gidNumber\n";
+    print FILE "gidNumber: ".$rights."\n";
+    print FILE "\n";
+
+    close FILE;
 
     #now modify the account
     system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
@@ -107,25 +139,37 @@ sub list_user {
 # cn: foo
 
     #iterate by line
+    my $open_entry = 0;
     for $output (@output) {
 #	print $output;
 	my @o = split(' ',$output);
-	if (defined $o[0] && $o[0] eq "cn:") {
-	    print "<user name='$o[1]'>";
-	}
-	if ($o[0] eq 'mail:') {
-	    print "<email>$o[1]</email>";
-
+	if (defined $o[0] && defined $o[1]) {
+	    if ($o[0] eq "uid:") {
+		$open_entry = 1;
+		print "<user name='$o[1]'>";
+	    }
+	    if ($o[0] eq 'mail:') {
+		print "<email>$o[1]</email>";
+	    }
 	    #The assumption is that mail is the last entry per user
-	    print "<name>";
 #	    print "<first>$o[1]</first>";
-#	    print "<last>$o[1]</last>";
-	    print "</name>";
+	    if ($o[0] eq 'sn:') {
+		print "<name>";
+		print "<last>$o[1]</last>";
+	    }
+	    if ($o[0] eq 'cn:') {
+		print "<first>$o[1]</first>";
+	    }
 	    
-	    print "<rights></rights>";
-	    print "<role></role>";
-	    
-	    print "</user>";
+	    if ($open_entry == 1 && $o[0] eq '#') {
+		print "</name>";
+		
+		print "<rights></rights>";
+		print "<role></role>";
+		
+		print "</user>";
+		$open_entry = 0;
+	    }
 	}
     }
 }
@@ -149,16 +193,16 @@ my @delete_user = ();
 
 #pull commands and call command
 GetOptions(
-           "add=s"           => \$add,
-           "password=s"      => \$password,
-           "lastname=s"      => \$lastname,
-           "firstname=s"     => \$firstname,
-           "email=s"         => \$email,
-           "role=s"          => \$role,
-           "rights=s"        => \$rights,
-           "delete=s"        => \$delete,
-           "list:s"          => \$list,
-
+    "add=s"           => \$add,
+    "modify=s"        => \$modify,
+    "password=s"      => \$password,
+    "lastname=s"      => \$lastname,
+    "firstname=s"     => \$firstname,
+    "email=s"         => \$email,
+    "role=s"          => \$role,
+    "rights=s"        => \$rights,
+    "delete=s"        => \$delete,
+    "list:s"          => \$list,
     ) or usage();
 
 
@@ -168,6 +212,10 @@ if ( defined $delete ) {
 }
 if ( defined $add ) {
     add_user();
+    exit 0;
+}
+if ( defined $modify ) {
+    modify_user();
     exit 0;
 }
 if ( defined $list ) {

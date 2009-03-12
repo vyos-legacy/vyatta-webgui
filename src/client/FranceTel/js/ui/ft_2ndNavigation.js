@@ -21,9 +21,9 @@ function FT_2ndNavigation(){
     this.f_init = function(p){
 
         thisObj.m_parent = p;
-        thisObj.m_menu = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_2_NAV_ID);
+        thisObj.m_menu = g_roleManagerObj.f_getMenu();
         thisObj.m_parent_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID);
-        
+        		
         var menu = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_2_NAV_UL_ID);
         for (var i = 0; menu.childNodes[i]; i++) {
             sid = f_elemGetAttribute(menu.childNodes[i], 'id');

@@ -4,20 +4,22 @@
  Author     : Loi.Vo
  Description:
  */
-FT_confPassword = Ext.extend(FT_confFormObj, {
-    thisObjName: 'ft_confPassword',
+function FT_confPassword (name, callback, busLayer) {
+    var thisObjName = 'ft_confPassword';
     
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
      * @param busLayer - business object
      */
-    constructor: function(name, callback, busLayer)
+    this.constructor = function(name, callback, busLayer)
     {
         FT_confPassword.superclass.constructor(name, callback, busLayer);
-    },	
+    }	
+
+	this.constructor(name, callback, busLayer);
 		
-    f_init: function()
+    this.f_init = function()
     {
         this.f_setConfig( {
 			id : 'conf_password',
@@ -48,17 +50,17 @@ FT_confPassword = Ext.extend(FT_confFormObj, {
 				onclick: this.f_handleClick
 			}]
 		})  
-    },
+    }
 	
-    f_loadVMData: function(element)
+    this.f_loadVMData = function(element)
     {
-    },
+    }
     
-    f_stopLoadVMData: function()
+    this.f_stopLoadVMData = function()
     {
-    },
+    }
     
-    f_handleClick: function(e)
+    this.f_handleClick = function(e)
     {
         var target = g_xbObj.f_xbGetEventTarget(e);
         if (target != undefined) {
@@ -69,6 +71,7 @@ FT_confPassword = Ext.extend(FT_confFormObj, {
                 alert('Password Policy cancel button clicked');               
             }
         }
-    }	
-    
-});
+    }	    
+}
+
+FT_extend(FT_confPassword, FT_confFormObj);

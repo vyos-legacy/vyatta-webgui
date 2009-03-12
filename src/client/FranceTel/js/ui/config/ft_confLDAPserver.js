@@ -4,20 +4,22 @@
  Author     : Loi.Vo
  Description:
  */
-FT_confLDAPserver = Ext.extend(FT_confFormObj, {
-    thisObjName: 'FT_confLDAPserver',
+function FT_confLDAPserver (name, callback, busLayer) {
+    var thisObjName = 'FT_confLDAPserver';
     
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
      * @param busLayer - business object
      */
-    constructor: function(name, callback, busLayer)
+    this.constructor = function(name, callback, busLayer)
     {
         FT_confLDAPserver.superclass.constructor(name, callback, busLayer);
-    },	
+    }	
+
+	this.constructor(name, callback, busLayer);
 		
-    f_init: function()
+    this.f_init = function()
     {
         this.f_setConfig( {
 			id : 'conf_ldap_srv',
@@ -64,7 +66,7 @@ FT_confLDAPserver = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'text',
 				id : 'conf_ldap_srv_server_addr',				
-				size: '30',
+				size: '64',
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
@@ -75,7 +77,7 @@ FT_confLDAPserver = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'text',
 				id: 'conf_ldap_srv_user_update',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
@@ -86,7 +88,7 @@ FT_confLDAPserver = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'password',
 				id: 'conf_ldap_srv_user_update_passwd',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'				
 			}, {
 				v_type: 'label',
@@ -97,7 +99,7 @@ FT_confLDAPserver = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'text',
 				id: 'conf_ldap_srv_user_read',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
@@ -108,7 +110,7 @@ FT_confLDAPserver = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'password',
 				id: 'conf_ldap_srv_user_read_passwd',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'					
 			}],				
 			buttons: [ {
@@ -121,17 +123,17 @@ FT_confLDAPserver = Ext.extend(FT_confFormObj, {
 				onclick: this.f_handleClick
 			}]
 		})  
-    },
+    }
 	
-    f_loadVMData: function(element)
+    this.f_loadVMData = function(element)
     {
-    },
+    }
     
-    f_stopLoadVMData: function()
+    this.f_stopLoadVMData = function()
     {
-    },
+    }
     
-    f_handleClick: function(e)
+    this.f_handleClick = function(e)
     {
         var target = g_xbObj.f_xbGetEventTarget(e);
         if (target != undefined) {
@@ -142,6 +144,7 @@ FT_confLDAPserver = Ext.extend(FT_confFormObj, {
                 alert('LDAP server cancel button clicked');               
             }
         }
-    }	
-    
-});
+    }	    
+}
+
+FT_extend(FT_confLDAPserver, FT_confFormObj);

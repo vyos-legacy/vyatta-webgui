@@ -101,7 +101,11 @@ function FT_mainPanel(){
 		thisObj.m_oa_container.style.display = 'block';
 		thisObj.m_container.appendChild(thisObj.m_oa_container);	
         thisObj.m_2navMenu.f_show();
-        thisObj.m_2navMenu.f_selectItem(VYA.FT_CONST.DOM_2_NAV_APP_ID);
+		if (g_roleManagerObj.f_isUser()) {
+			thisObj.m_2navMenu.f_selectItem(VYA.FT_CONST.DOM_2_NAV_MYPROFILE_ID);		
+		} else {
+			thisObj.m_2navMenu.f_selectItem(VYA.FT_CONST.DOM_2_NAV_APP_ID);
+		}
     }
     
     this.f_showVm = function(vmId, urlPath){

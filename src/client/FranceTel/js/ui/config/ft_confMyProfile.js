@@ -4,20 +4,22 @@
  Author     : Loi.Vo
  Description:
  */
-FT_confMyProfile = Ext.extend(FT_confFormObj, {
-    thisObjName: 'FT_confMyProfile',
+function FT_confMyProfile (name, callback, busLayer) {
+    var thisObjName = 'FT_confMyProfile';
     
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
      * @param busLayer - business object
      */
-    constructor: function(name, callback, busLayer)
+    this.constructor = function(name, callback, busLayer)
     {
         FT_confMyProfile.superclass.constructor(name, callback, busLayer);
-    },
+    }
+ 
+	this.constructor(name, callback, busLayer);
     	
-    f_init: function()
+    this.f_init = function()
     {
         this.f_setConfig( {
 			id : 'conf_my_profile',
@@ -45,7 +47,7 @@ FT_confMyProfile = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'password',
 				id : 'conf_myprofile_old_passwd',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
@@ -55,7 +57,7 @@ FT_confMyProfile = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'password',
 				id: 'conf_myprofile_new_passwd',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
@@ -65,7 +67,7 @@ FT_confMyProfile = Ext.extend(FT_confFormObj, {
 			}, {
 				v_type: 'password',
 				id: 'conf_myprofile_confirum_passwd',
-				size: '30',
+				size: '64',
 				v_end_row: 'true'
 			}],
 			buttons: [ {
@@ -78,20 +80,20 @@ FT_confMyProfile = Ext.extend(FT_confFormObj, {
 				onclick: this.f_handleClick
 			}]
 		})  
-    },
+    }
 	
-    f_loadVMData: function(element)
+    this.f_loadVMData = function(element)
     {
         var user = g_busObj.f_getLoginUserObj();
         var field = document.getElementById('conf_myprofile_login');
         field.innerHTML = user.m_user;
-    },
+    }
     
-    f_stopLoadVMData: function()
+    this.f_stopLoadVMData = function()
     {
-    },
+    }
     
-    f_handleClick: function(e)
+    this.f_handleClick = function(e)
     {
         var target = g_xbObj.f_xbGetEventTarget(e);
         if (target != undefined) {
@@ -106,4 +108,6 @@ FT_confMyProfile = Ext.extend(FT_confFormObj, {
         }
     }	
     
-});
+}
+
+FT_extend(FT_confMyProfile, FT_confFormObj);

@@ -1,3 +1,32 @@
+vyatta-webgui (0.2+fxd0+4) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add role-based functionality.
+
+  [ Kevin Choi ]
+  * * add/updated orange style images
+  * * removed Extjs superclass and subclass extension library.
+  * * support user login popup message using orange popup style instead
+    of alert.
+  * * removed unused files
+  * added email link image
+
+  [ root ]
+  * fixes to user listing.
+  * fixed add,delete,list commands. now can add and delete and list user
+    accounts.
+  * fixed wildcard listing option
+  * added commands for backup/restore
+  * support for email field
+  * added support for last,first name and other bugfixes.
+
+  [ Loi Vo ]
+  * 1. Convert all references to Ext.extend to FT_extend.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 11 Mar 2009 20:48:14 -0700
+
 vyatta-webgui (0.2+fxd0+3) unstable; urgency=low
 
   [ kchoi ]

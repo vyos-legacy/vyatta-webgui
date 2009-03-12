@@ -135,15 +135,10 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       string stdout;
       bool verbatim = false;
       err = WebGUI::execute(opmodecmd,stdout,verbatim,true);
-      //      cout << opmodecmd << endl;
-      //      cout << stdout << endl;
-      //turn off for users accts for now...
-      /*
       if (!verbatim) {
         stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
         stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
       }
-      */
       resp = stdout;
     }
     else {

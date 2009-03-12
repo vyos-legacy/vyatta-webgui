@@ -23,14 +23,13 @@ function FT_userRecObj(user, last, first, pw, role, type, email, right)
     {
         if(node == undefined || node.childNodes == undefined) return;
 
-        var s=0;
         for(var i=0; i<node.childNodes.length; i++)
         {
-            if(node.childNodes.nodeName == 'first')
-                this.m_first = node.childNodes.firstChild.nodeValue;
+            if(node.childNodes[i].nodeName == 'first')
+                this.m_first = node.childNodes[i].firstChild.nodeValue;
 
-            if(node.childNodes.nodeName == 'last')
-                this.m_last = node.childNodes.firstChild.nodeValue;
+            if(node.childNodes[i].nodeName == 'last')
+                this.m_last = node.childNodes[i].firstChild.nodeValue;
         }
     }
 }
@@ -45,14 +44,15 @@ function FT_userBusObj(busObj)
     this.m_busObj = busObj;
     this.m_sid = null;
     this.m_guiCb = null;
-    this.m_userList;
-    this.m_loginUser;
+    this.m_userList = null;
+    this.m_loginUser = null;
+    this.m_lastCmdSent = null;
 
     /////////////////////////////////////////
     /**
      * A callback function for all user management requests.
      */
-    this.f_respondRequestCallback = function()
+    this.f_respondRequestCallback = function(resp, cmdSent, noUICallback)
     {
         var response = thisObj.m_busObj.f_getRequestResponse(
                         thisObj.m_busObj.m_request);
@@ -61,7 +61,8 @@ function FT_userBusObj(busObj)
 
         if(response.f_isError != null)
         {
-            thisObj.m_guiCb(response);
+            if(noUICallback == undefined || !noUICallback)
+                thisObj.m_guiCb(response);
         }
         else
         {
@@ -69,15 +70,42 @@ function FT_userBusObj(busObj)
             if(sid != undefined && sid[0] != undefined)
                 thisObj.m_sid = sid[0].firstChild.nodeValue;
 
-            var user = response.getElementsByTagName('msg');
-            if(user != undefined && user.length > 0)
-                thisObj.m_userList = thisObj.f_parseUserResponse(user);
+            var err = response.getElementsByTagName('error');
+            if(err != null && err[0] != null)
+            {
+                var user = thisObj.f_getUserNodes(err);
+                if(user != null)
+                    thisObj.m_userList = thisObj.f_parseUserResponse(user);
 
-            /////////////////////////////////////////
-            // create an event then send back to ui
-            var evt = new FT_eventObj(0, thisObj, undefined);
-            thisObj.m_guiCb(evt);
+                /////////////////////////////////////////
+                // create an event then send back to ui
+                if(noUICallback == undefined || !noUICallback)
+                {
+                    var evt = new FT_eventObj(0, thisObj, undefined);
+                    thisObj.m_guiCb(evt);
+                }
+            }
+
+            if(cmdSent.indexOf('open-app user add ') > 0)
+            {
+                /////////////////////////////////////////////////////////////
+                // refresh local user list
+                sid = g_utils.f_getUserLoginedID();
+                var xmlstr = "<command><id>" + sid + "</id><statement mode='op'>" +
+                              "open-app user list</statement></command>";
+
+                thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                    thisObj.f_respondRequestCallbackWithoutGIUCB);
+            }
         }
+    }
+
+    /**
+     * reqeust callback from server and do not forward to GUI layer
+     */
+    this.f_respondRequestCallbackWithoutGIUCB = function(resp, cmdSent)
+    {
+        thisObj.f_respondRequestCallback(resp, cmdSent, true);
     }
 
     /**
@@ -144,8 +172,24 @@ function FT_userBusObj(busObj)
         var xmlstr = "<command><id>" + sid + "</id><statement mode='op'>" +
                       "open-app user list</statement></command>";
 
-        thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
     }
+
+    this.f_isThisUserExist = function(username)
+    {
+        if(this.m_userList != undefined && this.m_userList.length > 0)
+        {
+            for(var i=0; i<this.m_userList.length; i++)
+            {
+                if(this.m_userList[i].m_user == username)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * set user record to server.
      * To set username, last, first, pw to server. Use userObj.m_type to
@@ -154,6 +198,14 @@ function FT_userBusObj(busObj)
     this.f_setUser = function(userRec, guiCb)
     {
         thisObj.m_guiCb = guiCb;
+
+        if(this.f_isThisUserExist(userRec.m_user))
+        {
+            var evt = new FT_eventObj(9, '', "User already exist");
+            guiCb(evt);
+            return;
+        }
+
         var ur = userRec;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement>" +
@@ -166,7 +218,8 @@ function FT_userBusObj(busObj)
         xmlstr += "' role '" + ur.m_role + "'";
 
         xmlstr += "</statement></command>";
-        thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
     }
     /**
      * get a user profile by username.
@@ -194,29 +247,56 @@ function FT_userBusObj(busObj)
                     "open-app user delete '" + user + "'" +
                     "</statement></command>";
 
-        thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_getUserNodes = function(error)
+    {
+        var cn = error[0].childNodes;
+        for(var i=0; i<cn.length; i++)
+        {
+            if(cn[i].nodeName == 'msg')
+            {
+                var user = cn[i].childNodes;
+                for(var j=0; i<user.length; j++)
+                {
+                    if(user != undefined && user[j] != undefined &&
+                        user[j].nodeName == 'user')
+                        return user;
+                }
+            }
+        }
+
+        return null;
     }
 
     this.f_parseUserResponse = function(user)
     {
         var ul = [];
+        var c=0;
         for(var i=0; i<user.length; i++)
         {
-            ul[i] = new FT_userRecObj(user[i].getAttribute('user'));
-
-            for(var j=0; j<user[i].childNodes.length; j++)
+            var val = user[i];
+            if(val.nodeName == 'user')
             {
-                if(user[i].childNodes[j].nodeName == 'email')
-                    ul[i].m_email = user[i].childNodes[j].firstChild.nodeValue;
+                ul[c] = new FT_userRecObj(val.getAttribute('name'));
 
-                if(user[i].childNodes[j].nodeName == 'role')
-                    ul[i].m_role = user[i].childNodes[j].firstChild.nodeValue;
-
-                if(user[i].childNodes[j].nodeName == 'right')
-                    ul[i].m_right = user[i].childNodes[j].firstChild.nodeValue;
-
-                if(user[i].childNodes[j].nodeName == 'name')
-                    ul[i].f_setUserName(user[i].childNodes[j]);
+                for(var j=0; j<val.childNodes.length; j++)
+                {
+                    if(val.childNodes[j].nodeName == 'email' &&
+                        val.childNodes[j].firstChild != undefined)
+                        ul[c].m_email = val.childNodes[j].firstChild.nodeValue;
+                    if(val.childNodes[j].nodeName == 'role' &&
+                        val.childNodes[j].firstChild != undefined)
+                        ul[c].m_role = val.childNodes[j].firstChild.nodeValue;
+                    if(val.childNodes[j].nodeName == 'right' &&
+                        val.childNodes[j].firstChild != undefined)
+                        ul[c].m_right = val.childNodes[j].firstChild.nodeValue;
+                    if(val.childNodes[j].nodeName == 'name')
+                        ul[c].f_setUserName(val.childNodes[j]);
+                }
+                c++;
             }
         }
 

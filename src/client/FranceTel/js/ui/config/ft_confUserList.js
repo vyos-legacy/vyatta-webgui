@@ -8,6 +8,7 @@
 function FT_confUserList(name, callback, busLayer)
 {
     this.thisObjName = 'FT_confUserList';
+    var thisObj = this;
 
     /**
      * @param name - name of configuration screens.
@@ -40,6 +41,15 @@ function FT_confUserList(name, callback, busLayer)
         return cols;
     }
 
+    this.f_clearViewRow = function()
+    {
+        thisObj.f_removeDivChildren(thisObj.m_div);
+        thisObj.f_removeDivChildren(thisObj.m_body);
+        thisObj.m_div.appendChild(thisObj.m_header);
+        thisObj.m_div.appendChild(thisObj.m_body);
+        thisObj.m_div.appendChild(thisObj.m_buttons);
+    }
+
     this.f_loadVMData = function()
     {
         var thisObj = this;
@@ -54,7 +64,9 @@ function FT_confUserList(name, callback, busLayer)
 
                 if(ul != undefined)
                 {
-                    thisObj.m_userList = ul;
+                    thisObj.f_clearViewRow();
+                    thisObj.m_userList = ul.m_userList;
+                    ul = ul.m_userList;
 
                     for(var i=0; i<ul.length; i++)
                     {
@@ -69,82 +81,12 @@ function FT_confUserList(name, callback, busLayer)
                                 'Send email to ' + fName) : "";
                         var del = thisObj.f_renderButton(
                                 'deleteUser', true, "f_userListDeleteUser('" +
-                                ul[i].user + "')", 'Delete user (' + fName + ')');
+                                ul[i].m_user + "')", 'Delete user (' + fName + ')');
                         var data = [fName, anchor, email, del];
 
                         var bodyDiv = thisObj.f_createGridRow(hd, data);
                         thisObj.m_body.appendChild(bodyDiv);
                     }
-                }
-
-                var vmData = [];
-
-                thisObj.f_removeDivChildren(thisObj.m_div);
-                thisObj.m_div.appendChild(thisObj.m_header);
-                thisObj.m_div.appendChild(thisObj.m_body);
-                thisObj.m_div.appendChild(thisObj.m_buttons);
-
-
-                var img = '<img src="images/ft_email.PNG">';
-                vmData[0] = ["smith john",
-                    thisObj.f_renderAnchor('jsmith', "f_userListEditUser('jsmith')",
-                            'Click here to edit ' + "'smith john'"),
-                    thisObj.f_renderAnchorHref(img,
-                                "mailto:kevin.choi@vyatta.com",
-                                'Send email to ' + "Choi Kevin"),
-                    thisObj.f_renderButton(
-                                'deleteUser', true, "f_userListDeleteUser('" +
-                                "jsmith" + "')", 'Delete user ' + "smith john")];
-                vmData[1] = ["dupont pual",
-                    thisObj.f_renderAnchor('testing', "f_userListEditUser('testing')",
-                            'Click here to edit ' + "'dupon pual'"),
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderButton(
-                                'deleteUser', true, "f_userListDeleteUser('" +
-                                "jsmith" + "')", 'Delete user ' + "dupon pual")];
-                vmData[2] = ["smith john", 'jsmith',
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderButton(
-                                'deleteUser', true, "f_userListDeleteUser('" +
-                                "jsmith" + "')", 'Delete user ' + "smith john")];
-                vmData[3] = ["dupont pual", 'pdupont',
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderButton(
-                                'deleteUser', true, "f_userListDeleteUser('" +
-                                "jsmith" + "')", 'Delete user ' + "smith john")];
-                vmData[4] = ["smith john", 'jsmith',
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderButton(
-                                'deleteUser', true, "f_userListDeleteUser('" +
-                                "jsmith" + "')", 'Delete user ' + "smith john")];
-                vmData[5] = ["dupont pual", 'pdupont',
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderButton(
-                                'deleteUser', true, "f_userListDeleteUser('" +
-                                "jsmith" + "')", 'Delete user ' + "smith john")];
-                vmData[6] = ["smith john", 'jsmith',
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
-                vmData[7] = ["dupont pual", 'pdupont',
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
-                vmData[8] = ["smith john", 'jsmith',
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
-                vmData[9] = ["dupont pual", 'pdupont',
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
-                vmData[10] = ["smith john", 'jsmith',
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
-                vmData[11] = ["dupont pual", 'pdupont',
-                    thisObj.f_renderCheckbox('yes'),
-                    thisObj.f_renderCheckbox('no')];
-
-                for(var i=0; i<vmData.length; i++)
-                {
-                    var bodyDiv = thisObj.f_createGridRow(hd, vmData[i]);
-                    thisObj.m_body.appendChild(bodyDiv);
                 }
             }
         }
@@ -190,7 +132,24 @@ function f_userListEmail(eAddr)
 
 }
 
+function f_handleUserListDeleteUser(username)
+{
+    var cb = function(evt)
+    {
+        if(evt.f_isError())
+        {
+            alert('delete error');
+        }
+        else
+            g_configPanelObj.m_activeObj.f_loadVMData();
+    }
+
+    g_busObj.f_deleteUserFromServer(username, cb);
+}
+
 function f_userListDeleteUser(username)
 {
-
+    g_utils.f_popupMessage('Do you really want to delete (' + username + ') user?',
+                'confirm', 'Delete user account', 
+                "f_handleUserListDeleteUser('"+ username + "')");
 }

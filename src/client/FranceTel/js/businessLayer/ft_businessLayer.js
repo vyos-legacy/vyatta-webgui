@@ -99,10 +99,17 @@ function FT_businessLayer()
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<vyatta>" + content + "</vyatta>\n";
+        var innerCB = callback;
+        var requestCB = function(resp)
+        {
+            innerCB(resp, cmdSend);
+        }
 
         r.open('POST', '/cgi-bin/webgui-oa', true);
-        r.onreadystatechange = callback;
+        r.onreadystatechange = requestCB;
         r.send(cmdSend);
+
+        return cmdSend;
     }
 
     /**
@@ -195,7 +202,7 @@ function FT_businessLayer()
                       '<pswd><![CDATA[' + pw +
                       ']]></pswd></auth></vyatta>\n';
 
-        this.f_sendRequest(xmlstr, this.m_userObj.f_respondRequestCallback);
+        return this.f_sendRequest(xmlstr, this.m_userObj.f_respondRequestCallback);
     }
 
     this.f_getLoginUserObj = function()
@@ -293,7 +300,7 @@ function FT_businessLayer()
                       + "</vmstatus>";
 
         this.m_vm.m_guiCb = callback;
-        this.f_sendRequest(xmlstr, this.m_vm.f_respondRequestCallback);
+        return this.f_sendRequest(xmlstr, this.m_vm.f_respondRequestCallback);
     }
     /**
      * start a thread run in background to pull VM requests. call this function
@@ -337,7 +344,7 @@ function FT_businessLayer()
         var content = "<command><id>" + sid + "</id>" +
                     "<statement>vm stop '" + vmName + "'</statement></command>";
 
-        this.f_sendRequest(content, guiCb);
+        return this.f_sendRequest(content, guiCb);
     }
     /**
      * start VM request
@@ -348,7 +355,7 @@ function FT_businessLayer()
         var content = "<command><id>" + sid + "</id>" +
                     "<statement>vm start '" + vmName + "'</statement></command>";
 
-        this.f_sendRequest(content, guiCb);
+        return this.f_sendRequest(content, guiCb);
     }
     /**
      * restart VM request
@@ -359,7 +366,7 @@ function FT_businessLayer()
         var content = "<command><id>" + sid + "</id>" +
                     "<statement>vm restart '" + vmName + "'</statement></command>";
 
-        this.f_sendRequest(content, guiCb);
+        return this.f_sendRequest(content, guiCb);
     }
 }
 

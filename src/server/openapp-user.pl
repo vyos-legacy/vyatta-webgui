@@ -90,7 +90,7 @@ sub modify_user {
 
     print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
     print FILE "changetype: modify\n";
-    print FILE "replace: gidNumber\n";
+    print FILE "add: gidNumber\n";
     print FILE "gidNumber: ".$rights."\n";
     print FILE "\n";
 
@@ -166,7 +166,7 @@ sub list_user {
 		print "</name>";
 		
 		print "<rights></rights>";
-		print "<role></role>";
+		print "<role>user</role>";
 		
 		print "</user>";
 		$open_entry = 0;

@@ -221,7 +221,37 @@ function FT_confFormObj(name, callback, busLayer) {
     this.f_stopLoadVMData = function()
     {
     }
+	
+	//////////////////////////////////////////////////////////////////////////////////
+	//// form validation
+	//////////////////////////////////////////////////////////////////////////////////
+	this.f_checkEmail = function(email)
+	{
+		emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+		if (!email.match(emailRegex)) {			
+			return false;
+		}
+		return true;		
+	}
     
+	this.f_checkIP = function(ip)
+	{
+		ipRegex = /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/;
+		if (!ip.match(ipRegex)) {		
+			return false;
+		}
+		return true;			
+	}
+
+	this.f_checkHostname= function(hostname)
+	{
+		hnRegex = /^[a-zA-Z0-9.-]+$/;
+		if (!hostname.match(hnRegex)) {			
+			return false;
+		}
+		return true;			
+	}	
+	
 }
 
 FT_extend(FT_confFormObj, FT_confBaseObj);

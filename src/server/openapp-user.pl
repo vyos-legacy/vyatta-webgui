@@ -90,7 +90,7 @@ sub modify_user {
 
     print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
     print FILE "changetype: modify\n";
-    print FILE "replace: gidNumber\n";
+    print FILE "add: gidNumber\n";
     print FILE "gidNumber: ".$rights."\n";
     print FILE "\n";
 
@@ -140,6 +140,7 @@ sub list_user {
 
     #iterate by line
     my $open_entry = 0;
+    print "VERBATIM_OUTPUT\n";
     for $output (@output) {
 #	print $output;
 	my @o = split(' ',$output);
@@ -165,7 +166,7 @@ sub list_user {
 		print "</name>";
 		
 		print "<rights></rights>";
-		print "<role></role>";
+		print "<role>user</role>";
 		
 		print "</user>";
 		$open_entry = 0;
@@ -194,7 +195,7 @@ my @delete_user = ();
 #pull commands and call command
 GetOptions(
     "add=s"           => \$add,
-    "modify=s"        => \$modify,
+    "modify:s"        => \$modify,
     "password=s"      => \$password,
     "lastname=s"      => \$lastname,
     "firstname=s"     => \$firstname,
@@ -210,12 +211,12 @@ if ( defined $delete ) {
     del_user();
     exit 0;
 }
-if ( defined $add ) {
-    add_user();
-    exit 0;
-}
 if ( defined $modify ) {
     modify_user();
+    exit 0;
+}
+if ( defined $add ) {
+    add_user();
     exit 0;
 }
 if ( defined $list ) {

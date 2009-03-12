@@ -85,7 +85,7 @@ function FT_userBusObj(busObj)
                     thisObj.m_guiCb(evt);
                 }
             }
-
+/*
             if(cmdSent.indexOf('open-app user add ') > 0)
             {
                 /////////////////////////////////////////////////////////////
@@ -97,6 +97,7 @@ function FT_userBusObj(busObj)
                 thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                     thisObj.f_respondRequestCallbackWithoutGIUCB);
             }
+            */
         }
     }
 

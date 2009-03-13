@@ -122,6 +122,7 @@ function f_submit()
         else
         {
             g_utils.f_saveUserLoginId(event.m_value.m_sid);
+            g_utils.f_saveUserName(un);
             g_utils.f_gotoHomePage();
         }
     }

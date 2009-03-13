@@ -33,9 +33,19 @@ var g_utils =
         g_cookie.f_set(g_consObj.V_COOKIES_USER_ID, id, g_cookie.m_userNameExpire);
     },
 
+    f_saveUserName: function(username)
+    {
+        g_cookie.f_set(g_consObj.V_COOKIES_USER_NAME, username, g_cookie.m_userNameExpire);
+    },
+
     f_getUserLoginedID: function(cookieP /* cookieP is optional */)
     {
         return g_cookie.f_get(g_consObj.V_COOKIES_USER_ID);
+    },
+
+    f_getUserLoginedName: function()
+    {
+        return g_cookie.f_get(g_consObj.V_COOKIES_USER_NAME);
     },
 
     f_gotoHomePage: function()
@@ -84,13 +94,13 @@ var g_utils =
         document.getElementById('ft_popup_message').appendChild(div);
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
-                        
+
 
         var buttonsDiv = '';
         switch(type)
         {
             case 'confirm': // yes/no or apply/cancel
-                var cancelCb = cb == undefined ? "f_utilsPopupCancel()" : "f_utilsPopupCancel();" + cb;                            
+                var cancelCb = cb == undefined ? "f_utilsPopupCancel()" : "f_utilsPopupCancel();" + cb;
                 cb = cb == undefined ? "f_utilsPopupApply()" : "f_utilsPopupApply();" + cb;
                 buttonsDiv = '<div align="center"><img id="ft_popup_message_apply" src="images/ft_apply.PNG" ' +
                           'onclick="' + cb + '">&nbsp;&nbsp;' +
@@ -154,7 +164,7 @@ var g_utils =
                         '<td style="text-align:left;" width="300"><p ' +
                         'style="padding-left:5px; font:normal 10pt arial;">' +
                         message + '</p></td>';
-                break;						
+                break;
         }
 
         innerHtml += '</tr><tr height="28">' +

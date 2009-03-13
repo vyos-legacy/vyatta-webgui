@@ -85,6 +85,7 @@ function FT_userBusObj(busObj)
                     thisObj.m_guiCb(evt);
                 }
             }
+        }
     }
 
     /**
@@ -112,7 +113,9 @@ function FT_userBusObj(busObj)
      */
     this.f_setLogin = function(u, p, cb)
     {
-        thisObj.m_guiCb = cb;
+        if(cb != undefined)
+            thisObj.m_guiCb = cb;
+
         thisObj.m_loginUser = new FT_userRecObj(u, null, null, p, null, null, null, null);
 
         switch(u)
@@ -133,8 +136,16 @@ function FT_userBusObj(busObj)
      */
     this.f_isLogin = function()
     {
-        return g_cookie.f_get(g_consObj.V_COOKIES_USER_ID) ==
+        var isLogin = g_cookie.f_get(g_consObj.V_COOKIES_USER_ID) ==
                               g_consObj.V_NOT_FOUND ? false : true;
+
+        if(isLogin)
+        {
+            var name = g_cookie.f_get(g_consObj.V_COOKIES_USER_NAME);
+            this.f_setLogin(name, null, undefined);
+        }
+
+        return isLogin;
     }
 
     this.f_getUserFromLocal = function(username)

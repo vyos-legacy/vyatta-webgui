@@ -241,15 +241,15 @@ function FT_userBusObj(busObj)
 
         if(ur.m_pw != undefined && ur.m_pw.length > 0)
             xmlstr += "password '" + ur.m_pw + "' ";
-        else if(ur.m_last != undefined && ur.m_last.length > 0)
+        if(ur.m_last != undefined && ur.m_last.length > 0)
             xmlstr += "last '" + ur.m_last + "' ";
-        else if(ur.m_first != undefined && ur.m_first.length > 0)
+        if(ur.m_first != undefined && ur.m_first.length > 0)
             xmlstr += "first '" + ur.m_first + "' ";
-        else if(ur.m_email != undefined && ur.m_email.length > 0)
+        if(ur.m_email != undefined && ur.m_email.length > 0)
             xmlstr += "email '" + ur.m_email + "' ";
-        else if(ur.m_right != undefined && ur.m_email.length > 0)
+        if(ur.m_right != undefined && ur.m_email.length > 0)
             xmlstr += "rights '" + ur.m_right + "' ";
-        else if(ur.m_role != undefined && ur.m_role.llength > 0)
+        if(ur.m_role != undefined && ur.m_role.llength > 0)
             xmlstr += "role '" + ur.m_role + "'";
 
         xmlstr += "</statement></command>";

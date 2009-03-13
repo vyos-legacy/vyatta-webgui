@@ -62,10 +62,9 @@ function FT_confUserList(name, callback, busLayer)
             {
                 var ul = evt.m_value;
 
-                if(ul != undefined)
+                if(ul != undefined && ul.m_userList != null)
                 {
                     thisObj.f_clearViewRow();
-                    thisObj.m_userList = ul.m_userList;
                     ul = ul.m_userList;
 
                     for(var i=0; i<ul.length; i++)

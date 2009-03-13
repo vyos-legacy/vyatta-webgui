@@ -110,6 +110,13 @@ function FT_confDashboard(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
+// for testing
+        var cb = function(evt)
+        {
+            //alert('got user list ' + evt);
+        }
+        g_busObj.f_getUserListFromServer(cb);
+
         var btns = [['Update', "f_dbHandleUpdate('vm')", 'Update selected VM(s)'],
                     ['Cancel', "f_dbHandleCancel()", '']];
         this.m_buttons = this.f_createButtons(btns);
@@ -127,7 +134,7 @@ function f_dbHandleUpdate(vm)
         // for testing
         var cb = function(evt)
         {
-            alert('got user list ' + evt);
+            //alert('got user list ' + evt);
         }
         var us = new FT_userRecObj('username'+(counter++),
                     'lastn', 'firstn', 'pw', 'rolen', 'type',
@@ -135,7 +142,7 @@ function f_dbHandleUpdate(vm)
         g_busObj.f_addUserToServer(us, cb);
         //g_busObj.f_getUserListFromServer(cb);
 }
-var counter = 0;
+var counter = 110;
 
 function f_dbHandleCancel()
 {

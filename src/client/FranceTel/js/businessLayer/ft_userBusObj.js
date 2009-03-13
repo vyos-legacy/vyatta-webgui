@@ -223,7 +223,7 @@ function FT_userBusObj(busObj)
                               thisObj.f_respondRequestCallback);
     }
 
-    this.f_modifyUser(userRec, guiCb)
+    this.f_modifyUser = function(userRec, guiCb)
     {
         thisObj.m_guiCb = guiCb;
 

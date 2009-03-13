@@ -35,7 +35,7 @@ function FT_confUserList(name, callback, busLayer)
 
         cols[0] = this.f_createColumn('Name', 200, 'text', '6');
         cols[1] = this.f_createColumn('Login', 150, 'text', '6');
-        cols[2] = this.f_createColumn('Email', 100, 'checkbox', '40');
+        cols[2] = this.f_createColumn('Email', 100, 'button', '35');
         cols[3] = this.f_createColumn('Delete', 100, 'button', '35');
 
         return cols;

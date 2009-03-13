@@ -28,7 +28,7 @@
                             <a href="#" onclick="home()"><img src="images/Logo_OBS-Web.gif" alt="logo Orange Business Services" border="0"></a>
                         </div>
                         <div id="lang_bar">
-                            <select id="ft_language" name="language" size="1" STYLE="width: 87px; background-color: #EFEFEF; font-size: 8pt; border-style: solid; margin-top: 0.5em; border-color: #CCC;" onChange="onLanguageChange();">
+                            <select id="ft_language" name="language" size="1" STYLE="width: 87px; background-color: #EFEFEF; font-size: 8pt; border-style: solid; margin-top: 0.5em; border-color: #CCC;" onChange="f_onLanguageChange();">
                                 <option value="en" selected="selected">English</option>
                                 <option value="fr">Fran�ais</option>
                             </select>
@@ -50,19 +50,19 @@
                                         <table id="ft_table" align="center" width="100%">
                                             <tbody>
                                                 <tr>
-                                                    <td class="alignRight">
-                                                        User name:
+                                                    <td class="alignLeft">
+                                                        User name
                                                     </td>
                                                     <td class="alignLeft">
-                                                        <input id="username" name="username" type="text" onkeydown="f_LoginKeyPressHandler(event)">
+                                                        <input id="username" name="username" size="64" type="text" onkeydown="f_LoginKeyPressHandler(event)">
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="alignRight">
-                                                        Password:
+                                                    <td class="alignLeft">
+                                                        Password
                                                     </td>
                                                     <td class="alignLeft">
-                                                        <input id="password" name="password" type="password" onkeydown="f_LoginKeyPressHandler(event)">
+                                                        <input id="password" name="password" size="64" type="password" onkeydown="f_LoginKeyPressHandler(event)">
                                                     </td>
                                                 </tr>
                                             </tbody>

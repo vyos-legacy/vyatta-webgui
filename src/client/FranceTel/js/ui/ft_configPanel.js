@@ -137,9 +137,12 @@ function FT_configPanel()
                 }
                 thisObj.m_selectObj = new FT_confUserList('db', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
-                
-                
             case VYA.FT_CONST.DOM_3_NAV_SUB_USER_RIGHT_ID:
+                var dbcb = function(){
+
+                }
+                thisObj.m_selectObj = new FT_confUserRight('db', dbcb, g_busObj);
+                return thisObj.m_selectObj.f_getConfigurationPage();
                 
             case VYA.FT_CONST.DOM_3_NAV_SUB_HARDWARE_ID:
                 var hwCb = function(){
@@ -156,7 +159,10 @@ function FT_configPanel()
                 return thisObj.m_selectObj.f_getConfigurationPage();			
 			
             case VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID:
-                thisObj.m_selectObj	= new FT_confEmptyComponent();			
+                 var dbcb = function(){
+
+                }
+                thisObj.m_selectObj = new FT_confRestore('db', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
                 
             case VYA.FT_CONST.DOM_3_NAV_SUB_EMAIL_SRV_ID:

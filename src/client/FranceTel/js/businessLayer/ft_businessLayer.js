@@ -205,9 +205,20 @@ function FT_businessLayer()
         return this.f_sendRequest(xmlstr, this.m_userObj.f_respondRequestCallback);
     }
 
+    /**
+     *
+     */
     this.f_getLoginUserObj = function()
     {
         return this.m_userObj;
+    }
+
+    /**
+     *
+     */
+    this.f_getLoginUserRec = function()
+    {
+        return this.m_userObj.m_loginUser;
     }
 
     /**
@@ -380,6 +391,14 @@ function FT_businessLayer()
                     "<statement>vm restart '" + vmName + "'</statement></command>";
 
         return this.f_sendRequest(content, guiCb);
+    }
+
+    /**
+     *
+     */
+    this.f_getVMBackupListFromServer = function(guiCb)
+    {
+
     }
 }
 

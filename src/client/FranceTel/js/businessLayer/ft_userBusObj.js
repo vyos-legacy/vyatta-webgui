@@ -85,20 +85,6 @@ function FT_userBusObj(busObj)
                     thisObj.m_guiCb(evt);
                 }
             }
-/*
-            if(cmdSent.indexOf('open-app user add ') > 0)
-            {
-                /////////////////////////////////////////////////////////////
-                // refresh local user list
-                sid = g_utils.f_getUserLoginedID();
-                var xmlstr = "<command><id>" + sid + "</id><statement mode='op'>" +
-                              "open-app user list</statement></command>";
-
-                thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                    thisObj.f_respondRequestCallbackWithoutGIUCB);
-            }
-            */
-        }
     }
 
     /**

@@ -191,32 +191,42 @@ function FT_confBaseObj(name, callback, busLayer)
             switch(btn[0])
             {
                 case 'AddUser':
-                innerHtml += '<td width="110">' +
+                innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<img src="images/add_user.PNG" name="addUser" ' +
                     'style="cursor:pointer;" ' +
                     'value="addUser" onclick="' + btn[1] +
-                    '></div></td>';
+                    '"></div></td>';
                 break;
                 case 'Cancel':
-                    innerHtml += '<td width="110">' +
+                    innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<img src="images/ft_cancel.PNG" name="cancel" ' +
                     'style="cursor:pointer;" ' +
                     'value="Cancel" onclick="' + btn[1] +
-                    '></div></td>';
+                    '"></div></td>';
+                break;
+                case 'Apply':
+                    innerHtml += '<td>' +
+                    '<div title="' + btn[2] + '" style="height:30px; ' +
+                    'padding-top:15px;" >' +
+                    '<img src="images/ft_apply.PNG" name="apply" ' +
+                    'style="cursor:pointer;" ' +
+                    'value="apply" onclick="' + btn[1] +
+                    '"></div></td>';
                 break;
                 default:
-                innerHtml += '<td width="' + btn[0].length * 18 +
-                        '"><div style="height:30px; ' +
+                    innerHtml += '<td><div style="height:30px; ' +
                         'padding-top:15px;" >' +
                         '<input type="button" name="' + btn[0] +
                         '" value="' + btn[0] + '" onclick="' +
                         btn[1] + '" title="' + btn[2] + '">' +
                         '</div></td>';
+                break;
             }
+            innerHtml += '<td><div style="padding-left:20px">&nbsp;</div></td>';
         }
 
         innerHtml += '</tr></tbody></table>';
@@ -317,6 +327,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 imgSrc = enable ? 'images/vm_start.PNG' : 'images/vm_start2.PNG';
                 break;
             case 'deleteUser':
+            case 'delete':
                 imgSrc = 'images/ft_delete.PNG';
         }
 

@@ -8,6 +8,7 @@
 function FT_confUserList(name, callback, busLayer)
 {
     this.thisObjName = 'FT_confUserList';
+	this.m_buttons = undefined;
     var thisObj = this;
 
     /**
@@ -47,7 +48,9 @@ function FT_confUserList(name, callback, busLayer)
         thisObj.f_removeDivChildren(thisObj.m_body);
         thisObj.m_div.appendChild(thisObj.m_header);
         thisObj.m_div.appendChild(thisObj.m_body);
-        thisObj.m_div.appendChild(thisObj.m_buttons);
+		if (thisObj.m_buttons != undefined) {
+			thisObj.m_div.appendChild(thisObj.m_buttons);
+		}
     }
 
     this.f_loadVMData = function()
@@ -107,10 +110,13 @@ function FT_confUserList(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
-        var btns = [['AddUser', 'f_userListAddUserCallback()', 'Create new user account']];
-        this.m_buttons = this.f_createButtons(btns);
-
-        return [this.m_header, this.m_body, this.m_buttons];
+        if (g_roleManagerObj.f_isInstaller()) {
+			return [this.m_header, this.m_body];
+		} else {
+			var btns = [['AddUser', 'f_userListAddUserCallback()', 'Create new user account']];
+			this.m_buttons = this.f_createButtons(btns);
+			return [this.m_header, this.m_body, this.m_buttons];
+		}
     }
 }
 FT_extend(FT_confUserList, FT_confBaseObj);

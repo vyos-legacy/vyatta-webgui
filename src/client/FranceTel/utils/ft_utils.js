@@ -70,7 +70,7 @@ var g_utils =
         body.className = 'ft_default_cursor';
     },
 
-    f_popupMessage: function(message, type, title, cb)
+    f_popupMessage: function(message, type, title, cb, ccb)
     {
         var div = document.createElement('div');
         div.setAttribute('id', 'ft_popup_div');
@@ -100,7 +100,7 @@ var g_utils =
         switch(type)
         {
             case 'confirm': // yes/no or apply/cancel
-                var cancelCb = cb == undefined ? "f_utilsPopupCancel()" : "f_utilsPopupCancel();" + cb;
+                var cancelCb = ccb == undefined ? "f_utilsPopupCancel()" : "f_utilsPopupCancel();" + ccb;
                 cb = cb == undefined ? "f_utilsPopupApply()" : "f_utilsPopupApply();" + cb;
                 buttonsDiv = '<div align="center"><img id="ft_popup_message_apply" src="images/ft_apply.PNG" ' +
                           'onclick="' + cb + '">&nbsp;&nbsp;' +

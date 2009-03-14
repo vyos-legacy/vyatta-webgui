@@ -189,6 +189,7 @@ sub list_user {
 
     #iterate by line
     my $open_entry = 0;
+    my $hash_arr = {};
     print "VERBATIM_OUTPUT\n";
     for $output (@output) {
 #	print $output;
@@ -196,33 +197,42 @@ sub list_user {
 	if (defined $o[0] && defined $o[1]) {
 	    if ($o[0] eq "uid:") {
 		$open_entry = 1;
-		print "<user name='$o[1]'>";
+		$hash_arr->{'name'} = $o[1];
 	    }
 	    if ($o[0] eq 'mail:') {
-		print "<email>$o[1]</email>";
+		$hash_arr->{'mail'} = $o[1];
 	    }
 	    #The assumption is that mail is the last entry per user
 #	    print "<first>$o[1]</first>";
 	    if ($o[0] eq 'sn:') {
-		print "<name>";
-		print "<last>$o[1]</last>";
+		$hash_arr->{'last'} = $o[1];
 	    }
 	    if ($o[0] eq 'cn:') {
-		print "<first>$o[1]</first>";
+		$hash_arr->{'first'} = $o[1];
 	    }
 	    
 	    my @groups;
 	    if ($open_entry == 1 && $o[0] eq '#') {
+		#now squirt out everything.
+		print "<user name=$hash_arr->{'name'}>";
+		print "<name>";
+		print "<first>$hash_arr->{'first'}</first>";
+		print "<last>$hash_arr->{'last'}</last>";
 		print "</name>";
-
-		#use system call to retrieve rights
+		print "<email>$hash_arr->{'mail'}</email>";
 		print "<rights>";
 		@groups = system("id -G $list");
 		#will need to convert to strings.
 		print "</rights>";
 		print "<role>user</role>";
-		
 		print "</user>";
+
+		#let's clear the entry now
+		$hash_arr->{'name'} = "";
+		$hash_arr->{'first'} = "";
+		$hash_arr->{'last'} = "";
+		$hash_arr->{'mail'} = "";
+
 		$open_entry = 0;
 	    }
 	}

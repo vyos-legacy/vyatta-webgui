@@ -40,14 +40,12 @@ my ($list,$delete,$modify,$add,$password,$lastname,$firstname,$email,$role,$righ
 sub add_user {
     #write temp file.
 
+    my $conf_file = "/tmp/user-".$$;
+#    print "$conf_file\n";
+    open(FILE, ">$conf_file") or die "Can't open temp user file"; 
+	
     if (defined($password) && $password ne NULL && defined($email) && $email ne NULL && defined($lastname) && $lastname ne NULL && defined($firstname) && $firstname ne NULL) {
 
-	my $conf_file = "/tmp/user-".$$;
-	
-#    print "$conf_file\n";
-	
-	open(FILE, ">$conf_file") or die "Can't open temp user file"; 
-	
 	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
 	print FILE "changetype: modify\n";
 	print FILE "replace: userPassword\n";
@@ -71,20 +69,23 @@ sub add_user {
 	close FILE;
 	
 	#first add the user
-	system("ldapadduser $add vyattacfg");
+	system("ldapadduser $add operator");
 	
 	#post message to all registered VMs:
 	#POST /notifications/users/[username]
 	
-	#now modify the account
-	system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
-	#clean up temp file here.
-	unlink($conf_file);
     }
     elsif (defined($rights) && $rights ne NULL){
 	#modify rights on local system
-	system("usermod -a -G $rights $add");
+	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+	print FILE "changetype: modify\n";
+	print FILE "add: member\n";
+	print FILE "member: ".$rights."\n";
     }
+    #now modify the account
+    system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
+    #clean up temp file here.
+    unlink($conf_file);
 }
 
 #
@@ -136,16 +137,21 @@ sub modify_user {
 sub del_user {
     # post notification to VMs: 
     # DELETE /notifications/users/[username]
-    my @groups;
-    my $grp;
-    if ($rights != NULL) {
-	#how to remove???
-	#get group list and modify
-	@groups = system("id -G $delete");
-	#now remove $rights from $groups--probably need to eat a comma....
-	$grp = $groups[0];
-	$grp =~ s/$rights/''/; 
-	system("usermod -G $grp $delete");
+    if (defined($rights) && $rights ne NULL) {
+	my $conf_file = "/tmp/user-".$$;
+#    print "$conf_file\n";
+	open(FILE, ">$conf_file") or die "Can't open temp user file"; 
+	
+	#modify rights on local system
+	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+	print FILE "changetype: modify\n";
+	print FILE "delete: member\n";
+	print FILE "member: ".$rights."\n";
+
+	close FILE;
+	
+	#first add the user
+	system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
     }
     else {
 	system("ldapdeleteuser $delete");

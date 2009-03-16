@@ -110,13 +110,6 @@ function FT_confDashboard(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
-// for testing
-        var cb = function(evt)
-        {
-            //alert('got user list ' + evt);
-        }
-        g_busObj.f_getUserListFromServer(cb);
-
         var btns = [['Update', "f_dbHandleUpdate('vm')", 'Update selected VM(s)'],
                     ['Cancel', "f_dbHandleCancel()", '']];
         this.m_buttons = this.f_createButtons(btns);
@@ -129,29 +122,8 @@ FT_extend(FT_confDashboard, FT_confBaseObj);
 
 function f_dbHandleUpdate(vm)
 {
-    g_utils.f_popupMessage('testing tseting testing', 'confirm');
-    /////////////////////////////////////////////////////
-        // for testing
-        var cb = function(evt)
-        {
-            //alert('got user list ' + evt);
-        }
-        var us = new FT_userRecObj('username'+(counter++),
-                    'lastn', 'firstn', 'pw', 'rolen', 'type',
-                    'email@add.com', 'right')
-        g_busObj.f_addUserToServer(us, cb);
-        //g_busObj.f_getUserListFromServer(cb);
 }
-var counter = 110;
 
 function f_dbHandleCancel()
 {
-    /////////////////////////////////////////////////////
-        // for testing
-        var cb = function(evt)
-        {
-            alert('got user list ' + evt);
-        }
-        g_busObj.f_deleteUserFromServer('username'+counter, cb);
-        //g_busObj.f_getUserListFromServer(cb);
 }

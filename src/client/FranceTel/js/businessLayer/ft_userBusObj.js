@@ -13,7 +13,7 @@ function FT_userRecObj(user, last, first, pw, role, type, email, right)
     this.m_email = email;
     this.m_pw = pw;
     this.m_role = role; // user role: admin=0, installer=1, user=2
-    this.m_right = right;
+    this.m_rights = right; // an array of unique vm id
     this.m_type = type;    // add, change, delete, list
 
     /**
@@ -31,6 +31,15 @@ function FT_userRecObj(user, last, first, pw, role, type, email, right)
             if(node.childNodes[i].nodeName == 'last')
                 this.m_last = node.childNodes[i].firstChild.nodeValue;
         }
+    }
+
+    this.f_setUserRight = function(childNode)
+    {
+        if(childNode == undefined) return;
+        var val = childNode.nodeValue;
+        val = val.replace('\n', '');
+
+        this.m_rights = val.split(" ");
     }
 }
 
@@ -212,10 +221,27 @@ function FT_userBusObj(busObj)
         xmlstr += "' last '" + ur.m_last;
         xmlstr += "' first '" + ur.m_first;
         xmlstr += "' email '" + ur.m_email;
-        xmlstr += "' rights '" + ur.m_right;
+        xmlstr += "' rights '" + ur.m_rights;
         xmlstr += "' role '" + ur.m_role + "'";
 
         xmlstr += "</statement></command>";
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_modifyUserRight = function(userRightCmd, guiCb)
+    {
+        var r = userRightCmd;
+        if(r == undefined || r.length == 0) return;
+
+        thisObj.m_guiCb = guiCb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>";
+
+        for(var i=0; i<r.length; i++)
+            xmlstr += "<statement>open-app user " + r[i] + "</statement>\n";
+
+        xmlstr += "</command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
@@ -244,8 +270,8 @@ function FT_userBusObj(busObj)
             xmlstr += "first '" + ur.m_first + "' ";
         if(ur.m_email != undefined && ur.m_email.length > 0)
             xmlstr += "email '" + ur.m_email + "' ";
-        if(ur.m_right != undefined && ur.m_email.length > 0)
-            xmlstr += "rights '" + ur.m_right + "' ";
+        if(ur.m_rights != undefined && ur.m_email.length > 0)
+            xmlstr += "rights '" + ur.m_rights + "' ";
         if(ur.m_role != undefined && ur.m_role.llength > 0)
             xmlstr += "role '" + ur.m_role + "'";
 
@@ -315,18 +341,20 @@ function FT_userBusObj(busObj)
             {
                 ul[c] = new FT_userRecObj(val.getAttribute('name'));
 
+                
+
                 for(var j=0; j<val.childNodes.length; j++)
                 {
                     if(val.childNodes[j].nodeName == 'email' &&
                         val.childNodes[j].firstChild != undefined)
                         ul[c].m_email = val.childNodes[j].firstChild.nodeValue;
-                    if(val.childNodes[j].nodeName == 'role' &&
+                    else if(val.childNodes[j].nodeName == 'role' &&
                         val.childNodes[j].firstChild != undefined)
                         ul[c].m_role = val.childNodes[j].firstChild.nodeValue;
-                    if(val.childNodes[j].nodeName == 'right' &&
+                    else if(val.childNodes[j].nodeName == 'rights' &&
                         val.childNodes[j].firstChild != undefined)
-                        ul[c].m_right = val.childNodes[j].firstChild.nodeValue;
-                    if(val.childNodes[j].nodeName == 'name')
+                        ul[c].f_setUserRight(val.childNodes[j].firstChild);
+                    else if(val.childNodes[j].nodeName == 'name')
                         ul[c].f_setUserName(val.childNodes[j]);
                 }
                 c++;

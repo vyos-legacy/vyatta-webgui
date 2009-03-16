@@ -275,12 +275,17 @@ function FT_confBaseObj(name, callback, busLayer)
         }
     }
 
-    this.f_renderCheckbox = function(val)
+    /**
+     * @param val - check or un-check the checkbox
+     * @param elId - this element id
+     * @param cb = callback
+     */
+    this.f_renderCheckbox = function(val, elId, cb)
     {
-        if(val == 'yes')
-            return '<input type="checkbox" checked/>';
-        else
-            return '<input type="checkbox"/>';
+        var checked = val == 'yes' ? 'checked' : '';
+
+        return '<input id="' + elId + '" type="checkbox" ' + checked +
+                ' onclick="' + cb + '"/>';
     }
 
     this.f_renderCombobox = function(options, val)

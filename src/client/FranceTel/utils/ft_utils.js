@@ -100,6 +100,11 @@ var g_utils =
         switch(type)
         {
             case 'confirm': // yes/no or apply/cancel
+                if(title != undefined)
+                {
+                    div.style.height = '100px';
+                    message = '<b>' + title + '</b><br><br>' + message;
+                }
                 var cancelCb = cb == undefined ? "f_utilsPopupCancel()" : "f_utilsPopupCancel();" + cb;
                 cb = cb == undefined ? "f_utilsPopupApply()" : "f_utilsPopupApply();" + cb;
                 buttonsDiv = '<div align="center"><img id="ft_popup_message_apply" src="images/ft_apply.PNG" ' +
@@ -180,6 +185,17 @@ var g_utils =
         var div = document.getElementById('ft_popup_message');
         var cDiv = document.getElementById('ft_popup_div');
         div.removeChild(cDiv);
+    },
+
+    f_replace: function(str, expOld, expNew)
+    {
+        if(str != undefined && str.search != undefined)
+        {
+            while(str.search(expOld) > -1)
+                str = str.replace(expOld, expNew);
+        }
+
+        return str;
     }
 };
 

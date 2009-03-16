@@ -263,6 +263,11 @@ function FT_businessLayer()
         thisObj.m_userObj.f_modifyUser(userRec, guiCb);
     }
 
+    this.f_modifyUserRightToServer = function(userRightCmd, guiCb)
+    {
+        thisObj.m_userObj.f_modifyUserRight(userRightCmd, guiCb);
+    }
+
     /**
      * delete user from server.
      * @param user - username to be deleted
@@ -285,6 +290,18 @@ function FT_businessLayer()
     // VM supported functions:
     // f_getVMSummaryDataFromServer() - get only the vm name and number of vms for current logon user.
     // f_getVMDataFromServer()
+
+    /**
+     */
+    this.f_getVmObj = function()
+    {
+        return this.m_vm;
+    }
+
+    this.f_getVmRecObj = function()
+    {
+        return this.m_vm.m_vmRecObj;
+    }
 
     /**
      * GUI layer call this function to get summary VM data, such as number

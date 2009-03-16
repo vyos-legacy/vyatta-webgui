@@ -214,7 +214,7 @@ sub list_user {
 	    my @groups;
 	    if ($open_entry == 1 && $o[0] eq '#') {
 		#now squirt out everything.
-		print "<user name=$hash_arr->{'name'}>";
+		print "<user name='$hash_arr->{'name'}'>";
 		print "<name>";
 		print "<first>$hash_arr->{'first'}</first>";
 		print "<last>$hash_arr->{'last'}</last>";

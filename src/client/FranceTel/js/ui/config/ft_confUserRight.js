@@ -26,6 +26,14 @@ function FT_confUserRight(name, callback, busLayer)
         return this.f_getNewPanelDiv(this.f_init());
     }
 
+    this.f_showThisVM = function(vmName)
+    {
+        if(vmName == 'OpenAppliance' || vmName == 'router')
+            return false;
+
+        return true;
+    }
+
     this.f_createColumns = function()
     {
         var cols = [];
@@ -36,7 +44,8 @@ function FT_confUserRight(name, callback, busLayer)
         var vmIndex = 1;
         for(var i=0; i<vm.length; i++)
         {
-            if(vm[i].m_name == 'OpenAppliance') continue;
+            if(!this.f_showThisVM(vm[i].m_name))
+                continue;
 
             cols[vmIndex++] = this.f_createColumn(vm[i].m_name, 80, 'checkbox', '35');
         }
@@ -53,7 +62,7 @@ function FT_confUserRight(name, callback, busLayer)
         thisObj.m_div.appendChild(thisObj.m_buttons);
     }
 
-    this.f_loadVMData = function()
+    this.f_loadData = function()
     {
         var thisObj = this;
         var hd = this.f_createColumns();
@@ -85,7 +94,8 @@ function FT_confUserRight(name, callback, busLayer)
                         var uiData = [];
                         for(var j=0; j<vm.length; j++)
                         {
-                            if(vm[j].m_name == 'OpenAppliance') continue;
+                            if(!thisObj.f_showThisVM(vm[j].m_name))
+                                continue;
 
                             var vn = g_utils.f_replace(vm[j].m_name, " ", "");
                             var right = thisObj.f_createUserRightsCheckbox(
@@ -116,7 +126,6 @@ function FT_confUserRight(name, callback, busLayer)
 
     this.f_stopLoadVMData = function()
     {
-        this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
     }
 
     this.f_createUserRightsCheckbox = function(vmName, userName, ul)
@@ -136,6 +145,9 @@ function FT_confUserRight(name, callback, busLayer)
             return [thisObj.f_renderCheckbox('no', userName+vmName,
                             'f_userRightCheckboxClick(this)'), 'no'];
         }
+        else if(ul.m_rights == undefined)
+            return [thisObj.f_renderCheckbox('no', userName+vmName,
+                            'f_userRightCheckboxClick(this)'), 'no'];
 
         return null;
     }
@@ -165,7 +177,10 @@ function FT_confUserRight(name, callback, busLayer)
 
         var cb = function(evt)
         {
-            alert('gout it')
+            if(evt != undefined && !evt.f_isError())
+                thisObj.f_loadData();
+            else if(evt != undefined && evt.f_isError())
+                alert(evt.m_errMsg);
         }
 
         if(cmdStr.length > 0)
@@ -194,7 +209,7 @@ function FT_confUserRight(name, callback, busLayer)
         var hd = this.f_createColumns();
         this.m_header = this.f_createGridHeader(hd);
         this.m_body = this.f_createGridView(hd);
-        this.f_loadVMData();
+        this.f_loadData();
 
         var btns = [['Apply', "f_userRightHandleApply()", ''],
                     ['Cancel', "f_userRightHandleCancel()", '']];

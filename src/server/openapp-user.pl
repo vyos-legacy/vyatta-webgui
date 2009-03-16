@@ -53,6 +53,11 @@ sub add_user {
 	print FILE "\n";
 	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
 	print FILE "changetype: modify\n";
+	print FILE "replace: description\n";
+	print FILE "description: user\n";
+	print FILE "\n";
+	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+	print FILE "changetype: modify\n";
 	print FILE "replace: mail\n";
 	print FILE "mail: ".$email."\n";
 	print FILE "\n";
@@ -76,11 +81,16 @@ sub add_user {
 	
     }
     elsif (defined($rights) && $rights ne NULL){
-	#modify rights on local system
-	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
-	print FILE "changetype: modify\n";
-	print FILE "add: member\n";
-	print FILE "member: ".$rights."\n";
+	#need to validate entry here!
+	
+	#hardwired for now
+	if ($rights eq 'jvm' || $rights eq 'vyatta' || $rights eq 'pbx') {
+	    #modify rights on local system
+	    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+	    print FILE "changetype: modify\n";
+	    print FILE "add: memberUid\n";
+	    print FILE "memberUid: ".$rights."\n";
+	}
     }
     #now modify the account
     system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
@@ -143,10 +153,10 @@ sub del_user {
 	open(FILE, ">$conf_file") or die "Can't open temp user file"; 
 	
 	#modify rights on local system
-	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
+	print FILE "dn: uid=".$delete.",ou=People,dc=localhost,dc=localdomain\n";
 	print FILE "changetype: modify\n";
-	print FILE "delete: member\n";
-	print FILE "member: ".$rights."\n";
+	print FILE "delete: memberUid\n";
+	print FILE "memberUid: ".$rights."\n";
 
 	close FILE;
 	
@@ -210,6 +220,12 @@ sub list_user {
 	    if ($o[0] eq 'cn:') {
 		$hash_arr->{'first'} = $o[1];
 	    }
+	    if ($o[0] eq 'memberUid:') {
+		$hash_arr->{'rights'} .= "<rights>$o[1]</rights>";
+	    }
+	    if ($o[0] eq 'description:') {
+		$hash_arr->{'role'} = $o[1];
+	    }
 	    
 	    my @groups;
 	    if ($open_entry == 1 && $o[0] eq '#') {
@@ -220,11 +236,8 @@ sub list_user {
 		print "<last>$hash_arr->{'last'}</last>";
 		print "</name>";
 		print "<email>$hash_arr->{'mail'}</email>";
-		print "<rights>";
-		@groups = system("id -G $list");
-		#will need to convert to strings.
-		print "</rights>";
-		print "<role>user</role>";
+		print "$hash_arr->{'rights'}";
+		print "<role>$hash_arr->{'role'}</role>";
 		print "</user>";
 
 		#let's clear the entry now

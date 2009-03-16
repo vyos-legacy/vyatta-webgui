@@ -122,6 +122,7 @@ FT_extend(FT_confDashboard, FT_confBaseObj);
 
 function f_dbHandleUpdate(vm)
 {
+    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_SCHED_UPDATE_ID);	
 }
 
 function f_dbHandleCancel()

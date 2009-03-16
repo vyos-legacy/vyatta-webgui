@@ -36,11 +36,18 @@ function FT_mainFrame(){
 		welcome.style.display = 'none';
 		var login = document.getElementById(VYA.FT_CONST.DOM_LOGIN_CONTAINER_ID);
 		login.style.display = 'block';		
+        var e = document.getElementById('welcome_admin');
+		e.innerHTML = 'welcome <b><font color="#FF6600">guest</font></b>, please sign in to the Open Appliance admin service';	
 	}
 	
 	this.f_hideLogin = function () {
 		var login = document.getElementById(VYA.FT_CONST.DOM_LOGIN_CONTAINER_ID);
 		login.style.display = 'none';
+        var e = document.getElementById('welcome_admin');
+		var admin = g_busObj.f_getLoginUserRec().m_user;
+		//alert('admin: ' + admin + ' loginObj: ' + g_busObj.f_getLoginUserRec());
+		e.innerHTML = 'welcome <b><font color="#FF6600">' + 
+		    admin + '</font></b>, you are connected to the Open Appliance admin service';		
 	}
 	
 	this.f_logout = function() {

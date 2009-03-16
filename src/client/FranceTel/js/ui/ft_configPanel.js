@@ -42,22 +42,26 @@ function FT_configPanel()
     
     this.f_initDynSubMenu = function()
     {
-        var aMenu = document.getElementById(VYA.FT_CONST.DOM_DYN_SUB_MENU_ID);
-        aMenu.parentNode.removeChild(aMenu);
-        aMenu = f_elemGetFirstChildByNodeName(aMenu, 'UL'); //Get to the UL portion.	
-        thisObj.m_dynSubMenu = new FT_lookupTable();
-        //now go through the LI entries, and find out the id, desc from the HREF, 
-        //and add the id, desc to the lookup
-        for (var i = 0; aMenu.childNodes[i]; i++) { //This is @ LI node
-            var sid = f_elemGetAttribute(aMenu.childNodes[i], 'id');
-            if ((sid != undefined) && (sid != null)) {
-                var nodeHref = f_elemGetFirstChildByNodeName(aMenu.childNodes[i], 'A');
-                if (nodeHref != null) {
-                    var desc = nodeHref.getAttribute('desc');
-                    thisObj.m_dynSubMenu.f_put(sid, desc);
-                }
-            }
-        }
+        var dynMenu = document.getElementById(VYA.FT_CONST.DOM_DYN_SUB_MENU_ID);
+        dynMenu.parentNode.removeChild(dynMenu);
+		
+		var menus = dynMenu.getElementsByTagName('UL');
+        thisObj.m_dynSubMenu = new FT_lookupTable();		
+		for (var k = 0; k < menus.length; k++) {			
+			var aMenu = menus[k]; //Get to the UL portion.				
+			//now go through the LI entries, and find out the id, desc from the HREF, 
+			//and add the id, desc to the lookup
+			for (var i = 0; aMenu.childNodes[i]; i++) { //This is @ LI node
+				var sid = f_elemGetAttribute(aMenu.childNodes[i], 'id');
+				if ((sid != undefined) && (sid != null)) {
+					var nodeHref = f_elemGetFirstChildByNodeName(aMenu.childNodes[i], 'A');
+					if (nodeHref != null) {
+						var desc = nodeHref.getAttribute('desc');
+						thisObj.m_dynSubMenu.f_put(sid, desc);
+					}
+				}
+			}
+		}
     }
     
     this.f_showHeader = function(id, desc)
@@ -121,6 +125,13 @@ function FT_configPanel()
                 }
                 thisObj.m_selectObj = new FT_confVMUpdates('db', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
+				
+            case VYA.FT_CONST.DOM_3_NAV_SUB_SCHED_UPDATE_ID:
+                var mpCb = function(){
+                }
+                thisObj.m_selectObj = new FT_confSchedUpdate('Update', mpCb, g_busObj);
+                thisObj.m_selectObj.f_init();
+                return thisObj.m_selectObj.f_getConfigurationPage();							
                
             case VYA.FT_CONST.DOM_3_NAV_SUB_RESTART_ID:
                 var dbcb = function(){
@@ -130,7 +141,12 @@ function FT_configPanel()
                 return thisObj.m_selectObj.f_getConfigurationPage();
                 
             case VYA.FT_CONST.DOM_3_NAV_SUB_SUBCRIBE_ID:
-                
+                var mpCb = function(){
+                }
+                thisObj.m_selectObj = new FT_confSubscribe('Subscription', mpCb, g_busObj);
+                thisObj.m_selectObj.f_init();
+                return thisObj.m_selectObj.f_getConfigurationPage();
+				                
             case VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID:
                 var dbcb = function(){
                 

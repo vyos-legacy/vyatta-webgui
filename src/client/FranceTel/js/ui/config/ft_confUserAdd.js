@@ -131,12 +131,13 @@ function FT_confUserAdd (name, callback, busLayer)
 		var error = 'Please fix the following errors:<br>';
 		var errorInner = '';
 		var valid = true;
+				
 		if (thisObj.form.conf_user_add_username.value.trim().length <=0 ) {
-			errorInner = errorInner + '<li style="list-style-type:square;">username cannot be empty</li>';
+			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">username cannot be empty</li>';
 			valid = false;
 		}
 		if (!thisObj.f_checkEmail(thisObj.form.conf_user_add_email.value.trim())) {
-			errorInner = errorInner + '<li style="list-style-type:square">email address: ' +
+			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">email address: ' +
 			   thisObj.form.conf_user_add_email.value + ' is invalid</li>';
 			valid = false;
 		}

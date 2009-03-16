@@ -59,6 +59,13 @@
 	margin-left: 30px;
 }
 
+.v_form_input_no_left_margin {
+	color: #444444;
+	display: block;
+	border: 1px solid #CCCCCC;
+	margin-left: 1px;
+}
+
 .v_button_container {
 	clear: both;
 }

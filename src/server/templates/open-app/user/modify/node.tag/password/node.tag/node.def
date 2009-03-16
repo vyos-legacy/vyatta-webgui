@@ -1,1 +1,1 @@
-run: sudo perl /opt/vyatta/sbin/openapp-user.pl --modify --password "$6"
+run: sudo perl /opt/vyatta/sbin/openapp-user.pl --modify "$4" --password "$6"

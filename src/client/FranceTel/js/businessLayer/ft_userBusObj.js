@@ -33,13 +33,14 @@ function FT_userRecObj(user, last, first, pw, role, type, email, right)
         }
     }
 
-    this.f_setUserRight = function(childNode)
+    this.f_setUserRight = function(nodeValue)
     {
-        if(childNode == undefined) return;
-        var val = childNode.nodeValue;
-        val = val.replace('\n', '');
+        if(nodeValue == undefined) return;
 
-        this.m_rights = val.split(" ");
+        if(this.m_rights == undefined)
+            this.m_rights = [];
+
+        this.m_rights[this.m_rights.length] = nodeValue;
     }
 }
 
@@ -341,21 +342,22 @@ function FT_userBusObj(busObj)
             {
                 ul[c] = new FT_userRecObj(val.getAttribute('name'));
 
-                
-
                 for(var j=0; j<val.childNodes.length; j++)
                 {
-                    if(val.childNodes[j].nodeName == 'email' &&
-                        val.childNodes[j].firstChild != undefined)
-                        ul[c].m_email = val.childNodes[j].firstChild.nodeValue;
-                    else if(val.childNodes[j].nodeName == 'role' &&
-                        val.childNodes[j].firstChild != undefined)
-                        ul[c].m_role = val.childNodes[j].firstChild.nodeValue;
-                    else if(val.childNodes[j].nodeName == 'rights' &&
-                        val.childNodes[j].firstChild != undefined)
-                        ul[c].f_setUserRight(val.childNodes[j].firstChild);
-                    else if(val.childNodes[j].nodeName == 'name')
-                        ul[c].f_setUserName(val.childNodes[j]);
+                    var cNode = val.childNodes[j];
+                    if(cNode == undefined) continue;
+                 
+                    if(cNode.nodeName == 'email' &&
+                        cNode.firstChild != undefined)
+                        ul[c].m_email = cNode.firstChild.nodeValue;
+                    else if(cNode.nodeName == 'role' &&
+                        cNode.firstChild != undefined)
+                        ul[c].m_role = cNode.firstChild.nodeValue;
+                    else if(cNode.nodeName == 'rights' &&
+                        cNode.firstChild != undefined)
+                        ul[c].f_setUserRight(cNode.firstChild.nodeValue);
+                    else if(cNode.nodeName == 'name')
+                        ul[c].f_setUserName(cNode);
                 }
                 c++;
             }

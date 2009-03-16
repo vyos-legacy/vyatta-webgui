@@ -236,7 +236,9 @@ sub list_user {
 		print "<last>$hash_arr->{'last'}</last>";
 		print "</name>";
 		print "<email>$hash_arr->{'mail'}</email>";
-		print "$hash_arr->{'rights'}";
+		if (defined $hash_arr->{'rights'}) {
+		    print "$hash_arr->{'rights'}";
+		}
 		print "<role>$hash_arr->{'role'}</role>";
 		print "</user>";
 

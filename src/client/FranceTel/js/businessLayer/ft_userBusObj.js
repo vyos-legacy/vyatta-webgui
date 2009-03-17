@@ -355,6 +355,20 @@ function FT_userBusObj(busObj)
                               thisObj.f_respondRequestCallback);
     }
 
+    this.f_isDeletableUser = function(role)
+    {
+        switch(role)
+        {
+            case 'admin':
+            case 'installer':
+            default:
+                return false;
+            case 'user':
+            case 'User':
+                return true;
+        }
+    }
+
     this.f_getUserNodes = function(error)
     {
         var cn = error[0].childNodes;

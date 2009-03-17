@@ -280,6 +280,11 @@ function FT_businessLayer()
         thisObj.m_userObj.f_deleteUser(user, guiCb);
     }
 
+    this.f_isDeletableUser = function(role)
+    {
+        return thisObj.m_userObj.f_isDeletableUser(role);
+    }
+
     /**
      * logout the system.
      */

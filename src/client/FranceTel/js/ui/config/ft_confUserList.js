@@ -8,7 +8,6 @@
 function FT_confUserList(name, callback, busLayer)
 {
     this.thisObjName = 'FT_confUserList';
-	this.m_buttons = undefined;
     var thisObj = this;
 
     /**
@@ -48,9 +47,7 @@ function FT_confUserList(name, callback, busLayer)
         thisObj.f_removeDivChildren(thisObj.m_body);
         thisObj.m_div.appendChild(thisObj.m_header);
         thisObj.m_div.appendChild(thisObj.m_body);
-		if (thisObj.m_buttons != undefined) {
-			thisObj.m_div.appendChild(thisObj.m_buttons);
-		}
+        thisObj.m_div.appendChild(thisObj.m_buttons);
     }
 
     this.f_loadVMData = function()
@@ -110,13 +107,10 @@ function FT_confUserList(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
-        if (g_roleManagerObj.f_isInstaller()) {
-			return [this.m_header, this.m_body];
-		} else {
-			var btns = [['AddUser', 'f_userListAddUserCallback()', 'Create new user account']];
-			this.m_buttons = this.f_createButtons(btns);
-			return [this.m_header, this.m_body, this.m_buttons];
-		}
+        var btns = [['AddUser', 'f_userListAddUserCallback()', 'Create new user account']];
+        this.m_buttons = this.f_createButtons(btns);
+
+        return [this.m_header, this.m_body, this.m_buttons];
     }
 }
 FT_extend(FT_confUserList, FT_confBaseObj);
@@ -137,7 +131,7 @@ function f_userListEmail(eAddr)
 
 }
 
-function f_handleUserListDeleteUser(username)
+function f_handleUserListDeleteUser(e, username)
 {
     var cb = function(evt)
     {
@@ -149,12 +143,13 @@ function f_handleUserListDeleteUser(username)
             g_configPanelObj.m_activeObj.f_loadVMData();
     }
 
-    g_busObj.f_deleteUserFromServer(username, cb);
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+        g_busObj.f_deleteUserFromServer(username, cb);
 }
 
 function f_userListDeleteUser(username)
 {
     g_utils.f_popupMessage('Do you really want to delete (' + username + ') user?',
                 'confirm', 'Delete user account', 
-                "f_handleUserListDeleteUser('"+ username + "')");
+                "f_handleUserListDeleteUser(this, '"+ username + "')");
 }

@@ -8,6 +8,8 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <grp.h>
+#include <string>
+#include "rl_str_proc.hh"
 #include "authenticate.hh"
 
 using namespace std;
@@ -216,6 +218,8 @@ Authenticate::create_new_id()
       file = WebGUI::VYATTA_MODIFY_FILE + string(buf);
     }
     while (stat(file.c_str(), &tmp) == 0);
+
+    fclose(fp);
   }
   return id;  
 }
@@ -255,3 +259,44 @@ Authenticate::reuse_session()
   closedir(dp);
   return strtoul(id_str.c_str(),NULL,10);
 }
+
+/**                                                                                                                                               
+ *                                                                                                                                                
+ **/
+WebGUI::AccessLevel
+Authenticate::get_access_level(const std::string &username)
+{
+  ////////////////////////////////////////////////////                                                                                            
+  //Only allow users who are members of operator or vyattacfg groups to proceed                                                                   
+  //get group membership via ldap...
+  //first execute the ldap command
+  string cmd = "/usr/bin/ldapsearch -x -b \"dc=localhost,dc=localdomain\" \"uid=" + username + "\"";
+  string stdout;
+  bool verbatim = false;
+  int err = WebGUI::execute(cmd,stdout,verbatim,true);
+  if (err != 0) {
+    return WebGUI::ACCESS_NONE;
+  }
+  //now scan the output for the description field
+  StrProc str_proc(stdout," ");
+  vector<string> coll = str_proc.get();
+  vector<string>::iterator iter = coll.begin();
+  while (iter != coll.end()) {
+    if (*iter == "description:") {
+      ++iter;
+      if (strncmp(iter->c_str(),"user",4) == 0) {
+	return WebGUI::ACCESS_USER;
+      }
+      else if (strncmp(iter->c_str(),"admin",5) == 0) {
+	return WebGUI::ACCESS_ADMIN;
+      }
+      else if (strncmp(iter->c_str(),"installer",9) == 0) {
+	return WebGUI::ACCESS_INSTALLER;
+      }
+      return WebGUI::ACCESS_NONE;
+    }
+    ++iter;
+  }
+  return WebGUI::ACCESS_NONE;
+}
+

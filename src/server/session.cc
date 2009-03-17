@@ -124,7 +124,7 @@ Session::process_message()
       if (!update_session()) {
 	return false;
       }
-      _command.execute_command();
+      _command.execute_command(_access_level);
       break;
 
     case WebGUI::GETCONFIG:
@@ -306,6 +306,15 @@ Session::update_session()
     return false;
   }
   
+
+
+  //let's check whether the user is currently a member of vyattacfg or operator group                                                                 
+  _access_level = _authenticate.get_access_level(name_buf);
+  if (_access_level == WebGUI::ACCESS_NONE) {
+    _processor->set_response(WebGUI::SESSION_FAILURE);
+    return false;
+  }
+
   //move this up the timeline in the future, but this is where we will initially set the uid/gid
   //retreive username, then use getpwnam() from here to populate below
   if (setgid(pw->pw_gid) != 0) {

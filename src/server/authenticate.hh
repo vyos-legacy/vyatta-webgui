@@ -15,6 +15,9 @@ public:
   bool
   create_new_session();
 
+  WebGUI::AccessLevel
+  get_access_level(const std::string &username);
+
 private:
   bool
   test_grp_membership(const std::string &username, const char *gname);

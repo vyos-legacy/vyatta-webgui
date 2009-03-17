@@ -11,16 +11,16 @@ public:
   ~Command();
 
   void
-  execute_command();
-
-  void
-  execute_single_command(std::string &cmd, std::string &resp, int &err);
+  execute_command(WebGUI::AccessLevel access_level);
 
 private:
+  void
+  execute_single_command(std::string &cmd, WebGUI::AccessLevel access_level, std::string &resp, int &err);
+
   bool
   validate_session(unsigned long id);
 
-  bool
+  WebGUI::AccessLevel
   validate_op_cmd(std::string &cmd);
 };
 #endif //__COMMAND_HH__

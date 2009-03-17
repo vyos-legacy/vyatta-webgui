@@ -20,7 +20,7 @@ Command::~Command()
 }
 
 void
-Command::execute_command()
+Command::execute_command(WebGUI::AccessLevel access_level)
 {
   Message msg = _proc->get_msg();
   //parses all template nodes (or until depth to provide full template tree
@@ -45,7 +45,7 @@ Command::execute_command()
   while (iter != coll.end()) {
     string err;
     int err_code = WebGUI::SUCCESS;
-    execute_single_command(*iter, err, err_code);
+    execute_single_command(*iter, access_level, err, err_code);
     if (err_code != WebGUI::SUCCESS) {
       //generate error response for this command and exit
       _proc->set_response(WebGUI::COMMAND_ERROR, err);
@@ -64,7 +64,7 @@ Command::execute_command()
  *
  **/
 void
-Command::execute_single_command(string &cmd, string &resp, int &err)
+Command::execute_single_command(string &cmd, WebGUI::AccessLevel user_access_level, string &resp, int &err)
 {
   if (cmd.empty()) {
     resp = "";
@@ -109,6 +109,12 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     tmp = tmp.substr(0,pos);
   }
 
+  //now enforce role restrictions: opmode commands that contain an "admin" tag will be restricted to admin users only!
+  //first parse the command file, then find tag, use role level and compare
+  
+  
+
+
   if (strncmp(tmp.c_str(),"set",3) == 0 || strncmp(tmp.c_str(),"delete",6) == 0 || strncmp(tmp.c_str(),"commit",6) == 0) {
     tmp = "/opt/vyatta/sbin/my_" + cmd;
   }
@@ -127,13 +133,15 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   }
   else {
     //treat this as an op mode command
-    if (validate_op_cmd(cmd)) {
+    if (user_access_level >= validate_op_cmd(cmd)) {
+
       cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
       string opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c '"
                          + cmd + " 2>&1'";
       string stdout;
       bool verbatim = false;
+
       err = WebGUI::execute(opmodecmd,stdout,verbatim,true);
       if (!verbatim) {
         stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
@@ -183,7 +191,7 @@ Command::validate_session(unsigned long id)
 /**
  * replaces quoted values with node.tag and validates against cmd directory
  **/
-bool
+WebGUI::AccessLevel
 Command::validate_op_cmd(std::string &cmd)
 {
   //convert to op directory
@@ -221,6 +229,23 @@ Command::validate_op_cmd(std::string &cmd)
   path = WebGUI::OP_COMMAND_DIR + path;
 
   //now that we have a path let's compare this to the op cmds
-  struct stat s;
-  return (stat(path.c_str(), &s) == 0);
+  //let's open this and parse out the access level
+  path += "/node.def";
+  FILE *fp = fopen(path.c_str(),"r");
+  if (fp) {
+    char buf[1025];
+    //read value in here....
+    while (fgets(buf, 1024, fp) != 0) {
+      string tmp = string(buf);
+      if (tmp.find("access:admin") != string::npos) {
+	return WebGUI::ACCESS_ADMIN;
+      }
+      else if (tmp.find("access:installer") != string::npos) {
+	return WebGUI::ACCESS_INSTALLER;
+      }
+    }
+    fclose(fp);
+    return WebGUI::ACCESS_USER;  //allow user access if no permission stated
+  }
+  return WebGUI::ACCESS_USER;
 }

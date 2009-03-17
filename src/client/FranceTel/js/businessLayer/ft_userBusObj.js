@@ -87,12 +87,27 @@ function FT_userBusObj(busObj)
                 if(user != null)
                     thisObj.m_userList = thisObj.f_parseUserResponse(user);
 
-                /////////////////////////////////////////
-                // create an event then send back to ui
-                if(noUICallback == undefined || !noUICallback)
+                // if reqeust is login request, we need to get user role for
+                // this login user before we call the guicb.
+                if(thisObj.m_lastCmdSent.indexOf('<auth>') >= 0)
                 {
-                    var evt = new FT_eventObj(0, thisObj, undefined);
-                    thisObj.m_guiCb(evt);
+                    g_utils.f_saveUserLoginId(thisObj.m_sid);
+                    thisObj.f_getUserRoleFromServer(thisObj.m_guiCb);
+                }
+                else
+                {
+                    // if request is 'get user list', need to update the login
+                    // user's role from userList
+                    if(thisObj.m_lastCmdSent.indexOf('open-app user list'))
+                        thisObj.f_updateLoginUserRole();
+
+                    /////////////////////////////////////////
+                    // create an event then send back to ui
+                    if(noUICallback == undefined || !noUICallback)
+                    {
+                        var evt = new FT_eventObj(0, thisObj, undefined);
+                        thisObj.m_guiCb(evt);
+                    }
                 }
             }
         }
@@ -127,8 +142,12 @@ function FT_userBusObj(busObj)
             thisObj.m_guiCb = cb;
 
         thisObj.m_loginUser = new FT_userRecObj(u, null, null, p, null, null, null, null);
+        thisObj.f_setUserRole(u);
+    }
 
-        switch(u)
+    this.f_setUserRole = function(role)
+    {
+        switch(role)
         {
             case 'admin':
                 thisObj.m_loginUser.m_role = thisObj.V_ROLE_ADMIN;
@@ -138,6 +157,31 @@ function FT_userBusObj(busObj)
                 break;
             default:
                 thisObj.m_loginUser.m_role = thisObj.V_ROLE_USER;
+        }
+    }
+
+    /**
+     */
+    this.f_getUserRoleFromServer = function(guiCb)
+    {
+        thisObj.f_getUserListFromServer(guiCb);
+    }
+
+    /**
+     * update current login user's role from user list.
+     */
+    this.f_updateLoginUserRole = function()
+    {
+        // walk through the user list and find the current login user role,
+        // then update it.
+        var ul = thisObj.m_userList;
+        for(var i=0; i<ul.length; i++)
+        {
+            if(ul[i].m_user == thisObj.m_loginUser.m_user)
+            {
+                thisObj.f_setUserRole(thisObj.m_userList[i].m_role);
+                break;
+            }
         }
     }
 

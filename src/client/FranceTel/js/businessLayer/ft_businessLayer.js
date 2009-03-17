@@ -201,6 +201,7 @@ function FT_businessLayer()
         var xmlstr = '<vyatta><auth><user>' + username + '</user>\n' +
                       '<pswd><![CDATA[' + pw +
                       ']]></pswd></auth></vyatta>\n';
+        thisObj.m_userObj.m_lastCmdSent = xmlstr;
 
         return this.f_sendRequest(xmlstr, this.m_userObj.f_respondRequestCallback);
     }

@@ -247,6 +247,8 @@ sub list_user {
 		$hash_arr->{'first'} = "";
 		$hash_arr->{'last'} = "";
 		$hash_arr->{'mail'} = "";
+		$hash_arr->{'rights'} = "";
+		$hash_arr->{'role'} = "";
 
 		$open_entry = 0;
 	    }

@@ -5,11 +5,11 @@
     Description:
 */
 
-function FT_backupRec(vm, bkDate, fn, mode)
+function FT_backupRec(vm, bkDate, content, mode)
 {
     this.m_vm = vm;
     this.m_bkDate = bkDate;
-    this.m_filename = fn;
+    this.m_content = content;
     this.m_bkMode = mode; // 0: config, 1:data, 2:both
 }
 

@@ -54,7 +54,7 @@ function FT_confRestoreDesc(name, callback, busLayer)
 
 
         //var bodyDiv = thisObj.f_createGridRow(hd, vmData);
-        thisObj.m_body.appendChild(bodyDiv);
+        //thisObj.m_body.appendChild(bodyDiv);
 
         //g_utils.f_cursorWait();
         //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
@@ -90,5 +90,5 @@ function f_restoreDescRestore()
 
 function f_restoreDescCancel()
 {
-
+    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);
 }

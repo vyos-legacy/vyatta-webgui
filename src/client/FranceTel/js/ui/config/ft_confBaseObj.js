@@ -334,6 +334,13 @@ function FT_confBaseObj(name, callback, busLayer)
             case 'deleteUser':
             case 'delete':
                 imgSrc = 'images/ft_delete.PNG';
+                break;
+            case 'restore':
+                imgSrc = 'images/ft_delete.PNG';
+                break;
+            case 'download':
+                imgSrc = 'images/ft_delete.PNG';
+                break;
         }
 
         return '<img title="' + tooltip + '" height="21" name="' + text +

@@ -49,7 +49,8 @@ sub add_user {
 	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
 	print FILE "changetype: modify\n";
 	print FILE "replace: userPassword\n";
-	print FILE "userPassword: ".$password."\n";
+	my @output = `/usr/sbin/slappasswd -s $password`;
+	print FILE "userPassword: ".$output[0]."\n";
 	print FILE "\n";
 	print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
 	print FILE "changetype: modify\n";
@@ -127,8 +128,9 @@ sub modify_user {
 	print FILE "commonname: ".$firstname."\n";
     }
     elsif (defined($password) && $password ne NULL) {
-	print FILE "add: password\n";
-	print FILE "password: ".$password."\n";
+	print FILE "replace: userPassword\n";
+	my @output = `/usr/sbin/slappasswd -s $password`;
+	print FILE "userPassword: ".$output[0]."\n";
     }
     print FILE "\n";
 

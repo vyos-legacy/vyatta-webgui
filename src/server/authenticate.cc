@@ -148,6 +148,7 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
   if (!test_grp_membership(username, "vyattacfg")) {
     return false; //rejecting as failed check or non vyattacfg member
   }
+  /*
  
   // open appliance: group requirement
   char *be_type = getenv("VYATTA_BACKEND_TYPE");
@@ -156,7 +157,7 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
       return false;
     }
   }
-
+  */
   pam_conv conv = { conv_fun, const_cast<void*>((const void*)&password) };
   
   pam_handle_t *pam = NULL;

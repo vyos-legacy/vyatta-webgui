@@ -2,7 +2,6 @@
 
 umask 002
 VYATTA_BACKEND_TYPE=OA
-export VYATTA_BACKEND_TYPE
 
 echo -en "Content-Type: text/xml\r\n\r\n"
 

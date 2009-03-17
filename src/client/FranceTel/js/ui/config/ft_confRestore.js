@@ -33,7 +33,7 @@ function FT_confRestore(name, callback, busLayer)
 
         cols[0] = this.f_createColumn('Date', 120, 'text', '6');
         cols[1] = this.f_createColumn('Content', 220, 'text', '6');
-        cols[2] = this.f_createColumn('Restore', 100, 'checkbox', '25');
+        cols[2] = this.f_createColumn('Restore', 100, 'button', '25');
         cols[3] = this.f_createColumn('Download', 100, 'button', '25');
         cols[4] = this.f_createColumn('Delete', 100, 'button', '25');
 
@@ -89,8 +89,8 @@ function FT_confRestore(name, callback, busLayer)
                                 "f_userListEditUser('" + filename + "')",
                                 'Click here to restore ' + "(filename)");
         var restore = thisObj.f_renderButton(
-                                'delete', true, "f_deleteBackupFile('" +
-                                filename + "')", 'Delete filename (' + filename + ')');
+                                'delete', true, "f_handleRestoreDesc('" +
+                                filename + "')", 'Restore (' + filename + ')');
         var download = thisObj.f_renderButton(
                                 'delete', true, "f_deleteBackupFile('" +
                                 filename + "')", 'Delete filename (' + filename + ')');
@@ -159,6 +159,12 @@ function f_handleBrownMyPC(vm)
 {
     g_busObj.f_stopVM(vm);
 }
+
+function f_handleRestoreDesc()
+{
+    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_DESC_ID);
+}
+
 function f_handleDeleteBackupFile(filename)
 {
     var cb = function(evt)

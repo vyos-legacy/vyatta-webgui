@@ -13,6 +13,7 @@ document.write('<script type="text/javascript" src="js/ui/config/ft_confHwMonito
 document.write('<script type="text/javascript" src="js/ui/config/ft_confUserList.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confUserRight.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confRestore.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/ft_confRestoreDesc.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confBackup.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confFormObj.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confMyProfile.js"></script>');

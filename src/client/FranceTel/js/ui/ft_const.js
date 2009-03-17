@@ -70,7 +70,8 @@ VYA.FT_CONST = {
     DOM_3_NAV_SUB_NETWORK_ID : 'network_l2',
 	//-----Backup
     DOM_3_NAV_SUB_BACKUP_ID : 'backup_l2',
-    DOM_3_NAV_SUB_RESTORE_ID : 'restore_l2',	
+    DOM_3_NAV_SUB_RESTORE_ID : 'restore_l2',
+    DOM_3_NAV_SUB_RESTORE_DESC_ID : 'restore_desc_l2',
 	//-----Configuration
     DOM_3_NAV_SUB_EMAIL_SRV_ID : 'email_serv_l2',
     DOM_3_NAV_SUB_TIME_SRV_ID : 'time_serv_l2',

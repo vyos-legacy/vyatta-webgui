@@ -56,19 +56,25 @@ public:
 		   OP};
 
   enum NodeType {NONE,
-			 TEXT,
-			 IPV4,
-			 IPV4NET,
-			 IPV6,
-			 IPV6NET,
-			 U32,
-			 BOOL,
-			 MACADDR};
-
+		 TEXT,
+		 IPV4,
+		 IPV4NET,
+		 IPV6,
+		 IPV6NET,
+		 U32,
+		 BOOL,
+		 MACADDR};
+  
   enum NodeState {ACTIVE,
-			  DELETE,
-			  SET};
-
+		  DELETE,
+		  SET};
+  
+  
+  enum AccessLevel {ACCESS_USER = 0,
+                    ACCESS_ADMIN = 1,
+                    ACCESS_INSTALLER = 2,
+		    ACCESS_NONE = 3};
+  
 
   static std::string
   generate_response(std::string &token, Error err);

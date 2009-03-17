@@ -1,13 +1,15 @@
 /*
     Document   : ft_confBackup.js
     Created on : Mar 03, 2009, 6:18:51 PM
-    Author     : Kevin.Choi
+    Author     : Kevin.Choi, Loi.Vo
     Description:
 */
 
 function FT_confBackup(name, callback, busLayer)
 {
-    this.thisObjName = 'FT_confBackup',
+    this.thisObjName = 'FT_confBackup';
+	this.m_vmName = [];
+	var thisObj = this;
 
     /**
      * @param name - name of configuration screens.
@@ -23,24 +25,150 @@ function FT_confBackup(name, callback, busLayer)
     this.f_getConfigurationPage = function()
     {
         var page = this.f_getNewPanelDiv(this.f_init());
-
+        page.style.height = '360px';
+        thisObj.f_attachEventListener();			
         return page;
     }
 
     this.f_createColumns = function()
     {
         var cols = [];
+    
+	    var config = '<input type="checkbox" id="conf_backup_config_checkall" name="config_checkall" value="config_checkall">&nbsp;Config.</input>';
+	    var data = '<input type="checkbox" id="conf_backup_data_checkall" name="data_checkall" value="data_checkall">&nbsp;Data</input>';
 
         cols[0] = this.f_createColumn('Application', 250, 'text', '6');
-        cols[1] = this.f_createColumn('Data', 80, 'checkbox', '35');
-        cols[2] = this.f_createColumn('Config.', 80, 'checkbox', '35');
+        cols[1] = this.f_createColumn(config,120, 'checkbox', '32');		
+        cols[2] = this.f_createColumn(data, 120, 'checkbox', '40');
 
         return cols;
     }
+	
+	this.f_attachEventListener = function()
+	{
+		var el = document.getElementById('conf_backup_config_checkall');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);		
+		el = document.getElementById('conf_backup_data_checkall');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);							
+	}
+	
+	this.f_detachEventListener = function()
+	{
+		var el = document.getElementById('conf_backup_config_checkall');
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);				
+		el = document.getElementById('conf_backup_data_checkall');		
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);						
+	}
+
+    this.f_checkAll = function(target, value)
+	{
+        var s = 'conf_backup_' + target + '_cb';
+		for (var i=0; i < thisObj.m_vmName.length; i++) {
+	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
+			el.checked = value;		
+		}			
+	}
+
+    this.f_handleClick = function(e)
+    {
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if (target != undefined) {
+            var id = target.getAttribute('id');
+            if (id == 'conf_backup_config_checkall') { //config checkall clicked
+                thisObj.f_checkAll('config', target.checked);
+            } else if (id == 'conf_backup_data_checkall') { //data checkall clicked
+                thisObj.f_checkAll('data', target.checked);
+            } 
+        }
+    }
+	
+	this.f_reset = function()
+	{
+		thisObj.f_checkAll('config', false);
+		thisObj.f_checkAll('data', false);
+		var el = document.getElementById('conf_backup_config_checkall');
+		el.checked = false;
+        el = document.getElementById('conf_backup_data_checkall');
+		el.checked = false;				
+		el = document.getElementById('conf_backup_form');
+        el.target_group[0].checked = true;
+		el.target_group[1].checked = false;		
+	}
+	
+	this.f_validate = function()
+	{
+		var s = 'conf_backup_config_cb';
+		for (var i=0; i < thisObj.m_vmName.length; i++) {
+	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
+			if (el.checked == true) {
+				return true;
+			}	
+		}
+		s = 'conf_backup_data_cb';
+		for (var i=0; i < thisObj.m_vmName.length; i++) {
+	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
+			if (el.checked == true) {
+				return true;
+			}	
+		}
+		       
+        g_utils.f_popupMessage('Please select at least one application to backup', 'error', 'Error!');		
+		
+		return false;
+	}
+    
+	//////////////////////////////////////////////////////////////////////////
+	////////// TODO : NEED BACKEND SUPPORT
+	////////////////////////////////////////////////////////////////////////// 
+	this.f_overflow = function() 
+	{
+		//Hard code a value for now.  It will need backend support.
+		return 1;
+	}
+	
+	//////////////////////////////////////////////////////////////////////////
+	////////// TODO : NEED BACKEND SUPPORT
+	////////////////////////////////////////////////////////////////////////// 	
+	this.f_pcBackup = function()
+	{
+		//need to define a mechanism to receive file from the backup.
+		var url = 'test.zip';
+		window.open(url, 'Download');
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	////////// TODO : NEED BACKEND SUPPORT
+	////////////////////////////////////////////////////////////////////////// 	
+	this.f_oaBackup = function()
+	{
+        g_utils.f_popupMessage('Backup is in progress.  You will receive an email notification when the operation is finshed.', 'ok', 'Information');
+	}
+	
+	this.f_backup = function()
+	{
+		if (!this.f_validate()) {			
+			return;
+		}
+		
+		var el = document.getElementById('conf_backup_form');
+        if (el.target_group[0].checked == true) {
+			thisObj.f_pcBackup();
+			return;
+		}
+		
+		var max = 3;		
+		if (g_roleManagerObj.f_isInstaller()) {
+			max = 2;
+		} 
+		if (thisObj.f_overflow() > max) {
+            g_utils.f_popupMessage('There are ' + max + ' backups already stored on the Open Appliance.  Please delete the oldest and try again.', 'error', 'Error!');
+			return;				    
+		}
+		thisObj.f_oaBackup();
+	}
 
     this.f_loadVMData = function()
     {
-        var thisObj = this;
         var hd = this.f_createColumns();
 
         var cb = function(evt)
@@ -51,60 +179,111 @@ function FT_confBackup(name, callback, busLayer)
                 var vm = evt.m_value.m_vmRecObj;
                 if(vm == undefined) return;
 
+                /*  
                 thisObj.f_removeDivChildren(thisObj.m_div);
                 thisObj.f_removeDivChildren(thisObj.m_body);
                 thisObj.m_div.appendChild(thisObj.m_header);
                 thisObj.m_div.appendChild(thisObj.m_body);
-
+                */
+				// only need to remove the grid body.  the header should be the same, as well as other.
+				thisObj.f_removeDivChildren(thisObj.m_body);
+				
+				thisObj.m_vmName.length = 0;
+				
                 for(var i=0; i<=vm.length; i++)
                 {
                     var v = vm[i];
                     if(v == undefined) break;
-
-                    var data = thisObj.f_renderCheckbox('yes');
-                    var config = thisObj.f_renderCheckbox('no');
-                    vmData[i] = [v.m_name, data, config];
+	////////////////////////////////////////////////////////////////////////////////////////////
+	////////// TODO : NEED BACKEND SUPPORT for the ID of OpenAppliance, ie dom0 VM
+	//////////////////////////////////////////////////////////////////////////////////////////// 	
+                    if (v.m_name == 'OpenAppliance') {
+						if (!g_roleManagerObj.f_isInstaller()) {
+							continue;
+						}
+					}
+                    var data = thisObj.f_renderCheckbox('no','conf_backup_data_cb_' + v.m_name);
+                    var config = thisObj.f_renderCheckbox('no','conf_backup_config_cb_' + v.m_name);
+					thisObj.m_vmName.push(v.m_name);
+                    vmData[i] = [v.m_name, config, data];
 
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData[i]);
+					//alert('adding row: vm: ' + v.m_name + ' innerHTML: ' + bodyDiv.innerHTML);
                     thisObj.m_body.appendChild(bodyDiv);
                 }
+				//////////////////////////////////////////////////////////
+				//// adding the check all, check all to the last row
+				//////////////////////////////////////////////////////////
+				/*
+				var cAllData ='<input type="checkbox" id="conf_backup_data_checkall" name="data_checkall" value="data_checkall">&nbsp;Check All</a>';
+				var cAllConfig = '<input type="checkbox" id="conf_backup_config_checkall" name="data_checkall" value="data_checkall">&nbsp;Check All</a>';
+				var row = ['&nbsp;&nbsp;', cAllConfig, cAllData];
+				var bDiv = thisObj.f_createGridRow(hd, row);
+				thisObj.m_body.appendChild(bDiv);
+				*/
             }
         }
-
-        this.m_treadId = this.m_busLayer.f_startVMRequestThread(cb);
+        thisObj.m_busLayer.f_getVMDataFromServer(cb);	
+        //this.m_treadId = this.m_busLayer.f_startVMRequestThread(cb);
     }
 
     this.f_stopLoadVMData = function()
     {
-        this.m_busLayer.f_stopVMRequestThread(this.m_treadId);
+		thisObj.f_detachEventListener();
+        //this.m_busLayer.f_stopVMRequestThread(this.m_treadId);
     }
+	
+    /**
+     * create a div for target selection.
+     */
+    this.f_createTargetView = function()
+	{
+		var div = document.createElement('div');
+		div.style.display = 'block';
+		div.style.marginTop = '30px';
+		div.style.marginBottom = '20px';
+		div.style.backgroundColor = 'white';
+		div.style.height = '50px';
+		
+		var innerHtml = 
+		    '<form id="conf_backup_form" class="v_form" border="0">' +
+				'<table cellspacing="0" cellpadding="0" border="0">' +
+					'<tr><td><label class="v_label">Target:</label></td></tr>' +				
+				    '<tr><td style="padding-left:35px;"><input type="radio" name="target_group" value="pc" checked>&nbsp;My PC</td></tr>' +
+				    '<tr><td style="padding-left:35px;"><input type="radio" name="target_group" value="oa">&nbsp;Open appliance</td></tr>' +
+				'</table>' +
+		    '</form>';		
+
+        div.innerHTML = innerHtml;
+
+        return div;
+    }		
+		
 
     this.f_init = function()
     {
         var hd = this.f_createColumns();
         this.m_header = this.f_createGridHeader(hd);
         this.m_body = this.f_createGridView(hd);
+		this.m_target = this.f_createTargetView();
+		
         this.f_loadVMData();
 
-        var btns = [['Add', 'f_addButtonCallback()']];
+        var btns = [['Backup', 'f_handleConfBackupBkCb()'],
+		            ['Cancel', 'f_handleConfBackupCancelCb()']];
         this.m_buttons = this.f_createButtons(btns);
 
-        return [this.m_header, this.m_body, this.m_buttons];
+        return [this.m_header, this.m_body, this.m_target, this.m_buttons];
     }
 }
 FT_extend(FT_confBackup, FT_confBaseObj);
 
-function f_handleStop(vm)
+function f_handleConfBackupBkCb()
 {
-    alert('stop ' + vm)
+    g_configPanelObj.m_activeObj.f_backup();
 }
 
-function f_handleRestart(vm)
+function f_handleConfBackupCancelCb()
 {
-    alert('restart ' + vm)
-}
-
-function f_handleStart(vm)
-{
-    alert('start ' + vm)
+   g_configPanelObj.m_activeObj.f_reset();
 }

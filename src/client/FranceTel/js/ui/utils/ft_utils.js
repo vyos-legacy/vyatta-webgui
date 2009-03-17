@@ -37,3 +37,25 @@ function f_elemGetFirstChildByNodeName(elem, name){
         return null;
     }
 }
+
+/**
+ * This function insert an element before another element.  
+ * @param parent: optional parent node 
+ * @param before: the node to be inserted before.
+ * @param elem: the element to be inserted.
+ */
+function f_insertBefore(parent, before, elem){
+    //check to see if no parent node was provided.
+	if (elem==null) {
+		elem = before;
+		before = parent;
+		parent = before.parentNode;
+	}
+	parent.insertBefore(f_checkElem(elem), before);
+}
+
+function f_checkElem(elem) {
+	//if only a string was provided, convert it into a text node
+	return elem && elem.constructor == String? document.createTextNode(elem) : elem;
+}
+

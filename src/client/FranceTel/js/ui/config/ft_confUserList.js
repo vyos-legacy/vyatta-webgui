@@ -72,7 +72,7 @@ function FT_confUserList(name, callback, busLayer)
                         var fName = ul[i].m_last + ' ' + ul[i].m_first;
                         var anchor = thisObj.f_renderAnchor(ul[i].m_user,
                                 "f_userListEditUser('" + ul[i].m_user + "')",
-                                'Click here to edit ' + "(smith john)");
+                                'Click here to edit ' + "(" + fName + ")");
                         var email = ul[i].m_email != undefined ?
                                 thisObj.f_renderAnchorHref(
                                 '<img src="images/ft_email.PNG">',
@@ -150,6 +150,6 @@ function f_handleUserListDeleteUser(e, username)
 function f_userListDeleteUser(username)
 {
     g_utils.f_popupMessage('Do you really want to delete (' + username + ') user?',
-                'confirm', 'Delete user account', 
+                'confirm', 'Delete user account',
                 "f_handleUserListDeleteUser(this, '"+ username + "')");
 }

@@ -8,6 +8,7 @@
 function FT_confRestore(name, callback, busLayer)
 {
     this.thisObjName = 'FT_confRestore';
+    var thisObj = this;
 
     /**
      * @param name - name of configuration screens.
@@ -32,17 +33,16 @@ function FT_confRestore(name, callback, busLayer)
         var cols = [];
 
         cols[0] = this.f_createColumn('Date', 120, 'text', '6');
-        cols[1] = this.f_createColumn('Content', 220, 'text', '6');
-        cols[2] = this.f_createColumn('Restore', 100, 'button', '25');
-        cols[3] = this.f_createColumn('Download', 100, 'button', '25');
-        cols[4] = this.f_createColumn('Delete', 100, 'button', '25');
+        cols[1] = this.f_createColumn('Content', 260, 'text', '6');
+        cols[2] = this.f_createColumn('Restore', 90, 'button', '25');
+        cols[3] = this.f_createColumn('Download', 90, 'button', '25');
+        cols[4] = this.f_createColumn('Delete', 90, 'button', '25');
 
         return cols;
     }
 
     this.f_loadVMData = function()
     {
-        var thisObj = this;
         var hd = this.f_createColumns();
 
         var cb = function(evt)
@@ -64,8 +64,8 @@ function FT_confRestore(name, callback, busLayer)
                 }
 
                 var vmData = [];
-                var vm = evt.m_value.m_vmRecObj;
-                if(vm == undefined) return;
+                var bkRec = evt.m_value.m_backupRec;
+                if(bkRec == undefined) return;
 
                 thisObj.f_removeDivChildren(thisObj.m_div);
                 thisObj.f_removeDivChildren(thisObj.m_body);
@@ -73,10 +73,24 @@ function FT_confRestore(name, callback, busLayer)
                 thisObj.m_div.appendChild(thisObj.m_body);
                 thisObj.m_div.appendChild(thisObj.m_restorePC);
 
-                for(var i=0; i<=vm.length; i++)
+                for(var i=0; i<=bkRec.length; i++)
                 {
-   
+                    var r = bkRec[i];
 
+                    var anchor = thisObj.f_renderAnchor(r.m_content,
+                                "f_handleRestoreDesc('" + r.m_content + "')",
+                                'Click here to restore ' + "(" + r.m_content + ")");
+                    var restore = thisObj.f_renderButton(
+                                'restore', true, "f_handleRestoreDesc('" +
+                                r.m_content + "')", 'Restore (' + r.m_content + ')');
+                    var download = thisObj.f_renderButton(
+                                'download', true, "f_handleDownloadRestore('" +
+                                r.m_content + "')", 'Download restore (' + r.m_content + ')');
+                    var del = thisObj.f_renderButton(
+                                'delete', true, "f_deleteRestoreFile('" +
+                                r.m_content + "')", 'Delete filename (' + r.m_content + ')');
+
+                    vmData = [r.m_bkData, anchor, restore, download, del]
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData[i]);
                     thisObj.m_body.appendChild(bodyDiv);
                 }
@@ -86,16 +100,16 @@ function FT_confRestore(name, callback, busLayer)
 
         var filename = 'filename';
         var anchor = thisObj.f_renderAnchor(filename,
-                                "f_userListEditUser('" + filename + "')",
+                                "f_handleRestoreDesc('" + filename + "')",
                                 'Click here to restore ' + "(filename)");
         var restore = thisObj.f_renderButton(
                                 'delete', true, "f_handleRestoreDesc('" +
                                 filename + "')", 'Restore (' + filename + ')');
         var download = thisObj.f_renderButton(
-                                'delete', true, "f_deleteBackupFile('" +
+                                'delete', true, "f_handleDownloadRestore('" +
                                 filename + "')", 'Delete filename (' + filename + ')');
         var del = thisObj.f_renderButton(
-                                'delete', true, "f_deleteBackupFile('" +
+                                'delete', true, "f_deleteRestoreFile('" +
                                 filename + "')", 'Delete filename (' + filename + ')');
 
         var vmData = ["03/13/09", anchor, restore, download, del];
@@ -103,13 +117,12 @@ function FT_confRestore(name, callback, busLayer)
         thisObj.m_body.appendChild(bodyDiv);
 
         //g_utils.f_cursorWait();
-        //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
+        //this.m_threadId = this.m_busLayer.f_getVMRestoreListFromServer(cb);
     }
 
     this.f_stopLoadVMData = function()
     {
-        this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
-        this.m_threadId = null;
+        thisObj = null;
     }
 
     this.f_init = function()
@@ -140,16 +153,15 @@ function FT_confRestore(name, callback, busLayer)
 
         innerHtml += '<tr height="22"><td>' +
                       '<input id="mypcFile" name="mypcfile" type="file" ></td>'+
-                    '<div title="Browse my pc" style="padding-left:10px">' +
-                    '<img src="images/vm_restart.PNG" name="OpenAppl" ' +
+                    '<div title="Browse my pc" style="padding-left:20px">' +
+                    '<input type="button" name="OpenAppl" ' +
                     'style="cursor:pointer;" ' +
-                    'value="Restart" onclick="' + handleFunc +
-                    '></div></td>';
+                    'value="Go" title="Click here to start restore from my PC" onclick="' +
+                    handleFunc + '></div></td>';
 
         innerHtml += '</tr></tbody></table>';
 
         div.innerHTML = innerHtml;
-
         return div;
     }
 }
@@ -165,7 +177,7 @@ function f_handleRestoreDesc()
     g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_DESC_ID);
 }
 
-function f_handleDeleteBackupFile(filename)
+function f_handleDeleteRestoreFile(e, restoreContent)
 {
     var cb = function(evt)
     {
@@ -177,12 +189,18 @@ function f_handleDeleteBackupFile(filename)
             g_configPanelObj.m_activeObj.f_loadVMData();
     }
 
-    //g_busObj.f_deleteUserFromServer(username, cb);
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+        g_busObj.f_deleteUserFromServer(restoreContent, cb);
 }
 
-function f_deleteBackupFile(filename)
+function f_handleDownloadRestore()
 {
-    g_utils.f_popupMessage('Do you really want to delete (' + filename + ')?',
-                'confirm', 'Delete Backup File', 
-                "f_handleDeleteBackupFile('"+ filename + "')");
+
+}
+
+function f_deleteRestoreFile(restoreContent)
+{
+    g_utils.f_popupMessage('Do you really want to delete (' + restoreContent + ')?',
+                'confirm', 'Delete Restore File',
+                "f_handleDeleteRestoreFile(this, '"+ restoreContent + "')");
 }

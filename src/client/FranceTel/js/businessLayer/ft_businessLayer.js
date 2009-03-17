@@ -412,6 +412,10 @@ function FT_businessLayer()
         return this.f_sendRequest(content, guiCb);
     }
 
+    this.f_getVMBackupObj = function()
+    {
+        return thisObj.m_backup;
+    }
     /**
      *
      */

@@ -146,10 +146,12 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
   }
 
   ////////////////////////////////////////////////////
+  /*
   //without support for op cmds fail any non vyattacfg group member
   if (!test_grp_membership(username, "vyattacfg")) {
     return false; //rejecting as failed check or non vyattacfg member
   }
+  */
   /*
  
   // open appliance: group requirement

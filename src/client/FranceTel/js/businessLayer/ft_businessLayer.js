@@ -84,6 +84,7 @@ function FT_businessLayer()
     this.m_request = createXMLHttpRequest();
     this.m_userObj = new FT_userBusObj(this);
     this.m_vm = new FT_vmBusObj(this);
+    this.m_backup = new FT_backupObj(this);
 
     ///////////////////////////////
     // functions
@@ -416,7 +417,15 @@ function FT_businessLayer()
      */
     this.f_getVMBackupListFromServer = function(guiCb)
     {
+        this.m_backup.f_getVMBackupList(guiCb);
+    }
 
+    /**
+     *
+     */
+    this.f_getVMRestoreListFromServer = function(guiCb)
+    {
+        this.m_backup.f_getVMRestoreList(guiCb);
     }
 }
 

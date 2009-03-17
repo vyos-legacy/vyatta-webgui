@@ -5,7 +5,7 @@
     Description:
 */
 
-function FT_vmBackupRec(vm, bkDate, fn, mode)
+function FT_backupRec(vm, bkDate, fn, mode)
 {
     this.m_vm = vm;
     this.m_bkDate = bkDate;
@@ -13,7 +13,7 @@ function FT_vmBackupRec(vm, bkDate, fn, mode)
     this.m_bkMode = mode; // 0: config, 1:data, 2:both
 }
 
-function FT_vmBackupObj(busObj)
+function FT_backupObj(busObj)
 {
     /////////////////////////////////////
     // properteis

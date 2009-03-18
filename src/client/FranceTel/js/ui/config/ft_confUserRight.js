@@ -64,7 +64,6 @@ function FT_confUserRight(name, callback, busLayer)
 
     this.f_loadData = function()
     {
-        var thisObj = this;
         var hd = this.f_createColumns();
 
         var cb = function(evt)
@@ -116,6 +115,8 @@ function FT_confUserRight(name, callback, busLayer)
                         var bodyDiv = thisObj.f_createGridRow(hd, data);
                         thisObj.m_body.appendChild(bodyDiv);
                     }
+
+                    thisObj.f_adjustDivPosition(thisObj.m_buttons);
                 }
             }
         }

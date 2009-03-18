@@ -172,7 +172,8 @@ function FT_businessLayer()
 
     ////////////////////////////////////////////////////
     // functions for public
-
+    // ////////////////////////////////////////////////////
+    //
     ////////////////////////////////////////////////////////////////////////////
     // user management support functions:
     // f_isLogin() - find out if user is login
@@ -280,6 +281,11 @@ function FT_businessLayer()
         thisObj.m_userObj.f_deleteUser(user, guiCb);
     }
 
+    this.f_isDeletableUser = function(role)
+    {
+        return thisObj.m_userObj.f_isDeletableUser(role);
+    }
+
     /**
      * logout the system.
      */
@@ -288,6 +294,8 @@ function FT_businessLayer()
         thisObj.m_userObj.f_logout(guiCb);
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // VM session start here.....
     ////////////////////////////////////////////////////////////////////////////
     // VM supported functions:
     // f_getVMSummaryDataFromServer() - get only the vm name and number of vms for current logon user.
@@ -378,6 +386,9 @@ function FT_businessLayer()
         if(threadId != null)
             thisObj.m_reqThread.f_stop(threadId);
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // VM start/stop/restart session start here.....
     /**
      * stop VM request
      */
@@ -412,16 +423,19 @@ function FT_businessLayer()
         return this.f_sendRequest(content, guiCb);
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // backup/restore session start here.....
     this.f_getVMBackupObj = function()
     {
         return thisObj.m_backup;
     }
+
     /**
      *
      */
     this.f_getVMBackupListFromServer = function(guiCb)
     {
-        this.m_backup.f_getVMBackupList(guiCb);
+        thisObj.m_backup.f_getVMBackupList(guiCb);
     }
 
     /**
@@ -429,7 +443,29 @@ function FT_businessLayer()
      */
     this.f_getVMRestoreListFromServer = function(guiCb)
     {
-        this.m_backup.f_getVMRestoreList(guiCb);
+        thisObj.m_backup.f_getVMRestoreList(guiCb);
+    }
+
+    /**
+     * restore backup file
+     * @param vms - list of vms to be restored. ex. [vm1, vm2, vm3,...] array type
+     * @param mode - config/data/both (0:config, 1:daata, both:2)
+     * @param guiCb - gui callback function
+     */
+    this.f_restore = function(vms, mode, guiCb)
+    {
+        thisObj.m_backup.f_backupRestore(vms, mode, "restore", guiCb);
+    }
+
+    /**
+     * backup vm config/data/both
+     * @param vms - list of vms to be backup. ex. [vm1, vm2, vm3,...] array type
+     * @param mode - config/data/both (0:config, 1:daata, both:2)
+     * @param guiCb - gui callback function
+     */
+    this.f_backup = function(vms, mode, guiCb)
+    {
+        thisObj.m_backup.f_backupRestore(vms, mode, "backup", guiCb);
     }
 }
 

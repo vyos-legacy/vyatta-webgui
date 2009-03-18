@@ -78,14 +78,19 @@ function FT_confUserList(name, callback, busLayer)
                                 '<img src="images/ft_email.PNG">',
                                 "mailto:" + ul[i].m_email,
                                 'Send email to ' + fName) : "";
-                        var del = thisObj.f_renderButton(
+
+                        var del = g_busObj.f_isDeletableUser(ul[i].m_role) ?
+                                thisObj.f_renderButton(
                                 'deleteUser', true, "f_userListDeleteUser('" +
-                                ul[i].m_user + "')", 'Delete user (' + fName + ')');
+                                ul[i].m_user + "')", 'Delete user (' + fName + ')'):
+                                "";
                         var data = [fName, anchor, email, del];
 
                         var bodyDiv = thisObj.f_createGridRow(hd, data);
                         thisObj.m_body.appendChild(bodyDiv);
                     }
+
+                    thisObj.f_adjustDivPosition(thisObj.m_buttons);
                 }
             }
         }
@@ -96,7 +101,7 @@ function FT_confUserList(name, callback, busLayer)
 
     this.f_stopLoadVMData = function()
     {
-        this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
+        //this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
         this.m_threadId = null;
     }
 

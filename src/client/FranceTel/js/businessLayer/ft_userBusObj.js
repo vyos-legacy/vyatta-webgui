@@ -175,6 +175,7 @@ function FT_userBusObj(busObj)
         // walk through the user list and find the current login user role,
         // then update it.
         var ul = thisObj.m_userList;
+        if(ul == undefined) return;
         for(var i=0; i<ul.length; i++)
         {
             if(ul[i].m_user == thisObj.m_loginUser.m_user)
@@ -230,7 +231,15 @@ function FT_userBusObj(busObj)
 
     this.f_isThisUserExist = function(username)
     {
-        if(this.m_userList != undefined && this.m_userList.length > 0)
+        // if the login user is USER_ROLE, they only can change their own profile
+        if(this.m_loginUser.m_role == thisObj.V_ROLE_USER)
+        {
+            if(this.m_loginUser.m_user == username)
+                return true;
+            else
+                return false;
+        }
+        else if(this.m_userList != undefined && this.m_userList.length > 0)
         {
             for(var i=0; i<this.m_userList.length; i++)
             {
@@ -353,6 +362,20 @@ function FT_userBusObj(busObj)
 
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
+    }
+
+    this.f_isDeletableUser = function(role)
+    {
+        switch(role)
+        {
+            case 'admin':
+            case 'installer':
+            default:
+                return false;
+            case 'user':
+            case 'User':
+                return true;
+        }
     }
 
     this.f_getUserNodes = function(error)

@@ -8,6 +8,7 @@
 function FT_confRestart(name, callback, busLayer)
 {
     this.thisObjName = 'FT_confRestart';
+    var thisObj = this;
 
     /**
      * @param name - name of configuration screens.
@@ -42,7 +43,6 @@ function FT_confRestart(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
-        var thisObj = this;
         var hd = this.f_createColumns();
 
         var cb = function(evt)
@@ -63,7 +63,6 @@ function FT_confRestart(name, callback, busLayer)
                     return;
                 }
 
-                var vmData = [];
                 var vm = evt.m_value.m_vmRecObj;
                 if(vm == undefined) return;
 
@@ -73,10 +72,9 @@ function FT_confRestart(name, callback, busLayer)
                 thisObj.m_div.appendChild(thisObj.m_body);
                 thisObj.m_div.appendChild(thisObj.m_button);
 
-                for(var i=0; i<=vm.length; i++)
+                for(var i=0; i<vm.length; i++)
                 {
                     var v = vm[i];
-                    if(v == undefined) break;
 
                     //////////////////////////////////
                     // skip open appliance
@@ -94,11 +92,13 @@ function FT_confRestart(name, callback, busLayer)
                     var start = thisObj.f_renderButton(
                                 'Start', !enabled, "f_vmHandleStart('" +
                                 v.m_name + "')", 'Start ' + v.m_name);
-                    vmData[i] = [v.m_name, img, restart, stop, start];
+                    var vmData = [v.m_name, img, restart, stop, start];
 
-                    var bodyDiv = thisObj.f_createGridRow(hd, vmData[i]);
+                    var bodyDiv = thisObj.f_createGridRow(hd, vmData);
                     thisObj.m_body.appendChild(bodyDiv);
                 }
+
+                thisObj.f_adjustDivPosition(thisObj.m_button);
             }
         }
 
@@ -127,9 +127,10 @@ function FT_confRestart(name, callback, busLayer)
     {
         var handleFunc = "f_handleRestart('OpenAppliance')";
         var div = document.createElement('div');
+        div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-        div.style.height = '50px';
+        div.style.height = '40px';
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr height="22">';

@@ -62,7 +62,6 @@ function FT_confDashboard(name, callback, busLayer)
                     return;
                 }
 
-                var vmData = [];
                 var vm = evt.m_value.m_vmRecObj;
                 if(vm == undefined) return;
 
@@ -72,11 +71,10 @@ function FT_confDashboard(name, callback, busLayer)
                 thisObj.m_div.appendChild(thisObj.m_body);
                 thisObj.m_div.appendChild(thisObj.m_buttons);
 
-                for(var i=0; i<=vm.length; i++)
+                for(var i=0; i<vm.length; i++)
                 {
                     var v = vm[i];
 
-                    if(v == undefined) break;
                     var img = thisObj.f_renderStatus(v.m_status);
                     var cpu = thisObj.f_renderProgressBar(v.m_cpu,
                             'CPU Used: ' + v.m_cpu + '%');
@@ -86,11 +84,13 @@ function FT_confDashboard(name, callback, busLayer)
                     var disk = thisObj.f_renderProgressBar(v.f_getDiskPercentage(),
                             'Disk Used: Total = ' + v.m_diskTotal +
                             ', Free = ' + v.m_diskFree);
-                    vmData[i] = [v.m_name, img, cpu, mem, disk, ''];
+                    var vmData = [v.m_name, img, cpu, mem, disk, ''];
 
-                    var bodyDiv = thisObj.f_createGridRow(hd, vmData[i]);
+                    var bodyDiv = thisObj.f_createGridRow(hd, vmData);
                     thisObj.m_body.appendChild(bodyDiv);
                 }
+
+                thisObj.f_adjustDivPosition(thisObj.m_buttons);
             }
         }
 
@@ -122,7 +122,7 @@ FT_extend(FT_confDashboard, FT_confBaseObj);
 
 function f_dbHandleUpdate(vm)
 {
-    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_SCHED_UPDATE_ID);	
+    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_SCHED_UPDATE_ID);
 }
 
 function f_dbHandleCancel()

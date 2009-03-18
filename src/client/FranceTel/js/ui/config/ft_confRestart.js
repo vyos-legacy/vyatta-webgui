@@ -141,8 +141,7 @@ function FT_confRestart(name, callback, busLayer)
         innerHtml += '<td width="110">' +
                     '<div title="Restart Open Appliance" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<img src="images/vm_restart.PNG" name="OpenAppl" ' +
-                    'style="cursor:pointer;" ' +
+                    '<input type="image" src="images/bt_restart.gif" name="OpenAppl" ' +
                     'value="Restart" onclick="' + handleFunc +
                     '></div></td>';
 

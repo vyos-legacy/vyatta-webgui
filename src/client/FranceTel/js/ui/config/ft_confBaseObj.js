@@ -203,8 +203,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<img src="images/add_user.PNG" name="addUser" ' +
-                    'style="cursor:pointer;" ' +
+                    '<input type="image" src="images/bt_addUser.gif" name="addUser" ' +
                     'value="addUser" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -212,8 +211,7 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<img src="images/ft_cancel.PNG" name="cancel" ' +
-                    'style="cursor:pointer;" ' +
+                    '<input type="image" src="images/bt_cancel.gif" name="cancel" ' +
                     'value="Cancel" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -221,8 +219,15 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<img src="images/ft_apply.PNG" name="apply" ' +
-                    'style="cursor:pointer;" ' +
+                    '<input type="image" src="images/bt_apply.gif" name="apply" ' +
+                    'value="apply" onclick="' + btn[1] +
+                    '"></div></td>';
+                break;
+                case 'Update':
+                    innerHtml += '<td>' +
+                    '<div title="' + btn[2] + '" style="height:30px; ' +
+                    'padding-top:15px;" >' +
+                    '<input type="image" src="images/bt_update.gif" name="apply" ' +
                     'value="apply" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -336,28 +341,29 @@ function FT_confBaseObj(name, callback, busLayer)
         switch(text)
         {
             case 'Stop':
-                imgSrc = enable ? 'images/vm_stop.PNG' : 'images/vm_stop2.PNG';
+                imgSrc = enable ? 'images/bt_stop.gif' : 'images/bt_stop_disable.PNG';
                 break;
             case 'Restart':
-                imgSrc = enable ? 'images/vm_restart.PNG' : 'images/vm_restart2.PNG';
+                imgSrc = enable ? 'images/bt_restart.gif' : 'images/bt_restart_disable.PNG';
                 break;
             case 'Start':
-                imgSrc = enable ? 'images/vm_start.PNG' : 'images/vm_start2.PNG';
+                imgSrc = enable ? 'images/bt_start.gif' : 'images/bt_start_disable.PNG';
                 break;
             case 'deleteUser':
             case 'delete':
-                imgSrc = 'images/ft_delete.PNG';
+                imgSrc = 'images/ico_delete.gif';
                 break;
             case 'restore':
-                imgSrc = 'images/ft_delete.PNG';
+                imgSrc = 'images/ico_disquette.gif';
                 break;
             case 'download':
-                imgSrc = 'images/ft_delete.PNG';
+                imgSrc = 'images/ico_download.gif';
                 break;
         }
 
-        return '<img title="' + tooltip + '" height="21" name="' + text +
-                        '" src="' + imgSrc + '" style="cursor:pointer;" ' +
+        var disabled = enable ? '' : 'disabled';
+        return '<input type="image" title="' + tooltip + '" name="' +
+                        text + '" src="' + imgSrc + '" ' + disabled +
                         ' onclick="' + cb + '">';
     }
 

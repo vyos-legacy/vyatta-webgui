@@ -107,11 +107,11 @@ var g_utils =
                 }
                 var cancelCb = ccb == undefined ? "f_utilsPopupCancel()" : "f_utilsPopupCancel();" + ccb;
                 cb = cb == undefined ? "f_utilsPopupApply()" : "f_utilsPopupApply();" + cb;
-                buttonsDiv = '<div align="center"><img id="ft_popup_message_apply" src="images/ft_apply.PNG" ' +
-                          'onclick="' + cb + '">&nbsp;&nbsp;' +
+                buttonsDiv = '<div align="center"><input id="ft_popup_message_apply" src="images/bt_apply.gif" ' +
+                          'type="image" onclick="' + cb + '">&nbsp;&nbsp;' +
                           '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-                          '<img id="ft_popup_message_cancel" src="images/ft_cancel.PNG" ' +
-                          'onclick="' + cancelCb + '"></div>';
+                          '<input id="ft_popup_message_cancel" src="images/bt_cancel.gif" ' +
+                          'type="image" onclick="' + cancelCb + '"></div>';
                 innerHtml += '<tbody><tr height="55">' +
                       '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="250"><p ' +
@@ -126,7 +126,7 @@ var g_utils =
                       '<br>Please re-login again.';
 
                 buttonsDiv = '<div align="center" style="padding-top:8px;">' +
-                              '<img src="images/ft_apply.PNG" ' +
+                              '<input type="image" src="images/bt_ok.gif" ' +
                               'onclick="f_utilsPopupTimeout()"></div>';
                 innerHtml += '<tbody><tr height="73">' +
                         '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
@@ -144,7 +144,7 @@ var g_utils =
                 }
 
                 buttonsDiv = '<div align="center" style="padding-top:8px;">' +
-                              '<img src="images/ft_apply.PNG" ' +
+                              '<input type="image" src="images/bt_ok.gif" ' +
                               'onclick="' + cb + '"></div>';
                 innerHtml += '<tbody><tr height="73">' +
                         '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
@@ -162,7 +162,7 @@ var g_utils =
                 }
 
                 buttonsDiv = '<div align="center" style="padding-top:8px;">' +
-                              '<img src="images/ft_apply.PNG" ' +
+                              '<img src="images/bt_ok.gif" ' +
                               'onclick="' + cb + '"></div>';
                 innerHtml += '<tbody><tr height="73">' +
                         '<td width="48"><img src="images/ft_confirm.PNG"></td>' +

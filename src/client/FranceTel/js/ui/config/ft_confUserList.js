@@ -75,7 +75,7 @@ function FT_confUserList(name, callback, busLayer)
                                 'Click here to edit ' + "(" + fName + ")");
                         var email = ul[i].m_email != undefined ?
                                 thisObj.f_renderAnchorHref(
-                                '<img src="images/ft_email.PNG">',
+                                '<img src="images/ico_email.gif">',
                                 "mailto:" + ul[i].m_email,
                                 'Send email to ' + fName) : "";
 

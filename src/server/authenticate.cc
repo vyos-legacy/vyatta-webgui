@@ -272,6 +272,12 @@ Authenticate::get_access_level(const std::string &username)
   //Only allow users who are members of operator or vyattacfg groups to proceed                                                                   
   //get group membership via ldap...
   //first execute the ldap command
+  
+  //short-circuit installer access here
+  if (username,"installer",9 == 0) {
+    return WebGUI::ACCESS_INSTALLER;
+  }
+
   string cmd = "/usr/bin/ldapsearch -x -b \"dc=localhost,dc=localdomain\" \"uid=" + username + "\"";
   string stdout;
   bool verbatim = false;
@@ -291,9 +297,6 @@ Authenticate::get_access_level(const std::string &username)
       }
       else if (strncmp(iter->c_str(),"admin",5) == 0) {
 	return WebGUI::ACCESS_ADMIN;
-      }
-      else if (strncmp(iter->c_str(),"installer",9) == 0) {
-	return WebGUI::ACCESS_INSTALLER;
       }
       return WebGUI::ACCESS_NONE;
     }

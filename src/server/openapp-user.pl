@@ -109,7 +109,7 @@ sub modify_user {
     #write temp file.
     my $conf_file = "/tmp/user-".$$;
 
-    print "$conf_file\n";
+#    print "$conf_file\n";
 
     open(FILE, ">$conf_file") or die "Can't open temp user file"; 
 

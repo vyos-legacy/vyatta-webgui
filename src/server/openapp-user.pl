@@ -31,7 +31,7 @@ use POSIX;
 use File::Copy;
 use Getopt::Long;
 
-my ($list,$delete,$modify,$add,$password,$lastname,$firstname,$email,$role,$rights);
+my ($list,$delete,$modify,$add,$password,$oldpassword,$lastname,$firstname,$email,$role,$rights);
 
 #
 # Add user <account>
@@ -128,9 +128,31 @@ sub modify_user {
 	print FILE "commonname: ".$firstname."\n";
     }
     elsif (defined($password) && $password ne NULL) {
-	print FILE "replace: userPassword\n";
-	my @output = `/usr/sbin/slappasswd -s $password`;
-	print FILE "userPassword: ".$output[0]."\n";
+	if (defined($oldpassword) && $oldpassword ne NULL) {
+	    my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -a $oldpassword -s $password -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");
+#	    print FILE "replace: userPassword\n";
+#	    my @output = `/usr/sbin/slappasswd -s $password`;
+#	    print FILE "userPassword: ".$output[0]."\n";
+	    close FILE;
+	    unlink($conf_file);
+	    if ($err != 0) {
+		exit 1;
+	    }
+	    return;
+	}
+	else {
+	    #this is a reset operation then
+	    my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -s $password -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");
+#	    print FILE "replace: userPassword\n";
+#	    my @output = `/usr/sbin/slappasswd -s $password`;
+#	    print FILE "userPassword: ".$output[0]."\n";
+	    close FILE;
+	    unlink($conf_file);
+	    if ($err != 0) {
+		exit 1;
+	    }
+	    return;
+	}
     }
     print FILE "\n";
 
@@ -265,6 +287,7 @@ sub usage() {
     print "       $0 --add=<username>\n";
     print "       $0 --list=<username>\n";
     print "       $0 --password=<password>\n";
+    print "       $0 --oldpassword=<oldpassword>\n";
     print "       $0 --lastname=<lastname>\n";
     print "       $0 --firstname=<firstname>\n";
     print "       $0 --email=<email>\n";
@@ -294,6 +317,7 @@ GetOptions(
     "add=s"           => \$add,
     "modify=s"        => \$modify,
     "password=s"      => \$password,
+    "oldpassword=s"   => \$oldpassword,
     "lastname=s"      => \$lastname,
     "firstname=s"     => \$firstname,
     "email=s"         => \$email,

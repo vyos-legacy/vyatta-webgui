@@ -102,10 +102,10 @@ function FT_mainPanel(){
 		thisObj.m_container.appendChild(thisObj.m_oa_container);	
         thisObj.m_2navMenu.f_show();
 		if (g_roleManagerObj.f_isUser()) {
-			alert('is regular user');
+			//alert('is regular user');
 			thisObj.m_2navMenu.f_selectItem(VYA.FT_CONST.DOM_2_NAV_MYPROFILE_ID);		
 		} else {
-			alert('other user');
+			//alert('other user');
 			thisObj.m_2navMenu.f_selectItem(VYA.FT_CONST.DOM_2_NAV_APP_ID);
 		}
     }

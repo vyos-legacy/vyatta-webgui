@@ -1,0 +1,253 @@
+.scw
+{
+    padding: 0px;
+    vertical-align: middle;
+}
+
+iframe.scw
+{
+    position: absolute;
+    z-index: 1;
+    top: 0px;
+    left: 0px;
+    visibility: hidden;
+    width: 1px;
+    height: 1px;
+}
+
+table.scw
+{
+    padding: 0px;
+    visibility: hidden;
+    position: absolute;
+    cursor: default;
+    width: 200px;
+    top: 0px;
+    left: 0px;
+    z-index: 2;
+    text-align: center;
+    vertical-align: middle;
+    border: solid 2px;
+    font-size: 10pt;
+    font-family: Arial, Helvetica, Sans-Serif;
+    font-weight: bold;
+}
+
+/** This is the combo section **/
+td.scwHead
+{
+    padding: 0px 0px;
+    text-align: center;
+	background-color: #EEEEEE;
+}
+
+td.scwDrag
+{
+    font-size: 8pt;
+}
+
+select.scwHead
+{
+    margin: 3px 1px;
+    text-align: center;
+}
+
+input.scwHead
+{
+    height: 22px;
+    width: 22px;
+    vertical-align: middle;
+    text-align: center;
+    margin: 2px 1px;
+    font-weight: bold;
+    font-size: 10pt;
+    font-family: fixedSys;
+}
+
+td.scwWeekNumberHead, td.scwWeek
+{
+    padding: 0px;
+    text-align: center;
+    font-weight: bold;
+}
+
+td.scwNow, td.scwNowHover, td.scwNow:hover, td.scwNowDisabled
+{
+    padding: 0px;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: normal;
+}
+
+table.scwCells
+{
+    text-align: right;
+    font-size: 8pt;
+    width: 96%;
+}
+
+td.scwCells, td.scwCellsHover, td.scwCells:hover, td.scwCellsDisabled, td.scwCellsExMonth, td.scwCellsExMonthHover, td.scwCellsExMonth:hover, td.scwCellsExMonthDisabled, td.scwCellsWeekend, td.scwCellsWeekendHover, td.scwCellsWeekend:hover, td.scwCellsWeekendDisabled, td.scwInputDate, td.scwInputDateHover, td.scwInputDate:hover, td.scwInputDateDisabled, td.scwWeekNo, td.scwWeeks
+{
+    padding: 0px;
+    width: 16px;
+    height: 16px;
+    border-width: 1px;
+    border-style: solid;
+    font-weight: normal;
+    vertical-align: middle;
+}
+
+/* background color section */
+table.scw
+{
+    background-color: #FFFFFF;
+}
+
+td.scwDrag
+{
+    background-color: #9999CC;
+    color: #CCCCFF;
+}
+
+td.scwWeekNumberHead
+{
+    background-color: #FFFFFF;	
+    color: #6666CC;
+	font-weight: bold;
+}
+
+/** this is the week header M T W T F S S */
+td.scwWeek
+{
+    background-color: #FF6600;	
+    color: #FFFFFF;
+	font-weight: bold;
+}
+
+td.scwWeekNo
+{
+    background-color: #776677;
+    color: #CCCCCC;
+}
+
+td.scwCells
+{
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+td.scwInputDate
+{
+    background-color: #FFFFFF;
+    color: #FF6600;
+	font-weight: bold;
+}
+
+td.scwCellsWeekend
+{
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+td.scwCellsExMonth
+{
+    background-color: #FFFFFF;
+    color: #666666;
+}
+
+/* today selector */
+td.scwNow
+{
+    background-color: #FFFFFF;
+    color: #FF6600;
+}
+
+td.scwClear
+{
+    padding: 0px;
+}
+
+input.scwClear
+{
+    padding: 0px;
+    text-align: center;
+    font-size: 8pt;
+}
+
+/* active cells */
+td.scwCells:hover, td.scwCellsHover
+{
+    background-color: #FF6600;
+    cursor: pointer;
+    color: #FFFFFF;
+}
+
+/* Day matching the input date */
+td.scwInputDate:hover, td.scwInputDateHover
+{
+    background-color: #FF6600;
+    cursor: pointer;
+    color: #FFFFFF;
+}
+
+/* Weekend cells */
+td.scwCellsWeekend:hover, td.scwCellsWeekendHover
+{
+    background-color: #FF6600;
+    cursor: pointer;
+    color: #FFFFFF;
+}
+
+/* Day outside the current month */
+td.scwCellsExMonth:hover, td.scwCellsExMonthHover
+{
+    background-color: #FF6600;
+    cursor: pointer;
+    color: #FFFFFF;
+}
+
+/* Today selector */
+td.scwNow:hover, td.scwNowHover
+{
+    background-color: #FF6600;	
+    color: #FFFFFF;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Disabled cells */
+/* Week Day */
+/* Day matching the input date */
+td.scwInputDateDisabled
+{
+    background-color: #999999;
+    color: #000000;
+}
+
+td.scwCellsDisabled
+{
+    background-color: #999999;
+    color: #000000;
+}
+
+/* Weekend Day */
+td.scwCellsWeekendDisabled
+{
+    background-color: #999999;
+    color: #CC6666;
+}
+
+/* Day outside the current month */
+td.scwCellsExMonthDisabled
+{
+    background-color: #999999;
+    color: #666666;
+}
+
+td.scwNowDisabled
+{
+    background-color: #6666CC;
+    color: #FFFFFF;
+}
+
+

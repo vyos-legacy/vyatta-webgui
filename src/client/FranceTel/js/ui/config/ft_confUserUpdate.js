@@ -189,8 +189,8 @@ function FT_confUserUpdate(name, callback, busLayer)
     
     this.f_resetPasswdConfirmCb = function()
     {
-        var user = new FT_userRecObj(this.m_user.m_user, null, null, this.m_user.m_user, null, null, null, null);
-        g_busObj.f_modifyUserFromServer(user, thisObj.f_resetPasswordCb);
+        var user = new FT_userRecObj(this.m_user.m_user, null, null, null, null, null, null, null,null);
+        g_busObj.f_resetUserPassword(user, thisObj.f_resetPasswordCb);
     }
     
     /**

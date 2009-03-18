@@ -215,6 +215,13 @@ function FT_configPanel()
                 thisObj.m_selectObj = new FT_confBLB('BLB Association', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
+				
+			case VYA.FT_CONST.DOM_3_NAV_SUB_BLB_CHECK_ID:
+                var mpCb = function(){
+                }
+                thisObj.m_selectObj = new FT_confBLBcheck('BLB credentials check', mpCb, g_busObj);
+                thisObj.m_selectObj.f_init();
+                return thisObj.m_selectObj.f_getConfigurationPage();			
                 
             case VYA.FT_CONST.DOM_3_NAV_SUB_PASSWORD_ID:
                 var mpCb = function(){

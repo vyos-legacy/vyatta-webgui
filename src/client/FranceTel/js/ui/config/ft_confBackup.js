@@ -10,6 +10,7 @@ function FT_confBackup(name, callback, busLayer)
     this.thisObjName = 'FT_confBackup';
 	this.m_vmName = [];
 	var thisObj = this;
+	this.m_bottom = undefined;
 
     /**
      * @param name - name of configuration screens.
@@ -91,8 +92,8 @@ function FT_confBackup(name, callback, busLayer)
         el = document.getElementById('conf_backup_data_checkall');
 		el.checked = false;				
 		el = document.getElementById('conf_backup_form');
-        el.target_group[0].checked = true;
-		el.target_group[1].checked = false;		
+        el.target_group[0].checked = false;
+		el.target_group[1].checked = true;		
 	}
 	
 	this.f_validate = function()
@@ -211,6 +212,7 @@ function FT_confBackup(name, callback, busLayer)
 					//alert('adding row: vm: ' + v.m_name + ' innerHTML: ' + bodyDiv.innerHTML);
                     thisObj.m_body.appendChild(bodyDiv);
                 }
+                thisObj.f_adjustDivPosition(thisObj.m_bottom);				
 				//////////////////////////////////////////////////////////
 				//// adding the check all, check all to the last row
 				//////////////////////////////////////////////////////////
@@ -249,8 +251,8 @@ function FT_confBackup(name, callback, busLayer)
 		    '<form id="conf_backup_form" class="v_form" border="0">' +
 				'<table cellspacing="0" cellpadding="0" border="0">' +
 					'<tr><td><label class="v_label">Target:</label></td></tr>' +				
-				    '<tr><td style="padding-left:35px;"><input type="radio" name="target_group" value="pc" checked>&nbsp;My PC</td></tr>' +
-				    '<tr><td style="padding-left:35px;"><input type="radio" name="target_group" value="oa">&nbsp;Open appliance</td></tr>' +
+				    '<tr><td style="padding-left:35px;"><input type="radio" name="target_group" value="pc">&nbsp;My PC</td></tr>' +
+				    '<tr><td style="padding-left:35px;"><input type="radio" name="target_group" value="oa" checked>&nbsp;Open appliance</td></tr>' +
 				'</table>' +
 		    '</form>';		
 
@@ -259,21 +261,35 @@ function FT_confBackup(name, callback, busLayer)
         return div;
     }		
 		
+	this.f_createBottom = function()
+	{
+        var div = document.createElement('div');
+        div.style.position = 'relative';
+        //div.style.borderBottom = '1px dotted #CCC';
+        div.style.backgroundColor = 'white';
+        div.style.paddingTop = '0px';
+        div.style.paddingBottom = '0px';		
+		return div;
+	}	
 
     this.f_init = function()
     {
-        var hd = this.f_createColumns();
-        this.m_header = this.f_createGridHeader(hd);
-        this.m_body = this.f_createGridView(hd);
-		this.m_target = this.f_createTargetView();
+        var hd = thisObj.f_createColumns();
+        this.m_header = thisObj.f_createGridHeader(hd);
+        this.m_body = thisObj.f_createGridView(hd);
+		this.m_target = thisObj.f_createTargetView();
 		
-        this.f_loadVMData();
+        thisObj.f_loadVMData();
 
         var btns = [['Backup', 'f_handleConfBackupBkCb()'],
 		            ['Cancel', 'f_handleConfBackupCancelCb()']];
-        this.m_buttons = this.f_createButtons(btns);
-
-        return [this.m_header, this.m_body, this.m_target, this.m_buttons];
+        this.m_buttons = thisObj.f_createButtons(btns);
+        
+		this.m_bottom = thisObj.f_createBottom();
+		this.m_bottom.appendChild(this.m_target);
+		this.m_bottom.appendChild(this.m_buttons);
+		
+        return [this.m_header, this.m_body, this.m_bottom];
     }
 }
 FT_extend(FT_confBackup, FT_confBaseObj);

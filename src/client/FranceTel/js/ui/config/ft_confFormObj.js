@@ -195,6 +195,29 @@ function FT_confFormObj(name, callback, busLayer) {
         if (this.m_config.buttons != undefined) {
             html = html + '<div class="v_button_container"><br/><br/>';
             for (var i = 0; i < this.m_config.buttons.length; i++) {
+				html = html + '<img id="' + this.m_config.buttons[i].id + '" class="v_button"';
+				var imgSrc = 'images/bt_apply.gif';
+				switch (this.m_config.buttons[i].text.trim().toLowerCase()) {
+					case 'apply':
+					    imgSrc = 'images/bt_apply.gif';
+						break;
+					case 'update':
+					    imgSrc = 'images/bt_update.gif';
+						break;
+					case 'cancel':
+					    imgSrc = 'images/bt_cancel.gif';
+						break;
+					case 'ok':
+					    imgSrc = 'images/bt_ok.gif';
+						break;
+					case 'backup':
+					    imgSrc = 'images/bt_backup.gif';
+						break;
+					default: 
+					    break;
+				}
+				html = html + ' src="' + imgSrc + '">';
+				/*
                 html = html + '<button id="' + this.m_config.buttons[i].id + '" type="button" class="v_button"';
                 if (this.m_config.buttons[i].size != undefined) {
                     html = html + ' size="' + this.m_config_buttons[i].size + '">';
@@ -202,6 +225,7 @@ function FT_confFormObj(name, callback, busLayer) {
                     html = html + '">';
                 }
                 html = html + this.m_config.buttons[i].text + '</button>';
+                */
             }
             html = html + '</div>';
         }

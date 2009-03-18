@@ -3,6 +3,7 @@
  */
 document.write('<script type="text/javascript" src="js/ui/utils/ft_utils.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/utils/ft_crossBrowser.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/utils/ft_calendar.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/utils/ft_lookupTable.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/ft_const.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/style/ft_style.js"></script>');

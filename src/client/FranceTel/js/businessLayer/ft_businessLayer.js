@@ -266,6 +266,16 @@ function FT_businessLayer()
         thisObj.m_userObj.f_modifyUser(userRec, guiCb);
     }
 
+    this.f_modifyUserPassword = function(userRec, guiCb)
+    {
+        thisObj.m_userObj.f_modifyUserPassword(userRec, guiCb);
+    }
+
+    this.f_resetUserPassword = function(userRec, guiCb)
+    {
+       thisObj.m_userObj.f_resetUserPassword(userRec, guiCb);
+    }
+
     this.f_modifyUserRightToServer = function(userRightCmd, guiCb)
     {
         thisObj.m_userObj.f_modifyUserRight(userRightCmd, guiCb);

@@ -231,6 +231,14 @@ function FT_confBaseObj(name, callback, busLayer)
                     'value="apply" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
+                case 'Backup':
+                    innerHtml += '<td>' +
+                    '<div title="' + btn[2] + '" style="height:30px; ' +
+                    'padding-top:15px;" >' +
+                    '<input type="image" src="images/bt_backup.gif" name="apply" ' +
+                    'value="apply" onclick="' + btn[1] +
+                    '"></div></td>';
+                break;				
                 default:
                     innerHtml += '<td><div style="height:30px; ' +
                         'padding-top:15px;" >' +

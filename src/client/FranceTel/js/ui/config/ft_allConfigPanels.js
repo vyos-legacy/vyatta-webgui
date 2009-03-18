@@ -23,6 +23,7 @@ document.write('<script type="text/javascript" src="js/ui/config/ft_confEmailSer
 document.write('<script type="text/javascript" src="js/ui/config/ft_confTimeServer.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confLDAPserver.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confBLB.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/ft_confBLBcheck.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confPassword.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confSchedUpdate.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confSubscribe.js"></script>');

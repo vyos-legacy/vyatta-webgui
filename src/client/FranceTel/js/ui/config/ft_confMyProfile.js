@@ -144,9 +144,8 @@ function FT_confMyProfile (name, callback, busLayer) {
 	
 	this.f_resetPassword = function()
 	{
-		//alert('login name: ' + thisObj.m_user.m_user);
-        var user = new FT_userRecObj(thisObj.m_user.m_user, null, null, thisObj.form.conf_myprofile_new_passwd.value, null, null, null, null);
-        g_busObj.f_modifyUserFromServer(user, thisObj.f_resetPasswordCb);		
+        var user = new FT_userRecObj(thisObj.m_user.m_user, null, null, thisObj.form.conf_myprofile_old_passwd.value, null, null, null, null,thisObj.form.conf_myprofile_new_passwd.value);
+        g_busObj.f_modifyUserPassword(user, thisObj.f_resetPasswordCb);		
 	}
 	
 	this.f_reset = function()

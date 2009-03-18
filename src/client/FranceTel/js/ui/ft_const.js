@@ -77,6 +77,7 @@ VYA.FT_CONST = {
     DOM_3_NAV_SUB_TIME_SRV_ID : 'time_serv_l2',
 	DOM_3_NAV_SUB_USER_DIR_ID : 'user_dir_l2',
 	DOM_3_NAV_SUB_BLB_ID : 'blb_l2',
+	DOM_3_NAV_SUB_BLB_CHECK_ID : 'blb_check_l2',
 	DOM_3_NAV_SUB_3_PARTY_ID : '3rd_party_l2',
 	DOM_3_NAV_SUB_PASSWORD_ID : 'password_l2',
 	//----My Profile

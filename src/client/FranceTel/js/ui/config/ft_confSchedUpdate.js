@@ -69,8 +69,9 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 				id: 'conf_sched_update_cal_text',
 				size: '12'
 			}, {
-				v_type: 'text',
+				v_type: 'html',
 				id: 'conf_sched_update_cal',
+				text: '<img id="conf_sched_update_cal" src="images/ico_calendar.gif">',				
 				no_left_margin: 'true',
 				size: '8'
 			}, {
@@ -108,6 +109,8 @@ function FT_confSchedUpdate (name, callback, busLayer) {
         g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);
 		el = document.getElementById('conf_sched_update_now');
         g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);
+        el = document.getElementById('conf_sched_update_cal');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);		
     }
     
     this.f_detachListener = function()
@@ -116,7 +119,15 @@ function FT_confSchedUpdate (name, callback, busLayer) {
         g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);
 		el = document.getElementById('conf_sched_update_now');
         g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);
+        el = document.getElementById('conf_sched_update_cal');		
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);		
     }	
+	
+	this.f_showCal = function(e) 
+	{
+		var el = document.getElementById('conf_sched_update_cal_text');
+		g_calObj.f_show(el,e);
+	}
 	
     this.f_handleClick = function(e)
     {
@@ -131,6 +142,8 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 				
 			} else if (id == 'conf_sched_update_now') {
 				
+			} else if (id == 'conf_sched_update_cal') {
+				thisObj.f_showCal(e);
 			}
         }
     }	    

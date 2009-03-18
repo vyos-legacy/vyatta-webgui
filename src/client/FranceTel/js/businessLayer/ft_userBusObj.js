@@ -5,13 +5,14 @@
     Description:
 */
 
-function FT_userRecObj(user, last, first, pw, role, type, email, right)
+function FT_userRecObj(user, last, first, pw, role, type, email, right, newPw)
 {
     this.m_user = user;    // login username
     this.m_last = last;
     this.m_first = first;
     this.m_email = email;
-    this.m_pw = pw;
+    this.m_pw = pw;         // old or current pw
+    this.m_newPw = newPw;   // new pw to be changed
     this.m_role = role; // user role: admin=0, installer=1, user=2
     this.m_rights = right; // an array of unique vm id
     this.m_type = type;    // add, change, delete, list
@@ -316,8 +317,6 @@ function FT_userBusObj(busObj)
         var xmlstr = "<command><id>" + sid + "</id><statement>" +
                     "open-app user modify '" + ur.m_user + "' ";
 
-        if(ur.m_pw != undefined && ur.m_pw.length > 0)
-            xmlstr += "password '" + ur.m_pw + "' ";
         if(ur.m_last != undefined && ur.m_last.length > 0)
             xmlstr += "last '" + ur.m_last + "' ";
         if(ur.m_first != undefined && ur.m_first.length > 0)
@@ -330,6 +329,53 @@ function FT_userBusObj(busObj)
             xmlstr += "role '" + ur.m_role + "'";
 
         xmlstr += "</statement></command>";
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_modifyUserPassword = function(userRec, guiCb)
+    {
+        thisObj.m_guiCb = guiCb;
+
+        if(!this.f_isThisUserExist(userRec.m_user))
+        {
+            var evt = new FT_eventObj(9, '', "User is not existed");
+            guiCb(evt);
+            return;
+        }
+
+        var ur = userRec;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+                    "open-app user modify '" + ur.m_user + "' ";
+
+        if(ur.m_newPw != undefined && ur.m_newPw.length > 0)
+            xmlstr += "password '" + ur.m_newPw + "' ";
+        if(ur.m_pw != undefined && ur.m_pw.length > 0)
+            xmlstr += "oldpassword '" + ur.m_pw + "' ";
+
+        xmlstr += "</statement></command>";
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_resetUserPassword = function(userRec, guiCb)
+    {
+        thisObj.m_guiCb = guiCb;
+
+        if(!this.f_isThisUserExist(userRec.m_user))
+        {
+            var evt = new FT_eventObj(9, '', "User is not existed");
+            guiCb(evt);
+            return;
+        }
+
+        var ur = userRec;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+                    "open-app user modify '" + ur.m_user + "' " +
+                    "password reset</statement></command>";
+
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }

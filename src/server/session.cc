@@ -124,7 +124,7 @@ Session::process_message()
       if (!update_session()) {
 	return false;
       }
-      _command.execute_command(_access_level);
+      _command.execute_command(_username, _access_level);
       break;
 
     case WebGUI::GETCONFIG:
@@ -296,6 +296,8 @@ Session::update_session()
     fclose(fp);
     return false;
   }
+
+  _username = string(name_buf);
 
   fclose(fp);
 

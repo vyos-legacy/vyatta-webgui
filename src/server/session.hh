@@ -82,6 +82,7 @@ public://private:
   bool _valid;
   bool _debug;
   WebGUI::AccessLevel _access_level;
+  std::string _username;
 };
 
 #endif //__SESSION_HH__

@@ -6,6 +6,7 @@
  */
 function FT_confSchedUpdate (name, callback, busLayer) {
     var thisObjName = 'FT_confSchedUpdate';
+	var thisObj = this;
     
     /**
      * @param name - name of configuration screens.
@@ -50,7 +51,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 				v_type: 'html',
 				id: 'conf_sched_update_now',
 				padding : '30px',				
-				text: '<input type="radio" name="conf_sched_update_when" value="now" checked>&nbsp;Now',
+				text: '<input type="radio" name="conf_sched_update_when" id="conf_sched_update_now" value="now" checked>&nbsp;Now',
 				v_new_row: 'true',
 				v_end_row: 'true'
 			}, {
@@ -61,7 +62,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 				v_type: 'html',
 				id: 'conf_sched_update_later',
 				padding : '30px',		
-				text: '<input type="radio" name="conf_sched_update_when" value="later">&nbsp;Later',
+				text: '<input type="radio" name="conf_sched_update_when" id="conf_sched_update_later" value="later">&nbsp;Later',
 				v_new_row: 'true'
 			}, {
 				v_type: 'text',
@@ -93,12 +94,30 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 	
     this.f_loadVMData = function(element)
     {
+		thisObj.f_attachListener();
     }
     
     this.f_stopLoadVMData = function()
     {
+		thisObj.f_detachListener();
     }
     
+    this.f_attachListener = function()
+    {
+        var el = document.getElementById('conf_sched_update_later');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);
+		el = document.getElementById('conf_sched_update_now');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);
+    }
+    
+    this.f_detachListener = function()
+    {
+        var el = document.getElementById('conf_sched_update_later');
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);
+		el = document.getElementById('conf_sched_update_now');
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);
+    }	
+	
     this.f_handleClick = function(e)
     {
         var target = g_xbObj.f_xbGetEventTarget(e);
@@ -108,7 +127,11 @@ function FT_confSchedUpdate (name, callback, busLayer) {
                 alert('Schedule update update button clicked');
             } else if (id == 'conf_sched_update_cancel_button') { //cancel clicked
                 g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_DASHBOARD_ID);           
-            }
+            } else if (id == 'conf_sched_update_later') {
+				
+			} else if (id == 'conf_sched_update_now') {
+				
+			}
         }
     }	    
 }

@@ -9,7 +9,7 @@ function FT_roleManager()
 	/////////////////////////////////////
 	// properties
 	var thisObj = this;
-	var m_user = undefined;
+	this.m_user = undefined;
 	
 	///////////////////////////////////////
 	// functions
@@ -57,12 +57,19 @@ function FT_roleManager()
 	}	
 	
 	this.f_isUser = function() {
-		return (thisObj.m_user.m_role == thisObj.m_user.V_ROLE_USER);
+        var uo = g_busObj.f_getLoginUserObj();		
+		return (thisObj.m_user.m_role == uo.V_ROLE_USER);
 	}
 	
 	this.f_isInstaller = function() {
-		return (thisObj.m_user.m_role == thisObj.m_user.V_ROLE_INSTALL);		
+        var uo = g_busObj.f_getLoginUserObj();			
+		return (thisObj.m_user.m_role == uo.V_ROLE_INSTALL);		
 	}
+	
+	this.f_isAdmin = function() {
+        var uo = g_busObj.f_getLoginUserObj();			
+		return (thisObj.m_user.m_role == uo.V_ROLE_ADMIN);		
+	}	
 }
 
 ///////////////////////////////////////////////

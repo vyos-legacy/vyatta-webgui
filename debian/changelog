@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-7) unstable; urgency=low
+
+  * Don't redirect webproxy cgi script to https.
+
+ -- Stig Thormodsrud <stig@vyatta.com>  Tue, 17 Mar 2009 17:36:39 -0700
+
 vyatta-webgui (0.2.13-6) unstable; urgency=low
 
   * update build dependency

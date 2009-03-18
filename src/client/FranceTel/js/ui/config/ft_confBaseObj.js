@@ -94,12 +94,13 @@ function FT_confBaseObj(name, callback, busLayer)
 
     this.f_createGridView = function(header)
     {
+        thisObj.m_tableRowCounter = 0;
         var div = document.createElement('div');
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-        div.style.height = '150px';
-        div.style.overflow = 'auto';
-        div.style.border = '1px solid #CCC';
+        div.style.height = '50px';
+        div.style.overflow = 'visible';
+        //div.style.border = '1px solid #CCC';
         div.style.color = '#000';
 
         var width = 0;
@@ -166,7 +167,14 @@ function FT_confBaseObj(name, callback, busLayer)
         div.style.width = (width) + 'px';
         div.innerHTML = innerHtml;
 
+        thisObj.m_tableRowCounter++;
         return div;
+    }
+
+    this.f_adjustDivPosition = function(div)
+    {
+        var adVal = (thisObj.m_tableRowCounter * 28) - 20;
+        div.style.top = adVal+'px';
     }
 
     /**
@@ -178,9 +186,10 @@ function FT_confBaseObj(name, callback, busLayer)
     this.f_createButtons = function(buttons)
     {
         var div = document.createElement('div');
+        div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-        div.style.height = '50px';
+        div.style.height = '40px';
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr height="22">';
@@ -238,6 +247,10 @@ function FT_confBaseObj(name, callback, busLayer)
 
     this.f_removeDivChildren = function(div)
     {
+        if(div == undefined) return;
+
+        thisObj.m_tableRowCounter = 0;
+
         while(div.hasChildNodes())
             div.removeChild(div.childNodes[0])
     }

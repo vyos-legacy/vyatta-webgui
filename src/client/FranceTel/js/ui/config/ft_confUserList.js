@@ -89,6 +89,8 @@ function FT_confUserList(name, callback, busLayer)
                         var bodyDiv = thisObj.f_createGridRow(hd, data);
                         thisObj.m_body.appendChild(bodyDiv);
                     }
+
+                    thisObj.f_adjustDivPosition(thisObj.m_buttons);
                 }
             }
         }
@@ -99,7 +101,7 @@ function FT_confUserList(name, callback, busLayer)
 
     this.f_stopLoadVMData = function()
     {
-        this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
+        //this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
         this.m_threadId = null;
     }
 

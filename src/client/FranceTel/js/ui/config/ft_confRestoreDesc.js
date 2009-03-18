@@ -49,10 +49,10 @@ function FT_confRestoreDesc(name, callback, busLayer)
             thisObj.f_removeDivChildren(thisObj.m_body);
             thisObj.m_div.appendChild(thisObj.m_header);
             thisObj.m_div.appendChild(thisObj.m_body);
-            thisObj.m_div.appendChild(thisObj.m_restorePC);
+            thisObj.m_div.appendChild(thisObj.m_buttons);
         }
 
-
+        //thisObj.f_adjustDivPosition(thisObj.m_buttons);
         //var bodyDiv = thisObj.f_createGridRow(hd, vmData);
         //thisObj.m_body.appendChild(bodyDiv);
 
@@ -62,7 +62,6 @@ function FT_confRestoreDesc(name, callback, busLayer)
 
     this.f_stopLoadVMData = function()
     {
-        this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
         this.m_threadId = null;
     }
 

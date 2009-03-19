@@ -20,7 +20,7 @@ Command::~Command()
 }
 
 void
-Command::execute_command(const string &username, WebGUI::AccessLevel access_level)
+Command::execute_command(const string &username, WebGUI::AccessLevel user_access_level)
 {
   Message msg = _proc->get_msg();
   //parses all template nodes (or until depth to provide full template tree
@@ -45,7 +45,7 @@ Command::execute_command(const string &username, WebGUI::AccessLevel access_leve
   while (iter != coll.end()) {
     string err;
     int err_code = WebGUI::SUCCESS;
-    execute_single_command(*iter, username, access_level, err, err_code);
+    execute_single_command(*iter, username, user_access_level, err, err_code);
     if (err_code != WebGUI::SUCCESS) {
       //generate error response for this command and exit
       _proc->set_response(WebGUI::COMMAND_ERROR, err);
@@ -133,7 +133,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   }
   else {
     //treat this as an op mode command
-    if (user_access_level >= validate_op_cmd(username,cmd)) {
+    if (user_access_level >= validate_op_cmd(username,user_access_level,cmd)) {
 
       cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
@@ -192,9 +192,9 @@ Command::validate_session(unsigned long id)
  * replaces quoted values with node.tag and validates against cmd directory
  **/
 WebGUI::AccessLevel
-Command::validate_op_cmd(const string &username, std::string &cmd)
+Command::validate_op_cmd(const string &username, WebGUI::AccessLevel user_access_level, std::string &cmd)
 {
-  WebGUI::AccessLevel access_level = WebGUI::ACCESS_NONE;
+  WebGUI::AccessLevel cmd_access_level = WebGUI::ACCESS_NONE;
   //convert to op directory
 
   //first let's replace all 'asdf asdf' with node.tag string
@@ -239,19 +239,19 @@ Command::validate_op_cmd(const string &username, std::string &cmd)
     while (fgets(buf, 1024, fp) != 0) {
       string tmp = string(buf);
       if (tmp.find("access:admin") != string::npos) {
-	access_level = WebGUI::ACCESS_ADMIN;
+	cmd_access_level = WebGUI::ACCESS_ADMIN;
       }
       else if (tmp.find("access:installer") != string::npos) {
-	access_level = WebGUI::ACCESS_INSTALLER;
+	cmd_access_level = WebGUI::ACCESS_INSTALLER;
       }
     }
     fclose(fp);
-    access_level = WebGUI::ACCESS_USER;  //allow user access if no permission stated
+    cmd_access_level = WebGUI::ACCESS_USER;  //allow user access if no permission stated
   }
-  access_level = WebGUI::ACCESS_USER;
+  cmd_access_level = WebGUI::ACCESS_USER;
 
   //finally a special restriction on user modification given access level
-  if (access_level == WebGUI::ACCESS_USER) {
+  if (user_access_level == WebGUI::ACCESS_USER) {
     //can only modify themselves
     StrProc str_proc(cmd," ");
     if (str_proc.get(1) == "user" && (str_proc.get(2) == "add" ||
@@ -262,5 +262,5 @@ Command::validate_op_cmd(const string &username, std::string &cmd)
       }
     }
   }
-  return access_level;
+  return cmd_access_level;
 }

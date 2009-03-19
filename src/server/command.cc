@@ -7,6 +7,7 @@
 #include <string>
 #include "rl_str_proc.hh"
 #include "systembase.hh"
+#include "multirespcmd.hh"
 #include "command.hh"
 
 using namespace std;
@@ -164,6 +165,37 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   stdout = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
   resp = stdout;
 }
+
+
+/**                                                                                                                                                   
+ *                                                                                                                                                    
+ **/
+bool
+Command::multi_part_op_cmd(std::string &cmd)
+{
+  //does the cmd either equal an in-process bground op multi-part cmd                                                                                 
+  //or is this the start of one?                                                                                                                      
+  MultiResponseCommand multi_resp_cmd(_proc->get_msg().id(),cmd);
+  multi_resp_cmd.init();
+  //blocks until enough of a response is generated                                                                                                    
+  if (!multi_resp_cmd.process()) {
+    //generate the error response                                                                                                                     
+    return false;
+  }
+  string resp,token;
+  multi_resp_cmd.get_resp(token,resp);
+  resp = WebGUI::mass_replace(resp, "&", "&amp;");
+  resp = WebGUI::mass_replace(resp, "\"", "&quot;");
+  resp = WebGUI::mass_replace(resp, "'", "&apos;");
+  resp = WebGUI::mass_replace(resp, "<", "&lt;");
+  resp = WebGUI::mass_replace(resp, ">", "&gt;");
+
+  //will build out special response here:                                                                                                             
+  string msg = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->_msg._token+"</token><error><code>0</code><msg segment='"+token+"'>"+resp+"</msg></error></vyatta>";
+  _proc->set_response(msg);
+  return true;
+}
+
 
 /**
  *

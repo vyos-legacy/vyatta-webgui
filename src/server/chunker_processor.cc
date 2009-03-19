@@ -165,6 +165,8 @@ ChunkerProcessor::reader(string token,int (&cp)[2])
 void
 ChunkerProcessor::process_chunk_end(string &str, string &token, long &chunk_ct)
 {
+  string chunk = str;
+  /*
   //OK, let's find a natural break and start processing
   size_t pos = str.rfind('\n');
   string chunk;
@@ -176,7 +178,7 @@ ChunkerProcessor::process_chunk_end(string &str, string &token, long &chunk_ct)
     chunk = str;
     str = string("");
   }
-  
+  */
   char buf[80];
   sprintf(buf,"%lu",chunk_ct);
   string file = WebGUI::CHUNKER_RESP_TOK_DIR + WebGUI::CHUNKER_RESP_TOK_BASE + token + "_" + string(buf);

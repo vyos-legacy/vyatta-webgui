@@ -76,7 +76,7 @@ install-exec-hook:
 		); \
 		rm -f /tmp/ext-$$v.zip; \
 	done
-	@mkdir -p $(DESTDIR)$(statedir)
+	@mkdir -p $(DESTDIR)$(statedir)/vmstatus
 	@cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
 	@mkdir -p $(DESTDIR)$(opdir)
 	@cd src/server/templates; $(cpiop) $(DESTDIR)$(opdir)

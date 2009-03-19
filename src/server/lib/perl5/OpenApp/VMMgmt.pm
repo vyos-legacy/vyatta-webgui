@@ -5,6 +5,7 @@ our @EXPORT = qw(getVMList);
 use base qw(Exporter);
 
 my $VMDIR = '/opt/vyatta/etc/gui/VM';
+my $STATUS_DIR = '/opt/vyatta/var/run/vmstatus';
 
 sub getVMList {
   my $dd = undef;
@@ -15,15 +16,25 @@ sub getVMList {
 }
 
 my %fields = (
+  # metadata
   _vmId => undef,
   _vmIP => undef,
   _vmWuiPort => undef,
   _vmWuiUri => undef,
   _vmImgVer => undef,
-  _vmDisplayName => undef
+  _vmDisplayName => undef,
+
+  # status
+  _vmState => undef,
+  _vmCpu => undef,
+  _vmDiskAll => undef,
+  _vmDiskFree => undef,
+  _vmMemAll => undef,
+  _vmMemFree => undef,
+  _vmNewUpdate => undef
 );
 
-sub _setup {
+sub _setupMeta {
   my ($self, $id) = @_;
   if (! -r "$VMDIR/$id") {
     return;
@@ -42,6 +53,32 @@ sub _setup {
   $self->{_vmDisplayName} = $dname;
 }
 
+sub _setupStatus {
+  my ($self, $id) = @_;
+  if (! -r "$STATUS_DIR/$id") {
+    return;
+  }
+  my $fd = undef;
+  open($fd, '<', "$STATUS_DIR/$id") or return;
+  my $data = <$fd>;
+  close($fd);
+  chomp($data);
+  my ($st, $cpu, $dall, $dfree, $mall, $mfree, $upd) = split(/ /, $data);
+  $self->{_vmState} = $st;
+  $self->{_vmCpu} = $cpu;
+  $self->{_vmDiskAll} = $dall;
+  $self->{_vmDiskFree} = $dfree;
+  $self->{_vmMemAll} = $mall;
+  $self->{_vmMemFree} = $mfree;
+  $self->{_vmNewUpdate} = $upd;
+}
+
+sub _setup {
+  my ($self, $id) = @_;
+  $self->_setupMeta($id);
+  $self->_setupStatus($id);
+}
+
 sub new {
   my ($that, $id) = @_;
   my $class = ref ($that) || $that;
@@ -54,6 +91,7 @@ sub new {
   return $self;
 }
 
+### getters for VM metadata
 sub getId {
   my ($self) = @_;
   return $self->{_vmId};
@@ -82,6 +120,42 @@ sub getImgVer {
 sub getDisplayName {
   my ($self) = @_;
   return $self->{_vmDisplayName};
+}
+
+### getters for VM status
+sub getState {
+  my ($self) = @_;
+  return $self->{_vmState};
+}
+
+sub getCpu {
+  my ($self) = @_;
+  return $self->{_vmCpu};
+}
+
+sub getDiskAll {
+  my ($self) = @_;
+  return $self->{_vmDiskAll};
+}
+
+sub getDiskFree {
+  my ($self) = @_;
+  return $self->{_vmDiskFree};
+}
+
+sub getMemAll {
+  my ($self) = @_;
+  return $self->{_vmMemAll};
+}
+
+sub getMemFree {
+  my ($self) = @_;
+  return $self->{_vmMemFree};
+}
+
+sub getUpdateAvail {
+  my ($self) = @_;
+  return $self->{_vmNewUpdate};
 }
 
 1;

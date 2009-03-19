@@ -135,12 +135,12 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   else {
     //treat this as an op mode command
     if (user_access_level >= validate_op_cmd(username,user_access_level,cmd)) {
-
       //capture the backup command and direct to the chunker
       if (multi_part_op_cmd(cmd)) {
         //success                                                                                                                                     
         return;
       }
+    cout << "D" << endl;
  
       cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
@@ -189,6 +189,14 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 bool
 Command::multi_part_op_cmd(std::string &cmd)
 {
+  //only eat "openapp archive backup commands" right now
+  StrProc str_proc(cmd," ");
+  if (str_proc.get(0) != "open-app" ||
+      str_proc.get(1) != "archive" ||
+      str_proc.get(2) != "backup") {
+    return false;
+  }
+
   //does the cmd either equal an in-process bground op multi-part cmd                                                                                 
   //or is this the start of one?                                                                                                                      
   MultiResponseCommand multi_resp_cmd(_proc->get_msg().id(),cmd);

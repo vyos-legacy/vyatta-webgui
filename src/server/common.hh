@@ -21,6 +21,16 @@ public:
   const static std::string VYATTA_MODIFY_FILE;
   const static std::string VERBATIM_OUTPUT;
 
+  const static std::string CHUNKER_RESP_CMDS;
+  const static std::string CHUNKER_RESP_INIT;
+  const static std::string CHUNKER_RESP_TOK_DIR;
+  const static std::string CHUNKER_RESP_TOK_BASE;
+  const static std::string CHUNKER_RESP_PID;
+  const static std::string CHUNKER_SOCKET;
+  const static unsigned long CHUNKER_MAX_WAIT_TIME;
+  const static std::string CHUNKER_MSG_FORMAT;
+  const static std::string CHUNKER_UPDATE_FORMAT;
+
   enum Error {SUCCESS = 0,
 	      MALFORMED_REQUEST,
 	      AUTHENTICATION_FAILURE,

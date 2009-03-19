@@ -1,3 +1,5 @@
+chunkerinitdir = /usr/lib/cgi-bin/etc/init.d
+chunkerpiddir = /usr/lib/cgi-bin/var/run
 wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
 opdir = $(datadir)/vyatta-op/templates
@@ -7,6 +9,11 @@ oaperldir = $(datadir)/perl5/OpenApp
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
 CLEANFILES = src/server/main.o src/server/manager.o src/server/session.o src/server/processor.o src/server/sessionexchange.o src/server/sessionexchangefile.o src/server/sessionexchangesocket.o src/server/sessionexchangestdio.o src/server/test.o src/server/authenticate.o src/server/common.o src/server/command.o src/server/configuration.o src/server/rl_str_proc.o
+
+src_server_chunker_SOURCES = src/server/chunker_main.cc
+src_server_chunker_SOURCES += src/server/chunker_manager.cc
+src_server_chunker_SOURCES += src/server/chunker_processor.cc
+src_server_chunker_SOURCES += src/server/common.cc
 
 src_server_test_SOURCES = src/server/test.cc
 
@@ -28,6 +35,7 @@ src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
 
 cgi_PROGRAMS = src/server/webgui
+cgi_PROGRAMS += src/server/chunker
 
 cgi_SCRIPTS = src/server/webgui-oa
 
@@ -49,6 +57,10 @@ cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
 
 # XXX get Ext here for now
 install-exec-hook:
+	mkdir -p $(DESTDIR)$(chunkerinitdir)/
+	mkdir -p $(DESTDIR)$(chunkerpiddir)/
+	cp scripts/vyatta-webgui-chunker.init $(DESTDIR)/$(initddir)/vyatta-webgui-chunker
+	cp scripts/chunker_cmd $(DESTDIR)/$(cgidir)/chunker_cmd
 	@mkdir -p $(DESTDIR)/var/www
 	@for v in 2.2; do \
 		rm -f /tmp/ext-$$v.zip; \

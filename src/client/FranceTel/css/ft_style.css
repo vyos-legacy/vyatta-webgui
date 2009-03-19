@@ -64,7 +64,10 @@ img
 
 .nav1 {
     height: 40px;
+	/*
     background-image: url("../images/tab_nav_base.PNG");
+    */
+	background-image: url("../images/nav_end.gif");
     float: left;
 } 
 
@@ -73,8 +76,11 @@ img
     font-family: "Helvetica Neue 75 bold", Helvetica, Arial, sans-serif;
     font-weight: bold;
     width: 120px;
+	/*
     border-right: 1px solid #CCC;
     background-image: url("../images/tab_nav_base.PNG");
+    */
+	background-image: url("../images/nav_end.gif");	
 } 
 
 .divider {

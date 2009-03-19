@@ -195,7 +195,6 @@ function FT_confUserAdd (name, callback, busLayer)
 	
 	this.f_addUser = function()
 	{
-		var role = undefined;
 		var loginUser = g_busObj.f_getLoginUserObj();
 		switch (loginUser.m_role) {
 			case loginUser.V_ROLE_INSTALL:
@@ -218,10 +217,10 @@ function FT_confUserAdd (name, callback, busLayer)
 		    thisObj.form.conf_user_add_surname.value, 
 			thisObj.form.conf_user_add_givenname.value, 
 			thisObj.form.conf_user_add_username.value, 
-			role, 
+			null, 
 			'add', 
 			thisObj.form.conf_user_add_email.value, 
-			'right'
+			null
 			);
 		g_busObj.f_addUserToServer(user, thisObj.f_addUserCb);
 		//Here we need to popup a waiting message dialog

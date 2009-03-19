@@ -1,4 +1,4 @@
-chunkerpiddir = /usr/lib/cgi-bin/var/run
+statedir = $(localstatedir)/run
 wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
 initddir = /etc/init.d
@@ -62,7 +62,6 @@ cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
 
 # XXX get Ext here for now
 install-exec-hook:
-	mkdir -p $(DESTDIR)$(chunkerpiddir)/
 	@mkdir -p $(DESTDIR)/var/www
 	@for v in 2.2; do \
 		rm -f /tmp/ext-$$v.zip; \
@@ -77,6 +76,7 @@ install-exec-hook:
 		); \
 		rm -f /tmp/ext-$$v.zip; \
 	done
+	@mkdir -p $(DESTDIR)$(statedir)
 	@cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
 	@mkdir -p $(DESTDIR)$(opdir)
 	@cd src/server/templates; $(cpiop) $(DESTDIR)$(opdir)

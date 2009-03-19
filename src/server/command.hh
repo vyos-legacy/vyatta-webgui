@@ -18,7 +18,7 @@ private:
   multi_part_op_cmd(std::string &cmd);
 
   void
-  execute_single_command(std::string &cmd, const std::string &username, WebGUI::AccessLevel access_level, std::string &resp, int &err);
+  execute_single_command(std::string &cmd, const std::string &username, WebGUI::AccessLevel access_level, std::string &resp, WebGUI::Error &err);
 
   bool
   validate_session(unsigned long id);

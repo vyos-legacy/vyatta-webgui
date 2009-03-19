@@ -30,6 +30,7 @@ src_server_webgui_SOURCES += src/server/authenticate.cc
 src_server_webgui_SOURCES += src/server/command.cc
 src_server_webgui_SOURCES += src/server/configuration.cc
 src_server_webgui_SOURCES += src/server/rl_str_proc.cc
+src_server_webgui_SOURCES += src/server/multirespcmd.cc
 
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam

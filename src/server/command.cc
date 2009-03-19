@@ -140,7 +140,6 @@ export vyatta_localedir=/opt/vyatta/share/locale";
         //success                                                                                                                                     
         return;
       }
-    cout << "D" << endl;
  
       cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 

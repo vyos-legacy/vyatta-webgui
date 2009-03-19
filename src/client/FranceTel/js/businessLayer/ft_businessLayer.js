@@ -331,21 +331,7 @@ function FT_businessLayer()
      */
     this.f_getVMSummaryDataFromServer = function(cb)
     {
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<vmstatus><id>" + sid + "</id>\n"
-                      + "</vmstatus>";
-
-        thisObj.m_vm.m_guiCb = cb;
-        //this.f_sendRequest(xmlstr, this.m_vm.f_respondRequestCallback);
-
-        thisObj.m_vm.m_vmRecObj[0] = new FT_vmRecObj('Business Livebox');
-        thisObj.m_vm.m_vmRecObj[1] = new FT_vmRecObj('Open Applicance');
-        thisObj.m_vm.m_vmRecObj[2] = new FT_vmRecObj('UTM Configuration');
-        thisObj.m_vm.m_vmRecObj[3] = new FT_vmRecObj('PBX Configuration');
-        //thisObj.m_vm.m_vmRecObj[4] = new FT_vmRecObj('3rd Parties Application');
-
-        var evt = new FT_eventObj(0, thisObj.m_vm.m_vmRecObj, '');
-        cb(evt);
+        thisObj.m_vm.f_getSummaryVMListFromServer(cb);
     }
 
     /**
@@ -386,6 +372,7 @@ function FT_businessLayer()
         // start to run
         var threadId = thisObj.m_reqThread.f_start(callback);
 
+        thisObj.f_getVMDataFromServer(guiCb);
         return threadId;
     }
     /**

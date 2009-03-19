@@ -125,6 +125,13 @@ function FT_configPanel()
                 }
                 thisObj.m_selectObj = new FT_confVMUpdates('Update', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
+				                
+            case VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID:
+                var mpCb = function(){
+                }
+                thisObj.m_selectObj = new FT_confRestoreUpdate('Update user', mpCb, g_busObj);
+                thisObj.m_selectObj.f_init(obj);
+                return thisObj.m_selectObj.f_getConfigurationPage();				
 				
             case VYA.FT_CONST.DOM_3_NAV_SUB_SCHED_UPDATE_ID:
                 var mpCb = function(){

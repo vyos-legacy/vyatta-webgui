@@ -60,6 +60,7 @@ VYA.FT_CONST = {
 	DOM_3_NAV_SUB_RESTART_ID : 'restart_l2',	
 	DOM_3_NAV_SUB_SUBCRIBE_ID : 'subscribe_l2',
 	DOM_3_NAV_SUB_SCHED_UPDATE_ID: 'sched_update_l2',
+	DOM_3_NAV_SUB_RESTORE_UPDATE_ID: 'restore_update_l2',
     //-----Users
     DOM_3_NAV_SUB_USER_ID : 'user_l2', 
     DOM_3_NAV_SUB_USER_RIGHT_ID : 'user_right_l2',	

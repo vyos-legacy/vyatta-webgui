@@ -27,3 +27,4 @@ document.write('<script type="text/javascript" src="js/ui/config/ft_confBLBcheck
 document.write('<script type="text/javascript" src="js/ui/config/ft_confPassword.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confSchedUpdate.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confSubscribe.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/ft_confRestoreUpdate.js"></script>');

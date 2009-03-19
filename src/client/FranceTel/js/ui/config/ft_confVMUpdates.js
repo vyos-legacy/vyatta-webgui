@@ -103,7 +103,7 @@ function f_handleCancel(vm)
 
 function f_handleRestore(vm)
 {
-    alert('fire up user editor panel for ' + vm);
+    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID, vm);
 }
 
 

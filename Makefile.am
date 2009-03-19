@@ -1,7 +1,7 @@
-chunkerinitdir = /usr/lib/cgi-bin/etc/init.d
 chunkerpiddir = /usr/lib/cgi-bin/var/run
 wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
+initddir = /etc/init.d
 opdir = $(datadir)/vyatta-op/templates
 cfgdir = $(datadir)/vyatta-cfg/templates
 oaperldir = $(datadir)/perl5/OpenApp
@@ -38,6 +38,7 @@ cgi_PROGRAMS = src/server/webgui
 cgi_PROGRAMS += src/server/chunker
 
 cgi_SCRIPTS = src/server/webgui-oa
+cgi_SCRIPTS += scripts/chunker_cmd
 
 sbin_PROGRAMS = src/server/test
 
@@ -49,18 +50,18 @@ sbin_SCRIPTS += src/server/vyatta-vmdeploy
 sbin_SCRIPTS += src/server/vyatta-vmdeploy-op
 sbin_SCRIPTS += src/server/vyatta-vmbackup-all
 sbin_SCRIPTS += src/server/openapp-user.pl
+sbin_SCRIPTS += src/server/openapp-vm-query.pl
 
 oaperl_DATA = src/server/lib/perl5/OpenApp/VMMgmt.pm
+
+initd_SCRIPTS = scripts/vyatta-webgui-chunker
 
 cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
 	cpio -0pd
 
 # XXX get Ext here for now
 install-exec-hook:
-	mkdir -p $(DESTDIR)$(chunkerinitdir)/
 	mkdir -p $(DESTDIR)$(chunkerpiddir)/
-	cp scripts/vyatta-webgui-chunker.init $(DESTDIR)/$(initddir)/vyatta-webgui-chunker
-	cp scripts/chunker_cmd $(DESTDIR)/$(cgidir)/chunker_cmd
 	@mkdir -p $(DESTDIR)/var/www
 	@for v in 2.2; do \
 		rm -f /tmp/ext-$$v.zip; \

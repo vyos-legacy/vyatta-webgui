@@ -275,9 +275,11 @@ function FT_userBusObj(busObj)
         xmlstr += "' password '" + ur.m_pw;
         xmlstr += "' last '" + ur.m_last;
         xmlstr += "' first '" + ur.m_first;
-        xmlstr += "' email '" + ur.m_email;
-        xmlstr += "' rights '" + ur.m_rights;
-        xmlstr += "' role '" + ur.m_role + "'";
+        xmlstr += "' email '" + ur.m_email + "' ";
+        if(ur.m_right != null)
+            xmlstr += "rights '" + ur.m_rights + "' ";
+        if(ur.m_role != null)
+            xmlstr += "role '" + ur.m_role + "'";
 
         xmlstr += "</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -459,7 +461,7 @@ function FT_userBusObj(busObj)
                 {
                     var cNode = val.childNodes[j];
                     if(cNode == undefined) continue;
-                 
+
                     if(cNode.nodeName == 'email' &&
                         cNode.firstChild != undefined)
                         ul[c].m_email = cNode.firstChild.nodeValue;

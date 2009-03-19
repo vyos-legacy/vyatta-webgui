@@ -21,21 +21,29 @@ VYA.DYN_STYLE = {
 	//
 	// General
 	PRI_NAV_ITEM_WIDTH : '120px',
-	PRI_NAV_ITEM_BORDER : '1px solid #CCC',
+//	PRI_NAV_ITEM_BORDER : '1px solid #CCC',	
+	PRI_NAV_ITEM_BORDER : 'none',
+	PRI_NAV_LAST_ITEM_BORDER_RIGHT : '1px solid #CCC',	
 	PRI_NAV_ITEM_FONT_WEIGHT : 'bold',
 	PRI_NAV_ITEM_TEXT_ALIGN : 'center',
-	PRI_NAV_ITEM_BG_IMG : 'url("images/tab_nav_base.PNG")',
+//	PRI_NAV_ITEM_BG_IMG : 'url("images/tab_nav_base.PNG")',
+	PRI_NAV_ITEM_BG_IMG : 'url("images/nav_end.PNG")',	
 	//
 	// Active
 	PRI_NAV_ACT_ITEM_BG_IMG : 'none',
 	PRI_NAV_ACT_ITEM_COLOR : '#FF6600',
-	PRI_NAV_ACT_ITEM_BORDER_BOTTOM : '0px',
+	PRI_NAV_ACT_ITEM_BORDER_BOTTOM : '0px solid #CCC',
+	PRI_NAV_ACT_ITEM_BORDER_TOP : '1px solid #CCC',	
+	PRI_NAV_ACT_ITEM_BORDER_LEFT : '1px solid #CCC',		
 	PRI_NAV_ACT_ITEM_BG : '#FFFFFF',	
 	//
 	// Inactive
-	PRI_NAV_NOT_ACT_ITEM_BG_IMG : 'url("images/tab_nav_base.PNG")',
+//	PRI_NAV_NOT_ACT_ITEM_BG_IMG : 'url("images/tab_nav_base.PNG")',
+	PRI_NAV_NOT_ACT_ITEM_BG_IMG : 'url("images/nav_end.PNG")',	
 	PRI_NAV_NOT_ACT_ITEM_COLOR : '#000000',
-	PRI_NAV_NOT_ACT_ITEM_BORDER_BOTTOM : '1px',
+	PRI_NAV_NOT_ACT_ITEM_BORDER_BOTTOM : '0px solid #FFFFFF',
+	PRI_NAV_NOT_ACT_ITEM_BORDER_TOP : '0px solid #FFFFFF',	
+	PRI_NAV_NOT_ACT_ITEM_BORDER_LEFT : '0px solid #FFFFFF',		
 	
 	/////////// SECONDARY NAVIGATION ////////////////////////////////
 	//

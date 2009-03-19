@@ -1,0 +1,46 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+### END INIT INFO
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+. /lib/lsb/init-functions
+
+NAME=chunker
+DAEMON=/usr/lib/cgi-bin/chunker
+PIDFILE=/var/run/chunker.pid
+
+test -x $DAEMON || exit 5
+
+if [ -r /etc/default/$NAME ]; then
+	. /etc/default/$NAME
+fi
+
+case $1 in
+	start)
+		echo "Starting PAGER server"
+  		start-stop-daemon --start --quiet --oknodo --background -m --pidfile $PIDFILE --startas $DAEMON -- -p $PIDFILE 
+  		;;
+	stop)
+		echo "Stopping PAGER server"
+                if [ -f $PIDFILE ] ; then 
+  		    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE 
+                fi  
+		rm -f $PIDFILE >/dev/null	
+		;;
+	restart|force-reload)
+		$0 stop && sleep 2 && $0 start
+  		;;
+	try-restart)
+		if $0 status >/dev/null; then
+			$0 restart
+		else
+			exit 0
+		fi
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 2
+		;;
+esac

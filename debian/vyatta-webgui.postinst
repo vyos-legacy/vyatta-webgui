@@ -1,12 +1,39 @@
 #!/bin/bash
 
 prefix=/opt/vyatta
+CHUNKER_DIR=/usr/lib/cgi-bin/tmp/webgui
+CHUNKER_INIT_DIR=/usr/lib/cgi-bin/etc/init.d
+CHUNKER_PID_DIR=/usr/lib/cgi-bin/var/run
+
+# create chunker temp directory
+mkdir -p $CHUNKER_DIR
+chmod 0777 $CHUNKER_DIR
+touch ${CHUNKER_DIR}/dummy
+
+#create chunker proc directory
+mkdir -p $CHUNKER_INIT_DIR
+chmod 0755 $CHUNKER_INIT_DIR
+touch ${CHUNKER_INIT_DIR}/dummy
+
+#create chunker pid directory
+mkdir -p $CHUNKER_PID_DIR
+chmod 0777 $CHUNKER_PID_DIR
+touch ${CHUNKER_PID_DIR}/dummy
+
+
+
+
+
 
 # enable CGI for lighttpd
 ln -sf /etc/lighttpd/conf-available/10-cgi.conf /etc/lighttpd/conf-enabled/
 
 # enable https
 ln -sf /etc/lighttpd/conf-available/10-ssl.conf /etc/lighttpd/conf-enabled/
+
+# add sudo hooks
+ln -sf /etc/init.d/vyatta-webgui-chunker /opt/vyatta/bin/sudo-users/vyatta-webgui-chunker
+
 
 # fix debian cgi config file
 sed -i '/^\$HTTP.*127\.0\.0\.1/,/^}$/{s/^\(.*\)$/# \1/}' \

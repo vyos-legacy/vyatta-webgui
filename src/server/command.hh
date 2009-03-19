@@ -21,6 +21,6 @@ private:
   validate_session(unsigned long id);
 
   WebGUI::AccessLevel
-  validate_op_cmd(const std::string &username, std::string &cmd);
+  validate_op_cmd(const std::string &username, WebGUI::AccessLevel user_access_level, std::string &cmd);
 };
 #endif //__COMMAND_HH__

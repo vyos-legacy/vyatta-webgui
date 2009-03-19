@@ -45,11 +45,11 @@ Command::execute_command(const string &username, WebGUI::AccessLevel user_access
   vector<string>::iterator iter = coll.begin();
   while (iter != coll.end()) {
     string err;
-    int err_code = WebGUI::SUCCESS;
+    WebGUI::Error err_code = WebGUI::SUCCESS;
     execute_single_command(*iter, username, user_access_level, err, err_code);
     if (err_code != WebGUI::SUCCESS) {
       //generate error response for this command and exit
-      _proc->set_response(WebGUI::COMMAND_ERROR, err);
+      _proc->set_response(err_code, err);
       return;
     }
     else {
@@ -65,7 +65,7 @@ Command::execute_command(const string &username, WebGUI::AccessLevel user_access
  *
  **/
 void
-Command::execute_single_command(string &cmd, const string &username, WebGUI::AccessLevel user_access_level, string &resp, int &err)
+Command::execute_single_command(string &cmd, const string &username, WebGUI::AccessLevel user_access_level, string &resp, WebGUI::Error &err)
 {
   if (cmd.empty()) {
     resp = "";
@@ -136,6 +136,12 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     //treat this as an op mode command
     if (user_access_level >= validate_op_cmd(username,user_access_level,cmd)) {
 
+      //capture the backup command and direct to the chunker
+      if (multi_part_op_cmd(cmd)) {
+        //success                                                                                                                                     
+        return;
+      }
+ 
       cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
       string opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c '"
@@ -143,16 +149,24 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       string stdout;
       bool verbatim = false;
 
-      err = WebGUI::execute(opmodecmd,stdout,verbatim,true);
+      if (WebGUI::execute(opmodecmd,stdout,verbatim,true) == 0) {
+	err = WebGUI::SUCCESS;
+      }
+      else {
+	err = WebGUI::COMMAND_ERROR;
+      }
+
       if (!verbatim) {
-        stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
-        stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
+        stdout = WebGUI::mass_replace(stdout, "&", "&amp;");
+        stdout = WebGUI::mass_replace(stdout, "\"", "&quot;");
+        stdout = WebGUI::mass_replace(stdout, "'", "&apos;");
+ 	stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
+	stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
       }
       resp = stdout;
     }
     else {
       err = WebGUI::COMMAND_ERROR;
-      _proc->set_response(WebGUI::COMMAND_ERROR);
     }
     return;
   }
@@ -161,9 +175,11 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 
   string stdout;
   bool dummy;
-  err = WebGUI::execute(command,stdout,dummy,true);
-  stdout = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
-  resp = stdout;
+  WebGUI::execute(command,stdout,dummy,true);
+  if (stdout.empty() == true) {
+    err = WebGUI::SUCCESS;
+  }
+  resp = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
 }
 
 

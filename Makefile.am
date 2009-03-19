@@ -49,6 +49,7 @@ sbin_SCRIPTS += src/server/vyatta-vmdeploy
 sbin_SCRIPTS += src/server/vyatta-vmdeploy-op
 sbin_SCRIPTS += src/server/vyatta-vmbackup-all
 sbin_SCRIPTS += src/server/openapp-user.pl
+sbin_SCRIPTS += src/server/openapp-vm-query.pl
 
 oaperl_DATA = src/server/lib/perl5/OpenApp/VMMgmt.pm
 

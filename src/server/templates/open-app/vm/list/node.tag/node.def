@@ -1,0 +1,2 @@
+help: List the attributes of an existing VM on the OpenAppliance
+run: /opt/vyatta/sbin/openapp-vm-query.pl --list "$4"

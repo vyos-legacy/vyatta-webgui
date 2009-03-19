@@ -32,9 +32,9 @@ function FT_confDashboard(name, callback, busLayer)
         cols[0] = this.f_createColumn('Application', 180, 'text', '6');
         cols[1] = this.f_createColumn('Status', 80, 'image', '35');
         cols[2] = this.f_createColumn('CPU', 120, 'progress', '8');
-        cols[3] = this.f_createColumn('RAM', 120, 'progress', '8');
-        cols[4] = this.f_createColumn('Disk', 120, 'progress', '8');
-        cols[5] = this.f_createColumn('Need Updated', 130, 'checkbox', '40');
+        cols[3] = this.f_createColumn('Memory', 120, 'progress', '8');
+        cols[4] = this.f_createColumn('Disk Space', 120, 'progress', '8');
+        cols[5] = this.f_createColumn('Update Needed', 130, 'checkbox', '40');
 
         return cols;
     }

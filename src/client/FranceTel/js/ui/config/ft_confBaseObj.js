@@ -238,7 +238,7 @@ function FT_confBaseObj(name, callback, busLayer)
                     '<input type="image" src="images/bt_backup.gif" name="apply" ' +
                     'value="apply" onclick="' + btn[1] +
                     '"></div></td>';
-                break;				
+                break;
                 default:
                     innerHtml += '<td><div style="height:30px; ' +
                         'padding-top:15px;" >' +
@@ -349,13 +349,13 @@ function FT_confBaseObj(name, callback, busLayer)
         switch(text)
         {
             case 'Stop':
-                imgSrc = enable ? 'images/bt_stop.gif' : 'images/bt_stop_disable.PNG';
+                imgSrc = enable ? 'images/bt_stop.gif' : 'images/bt_stop.gif';
                 break;
             case 'Restart':
-                imgSrc = enable ? 'images/bt_restart.gif' : 'images/bt_restart_disable.PNG';
+                imgSrc = enable ? 'images/bt_restart.gif' : 'images/bt_restart.gif';
                 break;
             case 'Start':
-                imgSrc = enable ? 'images/bt_start.gif' : 'images/bt_start_disable.PNG';
+                imgSrc = enable ? 'images/bt_start.gif' : 'images/bt_start.gif';
                 break;
             case 'deleteUser':
             case 'delete':

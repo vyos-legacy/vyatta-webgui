@@ -1,7 +1,8 @@
 wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
-opdir = $(datadir)/oa-op/templates
+opdir = $(datadir)/vyatta-op/templates
 cfgdir = $(datadir)/vyatta-cfg/templates
+oaperldir = $(datadir)/perl5/OpenApp
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
@@ -41,13 +42,15 @@ sbin_SCRIPTS += src/server/vyatta-vmdeploy-op
 sbin_SCRIPTS += src/server/vyatta-vmbackup-all
 sbin_SCRIPTS += src/server/openapp-user.pl
 
+oaperl_DATA = src/server/lib/perl5/OpenApp/VMMgmt.pm
+
 cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
 	cpio -0pd
 
 # XXX get Ext here for now
 install-exec-hook:
 	@mkdir -p $(DESTDIR)/var/www
-	@for v in 2.1 2.2; do \
+	@for v in 2.2; do \
 		rm -f /tmp/ext-$$v.zip; \
 		wget -q -O /tmp/ext-$$v.zip \
 			http://packages.vyatta.com/vyatta-dev/tmp/ext-$$v.zip; \

@@ -90,8 +90,11 @@ sub backup_archive {
 	}
     }
 
-    my $date = 'foo';
-    my $time = 'foo';
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
+    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
+    my $date = sprintf("%02d_%02d_%4d",$mon+1,$mday,$year+1900);
+    my $time = sprintf("%02d_%02d_%02d",$hour,$min,$sec);
+
     my $datamodel = '1';
     my $filename = $date."_".$time."_".$datamodel;
     #now create metadata file
@@ -101,7 +104,7 @@ sub backup_archive {
     print FILE "<archive>";
     print FILE "<name>name</name>";
     print FILE "<file>$filename</file>";                                                                             
-    print FILE "<date>$date</date>";
+    print FILE "<date>$date $time</date>";
     print FILE "<contents>";
     foreach my $vmkey (keys %hash_arr) {
 	my $vm = new OpenApp::VMMgmt($vmkey);
@@ -127,6 +130,31 @@ sub backup_archive {
 sub restore_archive {
 
     #Need to send rest messages, but how will the vm get the bu file?
+    #first let's process the list
+    my %hash_arr;
+    my $hash_arr;
+    my $archive;
+    my @archive = split(',',$restore);
+    for $archive (@archive) {
+	my @bu = split(':',$archive);
+	$hash_arr->{$bu[0]} = $bu[1];
+    }
+
+
+    my $VMs = ();
+    my @VMs = OpenApp::VMMgmt::getVMList();
+    foreach my $vmkey (keys %hash_arr) {
+	my $vm = new OpenApp::VMMgmt($vmkey);
+	my $ip = '';
+	$ip = $vm->getIP();
+	if (defined $ip && $ip ne '') {
+	    my $cmd = "http://$ip/notifications/restore/$hash_arr{$vmkey}";
+	    my $rc = `curl -q -I $cmd 2>&1`;
+	    #if error returned from curl, remove from list here and notify of error??
+	    
+	}
+    }
+
 
     #NEED MORE CLARIFICATION HERE
 

@@ -19,20 +19,12 @@ sub getVMList {
   return @v;
 }
 
-sub _lockStatus {
-}
-
-sub _unlockStatus {
-}
-
 sub updateStatus {
   my ($id, $st, $cpu, $dall, $dfree, $mall, $mfree, $upd) = @_;
-  _lockStatus();
   my $fd = undef;
   open($fd, '>', "$STATUS_DIR/$id") or return;
   print $fd "$st $cpu $dall $dfree $mall $mfree $upd\n";
   close($fd);
-  _unlockStatus();
 }
 
 my %fields = (
@@ -81,7 +73,6 @@ sub _setupMeta {
 
 sub refreshStatus {
   my ($self) = @_;
-  _lockStatus();
   my $id = $self->{_vmId};
   if (! -r "$STATUS_DIR/$id") {
     return;
@@ -90,7 +81,6 @@ sub refreshStatus {
   open($fd, '<', "$STATUS_DIR/$id") or return;
   my $data = <$fd>;
   close($fd);
-  _unlockStatus();
   chomp($data);
   my ($st, $cpu, $dall, $dfree, $mall, $mfree, $upd) = split(/ /, $data);
   $self->{_vmState} = $st;

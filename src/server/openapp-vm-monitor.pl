@@ -1,10 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use threads;
-use threads::shared;
 
-use POSIX qw(mkfifo);
 use Net::SNMP;
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::VMMgmt;
@@ -14,12 +11,7 @@ my $INTERVAL_INACTIVE = 30;
 my $INACTIVE_TIMEOUT = 60;
 my $OA_ID = $OpenApp::VMMgmt::OPENAPP_ID;
 my $OA_SNMP_COMM = $OpenApp::VMMgmt::OPENAPP_SNMP_COMM;
-my $STATE_DIR = '/opt/vyatta/var/run';
-my $FIFO_NAME = "$STATE_DIR/vm-monitor-sock";
-
-# the time that the last GUI activity occurred
-my $LAST_ACT_TIME :shared;
-$LAST_ACT_TIME = 0;
+my $STATE_FILE = '/opt/vyatta/var/run/vm-monitor.state';
 
 sub updateOAStatus {
   # cpu
@@ -158,24 +150,14 @@ sub updateVMStatus {
                                 $disk_free, $mem_total, $mem_free, 'no');
 }
 
-sub fifo_thread {
-  if (! -p $FIFO_NAME) {
-    unlink($FIFO_NAME);
-    my ($d1, $d2, $gid, $d3) = getgrnam('operator');
-    umask(007);
-    mkfifo($FIFO_NAME, 0770) or return;
-    chown -1, $gid, $FIFO_NAME;
+sub get_last_act_time {
+  if (! -r $STATE_FILE) {
+    return 0;
+  } else {
+    return (stat($STATE_FILE))[8];
   }
-  my $fd = undef;
-  while (1) {
-    open($fd, '<', $FIFO_NAME) or return;
-    my $line = <$fd>;
-    close($fd);
-    $LAST_ACT_TIME = time();
-  } 
 }
 
-my $th = threads->create('fifo_thread');
 while (1) {
   updateOAStatus();
   my @VMs = OpenApp::VMMgmt::getVMList();
@@ -185,7 +167,7 @@ while (1) {
 
   my $cur_time = time();
   my $to_sleep = $INTERVAL_ACTIVE;
-  if (($cur_time - $LAST_ACT_TIME) > $INACTIVE_TIMEOUT) {
+  if (($cur_time - get_last_act_time()) > $INACTIVE_TIMEOUT) {
     # it's been too long since last GUI activity. use inactive interval.
     $to_sleep = $INTERVAL_INACTIVE;
   }
@@ -194,8 +176,8 @@ while (1) {
   while ($slept < $to_sleep) {
     sleep($INTERVAL_ACTIVE);
     $slept += $INTERVAL_ACTIVE;
-    if ($cur_time < $LAST_ACT_TIME) {
-      # something happened while we are asleep. wake up.
+    if ($cur_time < get_last_act_time()) {
+      # something happened while we were asleep. wake up.
       last;
     }
   }

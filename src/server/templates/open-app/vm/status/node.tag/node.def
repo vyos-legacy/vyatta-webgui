@@ -1,2 +1,3 @@
 help: Return status of an existing VM on the OpenAppliance
-run: /opt/vyatta/sbin/openapp-vm-query.pl --status "$4"
+run: touch /opt/vyatta/var/run/vm-monitor.state
+     /opt/vyatta/sbin/openapp-vm-query.pl --status "$4"

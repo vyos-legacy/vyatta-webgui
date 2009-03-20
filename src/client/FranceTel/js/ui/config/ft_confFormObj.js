@@ -234,6 +234,20 @@ function FT_confFormObj(name, callback, busLayer) {
         return html;
     }
     
+	this.f_createListItem = function (item)
+	{
+		return ('<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">' + item + '</li>');
+	}	
+	
+    this.f_checkEmpty = function(field, message, err)
+    {
+        if (field.value.trim().length <= 0) {
+            return (err + thisObj.f_createListItem(message));
+        } else {
+            return err;
+        }
+    }	
+	
     this.f_attachEventListener = function()
     {
         for (var i = 0; i < this.m_config.buttons.length; i++) {

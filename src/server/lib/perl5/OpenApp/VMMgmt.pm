@@ -5,6 +5,8 @@ use strict;
 our $OPENAPP_ID = 'openapp';
 our $OPENAPP_DNAME = 'OpenAppliance';
 our $OPENAPP_SNMP_COMM = 'openappliance';
+our $OPENAPP_VENDOR = 'Vyatta';
+our $OPENAPP_BFORMAT = '1';
 
 my $VMDIR = '/opt/vyatta/etc/gui/VM';
 my $STATUS_DIR = '/opt/vyatta/var/run/vmstatus';
@@ -69,6 +71,8 @@ my %fields = (
   _vmWuiPort => undef,
   _vmWuiUri => undef,
   _vmImgVer => undef,
+  _vmVendor => undef,
+  _vmBackupFormat => undef,
   _vmDisplayName => undef,
 
   # status
@@ -86,6 +90,8 @@ sub _setupMeta {
   if ($id eq $OPENAPP_ID) {
     # dom0
     $self->{_vmId} = $OPENAPP_ID;
+    $self->{_vmVendor} = $OPENAPP_VENDOR;
+    $self->{_vmBackupFormat} = $OPENAPP_BFORMAT;
     $self->{_vmDisplayName} = $OPENAPP_DNAME;
     return;
   }
@@ -97,12 +103,14 @@ sub _setupMeta {
   my $data = <$fd>;
   close($fd);
   chomp($data);
-  my ($ip, $port, $uri, $ver, $dname) = split(/ /, $data, 5);
+  my ($ip, $port, $uri, $ver, $vend, $bform, $dname) = split(/ /, $data, 7);
   $self->{_vmId} = $id;
   $self->{_vmIP} = $ip;
   $self->{_vmWuiPort} = $port;
   $self->{_vmWuiUri} = $uri;
   $self->{_vmImgVer} = $ver;
+  $self->{_vmVendor} = $vend;
+  $self->{_vmBackupFormat} = $bform;
   $self->{_vmDisplayName} = $dname;
 }
 

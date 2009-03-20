@@ -1,8 +1,6 @@
 package OpenApp::VMMgmt;
 
 use strict;
-our @EXPORT = qw(getVMList);
-use base qw(Exporter);
 
 our $OPENAPP_ID = 'openapp';
 our $OPENAPP_DNAME = 'OpenAppliance';
@@ -10,7 +8,9 @@ our $OPENAPP_SNMP_COMM = 'openappliance';
 
 my $VMDIR = '/opt/vyatta/etc/gui/VM';
 my $STATUS_DIR = '/opt/vyatta/var/run/vmstatus';
+my $HWMON_FILE = '/opt/vyatta/var/run/vm-monitor.hw';
 
+### "static" functions
 sub getVMList {
   my $dd = undef;
   opendir($dd, "$VMDIR") or return;
@@ -27,6 +27,41 @@ sub updateStatus {
   close($fd);
 }
 
+sub updateHwMon {
+  my ($nic, $disk, $cpu, $fan) = @_;
+  my $fd = undef;
+  open($fd, '>', "$HWMON_FILE") or return;
+  print $fd <<EOF;
+nic $nic
+disk $disk
+cpu $cpu
+fan $fan
+EOF
+  close($fd);
+}
+
+sub getHwMonData {
+  my ($nic, $disk, $cpu, $fan) = ('unknown', 'unknown', 'unknown', 'unknown');
+  my $fd = undef;
+  open($fd, '<', "$HWMON_FILE") or return;
+  while (<$fd>) {
+    chomp;
+    my @words = split(/ /);
+    if ($words[0] eq 'nic') {
+      $nic = $words[1];
+    } elsif ($words[0] eq 'disk') {
+      $disk = $words[1];
+    } elsif ($words[0] eq 'cpu') {
+      $cpu = $words[1];
+    } elsif ($words[0] eq 'fan') {
+      $fan = $words[1];
+    }
+  }
+  close($fd);
+  return ($nic, $disk, $cpu, $fan);
+}
+
+### data
 my %fields = (
   # metadata
   _vmId => undef,

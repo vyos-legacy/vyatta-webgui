@@ -1,0 +1,2 @@
+help: Return status of an existing VM on the OpenAppliance
+run: /opt/vyatta/sbin/openapp-vm-query.pl --status "$4"

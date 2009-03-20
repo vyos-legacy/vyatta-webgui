@@ -1,0 +1,2 @@
+help: Return status of all existing VMs on the OpenAppliance
+run: /opt/vyatta/sbin/openapp-vm-query.pl --status

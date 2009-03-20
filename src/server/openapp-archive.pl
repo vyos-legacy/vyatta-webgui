@@ -90,19 +90,121 @@ sub backup_archive {
 	}
     }
 
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
+    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
+    my $date = sprintf("%02d_%02d_%4d",$mon+1,$mday,$year+1900);
+    my $time = sprintf("%02d_%02d_%02d",$hour,$min,$sec);
+
+    my $datamodel = '1';
+    my $filename = $date."_".$time."_".$datamodel;
     #now create metadata file
+    my $FILE;
+    open FILE, ">", "/tmp/backup/$filename.txt" or die $!;
+    #we'll write out xml descriptions--the same as what we display...
+    print FILE "<archive>";
+    print FILE "<name>name</name>";
+    print FILE "<file>$filename</file>";                                                                             
+    print FILE "<date>$date $time</date>";
+    print FILE "<contents>";
+    foreach my $vmkey (keys %hash_arr) {
+	my $vm = new OpenApp::VMMgmt($vmkey);
+	print FILE "<entry>";
+	print FILE "<vm>$vmkey</vm>";
+	print FILE "<type>$hash_arr{$vmkey}</type>";
+	print FILE "</entry>";
+    }    
+    print FILE "</contents>";
+    print FILE "</archive>";
+    close FILE;
 
     #finally tar up the proceedings...
-    my $date = 'foo';
-    my $time = 'foo';
-    my $datamodel = '1';
-    'tar -cvs /backupfiles/$date_$time_$datamodel.tar';
+    `tar -C /tmp/backup/ -cf /tmp/backup/$filename.tar . 2>/dev/null`;
+
+    #needs to clean out old files or files past limit at this point....
 
 }
 
+#
+#
+#
 sub restore_archive {
 
+    #Need to send rest messages, but how will the vm get the bu file?
+    #first let's process the list
+    my %hash_arr;
+    my $hash_arr;
+    my $archive;
+    my @archive = split(',',$restore);
+    for $archive (@archive) {
+	my @bu = split(':',$archive);
+	$hash_arr->{$bu[0]} = $bu[1];
+    }
 
+
+    my $VMs = ();
+    my @VMs = OpenApp::VMMgmt::getVMList();
+    foreach my $vmkey (keys %hash_arr) {
+	my $vm = new OpenApp::VMMgmt($vmkey);
+	my $ip = '';
+	$ip = $vm->getIP();
+	if (defined $ip && $ip ne '') {
+	    my $cmd = "http://$ip/notifications/restore/$hash_arr{$vmkey}";
+	    my $rc = `curl -q -I $cmd 2>&1`;
+	    #if error returned from curl, remove from list here and notify of error??
+	    
+	}
+    }
+
+
+    #NEED MORE CLARIFICATION HERE
+
+}
+
+#
+# Generates xml listing...
+#
+# Generates the following xml
+# <archive>
+#   <name>name</name>
+#   <file>file</file>
+#   <date>date</date>
+#   <contents>
+#     <entry>
+#       <vm>vm</vm>
+#       <type>data|conf</type>
+#     </entry>
+#   </contents>
+# </archive>
+#
+#
+
+sub list_archive {
+    #get a directory listing of /backup/.
+    
+    my $hash_arr = {};
+
+    print "VERBATIM_OUTPUT\n";
+
+    my $file;
+    my @files = </tmp/backup/*.tar>;
+    foreach $file (@files) {
+	my @name = split('/',$file);
+	#just open up meta data file and squirt out contents...
+	my $metafile;
+	my @metafile = split('\.',$name[3]);
+	my $output;
+	my @output = `tar -xf $file --wildcards -O ./$metafile[0].txt`;
+	print $output[0];
+    } 
+    #done
+}
+
+#
+# delete archive...
+#
+sub delete_archive {
+    my $file = "/backup/$delete";
+    unlink($file);
 }
 
 
@@ -110,7 +212,8 @@ sub restore_archive {
 sub usage() {
     print "Usage: $0 --backup=<backup>\n";
     print "       $0 --restore=<restore>\n";
-    print "       $0 --vm=<vm>\n";
+    print "       $0 --list=<list>\n";
+    print "       $0 --delete=<delete>\n";
     exit 1;
 }
 
@@ -119,7 +222,7 @@ sub usage() {
 GetOptions(
            "backup:s"       => \$backup,
            "restore=s"      => \$restore,
-           "list=s"         => \$list,
+           "list:s"         => \$list,
            "delete=s"       => \$delete,
     ) or usage();
 
@@ -128,8 +231,14 @@ if ( defined $backup ) {
     backup_archive();
     exit 0;
 }
-if ( defined $restore ) {
+elsif ( defined $restore ) {
     restore_archive();
     exit 0;
+}
+elsif (defined $list ) {
+    list_archive();
+}
+elsif (defined $delete ) {
+    delete_archive();
 }
 exit 0;

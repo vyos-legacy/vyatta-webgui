@@ -7,10 +7,11 @@ use OpenApp::VMMgmt;
 
 my $OA_ID = $OpenApp::VMMgmt::OPENAPP_ID;
 
-my ($list, $status) = ('NO_VALUE', 'NO_VALUE');
+my ($list, $status, $hwmon) = ('NO_VALUE', 'NO_VALUE', 0);
 GetOptions(
   'list:s' => \$list,
-  'status:s' => \$status
+  'status:s' => \$status,
+  'hwmon' => \$hwmon
 );
 
 if ($list ne 'NO_VALUE') {
@@ -19,6 +20,10 @@ if ($list ne 'NO_VALUE') {
 }
 if ($status ne 'NO_VALUE') {
   do_status($status);
+  exit 0;
+}
+if ($hwmon) {
+  do_hwmon();
   exit 0;
 }
 
@@ -83,5 +88,18 @@ sub do_status {
       </vmstatus>
 EOF
   }
+}
+
+sub do_hwmon {
+  print "VERBATIM_OUTPUT\n";
+  my ($nic, $disk, $cpu, $fan) = OpenApp::VMMgmt::getHwMonData();
+  print <<EOF;
+      <hwmon>
+        <nic>$nic</nic>
+        <disk>$disk</disk>
+        <cpu>$cpu</cpu>
+        <fan>$fan</fan>
+      </hwmon>
+EOF
 }
 

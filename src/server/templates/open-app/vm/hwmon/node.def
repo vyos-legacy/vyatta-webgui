@@ -1,0 +1,2 @@
+help: Return OpenAppliance hardware monitoring data
+run: /opt/vyatta/sbin/openapp-vm-query.pl --hwmon

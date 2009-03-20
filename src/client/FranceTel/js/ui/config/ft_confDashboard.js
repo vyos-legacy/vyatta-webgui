@@ -115,11 +115,24 @@ function FT_confDashboard(name, callback, busLayer)
         for(var i=0; i<f.length; i++)
         {
             var vm = f[i];
-            if(vm[1].m_name == chkbox.id)
+            if('db_' + vm[1].m_name == chkbox.id)
             {
                 vm[2] = chkbox.checked ? 'yes' : 'no';
                 break;
             }
+        }
+    }
+
+    this.f_handleResetCheckbox = function()
+    {
+        var f = thisObj.m_updateFields;
+
+        for(var i=0; i<f.length; i++)
+        {
+            var vm = f[i];
+            var chkbox = document.getElementById('db_' + vm[1].m_name)
+            if(chkbox != undefined)
+                chkbox.checked = true;
         }
     }
 
@@ -135,7 +148,7 @@ function FT_confDashboard(name, callback, busLayer)
         for(var i=0; i<f.length; i++)
         {
             var vm = f[i];
-            if(vm[2] == 'yes')
+            if(vm[2] != 'no')
                 vmList[index++] = vm[1].m_name;
         }
 
@@ -148,7 +161,7 @@ function FT_confDashboard(name, callback, busLayer)
             updates[vmindex] = [vm.m_needUpdate, vm, vm.m_needUpdate /*user input*/];
 
         // need update checkbox
-        if(vm.m_needUpdate == 'yes')
+        if(vm.m_needUpdate != 'no')
         {
             // now let create checkbox
             var vmu = updates[vmindex];
@@ -156,7 +169,7 @@ function FT_confDashboard(name, callback, busLayer)
             // we want to keep user's last input
             var isChecked = vmu[2] == 'no' ? 'no' : 'yes';
 
-            return [thisObj.f_renderCheckbox(isChecked, vm.m_name,
+            return [thisObj.f_renderCheckbox(isChecked, 'db_' + vm.m_name,
                             'f_dbCheckboxClick(this)'), updates[vmindex]];
         }
         else
@@ -193,6 +206,7 @@ function f_dbHandleUpdate()
 
 function f_dbHandleCancel()
 {
+    g_configPanelObj.m_activeObj.f_handleResetCheckbox();
 }
 
 function f_dbCheckboxClick(e)

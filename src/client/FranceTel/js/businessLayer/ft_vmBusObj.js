@@ -335,7 +335,7 @@ function FT_vmRecObj(id, displayName)
     this.m_diskTotal = 0;
     this.m_diskFree = 0;
     this.m_guiURL = null;
-    this.m_needUpdate = 'no';   // yes/no
+    this.m_needUpdate = 'no';   // value : 'no' or version number
 
 
     this.f_setVMSummaryValues = function(id, disName, ip, port, uri)

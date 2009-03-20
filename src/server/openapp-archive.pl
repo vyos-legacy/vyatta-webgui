@@ -41,50 +41,62 @@ sub backup_archive {
     #get list of VMs from argument list 
     #the format is: vmkey:type,vmkey:type...
 
-    my $VMs = ();
-    my @VMs = OpenApp::VMMgmt::getVMList();
-
+    #first let's process the list
+    my %hash_arr;
+    my $hash_arr;
     my $archive;
     my @archive = split(',',$backup);
-    print "A\n";
-
     for $archive (@archive) {
-	#have a vm:type pair right now
 	my @bu = split(':',$archive);
-	print "B: $bu[0]\n";
+	$hash_arr->{$bu[0]} = $bu[1];
+    }
 
-	
-	#now look up vm
-	my $vm = new OpenApp::VMMgmt($bu[0]);
-#	$vm->do_list();
+
+    my $VMs = ();
+    my @VMs = OpenApp::VMMgmt::getVMList();
+    foreach my $vmkey (keys %hash_arr) {
+	my $vm = new OpenApp::VMMgmt($vmkey);
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    print "c: $ip\n";
-
-	    my $cmd = "http://$ip/notifications/backup/$bu[1]";
+	    my $cmd = "http://$ip/notifications/backup/$hash_arr{$vmkey}";
 	    my $rc = `curl -q -I $cmd 2>&1`;
+	    #if error returned from curl, remove from list here and notify of error??
+	    
 	}
     }
 
+#	$vm->do_list();
+
+#what happens if a vm fails to backup???? how are we to identify this???
+
     #now that each are started, let's sequentially iterate through and retrieve
-    for $archive (@archive) {
-	#have a vm:type pair right now
-	my @bu = split(':',$archive);
-	
-	#now look up vm
-	#my $ip = getVMIP($bu[0]);
-	#my $cmd = "GET /url/backup-file
-	#post command
-	
-	#now save to temporary location while processing....
+    foreach my $vmkey (keys %hash_arr) {
+	my $vm = new OpenApp::VMMgmt($vmkey);
+	my $ip = '';
+	$ip = $vm->getIP();
+	if (defined $ip && $ip ne '') {
+	    my $cmd = "GET /url/backup-file";
+	    #writes to specific location on disk
+	    my $bufile = "/backup/$vmkey/$hash_arr{$vmkey}";
+	    my $rc = `curl -q -I $cmd -O $bufile 2>&1`;
 
+	    #now encrypt command--NEED MAC ADDR OF ETH0
+	    my $mac = 'cat /opt/vyatta/config/active/interfaces/ethernet/eth0/hw-id/node.val';
+	    #probably need to eat the cr here
+	    $mac = chomp($mac);
 
-	#encrypt each file, key is dom0 mac addr
-
-	#see rest of brick backup operations.
-	
+	    my $resp = 'openssl enc -aes-256-cbc -salt $mac -in /backup/$vmkey/$hash_arr{$vmkey} -out /backup/$vmkey/$hash_arr{$vmkey}.enc';
+	}
     }
+
+    #now create metadata file
+
+    #finally tar up the proceedings...
+    my $date = 'foo';
+    my $time = 'foo';
+    my $datamodel = '1';
+    'tar -cvs /backupfiles/$date_$time_$datamodel.tar';
 
 }
 

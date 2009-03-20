@@ -318,14 +318,28 @@ function FT_businessLayer()
         return this.m_vm;
     }
 
+    /**
+     * return a list of vm record object from cache
+     */
     this.f_getVmRecObj = function()
     {
         return this.m_vm.m_vmRecObj;
     }
 
     /**
-     * GUI layer call this function to get summary VM data, such as number
-     * of vms, vm name.
+     * return a vm record object from cache by given a vm id
+     * @param id - vm id
+     */
+    this.f_getVmRecByVmId = function(id)
+    {
+        return this.m_vm.m_vmRecObj;
+    }
+
+    /**
+     * Call backend api -- <open-app vm list>
+     * GUI layer call this function handle the top level tabs.
+     * call this to get summary VM data, such as number
+     * of vm, vm id, vm name etc....
      * @param cb - callback function to be called when data is ready.
      *            ex. cb(responseObj) where responseObj is FT_eventObj;
      */
@@ -335,6 +349,7 @@ function FT_businessLayer()
     }
 
     /**
+     * Call backend api -- <open-app vm status>
      * GUI layer simple call this function to get details VM data.
      * @param callback - a callback function to be called
      *          when data is ready.
@@ -342,13 +357,9 @@ function FT_businessLayer()
      */
     this.f_getVMDataFromServer = function(callback)
     {
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<vmstatus><id>" + sid + "</id>\n"
-                      + "</vmstatus>";
-
-        this.m_vm.m_guiCb = callback;
-        return this.f_sendRequest(xmlstr, this.m_vm.f_respondRequestCallback);
+        thisObj.m_vm.f_getVMStatusFromServer(callback);
     }
+
     /**
      * start a thread run in background to pull VM requests. call this function
      * if you wish to continue getting VM request.

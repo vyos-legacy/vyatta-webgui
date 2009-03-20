@@ -41,8 +41,85 @@ function FT_backupObj(busObj)
         }
         else
         {
+            var evt = new FT_eventObj(0, thisObj, '');
 
+            var err = response.getElementsByTagName('error');
+            if(err != null && err[0] != null)
+            {
+                thisObj.m_vmRecObj = thisObj.f_parseRestoreData(err);
+                evt = new FT_eventObj(0, thisObj.m_backupRec, '');
+            }
+            else
+            {
+                thisObj.f_parseSystemTime(response);
+                thisObj.f_parseVM(response);
+                thisObj.f_parseHw(response);
+            }
+
+            if(thisObj.m_guiCb != undefined)
+                thisObj.m_guiCb(evt);
         }
+    }
+
+    this.f_parseRestoreData = function(response)
+    {
+        var reNodes = thisObj.f_getRestoreNodesFromResponse(response);
+        if(reNodes != null)
+        {
+            var vms = [];
+            var c=0;
+            for(var i=0; i<reNodes.length; i++)
+            {
+                var val = reNodes[i];
+                if(val.nodeName == 'vm')
+                {
+                    vms[c] = new FT_vmRecObj(val.getAttribute('id'));
+
+                    for(var j=0; j<val.childNodes.length; j++)
+                    {
+                        var cNode = val.childNodes[j];
+                        if(cNode == undefined) continue;
+
+                        if(cNode.nodeName == 'ip' &&
+                            cNode.firstChild != undefined)
+                            vms[c].m_ip = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'guiPort' &&
+                            cNode.firstChild != undefined)
+                            vms[c].m_guiPort = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'guiUri' &&
+                            cNode.firstChild != undefined)
+                            vms[c].m_guiUri = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'version')
+                            vms[c].m_version = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'displayName')
+                            vms[c].m_displayName = cNode.firstChild.nodeValue;
+                    }
+                    c++;
+                }
+            }
+        }
+
+        return vms;
+    }
+
+    this.f_getRestoreNodesFromResponse = function(response)
+    {
+        var cn = response[0].childNodes;
+        for(var i=0; i<cn.length; i++)
+        {
+            if(cn[i].nodeName == 'msg')
+            {
+                var vm = cn[i].childNodes;
+                for(var j=0; i<vm.length; j++)
+                {
+                    if(vm != undefined && vm[j] != undefined &&
+                        vm[j].nodeName == 'vm')
+                        return vm;
+                }
+            }
+        }
+
+        return null;
     }
 
     this.f_convertMode = function(mode)
@@ -93,6 +170,7 @@ function FT_backupObj(busObj)
     this.f_getVMRestoreList = function(guiCb)
     {
         thisObj.m_guiCb = guiCb;
+        /*/
         thisObj.m_backupRec = [];
 
         thisObj.m_backupRec[0] = new FT_backupRec('vm1', '01/01/2001',
@@ -107,6 +185,12 @@ function FT_backupObj(busObj)
                     'content2', 1);
         thisObj.m_backupRec[5] = new FT_backupRec('vm3', '01/01/2003',
                     'content 3', 2);
+*/
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                     "<statement>open-app archive list</statement></command>";
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
     }
 
     /**

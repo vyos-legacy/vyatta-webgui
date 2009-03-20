@@ -40,13 +40,14 @@ function FT_vmBusObj(busObj)
             var err = response.getElementsByTagName('error');
             if(err != null && err[0] != null)
             {
-                thisObj.m_vmRecObj = thisObj.f_parseVMSummaryData(err);
+                thisObj.f_parseVMSummaryData(err);
+                thisObj.f_parseVMStatus(err);
                 evt = new FT_eventObj(0, thisObj.m_vmRecObj, '');
             }
             else
             {
                 thisObj.f_parseSystemTime(response);
-                thisObj.f_parseVM(response);
+                //thisObj.f_parseVM(response);
                 thisObj.f_parseHw(response);
             }
 
@@ -78,15 +79,29 @@ function FT_vmBusObj(busObj)
                               thisObj.f_respondRequestCallback);
     }
 
+    /**
+     * call backend api to get vm status
+     */
+    this.f_getVMStatusFromServer = function(guiCb)
+    {
+        thisObj.m_guiCb = guiCb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+                      "open-app vm status </statement></command>";
+
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
     this.f_parseVMSummaryData = function(response)
     {
-        var vmNodes = thisObj.f_getVMNodesFromResponse(response);
+        var vmNodes = thisObj.f_getVMNodesFromResponse(response, 'vm');
         if(vmNodes != null)
         {
             var vms = [];
             var c=0;
             vms[c++] = new FT_vmRecObj('blb', 'Business Livebox');
-            vms[c++] = new FT_vmRecObj('op', 'Open Appliance');
+            vms[c++] = new FT_vmRecObj('openapp', 'Open Appliance');
             for(var i=0; i<vmNodes.length; i++)
             {
                 var val = vmNodes[i];
@@ -108,20 +123,95 @@ function FT_vmBusObj(busObj)
                         else if(cNode.nodeName == 'guiUri' &&
                             cNode.firstChild != undefined)
                             vms[c].m_guiUri = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'version')
+                        else if(cNode.nodeName == 'version'  &&
+                            cNode.firstChild != undefined)
                             vms[c].m_version = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'displayName')
+                        else if(cNode.nodeName == 'displayName' &&
+                            cNode.firstChild != undefined)
                             vms[c].m_displayName = cNode.firstChild.nodeValue;
                     }
                     c++;
                 }
             }
-        }
 
-        return vms;
+            thisObj.m_vmRecObj = vms;
+        }
     }
 
-    this.f_getVMNodesFromResponse = function(response)
+    this.f_parseVMStatus = function(response)
+    {
+        // get a vm status nodes
+        var vmNodes = thisObj.f_getVMNodesFromResponse(response, 'vmstatus');
+        if(vmNodes != null)
+        {
+            for(var i=0; i<vmNodes.length; i++)
+            {
+                var val = vmNodes[i];
+                if(val.nodeName == 'vmstatus')
+                {
+                    var vmIndex = thisObj.f_getVMRecObjIndexByVMId(val.getAttribute('id'));
+                    if(vmIndex == null) continue;
+
+                    var vmr = thisObj.m_vmRecObj[vmIndex];
+                    for(var j=0; j<val.childNodes.length; j++)
+                    {
+                        if(val.childNodes == undefined || val.childNodes[j] == null)
+                            continue;
+
+                        var cNode = val.childNodes[j];
+
+                        if(cNode.nodeName == 'state' &&
+                            cNode.firstChild != undefined)
+                            vmr.m_status = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'cpu' &&
+                            cNode.firstChild != undefined)
+                            vmr.m_cpu = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'diskAll' &&
+                            cNode.firstChild != undefined)
+                            vmr.m_diskTotal = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'diskFree' &&
+                            cNode.firstChild != undefined)
+                            vmr.m_diskFree = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'memAll' &&
+                            cNode.firstChild != undefined)
+                            vmr.m_memTotal = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'memFree' &&
+                            cNode.firstChild != undefined)
+                            vmr.m_memFree = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'updAvail' &&
+                            cNode.firstChild != undefined)
+                            vmr.m_needUpdate = cNode.firstChild.nodeValue;
+                    }
+
+                    thisObj.m_vmRecObj[vmIndex] = vmr;
+                }
+            }
+        }
+    }
+
+    this.f_getVMRecObjIndexByVMId = function(id)
+    {
+        var vmr = thisObj.m_vmRecObj;
+
+        if(vmr == null || vmr.length == 0) return null;
+
+        for(var i=0; i<vmr.length; i++)
+        {
+            if(vmr[i].m_name == id)
+                return i;
+        }
+
+        return null;
+    }
+
+    this.f_getVMRecObjByVMId = function(id)
+    {
+        var index = this.f_getVMRecObjIndexByVMId(id);
+
+        return index == null ? null : this.m_vmRecObj[index];
+    }
+
+    this.f_getVMNodesFromResponse = function(response, node)
     {
         var cn = response[0].childNodes;
         for(var i=0; i<cn.length; i++)
@@ -129,10 +219,10 @@ function FT_vmBusObj(busObj)
             if(cn[i].nodeName == 'msg')
             {
                 var vm = cn[i].childNodes;
-                for(var j=0; i<vm.length; j++)
+                for(var j=0; j<vm.length; j++)
                 {
                     if(vm != undefined && vm[j] != undefined &&
-                        vm[j].nodeName == 'vm')
+                        vm[j].nodeName == node)
                         return vm;
                 }
             }
@@ -229,8 +319,7 @@ function FT_vmBusObj(busObj)
 /**
  * VM Data Rec object
  */
-function FT_vmRecObj(id, displayName, status, cpu, memTotal, memFree, diskTotal,diskFree,
-                    guiURL, versions, deploys)
+function FT_vmRecObj(id, displayName)
 {
     var thisObj = this;
     this.m_name = id;   // vm id
@@ -239,16 +328,14 @@ function FT_vmRecObj(id, displayName, status, cpu, memTotal, memFree, diskTotal,
     this.m_guiPort = null;
     this.m_guiUri = null;
     this.m_version = null;
-    this.m_status = status;
-    this.m_cpu = cpu;
-    this.m_memTotal = memTotal;
-    this.m_memFree = memFree;
-    this.m_diskTotal = diskTotal;
-    this.m_diskFree = diskFree;
-    this.m_guiURL = guiURL;
-    this.m_versions = versions; // 0=current, 1=avail1, 2=avail2...
-    this.m_deploys = deploys;   // schedule1, shecule2...
-    this.m_needUpdate = null;
+    this.m_status = 'unknown';
+    this.m_cpu = 0;
+    this.m_memTotal = 0;
+    this.m_memFree = 0;
+    this.m_diskTotal = 0;
+    this.m_diskFree = 0;
+    this.m_guiURL = null;
+    this.m_needUpdate = 'no';   // yes/no
 
 
     this.f_setVMSummaryValues = function(id, disName, ip, port, uri)

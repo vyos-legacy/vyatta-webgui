@@ -8,6 +8,7 @@
 function FT_confDashboard(name, callback, busLayer)
 {
     var thisObjName = 'FT_confDashboard';
+    var thisObj = this;
 
     /**
      * @param name - name of configuration screens.
@@ -34,15 +35,15 @@ function FT_confDashboard(name, callback, busLayer)
         cols[2] = this.f_createColumn('CPU', 120, 'progress', '8');
         cols[3] = this.f_createColumn('Memory', 120, 'progress', '8');
         cols[4] = this.f_createColumn('Disk Space', 120, 'progress', '8');
-        cols[5] = this.f_createColumn('Update Needed', 130, 'checkbox', '40');
+        cols[5] = this.f_createColumn('Update Needed', 130, 'checkbox', '55');
 
         return cols;
     }
 
     this.f_loadVMData = function()
     {
-        var thisObj = this;
         var hd = this.f_createColumns();
+        thisObj.m_updateFields = [];
 
         var cb = function(evt)
         {
@@ -62,7 +63,7 @@ function FT_confDashboard(name, callback, busLayer)
                     return;
                 }
 
-                var vm = evt.m_value.m_vmRecObj;
+                var vm = evt.m_value;
                 if(vm == undefined) return;
 
                 thisObj.f_removeDivChildren(thisObj.m_div);
@@ -71,9 +72,13 @@ function FT_confDashboard(name, callback, busLayer)
                 thisObj.m_div.appendChild(thisObj.m_body);
                 thisObj.m_div.appendChild(thisObj.m_buttons);
 
+                var vmIndex = 0;
                 for(var i=0; i<vm.length; i++)
                 {
                     var v = vm[i];
+
+                    // skip business live box
+                    if(v.m_name == 'blb') continue;
 
                     var img = thisObj.f_renderStatus(v.m_status);
                     var cpu = thisObj.f_renderProgressBar(v.m_cpu,
@@ -84,7 +89,10 @@ function FT_confDashboard(name, callback, busLayer)
                     var disk = thisObj.f_renderProgressBar(v.f_getDiskPercentage(),
                             'Disk Used: Total = ' + v.m_diskTotal +
                             ', Free = ' + v.m_diskFree);
-                    var vmData = [v.m_name, img, cpu, mem, disk, ''];
+                    var update = thisObj.f_handleUpdateNeedField(vmIndex, v, thisObj.m_updateFields);
+                    thisObj.m_updateFields[vmIndex++] = update[1];
+
+                    var vmData = [v.m_displayName, img, cpu, mem, disk, update[0]];
 
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData);
                     thisObj.m_body.appendChild(bodyDiv);
@@ -96,6 +104,63 @@ function FT_confDashboard(name, callback, busLayer)
 
         g_utils.f_cursorWait();
         this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
+    }
+
+    this.f_handleCheckboxClick = function(chkbox)
+    {
+        var f = thisObj.m_updateFields;
+        
+        // update the m_updateFields of user input. so next background
+        // refresh will keep the user's input instead of overrided it.
+        for(var i=0; i<f.length; i++)
+        {
+            var vm = f[i];
+            if(vm[1].m_name == chkbox.id)
+            {
+                vm[2] = chkbox.checked ? 'yes' : 'no';
+                break;
+            }
+        }
+    }
+
+    /**
+     * get a list of vm id who's checkbox is checked for update
+     */
+    this.f_getUpdateList = function()
+    {
+        var vmList = [];
+        var index = 0;
+        var f = thisObj.m_updateFields;
+
+        for(var i=0; i<f.length; i++)
+        {
+            var vm = f[i];
+            if(vm[2] == 'yes')
+                vmList[index++] = vm[1].m_name;
+        }
+
+        return vmList;
+    }
+
+    this.f_handleUpdateNeedField = function(vmindex, vm, updates)
+    {
+        if(updates[vmindex] == undefined)
+            updates[vmindex] = [vm.m_needUpdate, vm, vm.m_needUpdate /*user input*/];
+
+        // need update checkbox
+        if(vm.m_needUpdate == 'yes')
+        {
+            // now let create checkbox
+            var vmu = updates[vmindex];
+
+            // we want to keep user's last input
+            var isChecked = vmu[2] == 'no' ? 'no' : 'yes';
+
+            return [thisObj.f_renderCheckbox(isChecked, vm.m_name,
+                            'f_dbCheckboxClick(this)'), updates[vmindex]];
+        }
+        else
+            return ["", updates[vmindex]];
     }
 
     this.f_stopLoadVMData = function()
@@ -110,7 +175,7 @@ function FT_confDashboard(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
-        var btns = [['Update', "f_dbHandleUpdate('vm')", 'Update selected VM(s)'],
+        var btns = [['Update', "f_dbHandleUpdate()", 'Update selected VM(s)'],
                     ['Cancel', "f_dbHandleCancel()", '']];
         this.m_buttons = this.f_createButtons(btns);
 
@@ -120,11 +185,17 @@ function FT_confDashboard(name, callback, busLayer)
 FT_extend(FT_confDashboard, FT_confBaseObj);
 
 
-function f_dbHandleUpdate(vm)
+function f_dbHandleUpdate()
 {
-    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_SCHED_UPDATE_ID);
+    var ul = g_configPanelObj.m_activeObj.f_getUpdateList();
+    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_SCHED_UPDATE_ID, ul);
 }
 
 function f_dbHandleCancel()
 {
+}
+
+function f_dbCheckboxClick(e)
+{
+    g_configPanelObj.m_activeObj.f_handleCheckboxClick(e);
 }

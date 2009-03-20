@@ -276,11 +276,11 @@ function FT_userBusObj(busObj)
         xmlstr += "' last '" + ur.m_last;
         xmlstr += "' first '" + ur.m_first;
         xmlstr += "' email '" + ur.m_email + "' ";
-        if (ur.m_right != null) {
-			xmlstr += "rights '" + ur.m_rights + "' ";
-		} else {
-			xmlstr += "rights 'none' ";
-		}
+        if(ur.m_right != null) {
+            xmlstr += "rights '" + ur.m_rights + "' ";
+        } else {
+            xmlstr += "rights 'none' ";
+        }
         if(ur.m_role != null)
             xmlstr += "role '" + ur.m_role + "'";
 

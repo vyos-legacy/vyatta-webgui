@@ -90,13 +90,32 @@ sub backup_archive {
 	}
     }
 
-    #now create metadata file
-
-    #finally tar up the proceedings...
     my $date = 'foo';
     my $time = 'foo';
     my $datamodel = '1';
-    'tar -cvs /backup/$date_$time_$datamodel.tar';
+    my $filename = $date."_".$time."_".$datamodel;
+    #now create metadata file
+    my $FILE;
+    open FILE, ">", "/tmp/backup/$filename.txt" or die $!;
+    #we'll write out xml descriptions--the same as what we display...
+    print FILE "<archive>";
+    print FILE "<name>name</name>";
+    print FILE "<file>$filename</file>";                                                                             
+    print FILE "<date>$date</date>";
+    print FILE "<contents>";
+    foreach my $vmkey (keys %hash_arr) {
+	my $vm = new OpenApp::VMMgmt($vmkey);
+	print FILE "<entry>";
+	print FILE "<vm>$vmkey</vm>";
+	print FILE "<type>$hash_arr{$vmkey}</type>";
+	print FILE "</entry>";
+    }    
+    print FILE "</contents>";
+    print FILE "</archive>";
+    close FILE;
+
+    #finally tar up the proceedings...
+    `tar -C /tmp/backup/ -cf /tmp/backup/$filename.tar . 2>/dev/null`;
 
     #needs to clean out old files or files past limit at this point....
 
@@ -139,13 +158,15 @@ sub list_archive {
     print "VERBATIM_OUTPUT\n";
 
     my $file;
-    my @files = <"/backup/*.tar">;
+    my @files = </tmp/backup/*.tar>;
     foreach $file (@files) {
-	#on each listing read the metadata header
-	print "<archive>";
-	print "<file>$file</file>";
-	#need to print date,contents and name
-	print "</archive>"
+	my @name = split('/',$file);
+	#just open up meta data file and squirt out contents...
+	my $metafile;
+	my @metafile = split('\.',$name[3]);
+	my $output;
+	my @output = `tar -xf $file --wildcards -O ./$metafile[0].txt`;
+	print $output[0];
     } 
     #done
 }
@@ -173,7 +194,7 @@ sub usage() {
 GetOptions(
            "backup:s"       => \$backup,
            "restore=s"      => \$restore,
-           "list=s"         => \$list,
+           "list:s"         => \$list,
            "delete=s"       => \$delete,
     ) or usage();
 

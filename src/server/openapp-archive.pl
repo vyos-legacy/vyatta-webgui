@@ -96,13 +96,66 @@ sub backup_archive {
     my $date = 'foo';
     my $time = 'foo';
     my $datamodel = '1';
-    'tar -cvs /backupfiles/$date_$time_$datamodel.tar';
+    'tar -cvs /backup/$date_$time_$datamodel.tar';
+
+    #needs to clean out old files or files past limit at this point....
 
 }
 
+#
+#
+#
 sub restore_archive {
 
+    #Need to send rest messages, but how will the vm get the bu file?
 
+    #NEED MORE CLARIFICATION HERE
+
+}
+
+#
+# Generates xml listing...
+#
+# Generates the following xml
+# <archive>
+#   <name>name</name>
+#   <file>file</file>
+#   <date>date</date>
+#   <contents>
+#     <entry>
+#       <vm>vm</vm>
+#       <type>data|conf</type>
+#     </entry>
+#   </contents>
+# </archive>
+#
+#
+
+sub list_archive {
+    #get a directory listing of /backup/.
+    
+    my $hash_arr = {};
+
+    print "VERBATIM_OUTPUT\n";
+
+    my $file;
+    my @files = <"/backup/*.tar">;
+    foreach $file (@files) {
+	#on each listing read the metadata header
+	print "<archive>";
+	print "<file>$file</file>";
+	#need to print date,contents and name
+	print "</archive>"
+    } 
+    #done
+}
+
+#
+# delete archive...
+#
+sub delete_archive {
+    my $file = "/backup/$delete";
+    unlink($file);
 }
 
 
@@ -110,7 +163,8 @@ sub restore_archive {
 sub usage() {
     print "Usage: $0 --backup=<backup>\n";
     print "       $0 --restore=<restore>\n";
-    print "       $0 --vm=<vm>\n";
+    print "       $0 --list=<list>\n";
+    print "       $0 --delete=<delete>\n";
     exit 1;
 }
 
@@ -128,8 +182,14 @@ if ( defined $backup ) {
     backup_archive();
     exit 0;
 }
-if ( defined $restore ) {
+elsif ( defined $restore ) {
     restore_archive();
     exit 0;
+}
+elsif (defined $list ) {
+    list_archive();
+}
+elsif (defined $delete ) {
+    delete_archive();
 }
 exit 0;

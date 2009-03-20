@@ -332,15 +332,15 @@ if ( defined $modify ) {
     modify_user();
     exit 0;
 }
-if ( defined $add ) {
+elsif ( defined $add ) {
     add_user();
     exit 0;
 }
-if ( defined $delete ) {
+elsif ( defined $delete ) {
     del_user();
     exit 0;
 }
-if ( defined $list ) {
+elsif ( defined $list ) {
     list_user();
     exit 0;
 }

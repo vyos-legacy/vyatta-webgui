@@ -5,6 +5,8 @@ use Getopt::Long;
 use lib "/opt/vyatta/share/perl5";
 use OpenApp::VMMgmt;
 
+my $OA_ID = $OpenApp::VMMgmt::OPENAPP_ID;
+
 my ($list, $status) = ('NO_VALUE', 'NO_VALUE');
 GetOptions(
   'list:s' => \$list,
@@ -57,7 +59,7 @@ sub do_status {
     @VMs = ( $id );
   } else {
     @VMs = OpenApp::VMMgmt::getVMList();
-    unshift @VMs, 'openapp';
+    unshift @VMs, $OA_ID;
   }
 
   for my $vid (@VMs) {

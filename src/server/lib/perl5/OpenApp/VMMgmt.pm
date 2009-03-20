@@ -4,6 +4,10 @@ use strict;
 our @EXPORT = qw(getVMList);
 use base qw(Exporter);
 
+our $OPENAPP_ID = 'openapp';
+our $OPENAPP_DNAME = 'OpenAppliance';
+our $OPENAPP_SNMP_COMM = 'openappliance';
+
 my $VMDIR = '/opt/vyatta/etc/gui/VM';
 my $STATUS_DIR = '/opt/vyatta/var/run/vmstatus';
 
@@ -13,6 +17,22 @@ sub getVMList {
   my @v = grep { !/^\./ && -f "$VMDIR/$_" } readdir($dd);
   closedir($dd);
   return @v;
+}
+
+sub _lockStatus {
+}
+
+sub _unlockStatus {
+}
+
+sub updateStatus {
+  my ($id, $st, $cpu, $dall, $dfree, $mall, $mfree, $upd) = @_;
+  _lockStatus();
+  my $fd = undef;
+  open($fd, '>', "$STATUS_DIR/$id") or return;
+  print $fd "$st $cpu $dall $dfree $mall $mfree $upd\n";
+  close($fd);
+  _unlockStatus();
 }
 
 my %fields = (
@@ -36,6 +56,12 @@ my %fields = (
 
 sub _setupMeta {
   my ($self, $id) = @_;
+  if ($id eq $OPENAPP_ID) {
+    # dom0
+    $self->{_vmId} = $OPENAPP_ID;
+    $self->{_vmDisplayName} = $OPENAPP_DNAME;
+    return;
+  }
   if (! -r "$VMDIR/$id") {
     return;
   }
@@ -53,8 +79,10 @@ sub _setupMeta {
   $self->{_vmDisplayName} = $dname;
 }
 
-sub _setupStatus {
-  my ($self, $id) = @_;
+sub refreshStatus {
+  my ($self) = @_;
+  _lockStatus();
+  my $id = $self->{_vmId};
   if (! -r "$STATUS_DIR/$id") {
     return;
   }
@@ -62,6 +90,7 @@ sub _setupStatus {
   open($fd, '<', "$STATUS_DIR/$id") or return;
   my $data = <$fd>;
   close($fd);
+  _unlockStatus();
   chomp($data);
   my ($st, $cpu, $dall, $dfree, $mall, $mfree, $upd) = split(/ /, $data);
   $self->{_vmState} = $st;
@@ -76,7 +105,7 @@ sub _setupStatus {
 sub _setup {
   my ($self, $id) = @_;
   $self->_setupMeta($id);
-  $self->_setupStatus($id);
+  $self->refreshStatus();
 }
 
 sub new {

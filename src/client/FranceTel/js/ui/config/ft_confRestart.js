@@ -63,7 +63,7 @@ function FT_confRestart(name, callback, busLayer)
                     return;
                 }
 
-                var vm = evt.m_value.m_vmRecObj;
+                var vm = evt.m_value;
                 if(vm == undefined) return;
 
                 thisObj.f_removeDivChildren(thisObj.m_div);

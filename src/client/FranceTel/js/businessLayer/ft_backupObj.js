@@ -5,12 +5,18 @@
     Description:
 */
 
-function FT_backupRec(vm, bkDate, content, mode)
+function FT_backupContentRec(vm, type)
 {
     this.m_vm = vm;
+    this.m_type = type; // config/data
+}
+
+function FT_backupRec(bkDate, name, file, content)
+{
     this.m_bkDate = bkDate;
-    this.m_content = content;
-    this.m_bkMode = mode; // 0: config, 1:data, 2:both
+    this.m_name = name;
+    this.m_file = file;
+    this.m_content = content;   // data type : FT_backupContentRec
 }
 
 function FT_backupObj(busObj)
@@ -21,7 +27,7 @@ function FT_backupObj(busObj)
     this.m_objName = 'FT_vmBackupObj';
     this.m_guiCb = null;
     this.m_busObj = busObj;
-    this.m_backupRec = null;   // list of backup rec data.
+    this.m_archiveRec = null;
 
     /////////////////////////////////////////
     /**
@@ -46,18 +52,12 @@ function FT_backupObj(busObj)
             var err = response.getElementsByTagName('error');
             if(err != null && err[0] != null)
             {
-                thisObj.m_vmRecObj = thisObj.f_parseRestoreData(err);
-                evt = new FT_eventObj(0, thisObj.m_backupRec, '');
-            }
-            else
-            {
-                thisObj.f_parseSystemTime(response);
-                thisObj.f_parseVM(response);
-                thisObj.f_parseHw(response);
-            }
+                thisObj.m_archiveRec = thisObj.f_parseRestoreData(err);
+                evt = new FT_eventObj(0, thisObj.m_archiveRec, '');
 
-            if(thisObj.m_guiCb != undefined)
-                thisObj.m_guiCb(evt);
+                if(thisObj.m_guiCb != undefined)
+                    thisObj.m_guiCb(evt);
+            }
         }
     }
 
@@ -66,40 +66,70 @@ function FT_backupObj(busObj)
         var reNodes = thisObj.f_getRestoreNodesFromResponse(response);
         if(reNodes != null)
         {
-            var vms = [];
+            var arch = [];
             var c=0;
             for(var i=0; i<reNodes.length; i++)
             {
                 var val = reNodes[i];
-                if(val.nodeName == 'vm')
+                if(val.nodeName == 'archive')
                 {
-                    vms[c] = new FT_vmRecObj(val.getAttribute('id'));
+                    arch[c] = new FT_backupRec();
 
                     for(var j=0; j<val.childNodes.length; j++)
                     {
                         var cNode = val.childNodes[j];
                         if(cNode == undefined) continue;
 
-                        if(cNode.nodeName == 'ip' &&
+                        if(cNode.nodeName == 'name' &&
                             cNode.firstChild != undefined)
-                            vms[c].m_ip = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'guiPort' &&
+                            arch[c].m_name = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'file' &&
                             cNode.firstChild != undefined)
-                            vms[c].m_guiPort = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'guiUri' &&
+                            arch[c].m_file = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'date' &&
                             cNode.firstChild != undefined)
-                            vms[c].m_guiUri = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'version')
-                            vms[c].m_version = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'displayName')
-                            vms[c].m_displayName = cNode.firstChild.nodeValue;
+                            arch[c].m_bkDate = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'contents' &&
+                            cNode.firstChild != undefined)
+                            arch[c].m_contents = thisObj.f_parseContents(cNode);
                     }
                     c++;
                 }
             }
         }
 
-        return vms;
+        return arch;
+    }
+
+    this.f_parseContents = function(node)
+    {
+        var contents = [];
+        var c = 0;    // contents counter
+        if(node == undefined || node.childNodes == undefined) return contents;
+
+        for(var i=0; i<node.childNodes.length; i++)
+        {
+            if(node.childNodes[i].nodeName == 'entry')
+            {
+                var cNode = node.childNodes[i];
+                var vm ="";
+                var type = "";
+
+                for(var j=0; j<cNode.length; j++)
+                {
+                    var ccNode = cNode[j];
+
+                    if(ccNode.nodeName == 'vm')
+                        vm = ccNode.firstChild.nodeValue;
+                    else if(ccNode.nodeName == 'type')
+                        type = ccNode.firstChild.nodeValue;
+                }
+
+                contents[c++] = new FT_backupContentRec(vm, type);
+            }
+        }
+
+        return contents;
     }
 
     this.f_getRestoreNodesFromResponse = function(response)
@@ -113,7 +143,7 @@ function FT_backupObj(busObj)
                 for(var j=0; i<vm.length; j++)
                 {
                     if(vm != undefined && vm[j] != undefined &&
-                        vm[j].nodeName == 'vm')
+                        vm[j].nodeName == 'archive')
                         return vm;
                 }
             }
@@ -170,22 +200,6 @@ function FT_backupObj(busObj)
     this.f_getVMRestoreList = function(guiCb)
     {
         thisObj.m_guiCb = guiCb;
-        /*/
-        thisObj.m_backupRec = [];
-
-        thisObj.m_backupRec[0] = new FT_backupRec('vm1', '01/01/2001',
-                    'content', 0);
-        thisObj.m_backupRec[1] = new FT_backupRec('vm2', '01/01/2002',
-                    'content2', 1);
-        thisObj.m_backupRec[2] = new FT_backupRec('vm3', '01/01/2003',
-                    'content 3', 2);
-        thisObj.m_backupRec[3] = new FT_backupRec('vm1', '01/01/2001',
-                    'content', 0);
-        thisObj.m_backupRec[4] = new FT_backupRec('vm2', '01/01/2002',
-                    'content2', 1);
-        thisObj.m_backupRec[5] = new FT_backupRec('vm3', '01/01/2003',
-                    'content 3', 2);
-*/
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
                      "<statement>open-app archive list</statement></command>";

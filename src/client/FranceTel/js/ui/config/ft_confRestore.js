@@ -49,15 +49,6 @@ function FT_confRestore(name, callback, busLayer)
 
         var cb = function(evt)
         {
-//////////////////////////////
-// below code is for testing
-thisObj.m_busLayer.f_getVMRestoreListFromServer(cb);
-var ev = new FT_eventObj(0,
-    thisObj.m_busLayer.f_getVMBackupObj(),
-                      "");
-evt = ev;
-//////////////////////////////
-
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
@@ -90,19 +81,20 @@ evt = ev;
                 for(var i=0; i<bkRec.length; i++)
                 {
                     var r = bkRec[i];
+                    var content = thisObj.f_getContents(r.m_content);
 
-                    var anchor = thisObj.f_renderAnchor(r.m_content,
-                                "f_handleRestoreDesc('" + r.m_content + "')",
-                                'Click here to restore ' + "(" + r.m_content + ")");
+                    var anchor = thisObj.f_renderAnchor(content,
+                                "f_handleRestoreDesc('" + r.m_file + "')",
+                                'Click here to restore ' + "(" + r.m_name + ")");
                     var restore = thisObj.f_renderButton(
                                 'restore', true, "f_handleRestoreDesc('" +
-                                r.m_content + "')", 'Restore (' + r.m_content + ')');
+                                r.m_file + "')", 'Restore (' + r.m_name + ')');
                     var download = thisObj.f_renderButton(
                                 'download', true, "f_handleDownloadRestore('" +
-                                r.m_content + "')", 'Download restore (' + r.m_content + ')');
+                                r.m_file + "')", 'Download restore (' + r.m_name + ')');
                     var del = thisObj.f_renderButton(
                                 'delete', true, "f_deleteRestoreFile('" +
-                                r.m_content + "')", 'Delete filename (' + r.m_content + ')');
+                                r.m_name + "')", 'Delete filename (' + r.m_name + ')');
 
                     vmData = [r.m_bkDate, anchor, restore, download, del]
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData);
@@ -114,11 +106,21 @@ evt = ev;
         }
 
         g_utils.f_cursorWait();
-        this.m_busLayer.f_getUserListFromServer(cb);
+        thisObj.m_busLayer.f_getVMRestoreListFromServer(cb);
     }
 
     this.f_stopLoadVMData = function()
     {
+    }
+
+    this.f_getContents = function(contents)
+    {
+        var content = '';
+
+        for(var i=0; i<contents.length; i++)
+            content += contents[i].m_vm + ' ' + contents[i].m_type + ';';
+
+        return content;
     }
 
     this.f_init = function()

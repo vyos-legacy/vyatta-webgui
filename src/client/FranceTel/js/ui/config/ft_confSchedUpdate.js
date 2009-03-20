@@ -7,6 +7,7 @@
 function FT_confSchedUpdate (name, callback, busLayer) {
     var thisObjName = 'FT_confSchedUpdate';
 	var thisObj = this;
+	this.m_vmList = undefined;
     
     /**
      * @param name - name of configuration screens.
@@ -20,8 +21,17 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 
 	this.constructor(name, callback, busLayer);
 		
-    this.f_init = function()
+    this.f_init = function(vmIds)
     {
+		if ((vmIds != undefined) && (vmIds != null)) {
+			thisObj.m_vmList = new Array();
+			for (var i = 0; i < vmIds.length; i++) {
+				var vm = g_busObj.f_getVmRecByVmId(vmIds[i]);
+				if ((vm != undefined) && (vm!=null)) {
+					thisObj.m_vmList.push(vm);
+				}				
+			}
+		}
         this.f_setConfig( {
 			id : 'conf_sched_update',
 			items: [ {
@@ -39,8 +49,8 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 				v_type: 'html',
 				id: 'conf_sched_update_app',
 				padding : '30px',
-				size: '30',
-				text: '<div id="conf_sched_update_app></div>',
+				colspan: '4',
+				text: '<div id="conf_sched_update_app"></div>',
                 v_new_row: 'true',
 				v_end_row: 'true'
 			}, {
@@ -93,9 +103,20 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 		})  
     }
 	
-    this.f_loadVMData = function(element)
+	this.f_showUpdateVm = function()
+	{
+		var div = document.getElementById('conf_sched_update_app');
+		var text = '';
+		for (var i=0 ; i < thisObj.m_vmList.length; i++) {
+			text += thisObj.f_createListItem(thisObj.m_vmList[i].m_displayName);
+		}
+		div.innerHTML = text;
+	}
+	
+    this.f_loadVMData = function()
     {
 		thisObj.f_attachListener();
+		thisObj.f_showUpdateVm();
     }
     
     this.f_stopLoadVMData = function()

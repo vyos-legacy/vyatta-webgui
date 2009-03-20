@@ -97,22 +97,7 @@ function FT_confEmailServer(name, callback, busLayer)
     this.f_stopLoadVMData = function()
     {
     }
-    
-    this.f_checkEmpty = function(field, message, err)
-    {
-        if (field.value.trim().length <= 0) {
-            return (err + thisObj.f_liWrap(message));
-        } else {
-            return err;
-        }
-    }
-    
-	this.f_liWrap = function (err)
-	{
-		return ('<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">' + err + '</li>');
-	}
-	
-	
+        		
     this.f_validate = function()
     {
         var error = 'Please fix the following errors:<br>';
@@ -120,16 +105,16 @@ function FT_confEmailServer(name, callback, busLayer)
         
         if (!thisObj.f_checkIP(thisObj.m_form.conf_email_srv_stmp.value)) {
             if (!thisObj.f_checkHostname(thisObj.m_form.conf_email_srv_stmp.value)) {
-                errorInner += thisObj.f_liWrap('SMTP server address is invalid');
+                errorInner += thisObj.f_createListItem('SMTP server address is invalid');
             }
         }
         
         if (!thisObj.f_checkHostname(thisObj.m_form.conf_email_srv_local_machine.value)) {
-            errorInner += thisObj.f_liWrap('Local machine name is invalid');
+            errorInner += thisObj.f_createListItem('Local machine name is invalid');
         }
         
         if (!thisObj.f_checkEmail(thisObj.m_form.conf_email_srv_local_email.value)) {
-            errorInner += thisObj.f_liWrap('Local email address is invalid');
+            errorInner += thisObj.f_createListItem('Local email address is invalid');
         }
         
         errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_email_srv_auth_name, 'Authorization name cannot be empty', errorInner);

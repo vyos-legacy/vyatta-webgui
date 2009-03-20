@@ -13,8 +13,8 @@ VYA.FT_CONST = {
 
     ///////////////////////////////////////////////////
     // Defines the DOM element ID
-	OA_ID : 'Open Applicance',
-	BLB_ID : 'Business Livebox',
+	OA_ID : 'openapp',
+	BLB_ID : 'blb',
 	
 	//-----Main
 	DOM_MAIN_ID : 'main',

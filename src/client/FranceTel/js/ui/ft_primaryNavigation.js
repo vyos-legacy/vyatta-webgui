@@ -30,34 +30,40 @@ function FT_primaryNavigation()
                 if (i == (thisObj.m_vmList.length - 1)) {
                     thisObj.m_lastVm = thisObj.m_vmList[i].m_name;
                 }
-                thisObj.f_addVm(thisObj.m_vmList[i].m_name);
+                thisObj.f_addVm(thisObj.m_vmList[i].m_name, thisObj.m_vmList[i].m_displayName, 
+				    thisObj.f_buildUrlPath(thisObj.m_vmList[i]));
             }
         }
         thisObj.f_selectVm(VYA.FT_CONST.OA_ID);
     }
     
-    this.f_getUrlPath = function(vm)
+    this.f_buildUrlPath = function(vm)
     {
-        if (vm == VYA.FT_CONST.OA_ID) {
+        //return (window.location.protocol + '//' + vm.m_ip + ':' + vm.m_guiPort  + vm.m_guiUri);
+		return vm.m_guiUri;
+    }
+    
+    this.f_getUrlPath = function(vmId, vmURL)
+    {
+        if (vmId == VYA.FT_CONST.OA_ID) {
             return '#';
-        } else if (vm == VYA.FT_CONST.BLB_ID) {
-            return 'http://www.orange-business.com/index_en.html';
         } else {
-            return 'http://www.vyatta.org';
+            return vmURL;
         }
     }
     
     /*
      * Add this VM to the primary navigation bar
      */
-    this.f_addVm = function(vm)
+    this.f_addVm = function(vmId, vmDisplay, vmURL)
     {
+        //alert('addVm: vmId: ' + vmId + ' vmDisplay: ' + vmDisplay + ' vmURL: ' + vmURL);
         var p = document.getElementById(VYA.FT_CONST.DOM_MAIN_FRM_NAV_BAR_ID);
         var newVM = document.createElement('th');
-        newVM.setAttribute('id', vm);
+        newVM.setAttribute('id', vmId);
         newVM.setAttribute("class", 'VYA.FT_CONST.DOM_MAIN_FRM_NAV_BAR_CLS');
-        newVM.setAttribute("urlPath", thisObj.f_getUrlPath(vm));
-        newVM.appendChild(document.createTextNode(vm));
+        newVM.setAttribute("urlPath", thisObj.f_getUrlPath(vmId, vmURL));
+        newVM.appendChild(document.createTextNode(vmDisplay));
         newVM.style.width = VYA.DYN_STYLE.PRI_NAV_ITEM_WIDTH;
         newVM.style.height = '40px';
         newVM.style.border = VYA.DYN_STYLE.PRI_NAV_ITEM_BORDER;
@@ -83,6 +89,7 @@ function FT_primaryNavigation()
      */
     this.f_selectVm = function(vmId, urlPath)
     {
+        //alert('select vm: ' + vmId + ' url: ' + urlPath);
         thisObj.m_selectedVm = vmId;
         thisObj.f_highlightSelectedVm(thisObj.m_selectedVm);
         thisObj.m_parent.f_showVm(thisObj.m_selectedVm, urlPath);
@@ -168,7 +175,8 @@ function FT_primaryNavigation()
         var target = g_xbObj.f_xbGetEventTarget(e);
         if (target != undefined) {
             //Get the id of the tab being clicked.
-            var vmId = target.innerHTML.trim();
+            //var vmId = target.innerHTML.trim();
+			var vmId = target.getAttribute('id');
             if (vmId == thisObj.m_selectedVm) {
                 return false;
             }

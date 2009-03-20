@@ -142,6 +142,23 @@ function FT_confBackup(name, callback, busLayer)
 	////////////////////////////////////////////////////////////////////////// 	
 	this.f_oaBackup = function()
 	{
+		/** get the list of checked vm, and what check **/
+//		var s = 'conf_backup_config_cb';
+//		for (var i=0; i < thisObj.m_vmName.length; i++) {
+//	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
+//			if (el.checked == true) {
+//				return true;
+//			}	
+//		}
+//		s = 'conf_backup_data_cb';
+//		for (var i=0; i < thisObj.m_vmName.length; i++) {
+//	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
+//			if (el.checked == true) {
+//				return true;
+//			}	
+//		}
+//		g_busObj.f_backup(vms, mode, guiCb);
+	
         g_utils.f_popupMessage('Backup is in progress.  You will receive an email notification when the operation is finshed.', 'ok', 'Information');
 	}
 	
@@ -177,8 +194,9 @@ function FT_confBackup(name, callback, busLayer)
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
                 var vmData = [];
-                var vm = evt.m_value.m_vmRecObj;
-                if(vm == undefined) return;
+                var vm = evt.m_value;
+                if(vm == undefined)  
+				    return;
 
                 /*  
                 thisObj.f_removeDivChildren(thisObj.m_div);
@@ -191,14 +209,15 @@ function FT_confBackup(name, callback, busLayer)
 				
 				thisObj.m_vmName.length = 0;
 				
-                for(var i=0; i<=vm.length; i++)
+                for(var i=0; i<vm.length; i++)
                 {
                     var v = vm[i];
+					//alert('vm name: ' + vm[i].m_name + ' vm dn:' + vm[i].m_displayName);
                     if(v == undefined) break;
 	////////////////////////////////////////////////////////////////////////////////////////////
 	////////// TODO : NEED BACKEND SUPPORT for the ID of OpenAppliance, ie dom0 VM
 	//////////////////////////////////////////////////////////////////////////////////////////// 	
-                    if (v.m_name == 'OpenAppliance') {
+                    if (v.m_name == VYA.FT_CONST.OA_ID) {
 						if (!g_roleManagerObj.f_isInstaller()) {
 							continue;
 						}
@@ -206,7 +225,7 @@ function FT_confBackup(name, callback, busLayer)
                     var data = thisObj.f_renderCheckbox('no','conf_backup_data_cb_' + v.m_name);
                     var config = thisObj.f_renderCheckbox('no','conf_backup_config_cb_' + v.m_name);
 					thisObj.m_vmName.push(v.m_name);
-                    vmData[i] = [v.m_name, config, data];
+                    vmData[i] = [v.m_displayName, config, data];
 
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData[i]);
 					//alert('adding row: vm: ' + v.m_name + ' innerHTML: ' + bodyDiv.innerHTML);

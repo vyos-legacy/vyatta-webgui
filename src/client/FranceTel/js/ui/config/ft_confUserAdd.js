@@ -217,7 +217,7 @@ function FT_confUserAdd (name, callback, busLayer)
 		    thisObj.form.conf_user_add_surname.value, 
 			thisObj.form.conf_user_add_givenname.value, 
 			thisObj.form.conf_user_add_username.value, 
-			null, 
+			'user', 
 			'add', 
 			thisObj.form.conf_user_add_email.value, 
 			null

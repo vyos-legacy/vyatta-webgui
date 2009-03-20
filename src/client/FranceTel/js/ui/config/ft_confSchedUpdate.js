@@ -128,6 +128,13 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 		var el = document.getElementById('conf_sched_update_cal_text');
 		g_calObj.f_show(el,e);
 	}
+		
+	this.f_update = function()
+	{	
+        var vm = new FT_vmRecObj('security', 'up', '50', '50', '50', 
+		    '50', '50', 'dummy.html', ['version 1.3 corrupted', 'ver 1.1'], null);		
+        g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID, vm);				
+	}
 	
     this.f_handleClick = function(e)
     {
@@ -135,7 +142,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
         if (target != undefined) {
             var id = target.getAttribute('id');
             if (id == 'conf_sched_update_update_button') { //update clicked
-                alert('Schedule update update button clicked');
+                thisObj.f_update();
             } else if (id == 'conf_sched_update_cancel_button') { //cancel clicked
                 g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_DASHBOARD_ID);           
             } else if (id == 'conf_sched_update_later') {
@@ -150,3 +157,4 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 }
 
 FT_extend(FT_confSchedUpdate, FT_confFormObj);
+

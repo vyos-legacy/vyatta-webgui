@@ -6,6 +6,9 @@
  */
 function FT_confRestoreUpdate (name, callback, busLayer) {
     var thisObjName = 'FT_confRestoreUpdate';
+	var thisObj = this;
+	this.m_vm = undefined;
+	this.form = undefined;
     
     /**
      * @param name - name of configuration screens.
@@ -21,12 +24,14 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 		
     this.f_init = function(vmUpdate)
     {
+		thisObj.m_vm = vmUpdate;
+
         this.f_setConfig( {
 			id : 'conf_restore_update',
 			items: [ {
 				v_type: 'label',
 				id: 'conf_restore_update_vm_label',
-				text: vmUpdate.m_name,			
+				text: 'vm name',			
 				font_weight : 'bold',	
 				v_new_row : 'true'
 			}, {
@@ -42,7 +47,7 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 			}, {
 				v_type: 'label',
 				id : 'conf_restore_update_cver_value',				
-				text: vmUpdate.m_versions[0],
+				text: 'current version',
 				font_weight: 'bold',
 				v_end_row: 'true'
 			}, {
@@ -54,15 +59,9 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 			}, {
 				v_type: 'label',
 				id : 'conf_restore_update_pver_value',				
-				text: vmUpdate.m_versions[1],
+				text: 'avail version',
 				font_weight: 'bold',
 				v_end_row: 'true'
-			}, {
-				v_type: 'label',
-				id: 'conf_ldap_srv_user_update_passwd_label',
-				padding : '60px',					
-				text: 'Password',
-				v_new_row: 'true'
 			}],				
 			buttons: [ {
 				id: 'conf_restore_update_update_button',
@@ -76,8 +75,18 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 		})  
     }
 	
+	this.f_setData = function(label, value)
+	{
+        var field = document.getElementById(label);
+        field.innerHTML = value;		
+	}
+	
     this.f_loadVMData = function(element)
     {
+		thisObj.form = document.getElementById('conf_restore_update_form');
+        thisObj.f_setData('conf_restore_update_vm_label', thisObj.m_vm.m_name);
+        thisObj.f_setData('conf_restore_update_cver_value', thisObj.m_vm.m_versions[0]);
+		thisObj.f_setData('conf_restore_update_pver_value', thisObj.m_vm.m_versions[1]);
     }
     
     this.f_stopLoadVMData = function()

@@ -44,6 +44,7 @@ function FT_mainPanel(){
     }
     		
 	this.f_show = function(vmId, urlPath) {
+		//alert('ft_mainPanel: vmId: ' + vmId + ' urlPath: ' + urlPath);
 		thisObj.f_reset();
 		thisObj.m_2navSelectedItem = vmId;
 		if (vmId == VYA.FT_CONST.OA_ID) {

@@ -18,6 +18,3 @@ update: if [ ! -f /etc/lighttpd/server.pem ]; then
         fi
         nohup /opt/vyatta/sbin/openapp-vm-monitor.pl >&/dev/null &
         jobs -p %1 >/opt/vyatta/var/run/vm-monitor.pid
-        touch /opt/vyatta/var/run/vm-monitor.state
-        chgrp operator /opt/vyatta/var/run/vm-monitor.state
-        chmod 770 /opt/vyatta/var/run/vm-monitor.state

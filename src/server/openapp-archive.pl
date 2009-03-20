@@ -23,13 +23,13 @@
 # **** End License ****
 #
 
-use lib "/opt/vyatta/share/perl5/";
-
+use lib "/opt/vyatta/share/perl5";
 use warnings;
 use strict;
 use POSIX;
 use File::Copy;
 use Getopt::Long;
+use OpenApp::VMMgmt;
 
 my ($backup,$restore,$list,$delete);
 
@@ -40,20 +40,52 @@ my ($backup,$restore,$list,$delete);
 sub backup_archive {
     #get list of VMs from argument list 
     #the format is: vmkey:type,vmkey:type...
+
+    my $VMs = ();
+    my @VMs = OpenApp::VMMgmt::getVMList();
+
     my $archive;
     my @archive = split(',',$backup);
+    print "A\n";
+
+    for $archive (@archive) {
+	#have a vm:type pair right now
+	my @bu = split(':',$archive);
+	print "B: $bu[0]\n";
+
+	
+	#now look up vm
+	my $vm = new OpenApp::VMMgmt($bu[0]);
+#	$vm->do_list();
+	my $ip = '';
+	$ip = $vm->getIP();
+	if (defined $ip && $ip ne '') {
+	    print "c: $ip\n";
+
+	    my $cmd = "http://$ip/notifications/backup/$bu[1]";
+	    my $rc = `curl -q -I $cmd 2>&1`;
+	}
+    }
+
+    #now that each are started, let's sequentially iterate through and retrieve
     for $archive (@archive) {
 	#have a vm:type pair right now
 	my @bu = split(':',$archive);
 	
 	#now look up vm
 	#my $ip = getVMIP($bu[0]);
-	#my $cmd = "PUT /archive/backup/$bu[1]"
+	#my $cmd = "GET /url/backup-file
 	#post command
 	
+	#now save to temporary location while processing....
 
-	#on receiving data start writing out to file and return filename
+
+	#encrypt each file, key is dom0 mac addr
+
+	#see rest of brick backup operations.
+	
     }
+
 }
 
 sub restore_archive {

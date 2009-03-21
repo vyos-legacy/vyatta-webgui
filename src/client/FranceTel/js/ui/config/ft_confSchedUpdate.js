@@ -119,7 +119,8 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 		var div = document.getElementById('conf_sched_update_app');
 		var text = '';
 		for (var i=0 ; i < thisObj.m_vmList.length; i++) {
-			text += thisObj.f_createListItem(thisObj.m_vmList[i].m_displayName);
+			text += thisObj.f_createListItem(thisObj.m_vmList[i].m_displayName + 
+			  '&nbsp;&nbsp;[new version: ' + thisObj.m_vmList[i].m_needUpdate + ']');
 		}
 		div.innerHTML = text;
 	}

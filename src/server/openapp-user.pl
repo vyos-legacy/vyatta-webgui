@@ -30,6 +30,7 @@ use strict;
 use POSIX;
 use File::Copy;
 use Getopt::Long;
+use OpenApp::VMMgmt;
 
 my ($list,$delete,$modify,$add,$password,$oldpassword,$lastname,$firstname,$email,$role,$rights);
 
@@ -79,6 +80,8 @@ sub add_user {
 	
 	#post message to all registered VMs:
 	#POST /notifications/users/[username]
+
+	
 	
     }
     elsif (defined($rights) && $rights ne NULL){
@@ -91,6 +94,17 @@ sub add_user {
 	    print FILE "changetype: modify\n";
 	    print FILE "add: memberUid\n";
 	    print FILE "memberUid: ".$rights."\n";
+
+	    my $VMs = ();
+	    my @VMs = OpenApp::VMMgmt::getVMList();
+	    my $vm = new OpenApp::VMMgmt($rights);
+	    my $ip = '';
+	    $ip = $vm->getIP();
+	    if (defined $ip && $ip ne '') {
+		my $cmd = "http://$ip/notifications/users/$add";
+		my $rc = `curl -q -I $cmd 2>&1`;
+		#if error returned from curl, remove from list here and notify of error??
+	    }
 	}
     }
     #now modify the account
@@ -186,6 +200,18 @@ sub del_user {
 	
 	#first add the user
 	system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
+
+	my $VMs = ();
+	my @VMs = OpenApp::VMMgmt::getVMList();
+	my $vm = new OpenApp::VMMgmt($rights);
+	my $ip = '';
+	$ip = $vm->getIP();
+	if (defined $ip && $ip ne '') {
+	    my $cmd = "http://$ip/notifications/users/$delete";
+	    my $rc = `curl -q -I $cmd 2>&1`;
+	    #if error returned from curl, remove from list here and notify of error??
+	}
+
     }
     else {
 	system("ldapdeleteuser $delete");

@@ -74,13 +74,15 @@ sub do_list {
     my $aref = $vm->getHist();
     for my $href (@{$aref}) {
       my $time = $href->{_time};
-      my $img = $href->{_img};
+      my $id = $href->{_id};
+      my $ver = $href->{_ver};
       my $status = $href->{_status};
       my $msg = $href->{_msg};
       print <<EOF;
       <record>
         <time>$time</time>
-        <img>$img</img>
+        <id>$id</id>
+        <ver>$ver</ver>
         <status>$status</status>
         <msg>$msg</msg>
       </record>

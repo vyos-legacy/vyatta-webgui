@@ -114,7 +114,8 @@ sub getHist {
   if (defined($scheduled)) {
     my %shash = (
                   _time => $time,
-                  _img => "$self->{_vmId} $ver",
+                  _id => "$self->{_vmId}",
+                  _ver => "$ver",
                   _status => $scheduled,
                   _msg => ''
                 );

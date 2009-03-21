@@ -332,7 +332,7 @@ function FT_businessLayer()
      */
     this.f_getVmRecByVmId = function(id)
     {
-        return this.m_vm.m_vmRecObj;
+        return this.m_vm.f_getVMRecObjByVMId(id);
     }
 
     /**

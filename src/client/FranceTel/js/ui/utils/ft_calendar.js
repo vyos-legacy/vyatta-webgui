@@ -21,7 +21,7 @@ function FT_calendar()
     // this to true.  If not, false.	
     this.m_WeekNumberDisplay = false;
     this.m_WeekNumberBaseDay = 4;
-    this.m_ShowInvalidDateMsg = true;
+    this.m_ShowInvalidDateMsg = false;
     this.m_ShowOutOfRangeMsg = true;
     this.m_ShowDoesNotExistMsg = true;
     this.m_ShowInvalidAlert = true;
@@ -31,7 +31,7 @@ function FT_calendar()
     /* Displayed "Today" date format */
     this.m_DateDisplayFormat = 'mm-dd-yy'; // e.g. 'MMM-DD-YYYY' for the US
     /* Output date format */
-    this.m_DateOutputFormat = 'MMM DD, YYYY'; // e.g. 'MMM-DD-YYYY' for the US
+    this.m_DateOutputFormat = 'MM/DD/YYYY'; // e.g. 'MMM-DD-YYYY' for the US
     this.m_Zindex = 1;
     this.m_BlnStrict = false;
     this.m_ClearButton = true;

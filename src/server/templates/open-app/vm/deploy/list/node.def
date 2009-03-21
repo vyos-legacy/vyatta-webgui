@@ -1,0 +1,2 @@
+help: Return VM deployment records
+run: /opt/vyatta/sbin/openapp-vm-deploy.pl --list

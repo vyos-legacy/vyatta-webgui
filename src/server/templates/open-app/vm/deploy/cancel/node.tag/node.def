@@ -1,0 +1,2 @@
+help: ID of the target VM
+run: /opt/vyatta/sbin/openapp-vm-deploy.pl --cancel "$5"

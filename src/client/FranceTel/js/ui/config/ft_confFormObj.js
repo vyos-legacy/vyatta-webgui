@@ -282,6 +282,33 @@ function FT_confFormObj(name, callback, busLayer) {
 	//////////////////////////////////////////////////////////////////////////////////
 	//// form validation
 	//////////////////////////////////////////////////////////////////////////////////
+	this.f_checkDate = function(date)
+	{
+		dateRegex = /([1-9]|0[1-9]|1[012])[-\/.]([1-9]|0[1-9]|[12][0-9]|3[01])[-\/.](20)\d\d/;
+		if (!date.match(dateRegex)) {			
+			return false;
+		}
+		return true;		
+	}
+	
+	this.f_checkHour = function(hour)
+	{
+		hourRegex =/^(0[1-9]|1[012]|[1-9])$/;
+		if (!hour.match(hourRegex)) {			
+			return false;
+		}
+		return true;		
+	}
+	
+	this.f_checkMinute = function(minute)
+	{
+		minuteRegex =/^([0-9]|[0-5][0-9])$/;
+		if (!minute.match(minuteRegex)) {			
+			return false;
+		}
+		return true;		
+	}	
+	
 	this.f_checkEmail = function(email)
 	{
 		emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;

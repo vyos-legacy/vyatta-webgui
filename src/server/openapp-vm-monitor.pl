@@ -49,7 +49,7 @@ sub updateOAStatus {
 
   # XXX hardwired state and updateAvail
   OpenApp::VMMgmt::updateStatus($OA_ID, 'up', $cpu_util, $disk_total,
-                                $disk_free, $mem_total, $mem_free, 'no');
+                                $disk_free, $mem_total, $mem_free, '');
 }
 
 sub vmStatus {
@@ -120,7 +120,7 @@ sub updateVMStatus {
   my $vm = new OpenApp::VMMgmt($vid);
   my $ip = $vm->getIP();
   my ($status, $cpu_util, $mem_total, $mem_free, $disk_total, $disk_free,
-      $upd_avail) = ('unknown', 0, 0, 0, 0, 0, 'no');
+      $upd_avail) = ('unknown', 0, 0, 0, 0, 0, '');
 
   # check update availability
   $upd_avail = OpenApp::VMDeploy::vmCheckUpdate($vid);

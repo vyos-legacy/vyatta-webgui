@@ -12,7 +12,7 @@ my $HIST_FILE = 'current/hist';
 sub vmCheckUpdate {
   my $vid = shift;
   my $dd = undef;
-  opendir($dd, "$NVIMG_DIR") or return 'no';
+  opendir($dd, "$NVIMG_DIR") or return '';
   my @v = grep { /^oa-vimg-${vid}_.*\.deb$/
                  && -f "$NVIMG_DIR/$_" } readdir($dd);
   closedir($dd);

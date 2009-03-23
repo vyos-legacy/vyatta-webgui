@@ -6,6 +6,8 @@
  */
 function FT_confLDAPserver (name, callback, busLayer) {
     var thisObjName = 'FT_confLDAPserver';
+	var thisObj = this;
+    this.m_form = undefined;		
     
     /**
      * @param name - name of configuration screens.
@@ -38,7 +40,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
 				id: 'conf_ldap_srv_in_oa',
 				padding : '30px',
 				size: '30',
-				text: '<input type="radio" name="loc_group" value="oa" checked>&nbsp;In the Open Appliance',
+				text: '<input id="conf_ldap_srv_in_oa" type="radio" name="loc_group" value="oa" checked>&nbsp;In the Open Appliance',
                 v_new_row: 'true',
 				v_end_row: 'true'
 			}, {
@@ -50,7 +52,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
 				id: 'conf_ldap_srv_in_ldap',
 				padding : '30px',				
 				size: '30',
-				text: '<input type="radio" name="loc_group" value="lan">&nbsp;In the company LAN',
+				text: '<input id="conf_ldap_srv_in_ldap" type="radio" name="loc_group" value="lan">&nbsp;In the company LAN',
 				v_new_row: 'true',
 				v_end_row: 'true'
 			}, {
@@ -127,11 +129,51 @@ function FT_confLDAPserver (name, callback, busLayer) {
 	
     this.f_loadVMData = function(element)
     {
+        thisObj.m_form = document.getElementById('conf_ldap_srv' + "_form");			
     }
     
     this.f_stopLoadVMData = function()
     {
     }
+	
+	this.f_validate = function() 
+	{
+        var error = 'Please fix the following errors:<br>';
+        var errorInner = '';
+        if (thisObj.m_form.conf_ldap_srv_in_oa.checked == true) {
+			return true;
+		}
+        if (!thisObj.f_checkIP(thisObj.m_form.conf_ldap_srv_server_addr.value)) {
+            if (!thisObj.f_checkHostname(thisObj.m_form.conf_ldap_srv_server_addr.value)) {
+                errorInner += thisObj.f_createListItem('Server address is invalid');
+            }
+        }	
+						
+		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_user_update, "User (update rights) cannot be empty", errorInner);
+		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_user_update_passwd, "Password (update rights) cannot be empty", errorInner);
+		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_user_read, "User (read rights) cannot be empty", errorInner);
+		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_user_read_passwd, "Password (read rights) cannot be empty", errorInner);
+			   		   
+        if (errorInner.trim().length > 0) {
+            error = error + '<ul style="padding-left:30px;">';
+            error = error + errorInner + '</ul>';
+            g_utils.f_popupMessage(error, 'error', 'Error!');
+			return false;
+        }
+
+        return true;		
+		
+	}
+	
+	this.f_apply = function()
+	{
+		
+	}
+	
+	this.f_reset = function()
+	{
+		
+	}
     
     this.f_handleClick = function(e)
     {
@@ -139,9 +181,12 @@ function FT_confLDAPserver (name, callback, busLayer) {
         if (target != undefined) {
             var id = target.getAttribute('id');
             if (id == 'conf_ldap_server_apply_button') { //apply clicked
-                alert('LDAP server apply button clicked');
+                if (!thisObj.f_validate()) {
+					return false;
+				}
+                thisObj.f_apply();
             } else if (id == 'conf_ldap_server_cancel_button') { //cancel clicked
-                alert('LDAP server cancel button clicked');               
+                thisObj.f_reset();               
             }
         }
     }	    

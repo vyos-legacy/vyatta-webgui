@@ -1,0 +1,2 @@
+help: Time to deploy VM image, e.g., "00:01 21.03.09"
+run: /opt/vyatta/sbin/openapp-vm-deploy.pl --sched "$5" --ver "$7" --time "$9"

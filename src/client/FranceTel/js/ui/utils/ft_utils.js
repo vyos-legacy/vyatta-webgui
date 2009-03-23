@@ -5,6 +5,12 @@ String.prototype.trim = function(){
     return this.replace(/^\s*/, "").replace(/\s*$/, "");
 }
 
+RegExp.escape = function(str)
+{
+    var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
+    return str.replace(specials, "\\$&");
+}
+
 /**
  * @param  object  elem : the DOM element to be used
  * @param  string  attr : the attribute to get

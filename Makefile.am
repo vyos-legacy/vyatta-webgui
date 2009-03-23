@@ -53,8 +53,10 @@ sbin_SCRIPTS += src/server/vyatta-vmbackup-all
 sbin_SCRIPTS += src/server/openapp-user.pl
 sbin_SCRIPTS += src/server/openapp-vm-query.pl
 sbin_SCRIPTS += src/server/openapp-vm-monitor.pl
+sbin_SCRIPTS += src/server/openapp-vm-deploy.pl
 
 oaperl_DATA = src/server/lib/perl5/OpenApp/VMMgmt.pm
+oaperl_DATA += src/server/lib/perl5/OpenApp/VMDeploy.pm
 
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 

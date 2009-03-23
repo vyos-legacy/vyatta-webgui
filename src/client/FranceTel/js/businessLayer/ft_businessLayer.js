@@ -526,6 +526,18 @@ function FT_businessLayer()
     {
         thisObj.m_backup.f_backupRestore(vms, mode, "backup", guiCb);
     }
+	
+	/**
+	 * upgrade vm, one vm at a time.
+	 * @param {Object} vm
+	 * @param {Object} ver
+	 * @param {Object} time - time is in 'hh:mm dd.mm.yy or 'now'  
+	 * @param {Object} guiCb
+	 */
+    this.f_upgradeVm = function(vm, ver, time /*time is in 'hh:mm dd.mm.yy*/, guiCb)	
+	{
+		thisObj.m_vm.f_upgradeVm(vm, ver, time, guiCb);
+	}	
 }
 
 ///////////////////////////////////////////////

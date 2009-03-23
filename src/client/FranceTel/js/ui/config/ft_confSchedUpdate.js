@@ -10,6 +10,9 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 	this.m_vmList = undefined;
     this.m_form = undefined;
 	this.m_date = undefined;
+	this.m_transaction = undefined;
+	this.m_response = undefined;
+	this.m_lastCmd = undefined;
     
     /**
      * @param name - name of configuration screens.
@@ -269,13 +272,90 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 		date.setSeconds(0);
 		return date;
 	}
+	
+	this.f_formatTime = function()
+	{
+		var t = '';
+		var h = ' ' + thisObj.m_date.getHours();
+		var m = ' ' + thisObj.m_date.getMinutes();
+		var d = ' ' + thisObj.m_date.getDate();
+		var mo_plusOne = thisObj.m_date.getMonth() + 1;
+		var mo = ' ' + mo_plusOne;
+		var y = ' ' + thisObj.m_date.getFullYear();
+
+		t += f_addZero(h.trim()) + ':' + 
+		     f_addZero(m.trim()) + ' ' + 
+		     f_addZero(d.trim()) + '.' + 
+			 f_addZero(mo
+			 .trim()) + '.' +
+			 y.trim().substring(2,y.length);
+		return t;
+	}
+    	
+    this.f_processResponse = function()
+	{
+		if (thisObj.m_response.length <= 0) {
+            g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_UPDATE_ID);	
+			return;		
+		}
+		var error = 'The following errors occur while we try to schedule an upgrade:<br>';
+        var errorInner = '';		
+		for (var i=0; i < thisObj.m_response.length; i++) {
+			errorInner += thisObj.f_createListItem(thisObj.m_response[i]);
+		}
+        if (errorInner.trim().length > 0) {
+            error = error + '<ul style="padding-left:30px;">';
+            error = error + errorInner + '</ul>';
+            g_utils.f_popupMessage(error, 'error', 'Error!');
+        }		
+	}
+	
+	this.f_upgradeVmCb = function(eventObj)
+	{
+        if (eventObj.f_isError()) {
+			thisObj.m_response.push(thisObj.m_lastCmd + ' : ' + eventObj.m_errMsg);
+		}             
+		thisObj.f_processTransaction();	
+	}
+	
+    this.f_processTransaction = function()
+    {
+        if (thisObj.m_transaction.length <= 0) {
+            thisObj.f_processResponse();
+        } else {
+            var obj = thisObj.m_transaction.shift();
+			thisObj.m_lastCmd = 'Upgrade: [' + obj.m_displayName + ', ' + obj.m_ver + ']'; 
+			g_busObj.f_upgradeVm(obj.m_vm, obj.m_ver, obj.m_time, thisObj.f_upgradeVmCb);
+        }
+    }	
+		
+	this.f_schedule = function (time)
+	{
+		thisObj.m_transaction = new Array();
+		thisObj.m_response = new Array();
+        for (var i=0; i < thisObj.m_vmList.length; i++) {
+			thisObj.m_transaction.push(new FT_vmUpgradeTransaction(thisObj.m_vmList[i].m_name,
+			    thisObj.m_vmList[i].m_displayName,
+			    thisObj.m_vmList[i].m_needUpdate, time));
+		}
+        
+        if (thisObj.m_transaction.length > 0) {
+            thisObj.f_processTransaction();
+        }
+	}	
 		
 	this.f_update = function()
 	{	
-	    this.m_date.getTime();
+	    var time = 'now';
+        if (thisObj.m_form.conf_sched_update_later.checked == true) {
+			time = thisObj.f_formatTime();
+		}	    
+		thisObj.f_schedule(time);
+		/*
         var vm = new FT_vmRecObj('security', 'up', '50', '50', '50', 
 		    '50', '50', 'dummy.html', ['version 1.3 corrupted', 'ver 1.1'], null);		
-        g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID, vm);				
+        g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID, vm);
+        */				
 	}
 	
     this.f_handleClick = function(e)
@@ -304,3 +384,10 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 
 FT_extend(FT_confSchedUpdate, FT_confFormObj);
 
+function FT_vmUpgradeTransaction(vm, displayName, ver, time)
+{
+    this.m_vm = vm;
+	this.m_displayName = displayName;
+    this.m_ver = ver;
+    this.m_time = time;
+}

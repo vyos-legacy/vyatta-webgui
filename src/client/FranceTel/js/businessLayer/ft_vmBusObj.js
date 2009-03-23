@@ -372,6 +372,19 @@ function FT_vmBusObj(busObj)
 
         thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_CmdResRequestCallback);
     }
+
+	this.f_upgradeVm = function(vm, ver, time /*time is in 'hh:mm dd.mm.yy*/, guiCb)
+	{
+		thisObj.m_guiCb = guiCb;
+		var sid = g_utils.f_getUserLoginedID();;
+        var xmlstr = "<command><id>" + sid + "</id>\n" +
+                      "<statement>open-app vm deploy schedule '" + vm + "' version '" + ver +
+					  "' time '" + time + "'" + "</statement>\n"
+                      + "</command>";
+
+        thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
+	}	
+	
 }
 
 /**

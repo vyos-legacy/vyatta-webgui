@@ -25,6 +25,16 @@ function f_elemGetAttribute(elem, attr){
     }
 }
 
+function f_addZero(s)
+{
+	if ((s != undefined) && (s != null) && (typeof s == 'string')) {
+		if (s.trim().length ==1) {
+			return '0' + s;
+		}
+	}
+	return s;
+}
+
 /**
  * @param  object  elem : the DOM element to be used
  * @param  string  nodeName : the nodeName to get

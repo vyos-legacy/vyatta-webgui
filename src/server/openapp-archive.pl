@@ -59,8 +59,8 @@ sub backup_archive {
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notifications/backup/$hash_arr{$vmkey}";
-	    my $rc = `curl -q -I $cmd 2>&1`;
+	    my $cmd = "http://$ip/notifications/archive/backup/$hash_arr{$vmkey}";
+	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	    
 	}
@@ -76,10 +76,10 @@ sub backup_archive {
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "GET /url/backup-file";
+	    my $cmd = "/url/backup-file";
 	    #writes to specific location on disk
 	    my $bufile = "/backup/$vmkey/$hash_arr{$vmkey}";
-	    my $rc = `curl -q -I $cmd -O $bufile 2>&1`;
+	    my $rc = `curl -X POST -q -I $cmd -O $bufile 2>&1`;
 
 	    #now encrypt command--NEED MAC ADDR OF ETH0
 	    my $mac = 'cat /opt/vyatta/config/active/interfaces/ethernet/eth0/hw-id/node.val';
@@ -148,8 +148,8 @@ sub restore_archive {
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notifications/restore/$hash_arr{$vmkey}";
-	    my $rc = `curl -q -I $cmd 2>&1`;
+	    my $cmd = "http://$ip/notifications/archive/restore/$hash_arr{$vmkey}";
+	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	    
 	}

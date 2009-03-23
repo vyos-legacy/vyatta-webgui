@@ -91,8 +91,14 @@ sub backup_archive {
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
     ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
-    my $date = sprintf("%02d_%02d_%4d",$mon+1,$mday,$year+1900);
-    my $time = sprintf("%02d_%02d_%02d",$hour,$min,$sec);
+
+    my $am_pm='AM';
+    $hour >= 12 and $am_pm='PM'; # hours 12-23 are afternoon
+    $hour > 12 and $hour=$hour-12; # 13-23 ==> 1-11 (PM)
+    $hour == 0 and $hour=12; # convert day's first hour
+
+    my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
+    my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
 
     my $datamodel = '1';
     my $filename = $date."_".$time."_".$datamodel;

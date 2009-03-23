@@ -85,6 +85,11 @@ my %fields = (
   _vmNewUpdate => undef
 );
 
+sub _isValidId {
+  my ($id) = @_;
+  return ($id eq $OPENAPP_ID || -r "$VMDIR/$id") ? 1 : 0;
+}
+
 sub _setupMeta {
   my ($self, $id) = @_;
   if ($id eq $OPENAPP_ID) {
@@ -93,9 +98,6 @@ sub _setupMeta {
     $self->{_vmVendor} = $OPENAPP_VENDOR;
     $self->{_vmBackupFormat} = $OPENAPP_BFORMAT;
     $self->{_vmDisplayName} = $OPENAPP_DNAME;
-    return;
-  }
-  if (! -r "$VMDIR/$id") {
     return;
   }
   my $fd = undef;
@@ -143,6 +145,9 @@ sub _setup {
 
 sub new {
   my ($that, $id) = @_;
+  if (!isValidId($id)) {
+    return undef;
+  }
   my $class = ref ($that) || $that;
   my $self = {
     %fields,

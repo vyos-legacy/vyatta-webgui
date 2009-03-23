@@ -51,11 +51,9 @@ sub backup_archive {
 	$hash_arr->{$bu[0]} = $bu[1];
     }
 
-
-    my $VMs = ();
-    my @VMs = OpenApp::VMMgmt::getVMList();
     foreach my $vmkey (keys %hash_arr) {
 	my $vm = new OpenApp::VMMgmt($vmkey);
+	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
@@ -73,6 +71,7 @@ sub backup_archive {
     #now that each are started, let's sequentially iterate through and retrieve
     foreach my $vmkey (keys %hash_arr) {
 	my $vm = new OpenApp::VMMgmt($vmkey);
+	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
@@ -108,6 +107,7 @@ sub backup_archive {
     print FILE "<contents>";
     foreach my $vmkey (keys %hash_arr) {
 	my $vm = new OpenApp::VMMgmt($vmkey);
+	next if (!defined($vm));
 	print FILE "<entry>";
 	print FILE "<vm>$vmkey</vm>";
 	print FILE "<type>$hash_arr{$vmkey}</type>";
@@ -140,11 +140,9 @@ sub restore_archive {
 	$hash_arr->{$bu[0]} = $bu[1];
     }
 
-
-    my $VMs = ();
-    my @VMs = OpenApp::VMMgmt::getVMList();
     foreach my $vmkey (keys %hash_arr) {
 	my $vm = new OpenApp::VMMgmt($vmkey);
+	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {

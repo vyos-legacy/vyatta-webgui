@@ -86,7 +86,6 @@ sub add_user {
     }
     elsif (defined($rights) && $rights ne NULL){
 	#need to validate entry here!
-	my $VMs = ();
 	my @VMs = OpenApp::VMMgmt::getVMList();
 	my $vm = new OpenApp::VMMgmt($rights);
 	if (defined($vm) && $vm ne NULL) {
@@ -199,11 +198,12 @@ sub del_user {
 	#first add the user
 	system("ldapmodify -x -D \"cn=admin,dc=localhost,dc=localdomain\" -w admin -f $conf_file");
 
-	my $VMs = ();
 	my @VMs = OpenApp::VMMgmt::getVMList();
 	my $vm = new OpenApp::VMMgmt($rights);
-	my $ip = '';
-	$ip = $vm->getIP();
+	my $ip = undef;
+	if (defined($vm)) {
+	    $ip = $vm->getIP();
+	}
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "http://$ip/notifications/users/$delete";
 	    my $rc = `curl -X PUT -q -I $cmd 2>&1`;
@@ -214,11 +214,12 @@ sub del_user {
     else {
 	system("ldapdeleteuser $delete");
 
-	my $VMs = ();
 	my @VMs = OpenApp::VMMgmt::getVMList();
 	my $vm = new OpenApp::VMMgmt($rights);
-	my $ip = '';
-	$ip = $vm->getIP();
+	my $ip = undef;
+	if (defined($vm)) {
+	    $ip = $vm->getIP();
+	}
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "http://$ip/notifications/users/$delete";
 	    my $rc = `curl -X DELETE -q -I $cmd 2>&1`;

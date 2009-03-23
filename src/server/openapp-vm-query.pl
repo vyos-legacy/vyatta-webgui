@@ -39,6 +39,7 @@ sub do_list {
 
   for my $vid (@VMs) {
     my $vm = new OpenApp::VMMgmt($vid);
+    next if (!defined($vm));
     my $ip = $vm->getIP();
     my $port = $vm->getWuiPort();
     my $uri = $vm->getWuiUri();
@@ -69,6 +70,7 @@ sub do_status {
 
   for my $vid (@VMs) {
     my $vm = new OpenApp::VMMgmt($vid);
+    next if (!defined($vm));
     my $st = $vm->getState();
     my $cpu = $vm->getCpu();
     my $dall = $vm->getDiskAll();

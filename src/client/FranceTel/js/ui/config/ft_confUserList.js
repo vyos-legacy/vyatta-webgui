@@ -77,7 +77,8 @@ function FT_confUserList(name, callback, busLayer)
                                 thisObj.f_renderAnchorHref(
                                 '<img src="images/ico_mail.gif">',
                                 "mailto:" + ul[i].m_email,
-                                'Send email to ' + fName) : "";
+                                'Send email to ' + fName + ' at ' +
+                                ul[i].m_email) : "";
 
                         var del = g_busObj.f_isDeletableUser(ul[i].m_role) ?
                                 thisObj.f_renderButton(

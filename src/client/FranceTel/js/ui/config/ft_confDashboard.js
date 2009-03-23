@@ -190,7 +190,7 @@ function FT_confDashboard(name, callback, busLayer)
         this.f_loadVMData();
 
         var btns = [['Update', "f_dbHandleUpdate()", 'Update selected VM(s)'],
-                    ['Cancel', "f_dbHandleCancel()", '']];
+                    ['Cancel', "f_dbHandleCancel()", 'Reset selection']];
         this.m_buttons = this.f_createButtons(btns);
 
         return [this.m_header, this.m_body, this.m_buttons];

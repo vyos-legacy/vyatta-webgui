@@ -28,7 +28,7 @@ function FT_confUserRight(name, callback, busLayer)
 
     this.f_showThisVM = function(vmName)
     {
-        if(vmName == 'OpenAppliance' || vmName == 'router')
+        if(vmName == 'blb' || vmName == 'openapp')
             return false;
 
         return true;
@@ -47,7 +47,8 @@ function FT_confUserRight(name, callback, busLayer)
             if(!this.f_showThisVM(vm[i].m_name))
                 continue;
 
-            cols[vmIndex++] = this.f_createColumn(vm[i].m_name, 80, 'checkbox', '35');
+            cols[vmIndex++] = this.f_createColumn(vm[i].m_displayName,
+                              80, 'checkbox', '35');
         }
 
         return cols;
@@ -212,8 +213,8 @@ function FT_confUserRight(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadData();
 
-        var btns = [['Apply', "f_userRightHandleApply()", ''],
-                    ['Cancel', "f_userRightHandleCancel()", '']];
+        var btns = [['Apply', "f_userRightHandleApply()", 'Set selection'],
+                    ['Cancel', "f_userRightHandleCancel()", 'Reset selection']];
         this.m_buttons = this.f_createButtons(btns);
 
         return [this.m_header, this.m_body, this.m_buttons];

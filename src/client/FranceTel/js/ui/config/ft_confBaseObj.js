@@ -363,7 +363,7 @@ function FT_confBaseObj(name, callback, busLayer)
             case 'delete':
                 imgSrc = 'images/ico_delete.gif';
                 break;
-            case 'restore':
+            case 'restore':   // ico image
                 imgSrc = 'images/ico_disquette.gif';
                 break;
             case 'download':
@@ -371,6 +371,9 @@ function FT_confBaseObj(name, callback, busLayer)
                 break;
             case 'Cancel':
                 imgSrc = 'images/bt_cancel.gif';
+                break;
+            case 'Restore':   // button image
+                imgSrc = 'images/bt_restore.gif';
                 break;
         }
 

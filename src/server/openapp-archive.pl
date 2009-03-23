@@ -31,7 +31,7 @@ use File::Copy;
 use Getopt::Long;
 use OpenApp::VMMgmt;
 
-my ($backup,$restore,$list,$delete);
+my ($backup,$filename,$restore,$list,$delete);
 
 #
 # Run through the list of VM's and
@@ -91,14 +91,27 @@ sub backup_archive {
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
     ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
-    my $date = sprintf("%02d_%02d_%4d",$mon+1,$mday,$year+1900);
-    my $time = sprintf("%02d_%02d_%02d",$hour,$min,$sec);
+
+    my $am_pm='AM';
+    $hour >= 12 and $am_pm='PM'; # hours 12-23 are afternoon
+    $hour > 12 and $hour=$hour-12; # 13-23 ==> 1-11 (PM)
+    $hour == 0 and $hour=12; # convert day's first hour
+
+    my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
+    my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
 
     my $datamodel = '1';
-    my $filename = $date."_".$time."_".$datamodel;
+#
+#    my $filename = $date."_".$time."_".$datamodel;
+#
+    if (!defined($filename) || $filename eq '') {
+	$filename = "/tmp/backup/".$date."_".$time."_".$datamodel;
+    }
+
     #now create metadata file
     my $FILE;
-    open FILE, ">", "/tmp/backup/$filename.txt" or die $!;
+
+    open FILE, ">", "$filename.txt" or die $!;
     #we'll write out xml descriptions--the same as what we display...
     print FILE "<archive>";
     print FILE "<name>name</name>";
@@ -118,7 +131,7 @@ sub backup_archive {
     close FILE;
 
     #finally tar up the proceedings...
-    `tar -C /tmp/backup/ -cf /tmp/backup/$filename.tar . 2>/dev/null`;
+    `tar -C /tmp/backup/ -cf $filename.tar . 2>/dev/null`;
 
     #needs to clean out old files or files past limit at this point....
 
@@ -209,6 +222,7 @@ sub delete_archive {
 ####main
 sub usage() {
     print "Usage: $0 --backup=<backup>\n";
+    print "       $0 --name=<optional filename>\n";
     print "       $0 --restore=<restore>\n";
     print "       $0 --list=<list>\n";
     print "       $0 --delete=<delete>\n";
@@ -218,10 +232,11 @@ sub usage() {
 
 #pull commands and call command
 GetOptions(
-           "backup:s"       => \$backup,
-           "restore=s"      => \$restore,
-           "list:s"         => \$list,
-           "delete=s"       => \$delete,
+    "backup:s"       => \$backup,
+    "filename:s"     => \$filename,
+    "restore=s"      => \$restore,
+    "list:s"         => \$list,
+    "delete=s"       => \$delete,
     ) or usage();
 
 

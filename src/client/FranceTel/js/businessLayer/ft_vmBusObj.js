@@ -51,7 +51,8 @@ function FT_vmBusObj(busObj)
                     thisObj.m_vmDeployRecObj = thisObj.f_parseVMDeployList(err);
                     evt = new FT_eventObj(0, thisObj.m_vmDeployRecObj, '');
                 }
-                else
+                else if(thisObj.m_lastCmdSent.indexOf('open-app vm list') > 0 ||
+                    thisObj.m_lastCmdSent.indexOf('vm status') > 0)
                 {
                     thisObj.f_parseVMSummaryData(err);
                     thisObj.f_parseVMStatus(err);
@@ -99,6 +100,18 @@ function FT_vmBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement>" +
                       "open-app vm deploy list </statement></command>";
+
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_cancelVMDeploy = function(vmId, guiCb)
+    {
+        thisObj.m_guiCb = guiCb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+                      "open-app vm deploy cancel '" + vmId +
+                      "'</statement></command>";
 
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -250,6 +263,19 @@ function FT_vmBusObj(busObj)
         return index == null ? null : this.m_vmRecObj[index];
     }
 
+    this.f_getVMDeployRecObjByVMId = function(vmId)
+    {
+        for(var i=0; i<thisObj.m_vmDeployRecObj.length; i++)
+        {
+            var d = thisObj.m_vmDeployRecObj[i];
+
+            if(d.m_id == vmId)
+                return d;
+        }
+
+        return null;
+    }
+
     this.f_getVMNodesFromResponse = function(response, node)
     {
         var cn = response[0].childNodes;
@@ -383,8 +409,8 @@ function FT_vmBusObj(busObj)
                       + "</command>";
 
         thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
-	}	
-	
+	}
+
 }
 
 /**
@@ -479,6 +505,7 @@ function FT_vmDeployObj(id, time, version, status, msg)
     this.m_time = time;
     this.m_id = id;   // vm id
     this.m_version = version;
+    this.m_prevVersion = null;
     this.m_status = status;
     this.m_msg = msg;
 }

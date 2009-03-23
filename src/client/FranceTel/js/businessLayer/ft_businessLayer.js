@@ -433,9 +433,30 @@ function FT_businessLayer()
         return this.f_sendRequest(content, guiCb);
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    // VM update/deploy session start here.....
+    /**
+     * to get a list of vm deploy list from server
+     */
     this.f_getVMUpdateListFromServer = function(guiCb)
     {
         thisObj.m_vm.f_getVMUpdateListFromServer(guiCb);
+    }
+
+    /**
+     * Cancel a vm update scheduled
+     * @param vmId - vm id of a scheduled upgrade
+     * @param guiCb - callback function
+     */
+    this.f_cancelVMDeploy = function(vmId, guiCb)
+    {
+        thisObj.m_vm.f_cancelVMDeploy(vmId, guiCb);
+    }
+
+    this.f_getVMDeployRecObjByVMId = function(vmId)
+    {
+        return thisObj.f_getVMDeployRecObjByVMId(vmId);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -508,36 +529,38 @@ function FT_businessLayer()
     /**
      * restore backup file
      * @param vms - list of vms to be restored. ex. [vm1, vm2, vm3,...] array type
-     * @param mode - config/data/both (0:config, 1:daata, both:2)
+     * @param modes - list of back modes. ex. ['config', 'data', 'data'....] array type
+     *                this list shoudl sync with vms.
      * @param guiCb - gui callback function
      */
-    this.f_restore = function(vms, mode, guiCb)
+    this.f_restore = function(vms, modes, guiCb)
     {
-        thisObj.m_backup.f_backupRestore(vms, mode, "restore", guiCb);
+        thisObj.m_backup.f_backupRestore(vms, modes, "restore", guiCb);
     }
 
     /**
      * backup vm config/data/both
      * @param vms - list of vms to be backup. ex. [vm1, vm2, vm3,...] array type
-     * @param mode - config/data/both (0:config, 1:daata, both:2)
+     * @param modes - list of back modes. ex. ['config', 'data', 'data'....] array type
+     *                this list shoudl sync with vms.
      * @param guiCb - gui callback function
      */
-    this.f_backup = function(vms, mode, guiCb)
+    this.f_backup = function(vms, modes, guiCb)
     {
-        thisObj.m_backup.f_backupRestore(vms, mode, "backup", guiCb);
+        thisObj.m_backup.f_backupRestore(vms, modes, "backup", guiCb);
     }
-	
+
 	/**
 	 * upgrade vm, one vm at a time.
 	 * @param {Object} vm
 	 * @param {Object} ver
-	 * @param {Object} time - time is in 'hh:mm dd.mm.yy or 'now'  
+	 * @param {Object} time - time is in 'hh:mm dd.mm.yy or 'now'
 	 * @param {Object} guiCb
 	 */
-    this.f_upgradeVm = function(vm, ver, time /*time is in 'hh:mm dd.mm.yy*/, guiCb)	
+    this.f_upgradeVm = function(vm, ver, time /*time is in 'hh:mm dd.mm.yy*/, guiCb)
 	{
 		thisObj.m_vm.f_upgradeVm(vm, ver, time, guiCb);
-	}	
+	}
 }
 
 ///////////////////////////////////////////////

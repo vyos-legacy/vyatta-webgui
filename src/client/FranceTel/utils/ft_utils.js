@@ -112,7 +112,7 @@ var g_utils =
                           '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
                           '<input id="ft_popup_message_cancel" src="images/bt_cancel.gif" ' +
                           'type="image" onclick="' + cancelCb + '"></div>';
-                innerHtml += '<tbody><tr height="55">' +
+                innerHtml += '<tbody><tr height="65">' +
                       '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="250"><p ' +
                         'style="padding-left:5px; font:normal 10pt arial;">' +
@@ -173,7 +173,7 @@ var g_utils =
         }
 
         innerHtml += '</tr><tr height="28">' +
-                      '<td colspan="2">' + buttonsDiv + '</td>' +
+                      '<td valign="bottom" colspan="2">' + buttonsDiv + '</td>' +
                       '</tr></table>';
 
         div.innerHTML = innerHtml;

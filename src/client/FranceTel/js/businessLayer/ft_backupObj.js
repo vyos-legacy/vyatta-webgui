@@ -166,11 +166,12 @@ function FT_backupObj(busObj)
     /**
      *  send backup/restore command to server to perform vm backup/resstore.
      *  @param vms - a list of vm to be backup or restore. vms is array type
-     *  @param mode - config/data/both (0:config, 1:daata, both:2)
+     *  @param modes - list of back modes. ex. ['config', 'data', 'data'....] array type
+     *                this list shoudl sync with vms.
      *  @param type - a string of 'backup' or 'restore'
      *  @param guiCb - gui callback function
      */
-    this.f_backupRestore = function(vms, mode, type, guiCb)
+    this.f_backupRestore = function(vms, modes, type, guiCb)
     {
         if(vms == undefined || vms.length == 0)
         {
@@ -181,15 +182,18 @@ function FT_backupObj(busObj)
 
         thisObj.m_guiCb = guiCb;
         var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>";
+        var commas = "";
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                    "<statement>open-app archive " + type;
 
         for(var i=0; i<vms.length; i++)
         {
-            xmlstr += "<statement>open-app " + type + " '" +
-                    thisObj.f_convertMode(mode) + "' '" + vms[i] + "'</statement>";
+            if(i > 0) commas = ", ";
+
+            xmlstr += commas + "'" + vms[i] + ":" + modes[i] + "'";
         }
 
-        xmlstr += "</command>";
+        xmlstr += "</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }

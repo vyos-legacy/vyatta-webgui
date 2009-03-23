@@ -64,6 +64,7 @@ function FT_confVMUpdates(name, callback, busLayer)
                 if(dep == undefined) return;
 
                 thisObj.f_removeDivChildren(thisObj.m_div);
+                thisObj.f_removeDivChildren(thisObj.m_body);
                 thisObj.m_div.appendChild(thisObj.m_header);
                 thisObj.m_div.appendChild(thisObj.m_body);
 
@@ -97,13 +98,13 @@ function FT_confVMUpdates(name, callback, busLayer)
         var cb = '';
         if(status == 'scheduled')
         {
-            cb = 'f_vmDeployCancel("' + vmId + '")';
+            cb = "f_vmDeployCancel('" + vmId + "', '" + vmName + "')";
             return thisObj.f_renderButton('Cancel', true, cb,
                     'Cancel ' + vmName);
         }
-        else if(status == 'failed')
+        else if(status == 'failed' || status == 'successed')
         {
-            cb = 'f_vmDeployRestore("' + vmId + '")';
+            cb = "f_vmDeployRestore('" + vmId + "')";
             return thisObj.f_renderButton('restore', true, cb, 'Restore ' + vmName);
         }
 
@@ -122,14 +123,50 @@ function FT_confVMUpdates(name, callback, busLayer)
 }
 FT_extend(FT_confVMUpdates, FT_confBaseObj);
 
-function f_handleCancel(vm)
+function f_vmHandleDeployCancel(e, vmId)
 {
-    alert('fire up add panel');
+    var cb = function(evt)
+    {
+        if(evt.f_isError())
+        {
+            alert('cancel error');
+        }
+        else
+            g_configPanelObj.m_activeObj.f_loadVMData();
+    }
+
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+        g_busObj.f_cancelVMDeploy(vmId, cb);
 }
 
-function f_handleRestore(vm)
+function f_vmDeployCancel(vmId, vmName)
 {
-    alert('fire up user editor panel for ' + vm);
+    g_utils.f_popupMessage('Do you really want to cancel (' + vmName + ') VM?',
+                'confirm', 'Cancel Update Schedule',
+                "f_vmHandleDeployCancel(this, '"+ vmId + "')");
+}
+
+function f_vmHandleDeployRestore(e, vmId)
+{
+    var cb = function(evt)
+    {
+        if(evt.f_isError())
+        {
+            alert('restore error');
+        }
+        else
+            g_configPanelObj.m_activeObj.f_loadVMData();
+    }
+
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+        g_busObj.f_cancelVMDeploy(vmId, cb);
+}
+
+function f_vmDeployRestore(vmId, vmName)
+{
+    g_utils.f_popupMessage('Do you really want to restore (' + vmName + ') VM?',
+                'confirm', 'Cancel Update Schedule',
+                "f_vmHandleDeployCancel(this, '"+ vmId + "')");
 }
 
 

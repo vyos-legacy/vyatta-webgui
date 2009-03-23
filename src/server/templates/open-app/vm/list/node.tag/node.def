@@ -1,2 +1,6 @@
 help: List the attributes of an existing VM on the OpenAppliance
-run: /opt/vyatta/sbin/openapp-vm-query.pl --list "$4"
+run: if /opt/vyatta/sbin/openapp-vm-query.pl --list "$4"; then
+       return 0
+     else
+       return 1
+     fi

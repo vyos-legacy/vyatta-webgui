@@ -86,23 +86,21 @@ sub add_user {
     }
     elsif (defined($rights) && $rights ne NULL){
 	#need to validate entry here!
-	
-	#hardwired for now
-	if ($rights eq 'jvm' || $rights eq 'vyatta' || $rights eq 'pbx') {
+	my $VMs = ();
+	my @VMs = OpenApp::VMMgmt::getVMList();
+	my $vm = new OpenApp::VMMgmt($rights);
+	if (defined($vm) && $vm ne NULL) {
 	    #modify rights on local system
 	    print FILE "dn: uid=".$add.",ou=People,dc=localhost,dc=localdomain\n";
 	    print FILE "changetype: modify\n";
 	    print FILE "add: memberUid\n";
 	    print FILE "memberUid: ".$rights."\n";
 
-	    my $VMs = ();
-	    my @VMs = OpenApp::VMMgmt::getVMList();
-	    my $vm = new OpenApp::VMMgmt($rights);
 	    my $ip = '';
 	    $ip = $vm->getIP();
 	    if (defined $ip && $ip ne '') {
 		my $cmd = "http://$ip/notifications/users/$add";
-		my $rc = `curl -q -I $cmd 2>&1`;
+		my $rc = `curl -X POST -q -I $cmd 2>&1`;
 		#if error returned from curl, remove from list here and notify of error??
 	    }
 	}
@@ -208,13 +206,25 @@ sub del_user {
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "http://$ip/notifications/users/$delete";
-	    my $rc = `curl -q -I $cmd 2>&1`;
+	    my $rc = `curl -X PUT -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	}
 
     }
     else {
 	system("ldapdeleteuser $delete");
+
+	my $VMs = ();
+	my @VMs = OpenApp::VMMgmt::getVMList();
+	my $vm = new OpenApp::VMMgmt($rights);
+	my $ip = '';
+	$ip = $vm->getIP();
+	if (defined $ip && $ip ne '') {
+	    my $cmd = "http://$ip/notifications/users/$delete";
+	    my $rc = `curl -X DELETE -q -I $cmd 2>&1`;
+	    #if error returned from curl, remove from list here and notify of error??
+	}
+
     }
 }
 

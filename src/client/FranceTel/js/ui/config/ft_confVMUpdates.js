@@ -8,6 +8,7 @@
 function FT_confVMUpdates(name, callback, busLayer)
 {
     this.thisObjName = 'FT_confVMUpdates';
+    var thisObj = this;
 
     /**
      * @param name - name of configuration screens.
@@ -32,17 +33,16 @@ function FT_confVMUpdates(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn('Data', 200, 'text', '6');
-        cols[1] = this.f_createColumn('VM', 200, 'text', '6');
-        cols[2] = this.f_createColumn('Status', 100, 'text', '6');
-        cols[3] = this.f_createColumn(' ', 100, 'button', '10');
+        cols[0] = this.f_createColumn('Date', 200, 'text', '6');
+        cols[1] = this.f_createColumn('Application', 200, 'text', '6');
+        cols[2] = this.f_createColumn('Status', 120, 'text', '6');
+        cols[3] = this.f_createColumn(' ', 120, 'button', '25');
 
         return cols;
     }
 
     this.f_loadVMData = function()
     {
-        var thisObj = this;
         var hd = this.f_createColumns();
 
         var cb = function(evt)
@@ -60,22 +60,30 @@ function FT_confVMUpdates(name, callback, busLayer)
                     return;
                 }
 
-                var vmData = [];
+                var dep = evt.m_value;  // get vm deploy record object
+                if(dep == undefined) return;
 
                 thisObj.f_removeDivChildren(thisObj.m_div);
                 thisObj.m_div.appendChild(thisObj.m_header);
                 thisObj.m_div.appendChild(thisObj.m_body);
 
-                //for(var i=0; i<vmData.length; i++)
-                //{
-                  //  var bodyDiv = thisObj.f_createGridRow(hd, vmData[i]);
-                    //thisObj.m_body.appendChild(bodyDiv);
-                //}
+                for(var i=0; i<dep.length; i++)
+                {
+                    var vmRec = g_busObj.f_getVmRecByVmId(dep[i].m_id);
+                    var button = thisObj.f_createRenderButton(dep[i].m_id,
+                                  vmRec.m_displayName, dep[i].m_status);
+
+                    var vmData = [dep[i].m_time, vmRec.m_displayName + " (" +
+                                  dep[i].m_version + ")", dep[i].m_status, button];
+
+                    var bodyDiv = thisObj.f_createGridRow(hd, vmData);
+                    thisObj.m_body.appendChild(bodyDiv);
+                }
             }
         }
 
         g_utils.f_cursorWait();
-        this.m_busLayer.f_getVMDataFromServer(cb);
+        this.m_busLayer.f_getVMUpdateListFromServer(cb);
     }
 
     this.f_stopLoadVMData = function()
@@ -83,6 +91,24 @@ function FT_confVMUpdates(name, callback, busLayer)
         this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
         this.m_threadId = null;
     },
+
+    this.f_createRenderButton = function(vmId, vmName, status)
+    {
+        var cb = '';
+        if(status == 'scheduled')
+        {
+            cb = 'f_vmDeployCancel("' + vmId + '")';
+            return thisObj.f_renderButton('Cancel', true, cb,
+                    'Cancel ' + vmName);
+        }
+        else if(status == 'failed')
+        {
+            cb = 'f_vmDeployRestore("' + vmId + '")';
+            return thisObj.f_renderButton('restore', true, cb, 'Restore ' + vmName);
+        }
+
+        return "";
+    }
 
     this.f_init = function()
     {
@@ -103,7 +129,7 @@ function f_handleCancel(vm)
 
 function f_handleRestore(vm)
 {
-    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID, vm);
+    alert('fire up user editor panel for ' + vm);
 }
 
 

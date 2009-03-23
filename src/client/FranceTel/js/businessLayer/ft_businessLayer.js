@@ -433,6 +433,11 @@ function FT_businessLayer()
         return this.f_sendRequest(content, guiCb);
     }
 
+    this.f_getVMUpdateListFromServer = function(guiCb)
+    {
+        thisObj.m_vm.f_getVMUpdateListFromServer(guiCb);
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
     // hw monitor session start here.....

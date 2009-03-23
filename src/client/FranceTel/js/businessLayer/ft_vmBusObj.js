@@ -14,6 +14,7 @@ function FT_vmBusObj(busObj)
     this.m_busObj = busObj;
     this.m_systemTime = undefined;
     this.m_vmRecObj = [];
+    this.m_vmDeployRecObj = [];
     this.m_hwRecObj = null;
     this.m_lastCmdSent = null;
 
@@ -45,6 +46,11 @@ function FT_vmBusObj(busObj)
                     thisObj.f_parseHw(err);
                     evt = new FT_eventObj(0, thisObj.m_hwRecObj, '');
                 }
+                else if(thisObj.m_lastCmdSent.indexOf('deploy list') > 0)
+                {
+                    thisObj.m_vmDeployRecObj = thisObj.f_parseVMDeployList(err);
+                    evt = new FT_eventObj(0, thisObj.m_vmDeployRecObj, '');
+                }
                 else
                 {
                     thisObj.f_parseVMSummaryData(err);
@@ -52,14 +58,9 @@ function FT_vmBusObj(busObj)
 
                     evt = new FT_eventObj(0, thisObj.m_vmRecObj, '');
                 }
-                
-                
             }
             else
-            {
                 thisObj.f_parseSystemTime(response);
-                thisObj.f_parseHw(response);
-            }
 
             if(thisObj.m_guiCb != undefined)
                 thisObj.m_guiCb(evt);
@@ -84,6 +85,20 @@ function FT_vmBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement>" +
                       "open-app vm list </statement></command>";
+
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    /**
+     * get summary vm list from server: list of vmId, ip, port, uri, vm display name
+     */
+    this.f_getVMUpdateListFromServer = function(guiCb)
+    {
+        thisObj.m_guiCb = guiCb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+                      "open-app vm deploy list </statement></command>";
 
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -288,6 +303,53 @@ function FT_vmBusObj(busObj)
         }
     }
 
+    this.f_parseVMDeployList = function(response)
+    {
+        // get a vm status nodes
+        var vmdNodes = thisObj.f_getVMNodesFromResponse(response, 'record');
+        var index = 0;
+        var vmd = [];
+        if(vmdNodes != null)
+        {
+            for(var i=0; i<vmdNodes.length; i++)
+            {
+                var val = vmdNodes[i];
+                if(val.nodeName == 'record')
+                {
+                    vmd[index] = new FT_vmDeployObj();
+
+                    for(var j=0; j<val.childNodes.length; j++)
+                    {
+                        var cNode = val.childNodes[j];
+                        if(cNode.firstChild == undefined) continue;
+
+                        switch(cNode.nodeName)
+                        {
+                            case 'time':
+                              vmd[index].m_time = cNode.firstChild.nodeValue;
+                              break;
+                            case 'id':
+                              vmd[index].m_id = cNode.firstChild.nodeValue;
+                              break;
+                            case 'ver':
+                              vmd[index].m_version = cNode.firstChild.nodeValue;
+                              break;
+                            case 'status':
+                              vmd[index].m_status = cNode.firstChild.nodeValue;
+                              break;
+                            case 'msg':
+                              vmd[index].m_msg = cNode.firstChild.nodeValue;
+                              break;
+                        }
+                    }
+                    index++;
+                }
+            }
+        }
+
+        return vmd;
+    }
+
     this.f_parseSystemTime = function(response)
     {
         var tNode = response.getElementsByTagName('time');
@@ -397,6 +459,15 @@ function FT_vmRecObj(id, displayName)
     {
         return g_utils.f_findPercentage(thisObj.m_memTotal, thisObj.m_memFree);
     }
+}
+
+function FT_vmDeployObj(id, time, version, status, msg)
+{
+    this.m_time = time;
+    this.m_id = id;   // vm id
+    this.m_version = version;
+    this.m_status = status;
+    this.m_msg = msg;
 }
 
 /**

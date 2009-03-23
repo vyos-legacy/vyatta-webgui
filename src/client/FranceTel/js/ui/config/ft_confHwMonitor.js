@@ -59,21 +59,20 @@ function FT_confHwMonitor(name, callback, busLayer)
                     return;
                 }
 
-                var vmData = [];
-                var vm = evt.m_value;
-                if(vm == undefined) return;
+                var hw = evt.m_value;
+                if(hw == undefined) return;
 
                 thisObj.f_removeDivChildren(thisObj.m_div);
                 thisObj.f_removeDivChildren(thisObj.m_body);
                 thisObj.m_div.appendChild(thisObj.m_header);
                 thisObj.m_div.appendChild(thisObj.m_body);
 
-                for(var i=0; i<=vm.FAN; i++)
+                for(var i=0; i<=hw.FAN; i++)
                 {
-                    var img = thisObj.f_renderStatus(vm.m_hwStatus[i]);
-                    vmData[i] = [vm.m_hwName[i], img];
+                    var img = thisObj.f_renderStatus(hw.m_hwStatus[i]);
+                    var hwData = [hw.m_hwName[i], img];
 
-                    var bodyDiv = thisObj.f_createGridRow(hd, vmData[i]);
+                    var bodyDiv = thisObj.f_createGridRow(hd, hwData);
                     thisObj.m_body.appendChild(bodyDiv);
                 }
             }

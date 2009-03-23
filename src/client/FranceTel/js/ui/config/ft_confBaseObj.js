@@ -369,6 +369,9 @@ function FT_confBaseObj(name, callback, busLayer)
             case 'download':
                 imgSrc = 'images/ico_download.gif';
                 break;
+            case 'Cancel':
+                imgSrc = 'images/bt_cancel.gif';
+                break;
         }
 
         var disabled = enable ? '' : 'disabled';

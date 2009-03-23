@@ -31,7 +31,7 @@ use File::Copy;
 use Getopt::Long;
 use OpenApp::VMMgmt;
 
-my ($backup,$restore,$list,$delete);
+my ($backup,$filename,$restore,$list,$delete);
 
 #
 # Run through the list of VM's and
@@ -101,10 +101,17 @@ sub backup_archive {
     my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
 
     my $datamodel = '1';
-    my $filename = $date."_".$time."_".$datamodel;
+#
+#    my $filename = $date."_".$time."_".$datamodel;
+#
+    if (!defined($filename) || $filename eq '') {
+	$filename = "/tmp/backup/".$date."_".$time."_".$datamodel;
+    }
+
     #now create metadata file
     my $FILE;
-    open FILE, ">", "/tmp/backup/$filename.txt" or die $!;
+
+    open FILE, ">", "$filename.txt" or die $!;
     #we'll write out xml descriptions--the same as what we display...
     print FILE "<archive>";
     print FILE "<name>name</name>";
@@ -124,7 +131,7 @@ sub backup_archive {
     close FILE;
 
     #finally tar up the proceedings...
-    `tar -C /tmp/backup/ -cf /tmp/backup/$filename.tar . 2>/dev/null`;
+    `tar -C /tmp/backup/ -cf $filename.tar . 2>/dev/null`;
 
     #needs to clean out old files or files past limit at this point....
 
@@ -215,6 +222,7 @@ sub delete_archive {
 ####main
 sub usage() {
     print "Usage: $0 --backup=<backup>\n";
+    print "       $0 --name=<optional filename>\n";
     print "       $0 --restore=<restore>\n";
     print "       $0 --list=<list>\n";
     print "       $0 --delete=<delete>\n";
@@ -224,10 +232,11 @@ sub usage() {
 
 #pull commands and call command
 GetOptions(
-           "backup:s"       => \$backup,
-           "restore=s"      => \$restore,
-           "list:s"         => \$list,
-           "delete=s"       => \$delete,
+    "backup:s"       => \$backup,
+    "filename:s"     => \$filename,
+    "restore=s"      => \$restore,
+    "list:s"         => \$list,
+    "delete=s"       => \$delete,
     ) or usage();
 
 

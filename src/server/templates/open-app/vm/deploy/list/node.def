@@ -1,2 +1,6 @@
 help: Return VM deployment records
-run: /opt/vyatta/sbin/openapp-vm-deploy.pl --list
+run: if /opt/vyatta/sbin/openapp-vm-deploy.pl --list; then
+       return 0
+     else
+       return 1
+     fi

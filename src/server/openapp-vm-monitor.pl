@@ -118,7 +118,6 @@ sub vmDisk {
 sub updateVMStatus {
   my $vid = shift;
   my $vm = new OpenApp::VMMgmt($vid);
-  my $ip = $vm->getIP();
   my ($status, $cpu_util, $mem_total, $mem_free, $disk_total, $disk_free,
       $upd_avail) = ('unknown', 0, 0, 0, 0, 0, '');
 
@@ -132,6 +131,9 @@ sub updateVMStatus {
     $status = 'down';
   }
   while ($status eq 'unknown') {
+    last if (!defined($vm));
+
+    my $ip = $vm->getIP();
     my ($s, $err) = Net::SNMP->session(-hostname => "$ip",
                                        -community => $OA_SNMP_COMM,
                                        -timeout => 1,

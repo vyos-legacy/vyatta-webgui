@@ -1,3 +1,7 @@
 help: Return status of all existing VMs on the OpenAppliance
 run: touch /opt/vyatta/var/run/vm-monitor.state
-     /opt/vyatta/sbin/openapp-vm-query.pl --status
+     if /opt/vyatta/sbin/openapp-vm-query.pl --status; then
+       return 0
+     else
+       return 1
+     fi

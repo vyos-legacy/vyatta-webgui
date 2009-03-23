@@ -1,2 +1,6 @@
 help: List all existing VMs on the OpenAppliance
-run: /opt/vyatta/sbin/openapp-vm-query.pl --list
+run: if /opt/vyatta/sbin/openapp-vm-query.pl --list; then
+       return 0
+     else
+       return 1
+     fi

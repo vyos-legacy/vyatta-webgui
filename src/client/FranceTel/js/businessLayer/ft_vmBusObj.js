@@ -40,14 +40,24 @@ function FT_vmBusObj(busObj)
             var err = response.getElementsByTagName('error');
             if(err != null && err[0] != null)
             {
-                thisObj.f_parseVMSummaryData(err);
-                thisObj.f_parseVMStatus(err);
-                evt = new FT_eventObj(0, thisObj.m_vmRecObj, '');
+                if(thisObj.m_lastCmdSent.indexOf('vm hwmon') > 0)
+                {
+                    thisObj.f_parseHw(err);
+                    evt = new FT_eventObj(0, thisObj.m_hwRecObj, '');
+                }
+                else
+                {
+                    thisObj.f_parseVMSummaryData(err);
+                    thisObj.f_parseVMStatus(err);
+
+                    evt = new FT_eventObj(0, thisObj.m_vmRecObj, '');
+                }
+                
+                
             }
             else
             {
                 thisObj.f_parseSystemTime(response);
-                //thisObj.f_parseVM(response);
                 thisObj.f_parseHw(response);
             }
 
@@ -88,6 +98,20 @@ function FT_vmBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement>" +
                       "open-app vm status </statement></command>";
+
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    /**
+     * call backend api to get hw monitor data
+     */
+    this.f_getHWMonitorFromServer = function(guiCb)
+    {
+        thisObj.m_guiCb = guiCb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+                      "open-app vm hwmon </statement></command>";
 
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -231,63 +255,35 @@ function FT_vmBusObj(busObj)
         return null;
     }
 
-    this.f_parseVM = function(response)
-    {
-        var vms = response.getElementsByTagName('vm');
-        for(var i=0; i<vms.length; i++)
-        {
-            thisObj.m_vmRecObj[i] = new FT_vmRecObj();
-            var vm = thisObj.m_vmRecObj[i];
-            vm.m_name = vms[i].getAttribute('name');
-
-            for(var j=0; j<vms[i].childNodes.length; j++)
-            {
-                if(vms[i].childNodes[j].nodeName == 'status')
-                    vm.m_status = vms[i].childNodes[j].firstChild.nodeValue;
-                else if(vms[i].childNodes[j].nodeName == 'cpu')
-                    vm.m_cpu = vms[i].childNodes[j].getAttribute('util');
-                else if(vms[i].childNodes[j].nodeName == 'mem')
-                {
-                    vm.m_memTotal = vms[i].childNodes[j].getAttribute('total');
-                    vm.m_memFree = vms[i].childNodes[j].getAttribute('free');
-                }
-                else if(vms[i].childNodes[j].nodeName == 'disk')
-                {
-                    vm.m_diskTotal = vms[i].childNodes[j].getAttribute('total');
-                    vm.m_diskFree = vms[i].childNodes[j].getAttribute('free');
-                }
-                else if(vms[i].childNodes[j].nodeName == 'version')
-                    vm.f_setVersions(vms[i].childNodes[j]);
-                else if(vms[i].childNodes[j].nodeName == 'guiUrl')
-                    vm.m_guiURL = vms[i].childNodes[j].firstChild.nodeValue;
-                else if(vms[i].childNodes[j].nodeName == 'deploy')
-                    vm.f_setDeploys(vms[i].childNodes[j])
-            }
-
-            if(vm.m_status == undefined) vm.m_status = 'unknown';
-
-            thisObj.m_vmRecObj[i] = vm;
-        }
-    }
-
     this.f_parseHw = function(response)
     {
-        var hws = response.getElementsByTagName('hw');
+        // get a vm status nodes
+        var hwNodes = thisObj.f_getVMNodesFromResponse(response, 'hwmon');
         var index = 0;
-
-        for(var i=0; i<hws[0].childNodes.length; i++)
+        if(hwNodes != null)
         {
-            switch(hws[0].childNodes[i].nodeName)
+            for(var i=0; i<hwNodes.length; i++)
             {
-                case 'nic':
-                case 'disk':
-                case 'cpu':
-                case 'fan':
-                    if(thisObj.m_hwRecObj == null)
-                        thisObj.m_hwRecObj = new FT_hwRecObj();
+                var val = hwNodes[i];
+                if(val.nodeName == 'hwmon')
+                {
+                    for(var j=0; j<val.childNodes.length; j++)
+                    {
+                        var cNode = val.childNodes[j];
+                        switch(cNode.nodeName)
+                        {
+                            case 'nic':
+                            case 'disk':
+                            case 'cpu':
+                            case 'fan':
+                                if(thisObj.m_hwRecObj == null)
+                                    thisObj.m_hwRecObj = new FT_hwRecObj();
 
-                    var cNode = hws[0].childNodes[i].firstChild;
-                    thisObj.m_hwRecObj.f_setHw(cNode.nodeValue, index++);
+                                thisObj.m_hwRecObj.f_setHw(
+                                          cNode.firstChild.nodeValue, index++);
+                        }
+                    }
+                }
             }
         }
     }

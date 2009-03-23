@@ -78,7 +78,7 @@ function FT_confRestart(name, callback, busLayer)
 
                     //////////////////////////////////
                     // skip open appliance
-                    if(v.m_name == 'OpenAppliance') continue;
+                    if(v.m_name == 'openapp' || v.m_name == 'blb') continue;
 
                     var enabled = v.m_status == 'up' ? true : false;
 
@@ -92,7 +92,7 @@ function FT_confRestart(name, callback, busLayer)
                     var start = thisObj.f_renderButton(
                                 'Start', !enabled, "f_vmHandleStart('" +
                                 v.m_name + "')", 'Start ' + v.m_name);
-                    var vmData = [v.m_name, img, restart, stop, start];
+                    var vmData = [v.m_displayName, img, restart, stop, start];
 
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData);
                     thisObj.m_body.appendChild(bodyDiv);

@@ -305,6 +305,7 @@ function FT_businessLayer()
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     // VM session start here.....
     ////////////////////////////////////////////////////////////////////////////
     // VM supported functions:
@@ -332,7 +333,7 @@ function FT_businessLayer()
      */
     this.f_getVmRecByVmId = function(id)
     {
-        return this.m_vm.m_vmRecObj;
+        return this.m_vm.f_getVMRecObjByVMId(id);
     }
 
     /**
@@ -396,6 +397,7 @@ function FT_businessLayer()
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     // VM start/stop/restart session start here.....
     /**
      * stop VM request
@@ -431,6 +433,50 @@ function FT_businessLayer()
         return this.f_sendRequest(content, guiCb);
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    // hw monitor session start here.....
+    /**
+     * start a thread run in background to pull HW monitor requests. call this function
+     * if you wish to continue getting VM request from background.
+     * NOTE: must call f_stopHWMonitorRequestThread to stop this thread.
+     *       is not recommand to call from outside of business layer.
+     * @param cb - gui callback function. Thread will call this function
+     *              for response data.
+     * @return thread unique id. use this id to stop the thread
+     */
+    this.f_startHWMonitorRequestThread = function(cb)
+    {
+        // create a new thread object
+        thisObj.m_reqThread = new FT_thread(thisObj);
+
+        var guiCb = cb;
+        var callback = function()
+        {
+            thisObj.f_getHWMonitorFromServer(guiCb);
+        }
+
+        // start to run
+        var threadId = thisObj.m_reqThread.f_start(callback);
+
+        thisObj.f_getHWMonitorFromServer(guiCb);
+        return threadId;
+    }
+    /**
+     * stop VM request thread run in background and destroy the thread
+     */
+    this.f_stopHWMonitorRequestThread = function(threadId)
+    {
+        if(threadId != null)
+            thisObj.m_reqThread.f_stop(threadId);
+    }
+
+    this.f_getHWMonitorFromServer = function(guiCb)
+    {
+        thisObj.m_vm.f_getHWMonitorFromServer(guiCb);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
     // backup/restore session start here.....
     this.f_getVMBackupObj = function()

@@ -60,7 +60,7 @@ function FT_confHwMonitor(name, callback, busLayer)
                 }
 
                 var vmData = [];
-                var vm = evt.m_value.m_hwRecObj;
+                var vm = evt.m_value;
                 if(vm == undefined) return;
 
                 thisObj.f_removeDivChildren(thisObj.m_div);
@@ -80,12 +80,12 @@ function FT_confHwMonitor(name, callback, busLayer)
         }
 
         g_utils.f_cursorWait();
-        this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
+        this.m_threadId = this.m_busLayer.f_startHWMonitorRequestThread(cb);
     }
 
     this.f_stopLoadVMData = function()
     {
-        this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
+        this.m_busLayer.f_stopHWMonitorRequestThread(this.m_threadId);
         this.m_threadId = null;
     }
 

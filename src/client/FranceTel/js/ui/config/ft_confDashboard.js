@@ -170,7 +170,8 @@ function FT_confDashboard(name, callback, busLayer)
             var isChecked = vmu[2] == 'no' ? 'no' : 'yes';
 
             return [thisObj.f_renderCheckbox(isChecked, 'db_' + vm.m_name,
-                            'f_dbCheckboxClick(this)'), updates[vmindex]];
+                            'f_dbCheckboxClick(this)', "Version to be updated - " +
+                            vm.m_needUpdate), updates[vmindex]];
         }
         else
             return ["", updates[vmindex]];

@@ -305,13 +305,15 @@ function FT_confBaseObj(name, callback, busLayer)
      * @param val - check or un-check the checkbox
      * @param elId - this element id
      * @param cb = callback
+     * @param tooltip - tooltip for this checkbox
      */
-    this.f_renderCheckbox = function(val, elId, cb)
+    this.f_renderCheckbox = function(val, elId, cb, tooltip)
     {
         var checked = val == 'yes' ? 'checked' : '';
+        tooltip = tooltip == undefined ? "" : tooltip;
 
         return '<input id="' + elId + '" type="checkbox" ' + checked +
-                ' onclick="' + cb + '"/>';
+                ' title="' + tooltip + '" onclick="' + cb + '"/>';
     }
 
     this.f_renderCombobox = function(options, val)

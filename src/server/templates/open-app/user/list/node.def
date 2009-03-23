@@ -1,1 +1,5 @@
-run: sudo perl /opt/vyatta/sbin/openapp-user.pl --list 
+run: if /opt/vyatta/sbin/openapp-user.pl --list; then
+      return 0
+    else
+      return 1
+    fi

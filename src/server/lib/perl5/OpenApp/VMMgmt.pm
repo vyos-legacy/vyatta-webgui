@@ -145,7 +145,7 @@ sub _setup {
 
 sub new {
   my ($that, $id) = @_;
-  if (!isValidId($id)) {
+  if (!_isValidId($id)) {
     return undef;
   }
   my $class = ref ($that) || $that;

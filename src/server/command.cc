@@ -221,17 +221,20 @@ Command::validate_op_cmd(const string &username, WebGUI::AccessLevel user_access
     //read value in here....
     while (fgets(buf, 1024, fp) != 0) {
       string tmp = string(buf);
-      if (tmp.find("access:admin") != string::npos) {
+      if (tmp.find("access:installer") != string::npos) {
+	cmd_access_level = WebGUI::ACCESS_INSTALLER;
+      }
+      else if (tmp.find("access:admin") != string::npos) {
 	cmd_access_level = WebGUI::ACCESS_ADMIN;
       }
-      else if (tmp.find("access:installer") != string::npos) {
-	cmd_access_level = WebGUI::ACCESS_INSTALLER;
+      else if (tmp.find("access:user") != string::npos) {
+	cmd_access_level = WebGUI::ACCESS_USER;
       }
     }
     fclose(fp);
-    cmd_access_level = WebGUI::ACCESS_USER;  //allow user access if no permission stated
+    cmd_access_level = WebGUI::ACCESS_INSTALLER;  //allow user access if no permission stated
   }
-  cmd_access_level = WebGUI::ACCESS_USER;
+  cmd_access_level = WebGUI::ACCESS_INSTALLER;
 
   //finally a special restriction on user modification given access level
   if (user_access_level == WebGUI::ACCESS_USER) {

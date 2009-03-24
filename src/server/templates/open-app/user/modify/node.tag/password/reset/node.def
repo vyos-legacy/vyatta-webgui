@@ -1,3 +1,4 @@
+access:user
 run: if sudo perl /opt/vyatta/sbin/openapp-user.pl --modify "$4" --password "$4"; then
        return 0
      else

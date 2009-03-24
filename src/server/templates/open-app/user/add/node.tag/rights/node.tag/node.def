@@ -1,3 +1,4 @@
+access:admin
 run: if sudo perl /opt/vyatta/sbin/openapp-user.pl -add "$4" --rights "$6"; then
        return 0
      else

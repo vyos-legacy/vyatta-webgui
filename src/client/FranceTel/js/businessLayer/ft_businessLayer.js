@@ -447,7 +447,7 @@ function FT_businessLayer()
 
     this.f_getVMDeployRecObjByVMId = function(vmId)
     {
-        return thisObj.f_getVMDeployRecObjByVMId(vmId);
+        return thisObj.m_vm.f_getVMDeployRecObjByVMId(vmId);
     }
 
     ///////////////////////////////////////////////////////////////////////////

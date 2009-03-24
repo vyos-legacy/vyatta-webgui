@@ -75,7 +75,9 @@ function FT_confVMUpdates(name, callback, busLayer)
                                   vmRec.m_displayName, dep[i].m_status);
 
                     var vmData = [dep[i].m_time, vmRec.m_displayName + " (" +
-                                  dep[i].m_version + ")", dep[i].m_status, button];
+                                  dep[i].m_version + ")",
+                                  thisObj.f_createRenderStatus(dep[i].m_status,
+                                  dep[i].m_msg), button];
 
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData);
                     thisObj.m_body.appendChild(bodyDiv);
@@ -92,6 +94,14 @@ function FT_confVMUpdates(name, callback, busLayer)
         this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
         this.m_threadId = null;
     },
+
+    this.f_createRenderStatus = function(status, msg)
+    {
+        if(msg == undefined || msg.length == 0)
+            return "<p>"+status+"</p>";
+        else
+            return '<p title="' + msg + '">' + status + '</p>';
+    }
 
     this.f_createRenderButton = function(vmId, vmName, status)
     {

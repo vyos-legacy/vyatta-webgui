@@ -360,6 +360,9 @@ function FT_vmBusObj(busObj)
                             case 'ver':
                               vmd[index].m_version = cNode.firstChild.nodeValue;
                               break;
+                            case 'prevVer':
+                              vmd[index].m_prevVersion = cNode.firstChild.nodeValue;
+                              break;
                             case 'status':
                               vmd[index].m_status = cNode.firstChild.nodeValue;
                               break;
@@ -502,12 +505,12 @@ function FT_vmRecObj(id, displayName)
     }
 }
 
-function FT_vmDeployObj(id, time, version, status, msg)
+function FT_vmDeployObj(id, time, version, prevVer, status, msg)
 {
     this.m_time = time;
     this.m_id = id;   // vm id
     this.m_version = version;
-    this.m_prevVersion = null;
+    this.m_prevVersion = prevVer;
     this.m_status = status;
     this.m_msg = msg;
 }

@@ -65,27 +65,34 @@ sub backup_archive {
 	    
 	}
     }
-
+    
 #what happens if a vm fails to backup???? how are we to identify this???
 
     #now that each are started, let's sequentially iterate through and retrieve
-    foreach $i (0..$#coll) {
-	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
-	next if (!defined($vm));
-	my $ip = '';
-	$ip = $vm->getIP();
-	if (defined $ip && $ip ne '') {
-	    my $cmd = "/url/backup-file";
-	    #writes to specific location on disk
-	    my $bufile = "/backup/$coll[$i][0]/$coll[$i][1]";
-	    my $rc = `curl -X POST -q -I $cmd -O $bufile 2>&1`;
-
-	    #now encrypt command--NEED MAC ADDR OF ETH0
-	    my $mac = 'cat /opt/vyatta/config/active/interfaces/ethernet/eth0/hw-id/node.val';
-	    #probably need to eat the cr here
-	    $mac = chomp($mac);
-
-	    my $resp = 'openssl enc -aes-256-cbc -salt $mac -in /backup/$coll[$i][0]/$coll[$i][1] -out /backup/$coll[$i][0]/$coll[$i][1].enc';
+    while ($#coll > -1) {
+	foreach $i (0..$#coll) {
+	    my $vm = new OpenApp::VMMgmt($coll[$i][0]);
+	    next if (!defined($vm));
+	    my $ip = '';
+	    $ip = $vm->getIP();
+	    if (defined $ip && $ip ne '') {
+		my $cmd = "http://$ip/archive/backup/status/$coll[$i][1]";
+		#writes to specific location on disk
+		my $bufile = "/tmp/backup/$coll[$i][0]/$coll[$i][1]";
+		my $rc = `wget $cmd -O $bufile`;
+		print "$rc";
+		if ($rc =~ /200 OK/) {
+		    #now encrypt command--NEED MAC ADDR OF ETH0
+		    my $mac = 'cat /opt/vyatta/config/active/interfaces/ethernet/eth0/hw-id/node.val';
+		    #probably need to eat the cr here
+		    $mac = chomp($mac);
+		    
+		    my $resp = 'openssl enc -aes-256-cbc -salt $mac -in /tmp/backup/$coll[$i][0]/$coll[$i][1] -out /tmp/backup/$coll[$i][0]/$coll[$i][1].enc';
+		    
+		    #remove from collection
+		    delete $coll[$i];
+		}
+	    }
 	}
     }
 

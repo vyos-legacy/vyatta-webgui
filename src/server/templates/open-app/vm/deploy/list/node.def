@@ -1,4 +1,5 @@
 help: Return VM deployment records
+access:admin
 run: if /opt/vyatta/sbin/openapp-vm-deploy.pl --list; then
        return 0
      else

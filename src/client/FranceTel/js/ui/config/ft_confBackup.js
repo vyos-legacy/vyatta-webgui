@@ -137,29 +137,37 @@ function FT_confBackup(name, callback, busLayer)
 		window.open(url, 'Download');
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	////////// TODO : NEED BACKEND SUPPORT
-	////////////////////////////////////////////////////////////////////////// 	
+    this.f_oaBackupCb = function(eventObj)
+	{
+        if (eventObj.f_isError()) {
+			g_utils.f_popupMessage('Backup failed: ' + eventObj.m_errMsg, 'error', 'Error!', true);
+		} else {
+			g_utils.f_popupMessage('Backup is in progress.  You will receive an email notification when the operation is finshed.', 'ok', 'Information', true);
+		}	
+	}
+
 	this.f_oaBackup = function()
 	{
-		/** get the list of checked vm, and what check **/
-//		var s = 'conf_backup_config_cb';
-//		for (var i=0; i < thisObj.m_vmName.length; i++) {
-//	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
-//			if (el.checked == true) {
-//				return true;
-//			}	
-//		}
-//		s = 'conf_backup_data_cb';
-//		for (var i=0; i < thisObj.m_vmName.length; i++) {
-//	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
-//			if (el.checked == true) {
-//				return true;
-//			}	
-//		}
-//		g_busObj.f_backup(vms, mode, guiCb);
-	
-        g_utils.f_popupMessage('Backup is in progress.  You will receive an email notification when the operation is finshed.', 'ok', 'Information',true);
+		var vms = new Array();
+		var mode = new Array();
+		
+		var s = 'conf_backup_config_cb';
+		for (var i=0; i < thisObj.m_vmName.length; i++) {
+	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
+			if (el.checked == true) {
+				vms.push(thisObj.m_vmName[i]);
+				mode.push('conf');
+			}	
+		}
+		s = 'conf_backup_data_cb';
+		for (var i=0; i < thisObj.m_vmName.length; i++) {
+	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
+			if (el.checked == true) {
+				vms.push(thisObj.m_vmName[i]);
+				mode.push('data');
+			}	
+		}
+		g_busObj.f_backup(vms, mode, thisObj.f_oaBackupCb);	
 	}
 	
 	this.f_backup = function()
@@ -214,10 +222,7 @@ function FT_confBackup(name, callback, busLayer)
                     var v = vm[i];
 					//alert('vm name: ' + vm[i].m_name + ' vm dn:' + vm[i].m_displayName);
                     if(v == undefined) break;
-	////////////////////////////////////////////////////////////////////////////////////////////
-	////////// TODO : NEED BACKEND SUPPORT for the ID of OpenAppliance, ie dom0 VM
-	//////////////////////////////////////////////////////////////////////////////////////////// 	
-                    if (v.m_name == VYA.FT_CONST.OA_ID) {
+                   if (v.m_name == VYA.FT_CONST.OA_ID) {
 						if (!g_roleManagerObj.f_isInstaller()) {
 							continue;
 						}

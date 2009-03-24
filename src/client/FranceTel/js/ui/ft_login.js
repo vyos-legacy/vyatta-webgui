@@ -49,9 +49,9 @@ function FT_login(busObj)
         ///////////////////////////////////
         // set initial focus
         var el = document.getElementById('username');
-		if (!g_xbObj.m_isSafari) {
+		//if (!g_xbObj.m_isSafari) {
 			el.focus();
-		}
+		//}
 		
         return div;
     }

@@ -107,6 +107,9 @@ function FT_crossBrowser()
     
     this.f_xbProcessDomReady = function()
     {
+		if (thisObj.m_isSafari) {
+			clearInterval(docReadyProcId);
+		}
         if (thisObj.m_domReadyCb != undefined) {
             thisObj.m_domReadyCb();
         }
@@ -130,7 +133,7 @@ function FT_crossBrowser()
             docReadyProcId = setInterval(function()
             {
                 var rs = document.readyState;
-                if (rs == "complete") {
+                if ((rs == "loaded") || (rs == "complete")) {
                     thisObj.f_xbProcessDomReady();
                 }
             }, 10);

@@ -67,33 +67,40 @@ sub backup_archive {
     }
     
 #what happens if a vm fails to backup???? how are we to identify this???
+    my @new_coll = @coll;
 
     #now that each are started, let's sequentially iterate through and retrieve
-    while ($#coll > -1) {
-	foreach $i (0..$#coll) {
-	    my $vm = new OpenApp::VMMgmt($coll[$i][0]);
+    while ($#new_coll > -1) {
+	foreach $i (0..$#new_coll) {
+	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
 	    next if (!defined($vm));
 	    my $ip = '';
 	    $ip = $vm->getIP();
 	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/archive/backup/status/$coll[$i][1]";
+		my $cmd = "http://$ip/archive/$new_coll[$i][1]";
 		#writes to specific location on disk
-		my $bufile = "/tmp/backup/$coll[$i][0]/$coll[$i][1]";
-		my $rc = `wget $cmd -O $bufile`;
-		print "$rc";
+		my $bufile = "/tmp/backup/$new_coll[$i][0]/$new_coll[$i][1]";
+		`rm -f /tmp/backup/$new_coll[$i][0] 2>/dev/null`;
+		`mkdir -p /tmp/backup/$new_coll[$i][0]`;
+
+		my $rc = `wget $cmd -O $bufile 2>&1`;
+#		print "$rc";
 		if ($rc =~ /200 OK/) {
+#		    print "SUCCESS\n";
 		    #now encrypt command--NEED MAC ADDR OF ETH0
-		    my $mac = 'cat /opt/vyatta/config/active/interfaces/ethernet/eth0/hw-id/node.val';
+#		    my $mac = `cat /sys/class/net/eth0/address`;
 		    #probably need to eat the cr here
-		    $mac = chomp($mac);
+#		    $mac = chomp($mac);
 		    
-		    my $resp = 'openssl enc -aes-256-cbc -salt $mac -in /tmp/backup/$coll[$i][0]/$coll[$i][1] -out /tmp/backup/$coll[$i][0]/$coll[$i][1].enc';
-		    
-		    #remove from collection
-		    delete $coll[$i];
+		    my $resp = `openssl enc -aes-256-cbc -kfile /sys/class/net/eth0/address -in /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1] -out /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1].enc`;
+#		    print "openssl enc -aes-256-cbc -salt $mac -in /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1] -out /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1].enc";
+#		    print "$resp\n";
+		    #remove from new_collection
+		    delete $new_coll[$i];
 		}
 	    }
 	}
+	sleep 1;
     }
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);

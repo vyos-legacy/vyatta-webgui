@@ -236,11 +236,12 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 		       
 		//check to see if it is greater than now.
 		thisObj.m_date = thisObj.f_getUpdateTime();
-		var  d = new Date();
-		var diff = d.getTime() - thisObj.m_date.getTime();
-		if (diff > 0) {
-			errorInner += thisObj.f_createListItem('You cannot schedule an update time in the past.')
-		}			   
+//COMMENT OUT THE LOCAL TIME CHECKING.  LET THE SERVER DO IT.		
+//		var  d = new Date();
+//		var diff = d.getTime() - thisObj.m_date.getTime();
+//		if (diff > 0) {
+//			errorInner += thisObj.f_createListItem('You cannot schedule an update time in the past.')
+//		}			   
 			   
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';

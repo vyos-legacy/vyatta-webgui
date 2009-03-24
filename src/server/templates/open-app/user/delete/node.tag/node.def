@@ -1,4 +1,4 @@
-run: if /opt/vyatta/sbin/openapp-user.pl --delete "$4"; then
+run: if sudo perl /opt/vyatta/sbin/openapp-user.pl --delete "$4"; then
        return 0
      else
        return 1

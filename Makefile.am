@@ -59,6 +59,7 @@ sbin_SCRIPTS += src/server/openapp-vm-op.pl
 
 oaperl_DATA = src/server/lib/perl5/OpenApp/VMMgmt.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/VMDeploy.pm
+oaperl_DATA += src/server/lib/perl5/OpenApp/LdapUser.pm
 
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 

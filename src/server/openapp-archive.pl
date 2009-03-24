@@ -42,48 +42,57 @@ sub backup_archive {
     #the format is: vmkey:type,vmkey:type...
 
     #first let's process the list
-    my %hash_arr;
-    my $hash_arr;
+    my @coll;
+    my $coll;
     my $archive;
     my @archive = split(',',$backup);
+    my $i = 0;
     for $archive (@archive) {
 	my @bu = split(':',$archive);
-	$hash_arr->{$bu[0]} = $bu[1];
+	$coll[$i] = [ @bu ];
+#	print "$coll[0][1]\n";
+	$i = $i + 1;
     }
-
-    foreach my $vmkey (keys %hash_arr) {
-	my $vm = new OpenApp::VMMgmt($vmkey);
+    foreach $i (0..$#coll) {
+	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
 	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notifications/archive/backup/$hash_arr{$vmkey}";
+	    my $cmd = "http://$ip/notifications/archive/backup/$coll[$i][1]";
 	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	    
 	}
     }
-
+    
 #what happens if a vm fails to backup???? how are we to identify this???
 
     #now that each are started, let's sequentially iterate through and retrieve
-    foreach my $vmkey (keys %hash_arr) {
-	my $vm = new OpenApp::VMMgmt($vmkey);
-	next if (!defined($vm));
-	my $ip = '';
-	$ip = $vm->getIP();
-	if (defined $ip && $ip ne '') {
-	    my $cmd = "/url/backup-file";
-	    #writes to specific location on disk
-	    my $bufile = "/backup/$vmkey/$hash_arr{$vmkey}";
-	    my $rc = `curl -X POST -q -I $cmd -O $bufile 2>&1`;
-
-	    #now encrypt command--NEED MAC ADDR OF ETH0
-	    my $mac = 'cat /opt/vyatta/config/active/interfaces/ethernet/eth0/hw-id/node.val';
-	    #probably need to eat the cr here
-	    $mac = chomp($mac);
-
-	    my $resp = 'openssl enc -aes-256-cbc -salt $mac -in /backup/$vmkey/$hash_arr{$vmkey} -out /backup/$vmkey/$hash_arr{$vmkey}.enc';
+    while ($#coll > -1) {
+	foreach $i (0..$#coll) {
+	    my $vm = new OpenApp::VMMgmt($coll[$i][0]);
+	    next if (!defined($vm));
+	    my $ip = '';
+	    $ip = $vm->getIP();
+	    if (defined $ip && $ip ne '') {
+		my $cmd = "http://$ip/archive/backup/status/$coll[$i][1]";
+		#writes to specific location on disk
+		my $bufile = "/tmp/backup/$coll[$i][0]/$coll[$i][1]";
+		my $rc = `wget $cmd -O $bufile`;
+		print "$rc";
+		if ($rc =~ /200 OK/) {
+		    #now encrypt command--NEED MAC ADDR OF ETH0
+		    my $mac = 'cat /opt/vyatta/config/active/interfaces/ethernet/eth0/hw-id/node.val';
+		    #probably need to eat the cr here
+		    $mac = chomp($mac);
+		    
+		    my $resp = 'openssl enc -aes-256-cbc -salt $mac -in /tmp/backup/$coll[$i][0]/$coll[$i][1] -out /tmp/backup/$coll[$i][0]/$coll[$i][1].enc';
+		    
+		    #remove from collection
+		    delete $coll[$i];
+		}
+	    }
 	}
     }
 
@@ -116,12 +125,12 @@ sub backup_archive {
     print FILE "<file>$filename</file>";                                                                             
     print FILE "<date>$date $time</date>";
     print FILE "<contents>";
-    foreach my $vmkey (keys %hash_arr) {
-	my $vm = new OpenApp::VMMgmt($vmkey);
+    foreach $i (0..$#coll) {
+	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
 	next if (!defined($vm));
 	print FILE "<entry>";
-	print FILE "<vm>$vmkey</vm>";
-	print FILE "<type>$hash_arr{$vmkey}</type>";
+	print FILE "<vm>$coll[$i][0]</vm>";
+	print FILE "<type>$coll[$i][1]</type>";
 	print FILE "</entry>";
     }    
     print FILE "</contents>";

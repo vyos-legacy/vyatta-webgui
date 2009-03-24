@@ -43,6 +43,8 @@ const string WebGUI::CHUNKER_UPDATE_FORMAT = "<vyatta><chunker_command><token>%s
 const string WebGUI::OPENAPP_GUI_USER = "installer";
 const string WebGUI::OPENAPP_GUI_GROUP = "vyattacfg";
 
+const string WebGUI::OA_GUI_ENV_AUTH_USER = "OA_AUTH_USER";
+
 char const* WebGUI::ErrorDesc[8] = {" ",
 				    "request cannot be parsed",
 				    "authentication error",

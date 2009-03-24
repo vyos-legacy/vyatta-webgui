@@ -53,14 +53,13 @@ sub backup_archive {
 #	print "$coll[0][1]\n";
 	$i = $i + 1;
     }
-
-    foreach $coll (@coll) {
-	my $vm = new OpenApp::VMMgmt($coll[0]);
+    foreach $i (0..$#coll) {
+	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
 	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notifications/archive/backup/$coll[1]";
+	    my $cmd = "http://$ip/notifications/archive/backup/$coll[$i][1]";
 	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	    
@@ -70,15 +69,15 @@ sub backup_archive {
 #what happens if a vm fails to backup???? how are we to identify this???
 
     #now that each are started, let's sequentially iterate through and retrieve
-    foreach $coll (@coll) {
-	my $vm = new OpenApp::VMMgmt($coll[0]);
+    foreach $i (0..$#coll) {
+	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
 	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "/url/backup-file";
 	    #writes to specific location on disk
-	    my $bufile = "/backup/$coll[0]/$coll[1]";
+	    my $bufile = "/backup/$coll[$i][0]/$coll[$i][1]";
 	    my $rc = `curl -X POST -q -I $cmd -O $bufile 2>&1`;
 
 	    #now encrypt command--NEED MAC ADDR OF ETH0
@@ -86,7 +85,7 @@ sub backup_archive {
 	    #probably need to eat the cr here
 	    $mac = chomp($mac);
 
-	    my $resp = 'openssl enc -aes-256-cbc -salt $mac -in /backup/$coll[0]/$coll[1] -out /backup/$coll[0]/$coll[1].enc';
+	    my $resp = 'openssl enc -aes-256-cbc -salt $mac -in /backup/$coll[$i][0]/$coll[$i][1] -out /backup/$coll[$i][0]/$coll[$i][1].enc';
 	}
     }
 
@@ -119,12 +118,12 @@ sub backup_archive {
     print FILE "<file>$filename</file>";                                                                             
     print FILE "<date>$date $time</date>";
     print FILE "<contents>";
-    foreach $coll (@coll) {
-	my $vm = new OpenApp::VMMgmt($coll[0]);
+    foreach $i (0..$#coll) {
+	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
 	next if (!defined($vm));
 	print FILE "<entry>";
-	print FILE "<vm>$coll[0]</vm>";
-	print FILE "<type>$coll[1]</type>";
+	print FILE "<vm>$coll[$i][0]</vm>";
+	print FILE "<type>$coll[$i][1]</type>";
 	print FILE "</entry>";
     }    
     print FILE "</contents>";

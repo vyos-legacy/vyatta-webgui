@@ -17,6 +17,14 @@ my %fields = (
 sub _setup {
   my ($self, $uname) = @_;
   $self->{_uname} = $uname;
+  
+  # special case for installer
+  if ($uname eq 'installer') {
+    $self->{_urole} = 'installer';
+    $self->{_urights} = {};
+    return;
+  }
+
   my $ldap = undef;
   open($ldap, '-|',
        "ldapsearch -x -b 'dc=localhost,dc=localdomain' 'uid=$uname'")

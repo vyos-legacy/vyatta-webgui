@@ -118,9 +118,13 @@ Command::multi_part_op_cmd(std::string &cmd)
 {
   //only eat "openapp archive backup commands" right now
   StrProc str_proc(cmd," ");
-  if (str_proc.get(0) != "open-app" ||
-      str_proc.get(1) != "archive" ||
-      str_proc.get(2) != "backup") {
+  if (str_proc.get(0) != "open-app") {
+    return false;
+  }
+  if (str_proc.get(1) != "archive") {
+    return false;
+  }
+  if (str_proc.get(2) != "backup" && str_proc.get(2) != "restore") {
     return false;
   }
 

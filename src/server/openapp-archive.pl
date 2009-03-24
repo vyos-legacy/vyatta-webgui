@@ -31,6 +31,13 @@ use File::Copy;
 use Getopt::Long;
 use OpenApp::VMMgmt;
 
+my $ARCHIVE_ROOT_DIR = "/tmp/backup";
+my $REST_BACKUP = "/notification/archive/backup";
+my $REST_RESTORE = "/notification/archive/restore";
+my $MAC_ADDR = "/sys/class/net/eth0/address";
+my $WEB_RESTORE_ROOT="/var/www/restore";
+
+
 my ($backup,$filename,$restore,$list,$delete);
 
 #
@@ -59,7 +66,7 @@ sub backup_archive {
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notifications/archive/backup/$coll[$i][1]";
+	    my $cmd = "http://$ip$REST_BACKUP/$coll[$i][1]";
 	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	    
@@ -79,9 +86,9 @@ sub backup_archive {
 	    if (defined $ip && $ip ne '') {
 		my $cmd = "http://$ip/archive/$new_coll[$i][1]";
 		#writes to specific location on disk
-		my $bufile = "/tmp/backup/$new_coll[$i][0]/$new_coll[$i][1]";
-		`rm -f /tmp/backup/$new_coll[$i][0] 2>/dev/null`;
-		`mkdir -p /tmp/backup/$new_coll[$i][0]`;
+		my $bufile = "$ARCHIVE_ROOT_DIR/$new_coll[$i][0]/$new_coll[$i][1]";
+		`rm -f $ARCHIVE_ROOT_DIR/$new_coll[$i][0] 2>/dev/null`;
+		`mkdir -p $ARCHIVE_ROOT_DIR/$new_coll[$i][0]`;
 
 		my $rc = `wget $cmd -O $bufile 2>&1`;
 #		print "$rc";
@@ -92,7 +99,7 @@ sub backup_archive {
 		    #probably need to eat the cr here
 #		    $mac = chomp($mac);
 		    
-		    my $resp = `openssl enc -aes-256-cbc -kfile /sys/class/net/eth0/address -in /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1] -out /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1].enc`;
+		    my $resp = `openssl enc -aes-256-cbc -kfile $MAC_ADDR -in $ARCHIVE_ROOT_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $ARCHIVE_ROOT_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc`;
 #		    print "openssl enc -aes-256-cbc -salt $mac -in /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1] -out /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1].enc";
 #		    print "$resp\n";
 		    #remove from new_collection
@@ -119,7 +126,7 @@ sub backup_archive {
 #    my $filename = $date."_".$time."_".$datamodel;
 #
     if (!defined($filename) || $filename eq '') {
-	$filename = "/tmp/backup/".$date."_".$time."_".$datamodel;
+	$filename = $ARCHIVE_ROOT_DIR."/".$date."_".$time."_".$datamodel;
     }
 
     #now create metadata file
@@ -145,7 +152,7 @@ sub backup_archive {
     close FILE;
 
     #finally tar up the proceedings...
-    `tar -C /tmp/backup/ -cf $filename.tar . 2>/dev/null`;
+    `tar -C $ARCHIVE_ROOT_DIR -cf $filename.tar . 2>/dev/null`;
 
     #needs to clean out old files or files past limit at this point....
 
@@ -172,7 +179,7 @@ sub restore_archive {
     }
     
     #untar archive
-    `tar xf /tmp/backup/$restore /var/www/restore/.`;
+    `tar xf $ARCHIVE_ROOT_DIR/$restore $WEB_RESTORE_ROOT/.`;
     
     foreach $i (0..$#coll) {
 	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
@@ -180,7 +187,7 @@ sub restore_archive {
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notifications/archive/restore/$coll[$i][1]";
+	    my $cmd = "http://$ip$REST_RESTORE/$coll[$i][1]";
 	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	    
@@ -241,7 +248,7 @@ sub list_archive {
     print "VERBATIM_OUTPUT\n";
 
     my $file;
-    my @files = </tmp/backup/*.tar>;
+    my @files = <$ARCHIVE_ROOT_DIR/*.tar>;
     foreach $file (@files) {
 	my @name = split('/',$file);
 	#just open up meta data file and squirt out contents...

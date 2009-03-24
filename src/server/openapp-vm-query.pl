@@ -4,8 +4,15 @@ use strict;
 use Getopt::Long;
 use lib "/opt/vyatta/share/perl5";
 use OpenApp::VMMgmt;
+use OpenApp::LdapUser;
 
 my $OA_ID = $OpenApp::VMMgmt::OPENAPP_ID;
+
+# authenticated user
+my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
+my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
+my %auth_user_rights = %{$auth_user->getRights()};
+my $auth_user_role = $auth_user->getRole();
 
 my ($list, $status, $hwmon) = ('NO_VALUE', 'NO_VALUE', 0);
 GetOptions(
@@ -19,10 +26,18 @@ if ($list ne 'NO_VALUE') {
   exit 0;
 }
 if ($status ne 'NO_VALUE') {
+  if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
+    # not authorized
+    exit 1;
+  }
   do_status($status);
   exit 0;
 }
 if ($hwmon) {
+  if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
+    # not authorized
+    exit 1;
+  }
   do_hwmon();
   exit 0;
 }
@@ -38,6 +53,9 @@ sub do_list {
   }
 
   for my $vid (@VMs) {
+    next if (($auth_user_role ne 'installer')
+             && ($auth_user_role ne 'admin')
+             && (!defined($auth_user_rights{$vid})));
     my $vm = new OpenApp::VMMgmt($vid);
     next if (!defined($vm));
     my $ip = $vm->getIP();

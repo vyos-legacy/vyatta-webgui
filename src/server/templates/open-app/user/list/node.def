@@ -1,4 +1,5 @@
-run: if /opt/vyatta/sbin/openapp-user.pl --list; then
+access:admin
+run: if sudo perl /opt/vyatta/sbin/openapp-user.pl --list; then
       return 0
     else
       return 1

@@ -1,4 +1,5 @@
-run: if /opt/vyatta/sbin/openapp-user.pl --modify "$4" --last "$6"; then
+access:user
+run: if sudo perl /opt/vyatta/sbin/openapp-user.pl --modify "$4" --last "$6"; then
        return 0
      else
        return 1

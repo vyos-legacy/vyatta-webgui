@@ -1,5 +1,6 @@
 help: Time to deploy VM image, e.g., "00:01 21.03.09"
-run: if /opt/vyatta/sbin/openapp-vm-deploy.pl \
+access:admin
+run: if sudo /opt/vyatta/sbin/openapp-vm-deploy.pl \
           --sched "$5" --ver "$7" --time "$9"; then
        return 0
      else

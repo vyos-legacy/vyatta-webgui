@@ -31,6 +31,11 @@ public:
   const static std::string CHUNKER_MSG_FORMAT;
   const static std::string CHUNKER_UPDATE_FORMAT;
 
+  const static std::string OPENAPP_GUI_USER;
+  const static std::string OPENAPP_GUI_GROUP;
+  
+  const static std::string OA_GUI_ENV_AUTH_USER;
+
   enum Error {SUCCESS = 0,
 	      MALFORMED_REQUEST,
 	      AUTHENTICATION_FAILURE,
@@ -128,6 +133,11 @@ public:
   static std::string
   unionfs(void);
 
+  static int
+  get_gui_uid(uid_t &uid);
+  
+  static int
+  get_gui_gid(gid_t &gid);
 };
 
 

@@ -1,5 +1,6 @@
 help: ID of the target VM
-run: if /opt/vyatta/sbin/openapp-vm-deploy.pl --cancel "$5"; then
+access:admin
+run: if sudo /opt/vyatta/sbin/openapp-vm-deploy.pl --cancel "$5"; then
        return 0
      else
        return 1

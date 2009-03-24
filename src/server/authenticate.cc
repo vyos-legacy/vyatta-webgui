@@ -274,7 +274,7 @@ Authenticate::get_access_level(const std::string &username)
   //first execute the ldap command
   
   //short-circuit installer access here
-  if (username,"installer",9 == 0) {
+  if (strcmp(username.c_str(), "installer") == 0) {
     return WebGUI::ACCESS_INSTALLER;
   }
 

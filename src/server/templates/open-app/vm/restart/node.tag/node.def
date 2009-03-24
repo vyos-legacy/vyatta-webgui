@@ -1,0 +1,7 @@
+help: ID of VM to restart
+access:admin
+run: if /opt/vyatta/sbin/openapp-vm-op.pl --action=restart --vm="$4"; then
+       return 0
+     else
+       return 1
+     fi

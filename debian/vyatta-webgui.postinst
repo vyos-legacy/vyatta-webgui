@@ -64,8 +64,6 @@ done
 
 # create vm monitor state file
 touch /opt/vyatta/var/run/vm-monitor.state
-chgrp operator /opt/vyatta/var/run/vm-monitor.state
-chmod 660 /opt/vyatta/var/run/vm-monitor.state
 
 # remove init links
 update-rc.d -f lighttpd remove

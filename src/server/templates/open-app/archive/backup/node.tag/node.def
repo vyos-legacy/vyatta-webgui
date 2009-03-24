@@ -1,1 +1,2 @@
+access:admin
 run: sudo perl /opt/vyatta/sbin/openapp-archive.pl --backup "$4"

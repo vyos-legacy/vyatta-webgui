@@ -5,6 +5,9 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
 #include "common.hh"
 
 using namespace std;
@@ -36,6 +39,11 @@ const string WebGUI::CHUNKER_SOCKET = "/tmp/browser_pager";
 const unsigned long WebGUI::CHUNKER_MAX_WAIT_TIME = 2; //seconds
 const string WebGUI::CHUNKER_MSG_FORMAT = "<vyatta><chunker_command><token>%s</token><statement>%s</statement></chunker_command></vyatta>\0\0";
 const string WebGUI::CHUNKER_UPDATE_FORMAT = "<vyatta><chunker_command><token>%s</token><statement></statement></chunker_command></vyatta>\0\0";
+
+const string WebGUI::OPENAPP_GUI_USER = "installer";
+const string WebGUI::OPENAPP_GUI_GROUP = "vyattacfg";
+
+const string WebGUI::OA_GUI_ENV_AUTH_USER = "OA_AUTH_USER";
 
 char const* WebGUI::ErrorDesc[8] = {" ",
 				    "request cannot be parsed",
@@ -241,5 +249,27 @@ WebGUI::unionfs(void)
 	fs = "unionfs";
 
     return fs;
+}
+
+int
+WebGUI::get_gui_uid(uid_t &uid)
+{
+  struct passwd *p = getpwnam(OPENAPP_GUI_USER.c_str());
+  if (!p) {
+    return -1;
+  }
+  uid = p->pw_uid;
+  return 0;
+}
+
+int
+WebGUI::get_gui_gid(gid_t &gid)
+{
+  struct group *g = getgrnam(OPENAPP_GUI_GROUP.c_str());
+  if (!g) {
+    return -1;
+  }
+  gid = g->gr_gid;
+  return 0;
 }
 

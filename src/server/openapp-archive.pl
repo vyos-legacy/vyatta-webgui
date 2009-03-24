@@ -31,6 +31,13 @@ use File::Copy;
 use Getopt::Long;
 use OpenApp::VMMgmt;
 
+my $ARCHIVE_ROOT_DIR = "/tmp/backup";
+my $REST_BACKUP = "/notification/archive/backup";
+my $REST_RESTORE = "/notification/archive/restore";
+my $MAC_ADDR = "/sys/class/net/eth0/address";
+my $WEB_RESTORE_ROOT="/var/www/restore";
+
+
 my ($backup,$filename,$restore,$list,$delete);
 
 #
@@ -42,49 +49,65 @@ sub backup_archive {
     #the format is: vmkey:type,vmkey:type...
 
     #first let's process the list
-    my %hash_arr;
-    my $hash_arr;
+    my @coll;
+    my $coll;
     my $archive;
     my @archive = split(',',$backup);
+    my $i = 0;
     for $archive (@archive) {
 	my @bu = split(':',$archive);
-	$hash_arr->{$bu[0]} = $bu[1];
+	$coll[$i] = [ @bu ];
+#	print "$coll[0][1]\n";
+	$i = $i + 1;
     }
-
-    foreach my $vmkey (keys %hash_arr) {
-	my $vm = new OpenApp::VMMgmt($vmkey);
+    foreach $i (0..$#coll) {
+	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
 	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notifications/archive/backup/$hash_arr{$vmkey}";
+	    my $cmd = "http://$ip$REST_BACKUP/$coll[$i][1]";
 	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	    
 	}
     }
-
+    
 #what happens if a vm fails to backup???? how are we to identify this???
+    my @new_coll = @coll;
 
     #now that each are started, let's sequentially iterate through and retrieve
-    foreach my $vmkey (keys %hash_arr) {
-	my $vm = new OpenApp::VMMgmt($vmkey);
-	next if (!defined($vm));
-	my $ip = '';
-	$ip = $vm->getIP();
-	if (defined $ip && $ip ne '') {
-	    my $cmd = "/url/backup-file";
-	    #writes to specific location on disk
-	    my $bufile = "/backup/$vmkey/$hash_arr{$vmkey}";
-	    my $rc = `curl -X POST -q -I $cmd -O $bufile 2>&1`;
+    while ($#new_coll > -1) {
+	foreach $i (0..$#new_coll) {
+	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
+	    next if (!defined($vm));
+	    my $ip = '';
+	    $ip = $vm->getIP();
+	    if (defined $ip && $ip ne '') {
+		my $cmd = "http://$ip/archive/$new_coll[$i][1]";
+		#writes to specific location on disk
+		my $bufile = "$ARCHIVE_ROOT_DIR/$new_coll[$i][0]/$new_coll[$i][1]";
+		`rm -f $ARCHIVE_ROOT_DIR/$new_coll[$i][0] 2>/dev/null`;
+		`mkdir -p $ARCHIVE_ROOT_DIR/$new_coll[$i][0]`;
 
-	    #now encrypt command--NEED MAC ADDR OF ETH0
-	    my $mac = 'cat /opt/vyatta/config/active/interfaces/ethernet/eth0/hw-id/node.val';
-	    #probably need to eat the cr here
-	    $mac = chomp($mac);
-
-	    my $resp = 'openssl enc -aes-256-cbc -salt $mac -in /backup/$vmkey/$hash_arr{$vmkey} -out /backup/$vmkey/$hash_arr{$vmkey}.enc';
+		my $rc = `wget $cmd -O $bufile 2>&1`;
+#		print "$rc";
+		if ($rc =~ /200 OK/) {
+#		    print "SUCCESS\n";
+		    #now encrypt command--NEED MAC ADDR OF ETH0
+#		    my $mac = `cat /sys/class/net/eth0/address`;
+		    #probably need to eat the cr here
+#		    $mac = chomp($mac);
+		    
+		    my $resp = `openssl enc -aes-256-cbc -kfile $MAC_ADDR -in $ARCHIVE_ROOT_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $ARCHIVE_ROOT_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc`;
+#		    print "openssl enc -aes-256-cbc -salt $mac -in /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1] -out /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1].enc";
+#		    print "$resp\n";
+		    #remove from new_collection
+		    delete $new_coll[$i];
+		}
+	    }
 	}
+	sleep 1;
     }
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
@@ -103,7 +126,7 @@ sub backup_archive {
 #    my $filename = $date."_".$time."_".$datamodel;
 #
     if (!defined($filename) || $filename eq '') {
-	$filename = "/tmp/backup/".$date."_".$time."_".$datamodel;
+	$filename = $ARCHIVE_ROOT_DIR."/".$date."_".$time."_".$datamodel;
     }
 
     #now create metadata file
@@ -116,12 +139,12 @@ sub backup_archive {
     print FILE "<file>$filename</file>";                                                                             
     print FILE "<date>$date $time</date>";
     print FILE "<contents>";
-    foreach my $vmkey (keys %hash_arr) {
-	my $vm = new OpenApp::VMMgmt($vmkey);
+    foreach $i (0..$#coll) {
+	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
 	next if (!defined($vm));
 	print FILE "<entry>";
-	print FILE "<vm>$vmkey</vm>";
-	print FILE "<type>$hash_arr{$vmkey}</type>";
+	print FILE "<vm>$coll[$i][0]</vm>";
+	print FILE "<type>$coll[$i][1]</type>";
 	print FILE "</entry>";
     }    
     print FILE "</contents>";
@@ -129,7 +152,7 @@ sub backup_archive {
     close FILE;
 
     #finally tar up the proceedings...
-    `tar -C /tmp/backup/ -cf $filename.tar . 2>/dev/null`;
+    `tar -C $ARCHIVE_ROOT_DIR -cf $filename.tar . 2>/dev/null`;
 
     #needs to clean out old files or files past limit at this point....
 
@@ -142,31 +165,61 @@ sub restore_archive {
 
     #Need to send rest messages, but how will the vm get the bu file?
     #first let's process the list
-    my %hash_arr;
-    my $hash_arr;
+    #first let's process the list
+    my @coll;
+    my $coll;
     my $archive;
     my @archive = split(',',$restore);
+    my $i = 0;
     for $archive (@archive) {
 	my @bu = split(':',$archive);
-	$hash_arr->{$bu[0]} = $bu[1];
+	$coll[$i] = [ @bu ];
+#	print "$coll[0][1]\n";
+	$i = $i + 1;
     }
-
-    foreach my $vmkey (keys %hash_arr) {
-	my $vm = new OpenApp::VMMgmt($vmkey);
+    
+    #untar archive
+    `tar xf $ARCHIVE_ROOT_DIR/$restore $WEB_RESTORE_ROOT/.`;
+    
+    foreach $i (0..$#coll) {
+	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
 	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notifications/archive/restore/$hash_arr{$vmkey}";
+	    my $cmd = "http://$ip$REST_RESTORE/$coll[$i][1]";
 	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	    
 	}
     }
 
+    #now poll for completion
+#what happens if a vm fails to backup???? how are we to identify this???
+    my @new_coll = @coll;
+    #now that each are started, let's sequentially iterate through and retrieve
+    while ($#new_coll > -1) {
+	foreach $i (0..$#new_coll) {
+	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
+	    next if (!defined($vm));
+	    my $ip = '';
+	    $ip = $vm->getIP();
+	    if (defined $ip && $ip ne '') {
+		my $cmd = "http://$ip/archive/restore/status";
+		#writes to specific location on disk
+		my $rc = `curl -X POST -q -I $cmd 2>&1`;
+#		print "$rc";
+		if ($rc =~ /200 OK/) {
+#		    print "SUCCESS\n";
+		    #remove from new_collection
+		    delete $new_coll[$i];
+		}
+	    }
+	}
+	sleep 1;
+    }
 
-    #NEED MORE CLARIFICATION HERE
-
+    #now we are done and this is a success
 }
 
 #
@@ -195,7 +248,7 @@ sub list_archive {
     print "VERBATIM_OUTPUT\n";
 
     my $file;
-    my @files = </tmp/backup/*.tar>;
+    my @files = <$ARCHIVE_ROOT_DIR/*.tar>;
     foreach $file (@files) {
 	my @name = split('/',$file);
 	#just open up meta data file and squirt out contents...

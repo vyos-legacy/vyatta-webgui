@@ -1,4 +1,5 @@
-run: if /opt/vyatta/sbin/openapp-user.pl --delete "$4" --rights "$6"; then
+access:admin
+run: if sudo perl /opt/vyatta/sbin/openapp-user.pl --delete "$4" --rights "$6"; then
        return 0
      else
        return 1

@@ -156,6 +156,6 @@ function f_handleUserListDeleteUser(e, username)
 function f_userListDeleteUser(username)
 {
     g_utils.f_popupMessage('Do you really want to delete (' + username + ') user?',
-                'confirm', 'Delete user account',
+                'confirm', 'Delete user account', false,
                 "f_handleUserListDeleteUser(this, '"+ username + "')");
 }

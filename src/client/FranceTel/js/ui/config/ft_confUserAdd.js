@@ -145,7 +145,7 @@ function FT_confUserAdd (name, callback, busLayer)
 			error = error + '<ul style="padding-left:30px;">';
 			error = error + errorInner + '</ul>';
 			thisObj.f_enableClick(false);
-			g_utils.f_popupMessage(error, 'error', 'Error!','f_confUserAddError()');
+			g_utils.f_popupMessage(error, 'error', 'Error!',true,'f_confUserAddError()');
 		}
 		return valid;
 	}
@@ -233,7 +233,7 @@ function FT_confUserAdd (name, callback, busLayer)
 		//    2. Display error messsage from server if any.  
 		//    3. Take user to user list screen when no error.
 		if (eventObj.f_isError()) {
-		    g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error');			    
+		    g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error',true);			    
 		} else {
 			g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID);
 		}

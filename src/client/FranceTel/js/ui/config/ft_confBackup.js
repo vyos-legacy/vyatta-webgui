@@ -113,7 +113,7 @@ function FT_confBackup(name, callback, busLayer)
 			}	
 		}
 		       
-        g_utils.f_popupMessage('Please select at least one application to backup', 'error', 'Error!');		
+        g_utils.f_popupMessage('Please select at least one application to backup', 'error', 'Error!',true);		
 		
 		return false;
 	}
@@ -159,7 +159,7 @@ function FT_confBackup(name, callback, busLayer)
 //		}
 //		g_busObj.f_backup(vms, mode, guiCb);
 	
-        g_utils.f_popupMessage('Backup is in progress.  You will receive an email notification when the operation is finshed.', 'ok', 'Information');
+        g_utils.f_popupMessage('Backup is in progress.  You will receive an email notification when the operation is finshed.', 'ok', 'Information',true);
 	}
 	
 	this.f_backup = function()
@@ -179,7 +179,7 @@ function FT_confBackup(name, callback, busLayer)
 			max = 2;
 		} 
 		if (thisObj.f_overflow() > max) {
-            g_utils.f_popupMessage('There are ' + max + ' backups already stored on the Open Appliance.  Please delete the oldest and try again.', 'error', 'Error!');
+            g_utils.f_popupMessage('There are ' + max + ' backups already stored on the Open Appliance.  Please delete the oldest and try again.', 'error', 'Error!',true);
 			return;				    
 		}
 		thisObj.f_oaBackup();

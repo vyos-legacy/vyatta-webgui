@@ -70,28 +70,52 @@ var g_utils =
         body.className = 'ft_default_cursor';
     },
 
-    f_popupMessage: function(message, type, title, cb, ccb)
-    {
+    f_createPopupDiv : function(isModal)
+	{
         var div = document.createElement('div');
         div.setAttribute('id', 'ft_popup_div');
-
-        /////////////////////////////////////////
-        // set inner styling of the div tag
-        div.style.position = 'relative';
-        div.style.display = 'block';
-        div.style.backgroundColor = 'white';
-        div.style.top = '-265px';
-        div.style.height = '70px';
-        div.style.width = '300px';
+		div.style.width = '300px';		      
+		div.style.backgroundColor = 'white';	
+        div.style.display = 'block';		
         div.style.overflow = 'visible';
         div.style.font = 'normal 10pt arial';
         div.style.borderTop = '2px solid #CCC';
         div.style.borderLeft = '2px solid #CCC';
         div.style.borderBottom = '2px solid #000';
-        div.style.borderRight = '2px solid #000';
-        div.style.padding = '15px';
+        div.style.borderRight = '2px solid #000';	
+        div.style.padding = '15px';	
+								  
+		if (isModal==true) {
+		    div.style.margin = '100px auto';
+		    div.style.textAlign = 'center';			
+		} else {
+            div.style.position = 'relative';
+            div.style.top = '-265px';
+            div.style.height = '70px';
+		}		
+		
+		return div;
+	},
 
-        document.getElementById('ft_popup_message').appendChild(div);
+    f_popupMessage: function(message, type, title, isModal, cb, ccb)
+    {
+        var popDivId = 'ft_popup_message';
+
+        /////////////////////////////////////////
+        // set inner styling of the div tag
+        var div = this.f_createPopupDiv(isModal);
+			
+		if (isModal==true) {
+			popDivId = 'ft_modal_popup_message'; 		
+			var el = document.getElementById(popDivId);
+			el.style.visibility = "visible";	
+		}
+		document.getElementById(popDivId).appendChild(div);
+		
+		var cancelHandler = "f_utilsPopupCancel('" + popDivId + "')";
+		var applyHandler = "f_utilsPopupApply('" + popDivId + "')";
+		var timeoutHandler = "f_utilsPopupTimeout('" + popDivId + "')";
+		var okHandler = "f_utilsPopupOk('" + popDivId + "')";
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
 
@@ -105,8 +129,8 @@ var g_utils =
                     div.style.height = '100px';
                     message = '<b>' + title + '</b><br><br>' + message;
                 }
-                var cancelCb = ccb == undefined ? "f_utilsPopupCancel()" : "f_utilsPopupCancel();" + ccb;
-                cb = cb == undefined ? "f_utilsPopupApply()" : "f_utilsPopupApply();" + cb;
+                var cancelCb = ccb == undefined ? cancelHandler : cancelHandler + ";" + ccb;
+                cb = cb == undefined ? applyHandler : applyHandler + ";" + cb;
                 buttonsDiv = '<div align="center"><input id="ft_popup_message_apply" src="images/bt_apply.gif" ' +
                           'type="image" onclick="' + cb + '">&nbsp;&nbsp;' +
                           '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
@@ -127,7 +151,7 @@ var g_utils =
 
                 buttonsDiv = '<div align="center" style="padding-top:8px;">' +
                               '<input type="image" src="images/bt_ok.gif" ' +
-                              'onclick="f_utilsPopupTimeout()"></div>';
+                              'onclick="' + timeoutHandler + '"></div>';
                 innerHtml += '<tbody><tr height="73">' +
                         '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="350"><p ' +
@@ -135,7 +159,7 @@ var g_utils =
                         message + '</p></td>';
                 break;
             case 'ok':    // ok only
-                cb = cb == undefined ? "f_utilsPopupOk()" : "f_utilsPopupOk();" + cb;
+                cb = cb == undefined ? okHandler : okHandler + ";" + cb;
                 div.style.width = '350px';
                 if(title != undefined)
                 {
@@ -153,7 +177,7 @@ var g_utils =
                         message + '</p></td>';
                 break;
             case 'error':    // ok only
-                cb = cb == undefined ? "f_utilsPopupOk()" : "f_utilsPopupOk();" + cb;
+                cb = cb == undefined ? okHandler : okHandler + ";" + cb;
                 div.style.width = '350px';
                 if(title != undefined)
                 {
@@ -180,9 +204,12 @@ var g_utils =
         return div;
     },
 
-    f_hidePopupMessage: function()
+    f_hidePopupMessage: function(id)
     {
-        var div = document.getElementById('ft_popup_message');
+        var div = document.getElementById(id);
+		if (id=='ft_modal_popup_message') {
+			div.style.visibility = "hidden";
+		}
         var cDiv = document.getElementById('ft_popup_div');
         div.removeChild(cDiv);
     },
@@ -199,23 +226,23 @@ var g_utils =
     }
 };
 
-function f_utilsPopupTimeout()
+function f_utilsPopupTimeout(id)
 {
-    g_utils.f_hidePopupMessage();
+    g_utils.f_hidePopupMessage(id);
     g_busObj.f_userLogout();
 }
 
-function f_utilsPopupApply()
+function f_utilsPopupApply(id)
 {
-    g_utils.f_hidePopupMessage();
+    g_utils.f_hidePopupMessage(id);
 }
 
-function f_utilsPopupOk()
+function f_utilsPopupOk(id)
 {
-    g_utils.f_hidePopupMessage();
+    g_utils.f_hidePopupMessage(id);
 }
 
-function f_utilsPopupCancel()
+function f_utilsPopupCancel(id)
 {
-    g_utils.f_hidePopupMessage();
+    g_utils.f_hidePopupMessage(id);
 }

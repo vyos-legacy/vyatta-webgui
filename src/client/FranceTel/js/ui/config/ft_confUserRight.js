@@ -231,7 +231,7 @@ function f_userRightHandleApplyComfirm(e)
 function f_userRightHandleApply(e)
 {
     g_utils.f_popupMessage('Do you really want to commit the change?', 'confirm',
-                "Change User Right", 'f_userRightHandleApplyComfirm(this)');
+                "Change User Right", false, 'f_userRightHandleApplyComfirm(this)');
     
 }
 

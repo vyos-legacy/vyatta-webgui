@@ -79,7 +79,7 @@ function FT_confBLBcheck(name, callback, busLayer)
         var message = 'BLB association has completed successfully';
         var type = 'ok';
         var title = 'BLB Association';
-        g_utils.f_popupMessage(message, type, title, 'f_confBLBcheckApply()');
+        g_utils.f_popupMessage(message, type, title, true, 'f_confBLBcheckApply()');
     }
     
     this.f_handleClick = function(e)

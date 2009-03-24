@@ -170,7 +170,7 @@ function FT_confUserUpdate(name, callback, busLayer)
         if (eventObj.f_isError()) {
             thisObj.f_enableClick(true);
             thisObj.m_transaction.length = 0;
-            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error');
+            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error',true);
         } else if (thisObj.m_transaction.length > 0) {
             thisObj.f_processTransaction();
         } else {
@@ -184,7 +184,7 @@ function FT_confUserUpdate(name, callback, busLayer)
         var type = 'confirm';
         var title = 'Reset password confirmation';
         thisObj.f_enableClick(false);
-        g_utils.f_popupMessage(message, type, title, 'f_confUserUpdateApply(this)', 'f_confUserUpdateApply(this)');
+        g_utils.f_popupMessage(message, type, title, true,'f_confUserUpdateApply(this)', 'f_confUserUpdateApply(this)');
     }
     
     this.f_resetPasswdConfirmCb = function()
@@ -200,13 +200,13 @@ function FT_confUserUpdate(name, callback, busLayer)
     {
         if (eventObj.f_isError()) {
             thisObj.f_enableClick(false);
-            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error', 'f_confUserUpdateMakeModal()');
+            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error', true,'f_confUserUpdateMakeModal()');
         } else {
             var message = 'Password reset successfully';
             var type = 'ok';
             var title = 'Reset password completed'
             thisObj.f_enableClick(false);
-            g_utils.f_popupMessage(message, type, title, 'f_confUserUpdateMakeModal()');
+            g_utils.f_popupMessage(message, type, title, true,'f_confUserUpdateMakeModal()');
         }
     }
     
@@ -229,7 +229,7 @@ function FT_confUserUpdate(name, callback, busLayer)
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
             thisObj.f_enableClick(false);
-            g_utils.f_popupMessage(error, 'error', 'Error!', 'f_confUserUpdateMakeModal()');
+            g_utils.f_popupMessage(error, 'error', 'Error!',true, 'f_confUserUpdateMakeModal()');
         }
         return valid;
     }

@@ -142,7 +142,7 @@ function f_vmHandleDeployCancel(e, vmId)
 function f_vmDeployCancel(vmId, vmName)
 {
     g_utils.f_popupMessage('Do you really want to cancel (' + vmName + ') VM?',
-                'confirm', 'Cancel Update Schedule',
+                'confirm', 'Cancel Update Schedule',false,
                 "f_vmHandleDeployCancel(this, '"+ vmId + "')");
 }
 
@@ -165,7 +165,7 @@ function f_vmHandleDeployRestore(e, vmId)
 function f_vmDeployRestore(vmId, vmName)
 {
     g_utils.f_popupMessage('Do you really want to restore (' + vmName + ') VM?',
-                'confirm', 'Cancel Update Schedule',
+                'confirm', 'Cancel Update Schedule',false,
                 "f_vmHandleDeployRestore(this, '"+ vmId + "')");
 }
 

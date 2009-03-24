@@ -200,6 +200,6 @@ function f_handleDownloadRestore()
 function f_deleteRestoreFile(restoreContent)
 {
     g_utils.f_popupMessage('Do you really want to delete (' + restoreContent + ')?',
-                'confirm', 'Delete Restore File',
+                'confirm', 'Delete Restore File', false,
                 "f_handleDeleteRestoreFile(this, '"+ restoreContent + "')");
 }

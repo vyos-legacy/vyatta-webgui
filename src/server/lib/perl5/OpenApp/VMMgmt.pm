@@ -9,6 +9,7 @@ our $OPENAPP_VENDOR = 'Vyatta';
 our $OPENAPP_BFORMAT = '1';
 
 my $VMDIR = '/opt/vyatta/etc/gui/VM';
+my $LIBVIRT_DIR = '/opt/vyatta/etc/libvirt';
 my $STATUS_DIR = '/opt/vyatta/var/run/vmstatus';
 my $HWMON_FILE = '/opt/vyatta/var/run/vm-monitor.hw';
 
@@ -145,7 +146,7 @@ sub _setup {
 
 sub new {
   my ($that, $id) = @_;
-  if (!isValidId($id)) {
+  if (!_isValidId($id)) {
     return undef;
   }
   my $class = ref ($that) || $that;
@@ -187,6 +188,11 @@ sub getImgVer {
 sub getDisplayName {
   my ($self) = @_;
   return $self->{_vmDisplayName};
+}
+
+sub getLibvirtCfg {
+  my ($self) = @_;
+  return "$LIBVIRT_DIR/$self->{_vmId}.xml";
 }
 
 ### getters for VM status

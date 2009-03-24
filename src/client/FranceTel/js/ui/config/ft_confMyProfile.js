@@ -105,22 +105,22 @@ function FT_confMyProfile (name, callback, busLayer) {
         var cpw = thisObj.form.conf_myprofile_confirm_passwd.value.trim();
 		
 		if (opw.length <= 0) {
-            g_utils.f_popupMessage('Old password cannot be empty', 'error', 'Error!');					
+            g_utils.f_popupMessage('Old password cannot be empty', 'error', 'Error!', true);					
 			return false;			
 		}
 		
 		if (npw.length <= 0) {
-            g_utils.f_popupMessage('New password cannot be empty', 'error', 'Error!');					
+            g_utils.f_popupMessage('New password cannot be empty', 'error', 'Error!', true);					
 			return false;			
 		}		
 		
 		if (cpw.length <= 0) {
-            g_utils.f_popupMessage('Confirm password cannot be empty', 'error', 'Error!');					
+            g_utils.f_popupMessage('Confirm password cannot be empty', 'error', 'Error!',true);					
 			return false;			
 		}	
 				
 		if (npw != cpw) {
-            g_utils.f_popupMessage('New password does not match confirm password', 'error', 'Error!');					
+            g_utils.f_popupMessage('New password does not match confirm password', 'error', 'Error!',true);					
 			return false;
 		}		
 		return true;
@@ -132,12 +132,12 @@ function FT_confMyProfile (name, callback, busLayer) {
     this.f_resetPasswordCb = function(eventObj)
     {
         if (eventObj.f_isError()) {
-            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error');
+            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error',true);
         } else {
             var message = 'Password reset successfully';
             var type = 'ok';
             var title = 'Reset password completed'
-            g_utils.f_popupMessage(message, type, title);
+            g_utils.f_popupMessage(message, type, title,true);
         }
     }	
 	

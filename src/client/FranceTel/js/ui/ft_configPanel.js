@@ -129,7 +129,7 @@ function FT_configPanel()
             case VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID:
                 var mpCb = function(){
                 }
-                thisObj.m_selectObj = new FT_confRestoreUpdate('Update user', mpCb, g_busObj);
+                thisObj.m_selectObj = new FT_confRestoreUpdate('Restore', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init(obj);
                 return thisObj.m_selectObj.f_getConfigurationPage();				
 				

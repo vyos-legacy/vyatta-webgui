@@ -74,7 +74,7 @@ function FT_confTimeServer (name, callback, busLayer) {
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
-            g_utils.f_popupMessage(error, 'error', 'Error!');
+            g_utils.f_popupMessage(error, 'error', 'Error!',true);
 			return false;
         }
         return true;
@@ -82,7 +82,7 @@ function FT_confTimeServer (name, callback, busLayer) {
 	
     this.f_apply = function()
     {
-        g_utils.f_popupMessage('Time server configuration saved.', 'ok', 'Time server configuration');
+        g_utils.f_popupMessage('Time server configuration saved.', 'ok', 'Time server configuration',true);
     }
     
     this.f_reset = function()

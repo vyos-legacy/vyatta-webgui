@@ -245,7 +245,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
-            g_utils.f_popupMessage(error, 'error', 'Error!');
+            g_utils.f_popupMessage(error, 'error', 'Error!', true);
 			return false;
         }
 
@@ -306,7 +306,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
-            g_utils.f_popupMessage(error, 'error', 'Error!');
+            g_utils.f_popupMessage(error, 'error', 'Error!',true);
         }		
 	}
 	

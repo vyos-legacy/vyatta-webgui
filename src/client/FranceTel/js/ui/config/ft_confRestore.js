@@ -66,7 +66,7 @@ function FT_confRestore(name, callback, busLayer)
                 }
 
                 var vmData = [];
-                var bkRec = evt.m_value.m_backupRec;
+                var bkRec = evt.m_value;
                 if(bkRec == undefined) return;
 
                 if(thisObj.m_div != undefined)

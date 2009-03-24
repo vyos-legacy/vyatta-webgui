@@ -203,7 +203,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="images/bt_addUser.gif" name="addUser" ' +
+                    '<input type="image" src="' + g_lang.m_imageDir + 'bt_addUser.gif" name="addUser" ' +
                     'value="addUser" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -211,7 +211,7 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="images/bt_cancel.gif" name="cancel" ' +
+                    '<input type="image" src="' + g_lang.m_imageDir + 'bt_cancel.gif" name="cancel" ' +
                     'value="Cancel" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -219,7 +219,7 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="images/bt_apply.gif" name="apply" ' +
+                    '<input type="image" src="' + g_lang.m_imageDir + 'bt_apply.gif" name="apply" ' +
                     'value="apply" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -227,7 +227,7 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="images/bt_update.gif" name="apply" ' +
+                    '<input type="image" src="' + g_lang.m_imageDir + 'bt_update.gif" name="apply" ' +
                     'value="apply" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -235,7 +235,7 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="images/bt_backup.gif" name="apply" ' +
+                    '<input type="image" src="' + g_lang.m_imageDir + 'bt_backup.gif" name="apply" ' +
                     'value="apply" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -291,13 +291,13 @@ function FT_confBaseObj(name, callback, busLayer)
         {
             default:
                 return '<span title="Status is unknow" align="center">' +
-                        '<img src="images/statusUnknown.gif" </span>';
+                        '<img src="' + g_lang.m_imageDir + 'statusUnknown.gif" </span>';
             case 'down':
                 return '<span title="Status is down" align="center">' +
-                        '<img src="images/statusDown.gif" </span>';
+                        '<img src="' + g_lang.m_imageDir + 'statusDown.gif" </span>';
             case 'up':
                 return '<span title="Status is up" align="center">' +
-                        '<img src="images/statusUp.gif"/> </span>';
+                        '<img src="' + g_lang.m_imageDir + 'statusUp.gif"/> </span>';
         }
     }
 
@@ -351,35 +351,35 @@ function FT_confBaseObj(name, callback, busLayer)
         switch(text)
         {
             case 'Stop':
-                imgSrc = enable ? 'images/bt_stop.gif' : 'images/bt_stop.gif';
+                imgSrc = enable ? 'bt_stop.gif' : 'bt_stop.gif';
                 break;
             case 'Restart':
-                imgSrc = enable ? 'images/bt_restart.gif' : 'images/bt_restart.gif';
+                imgSrc = enable ? 'bt_restart.gif' : 'bt_restart.gif';
                 break;
             case 'Start':
-                imgSrc = enable ? 'images/bt_start.gif' : 'images/bt_start.gif';
+                imgSrc = enable ? 'bt_start.gif' : 'bt_start.gif';
                 break;
             case 'deleteUser':
             case 'delete':
-                imgSrc = 'images/ico_delete.gif';
+                imgSrc = 'ico_delete.gif';
                 break;
             case 'restore':   // ico image
-                imgSrc = 'images/ico_disquette.gif';
+                imgSrc = 'ico_disquette.gif';
                 break;
             case 'download':
-                imgSrc = 'images/ico_download.gif';
+                imgSrc = 'ico_download.gif';
                 break;
             case 'Cancel':
-                imgSrc = 'images/bt_cancel.gif';
+                imgSrc = 'bt_cancel.gif';
                 break;
             case 'Restore':   // button image
-                imgSrc = 'images/bt_restore.gif';
+                imgSrc = 'bt_restore.gif';
                 break;
         }
 
         var disabled = enable ? '' : 'disabled';
         return '<input type="image" title="' + tooltip + '" name="' +
-                        text + '" src="' + imgSrc + '" ' + disabled +
+                        text + '" src="' + g_lang.m_imageDir + imgSrc + '" ' + disabled +
                         ' onclick="' + cb + '">';
     }
 

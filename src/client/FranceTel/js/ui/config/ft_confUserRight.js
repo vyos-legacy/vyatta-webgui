@@ -73,7 +73,6 @@ function FT_confUserRight(name, callback, busLayer)
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
                 var ul = evt.m_value;
-                thisObj.m_origData = [];
                 thisObj.m_uiData = [];
 
                 if(ul != undefined && ul.m_userList != null)
@@ -83,8 +82,12 @@ function FT_confUserRight(name, callback, busLayer)
                     var vm = g_busObj.f_getVmRecObj();
 
                     // create table row
+                    var c=0;
                     for(var i=0; i<ul.length; i++)
                     {
+                        if(ul[i].m_role == 'admin' || ul[i] == 'installer')
+                            continue;
+
                         var fName = ul[i].m_last + ' ' + ul[i].m_first;
                         var un = ul[i].m_user;
                         var data = [fName];
@@ -107,11 +110,11 @@ function FT_confUserRight(name, callback, busLayer)
                                 data[1+dataIndex++] = right[0];
                             }
                         }
-                        
+
                         // uiData contains username, vmname and checkbox element id and
                         // 'yes'/'no' where yes is check
                         // etc. id (username+vmName), check/no check, username, vmname
-                        thisObj.m_uiData[i] = uiData;
+                        thisObj.m_uiData[c++] = uiData;
 
                         var bodyDiv = thisObj.f_createGridRow(hd, data);
                         thisObj.m_body.appendChild(bodyDiv);
@@ -231,8 +234,8 @@ function f_userRightHandleApplyComfirm(e)
 function f_userRightHandleApply(e)
 {
     g_utils.f_popupMessage('Do you really want to commit the change?', 'confirm',
-                "Change User Right", false, 'f_userRightHandleApplyComfirm(this)');
-    
+                "Change User Right", true, 'f_userRightHandleApplyComfirm(this)');
+
 }
 
 function f_userRightHandleCancel(e)

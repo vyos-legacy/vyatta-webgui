@@ -49,10 +49,11 @@ function createXMLHttpRequest()
 }
 
 /////////////////////////////////////////////////////////////////////////
-function FT_thread(busObj)
+function FT_thread(busObj, interval)
 {
     this.m_busObj = busObj;
     this.m_isRun = false;
+    this.m_interval = interval == undefined ? 8000/* 8 sec default*/ : interval;
 
     ////////////////////////////////////////////////////
     this.f_start = function(runFunction)
@@ -61,7 +62,7 @@ function FT_thread(busObj)
             this.f_stop();
 
         this.m_isRun = true;
-        var timerId = window.setInterval(runFunction, 8000 /* 8 sec */)
+        var timerId = window.setInterval(runFunction, this.m_interval);
 
         return timerId;
     }
@@ -373,7 +374,7 @@ function FT_businessLayer()
     this.f_startVMRequestThread = function(cb)
     {
         // create a new thread object
-        thisObj.m_reqThread = new FT_thread(thisObj);
+        thisObj.m_reqThread = new FT_thread(thisObj, 8000);
 
         var guiCb = cb;
         var callback = function()
@@ -474,7 +475,7 @@ function FT_businessLayer()
     this.f_startHWMonitorRequestThread = function(cb)
     {
         // create a new thread object
-        thisObj.m_reqThread = new FT_thread(thisObj);
+        thisObj.m_reqThread = new FT_thread(thisObj, 8000 /*8 sec*/);
 
         var guiCb = cb;
         var callback = function()

@@ -18,6 +18,37 @@ FT_extend = function(subClass, baseClass)
 
 var g_utils =
 {
+    m_clock_serverTime : null,
+    m_clock_isClockRan : false,
+    m_clock_secTime : null,
+    f_startClock: function(sDate)
+    {
+        this.m_clock_secTime = new Date().getTime();
+        if(sDate != undefined && sDate instanceof Date)
+             this.m_clock_secTime = sDate.getTime();
+
+        if(!this.m_clock_isClockRan)
+        {
+            // create a thread to run every one second
+            this.m_thread = new FT_thread(this, 1000);
+
+            var clockRuns = function()
+            {
+                this.m_clock_secTime += 1000;
+                this.m_clock_serverTime = new Date(
+                                this.m_clock_secTime).format('j-n-y g:i:s A');
+            }
+
+            // start the clock
+            this.m_thread.f_start(clockRuns);
+            this.m_clock_isClockRan = true; // makesure only 1 clock is running
+        }
+    },
+    f_getServerTime: function()
+    {
+        return this.m_clock_serverTime;
+    },
+
     f_findPercentage: function(total, free)
     {
         if(total == 0 && free == 0) return 0;
@@ -97,6 +128,11 @@ var g_utils =
 		return div;
 	},
 
+    f_popupMessage: function(message, type)
+    {
+        this.f_popupMessage(message, type, "", true, null, null);
+    },
+
     f_popupMessage: function(message, type, title, isModal, cb, ccb)
     {
         var popDivId = 'ft_popup_message';
@@ -145,9 +181,8 @@ var g_utils =
             case 'timeout':
                 div.style.width = '380px';
                 div.style.height = '100px';
-                message = '<b>Session Time Out</b><br><br>' +
-                      'For security reasons, your session is no longer active.' +
-                      '<br>Please re-login again.';
+                message = '<b>' + g_lang.m_puSessionTimeout + '</b><br><br>' +
+                      g_lang.m_puSessionTimeoutMsg;
 
                 buttonsDiv = '<div align="center" style="padding-top:8px;">' +
                               '<input type="image" src="images/bt_ok.gif" ' +

@@ -30,12 +30,12 @@ function FT_confDashboard(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn('Application', 180, 'text', '6');
-        cols[1] = this.f_createColumn('Status', 80, 'image', '35');
-        cols[2] = this.f_createColumn('CPU', 120, 'progress', '8');
-        cols[3] = this.f_createColumn('Memory', 120, 'progress', '8');
-        cols[4] = this.f_createColumn('Disk Space', 120, 'progress', '8');
-        cols[5] = this.f_createColumn('Update Needed', 130, 'checkbox', '55');
+        cols[0] = this.f_createColumn(g_lang.m_dbHdApplication, 180, 'text', '6');
+        cols[1] = this.f_createColumn(g_lang.m_dbHdStatus, 80, 'image', '35');
+        cols[2] = this.f_createColumn(g_lang.m_dbHdCPU, 120, 'progress', '8');
+        cols[3] = this.f_createColumn(g_lang.m_dbMemory, 120, 'progress', '8');
+        cols[4] = this.f_createColumn(g_lang.m_dbDiskSpace, 120, 'progress', '8');
+        cols[5] = this.f_createColumn(g_lang.m_dbUpdateNeeded, 130, 'checkbox', '55');
 
         return cols;
     }
@@ -109,7 +109,7 @@ function FT_confDashboard(name, callback, busLayer)
     this.f_handleCheckboxClick = function(chkbox)
     {
         var f = thisObj.m_updateFields;
-        
+
         // update the m_updateFields of user input. so next background
         // refresh will keep the user's input instead of overrided it.
         for(var i=0; i<f.length; i++)

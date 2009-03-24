@@ -112,7 +112,7 @@ function FT_confVMUpdates(name, callback, busLayer)
             return thisObj.f_renderButton('Cancel', true, cb,
                     'Cancel ' + vmName);
         }
-        else if(status == 'failed' || status == 'successed')
+        else if(status == 'failed' || status == 'succeeded')
         {
             cb = "f_vmDeployRestore('" + vmId + "', '" + vmName + "')";
             return thisObj.f_renderButton('Restore', true, cb, 'Restore ' + vmName);

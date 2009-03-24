@@ -21,7 +21,7 @@ sub _setup {
   open($ldap, '-|',
        "ldapsearch -x -b 'dc=localhost,dc=localdomain' 'uid=$uname'")
     or return;
-  my @rights = ();
+  my %rights = ();
   while (<$ldap>) {
     chomp;
     my @fields = split(/ /);
@@ -35,13 +35,13 @@ sub _setup {
     } elsif ($fields[0] eq 'cn:') {
       $self->{_ufirst} = $fields[1];
     } elsif ($fields[0] eq 'memberUid:') {
-      push @rights, $fields[1];
+      $rights{$fields[1]} = 1;
     } elsif ($fields[0] eq 'description:') {
       $self->{_urole} = $fields[1];
     }
   }
   close($ldap);
-  $self->{_urights} = \@rights;
+  $self->{_urights} = \%rights;
 }
 
 sub new {
@@ -79,6 +79,7 @@ sub getFirst {
 
 sub getRights {
   my ($self) = @_;
+  # this is a hashref
   return $self->{_urights};
 }
 

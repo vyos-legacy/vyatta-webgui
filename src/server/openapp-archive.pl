@@ -158,31 +158,61 @@ sub restore_archive {
 
     #Need to send rest messages, but how will the vm get the bu file?
     #first let's process the list
-    my %hash_arr;
-    my $hash_arr;
+    #first let's process the list
+    my @coll;
+    my $coll;
     my $archive;
     my @archive = split(',',$restore);
+    my $i = 0;
     for $archive (@archive) {
 	my @bu = split(':',$archive);
-	$hash_arr->{$bu[0]} = $bu[1];
+	$coll[$i] = [ @bu ];
+#	print "$coll[0][1]\n";
+	$i = $i + 1;
     }
-
-    foreach my $vmkey (keys %hash_arr) {
-	my $vm = new OpenApp::VMMgmt($vmkey);
+    
+    #untar archive
+    `tar xf /tmp/backup/$restore /var/www/restore/.`;
+    
+    foreach $i (0..$#coll) {
+	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
 	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notifications/archive/restore/$hash_arr{$vmkey}";
+	    my $cmd = "http://$ip/notifications/archive/restore/$coll[$i][1]";
 	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	    
 	}
     }
 
+    #now poll for completion
+#what happens if a vm fails to backup???? how are we to identify this???
+    my @new_coll = @coll;
+    #now that each are started, let's sequentially iterate through and retrieve
+    while ($#new_coll > -1) {
+	foreach $i (0..$#new_coll) {
+	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
+	    next if (!defined($vm));
+	    my $ip = '';
+	    $ip = $vm->getIP();
+	    if (defined $ip && $ip ne '') {
+		my $cmd = "http://$ip/archive/restore/status";
+		#writes to specific location on disk
+		my $rc = `curl -X POST -q -I $cmd 2>&1`;
+#		print "$rc";
+		if ($rc =~ /200 OK/) {
+#		    print "SUCCESS\n";
+		    #remove from new_collection
+		    delete $new_coll[$i];
+		}
+	    }
+	}
+	sleep 1;
+    }
 
-    #NEED MORE CLARIFICATION HERE
-
+    #now we are done and this is a success
 }
 
 #

@@ -216,6 +216,7 @@ Command::validate_op_cmd(const string &username, WebGUI::AccessLevel user_access
   //let's open this and parse out the access level
   path += "/node.def";
   FILE *fp = fopen(path.c_str(),"r");
+  cmd_access_level = WebGUI::ACCESS_INSTALLER;
   if (fp) {
     char buf[1025];
     //read value in here....
@@ -223,18 +224,19 @@ Command::validate_op_cmd(const string &username, WebGUI::AccessLevel user_access
       string tmp = string(buf);
       if (tmp.find("access:installer") != string::npos) {
 	cmd_access_level = WebGUI::ACCESS_INSTALLER;
+	break;
       }
       else if (tmp.find("access:admin") != string::npos) {
 	cmd_access_level = WebGUI::ACCESS_ADMIN;
+	break;
       }
       else if (tmp.find("access:user") != string::npos) {
 	cmd_access_level = WebGUI::ACCESS_USER;
+	break;
       }
     }
     fclose(fp);
-    cmd_access_level = WebGUI::ACCESS_INSTALLER;  //allow user access if no permission stated
   }
-  cmd_access_level = WebGUI::ACCESS_INSTALLER;
 
   //finally a special restriction on user modification given access level
   if (user_access_level == WebGUI::ACCESS_USER) {

@@ -64,8 +64,6 @@ sub backup_archive {
 	}
     }
 
-#	$vm->do_list();
-
 #what happens if a vm fails to backup???? how are we to identify this???
 
     #now that each are started, let's sequentially iterate through and retrieve

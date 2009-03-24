@@ -48,7 +48,7 @@ sub backup_archive {
     my @archive = split(',',$backup);
     for $archive (@archive) {
 	my @bu = split(':',$archive);
-	$hash_arr->{$bu[0]} = $bu[1];
+	$hash_arr{$bu[0]} = $bu[1];
     }
 
     foreach my $vmkey (keys %hash_arr) {

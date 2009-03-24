@@ -73,112 +73,40 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
     return;
   }
 
-
-  //need to set up environment variables
-  string command = "export VYATTA_ACTIVE_CONFIGURATION_DIR="+WebGUI::ACTIVE_CONFIG_DIR+"; \
-export VYATTA_CONFIG_TMP=/opt/vyatta/config/tmp/tmp_" + _proc->get_msg().id() + "; \
-export VYATTA_TEMPLATE_LEVEL=/; \
-export VYATTA_MOD_NAME=.modified; \
-export vyatta_datadir=/opt/vyatta/share; \
-export vyatta_sysconfdir=/opt/vyatta/etc; \
-export vyatta_sharedstatedir=/opt/vyatta/com; \
-export VYATTA_TAG_NAME=node.tag; \
-export vyatta_sbindir=/opt/vyatta/sbin; \
-export VYATTA_CHANGES_ONLY_DIR="+WebGUI::LOCAL_CHANGES_ONLY + _proc->get_msg().id() + "; \
-export vyatta_cfg_templates="+WebGUI::CFG_TEMPLATE_DIR+"; \
-export VYATTA_CFG_GROUP_NAME=vyattacfg; \
-export vyatta_bindir=/opt/vyatta/bin; \
-export vyatta_libdir=/opt/vyatta/lib; \
-export VYATTA_EDIT_LEVEL=/; \
-export VYATTA_CONFIG_TEMPLATE="+WebGUI::CFG_TEMPLATE_DIR+"; \
-export vyatta_libexecdir=/opt/vyatta/libexec; \
-export vyatta_localstatedir=/opt/vyatta/var; \
-export vyatta_prefix=/opt/vyatta; \
-export vyatta_datarootdir=/opt/vyatta/share; \
-export vyatta_configdir=/opt/vyatta/config; \
-export vyatta_infodir=/opt/vyatta/share/info; \
-export VYATTA_TEMP_CONFIG_DIR="+WebGUI::LOCAL_CONFIG_DIR+_proc->get_msg().id()+"; \
-export UNIONFS="+WebGUI::unionfs()+";					\
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; \
-export vyatta_localedir=/opt/vyatta/share/locale";
-
-  string tmp = cmd;
-
-  //as a security precaution, lop off everything past the ";"
-  size_t pos = tmp.find(";");
-  if (pos != string::npos) {
-    tmp = tmp.substr(0,pos);
-  }
-
-  //now enforce role restrictions: opmode commands that contain an "admin" tag will be restricted to admin users only!
-  //first parse the command file, then find tag, use role level and compare
-  
-  
-
-
-  if (strncmp(tmp.c_str(),"set",3) == 0 || strncmp(tmp.c_str(),"delete",6) == 0 || strncmp(tmp.c_str(),"commit",6) == 0) {
-    tmp = "/opt/vyatta/sbin/my_" + cmd;
-  }
-  else if (strncmp(tmp.c_str(),"load",4) == 0) {
-    tmp = "/opt/vyatta/sbin/vyatta-load-config.pl";
-  }
-  else if (strncmp(tmp.c_str(),"save",4) == 0) {
-    tmp = "/opt/vyatta/sbin/vyatta-save-config.pl";
-  }
-  else if (strncmp(tmp.c_str(),"discard",7) == 0) {
-    string tmp = _proc->get_msg().id();
-    WebGUI::discard_session(tmp);
-    resp = "";
-    err = WebGUI::SUCCESS;
-    return;
-  }
-  else {
-    //treat this as an op mode command
-    if (user_access_level >= validate_op_cmd(username,user_access_level,cmd)) {
-      //capture the backup command and direct to the chunker
-      if (multi_part_op_cmd(cmd)) {
-        //success                                                                                                                                     
-        return;
-      }
- 
-      cmd = WebGUI::mass_replace(cmd,"'","'\\''");
-
-      string opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c '"
-                         + cmd + " 2>&1'";
-      string stdout;
-      bool verbatim = false;
-
-      if (WebGUI::execute(opmodecmd,stdout,verbatim,true) == 0) {
-	err = WebGUI::SUCCESS;
-      }
-      else {
-	err = WebGUI::COMMAND_ERROR;
-      }
-
-      if (!verbatim) {
-        stdout = WebGUI::mass_replace(stdout, "&", "&amp;");
-        stdout = WebGUI::mass_replace(stdout, "\"", "&quot;");
-        stdout = WebGUI::mass_replace(stdout, "'", "&apos;");
- 	stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
-	stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
-      }
-      resp = stdout;
+  //now enforce role restrictions using the "access:" attribute in templates.
+  //first parse the template file, then find tag, use role level and compare.
+  if (user_access_level >= validate_op_cmd(username,user_access_level,cmd)) {
+    //capture the backup command and direct to the chunker
+    if (multi_part_op_cmd(cmd)) {
+      //success
+      return;
     }
-    else {
+
+    cmd = WebGUI::mass_replace(cmd,"'","'\\''");
+
+    string opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c 'export "
+      + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username.c_str() + "; "
+      + cmd + " 2>&1'";
+    string stdout;
+    bool verbatim = false;
+
+    if (WebGUI::execute(opmodecmd,stdout,verbatim,true) == 0) {
+      err = WebGUI::SUCCESS;
+    } else {
       err = WebGUI::COMMAND_ERROR;
     }
-    return;
-  }
 
-  command += ";" + tmp;
-
-  string stdout;
-  bool dummy;
-  WebGUI::execute(command,stdout,dummy,true);
-  if (stdout.empty() == true) {
-    err = WebGUI::SUCCESS;
+    if (!verbatim) {
+      stdout = WebGUI::mass_replace(stdout, "&", "&amp;");
+      stdout = WebGUI::mass_replace(stdout, "\"", "&quot;");
+      stdout = WebGUI::mass_replace(stdout, "'", "&apos;");
+      stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
+      stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
+    }
+    resp = stdout;
+  } else {
+    err = WebGUI::COMMAND_ERROR;
   }
-  resp = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
 }
 
 

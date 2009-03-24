@@ -33,6 +33,8 @@ public:
 
   const static std::string OPENAPP_GUI_USER;
   const static std::string OPENAPP_GUI_GROUP;
+  
+  const static std::string OA_GUI_ENV_AUTH_USER;
 
   enum Error {SUCCESS = 0,
 	      MALFORMED_REQUEST,

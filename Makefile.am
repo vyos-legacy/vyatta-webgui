@@ -91,6 +91,7 @@ install-exec-hook:
 		); \
 		rm -f /tmp/ext-$$v.zip; \
 	done
+	cp -r webroot/. $(DESTDIR)$(wwwdir)
 	@cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
 	@mkdir -p $(DESTDIR)$(cfgdir); \
 	cd templates-cfg; $(cpiop) $(DESTDIR)$(cfgdir)

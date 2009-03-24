@@ -401,37 +401,27 @@ function FT_businessLayer()
     ///////////////////////////////////////////////////////////////////////////
     // VM start/stop/restart session start here.....
     /**
-     * stop VM request
+     * stop specific VM request
+     * @param vmId - vm id
+     * @param guiCb - gui callback function
      */
-    this.f_stopVM = function(vmName, guiCb)
+    this.f_stopVM = function(vmId, guiCb)
     {
-        var sid = g_utils.f_getUserLoginedID();
-        var content = "<command><id>" + sid + "</id>" +
-                    "<statement>vm stop '" + vmName + "'</statement></command>";
-
-        return this.f_sendRequest(content, guiCb);
+        thisObj.m_vm.setVmStartStopRequest(vmId, 'stop', guiCb);
     }
     /**
      * start VM request
      */
-    this.f_startVM = function(vmName, guiCb)
+    this.f_startVM = function(vmId, guiCb)
     {
-          var sid = g_utils.f_getUserLoginedID();
-        var content = "<command><id>" + sid + "</id>" +
-                    "<statement>vm start '" + vmName + "'</statement></command>";
-
-        return this.f_sendRequest(content, guiCb);
+          thisObj.m_vm.setVmStartStopRequest(vmId, 'start', guiCb);
     }
     /**
      * restart VM request
      */
-    this.f_restartVM = function(vmName, guiCb)
+    this.f_restartVM = function(vmId, guiCb)
     {
-          var sid = g_utils.f_getUserLoginedID();
-        var content = "<command><id>" + sid + "</id>" +
-                    "<statement>vm restart '" + vmName + "'</statement></command>";
-
-        return this.f_sendRequest(content, guiCb);
+        thisObj.m_vm.setVmStartStopRequest(vmId, 'restart', guiCb);
     }
 
     ///////////////////////////////////////////////////////////////////////////

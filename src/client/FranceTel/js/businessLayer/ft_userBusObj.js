@@ -93,7 +93,7 @@ function FT_userBusObj(busObj)
                 if(thisObj.m_lastCmdSent.indexOf('<auth>') >= 0)
                 {
                     g_utils.f_saveUserLoginId(thisObj.m_sid);
-                    thisObj.f_getUserRoleFromServer(thisObj.m_guiCb);
+                    thisObj.f_getUserFromServer(thisObj.m_loginUser.m_user, thisObj.m_guiCb);
                 }
                 else
                 {
@@ -253,9 +253,11 @@ function FT_userBusObj(busObj)
     }
 
     /**
-     * set user record to server.
+     * add userRec to server
      * To set username, last, first, pw to server. Use userObj.m_type to
      * specify the operation to be exceuted.
+     * @param userRec - user record to be add to server
+     * @param guiCb - gui callback function
      */
     this.f_setUser = function(userRec, guiCb)
     {
@@ -387,15 +389,19 @@ function FT_userBusObj(busObj)
 
     /**
      * get a user profile by username.
-     * @param user - a username of profile to be returned. if user == null,
+     * @param userName - a username of profile to be returned. if user == null,
      *                entire list of user profile return.
-     * @param guiCb -
+     * @param guiCb - gui callback function
      */
-    this.f_getUsers = function(user, guiCb)
+    this.f_getUserFromServer = function(userName, guiCb)
     {
-        thisObj.m_guiCb = guiCb;
-        var uRec = new FT_userRecObj(null, null, null, null, null, 'list');
-        thisObj.f_setUser(uRec);
+        this.m_guiCb = guiCb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+                      "open-app user list '" + userName + "'</statement></command>";
+
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
     }
 
     /**

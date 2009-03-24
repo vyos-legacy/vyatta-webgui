@@ -351,13 +351,13 @@ function FT_confBaseObj(name, callback, busLayer)
         switch(text)
         {
             case 'Stop':
-                imgSrc = enable ? 'bt_stop.gif' : 'bt_stop.gif';
+                imgSrc = enable ? 'bt_stop.gif' : 'bt_stop2.gif';
                 break;
             case 'Restart':
-                imgSrc = enable ? 'bt_restart.gif' : 'bt_restart.gif';
+                imgSrc = enable ? 'bt_restart.gif' : 'bt_restart2.gif';
                 break;
             case 'Start':
-                imgSrc = enable ? 'bt_start.gif' : 'bt_start.gif';
+                imgSrc = enable ? 'bt_start.gif' : 'bt_start2.gif';
                 break;
             case 'deleteUser':
             case 'delete':

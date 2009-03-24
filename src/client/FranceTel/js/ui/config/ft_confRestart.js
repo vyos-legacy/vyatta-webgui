@@ -156,15 +156,30 @@ FT_extend(FT_confRestart, FT_confBaseObj);
 
 function f_vmHandleStop(vm)
 {
-    g_busObj.f_stopVM(vm);
+    var cb = function()
+    {
+        g_configPanelObj.m_activeObj.f_loadVMData();
+    }
+
+    g_busObj.f_stopVM(vm, cb);
 }
 
 function f_vmHandleRestart(vm)
 {
-    g_busObj.f_restart(vm);
+    var cb = function()
+    {
+        g_configPanelObj.m_activeObj.f_loadVMData();
+    }
+
+    g_busObj.f_restartVM(vm, cb);
 }
 
 function f_vmHandleStart(vm)
 {
-    g_busObj.f_start(vm);
+    var cb = function()
+    {
+        g_configPanelObj.m_activeObj.f_loadVMData();
+    }
+
+    g_busObj.f_startVM(vm, cb);
 }

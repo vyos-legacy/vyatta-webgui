@@ -389,20 +389,22 @@ function FT_vmBusObj(busObj)
         return thisObj.m_vmRecObj.length;
     }
 
-    this.setVmStartStopRequest = function(vm, type /* start, stop, restart */)
+    this.setVmStartStopRequest = function(vmId, type /* start, stop, restart */, cb)
     {
-        var sid = f_getUserLoginedID();
+        thisObj.m_guiCb = cb;
+        var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>\n" +
-                      "<statement>vm " + type + " '" + vm + "'</statement>\n"
+                      "<statement>open-app vm " + type + " '" + vmId + "'</statement>\n"
                       + "</command>";
 
-        thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_CmdResRequestCallback);
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                            thisObj.f_respondRequestCallback);
     }
 
 	this.f_upgradeVm = function(vm, ver, time /*time is in 'hh:mm dd.mm.yy*/, guiCb)
 	{
 		thisObj.m_guiCb = guiCb;
-		var sid = g_utils.f_getUserLoginedID();;
+		var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>\n" +
                       "<statement>open-app vm deploy schedule '" + vm + "' version '" + ver +
 					  "' time '" + time + "'" + "</statement>\n"

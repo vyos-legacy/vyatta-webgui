@@ -4,6 +4,16 @@ use strict;
 use Getopt::Long;
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::VMMgmt;
+use OpenApp::LdapUser;
+
+# authenticated user
+my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
+my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
+my $auth_user_role = $auth_user->getRole();
+if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
+  # not authorized
+  exit 1;
+}
 
 # take care of forked processes
 $SIG{CHLD} = 'IGNORE';

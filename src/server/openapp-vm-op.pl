@@ -79,6 +79,8 @@ sub shutdownVm {
   system("sudo virsh -c xen:/// destroy $vm");
 }
 
+# TODO: make sure start/stop/restart are disallowed during upgrade/restore
+
 if ($action eq 'start') {
   system("sudo virsh -c xen:/// create $lv_cfg");
   # this always returns -1

@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+
+use strict;
+use Getopt::Long;
+use lib '/opt/vyatta/share/perl5';
+use OpenApp::VMMgmt;
+use OpenApp::VMDeploy;
+
+my ($action, $vmid, $vver) = (undef, undef, undef);
+GetOptions(
+  'action=s' => \$action,
+  'vm=s' => \$vmid,
+  'ver=s' => \$vver
+);
+if (!defined($action) || !defined($vmid) || !defined($vver)) {
+  print "Must specify action, VM ID, and version\n";
+  exit 1;
+}
+my $vmObj = new OpenApp::VMMgmt($vmid);
+if (!defined($vmObj)) {
+  print "Invalid VM ID '$vmid'\n";
+  exit 1;
+}
+
+# OA dom0
+if ($vmid eq $OpenApp::VMMgmt::OPENAPP_ID) {
+  # no dom0 update for now
+  exit 0;
+}
+
+my $vmDeploy = new OpenApp::VMDeploy($vmid);
+if ($action eq 'upgrade') {
+  $vmDeploy->upgrade($vver);
+  exit 0;
+} elsif ($action eq 'restore') {
+  $vmDeploy->restore($vver);
+  exit 0;
+}
+
+exit 0;
+

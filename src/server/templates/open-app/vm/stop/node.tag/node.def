@@ -1,0 +1,6 @@
+help: ID of VM to stop
+run: if /opt/vyatta/sbin/openapp-vm-op.pl --action=stop --vm="$4"; then
+       return 0
+     else
+       return 1
+     fi

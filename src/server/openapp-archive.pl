@@ -43,7 +43,7 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
 
 ##########################################################################
 # Directory layout is as follows:
-# /tmp/archive                               #root directory
+# /var/archive                               #root directory
 #             /installer                     #installer root and install bu/res
 #                       /tmp/backup          #install bu workspace
 #                       /tmp/restore         #install res workspace
@@ -53,7 +53,7 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
 #
 #
 ##########################################################################
-my $ARCHIVE_ROOT_DIR = "/tmp/archive$auth_user_role";
+my $ARCHIVE_ROOT_DIR = "/var/archive$auth_user_role";
 my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
 my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
 
@@ -68,10 +68,13 @@ my $WEB_RESTORE_ROOT="/var/www/restore";
 
 my ($backup,$filename,$restore,$restore_status,$list,$delete);
 
+##########################################################################
 #
 # Run through the list of VM's and
 # sequentially perform backup
 #
+#
+##########################################################################
 sub backup_archive {
     ##########################################################################
     #
@@ -173,7 +176,7 @@ sub backup_archive {
 
     my $metafile = $BACKUP_WORKSPACE_DIR."/".$date."_".$time."_".$datamodel;
     if (!defined($filename) || $filename eq '') {
-	$filename = $ARCHIVE_ROOT_DIR."/".$date."_".$time."_".$datamodel;
+	$filename = $date."_".$time."_".$datamodel;
     }
 
     #now create metadata file
@@ -203,7 +206,7 @@ sub backup_archive {
     # Now suck up everything in the directory and tar up. Done.
     #
     ##########################################################################
-    `tar -C $BACKUP_WORKSPACE_DIR -cf $filename.tar . 2>/dev/null`;
+    `tar -C $BACKUP_WORKSPACE_DIR -cf $ARCHIVE_ROOT_DIR/$filename.tar . 2>/dev/null`;
 }
 
 ##########################################################################
@@ -217,8 +220,9 @@ sub restore_archive {
     # clear out web restore directory and untar into web restore root 
     #
     ##########################################################################
-    `rm -fr $WEB_RESTORE_ROOT/.`;
-    `tar xf $ARCHIVE_ROOT_DIR/$restore $WEB_RESTORE_ROOT/.`;
+    `rm -fr $WEB_RESTORE_ROOT/`;
+    `mkdir -p $WEB_RESTORE_ROOT/`;
+    `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $WEB_RESTORE_ROOT/.`;
 
     #need to read from the directory in the following manner: jvm/data,jvm/conf,mike/data etc.
     #iterate on $WEB_RESTORE_ROOT/.
@@ -236,7 +240,7 @@ sub restore_archive {
     opendir ( DIR, $WEB_RESTORE_ROOT ) || die "Error in opening dir $WEB_RESTORE_ROOT\n";
     while( ($filename = readdir(DIR))){
 	if (lstat("$WEB_RESTORE_ROOT/$filename/data")) {
-	    $coll[$i] = {$filename,"data"};
+	    $coll[$i] = [ $filename,"data" ];
 	    $i = $i + 1;
 	}
 	if (lstat("$WEB_RESTORE_ROOT/$filename/conf")) {
@@ -275,6 +279,7 @@ sub restore_archive {
     my @new_coll = @coll;
     my $coll_ct = $#new_coll;
     my $progress_ct = 0;
+    `echo '0' > $RESTORE_WORKSPACE_DIR/status`;
     #now that each are started, let's sequentially iterate through and retrieve
     while ($#new_coll > -1) {
 	foreach $i (0..$#new_coll) {
@@ -286,7 +291,6 @@ sub restore_archive {
 		my $cmd = "http://$ip/archive/restore/status";
 		#writes to specific location on disk
 		my $rc = `curl -X POST -q -I $cmd 2>&1`;
-#		print "$rc";
 		if ($rc =~ /200 OK/) {
 #		    print "SUCCESS\n";
 		    #remove from new_collection
@@ -307,6 +311,9 @@ sub restore_archive {
     #now we are done and this is a success
 }
 
+##########################################################################
+#
+#
 #
 # Generates xml listing...
 #
@@ -324,7 +331,8 @@ sub restore_archive {
 # </archive>
 #
 #
-
+#
+##########################################################################
 sub list_archive {
     #get a directory listing of /backup/.
     print "VERBATIM_OUTPUT\n";
@@ -342,23 +350,33 @@ sub list_archive {
     #done
 }
 
+##########################################################################
 #
 # delete archive...
 #
+##########################################################################
 sub delete_archive {
-    my $file = "$ARCHIVE_ROOT_DIR/$delete";
+    my $file = "$ARCHIVE_ROOT_DIR/$delete.tar";
     unlink($file);
 }
 
+##########################################################################
 #
 # status of restore
 #
+##########################################################################
 sub restore_status {
-    `cat $RESTORE_WORKSPACE_DIR/status`;
+    my $out = `cat $RESTORE_WORKSPACE_DIR/status`;
+    print $out;
 }
 
 
-####main
+
+##########################################################################
+#
+# start of main
+#
+##########################################################################
 sub usage() {
     print "Usage: $0 --backup=<backup>\n";
     print "       $0 --name=<optional filename>\n";

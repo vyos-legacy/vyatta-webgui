@@ -41,13 +41,18 @@ function FT_confUserList(name, callback, busLayer)
         return cols;
     }
 
+    this.f_hideButtons = function()
+	{
+		thisObj.m_buttons.style.display = 'none';
+	}
+
     this.f_clearViewRow = function()
     {
         thisObj.f_removeDivChildren(thisObj.m_div);
         thisObj.f_removeDivChildren(thisObj.m_body);
         thisObj.m_div.appendChild(thisObj.m_header);
         thisObj.m_div.appendChild(thisObj.m_body);
-        thisObj.m_div.appendChild(thisObj.m_buttons);
+        thisObj.m_div.appendChild(thisObj.m_buttons);		
     }
 
     this.f_loadVMData = function()
@@ -118,7 +123,11 @@ function FT_confUserList(name, callback, busLayer)
 
         var btns = [['AddUser', 'f_userListAddUserCallback()', 'Create new user account']];
         this.m_buttons = this.f_createButtons(btns);
-
+       
+        if (g_roleManagerObj.f_isInstaller()) {
+			thisObj.f_hideButtons();
+		}	   
+	   
         return [this.m_header, this.m_body, this.m_buttons];
     }
 }

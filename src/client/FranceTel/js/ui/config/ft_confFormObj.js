@@ -213,6 +213,8 @@ function FT_confFormObj(name, callback, busLayer) {
 					case 'backup':
 					    imgSrc = 'images/bt_backup.gif';
 						break;
+					case 'restore':
+					    imgSrc = 'images/bt_restore.gif';
 					default: 
 					    break;
 				}

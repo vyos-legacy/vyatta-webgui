@@ -26,7 +26,7 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
     this.f_init = function(vmUpdate)
     {
 		thisObj.m_vm = g_busObj.f_getVmRecByVmId(vmUpdate);
-		thisObj.m_deployVm = g_busObj.f_getVmDeployRecByVmId(vmUpdate);
+		thisObj.m_deployVm = g_busObj.f_getVMDeployRecObjByVMId(vmUpdate);
 		
         this.f_setConfig( {
 			id : 'conf_restore_update',
@@ -67,7 +67,7 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 			}],				
 			buttons: [ {
 				id: 'conf_restore_update_update_button',
-				text: 'Update',
+				text: 'Restore',
 				onclick: this.f_handleClick
 			}, {
 				id: 'conf_restore_update_cancel_button',
@@ -88,9 +88,9 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 		thisObj.form = document.getElementById('conf_restore_update_form');
         thisObj.f_setData('conf_restore_update_vm_label', thisObj.m_vm.m_displayName);
         thisObj.f_setData('conf_restore_update_cver_value', thisObj.m_deployVm.m_version);
-		thisObj.f_setData('conf_restore_update_pver_value', thisObj.m_deployVm.m_prevVer);
+		thisObj.f_setData('conf_restore_update_pver_value', thisObj.m_deployVm.m_prevVersion);
     }
-    
+
     this.f_stopLoadVMData = function()
     {
     }
@@ -106,7 +106,7 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 	
 	this.f_restoreVm = function() 
 	{
-		g_busObj.f_upgradeVm(thisObj.m_vm.m_name, thisObj.m_deployVm.m_prevVer, 'now', thisObj.f_restoreVmCb);
+		g_busObj.f_upgradeVm(thisObj.m_vm.m_name, thisObj.m_deployVm.m_prevVersion, 'now', thisObj.f_restoreVmCb);
 	}
 	
     this.f_handleClick = function(e)

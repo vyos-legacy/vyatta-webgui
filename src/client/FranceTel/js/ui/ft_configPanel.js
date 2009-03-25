@@ -174,6 +174,7 @@ function FT_configPanel()
                 return thisObj.m_selectObj.f_getConfigurationPage();
                 
             case VYA.FT_CONST.DOM_3_NAV_SUB_NETWORK_ID:
+			    break;
             case VYA.FT_CONST.DOM_3_NAV_SUB_BACKUP_ID:
                 var dbcb = function(){
 

@@ -266,8 +266,8 @@ function FT_confBackup(name, callback, busLayer)
 	{
 		var div = document.createElement('div');
 		div.style.display = 'block';
-		div.style.marginTop = '30px';
-		div.style.marginBottom = '20px';
+		div.style.marginTop = '15px';
+		div.style.marginBottom = '15px';
 		div.style.backgroundColor = 'white';
 		div.style.height = '50px';
 		

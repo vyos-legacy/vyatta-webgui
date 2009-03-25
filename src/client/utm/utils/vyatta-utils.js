@@ -111,7 +111,7 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
       var conn = new Ext.data.Connection({});
       conn.request(
       {
-          url: urlPost,       //'/Vyatta/cgi-bin/webgui-wrap',
+          url: urlPost,       //'/utm/cgi-bin/webgui-wrap',
           method: 'POST',
           xmlData: xmlstr,
           callback: f_authCb

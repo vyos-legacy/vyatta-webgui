@@ -7,7 +7,7 @@ var g_cookie =
 {
     m_userNameExpire: (5* 60*60*1000),
     m_helpExpire: (5 * 60 * 60 * 1000),
-    m_namePrefix: 'Vyatta_',
+    m_namePrefix: 'utm_',
 
     /**
      * pName - the naem for the cookie to be set

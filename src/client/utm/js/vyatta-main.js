@@ -44,7 +44,7 @@ function f_startLogin()
   var passField = f_createLoginPasswordField();
   userField.setValue('dummy');
   passField.setValue('dummy');
-  f_loginHandler('main.html', '/Vyatta/cgi-bin/webgui-wrap',
+  f_loginHandler('main.html', '/utm/cgi-bin/webgui-wrap',
                  userField, passField);
 }
 
@@ -393,7 +393,7 @@ function f_autoLogin()
     userField.setValue(u.className);
     passField.setValue(u.className);
 
-    f_loginHandler('main.html', '/Vyatta/cgi-bin/webgui-wrap', userField, passField);
+    f_loginHandler('main.html', '/utm/cgi-bin/webgui-wrap', userField, passField);
 }
 /*******************************************************************************
  * Start of onReady function

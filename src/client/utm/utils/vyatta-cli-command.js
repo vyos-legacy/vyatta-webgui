@@ -44,7 +44,7 @@ function f_sendSpecialCliCommand(cmd, segmentId, cb)
     var conn = new Ext.data.Connection({});
     conn.request(
     {
-        url: '/Vyatta/cgi-bin/webgui-wrap',
+        url: '/utm/cgi-bin/webgui-wrap',
         method: 'POST',
         xmlData: xmlstr,
         callback: opCmdCb
@@ -226,7 +226,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
     var conn = new Ext.data.Connection({});
     conn.request(
     {
-        url: '/Vyatta/cgi-bin/webgui-wrap',
+        url: '/utm/cgi-bin/webgui-wrap',
         method: 'POST',
         xmlData: xmlstr,
         callback: opCmdCb
@@ -450,7 +450,7 @@ function f_sendConfFormCommand(treeObj)
     var conn = new Ext.data.Connection({});
     conn.request(
     {
-        url: '/Vyatta/cgi-bin/webgui-wrap',
+        url: '/utm/cgi-bin/webgui-wrap',
         method: 'POST',
         xmlData: xmlstr,
         callback: confCmdCb
@@ -568,7 +568,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
     var conn = new Ext.data.Connection({});
     conn.request(
     {
-        url: '/Vyatta/cgi-bin/webgui-wrap',
+        url: '/utm/cgi-bin/webgui-wrap',
         method: 'POST',
         xmlData: xmlstr,
         callback: sendCommandCliCb

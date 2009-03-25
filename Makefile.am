@@ -77,13 +77,13 @@ install-exec-hook:
 	cp scripts/mandatory $(DESTDIR)/$(cgidir)/mandatory
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/
-	@mkdir -p $(DESTDIR)$(wwwdir)/Vyatta
+	@mkdir -p $(DESTDIR)$(wwwdir)/utm
 	@for v in 2.2; do \
 		rm -f /tmp/ext-$$v.zip; \
 		wget -q -O /tmp/ext-$$v.zip \
 			http://packages.vyatta.com/vyatta-dev/tmp/ext-$$v.zip; \
 		( \
-			cd $(DESTDIR)$(wwwdir)/Vyatta; \
+			cd $(DESTDIR)$(wwwdir)/utm; \
 			unzip -qq /tmp/ext-$$v.zip; \
 			cd ext-$$v; \
 			rm -rf air build docs examples ext-all-debug.js \

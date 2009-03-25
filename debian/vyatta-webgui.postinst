@@ -31,13 +31,13 @@ sed -i '/^\$HTTP.*127\.0\.0\.1/,/^}$/{s/^\(.*\)$/# \1/}' \
   /etc/lighttpd/conf-enabled/10-cgi.conf
 
 # add cgi alias.
-# note: "/Vyatta/" is the prefix (domU ID) for the "Vyatta UTM".
-if ! grep -q '^alias.url.*/Vyatta/' \
+# note: "/utm/" is the prefix (domU ID) for the "Vyatta UTM".
+if ! grep -q '^alias.url.*/utm/' \
     /etc/lighttpd/conf-enabled/10-cgi.conf; then 
   cat <<'EOF' >>/etc/lighttpd/conf-enabled/10-cgi.conf
 
-alias.url += ( "/Vyatta/cgi-bin/" => "/usr/lib/cgi-bin/" )
-$HTTP["url"] =~ "^/Vyatta/cgi-bin/" {
+alias.url += ( "/utm/cgi-bin/" => "/usr/lib/cgi-bin/" )
+$HTTP["url"] =~ "^/utm/cgi-bin/" {
         cgi.assign = ( "" => "" )
 }
 EOF

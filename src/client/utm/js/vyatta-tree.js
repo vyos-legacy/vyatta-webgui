@@ -364,7 +364,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         {
             clearOnLoad: true
             ,requestMethod: 'POST'
-            ,dataUrl: '/Vyatta/cgi-bin/webgui-wrap'
+            ,dataUrl: '/utm/cgi-bin/webgui-wrap'
             ,uiProviders:
             {
                 'node': VyattaNodeUI

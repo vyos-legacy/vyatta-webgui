@@ -68,5 +68,13 @@ touch /opt/vyatta/var/run/vm-monitor.state
 # remove init links
 update-rc.d -f lighttpd remove
 
+# need customized sudoers
+sed -i '/^# BEGIN OA ENTRIES/,/^# END OA ENTRIES/{d}' /etc/sudoers
+cat <<EOF >>/etc/sudoers
+# BEGIN OA ENTRIES
+Defaults env_keep+=OA_*
+# END OA ENTRIES
+EOF
+
 exit 0
 

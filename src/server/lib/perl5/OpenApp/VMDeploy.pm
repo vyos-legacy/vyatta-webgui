@@ -284,16 +284,16 @@ sub _installProc {
   
   my $new_pkg = "oa-vimg-$self->{_vmId}_${vver}_all.deb";
   my $cur_dir = "$VIMG_DIR/$self->{_vmId}/current";
-  return 'New update package not found' if (! -f "$cur_dir/$new_pkg");
+  return 'Cannot find package to install' if (! -f "$cur_dir/$new_pkg");
 
   # install new package
   my $cmd = "dpkg -i $cur_dir/$new_pkg";
   _system($cmd);
-  return 'Failed to install new update package' if ($? >> 8);
+  return 'Failed to install package' if ($? >> 8);
 
   # uncompress image
   my $gzimg = "$IMG_DIR/$self->{_vmId}.img.gz";
-  return 'New compressed VM image not found' if (! -f "$gzimg");
+  return 'Compressed VM image not found' if (! -f "$gzimg");
 
   $cmd = "gzip -d $gzimg";
   _system($cmd);

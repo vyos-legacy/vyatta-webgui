@@ -37,7 +37,7 @@ my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
 my $auth_user_role = $auth_user->getRole();
 if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   # not authorized
-#  exit 1;
+  exit 1;
 }
 
 
@@ -212,24 +212,46 @@ sub backup_archive {
 #
 ##########################################################################
 sub restore_archive {
+    ##########################################################################
+    #
+    # clear out web restore directory and untar into web restore root 
+    #
+    ##########################################################################
+    `rm -fr $WEB_RESTORE_ROOT/.`;
+    `tar xf $ARCHIVE_ROOT_DIR/$restore $WEB_RESTORE_ROOT/.`;
 
-    #Need to send rest messages, but how will the vm get the bu file?
-    #first let's process the list
-    #first let's process the list
+    #need to read from the directory in the following manner: jvm/data,jvm/conf,mike/data etc.
+    #iterate on $WEB_RESTORE_ROOT/.
+
+    ##########################################################################
+    #
+    # now build out archive list from directory. could also do this from 
+    # archive list. will change.
+    #
+    ##########################################################################
     my @coll;
     my $coll;
-    my $archive;
-    my @archive = split(',',$restore);
     my $i = 0;
-    for $archive (@archive) {
-	my @bu = split(':',$archive);
-	$coll[$i] = [ @bu ];
-	$i = $i + 1;
+    my $filename;
+    opendir ( DIR, $WEB_RESTORE_ROOT ) || die "Error in opening dir $WEB_RESTORE_ROOT\n";
+    while( ($filename = readdir(DIR))){
+	if (lstat("$WEB_RESTORE_ROOT/$filename/data")) {
+	    $coll[$i] = {$filename,"data"};
+	    $i = $i + 1;
+	}
+	if (lstat("$WEB_RESTORE_ROOT/$filename/conf")) {
+	    $coll[$i] = {$filename,"conf"};
+	    $i = $i + 1;
+	}
     }
-    
-    #untar archive
-    `tar xf $ARCHIVE_ROOT_DIR/$restore $WEB_RESTORE_ROOT/.`;
-    
+    closedir(DIR);
+
+    ##########################################################################
+    #
+    # for each VM:type send REST message to VM to restore. web root is a 
+    # well known location.
+    #
+    ##########################################################################
     foreach $i (0..$#coll) {
 	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
 	next if (!defined($vm));
@@ -243,8 +265,13 @@ sub restore_archive {
 	}
     }
 
-    #now poll for completion
-#what happens if a vm fails to backup???? how are we to identify this???
+    ##########################################################################
+    #
+    # now poll for response from VM in restore process. just looking for 200
+    # success. updating status based on number of finished archive units. 
+    # continue until all are done or chunker kills me.
+    #
+    ##########################################################################
     my @new_coll = @coll;
     my $coll_ct = $#new_coll;
     my $progress_ct = 0;

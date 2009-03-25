@@ -24,14 +24,23 @@
 #
 
 use lib "/opt/vyatta/share/perl5";
-use warnings;
+#use warnings;
 use strict;
 use POSIX;
 use File::Copy;
 use Getopt::Long;
 use OpenApp::VMMgmt;
+use OpenApp::LdapUser;
 
-my $ARCHIVE_ROOT_DIR = "/tmp/backup";
+my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
+my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
+my $auth_user_role = $auth_user->getRole();
+if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
+  # not authorized
+  exit 1;
+}
+
+my $ARCHIVE_ROOT_DIR = "/tmp/backup/$auth_user_role";
 my $REST_BACKUP = "/notification/archive/backup";
 my $REST_RESTORE = "/notification/archive/restore";
 my $MAC_ADDR = "/sys/class/net/eth0/address";
@@ -45,8 +54,16 @@ my ($backup,$filename,$restore,$list,$delete);
 # sequentially perform backup
 #
 sub backup_archive {
-    #get list of VMs from argument list 
-    #the format is: vmkey:type,vmkey:type...
+    #need to enforce 2 backup limit for admin and 3 backup limit for installer
+    my $limit_ct = `ls $ARCHIVE_ROOT_DIR | wc -w`;
+    if ($auth_user_role eq 'installer' && $limit_ct > 2) {
+	print STDERR "Your backup directory is full. Please delete an archive to make room.";
+	exit 1;
+    }
+    elsif ($auth_user_role eq 'installer' && $limit_ct > 1) {
+	print STDERR "Your backup directory is full. Please delete an archive to make room.";
+	exit 1;
+    }
 
     #first let's process the list
     my @coll;
@@ -57,7 +74,6 @@ sub backup_archive {
     for $archive (@archive) {
 	my @bu = split(':',$archive);
 	$coll[$i] = [ @bu ];
-#	print "$coll[0][1]\n";
 	$i = $i + 1;
     }
     foreach $i (0..$#coll) {

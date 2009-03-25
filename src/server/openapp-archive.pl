@@ -40,6 +40,8 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   exit 1;
 }
 
+my $INSTALLER_BU_LIMIT = 3;
+my $ADMIN_BU_LIMIT = 2;
 my $ARCHIVE_ROOT_DIR = "/tmp/backup/$auth_user_role";
 my $REST_BACKUP = "/notification/archive/backup";
 my $REST_RESTORE = "/notification/archive/restore";
@@ -47,25 +49,34 @@ my $MAC_ADDR = "/sys/class/net/eth0/address";
 my $WEB_RESTORE_ROOT="/var/www/restore";
 
 
-my ($backup,$filename,$restore,$list,$delete);
+my ($backup,$filename,$restore,$restore_status,$list,$delete);
 
 #
 # Run through the list of VM's and
 # sequentially perform backup
 #
 sub backup_archive {
-    #need to enforce 2 backup limit for admin and 3 backup limit for installer
+    ##########################################################################
+    #
+    # Apply bu limit for installer and admin user
+    #
+    ##########################################################################
     my $limit_ct = `ls $ARCHIVE_ROOT_DIR | wc -w`;
-    if ($auth_user_role eq 'installer' && $limit_ct > 2) {
+    if ($auth_user_role eq 'installer' && $limit_ct >= $INSTALLER_BU_LIMIT) {
 	print STDERR "Your backup directory is full. Please delete an archive to make room.";
 	exit 1;
     }
-    elsif ($auth_user_role eq 'installer' && $limit_ct > 1) {
+    elsif ($auth_user_role eq 'installer' && $limit_ct >= $ADMIN_BU_LIMIT) {
 	print STDERR "Your backup directory is full. Please delete an archive to make room.";
 	exit 1;
     }
 
-    #first let's process the list
+
+    ##########################################################################
+    #
+    # Parse passed in backup list and send out REST message to VMs
+    #
+    ##########################################################################
     my @coll;
     my $coll;
     my $archive;
@@ -89,8 +100,12 @@ sub backup_archive {
 	}
     }
     
-    #what happens if a vm fails to backup???? how are we to identify this???
-
+    ##########################################################################
+    #
+    # Poll for bu completion, when complete pull bu and encrypt bu. Continue
+    # polling until all bu's have been pulled.
+    #
+    ##########################################################################
     my @new_coll = @coll;
     #now that each are started, let's sequentially iterate through and retrieve
     while ($#new_coll > -1) {
@@ -107,17 +122,11 @@ sub backup_archive {
 		`mkdir -p $ARCHIVE_ROOT_DIR/$new_coll[$i][0]`;
 
 		my $rc = `wget $cmd -O $bufile 2>&1`;
-#		print "$rc";
 		if ($rc =~ /200 OK/) {
 #		    print "SUCCESS\n";
-		    #now encrypt command--NEED MAC ADDR OF ETH0
-#		    my $mac = `cat /sys/class/net/eth0/address`;
-		    #probably need to eat the cr here
-#		    $mac = chomp($mac);
-		    
 		    my $resp = `openssl enc -aes-256-cbc -kfile $MAC_ADDR -in $ARCHIVE_ROOT_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $ARCHIVE_ROOT_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc`;
-#		    print "openssl enc -aes-256-cbc -salt $mac -in /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1] -out /tmp/backup/$new_coll[$i][0]/$new_coll[$i][1].enc";
-#		    print "$resp\n";
+		    #what happens if a vm fails to backup???? how are we to identify this???
+
 		    #remove from new_collection
 		    delete $new_coll[$i];
 		}
@@ -126,6 +135,12 @@ sub backup_archive {
 	sleep 1;
     }
 
+    ##########################################################################
+    #
+    # Build out archive filename according to spec. Also build out metadata
+    # format and write to metadata file.
+    #
+    ##########################################################################
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
     ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
 
@@ -165,16 +180,22 @@ sub backup_archive {
     print FILE "</archive>";
     close FILE;
 
-    #finally tar up the proceedings...
+    ##########################################################################
+    #
+    # Now suck up everything in the directory and tar up. Done.
+    #
+    ##########################################################################
     `tar -C $ARCHIVE_ROOT_DIR -cf $filename.tar . 2>/dev/null`;
 
     #needs to clean out old files or files past limit at this point....
 
 }
 
+##########################################################################
 #
 #
 #
+##########################################################################
 sub restore_archive {
 
     #Need to send rest messages, but how will the vm get the bu file?
@@ -281,12 +302,20 @@ sub delete_archive {
     unlink($file);
 }
 
+#
+# status of restore
+#
+sub restore_status {
+#GENERATE XML RESPONSE HERE
+}
+
 
 ####main
 sub usage() {
     print "Usage: $0 --backup=<backup>\n";
     print "       $0 --name=<optional filename>\n";
     print "       $0 --restore=<restore>\n";
+    print "       $0 --restore-status\n";
     print "       $0 --list=<list>\n";
     print "       $0 --delete=<delete>\n";
     exit 0;
@@ -294,11 +323,12 @@ sub usage() {
 
 #pull commands and call command
 GetOptions(
-    "backup:s"       => \$backup,
-    "filename:s"     => \$filename,
-    "restore=s"      => \$restore,
-    "list:s"         => \$list,
-    "delete=s"       => \$delete,
+    "backup:s"              => \$backup,
+    "filename:s"            => \$filename,
+    "restore=s"             => \$restore,
+    "restore-statis:s"      => \$restore_status,
+    "list:s"                => \$list,
+    "delete=s"              => \$delete,
     ) or usage();
 
 if ( defined $backup ) {
@@ -306,6 +336,9 @@ if ( defined $backup ) {
 }
 elsif ( defined $restore ) {
     restore_archive();
+}
+elsif ( defined $restore_status ) {
+    restore_status();
 }
 elsif (defined $list ) {
     list_archive();

@@ -11,6 +11,7 @@ my $IMG_DIR = '/var/xen';
 my $STATUS_FILE = 'current/status';
 my $SCHED_FILE = 'current/sched';
 my $HIST_FILE = 'current/hist';
+my $RUNNING_FILE = 'current/running_meta';
 
 ### "static" functions
 sub vmCheckUpdate {
@@ -37,8 +38,21 @@ sub vmCheckPrev {
   return "$1";
 }
 
+my $debug_log = '';
+
 sub _system {
-  print (join(' ', @_) . "\n");
+  my $cmd = $_[0];
+  if ("$debug_log" ne '') {
+    $cmd .= " >>$debug_log 2>&1";
+    my $fd = undef;
+    if (open($fd, '>>', $debug_log)) {
+      print $fd "$cmd\n";
+      close($fd);
+    }
+  } else {
+    $cmd .= ' >&/dev/null';
+  }
+  system($cmd);
 }
 
 ### data
@@ -127,9 +141,24 @@ sub sched {
   return "'$self->{_vmId}' update already scheduled"
     if ($scheduled eq 'scheduled');
 
-  # TODO schedule update
+  # schedule update
+  my $upg_cmd = '/opt/vyatta/sbin/openapp-vm-upgrade.pl --action=upgrade '
+                . " --vm=\"$self->{_vmId}\" --ver=\"$ver\"";
+  my @atouts = `echo '$upg_cmd' | sudo at '$time' 2>&1 | grep -v warning`;
+  my ($j, $t, $err) = (undef, undef, undef);
+  for my $at (@atouts) {
+    if ($at =~ /^job\s+(\d+)\s+at\s+(\w+\s+\w+\s+\d+\s+[\d:]+\s+\d+)$/) {
+      ($j, $t) = ($1, $2);
+      last;
+    }
+    $at =~ s/^at: //;
+    $err .= $at;
+  }
+  return "Failed to schedule update: $err" if (!defined($j));
+  my $tstr = `date -d '$t' +'%H:%M %d.%m.%y'`;
+  chomp($tstr);
 
-  $self->_writeSched('scheduled', '100', $ver, $time);
+  $self->_writeSched('scheduled', $j, $ver, $tstr);
   # success
   return undef;
 }
@@ -140,7 +169,10 @@ sub cancel {
   return "No scheduled update for '$self->{_vmId}'"
     if ($scheduled ne 'scheduled');
   
-  # TODO cancel update
+  # cancel update
+  my $cmd = "sudo atrm '$job'";
+  _system($cmd);
+  return 'Failed to cancel scheduled update' if ($? >> 8);
   
   $self->_writeSched('cancelled', '0', $ver, $time);
   # success
@@ -246,9 +278,9 @@ sub _preRestoreProc {
 # return error message or undef if success.
 sub _preInstProc {
   my ($self, $vver) = @_;
-  my $cur_dir = "$VIMG_DIR/$self->{_vmId}/current";
+  my $running = "$VIMG_DIR/$self->{_vmId}/$RUNNING_FILE";
 
-  my $cmd = "rm -f $cur_dir/running_meta";
+  my $cmd = "rm -f $running";
   _system($cmd);
   return 'Failed to remove previous state file' if ($? >> 8);
  
@@ -262,7 +294,7 @@ sub _preInstProc {
  
   # keep the metadata
   my $meta_file = "$VMDIR/$self->{_vmId}";
-  $cmd = "cp -p $meta_file $VIMG_DIR/$self->{_vmId}/current/running_meta";
+  $cmd = "cp -p $meta_file $running";
   _system($cmd);
   return 'Failed to save current state file' if ($? >> 8);
 
@@ -291,11 +323,17 @@ sub _installProc {
   _system($cmd);
   return 'Failed to install package' if ($? >> 8);
 
+  # remove previous image
+  my $img = "$IMG_DIR/$self->{_vmId}.img";
+  $cmd = "rm -f $img";
+  _system($cmd);
+  return 'Failed to remove previous VM image' if ($? >> 8);
+
   # uncompress image
   my $gzimg = "$IMG_DIR/$self->{_vmId}.img.gz";
   return 'Compressed VM image not found' if (! -f "$gzimg");
 
-  $cmd = "gzip -d $gzimg";
+  $cmd = "gzip -f -d $gzimg";
   _system($cmd);
   return 'Failed to extract new VM image' if ($? >> 8);
 
@@ -306,7 +344,7 @@ sub _installProc {
 # return error message or undef if success.
 sub _postInstProc {
   my ($self, $vver) = @_;
-  my $cur_dir = "$VIMG_DIR/$self->{_vmId}/current";
+  my $running = "$VIMG_DIR/$self->{_vmId}/$RUNNING_FILE";
 
   # start the VM
   my $cmd = '/opt/vyatta/sbin/openapp-vm-op.pl --action=start '
@@ -315,7 +353,7 @@ sub _postInstProc {
   return 'Failed to start VM' if ($? >> 8);
 
   # check if it was running before install
-  if (! -f "$cur_dir/running_meta") {
+  if (! -f "$running") {
     # wasn't running. done.
     return undef;
   }
@@ -323,6 +361,9 @@ sub _postInstProc {
   # TODO restore backup
   ## need to check vendor/backupFormat. don't restore if different.
   ## need to wait until VM can respond to restore command.
+
+  # done. remove metadata of previous running VM.
+  unlink($running) or return 'Failed to remove previous metadata';
   
   return undef;
 }
@@ -352,7 +393,7 @@ sub upgrade {
   } else {
     # success. write status.
     my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
-    $self->_writeStatus('succeeded', $vver, $time, '');
+    $self->_writeStatus('succeeded', $vver, $time, "Upgrade $vver succeeded");
     return undef;
   } 
 }
@@ -382,7 +423,7 @@ sub restore {
   } else {
     # success. write status.
     my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
-    $self->_writeStatus('succeeded', $vver, $time, '');
+    $self->_writeStatus('succeeded', $vver, $time, "Restore $vver succeeded");
     return undef;
   } 
 }

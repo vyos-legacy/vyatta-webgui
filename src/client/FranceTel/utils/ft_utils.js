@@ -16,6 +16,31 @@ FT_extend = function(subClass, baseClass)
    subClass.superclass = baseClass.prototype;
 }
 
+/////////////////////////////////////////////////////////////////////////
+function FT_thread(interval)
+{
+    this.m_isRun = false;
+    this.m_interval = interval == undefined ? 8000/* 8 sec default*/ : interval;
+
+    ////////////////////////////////////////////////////
+    this.f_start = function(runFunction)
+    {
+        if(this.m_timerId != null)
+            this.f_stop();
+
+        this.m_isRun = true;
+        var timerId = window.setInterval(runFunction, this.m_interval);
+
+        return timerId;
+    }
+
+    this.f_stop = function(threadId)
+    {
+        this.m_isRun = false;
+        window.clearInterval(threadId);
+    }
+}
+
 var g_utils =
 {
     m_clock_serverTime : null,
@@ -30,7 +55,7 @@ var g_utils =
         if(!this.m_clock_isClockRan)
         {
             // create a thread to run every one second
-            this.m_thread = new FT_thread(this, 1000);
+            this.m_thread = new FT_thread(1000);
 
             var clockRuns = function()
             {
@@ -128,11 +153,6 @@ var g_utils =
 		return div;
 	},
 
-    f_popupMessage: function(message, type)
-    {
-        this.f_popupMessage(message, type, "", true, null, null);
-    },
-
     f_popupMessage: function(message, type, title, isModal, cb, ccb)
     {
         var popDivId = 'ft_popup_message';
@@ -154,7 +174,6 @@ var g_utils =
 		var okHandler = "f_utilsPopupOk('" + popDivId + "')";
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
-
 
         var buttonsDiv = '';
         switch(type)

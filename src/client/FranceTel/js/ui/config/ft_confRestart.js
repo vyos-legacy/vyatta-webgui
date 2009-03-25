@@ -84,11 +84,13 @@ function FT_confRestart(name, callback, busLayer)
 
                     var img = thisObj.f_renderStatus(v.m_status);
                     var restart = thisObj.f_renderButton(
-                                'Restart', enabled, "f_vmHandleRestart('" +
-                                v.m_name + "')", 'Restart ' + v.m_name);
+                                'Restart', enabled, "f_vmRestart('" +
+                                v.m_name + "', '" + v.m_displayName + "')",
+                                'Restart ' + v.m_name);
                     var stop = thisObj.f_renderButton(
-                                'Stop', enabled, "f_vmHandleStop('" +
-                                v.m_name + "')", 'Stop ' + v.m_name);
+                                'Stop', enabled, "f_vmStop('" +
+                                v.m_name + "', '" + v.m_displayName + "')",
+                                'Stop ' + v.m_name);
                     var start = thisObj.f_renderButton(
                                 'Start', !enabled, "f_vmHandleStart('" +
                                 v.m_name + "')", 'Start ' + v.m_name);
@@ -125,7 +127,7 @@ function FT_confRestart(name, callback, busLayer)
 
     this.f_createOARestart = function()
     {
-        var handleFunc = "f_handleRestart('OpenAppliance')";
+        var handleFunc = "f_vmRestart('openapp')";
         var div = document.createElement('div');
         div.style.position = 'relative';
         div.style.display = 'block';
@@ -154,24 +156,44 @@ function FT_confRestart(name, callback, busLayer)
 }
 FT_extend(FT_confRestart, FT_confBaseObj);
 
-function f_vmHandleStop(vm)
+function f_vmStop(vmId, vmName)
 {
-    var cb = function()
+    g_utils.f_popupMessage('Do you really want to stop (' + vmName + ') VM?',
+                'confirm', 'Stop VM Process', true,
+                "f_vmHandleStop(this, '"+ vmId + "')");
+}
+function f_vmHandleStop(e, vmId)
+{
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
     {
-        g_configPanelObj.m_activeObj.f_loadVMData();
-    }
+        var cb = function()
+        {
+            g_configPanelObj.m_activeObj.f_loadVMData();
+        }
 
-    g_busObj.f_stopVM(vm, cb);
+        g_busObj.f_stopVM(vmId, cb);
+    }
 }
 
-function f_vmHandleRestart(vm)
+function f_vmRestart(vmId, vmName)
 {
-    var cb = function()
-    {
-        g_configPanelObj.m_activeObj.f_loadVMData();
-    }
+    if(vmId == 'openapp') vmName = 'Open Appliance';
 
-    g_busObj.f_restartVM(vm, cb);
+    g_utils.f_popupMessage('Do you really want to restart (' + vmName + ') VM?',
+                'confirm', 'Restart VM Process', true,
+                "f_vmHandleRestart(this, '"+ vmId + "')");
+}
+function f_vmHandleRestart(e, vmId)
+{
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+    {
+        var cb = function()
+        {
+            g_configPanelObj.m_activeObj.f_loadVMData();
+        }
+
+        g_busObj.f_restartVM(vmId, cb);
+    }
 }
 
 function f_vmHandleStart(vm)

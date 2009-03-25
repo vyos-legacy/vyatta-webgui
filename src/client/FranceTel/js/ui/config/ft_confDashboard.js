@@ -56,7 +56,7 @@ function FT_confDashboard(name, callback, busLayer)
                     thisObj.f_stopLoadVMData();
 
                     if(evt.m_errCode == 3)
-                        g_utils.f_popupMessage('timeout', 'timeout');
+                        g_utils.f_popupMessage('timeout', 'timeout', null, true);
                     else
                         alert(evt.m_errMsg);
 

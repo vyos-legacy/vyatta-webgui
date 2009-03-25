@@ -48,31 +48,6 @@ function createXMLHttpRequest()
     return request;
 }
 
-/////////////////////////////////////////////////////////////////////////
-function FT_thread(busObj, interval)
-{
-    this.m_busObj = busObj;
-    this.m_isRun = false;
-    this.m_interval = interval == undefined ? 8000/* 8 sec default*/ : interval;
-
-    ////////////////////////////////////////////////////
-    this.f_start = function(runFunction)
-    {
-        if(this.m_timerId != null)
-            this.f_stop();
-
-        this.m_isRun = true;
-        var timerId = window.setInterval(runFunction, this.m_interval);
-
-        return timerId;
-    }
-
-    this.f_stop = function(threadId)
-    {
-        this.m_isRun = false;
-        window.clearInterval(threadId);
-    }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // an OA business object. This object acts as a core interface to the server
@@ -374,7 +349,7 @@ function FT_businessLayer()
     this.f_startVMRequestThread = function(cb)
     {
         // create a new thread object
-        thisObj.m_reqThread = new FT_thread(thisObj, 8000);
+        thisObj.m_reqThread = new FT_thread(8000);
 
         var guiCb = cb;
         var callback = function()
@@ -465,7 +440,7 @@ function FT_businessLayer()
     this.f_startHWMonitorRequestThread = function(cb)
     {
         // create a new thread object
-        thisObj.m_reqThread = new FT_thread(thisObj, 8000 /*8 sec*/);
+        thisObj.m_reqThread = new FT_thread(8000 /*8 sec*/);
 
         var guiCb = cb;
         var callback = function()

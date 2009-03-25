@@ -72,6 +72,9 @@ function FT_confUserRight(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
+                if(thisObj.f_isServerError(evt, 'User Right Error'))
+                    return;
+
                 var ul = evt.m_value;
                 thisObj.m_uiData = [];
 
@@ -233,7 +236,7 @@ function f_userRightHandleApplyComfirm(e)
 
 function f_userRightHandleApply(e)
 {
-    g_utils.f_popupMessage('Do you really want to commit the change?', 'confirm',
+    g_utils.f_popupMessage('Are you sure you wish to commit the change?', 'confirm',
                 "Change User Right", true, 'f_userRightHandleApplyComfirm(this)');
 
 }

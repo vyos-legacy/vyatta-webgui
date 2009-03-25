@@ -50,15 +50,8 @@ function FT_confVMUpdates(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-                if(evt.f_isError())
-                {
-                    if(evt.m_errCode == 3)
-                        g_utils.f_popupMessage('timeout', 'timeout');
-                    else
-                        alert(evt.m_errMsg);
-
+                if(thisObj.f_isServerError(evt, 'VM Update Error'))
                     return;
-                }
 
                 var dep = evt.m_value;  // get vm deploy record object
                 if(dep == undefined) return;
@@ -151,8 +144,8 @@ function f_vmHandleDeployCancel(e, vmId)
 
 function f_vmDeployCancel(vmId, vmName)
 {
-    g_utils.f_popupMessage('Do you really want to cancel (' + vmName + ') VM?',
-                'confirm', 'Cancel Update Schedule',false,
+    g_utils.f_popupMessage('Are you sure you want to cancel (' + vmName + ') VM?',
+                'confirm', 'Cancel Update Schedule',true,
                 "f_vmHandleDeployCancel(this, '"+ vmId + "')");
 }
 
@@ -174,8 +167,8 @@ function f_vmHandleDeployRestore(e, vmId)
 
 function f_vmDeployRestore(vmId, vmName)
 {
-    g_utils.f_popupMessage('Do you really want to restore (' + vmName + ') VM?',
-                'confirm', 'Cancel Update Schedule',false,
+    g_utils.f_popupMessage('Are you sure you want to restore (' + vmName + ') VM?',
+                'confirm', 'Cancel Update Schedule',true,
                 "f_vmHandleDeployRestore(this, '"+ vmId + "')");
 }
 

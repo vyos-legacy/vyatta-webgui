@@ -60,6 +60,9 @@ function FT_confUserList(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
+                if(thisObj.f_isServerError(evt, 'VM Update Error'))
+                    return;
+
                 var ul = evt.m_value;
 
                 if(ul != undefined && ul.m_userList != null)
@@ -155,7 +158,7 @@ function f_handleUserListDeleteUser(e, username)
 
 function f_userListDeleteUser(username)
 {
-    g_utils.f_popupMessage('Do you really want to delete (' + username + ') user?',
+    g_utils.f_popupMessage('Are you sure you want to delete (' + username + ') user?',
                 'confirm', 'Delete user account', true,
                 "f_handleUserListDeleteUser(this, '"+ username + "')");
 }

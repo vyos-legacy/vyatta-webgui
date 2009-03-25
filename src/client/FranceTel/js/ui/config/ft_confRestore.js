@@ -52,18 +52,8 @@ function FT_confRestore(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-                // handle error code
-                if(evt.f_isError())
-                {
-                    thisObj.f_stopLoadVMData();
-
-                    if(evt.m_errCode == 3)
-                        g_utils.f_popupMessage('timeout', 'timeout');
-                    else
-                        alert(evt.m_errMsg);
-
+                if(thisObj.f_isServerError(evt, 'Configuration Restore  Error'))
                     return;
-                }
 
                 var vmData = [];
                 var bkRec = evt.m_value;
@@ -199,7 +189,7 @@ function f_handleDownloadRestore()
 
 function f_deleteRestoreFile(restoreContent)
 {
-    g_utils.f_popupMessage('Do you really want to delete (' + restoreContent + ')?',
-                'confirm', 'Delete Restore File', false,
+    g_utils.f_popupMessage('Are you sure you want to delete (' + restoreContent + ')?',
+                'confirm', 'Delete Restore File', true,
                 "f_handleDeleteRestoreFile(this, '"+ restoreContent + "')");
 }

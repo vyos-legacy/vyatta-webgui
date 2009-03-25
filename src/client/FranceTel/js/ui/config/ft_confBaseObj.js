@@ -395,4 +395,25 @@ function FT_confBaseObj(name, callback, busLayer)
               ';"></div><div style="position:relative; top:-16px; left:40px;">'+
               '<b>' + val +'%</b></div></div>';
     }
+
+    /**
+     * handle error message from evt (ft_eventObj) if error is not = 0.
+     * @param evt - ft_eventObj
+     * @param errTitle - title to be shown on popup dialog.
+     * @return true if there is error, else return false (no error)
+     */
+    this.f_isServerError = function(evt, errTitle)
+    {
+        if(evt.f_isError())
+        {
+            if(evt.m_errCode == 3)  // timeout error
+                g_utils.f_popupMessage('timeout', 'timeout', null, true);
+            else
+                alert(evt.m_errMsg);
+
+            return true;
+        }
+        else
+            return false;
+    }
 }

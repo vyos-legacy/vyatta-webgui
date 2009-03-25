@@ -50,16 +50,9 @@ function FT_confRestart(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-                // handle error code
-                if(evt.f_isError())
+                if(thisObj.f_isServerError(evt, 'VM Restart Error'))
                 {
                     thisObj.f_stopLoadVMData();
-
-                    if(evt.m_errCode == 3)
-                        g_utils.f_popupMessage('timeout', 'timeout');
-                    else
-                        alert(evt.m_errMsg);
-
                     return;
                 }
 
@@ -158,7 +151,7 @@ FT_extend(FT_confRestart, FT_confBaseObj);
 
 function f_vmStop(vmId, vmName)
 {
-    g_utils.f_popupMessage('Do you really want to stop (' + vmName + ') VM?',
+    g_utils.f_popupMessage('Are you sure you want to stop (' + vmName + ') VM?',
                 'confirm', 'Stop VM Process', true,
                 "f_vmHandleStop(this, '"+ vmId + "')");
 }
@@ -179,7 +172,7 @@ function f_vmRestart(vmId, vmName)
 {
     if(vmId == 'openapp') vmName = 'Open Appliance';
 
-    g_utils.f_popupMessage('Do you really want to restart (' + vmName + ') VM?',
+    g_utils.f_popupMessage('Are you sure you want to restart (' + vmName + ') VM?',
                 'confirm', 'Restart VM Process', true,
                 "f_vmHandleRestart(this, '"+ vmId + "')");
 }

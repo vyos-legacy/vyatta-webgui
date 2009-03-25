@@ -46,16 +46,9 @@ function FT_confHwMonitor(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-                // handle error code
-                if(evt.f_isError())
+                if(thisObj.f_isServerError(evt, 'Hardware Monitor Error'))
                 {
                     thisObj.f_stopLoadVMData();
-
-                    if(evt.m_errCode == 3)
-                        g_utils.f_popupMessage('timeout', 'timeout');
-                    else
-                        alert(evt.m_errMsg);
-
                     return;
                 }
 

@@ -88,11 +88,13 @@ sub do_list {
       my $ver = $href->{_ver};
       my $status = $href->{_status};
       my $msg = $href->{_msg};
+      my $prev = OpenApp::VMDeploy::vmCheckPrev($vid);
       print <<EOF;
       <record>
         <time>$time</time>
         <id>$id</id>
         <ver>$ver</ver>
+        <prevVer>$prev</prevVer>
         <status>$status</status>
         <msg>$msg</msg>
       </record>

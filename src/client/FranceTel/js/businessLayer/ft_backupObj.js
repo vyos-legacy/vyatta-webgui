@@ -194,16 +194,19 @@ function FT_backupObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var commas = "";
         var xmlstr = "<command><id>" + sid + "</id>" +
-                    "<statement>open-app archive " + type;
+                    "<statement>open-app archive " + type + ' ';
 
         for(var i=0; i<vms.length; i++)
         {
-            if(i > 0) commas = ", ";
-
-            xmlstr += commas + "'" + vms[i] + ":" + modes[i] + "'";
+			if (i == 0) {
+				xmlstr += "'";
+			} else {
+				commas = ",";
+			}
+            xmlstr += commas + vms[i] + ":" + modes[i];
         }
 
-        xmlstr += "</statement></command>";
+        xmlstr += "'</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }

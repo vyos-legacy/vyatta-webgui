@@ -37,12 +37,29 @@ my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
 my $auth_user_role = $auth_user->getRole();
 if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   # not authorized
-  exit 1;
+#  exit 1;
 }
+
+
+##########################################################################
+# Directory layout is as follows:
+# /tmp/archive                               #root directory
+#             /installer                     #installer root and install bu/res
+#                       /tmp/backup          #install bu workspace
+#                       /tmp/restore         #install res workspace
+#             /admin                         #admin root and admin bu/res
+#                       /tmp/backup          #admin bu workspace
+#                       /tmp/restore         #admin res workspace
+#
+#
+##########################################################################
+my $ARCHIVE_ROOT_DIR = "/tmp/archive$auth_user_role";
+my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
+my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
 
 my $INSTALLER_BU_LIMIT = 3;
 my $ADMIN_BU_LIMIT = 2;
-my $ARCHIVE_ROOT_DIR = "/tmp/backup/$auth_user_role";
+
 my $REST_BACKUP = "/notification/archive/backup";
 my $REST_RESTORE = "/notification/archive/restore";
 my $MAC_ADDR = "/sys/class/net/eth0/address";
@@ -117,14 +134,14 @@ sub backup_archive {
 	    if (defined $ip && $ip ne '') {
 		my $cmd = "http://$ip/archive/$new_coll[$i][1]";
 		#writes to specific location on disk
-		my $bufile = "$ARCHIVE_ROOT_DIR/$new_coll[$i][0]/$new_coll[$i][1]";
-		`rm -f $ARCHIVE_ROOT_DIR/$new_coll[$i][0] 2>/dev/null`;
-		`mkdir -p $ARCHIVE_ROOT_DIR/$new_coll[$i][0]`;
+		my $bufile = "$BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]";
+		`rm -fr $BACKUP_WORKSPACE_DIR/* 2>/dev/null`;
+		`mkdir -p $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]`;
 
 		my $rc = `wget $cmd -O $bufile 2>&1`;
 		if ($rc =~ /200 OK/) {
 #		    print "SUCCESS\n";
-		    my $resp = `openssl enc -aes-256-cbc -kfile $MAC_ADDR -in $ARCHIVE_ROOT_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $ARCHIVE_ROOT_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc`;
+		    my $resp = `openssl enc -aes-256-cbc -kfile $MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc`;
 		    #what happens if a vm fails to backup???? how are we to identify this???
 
 		    #remove from new_collection
@@ -154,6 +171,7 @@ sub backup_archive {
 
     my $datamodel = '1';
 
+    my $metafile = $BACKUP_WORKSPACE_DIR."/".$date."_".$time."_".$datamodel;
     if (!defined($filename) || $filename eq '') {
 	$filename = $ARCHIVE_ROOT_DIR."/".$date."_".$time."_".$datamodel;
     }
@@ -161,7 +179,7 @@ sub backup_archive {
     #now create metadata file
     my $FILE;
 
-    open FILE, ">", "$filename.txt" or die $!;
+    open FILE, ">", "$metafile.txt" or die $!;
     #we'll write out xml descriptions--the same as what we display...
     print FILE "<archive>";
     print FILE "<name>name</name>";
@@ -185,10 +203,7 @@ sub backup_archive {
     # Now suck up everything in the directory and tar up. Done.
     #
     ##########################################################################
-    `tar -C $ARCHIVE_ROOT_DIR -cf $filename.tar . 2>/dev/null`;
-
-    #needs to clean out old files or files past limit at this point....
-
+    `tar -C $BACKUP_WORKSPACE_DIR -cf $filename.tar . 2>/dev/null`;
 }
 
 ##########################################################################
@@ -231,6 +246,8 @@ sub restore_archive {
     #now poll for completion
 #what happens if a vm fails to backup???? how are we to identify this???
     my @new_coll = @coll;
+    my $coll_ct = $#new_coll;
+    my $progress_ct = 0;
     #now that each are started, let's sequentially iterate through and retrieve
     while ($#new_coll > -1) {
 	foreach $i (0..$#new_coll) {
@@ -246,6 +263,10 @@ sub restore_archive {
 		if ($rc =~ /200 OK/) {
 #		    print "SUCCESS\n";
 		    #remove from new_collection
+		    $progress_ct = $progress_ct + 1;
+		    #when done write
+		    my $progress = (100 * $progress_ct) / $coll_ct;
+		    `echo '$progress' > $RESTORE_WORKSPACE_DIR/status`;
 		    delete $new_coll[$i];
 		}
 	    }
@@ -306,7 +327,7 @@ sub delete_archive {
 # status of restore
 #
 sub restore_status {
-#GENERATE XML RESPONSE HERE
+    `cat $RESTORE_WORKSPACE_DIR/status`;
 }
 
 
@@ -326,7 +347,7 @@ GetOptions(
     "backup:s"              => \$backup,
     "filename:s"            => \$filename,
     "restore=s"             => \$restore,
-    "restore-statis:s"      => \$restore_status,
+    "restore-status:s"      => \$restore_status,
     "list:s"                => \$list,
     "delete=s"              => \$delete,
     ) or usage();

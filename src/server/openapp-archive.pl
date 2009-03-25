@@ -18,7 +18,7 @@
 # 
 # Author: Michael Larson
 # Date: March 2009
-# Description: Script to modify user accounts
+# Description: Script to archive backup and restore
 # 
 # **** End License ****
 #
@@ -89,9 +89,9 @@ sub backup_archive {
 	}
     }
     
-#what happens if a vm fails to backup???? how are we to identify this???
-    my @new_coll = @coll;
+    #what happens if a vm fails to backup???? how are we to identify this???
 
+    my @new_coll = @coll;
     #now that each are started, let's sequentially iterate through and retrieve
     while ($#new_coll > -1) {
 	foreach $i (0..$#new_coll) {
@@ -138,9 +138,7 @@ sub backup_archive {
     my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
 
     my $datamodel = '1';
-#
-#    my $filename = $date."_".$time."_".$datamodel;
-#
+
     if (!defined($filename) || $filename eq '') {
 	$filename = $ARCHIVE_ROOT_DIR."/".$date."_".$time."_".$datamodel;
     }
@@ -190,7 +188,6 @@ sub restore_archive {
     for $archive (@archive) {
 	my @bu = split(':',$archive);
 	$coll[$i] = [ @bu ];
-#	print "$coll[0][1]\n";
 	$i = $i + 1;
     }
     
@@ -233,6 +230,9 @@ sub restore_archive {
 	    }
 	}
 	sleep 1;
+
+	#what is a reasonable time to kick out of this command?
+	#let's kick out of this command after 1/2 hour--which should be done by the chunker
     }
 
     #now we are done and this is a success
@@ -258,11 +258,7 @@ sub restore_archive {
 
 sub list_archive {
     #get a directory listing of /backup/.
-    
-    my $hash_arr = {};
-
     print "VERBATIM_OUTPUT\n";
-
     my $file;
     my @files = <$ARCHIVE_ROOT_DIR/*.tar>;
     foreach $file (@files) {
@@ -281,7 +277,7 @@ sub list_archive {
 # delete archive...
 #
 sub delete_archive {
-    my $file = "/backup/$delete";
+    my $file = "$ARCHIVE_ROOT_DIR/$delete";
     unlink($file);
 }
 
@@ -293,9 +289,8 @@ sub usage() {
     print "       $0 --restore=<restore>\n";
     print "       $0 --list=<list>\n";
     print "       $0 --delete=<delete>\n";
-    exit 1;
+    exit 0;
 }
-
 
 #pull commands and call command
 GetOptions(
@@ -306,14 +301,11 @@ GetOptions(
     "delete=s"       => \$delete,
     ) or usage();
 
-
 if ( defined $backup ) {
     backup_archive();
-    exit 0;
 }
 elsif ( defined $restore ) {
     restore_archive();
-    exit 0;
 }
 elsif (defined $list ) {
     list_archive();

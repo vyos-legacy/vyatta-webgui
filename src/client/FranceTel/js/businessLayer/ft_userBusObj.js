@@ -130,7 +130,8 @@ function FT_userBusObj(busObj)
     this.f_logout = function(cb)
     {
         thisObj.m_sid = undefined;
-        g_cookie.f_remove(g_consObj.V_COOKIES_USER_ID);
+        // need to remove all cookies
+        g_cookie.f_remove_all();
         g_utils.f_gotoHomePage();
     }
 

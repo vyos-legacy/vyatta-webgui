@@ -103,6 +103,8 @@ sub backup_archive {
     my @archive = split(',',$backup);
     my $i = 0;
     for $archive (@archive) {
+	print "$backup\n";
+
 	my @bu = split(':',$archive);
 	$coll[$i] = [ @bu ];
 	$i = $i + 1;
@@ -144,6 +146,7 @@ sub backup_archive {
 		my $rc = `wget $cmd -O $bufile 2>&1`;
 		if ($rc =~ /200 OK/) {
 #		    print "SUCCESS\n";
+		    print "openssl enc -aes-256-cbc -kfile $MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc";
 		    my $resp = `openssl enc -aes-256-cbc -kfile $MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc`;
 		    #what happens if a vm fails to backup???? how are we to identify this???
 
@@ -206,6 +209,7 @@ sub backup_archive {
     # Now suck up everything in the directory and tar up. Done.
     #
     ##########################################################################
+#    print "tar -C $BACKUP_WORKSPACE_DIR -cf $ARCHIVE_ROOT_DIR/$filename.tar . 2>/dev/null";
     `tar -C $BACKUP_WORKSPACE_DIR -cf $ARCHIVE_ROOT_DIR/$filename.tar . 2>/dev/null`;
 }
 
@@ -341,10 +345,13 @@ sub list_archive {
     foreach $file (@files) {
 	my @name = split('/',$file);
 	#just open up meta data file and squirt out contents...
+	#now chop off the last period
+	my @name2 = split('\.',$name[4]);
+
 	my $metafile;
 	my @metafile = split('\.',$name[3]);
 	my $output;
-	my @output = `tar -xf $file --wildcards -O ./*.txt 2>/dev/null`;
+	my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
 	print $output[0];
     } 
     #done

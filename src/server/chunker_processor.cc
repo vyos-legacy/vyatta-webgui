@@ -117,18 +117,36 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   close(0); /* Close current stdin. */
   close( cp[0]);
 
-  string opmodecmd;
-  opmodecmd = WebGUI::mass_replace(cmd,"'","'\\''");
-  opmodecmd = "/bin/bash -c '" + opmodecmd + "'";
+  string opmodecmd = cmd;
+
+  //  opmodecmd = WebGUI::mass_replace(cmd,"'","'\\''");
+  //  opmodecmd = opmodecmd + "'";
 
   opmodecmd = WebGUI::mass_replace(cmd,"'","");
 
-  syslog(LOG_DEBUG,"command: %s",opmodecmd.c_str());
+  
+  //--rcfile /etc/bash_completion -i -c
+  string arg1="--rcfile";
+  string arg2="/etc/bash_completion";
+  string arg3="-i";
+  string arg4="-c";
 
-  int err = execlp("/usr/lib/cgi-bin/chunker_cmd",
-		   "/usr/lib/cgi-bin/chunker_cmd",
+  syslog(LOG_DEBUG,"command: %s",opmodecmd.c_str());
+  if (_debug) {
+    cout << "ChunkerProcessor::writer(): command to be executed: " << opmodecmd << endl;
+  }
+
+  int err = execlp("/bin/bash",
+		   "/bin/bash",
+		   arg1.c_str(),
+		   arg2.c_str(),
+		   arg3.c_str(),
+		   arg4.c_str(),
 		   opmodecmd.c_str(),
 		   NULL);
+  if (_debug) {
+    cout << "ChunkerProcessor::writer(): finished executing cmd: " << err << endl;
+  }
   syslog(LOG_ERR, "ERROR RECEIVED FROM EXECVP(1): %d, %d",err, errno);
 }
 

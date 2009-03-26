@@ -29,7 +29,15 @@ int main(int argc, char *argv[])
   printf("Please enter your message: ");
   bzero(buffer,1024);
   fgets(buffer,1024,stdin);
-  write(sockfd,buffer,strlen(buffer));
+
+  string tok = "999";
+  char buffer2[1024];
+  bzero(buffer2,1024);
+  sprintf(buffer2,WebGUI::CHUNKER_MSG_FORMAT.c_str(),tok.c_str(),buffer);
+
+
+
+  write(sockfd,buffer2,strlen(buffer2));
   n=read(sockfd,buffer,1024);
   printf("The return message was\n");
   write(1,buffer,n);   

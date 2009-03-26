@@ -53,7 +53,7 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
 #
 #
 ##########################################################################
-my $ARCHIVE_ROOT_DIR = "/var/archive$auth_user_role";
+my $ARCHIVE_ROOT_DIR = "/var/archive/$auth_user_role";
 my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
 my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
 
@@ -344,7 +344,7 @@ sub list_archive {
 	my $metafile;
 	my @metafile = split('\.',$name[3]);
 	my $output;
-	my @output = `tar -xf $file --wildcards -O ./$metafile[0].txt`;
+	my @output = `tar -xf $file --wildcards -O ./*.txt 2>/dev/null`;
 	print $output[0];
     } 
     #done

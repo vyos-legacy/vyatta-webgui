@@ -530,7 +530,7 @@ function FT_businessLayer()
 	
     this.f_restoreVm = function(vm, ver, guiCb)
 	{
-		thisObj.m_vm.f_upgradeVm(vm, ver, guiCb);
+		thisObj.m_vm.f_restoreVm(vm, ver, guiCb);
 	}	
 }
 

@@ -115,7 +115,7 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
         if (target != undefined) {
             var id = target.getAttribute('id');
             if (id == 'conf_restore_update_update_button') { //update clicked
-                this.f_restoreVm();
+                thisObj.f_restoreVm();
             } else if (id == 'conf_restore_update_cancel_button') { //cancel clicked
                 g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_UPDATE_ID);                             
             }

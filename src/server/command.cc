@@ -80,14 +80,14 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
     //capture the backup command and direct to the chunker
     cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
-    opmodecmd = "'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + "; " + cmd + " 2>&1'";
+    opmodecmd = "'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + "; " + cmd + "'";
 
     if (multi_part_op_cmd(cmd,opmodecmd)) {
       //success
       return;
     }
 
-    opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c " + opmodecmd;
+    opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + "; " + cmd + " 2>&1'";
 
     string stdout;
     bool verbatim = false;

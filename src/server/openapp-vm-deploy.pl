@@ -16,13 +16,14 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   exit 1;
 }
 
-my ($sched, $ver, $time, $cancel, $list)
-  = (undef, undef, undef, undef, undef);
+my ($sched, $ver, $time, $cancel, $restore, $list)
+  = (undef, undef, undef, undef, undef, undef);
 GetOptions(
   'sched=s' => \$sched,
   'ver=s' => \$ver,
   'time=s' => \$time,
   'cancel=s' => \$cancel,
+  'restore=s' => \$restore,
   'list' => \$list
 );
 
@@ -37,6 +38,15 @@ if (defined($sched)) {
 
 if (defined($cancel)) {
   do_cancel($cancel);
+  exit 0;
+}
+
+if (defined($restore)) {
+  if (!defined($ver)) {
+    print "Invalid command\n";
+    exit 1;
+  }
+  do_restore($restore, $ver);
   exit 0;
 }
 
@@ -73,6 +83,21 @@ sub do_cancel {
     exit 1;
   }
   print "'$id' update cancelled successfully\n";
+}
+
+sub do_restore {
+  my ($id, $ver) = @_;
+  my $vm = new OpenApp::VMDeploy($id);
+  if (!defined($vm)) {
+    print "Invalid VM ID '$id'\n";
+    exit 1;
+  }
+  my $err = $vm->schedRestore($ver);
+  if (defined($err)) {
+    print "$err\n";
+    exit 1;
+  }
+  print "'$id' restore initiated successfully\n";
 }
 
 sub do_list {

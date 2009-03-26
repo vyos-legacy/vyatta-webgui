@@ -179,6 +179,33 @@ sub cancel {
   return undef;
 }
 
+sub schedRestore {
+  my ($self, $ver) = @_;
+  my ($scheduled) = $self->_checkSched();
+  return "'$self->{_vmId}' update already scheduled"
+    if ($scheduled eq 'scheduled');
+
+  # schedule restore
+  my $upg_cmd = '/opt/vyatta/sbin/openapp-vm-upgrade.pl --action=restore'
+                . " --vm=\"$self->{_vmId}\" --ver=\"$ver\"";
+  my @atouts = `echo '$upg_cmd' | sudo at now 2>&1 | grep -v warning`;
+  my ($j, $t, $err) = (undef, undef, undef);
+  for my $at (@atouts) {
+    if ($at =~ /^job\s+(\d+)\s+at\s+(\w+\s+\w+\s+\d+\s+[\d:]+\s+\d+)$/) {
+      ($j, $t) = ($1, $2);
+      last;
+    }
+    $at =~ s/^at: //;
+    $err .= $at;
+  }
+  return "Failed to initiate restore: $err" if (!defined($j));
+
+  # TODO handle "sched" entry
+
+  # success
+  return undef;
+}
+
 sub getHist {
   my ($self) = @_;
   my @records = ();

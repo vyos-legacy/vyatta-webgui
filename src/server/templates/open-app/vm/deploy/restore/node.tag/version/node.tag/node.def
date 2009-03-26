@@ -1,0 +1,8 @@
+help: Version of the target VM image, e.g., "1.0"
+access:admin
+run: if sudo /opt/vyatta/sbin/openapp-vm-deploy.pl \
+          --restore "$5" --ver "$7"; then
+       return 0
+     else
+       return 1
+     fi

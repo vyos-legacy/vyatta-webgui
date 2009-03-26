@@ -75,17 +75,18 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
 
   //now enforce role restrictions using the "access:" attribute in templates.
   //first parse the template file, then find tag, use role level and compare.
+  string opmodecmd;
   if (user_access_level >= validate_op_cmd(username,user_access_level,cmd)) {
-    string opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username.c_str() + "; " + cmd;
+    opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username.c_str() + "; " + cmd;
     //capture the backup command and direct to the chunker
-    if (multi_part_op_cmd(cmd)) {
+    if (multi_part_op_cmd(opmodecmd)) {
       //success
       return;
     }
 
     cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
-    string opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c 'export "
+    opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c 'export "
       + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username.c_str() + "; "
       + cmd + " 2>&1'";
     string stdout;

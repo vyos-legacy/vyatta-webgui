@@ -106,7 +106,7 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 	
 	this.f_restoreVm = function() 
 	{
-		g_busObj.f_upgradeVm(thisObj.m_vm.m_name, thisObj.m_deployVm.m_prevVersion, 'now', thisObj.f_restoreVmCb);
+		g_busObj.f_restoreVm(thisObj.m_vm.m_name, thisObj.m_deployVm.m_prevVersion, thisObj.f_restoreVmCb);
 	}
 	
     this.f_handleClick = function(e)

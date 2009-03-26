@@ -527,6 +527,11 @@ function FT_businessLayer()
 	{
 		thisObj.m_vm.f_upgradeVm(vm, ver, time, guiCb);
 	}
+	
+    this.f_restoreVm = function(vm, ver, guiCb)
+	{
+		thisObj.m_vm.f_upgradeVm(vm, ver, guiCb);
+	}	
 }
 
 ///////////////////////////////////////////////

@@ -33,7 +33,7 @@ function FT_siteMap()
 	{
         var div = document.createElement('div');
         div.setAttribute('id', 'ft_popup_div');
-		div.style.width = '610px';		      
+		div.style.width = '560px';		      
 		div.style.backgroundColor = 'white';	
         div.style.display = 'block';		
         div.style.overflow = 'visible';
@@ -110,20 +110,28 @@ function FT_siteMap()
         el.removeChild(thisObj.m_div);		
 	}
 	
-	this.f_handleClick = function(id)
+	
+	
+	this.f_handleClick = function(id, subId)
 	{
+		thisObj.f_hide();
 		var index = id.indexOf('sitemap_vmlink_');
 		if (index != -1) {
 			id = id.substring(15,id.length);
+			var path = g_mainFrameObj.f_getUrlPath(id);
+			g_mainFrameObj.f_selectVm(id, path);
+		} else if (id == 'closeButton') {
+		    return;
+		} else { //OA panel clicked, and a sub link is selected.
+			g_mainFrameObj.f_selectVm(VYA.FT_CONST.OA_ID, '#');
+			g_mainFrameObj.f_selectPage(id, subId);
 		} 
-//		alert('vmlink: ' + id);
-		thisObj.f_hide();
 	}
 }
 
-function f_siteMapClickHandler(id)
+function f_siteMapClickHandler(id, subId)
 {
-	g_mainFrameObj.m_siteMap.f_handleClick(id);
+	g_mainFrameObj.m_siteMap.f_handleClick(id, subId);
 }
 
 function f_siteMapClick()

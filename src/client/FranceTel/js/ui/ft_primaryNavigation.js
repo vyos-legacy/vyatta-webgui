@@ -146,7 +146,8 @@ function FT_primaryNavigation()
     this.f_handleMouseout = function(e)
     {
         var target = g_xbObj.f_xbGetEventTarget(e);
-        var vmId = target.innerHTML.trim();
+        var vmId = target.getAttribute('id');
+		//console.log('f_handleMouseout: vmId:' + vmId + ' id: ' + id + ' thisObj.m_selectedVm: ' + thisObj.m_selectedVm +  ' lastVm: ' + thisObj.m_lastVm);
         if (vmId != thisObj.m_selectedVm) {
             target.style.color = VYA.DYN_STYLE.PRI_NAV_NOT_ACT_ITEM_COLOR;
             target.style.borderBottom = VYA.DYN_STYLE.PRI_NAV_NOT_ACT_ITEM_BORDER_BOTTOM;

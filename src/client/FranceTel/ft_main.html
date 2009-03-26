@@ -324,7 +324,7 @@
             <div class="sitemap_main">
                 <ul id="sitemap_vmlink_ul">
                     <li id="sitemap_vmlink_oa" class="sitemap_vmlink">
-                        <a href="#" onclick="f_siteMapClickHandler('vmlink_oa')"><img border="0" src="images/puce_link.gif">&nbsp;<span class="bold12">Open Appliance</span></a>
+                        <a href="#" onclick="f_siteMapClickHandler('vmlink_openapp')"><img border="0" src="images/puce_link.gif">&nbsp;<span class="bold12">Open Appliance</span></a>
                         <div id="sitemap_sm_applications" class="sitemap_menu">
                             <ul id="sitemap_sm_applications_ul">
                                 <li class="sitemap_menu_header">
@@ -333,16 +333,16 @@
                                 <li class="sitemap_menu_liner">
                                 </li>
                                 <li id="dashboard_l2_sitemap">
-                                    <a href="#" desc="dashboard" onclick="f_siteMapClickHandler('dashboard_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;dashboard</a>
+                                    <a href="#" desc="dashboard" onclick="f_siteMapClickHandler('app_l1','dashboard_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;dashboard</a>
                                 </li>
                                 <li id="update_l2_sitemap">
-                                    <a href="#" desc="updates planning and history" onclick="f_siteMapClickHandler('update_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;updates</a>
+                                    <a href="#" desc="updates planning and history" onclick="f_siteMapClickHandler('app_l1','update_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;updates</a>
                                 </li>
                                 <li id="restart_l2_sitemap">
-                                    <a href="#" desc="restart Application or Open appliance" onclick="f_siteMapClickHandler('restart_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;restart</a>
+                                    <a href="#" desc="restart Application or Open appliance" onclick="f_siteMapClickHandler('app_l1','restart_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;restart</a>
                                 </li>
                                 <li id="subscribe_l2_sitemap">
-                                    <a href="#" desc="subscription" onclick="f_siteMapClickHandler('subscribe_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;subscribe</a>
+                                    <a href="#" desc="subscription" onclick="f_siteMapClickHandler('app_l1','subscribe_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;subscribe</a>
                                 </li>
                                 <li class="sitemap_menu_liner">
                                 </li>
@@ -356,10 +356,10 @@
                                 <li class="sitemap_menu_liner">
                                 </li>
                                 <li id="user_l2_sitemap">
-                                    <a href="#" desc="user list" onclick="f_siteMapClickHandler('user_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;users</a>
+                                    <a href="#" desc="user list" onclick="f_siteMapClickHandler('user_l1','user_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;users</a>
                                 </li>
                                 <li id="user_right_l2_sitemap">
-                                    <a href="#" desc="user rights" onclick="f_siteMapClickHandler('user_right_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;users rights</a>
+                                    <a href="#" desc="user rights" onclick="f_siteMapClickHandler('user_l1','user_right_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;users rights</a>
                                 </li>
                                 <li class="sitemap_menu_liner">
                                 </li>
@@ -373,10 +373,10 @@
                                 <li class="sitemap_menu_liner">
                                 </li>
                                 <li id="hardware_l2_sitemap">
-                                    <a href="#" desc="hardware monitor" onclick="f_siteMapClickHandler('hardware_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;hardware</a>
+                                    <a href="#" desc="hardware monitor" onclick="f_siteMapClickHandler('mon_l1','hardware_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;hardware</a>
                                 </li>
                                 <li id="network_l2_sitemap">
-                                    <a href="#" desc="network monitor" onclick="f_siteMapClickHandler('network_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;network</a>
+                                    <a href="#" desc="network monitor" onclick="f_siteMapClickHandler('mon_l1','network_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;network</a>
                                 </li>
                                 <li class="sitemap_menu_liner">
                                 </li>
@@ -391,10 +391,10 @@
                                 <li class="sitemap_menu_liner">
                                 </li>
                                 <li id="backup_l2_sitemap">
-                                    <a href="#" desc="configuration backup" onclick="f_siteMapClickHandler('backup_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;configuration backup</a>
+                                    <a href="#" desc="configuration backup" onclick="f_siteMapClickHandler('backup_l1','backup_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;configuration backup</a>
                                 </li>
                                 <li id="restore_l2_sitemap">
-                                    <a href="#" desc="configuration restore" onclick="f_siteMapClickHandler('restore_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;configuration restore</a>
+                                    <a href="#" desc="configuration restore" onclick="f_siteMapClickHandler('backup_l1','restore_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;configuration restore</a>
                                 </li>
                                 <li class="sitemap_menu_liner">
                                 </li>
@@ -408,23 +408,23 @@
                                 <li class="sitemap_menu_liner">
                                 </li>
                                 <li id="email_serv_l2_sitemap">
-                                    <a href="#" desc="email server configuration" onclick="f_siteMapClickHandler('email_serv_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;email server</a>
+                                    <a href="#" desc="email server configuration" onclick="f_siteMapClickHandler('config_l1','email_serv_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;email server</a>
                                 </li>
                                 <li id="time_serv_l2_sitemap">
-                                    <a href="#" desc="time server configuration" onclick="f_siteMapClickHandler('time_serv_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;time server</a>
+                                    <a href="#" desc="time server configuration" onclick="f_siteMapClickHandler('config_l1','time_serv_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;time server</a>
                                 </li>
                                 <li id="user_dir_l2_sitemap">
-                                    <a href="#" desc="LDAP server configuration" onclick="f_siteMapClickHandler('user_dir_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;user directory</a>
+                                    <a href="#" desc="LDAP server configuration" onclick="f_siteMapClickHandler('config_l1','user_dir_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;user directory</a>
                                 </li>
                                 <li id="blb_l2_sitemap">
-                                    <a href="#" desc="BLB Association" onclick="f_siteMapClickHandler('blb_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;BLB association</a>
+                                    <a href="#" desc="BLB Association" onclick="f_siteMapClickHandler('config_l1','blb_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;BLB association</a>
                                 </li><!-- Remove 3rd_party_l2_sitemap link.  OSGi is not applicable.
                                 <li id="3rd_party_l2_sitemap">
                                 <a href="#" desc="OSGi"><img border="0" src="images/fleche_off.gif">&nbsp;3rd Parties</a>
                                 </li>
                                 -->
                                 <li id="password_l2_sitemap">
-                                    <a href="#" desc="password policy" onclick="f_siteMapClickHandler('password_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;password policy</a>
+                                    <a href="#" desc="password policy" onclick="f_siteMapClickHandler('config_l1','password_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;password policy</a>
                                 </li>
                                 <li class="sitemap_menu_liner">
                                 </li>
@@ -438,7 +438,7 @@
                                 <li class="sitemap_menu_liner">
                                 </li>
                                 <li id="myprof_l2_sitemap">
-                                    <a href="#" desc="my profile" onclick="f_siteMapClickHandler('myprof_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;my profile</a>
+                                    <a href="#" desc="my profile" onclick="f_siteMapClickHandler('myprof_l1','myprof_l2')"><img border="0" src="images/fleche_off.gif">&nbsp;my profile</a>
                                 </li>
                                 <li class="sitemap_menu_liner">
                                 </li>

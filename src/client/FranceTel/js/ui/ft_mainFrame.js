@@ -56,6 +56,18 @@ function FT_mainFrame(){
 	    g_busObj.f_userLogout();	
 	}
 	
+	this.f_getUrlPath = function(vmId) {
+		if (vmId == VYA.FT_CONST.OA_ID) {
+			return '#';
+		}
+		for (var i=0; i < thisObj.m_vmList.length; i++) {
+			if (vmId == thisObj.m_vmList[i].m_name) {
+				return thisObj.m_vmList[i].m_guiUri;
+			}
+		}
+		return 'undefined';
+	}
+	
     /*
      * Initialialize the main content after login.
      */
@@ -89,9 +101,16 @@ function FT_mainFrame(){
     this.f_showOApanel = function(vmId, urlPath){					
         thisObj.m_mainPanel.f_show(vmId, urlPath);
     }
+	
+	/*
+	 * Select a page inside OA
+	 */
+	this.f_selectPage = function(id, subId) {
+		thisObj.m_mainPanel.f_selectPage(id, subId);
+	}
     
     /*
-     * Render this VM
+     * Render this VM.  No primary selection alter.
      */
     this.f_showVm = function(vmId, urlPath){
         if (vmId == VYA.FT_CONST.OA_ID) {
@@ -100,6 +119,16 @@ function FT_mainFrame(){
             thisObj.f_showOther(vmId, urlPath);
         }
     }
+	
+	/*
+	 * This function called the primary navigation f_selectVm to mimic the case
+	 * the user clicks on the primary navigation bar.  
+	 * This function is called in ft_siteMap.
+	 */
+	this.f_selectVm = function(vmId, urlPath) {
+	    thisObj.m_priNavigation.f_selectVm(vmId, urlPath);	
+	}
+	
 	
 	this.f_handleClickLogoff = function(event) {
         thisObj.f_logout();	

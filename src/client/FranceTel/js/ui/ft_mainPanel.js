@@ -53,52 +53,13 @@ function FT_mainPanel(){
 			thisObj.f_showVm(vmId, urlPath);
 		}
 	}
-	/*
-    this.f_show = function(vmId){
-        //thisObj.f_reset();
-		if (thisObj.m_2navSelectedItem != undefined) {
-			//there are 3 cases of transition: 
-			// 1. OA -> ifrm: Need to hide OA. Show new ifrm.
-			// 2. ifrm -> ifrm: Need to remove ifrm.  Show new ifrm.
-			// 3. ifrm -> OA: Need to remove ifrm. Show OA.
-			if (thisObj.m_2navSelectedItem == VYA.FT_CONST.OA_ID) { //OA -> ifrm
-			    thisObj.m_2navMenu.f_hide();
-			    thisObj.m_2navMenu.f_resetSelectItem();
-			    thisObj.m_3navMenu.f_hide(thisObj.m_3navSelectedItem);
-			    thisObj.m_3navMenu.f_resetSelectItem();	
-                thisObj.m_2navSelectedItem = vmId;	
-				thisObj.f_showVm(vmId);		
-			} else if (vmId != VYA.FT_CONST.OA_ID) { //ifrm -> ifrm
-			    thisObj.f_reset();
-				thisObj.m_2navSelectedItem = vmId;
-				thisObj.f_showVm(vmId);
-			} else { //ifrm -> OA
-				thisObj.f_reset();
-				thisObj.m_2navSelectedItem = vmId;
-				thisObj.f_showOApanel();
-			}
-			
-		} else {
-		    thisObj.m_2navSelectedItem = vmId;	
-			(vmId == VYA.FT_CONST._OA_ID) ? thisObj.f_showOApanel() : thisObj.f_showVm(vmId);
-		}
-    }
-    */
-	
-	
-    this.f_showOApanel = function(){
-	
-///////// OLD DASHBOARD - 
-//        var dbcb = function()
-//        {
-//
-//        }
-//        var db = new FT_confDashboard('db', dbcb);
-//        var div = db.f_getConfigurationPage();
-//		thisObj.m_container.appendChild(div);
-//
-///////// END OF OLD DASHBOARD
-				
+
+    this.f_selectPage = function(id, subId) {
+		thisObj.m_2navMenu.f_selectItem(id);
+        thisObj.m_3navMenu.f_selectItem(subId);		
+	}
+
+    this.f_showOApanel = function(){				
 		thisObj.m_oa_container.style.display = 'block';
 		thisObj.m_container.appendChild(thisObj.m_oa_container);	
         thisObj.m_2navMenu.f_show();

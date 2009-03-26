@@ -207,7 +207,7 @@ function FT_3rdNavigation()
     
     this.f_selectItem = function(id)
     {
-        //alert ('f_selectItem: id=' + id);
+        //console.log('3rd: f_selectItem: ' + id);
         thisObj.m_selectedItem = id;
         if (id != undefined) {
             var menu = document.getElementById(id).parentNode; //This is @ UL node

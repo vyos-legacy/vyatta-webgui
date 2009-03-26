@@ -77,9 +77,8 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
   //first parse the template file, then find tag, use role level and compare.
   string opmodecmd;
   if (user_access_level >= validate_op_cmd(username,user_access_level,cmd)) {
-    opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username.c_str() + "; " + cmd;
     //capture the backup command and direct to the chunker
-    if (multi_part_op_cmd(opmodecmd)) {
+    if (multi_part_op_cmd(cmd,username)) {
       //success
       return;
     }
@@ -87,7 +86,7 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
     cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
     opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c 'export "
-      + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username.c_str() + "; "
+      + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + "; "
       + cmd + " 2>&1'";
     string stdout;
     bool verbatim = false;
@@ -116,7 +115,7 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
  *                                                                                                                                                    
  **/
 bool
-Command::multi_part_op_cmd(std::string &cmd)
+Command::multi_part_op_cmd(std::string &cmd,const std::string &username)
 {
   //only eat "openapp archive backup commands" right now
   StrProc str_proc(cmd," ");
@@ -130,9 +129,10 @@ Command::multi_part_op_cmd(std::string &cmd)
     return false;
   }
 
+  string opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + "; " + cmd;
   //does the cmd either equal an in-process bground op multi-part cmd                                                                                 
   //or is this the start of one?                                                                                                                      
-  MultiResponseCommand multi_resp_cmd(_proc->get_msg().id(),cmd);
+  MultiResponseCommand multi_resp_cmd(_proc->get_msg().id(),opmodecmd);
   multi_resp_cmd.init();
   //blocks until enough of a response is generated                                                                                                    
   if (!multi_resp_cmd.process()) {

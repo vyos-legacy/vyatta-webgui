@@ -181,7 +181,9 @@ function FT_confBaseObj(name, callback, busLayer)
      * create a div for push buttons.
      * @param buttons - is an array of array contains button name and onclick
      *                  callback.
-     *                  [ [btn1, btn1Callback], [btn2, btn2Callback], []...]
+     *                  [ [btn1, btn1Callback, tooltipString, element id],
+     *                  [btn2, btn2Callback, tooltipString, element id],
+     *                  []...]
      */
     this.f_createButtons = function(buttons)
     {
@@ -196,6 +198,7 @@ function FT_confBaseObj(name, callback, busLayer)
         for(var i=0; i<buttons.length; i++)
         {
             var btn = buttons[i];
+            var elId = btn[3] == undefined ? "" : 'id="' + btn[3] + '" ';
 
             switch(btn[0])
             {
@@ -203,7 +206,8 @@ function FT_confBaseObj(name, callback, busLayer)
                 innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="' + g_lang.m_imageDir + 'bt_addUser.gif" name="addUser" ' +
+                    '<input type="image" src="' + g_lang.m_imageDir +
+                    'bt_addUser.gif" ' + elId + ' name="addUser" ' +
                     'value="addUser" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -211,7 +215,8 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="' + g_lang.m_imageDir + 'bt_cancel.gif" name="cancel" ' +
+                    '<input type="image" src="' + g_lang.m_imageDir + 
+                    'bt_cancel.gif" ' + elId + ' name="cancel" ' +
                     'value="Cancel" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -219,7 +224,8 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="' + g_lang.m_imageDir + 'bt_apply.gif" name="apply" ' +
+                    '<input type="image" src="' + g_lang.m_imageDir + 
+                    'bt_apply.gif" ' + elId + ' name="apply" ' +
                     'value="apply" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -227,7 +233,8 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="' + g_lang.m_imageDir + 'bt_update.gif" name="apply" ' +
+                    '<input type="image" src="' + g_lang.m_imageDir + 
+                    'bt_update.gif" ' + elId + ' name="apply" ' +
                     'value="apply" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -235,7 +242,8 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="' + g_lang.m_imageDir + 'bt_backup.gif" name="apply" ' +
+                    '<input type="image" src="' + g_lang.m_imageDir + 
+                    'bt_backup.gif" ' + elId + ' name="apply" ' +
                     'value="apply" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -244,7 +252,8 @@ function FT_confBaseObj(name, callback, busLayer)
                         'padding-top:15px;" >' +
                         '<input type="button" name="' + btn[0] +
                         '" value="' + btn[0] + '" onclick="' +
-                        btn[1] + '" title="' + btn[2] + '">' +
+                        btn[1] + '" title="' + btn[2] + '" ' +
+                        elId + '>' +
                         '</div></td>';
                 break;
             }
@@ -278,7 +287,7 @@ function FT_confBaseObj(name, callback, busLayer)
      */
     this.f_createColumn = function(colName, width, type, paddLeft)
     {
-        var header = colName.length > 2 ?
+        var header = colName != null && colName.length > 2 ?
             "<p valign='center' align='center'><b>" + colName + "<br></b></p>" :
             "";
 
@@ -385,7 +394,11 @@ function FT_confBaseObj(name, callback, busLayer)
 
     this.f_renderProgressBar = function(val, tooltip)
     {
-        var bgColor = val >= 80 ? 'red' : 'green';
+        var bgColor = 'green';
+        if(val >= 90)
+            bgColor = 'red';
+        else if(val >= 60 && val <80)
+            bgColor = 'orange';
 
         return '<div title="' + tooltip + '" style="position:relative; ' +
               'width:102px; height:18px;' +
@@ -409,11 +422,39 @@ function FT_confBaseObj(name, callback, busLayer)
             if(evt.m_errCode == 3)  // timeout error
                 g_utils.f_popupMessage('timeout', 'timeout', null, true);
             else
-                alert(evt.m_errMsg);
+                g_utils.f_popupMessage(evt.m_errMsg, 'ok', errTitle, true);
 
             return true;
         }
         else
             return false;
+    }
+
+    /**
+     * enable/disable <input> element button image.
+     * NOTE: the name of enable/disable image must follow below form:
+     *        enable image: exampleImage.gif
+     *        disable image: exampleImage_disabled.gif
+     *
+     * @param elementId - dom element id
+     * @param enabled - true is enabled button image, false disabled.
+     */
+    this.f_enabledDisableButton = function(elementId, enabled)
+    {
+        var button = document.getElementById(elementId);
+        if(button != undefined)
+        {
+            var src = button.src;
+            var in1 = src.lastIndexOf('/');
+            var in2 = src.lastIndexOf('_disabled.gif');
+            if(in2 < 0)
+                in2 = src.lastIndexOf('.gif');
+            var name = src.substring(in1, in2);
+
+            var newSrc = src.substr(0, in1);
+            button.disabled = !enabled;
+            button.src = enabled ? newSrc + name + '.gif' :
+                          newSrc + name + '_disabled.gif';
+        }
     }
 }

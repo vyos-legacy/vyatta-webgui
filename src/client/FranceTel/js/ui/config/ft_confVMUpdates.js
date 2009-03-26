@@ -161,15 +161,12 @@ function f_vmHandleDeployRestore(e, vmId)
             g_configPanelObj.m_activeObj.f_loadVMData();
     }
 
-    if(e.getAttribute('id')== 'ft_popup_message_apply')
-        g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID, vmId);
+    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID, vmId);
 }
 
 function f_vmDeployRestore(vmId, vmName)
 {
-    g_utils.f_popupMessage('Are you sure you want to restore (' + vmName + ') VM?',
-                'confirm', 'Cancel Update Schedule',true,
-                "f_vmHandleDeployRestore(this, '"+ vmId + "')");
+    f_vmHandleDeployRestore(null, vmId);
 }
 
 

@@ -7,8 +7,10 @@
 
 function FT_confDashboard(name, callback, busLayer)
 {
-    var thisObjName = 'FT_confDashboard';
     var thisObj = this;
+    this.thisObjName = 'FT_confDashboard';
+    this.m_btnUpdateId = 'ft_dbUpdateButtonId';
+    this.m_btnCancelId = 'ft_dbCancelButtonId';
 
     /**
      * @param name - name of configuration screens.
@@ -92,6 +94,7 @@ function FT_confDashboard(name, callback, busLayer)
                 }
 
                 thisObj.f_adjustDivPosition(thisObj.m_buttons);
+                thisObj.f_updateApplyButton();
             }
         }
 
@@ -114,6 +117,8 @@ function FT_confDashboard(name, callback, busLayer)
                 break;
             }
         }
+
+        thisObj.f_updateApplyButton();
     }
 
     this.f_handleResetCheckbox = function()
@@ -127,6 +132,25 @@ function FT_confDashboard(name, callback, busLayer)
             if(chkbox != undefined)
                 chkbox.checked = true;
         }
+    }
+
+    this.f_updateApplyButton = function()
+    {
+        var f = thisObj.m_updateFields;
+        var isAnyChkboxChecked = false;
+
+        for(var i=0; i<f.length; i++)
+        {
+            var vm = f[i];
+            var chkbox = document.getElementById('db_' + vm[1].m_name)
+            if(chkbox != undefined && chkbox.checked)
+            {
+                isAnyChkboxChecked = true;
+                break;
+            }
+        }
+
+        thisObj.f_enabledDisableButton(thisObj.m_btnUpdateId, isAnyChkboxChecked);
     }
 
     /**
@@ -182,8 +206,10 @@ function FT_confDashboard(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
-        var btns = [['Update', "f_dbHandleUpdate()", 'Update selected VM(s)'],
-                    ['Cancel', "f_dbHandleCancel()", 'Reset selection']];
+        var btns = [['Update', "f_dbHandleUpdate()", 'Update selected VM(s)',
+                      this.m_btnUpdateId],
+                    ['Cancel', "f_dbHandleCancel()", 'Reset selection',
+                      this.m_btnCancelId]];
         this.m_buttons = this.f_createButtons(btns);
 
         return [this.m_header, this.m_body, this.m_buttons];

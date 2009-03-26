@@ -15,7 +15,7 @@ public:
 
 private:
   bool
-  multi_part_op_cmd(std::string &cmd,const std::string &username);
+  multi_part_op_cmd(std::string &cmd,std::string &username);
 
   void
   execute_single_command(std::string &cmd, const std::string &username, WebGUI::AccessLevel access_level, std::string &resp, WebGUI::Error &err);

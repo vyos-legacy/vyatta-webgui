@@ -65,7 +65,8 @@ function FT_confVMUpdates(name, callback, busLayer)
                 {
                     var vmRec = g_busObj.f_getVmRecByVmId(dep[i].m_id);
                     var button = thisObj.f_createRenderButton(dep[i].m_id,
-                                  vmRec.m_displayName, dep[i].m_status);
+                                  vmRec.m_displayName, dep[i].m_status,
+                                  vmRec.m_prevVersion);
 
                     var vmData = [dep[i].m_time, vmRec.m_displayName + " (" +
                                   dep[i].m_version + ")",
@@ -96,7 +97,7 @@ function FT_confVMUpdates(name, callback, busLayer)
             return '<p title="' + msg + '">' + status + '</p>';
     }
 
-    this.f_createRenderButton = function(vmId, vmName, status)
+    this.f_createRenderButton = function(vmId, vmName, status, prevVer)
     {
         var cb = '';
         if(status == 'scheduled')
@@ -108,7 +109,8 @@ function FT_confVMUpdates(name, callback, busLayer)
         else if(status == 'failed' || status == 'succeeded')
         {
             cb = "f_vmDeployRestore('" + vmId + "', '" + vmName + "')";
-            return thisObj.f_renderButton('Restore', true, cb, 'Restore ' + vmName);
+            return thisObj.f_renderButton('Restore', prevVer == undefined ?
+                false:true, cb, 'Restore ' + vmName);
         }
 
         return "";
@@ -130,11 +132,7 @@ function f_vmHandleDeployCancel(e, vmId)
 {
     var cb = function(evt)
     {
-        if(evt.f_isError())
-        {
-            alert('cancel error');
-        }
-        else
+        if(!g_configPanelObj.m_activeObj.f_isServerError(evt, 'VM Update Planning Error'))
             g_configPanelObj.m_activeObj.f_loadVMData();
     }
 
@@ -149,24 +147,9 @@ function f_vmDeployCancel(vmId, vmName)
                 "f_vmHandleDeployCancel(this, '"+ vmId + "')");
 }
 
-function f_vmHandleDeployRestore(e, vmId)
-{
-    var cb = function(evt)
-    {
-        if(evt.f_isError())
-        {
-            alert('restore error');
-        }
-        else
-            g_configPanelObj.m_activeObj.f_loadVMData();
-    }
-
-    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID, vmId);
-}
-
 function f_vmDeployRestore(vmId, vmName)
 {
-    f_vmHandleDeployRestore(null, vmId);
+    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID, vmId);
 }
 
 

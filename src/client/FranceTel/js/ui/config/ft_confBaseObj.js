@@ -220,6 +220,15 @@ function FT_confBaseObj(name, callback, busLayer)
                     'value="Cancel" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
+                case 'Restore':
+                    innerHtml += '<td>' +
+                    '<div title="' + btn[2] + '" style="height:30px; ' +
+                    'padding-top:15px;" >' +
+                    '<input type="image" src="' + g_lang.m_imageDir +
+                    'bt_restore.gif" ' + elId + ' name="restore" ' +
+                    'value="Restore" onclick="' + btn[1] +
+                    '"></div></td>';
+                break;
                 case 'Apply':
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
@@ -234,8 +243,8 @@ function FT_confBaseObj(name, callback, busLayer)
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<input type="image" src="' + g_lang.m_imageDir + 
-                    'bt_update.gif" ' + elId + ' name="apply" ' +
-                    'value="apply" onclick="' + btn[1] +
+                    'bt_update.gif" ' + elId + ' name="update" ' +
+                    'value="Update" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
                 case 'Backup':
@@ -243,8 +252,8 @@ function FT_confBaseObj(name, callback, busLayer)
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<input type="image" src="' + g_lang.m_imageDir + 
-                    'bt_backup.gif" ' + elId + ' name="apply" ' +
-                    'value="apply" onclick="' + btn[1] +
+                    'bt_backup.gif" ' + elId + ' name="backup" ' +
+                    'value="Backup" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
                 default:

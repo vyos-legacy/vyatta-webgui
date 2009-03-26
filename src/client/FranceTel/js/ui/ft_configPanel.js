@@ -21,7 +21,7 @@ function FT_configPanel()
     this.m_selectCmp = undefined; //the component being selected (but not yet displayed)
     this.m_selectObj = undefined; //the object that its component is being selected
     this.m_dynSubMenu = undefined; //the dynamic inner sub menu (class=dyn_sub_menu) for user add/ user update
-    
+
 	///////////////////////////////////////
     // functions
     /**
@@ -36,20 +36,20 @@ function FT_configPanel()
         thisObj.m_container = document.getElementById(VYA.FT_CONST.DOM_3_CONFIG_PANEL_ID);
         thisObj.m_title = document.getElementById(VYA.FT_CONST.DOM_3_CONFIG_PANEL_TITLE_ID);
         thisObj.m_container.parentNode.removeChild(thisObj.m_container);
-        //initialize the dynamic sub menu 
+        //initialize the dynamic sub menu
         thisObj.f_initDynSubMenu();
     }
-    
+
     this.f_initDynSubMenu = function()
     {
         var dynMenu = document.getElementById(VYA.FT_CONST.DOM_DYN_SUB_MENU_ID);
         dynMenu.parentNode.removeChild(dynMenu);
-		
+
 		var menus = dynMenu.getElementsByTagName('UL');
-        thisObj.m_dynSubMenu = new FT_lookupTable();		
-		for (var k = 0; k < menus.length; k++) {			
-			var aMenu = menus[k]; //Get to the UL portion.				
-			//now go through the LI entries, and find out the id, desc from the HREF, 
+        thisObj.m_dynSubMenu = new FT_lookupTable();
+		for (var k = 0; k < menus.length; k++) {
+			var aMenu = menus[k]; //Get to the UL portion.
+			//now go through the LI entries, and find out the id, desc from the HREF,
 			//and add the id, desc to the lookup
 			for (var i = 0; aMenu.childNodes[i]; i++) { //This is @ LI node
 				var sid = f_elemGetAttribute(aMenu.childNodes[i], 'id');
@@ -63,7 +63,7 @@ function FT_configPanel()
 			}
 		}
     }
-    
+
     this.f_showHeader = function(id, desc)
     {
         thisObj.m_currentDesc = desc;
@@ -72,7 +72,7 @@ function FT_configPanel()
         thisObj.m_container.style.display = 'block';
         thisObj.m_parent_container.appendChild(thisObj.m_container);
     }
-    
+
     this.f_stopPolling = function()
     {
         if (thisObj.m_activeObj != undefined) {
@@ -80,7 +80,7 @@ function FT_configPanel()
             thisObj.m_activeObj.f_stopLoadVMData();
         }
     }
-    
+
     this.f_showPage = function(id, obj)
     {
         //Lookup the id2desc in the hidden link first
@@ -95,68 +95,68 @@ function FT_configPanel()
             alert('cannot find description for id: ' + id);
         }
     }
-    
+
     this.f_show = function(id, desc, obj)
     {
         thisObj.f_stopPolling();
         thisObj.f_showHeader(id, desc);
-        
+
         var cmp = thisObj.f_getComponent(id, obj);
         if (cmp == null) {
             cmp = thisObj.f_createEmptyComponent();
         }
         thisObj.f_render(cmp);
     }
-    
+
     this.f_getComponent = function(id, obj)
     {
         switch (id) {
-        
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_DASHBOARD_ID:
                 var dbcb = function(){
-                
+
                 }
                 thisObj.m_selectObj = new FT_confDashboard('Dashboard', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
-                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_UPDATE_ID:
                 var dbcb = function(){
-                
+
                 }
                 thisObj.m_selectObj = new FT_confVMUpdates('Update', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
-				                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confRestoreUpdate('Restore', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init(obj);
-                return thisObj.m_selectObj.f_getConfigurationPage();				
-				
+                return thisObj.m_selectObj.f_getConfigurationPage();
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_SCHED_UPDATE_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confSchedUpdate('Update', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init(obj);
-                return thisObj.m_selectObj.f_getConfigurationPage();							
-               
+                return thisObj.m_selectObj.f_getConfigurationPage();
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_RESTART_ID:
                 var dbcb = function(){
-                
+
                 }
                 thisObj.m_selectObj = new FT_confRestart('Restart', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
-                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_SUBCRIBE_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confSubscribe('Subscription', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
-				                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID:
                 var dbcb = function(){
-                
+
                 }
                 thisObj.m_selectObj = new FT_confUserList('db', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
@@ -166,13 +166,13 @@ function FT_configPanel()
                 }
                 thisObj.m_selectObj = new FT_confUserRight('UserRight', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
-                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_HARDWARE_ID:
                 var hwCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confHwMonitor('Hardware Monitor', hwCb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
-                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_NETWORK_ID:
 			    break;
             case VYA.FT_CONST.DOM_3_NAV_SUB_BACKUP_ID:
@@ -180,8 +180,8 @@ function FT_configPanel()
 
                 }
                 thisObj.m_selectObj = new FT_confBackup('Backup', dbcb, g_busObj);
-                return thisObj.m_selectObj.f_getConfigurationPage();			
-			
+                return thisObj.m_selectObj.f_getConfigurationPage();
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID:
                  var dbcb = function(){
 
@@ -194,7 +194,7 @@ function FT_configPanel()
 
                 }
                 thisObj.m_selectObj = new FT_confRestoreDesc('RestoreDesc', dbcb, g_busObj);
-                return thisObj.m_selectObj.f_getConfigurationPage();
+                return thisObj.m_selectObj.f_getConfigurationPage(obj);
 
             case VYA.FT_CONST.DOM_3_NAV_SUB_EMAIL_SRV_ID:
                 var mpCb = function(){
@@ -202,56 +202,56 @@ function FT_configPanel()
                 thisObj.m_selectObj = new FT_confEmailServer('Email Server', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
-                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_TIME_SRV_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confTimeServer('Time Server', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
-                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_USER_DIR_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confLDAPserver('LDAP Server', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
-                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_BLB_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confBLB('BLB Association', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
-				
+
 			case VYA.FT_CONST.DOM_3_NAV_SUB_BLB_CHECK_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confBLBcheck('BLB credentials check', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
-                return thisObj.m_selectObj.f_getConfigurationPage();			
-                
+                return thisObj.m_selectObj.f_getConfigurationPage();
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_PASSWORD_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confPassword('Password Policy', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
-                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_MYPROFILE_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confMyProfile('My Profile', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
-                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_USER_ADD_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confUserAdd('Add user', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
-                
+
             case VYA.FT_CONST.DOM_3_NAV_SUB_USER_UPDATE_ID:
                 var mpCb = function(){
                 }
@@ -261,7 +261,7 @@ function FT_configPanel()
         }
         return (new FT_confEmptyComponent()).f_getConfigurationPage();
     }
-        
+
     this.f_load = function(component)
     {
         if (thisObj.m_selectObj != undefined) {
@@ -269,12 +269,12 @@ function FT_configPanel()
 				thisObj.m_configTempHolder.removeChild(component);
 			} catch (e) {
 				; //this is ok for now because the empty component doesn't get put to the temp holder
-			}		
-			
+			}
+
         }
         thisObj.m_container.appendChild(component);
     }
-    
+
     this.f_render = function(component)
     {
         if (thisObj.m_activeCmp != undefined) {
@@ -284,7 +284,7 @@ function FT_configPanel()
         thisObj.f_load(thisObj.m_selectCmp);
         thisObj.m_activeCmp = component;
         thisObj.m_activeObj = thisObj.m_selectObj;
-        
+
     }
-    
+
 }

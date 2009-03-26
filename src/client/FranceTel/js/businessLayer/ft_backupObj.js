@@ -16,7 +16,7 @@ function FT_backupRec(bkDate, name, file, content)
     this.m_bkDate = bkDate;
     this.m_name = name;
     this.m_file = file;
-    this.m_content = content == undefined ? [] : content;   // data type : FT_backupContentRec
+    this.m_contents = content == undefined ? [] : content;   // data type : FT_backupContentRec
 }
 
 function FT_backupObj(busObj)
@@ -59,7 +59,7 @@ function FT_backupObj(busObj)
                 }
                 else if(thisObj.m_lastCmdSent.indexOf('archive restore status') > 0)
                 {
-                    
+
                 }
                 else if(thisObj.m_lastCmdSent.indexOf('archive delete') > 0)
                 {
@@ -125,9 +125,9 @@ function FT_backupObj(busObj)
                 var vm ="";
                 var type = "";
 
-                for(var j=0; j<cNode.length; j++)
+                for(var j=0; j<cNode.childNodes.length; j++)
                 {
-                    var ccNode = cNode[j];
+                    var ccNode = cNode.childNodes[j];
 
                     if(ccNode.nodeName == 'vm')
                         vm = ccNode.firstChild.nodeValue;

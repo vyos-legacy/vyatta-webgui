@@ -35,7 +35,7 @@ function FT_confRestore(name, callback, busLayer)
         var cols = [];
 
         cols[0] = this.f_createColumn('Date', 120, 'text', '6');
-        cols[1] = this.f_createColumn('Content', 300, 'text', '6');
+        cols[1] = this.f_createColumn('Content', 330, 'text', '6');
         cols[2] = this.f_createColumn('Restore', 80, 'button', '30');
         cols[3] = this.f_createColumn('Download', 80, 'button', '30');
         cols[4] = this.f_createColumn('Delete', 80, 'button', '30');
@@ -71,14 +71,13 @@ function FT_confRestore(name, callback, busLayer)
                 for(var i=0; i<bkRec.length; i++)
                 {
                     var r = bkRec[i];
-                    var content = thisObj.f_getContents(r.m_content);
-
-                    var anchor = thisObj.f_renderAnchor(content,
-                                "f_handleRestoreDesc('" + r.m_file + "')",
+                    var content = thisObj.f_getContents(r.m_contents);
+                    var restDesc = "f_handleRestoreDesc('" + r.m_name + "', '" +
+                                    r.m_file + "', '" + content + "')";
+                    var anchor = thisObj.f_renderAnchor(content, restDesc,
                                 'Click here to restore ' + "(" + r.m_name + ")");
                     var restore = thisObj.f_renderButton(
-                                'restore', true, "f_handleRestoreDesc('" +
-                                r.m_file + "')", 'Restore (' + r.m_name + ')');
+                                'restore', true, restDesc, 'Restore (' + r.m_name + ')');
                     var download = thisObj.f_renderButton(
                                 'download', true, "f_handleDownloadRestore('" +
                                 r.m_file + "')", 'Download restore (' + r.m_name + ')');
@@ -103,12 +102,70 @@ function FT_confRestore(name, callback, busLayer)
     {
     }
 
+    ////////////////////////////////////////////////////////
+    // convert the contents format into content format where..
+    // contents - array of [ [vm, type], [vm, type], ... ]
+    // content - string of "vm (type, type), vm (type, type)";
+    //
+    // ex: [ [utm, conf], [pbx, conf], [utm, data]...]
+    //      "utm (conf+data), pbx (conf)..."
     this.f_getContents = function(contents)
     {
         var content = '';
 
+        ////////////////////////////////////////////
+        // extract vm from contents list into
+        // this form: [vm, vm2, vm3...]
+        var vm = [];
+        var c = 0;
         for(var i=0; i<contents.length; i++)
-            content += contents[i].m_vm + ' ' + contents[i].m_type + ';';
+        {
+            var vmAdd = false;
+            for(var j=0; j<vm.length; j++)
+            {
+                var v = vm[j];
+                if(v[0] == contents[i].m_vm)
+                {
+                    vmAdd = true;
+                    break;
+                }
+            }
+
+            if(!vmAdd)
+                vm[c++] = new Array(contents[i].m_vm);
+        }
+
+        // extract type into this form:
+        // [ [vm, type, type...], [vm2, type, type...] ... ]
+        for(var i=0; i<contents.length; i++)
+        {
+            for(var j=0; j<vm.length; j++)
+            {
+                var v = vm[j];
+                if(contents[i].m_vm == v[0])
+                {
+                    v[v.length] = contents[i].m_type;
+                    break;
+                }
+            }
+        }
+
+        // last form it into:
+        // "vm (type, type), vm (type, type)"
+        var comma = "";
+        for(var i=0; i<vm.length; i++)
+        {
+            var v = vm[i];
+            var vmRec = g_busObj.f_getVmRecByVmId(v[0]);
+
+            // for now, we only care for 2 type: conf and data
+            if(v[2] != undefined)
+                content += comma + vmRec.m_displayName + " (" + v[1] + "+" + v[2] + ")";
+            else
+                content += comma + vmRec.m_displayName + " (" + v[1] + ")";
+
+            comma = ", ";
+        }
 
         return content;
     }
@@ -161,9 +218,10 @@ function f_handleBrownMyPC(vm)
     g_busObj.f_stopVM(vm);
 }
 
-function f_handleRestoreDesc()
+function f_handleRestoreDesc(restorename, filename, content)
 {
-    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_DESC_ID);
+    var data = [restorename, filename, content];
+    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_DESC_ID, data);
 }
 
 function f_handleDeleteRestoreFile(e, restoreContent)
@@ -182,7 +240,7 @@ function f_handleDeleteRestoreFile(e, restoreContent)
         g_busObj.f_deleteUserFromServer(restoreContent, cb);
 }
 
-function f_handleDownloadRestore()
+function f_handleDownloadRestore(filename)
 {
 
 }

@@ -66,7 +66,7 @@ function FT_confVMUpdates(name, callback, busLayer)
                     var vmRec = g_busObj.f_getVmRecByVmId(dep[i].m_id);
                     var button = thisObj.f_createRenderButton(dep[i].m_id,
                                   vmRec.m_displayName, dep[i].m_status,
-                                  vmRec.m_prevVersion);
+                                  dep[i].m_prevVersion);
 
                     var vmData = [dep[i].m_time, vmRec.m_displayName + " (" +
                                   dep[i].m_version + ")",

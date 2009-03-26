@@ -108,6 +108,7 @@ sub _appendHist {
 
 sub _writeSched {
   my ($self, $sched, $job, $vver, $time) = @_;
+  # TODO move sched entry to history?
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
   my $sched_file = "$vdir/$SCHED_FILE";
   my $fd = undef;
@@ -118,6 +119,7 @@ sub _writeSched {
 
 sub _writeStatus {
   my ($self, $st, $vver, $time, $msg) = @_;
+  # TODO move status entry to history?
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
   my $st_file = "$vdir/$STATUS_FILE";
   my $fd = undef;
@@ -200,7 +202,9 @@ sub schedRestore {
   }
   return "Failed to initiate restore: $err" if (!defined($j));
 
-  # TODO handle "sched" entry
+  # remove sched entry
+  # TODO move to history?
+  $self->_clearSched();
 
   # success
   return undef;
@@ -399,7 +403,9 @@ sub _postInstProc {
 sub upgrade {
   my ($self, $vver) = @_;
 
-  # TODO move "scheduled" entry to history.
+  # remove sched entry
+  # TODO move to history?
+  $self->_clearSched();
 
   my $err = undef;
   while (1) {
@@ -429,7 +435,9 @@ sub upgrade {
 sub restore {
   my ($self, $vver) = @_;
 
-  # TODO handle "sched" entry
+  # remove sched entry
+  # TODO move to history?
+  $self->_clearSched();
 
   my $err = undef;
   while (1) {

@@ -13,6 +13,7 @@ function FT_mainFrame(){
     this.m_mainPanel = undefined;
     this.m_priNavigation = undefined;
     this.m_mainPanel = undefined;
+	this.m_siteMap = undefined;
 	this.m_doneInitComponent = false;
     
     ///////////////////////////////////////
@@ -25,6 +26,7 @@ function FT_mainFrame(){
         g_xbObj.f_xbAttachEventListener(logoff, 'click', thisObj.f_handleClickLogoff, true);			
         thisObj.m_mainPanel = new FT_mainPanel();		
         thisObj.m_priNavigation = new FT_primaryNavigation();
+		thisObj.m_siteMap = new FT_siteMap();
     }
     
 	this.f_getMainPanel = function() {
@@ -70,7 +72,7 @@ function FT_mainFrame(){
         
         thisObj.m_vmList = vmList;
         thisObj.m_priNavigation.f_init(thisObj, vmList);
-        
+		thisObj.m_siteMap.f_init(vmList);        
     }
     
     

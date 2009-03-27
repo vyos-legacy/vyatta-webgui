@@ -61,7 +61,7 @@ function FT_businessLayer()
     this.m_userObj = new FT_userBusObj(this);
     this.m_vm = new FT_vmBusObj(this);
     this.m_backup = new FT_backupObj(this);
-	this.m_oaConfig = new FT_oaConfigObj(this);
+    this.m_oaConfig = new FToaConfigObj(this);
 
     ///////////////////////////////
     // functions

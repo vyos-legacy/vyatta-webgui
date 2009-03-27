@@ -137,7 +137,7 @@ sub backup_archive {
 	    my $ip = '';
 	    $ip = $vm->getIP();
 	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/archive/$new_coll[$i][1]";
+		my $cmd = "http://$ip/archive/backup/$new_coll[$i][1]";
 		#writes to specific location on disk
 		my $bufile = "$BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]";
 		`rm -fr $BACKUP_WORKSPACE_DIR/* 2>/dev/null`;

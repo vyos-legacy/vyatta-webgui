@@ -9,6 +9,7 @@ function FT_confRestore(name, callback, busLayer)
 {
     this.thisObjName = 'FT_confRestore';
     var thisObj = this;
+    this.m_dataObj = null;
 
     /**
      * @param name - name of configuration screens.
@@ -59,6 +60,7 @@ function FT_confRestore(name, callback, busLayer)
                 var bkRec = evt.m_value;
                 if(bkRec == undefined) return;
 
+                thisObj.m_dataObj = bkRec;
                 if(thisObj.m_div != undefined)
                 {
                     thisObj.f_removeDivChildren(thisObj.m_div);
@@ -71,21 +73,19 @@ function FT_confRestore(name, callback, busLayer)
                 for(var i=0; i<bkRec.length; i++)
                 {
                     var r = bkRec[i];
-                    var content = thisObj.f_getContents(r.m_contents);
-                    var restDesc = "f_handleRestoreDesc('" + r.m_name + "', '" +
-                                    r.m_file + "', '" + content[0] + "', '" +
-                                    content[1] + "')";
-                    var anchor = thisObj.f_renderAnchor(content[0], restDesc,
-                                'Click here to restore ' + "(" + content[0] + ")");
+                    var content = thisObj.f_getContents(r.m_content.m_entry);
+                    var restDesc = "f_handleRestoreDesc('" + r.m_file + "')";
+                    var anchor = thisObj.f_renderAnchor(content, restDesc,
+                                'Click here to restore ' + "(" + content + ")");
                     var restore = thisObj.f_renderButton(
-                                'restore', true, restDesc, 'Restore backup archive (' + content[0] + ')');
+                                'restore', true, restDesc, 'Restore backup archive (' + content + ')');
                     var download = thisObj.f_renderButton(
                                 'download', true, "f_handleDownloadRestore('" +
-                                r.m_file + "')", 'Download backup archive (' + content[0] + ')');
+                                r.m_file + "')", 'Download backup archive (' + content + ')');
                     var del = thisObj.f_renderButton(
-                                'delete', true, "f_deleteRestoreFile('" + content[0] +
+                                'delete', true, "f_deleteRestoreFile('" + content +
                                 "', '" + r.m_file + "')",
-                                'Delete backup archive (' + content[0] + ')');
+                                'Delete backup archive (' + content + ')');
 
                     vmData = [r.m_bkDate, anchor, restore, download, del]
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData);
@@ -105,8 +105,8 @@ function FT_confRestore(name, callback, busLayer)
     }
 
     ////////////////////////////////////////////////////////
-    // convert the contents format into content format where..
-    // contents - array of [ [vm, type], [vm, type], ... ]
+    // convert the contents object data into content format where..
+    // contents - FT_backupEntryRec object
     // content - string of "vm (type, type), vm (type, type)";
     //
     // ex: [ [utm, conf], [pbx, conf], [utm, data]...]
@@ -114,64 +114,25 @@ function FT_confRestore(name, callback, busLayer)
     this.f_getContents = function(contents)
     {
         var content = '';
-
-        ////////////////////////////////////////////
-        // extract vm from contents list into
-        // this form: [vm, vm2, vm3...]
-        var vm = [];
-        var c = 0;
+        var comma = '';
         for(var i=0; i<contents.length; i++)
         {
-            var vmAdd = false;
-            for(var j=0; j<vm.length; j++)
+            var entry = contents[i];
+
+            if(entry.m_type.length == 2)
             {
-                var v = vm[j];
-                if(v[0] == contents[i].m_vm)
-                {
-                    vmAdd = true;
-                    break;
-                }
+                content += comma + entry.m_vmName + " (" + entry.m_type[0] + "+" +
+                        entry.m_type[1] + ")";
             }
-
-            if(!vmAdd)
-                vm[c++] = new Array(contents[i].m_vm);
-        }
-
-        // extract type into this form:
-        // [ [vm, type, type...], [vm2, type, type...] ... ]
-        for(var i=0; i<contents.length; i++)
-        {
-            for(var j=0; j<vm.length; j++)
+            else if(entry.m_type.length == 1)
             {
-                var v = vm[j];
-                if(contents[i].m_vm == v[0])
-                {
-                    v[v.length] = contents[i].m_type;
-                    break;
-                }
+                content += comma + entry.m_vmName + " (" + entry.m_type[0] + ")";
             }
-        }
-
-        // last form it into:
-        // "vm (type, type), vm (type, type)"
-        var comma = "";
-        var vmId = '';
-        for(var i=0; i<vm.length; i++)
-        {
-            var v = vm[i];
-            vmId += comma + v[0];
-            var vmRec = g_busObj.f_getVmRecByVmId(v[0]);
-
-            // for now, we only care for 2 type: conf and data
-            if(v[2] != undefined)
-                content += comma + vmRec.m_displayName + " (" + v[1] + "+" + v[2] + ")";
-            else
-                content += comma + vmRec.m_displayName + " (" + v[1] + ")";
 
             comma = ", ";
         }
 
-        return [content, vmId];
+        return content;
     }
 
     this.f_init = function()
@@ -183,6 +144,23 @@ function FT_confRestore(name, callback, busLayer)
         this.f_loadVMData();
 
         return [this.m_header, this.m_body];
+    }
+
+    this.f_launchRestoreDescription = function(fn)
+    {
+        if(thisObj.m_dataObj == null) return;
+
+        for(var i=0; i<thisObj.m_dataObj.length; i++)
+        {
+            var bkRec = thisObj.m_dataObj[i];
+
+            if(bkRec.m_file == fn)
+            {
+                g_configPanelObj.f_showPage(
+                VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_DESC_ID, bkRec);
+                return;
+            }
+        }
     }
 
     this.f_createRestoreFromPC = function()
@@ -222,10 +200,9 @@ function f_handleBrownMyPC(vm)
     g_busObj.f_stopVM(vm);
 }
 
-function f_handleRestoreDesc(name, filename, content, vmIds)
+function f_handleRestoreDesc(filename)
 {
-    var data = [name, filename, content, vmIds];
-    g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_DESC_ID, data);
+    g_configPanelObj.m_activeObj.f_launchRestoreDescription(filename);
 }
 
 function f_handleDeleteRestoreFile(e, filename)

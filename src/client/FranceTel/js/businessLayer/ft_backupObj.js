@@ -5,10 +5,62 @@
     Description:
 */
 
-function FT_backupContentRec(vm, type)
+function FT_backupEntryRec(vmId)
 {
-    this.m_vm = vm;
-    this.m_type = type; // config/data
+    var thisObj = this;
+    this.m_vmId = vmId;
+    this.m_vmName = null;
+    this.m_type = [];
+
+    this.f_setVmName = function(vmId)
+    {
+        var vmRec = g_busObj.f_getVmRecByVmId(vmId);
+        thisObj.m_vmName = vmRec.m_displayName;
+    }
+
+    this.f_addType = function(type)
+    {
+        if(thisObj.m_type == undefined)
+            thisObj.m_type = [];
+
+        thisObj.m_type[thisObj.m_type.length] = type;
+    }
+}
+
+function FT_backupContentRec()
+{
+    var thisObj = this;
+    thisObj.m_entry = [];
+
+    this.f_addEntry = function(vmId, type)
+    {
+        var entry = thisObj.f_getVMEntryRec(vmId);
+
+        if(entry != null)
+        {
+            entry.f_addType(type);
+        }
+        else
+        {
+            entry = new FT_backupEntryRec(vmId);
+            entry.f_addType(type);
+            entry.f_setVmName(vmId);
+            thisObj.m_entry[thisObj.m_entry.length] = entry;
+        }
+    }
+
+    this.f_getVMEntryRec = function(vmId)
+    {
+        for(var i=0; i<thisObj.m_entry.length; i++)
+        {
+            var e = thisObj.m_entry[i];
+
+            if(e.m_vmId == vmId)
+                return e;
+        }
+
+        return null;
+    }
 }
 
 function FT_backupRec(bkDate, name, file, content)
@@ -16,7 +68,32 @@ function FT_backupRec(bkDate, name, file, content)
     this.m_bkDate = bkDate;
     this.m_name = name;
     this.m_file = file;
-    this.m_contents = content == undefined ? [] : content;   // data type : FT_backupContentRec
+    this.m_content = content;   // data type : FT_backupContentRec
+
+    // below is the sample response string from server for the get restore list:
+    // we conver this string into FT_backupContentRec object.
+    /*
+     *  <archive>
+	<name>name</name>
+	<file>260309_11h51PM_1</file>
+	<date>260309 11h51PM</date>
+	<contents>
+		<entry>
+			<vm>mike</vm><type>conf</type>
+		</entry>
+		<entry>
+			<vm>kevin_check_your_email</vm><type>conf</type>
+		</entry>
+		<entry>
+			<vm>mike</vm><type>data</type>
+		</entry>
+		<entry>
+			<vm>kevin_check_your_email</vm><type>data</type>
+		</entry>
+          </contents>
+        </archive>
+     */
+
 }
 
 function FT_backupObj(busObj)
@@ -101,7 +178,7 @@ function FT_backupObj(busObj)
                             arch[c].m_bkDate = cNode.firstChild.nodeValue;
                         else if(cNode.nodeName == 'contents' &&
                             cNode.firstChild != undefined)
-                            arch[c].m_contents = thisObj.f_parseContents(cNode);
+                            arch[c].m_content = thisObj.f_parseContent(cNode);
                     }
                     c++;
                 }
@@ -111,12 +188,12 @@ function FT_backupObj(busObj)
         return arch;
     }
 
-    this.f_parseContents = function(node)
+    this.f_parseContent = function(node)
     {
-        var contents = [];
-        var c = 0;    // contents counter
-        if(node == undefined || node.childNodes == undefined) return contents;
+        var content = null;
+        if(node == undefined || node.childNodes == undefined) return content;
 
+        content = new FT_backupContentRec();
         for(var i=0; i<node.childNodes.length; i++)
         {
             if(node.childNodes[i].nodeName == 'entry')
@@ -135,11 +212,11 @@ function FT_backupObj(busObj)
                         type = ccNode.firstChild.nodeValue;
                 }
 
-                contents[c++] = new FT_backupContentRec(vm, type);
+                content.f_addEntry(vm, type);
             }
         }
 
-        return contents;
+        return content;
     }
 
     this.f_getRestoreNodesFromResponse = function(response)
@@ -191,8 +268,9 @@ function FT_backupObj(busObj)
      *                this list shoudl sync with vms.
      *  @param type - a string of 'backup' or 'restore'
      *  @param guiCb - gui callback function
+     *  @param archName - backup archieve filename
      */
-    this.f_backupRestore = function(vms, modes, type, guiCb)
+    this.f_backupRestore = function(vms, modes, type, guiCb, archName)
     {
         if(vms == undefined || vms.length == 0)
         {
@@ -204,8 +282,9 @@ function FT_backupObj(busObj)
         thisObj.m_guiCb = guiCb;
         var sid = g_utils.f_getUserLoginedID();
         var commas = "";
+        var aName = archName == undefined ? "" : " '" + archName + "' ";
         var xmlstr = "<command><id>" + sid + "</id>" +
-                    "<statement>open-app archive " + type + ' ';
+                    "<statement>open-app archive " + type + aName + ' ';
 
         for(var i=0; i<vms.length; i++)
         {

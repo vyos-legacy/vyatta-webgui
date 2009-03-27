@@ -498,10 +498,11 @@ function FT_businessLayer()
      * @param modes - list of back modes. ex. ['config', 'data', 'data'....] array type
      *                this list shoudl sync with vms.
      * @param guiCb - gui callback function
+     * @param archiveName - backup archive filename
      */
-    this.f_restore = function(vms, modes, guiCb)
+    this.f_restore = function(vms, modes, archiveName, guiCb)
     {
-        thisObj.m_backup.f_backupRestore(vms, modes, "restore", guiCb);
+        thisObj.m_backup.f_backupRestore(vms, modes, "restore", guiCb, archiveName);
     }
 
     this.f_deleteArchiveFileFromServer = function(arName, arFile, guiCb)

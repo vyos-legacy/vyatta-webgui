@@ -47,45 +47,41 @@ function FT_confRestoreDesc(name, callback, busLayer)
         //if(thisObj.f_isServerError(evt, 'Configuration Restore  Error'))
         //    return;
 
-        var contents = thisObj.m_dataObj[2]
+        var bkRec = thisObj.m_dataObj;
+        var entries = bkRec.m_content.m_entry;
         thisObj.m_chkboxFields = [];
-        if(contents != undefined)
+
+        for(var i=0; i<entries.length; i++)
         {
-            var vms = contents.split(",");
-            for(var i=0; i<vms.length; i++)
+            var entry = entries[i];
+            var types = entry.m_type;
+            var chkData = "";
+            var chkConf = "";
+
+            for(var j=0; j<types.length; j++)
             {
-                var vm = vms[i].substring(0, vms[i].indexOf('('));
-                var type = vms[i].substring(vms[i].indexOf('('),
-                            vms[i].indexOf(')'));
-                var types = type.split("+");
-                var chkData = "";
-                var chkConf = "";
-
-                for(var j=0; j<types.length; j++)
+                if(types[j].indexOf('conf') >= 0)
                 {
-                    if(types[j].indexOf('conf') >= 0)
-                    {
-                        chkConf = thisObj.f_renderCheckbox('yes', 'config_' + vm,
-                            'f_restoreCheckboxClick(this)', "");
-                        thisObj.m_chkboxFields[thisObj.m_chkboxFields.length] =
-                            'config_' + vm;
-                    }
-                    else if(types[j].indexOf('data') >= 0)
-                    {
-                        chkData = thisObj.f_renderCheckbox('yes', 'data_' + vm,
-                            'f_restoreCheckboxClick(this)', "");
-                        thisObj.m_chkboxFields[thisObj.m_chkboxFields.length] =
-                            'data_' + vm;
-                    }
+                    chkConf = thisObj.f_renderCheckbox('yes', 'conf_' + entry.m_vmId,
+                        'f_restoreCheckboxClick(this)', "");
+                    thisObj.m_chkboxFields[thisObj.m_chkboxFields.length] =
+                        'conf_' + entry.m_vmId;
                 }
-
-                var vmData = [vm, chkConf, chkData];
-                var bodyDiv = thisObj.f_createGridRow(hd, vmData);
-                thisObj.m_body.appendChild(bodyDiv);
+                else if(types[j].indexOf('data') >= 0)
+                {
+                    chkData = thisObj.f_renderCheckbox('yes', 'data_' + entry.m_vmId,
+                        'f_restoreCheckboxClick(this)', "");
+                    thisObj.m_chkboxFields[thisObj.m_chkboxFields.length] =
+                        'data_' + entry.m_vmId;
+                }
             }
 
-            thisObj.f_adjustDivPosition(thisObj.m_buttons);
+            var vmData = [entry.m_vmName, chkConf, chkData];
+            var bodyDiv = thisObj.f_createGridRow(hd, vmData);
+            thisObj.m_body.appendChild(bodyDiv);
         }
+
+        thisObj.f_adjustDivPosition(thisObj.m_buttons);
     }
 
     this.f_stopLoadVMData = function()
@@ -96,14 +92,30 @@ function FT_confRestoreDesc(name, callback, busLayer)
     this.f_restoreSelectedVM = function()
     {
         var f = thisObj.m_chkboxFields;
+        var rec = thisObj.m_dataObj;
+        var vms = [];
+        var types = [];
 
+        ////////////////////////////////////////
+        // walk through the check box list
         for(var i=0; i<f.length; i++)
         {
             var chkbox = document.getElementById(thisObj.m_chkboxFields[i]);
             if(chkbox != undefined && chkbox.checked)
             {
+                var type = thisObj.m_chkboxFields[i].split("_");
+                vms[vms.length] = type[1];
+                types[types.length] = type[0];
             }
         }
+
+        var callback = function(evt)
+        {
+            alert('restore in progress....' + evt);
+        }
+
+        //g_busObj.f_restore(vms, types, rec.m_file, callback);
+        g_busObj.f_restore(vms, types, null, callback);
     }
 
     this.f_handleCheckboxClick = function(e)
@@ -160,7 +172,7 @@ function f_restoreDescRestore()
 {
     g_utils.f_popupMessage('Are you sure you want to restore the selection VM?',
                 'confirm', 'Configuration Restore Description', true,
-                "f_handleRestoreDescRestore(e)(this)");
+                "f_handleRestoreDescRestore(this)");
 }
 
 function f_restoreDescCancel()

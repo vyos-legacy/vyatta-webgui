@@ -147,4 +147,15 @@ function f_onLanguageChange()
 	
 }
 
+function f_home()
+{
+    g_utils.f_gotoHomePage();	
+}
+
+function f_contact()
+{
+	var url = "http://orange.com/en_EN/tools/contact/index.html";
+	window.open(url, 'Download');
+}
+
 

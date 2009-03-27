@@ -133,8 +133,11 @@ function FT_confBackup(name, callback, busLayer)
 	this.f_pcBackup = function()
 	{
 		//need to define a mechanism to receive file from the backup.
+		/*
 		var url = 'test.zip';
 		window.open(url, 'Download');
+		*/
+        g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);  					
 	}
 
     this.f_oaBackupCb = function(eventObj)
@@ -143,6 +146,7 @@ function FT_confBackup(name, callback, busLayer)
 			g_utils.f_popupMessage('Backup failed: ' + eventObj.m_errMsg, 'error', 'Error!', true);
 		} else {
 			g_utils.f_popupMessage('Backup is in progress.  You will receive an email notification when the operation is finshed.', 'ok', 'Information', true);
+            g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);  			
 		}	
 	}
 

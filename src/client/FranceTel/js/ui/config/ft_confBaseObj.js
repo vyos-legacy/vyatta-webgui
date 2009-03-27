@@ -463,8 +463,8 @@ function FT_confBaseObj(name, callback, busLayer)
 
             var newSrc = src.substr(0, in1);
             button.disabled = !enabled;
-            button.src = enabled ? newSrc + name + '.gif' : newSrc + name + '.gif';
-                          //newSrc + name + '_disabled.gif';
+            button.src = enabled ? newSrc + name + '.gif' : /*newSrc + name + '.gif';*/
+                          newSrc + name + '_disabled.gif';
         }
     }
 }

@@ -225,6 +225,7 @@ Session::update_session()
   fclose(fp);
 
   struct passwd *pw;
+#if 0
   pw = getpwnam(name_buf);
   if (pw == NULL) {
     _processor->set_response(WebGUI::SESSION_FAILURE);
@@ -251,6 +252,7 @@ Session::update_session()
     _processor->set_response(WebGUI::SESSION_FAILURE);
     return false;
   }
+#endif
 
   //now touch session time mark file'
   string update_file = "sudo touch " + file;

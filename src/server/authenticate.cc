@@ -177,6 +177,7 @@ Authenticate::get_access_level(const std::string &username, gid_t &gid)
 bool
 Authenticate::test_auth(const std::string & username, const std::string & password) 
 {
+#if 0
   passwd * passwd = getpwnam(username.c_str());
   if (passwd == NULL) {
     //    cerr << "failed to retreive user" << endl;
@@ -188,6 +189,7 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
   if (level == WebGUI::ACCESS_NONE) {
     return false;
   }
+#endif
 
   // instead of pam_authenticate/etc. the user, we need to authenticate the
   // request, i.e., make sure it is from dom0.

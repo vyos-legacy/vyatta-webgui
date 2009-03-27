@@ -266,6 +266,19 @@ function FT_crossBrowser()
         }
     }
     
+	/**
+	 * This function set the class attribute of an element.
+	 * @param {Object} e
+	 * @param {Object} className
+	 */
+	this.f_xbSetClassAttribute = function(e, className)
+	{
+		if (g_xbObj.m_isIE) {
+			e.className = className;
+		} else {
+		    e.setAttribute('class', className);			
+		}
+	}
     
 }
 

@@ -96,6 +96,4 @@ VYA.FT_CONST = {
 	DOM_MAIN_PANEL_SUB_MENU_CLS: 'left_sub_menu',
     DOM_DYN_SUB_MENU_CLS: 'dyn_sub_menu'	
 
-
-
 }

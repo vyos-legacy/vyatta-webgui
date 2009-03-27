@@ -23,8 +23,8 @@ function FT_mainPanel(){
      */
     this.f_init = function(){
 
-        thisObj.m_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_ID);
-		thisObj.m_oa_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID);
+        thisObj.m_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_ID); //'tab_content'
+		thisObj.m_oa_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID); //'oa_container'
         thisObj.m_container.style.width = VYA.DYN_STYLE.APP_WIDTH; 
         //thisObj.m_container.style.height = '500';
         //thisObj.m_container.style.border = '0';

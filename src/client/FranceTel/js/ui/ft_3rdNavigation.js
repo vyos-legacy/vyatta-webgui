@@ -13,8 +13,10 @@ function FT_3rdNavigation()
     this.m_selectedItem = undefined;
     this.m_menus = [];
     this.m_parent_container = undefined;
+	this.m_oa_container = undefined;
     this.m_container = undefined;
 	this.m_id2descTable = undefined; 
+	this.m_help = undefined;
     
     ///////////////////////////////////////
     // functions
@@ -22,13 +24,13 @@ function FT_3rdNavigation()
      * A initialization method
      */
     this.f_init = function(p)
-    {
-    
+    {    
         thisObj.m_parent = p;
         thisObj.m_id2descTable = new FT_lookupTable();		
-        thisObj.m_parent_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID);
-        
-        var queryId = VYA.FT_CONST.DOM_MAIN_PANEL_LEFT_MENU_HOLDER_ID;
+        thisObj.m_oa_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID); //'oa_container'
+        thisObj.m_parent_container = thisObj.f_createParentDiv();
+		
+        var queryId = VYA.FT_CONST.DOM_MAIN_PANEL_LEFT_MENU_HOLDER_ID; //'sub_menu_container'
         //Obtain a reference to the sub_menu_container div tag in the html.
         var containerDiv = document.getElementById(queryId);
         this.m_container = containerDiv;
@@ -47,7 +49,49 @@ function FT_3rdNavigation()
             }
             containerDiv.removeChild(containerDiv.childNodes[0]);
         }
+		thisObj.m_help = thisObj.f_createHelpDiv();
     }
+	
+	this.f_createParentDiv = function() {
+		var div = document.createElement('div');
+		div.style.display = 'block';
+        div.style.width = '150px';		
+		div.setAttribute('id', 'sm_parent');
+		div.setAttribute('class', 'left');
+        return div;
+	}
+	
+	this.f_createEmptyDiv = function() {
+		var div = document.createElement('div');
+		div.style.display = 'block';
+        div.style.width = '150px';		
+		div.style.margin = '5px 0px 5px 0px';
+		div.setAttribute('class', 'vspace_div');
+		div.innerHTML = '<br/>';	
+		return div;	
+	}
+	
+	this.f_createHelpImgDiv = function() {
+		var div = document.createElement('div');
+		div.style.display = 'block';
+        div.style.width = '150px';		
+		div.style.borderLeft = '1px solid #DEDEDE';
+		div.style.borderTop = '1px solid #DEDEDE';		
+		div.style.paddingTop = '5px';
+		div.setAttribute('id', 'sm_help');
+		div.setAttribute('class', 'help');
+		div.innerHTML = '<img id="context_help" src = "images/img_help.gif">';
+        return div;		
+	}
+	
+	this.f_createHelpDiv = function() {
+		var div = document.createElement('div');
+		div.style.display = 'block';
+        div.style.width = '150px';		
+        div.appendChild(thisObj.f_createEmptyDiv());
+		div.appendChild(thisObj.f_createHelpImgDiv());
+		return div;
+	}
 	
 	this.f_initId2DescTable = function(subMenu) {
         		
@@ -185,7 +229,9 @@ function FT_3rdNavigation()
     {
         var index = thisObj.f_getIndexByLevel2Id(id);
         thisObj.m_menus[index].style.display = 'block';
-        thisObj.m_parent_container.appendChild(thisObj.m_menus[index]);
+		thisObj.m_parent_container.appendChild(thisObj.m_menus[index]);
+		thisObj.m_parent_container.appendChild(thisObj.m_help);
+        thisObj.m_oa_container.appendChild(thisObj.m_parent_container);
     }
     
     this.f_hide = function(id)
@@ -193,11 +239,13 @@ function FT_3rdNavigation()
         var index = thisObj.f_getIndexByLevel2Id(id);
         thisObj.m_menus[index].style.display = 'none';
         try {
+			thisObj.m_oa_container.removeChild(thisObj.m_parent.container);
             thisObj.m_parent_container.removeChild(thisObj.m_menus[index]);
+            thisObj.m_parent_container.removeChild(thisObj.m_help);
         } 
         catch (e) {
             //do nothing.  The child is already removed.  
-        }
+        }		
     }
     
     this.f_resetSelectItem = function()

@@ -13,7 +13,6 @@ function FT_configPanel()
     this.m_selectedItem = undefined;
     this.m_container = undefined; //the configuration panel
     this.m_parent_container = undefined; //the OA container which includes left menu + config panel
-    this.m_configTempHolder = undefined; //temporary 'ft_container' div
     this.m_currentDesc = undefined;//current description text
     this.m_title = undefined; //the title container for the header
     this.m_activeCmp = undefined; //the component currently active (displayed)
@@ -31,8 +30,7 @@ function FT_configPanel()
     {
         thisObj.m_parent = p;
         thisObj.m_parent_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID);
-        thisObj.m_configTempHolder = document.getElementById('ft_container');
-        //Obtain a reference to the div tag in the html.
+        //Obtain a reference to the div tag: 'ft_container' in the html.
         thisObj.m_container = document.getElementById(VYA.FT_CONST.DOM_3_CONFIG_PANEL_ID);
         thisObj.m_title = document.getElementById(VYA.FT_CONST.DOM_3_CONFIG_PANEL_TITLE_ID);
         thisObj.m_container.parentNode.removeChild(thisObj.m_container);
@@ -262,26 +260,16 @@ function FT_configPanel()
         return (new FT_confEmptyComponent()).f_getConfigurationPage();
     }
 
-    this.f_load = function(component)
-    {
-        if (thisObj.m_selectObj != undefined) {
-			try {
-				thisObj.m_configTempHolder.removeChild(component);
-			} catch (e) {
-				; //this is ok for now because the empty component doesn't get put to the temp holder
-			}
-
-        }
-        thisObj.m_container.appendChild(component);
-    }
-
     this.f_render = function(component)
     {
         if (thisObj.m_activeCmp != undefined) {
-            thisObj.m_container.removeChild(thisObj.m_activeCmp);
+			try {
+				thisObj.m_container.removeChild(thisObj.m_activeCmp);
+			} catch (e) {
+				; //this is ok for now because the empty component doesn't get put to the 'ft_container' by config based object.
+			}
         }
         thisObj.m_selectCmp = component;
-        thisObj.f_load(thisObj.m_selectCmp);
         thisObj.m_activeCmp = component;
         thisObj.m_activeObj = thisObj.m_selectObj;
 

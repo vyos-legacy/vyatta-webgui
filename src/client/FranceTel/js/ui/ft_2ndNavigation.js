@@ -22,9 +22,9 @@ function FT_2ndNavigation(){
 
         thisObj.m_parent = p;
         thisObj.m_menu = g_roleManagerObj.f_getMenu();
-        thisObj.m_parent_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID);
+        thisObj.m_parent_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID); //'oa_container'
         		
-        var menu = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_2_NAV_UL_ID);
+        var menu = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_2_NAV_UL_ID); //'oa_2_nav'
         for (var i = 0; menu.childNodes[i]; i++) {
             sid = f_elemGetAttribute(menu.childNodes[i], 'id');
             if ((sid != undefined) && (sid != null)) {

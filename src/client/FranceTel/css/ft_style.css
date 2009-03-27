@@ -24,6 +24,16 @@ img
     margin: 0 20px 0 20px;
 }
 
+.clear
+{
+    clear: both;
+} 
+
+.left
+{
+	float: left;
+}
+
 .logo {
     float: left;
 } 
@@ -168,7 +178,7 @@ img
     padding: 0;
     width: 150px;
     display: none;
-    float: left;
+    /* float: left; */
 } 
 
 .left_sub_menu ul {

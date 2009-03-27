@@ -93,6 +93,13 @@ function FT_confMyProfile (name, callback, busLayer) {
         field.innerHTML = user.m_user;
         thisObj.form = document.getElementById('conf_my_profile' + "_form");		
     }
+	
+	this.f_redraw = function(div)
+	{
+		//forcing this div to redraw due to label rendering bug.		
+		div.style.display = 'none';
+		div.style.display = 'block';
+	}
     
     this.f_stopLoadVMData = function()
     {

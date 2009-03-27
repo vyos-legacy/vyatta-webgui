@@ -50,11 +50,21 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Buttons & Images
     m_imageDir : 'images/',
+	m_ok: 'ok',
 
     ///////////////////////////////////////////////////////////////////
     // Popup Message Dialog
     m_puSessionTimeout : 'Session Time Out',
     m_puSessionTimeoutMsg : 'For security reasons, your session is no longer active.<br>Please re-login again.',
+	
+    ///////////////////////////////////////////////////////////////////
+    // Login Dialog
+    m_loginPrompt : 'Please enter username and password to login.',
+    m_loginError : 'Login error',
+    m_loginUnableToLogin : 'Unable to login: ',	
+	m_loginContactCS : 'If you have no username and password, contact your Customer Service Center.',
+	m_loginEnableJS: 'Warning: to connect to the Open Appliance program, your browser must accept pop-ups and cookies.',
+	
 
     /////////////////////////////////////////
     // plesae do not edit beyound dummy

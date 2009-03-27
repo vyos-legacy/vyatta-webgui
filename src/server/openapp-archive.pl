@@ -66,7 +66,7 @@ my $MAC_ADDR = "/sys/class/net/eth0/address";
 my $WEB_RESTORE_ROOT="/var/www/restore";
 
 
-my ($backup,$filename,$restore,$restore_status,$list,$delete);
+my ($backup,$filename,$restore,$restore_target,$restore_status,$list,$delete);
 
 ##########################################################################
 #
@@ -103,8 +103,6 @@ sub backup_archive {
     my @archive = split(',',$backup);
     my $i = 0;
     for $archive (@archive) {
-	print "$backup\n";
-
 	my @bu = split(':',$archive);
 	$coll[$i] = [ @bu ];
 	$i = $i + 1;
@@ -228,31 +226,39 @@ sub restore_archive {
     `mkdir -p $WEB_RESTORE_ROOT/`;
     `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $WEB_RESTORE_ROOT/.`;
 
-    #need to read from the directory in the following manner: jvm/data,jvm/conf,mike/data etc.
-    #iterate on $WEB_RESTORE_ROOT/.
-
     ##########################################################################
     #
-    # now build out archive list from directory. could also do this from 
-    # archive list. will change.
+    # Now build out an archive list as provided in the argument list, or if
+    # not supplied build out from archive
     #
     ##########################################################################
     my @coll;
     my $coll;
     my $i = 0;
-    my $filename;
-    opendir ( DIR, $WEB_RESTORE_ROOT ) || die "Error in opening dir $WEB_RESTORE_ROOT\n";
-    while( ($filename = readdir(DIR))){
-	if (lstat("$WEB_RESTORE_ROOT/$filename/data")) {
-	    $coll[$i] = [ $filename,"data" ];
-	    $i = $i + 1;
-	}
-	if (lstat("$WEB_RESTORE_ROOT/$filename/conf")) {
-	    $coll[$i] = {$filename,"conf"};
+    if (defined($restore_target) && $restore_target ne '') {
+	my $archive;
+	my @archive = split(',',$restore_target);
+	for $archive (@archive) {
+	    my @bu = split(':',$archive);
+	    $coll[$i] = [ @bu ];
 	    $i = $i + 1;
 	}
     }
-    closedir(DIR);
+    else {
+	my $filename;
+	opendir ( DIR, $WEB_RESTORE_ROOT ) || die "Error in opening dir $WEB_RESTORE_ROOT\n";
+	while( ($filename = readdir(DIR))){
+	    if (lstat("$WEB_RESTORE_ROOT/$filename/data")) {
+		$coll[$i] = [ $filename,"data" ];
+		$i = $i + 1;
+	    }
+	    if (lstat("$WEB_RESTORE_ROOT/$filename/conf")) {
+		$coll[$i] = {$filename,"conf"};
+		$i = $i + 1;
+	    }
+	}
+	closedir(DIR);
+    }
 
     ##########################################################################
     #
@@ -388,6 +394,7 @@ sub usage() {
     print "Usage: $0 --backup=<backup>\n";
     print "       $0 --name=<optional filename>\n";
     print "       $0 --restore=<restore>\n";
+    print "       $0 --restore-target=<restore_target>\n";
     print "       $0 --restore-status\n";
     print "       $0 --list=<list>\n";
     print "       $0 --delete=<delete>\n";
@@ -399,6 +406,7 @@ GetOptions(
     "backup:s"              => \$backup,
     "filename:s"            => \$filename,
     "restore=s"             => \$restore,
+    "restore-target:s"      => \$restore_target,
     "restore-status:s"      => \$restore_status,
     "list:s"                => \$list,
     "delete=s"              => \$delete,

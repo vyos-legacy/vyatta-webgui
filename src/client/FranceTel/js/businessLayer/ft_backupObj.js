@@ -173,6 +173,17 @@ function FT_backupObj(busObj)
         }
     }
 
+    this.f_deleteArchiveFile = function(arName, arFile, cb)
+    {
+        thisObj.m_guiCb = cb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                    "<statement>open-app archive delete '" + arFile +
+                    "'</statement></command>";
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
     /**
      *  send backup/restore command to server to perform vm backup/resstore.
      *  @param vms - a list of vm to be backup or restore. vms is array type

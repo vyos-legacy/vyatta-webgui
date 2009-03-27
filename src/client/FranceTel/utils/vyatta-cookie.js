@@ -38,7 +38,7 @@ var g_cookie =
 
             expires = '; expires=' + expDate.toGMTString();
         }
-        
+
         var path = '; path=/';
         if (pPath != undefined) {
           path = '; path=' + escape(pPath);
@@ -83,7 +83,7 @@ var g_cookie =
       var keys = str.split(';');
       for (var i = 0; i < keys.length; i++) {
         var avp = keys[i].match(new RegExp('^\\s*([^\\s]+)=([^\\s]*)\\s*$'));
-        if (avp[1] != undefined) {
+        if (avp != undefined && avp[1] != undefined) {
           this.f_set_raw(avp[1], '', -1);
         }
       }

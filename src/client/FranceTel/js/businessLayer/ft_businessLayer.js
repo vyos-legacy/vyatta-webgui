@@ -504,6 +504,11 @@ function FT_businessLayer()
         thisObj.m_backup.f_backupRestore(vms, modes, "restore", guiCb);
     }
 
+    this.f_deleteArchiveFileFromServer = function(arName, arFile, guiCb)
+    {
+        thisObj.m_backup.f_deleteArchiveFile(arName, arFile, guiCb);
+    }
+
     /**
      * backup vm config/data/both
      * @param vms - list of vms to be backup. ex. [vm1, vm2, vm3,...] array type
@@ -527,11 +532,11 @@ function FT_businessLayer()
 	{
 		thisObj.m_vm.f_upgradeVm(vm, ver, time, guiCb);
 	}
-	
+
     this.f_restoreVm = function(vm, ver, guiCb)
 	{
 		thisObj.m_vm.f_restoreVm(vm, ver, guiCb);
-	}	
+	}
 }
 
 ///////////////////////////////////////////////

@@ -215,7 +215,7 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="' + g_lang.m_imageDir + 
+                    '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_cancel.gif" ' + elId + ' name="cancel" ' +
                     'value="Cancel" onclick="' + btn[1] +
                     '"></div></td>';
@@ -233,7 +233,7 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="' + g_lang.m_imageDir + 
+                    '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_apply.gif" ' + elId + ' name="apply" ' +
                     'value="apply" onclick="' + btn[1] +
                     '"></div></td>';
@@ -242,7 +242,7 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="' + g_lang.m_imageDir + 
+                    '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_update.gif" ' + elId + ' name="update" ' +
                     'value="Update" onclick="' + btn[1] +
                     '"></div></td>';
@@ -251,7 +251,7 @@ function FT_confBaseObj(name, callback, busLayer)
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
-                    '<input type="image" src="' + g_lang.m_imageDir + 
+                    '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_backup.gif" ' + elId + ' name="backup" ' +
                     'value="Backup" onclick="' + btn[1] +
                     '"></div></td>';
@@ -429,7 +429,8 @@ function FT_confBaseObj(name, callback, busLayer)
         if(evt.f_isError())
         {
             if(evt.m_errCode == 3)  // timeout error
-                g_utils.f_popupMessage('timeout', 'timeout', null, true);
+                g_utils.f_popupMessage('timeout', 'timeout', null, true,
+                      'f_confHandleSessionTimeoutConfirm()');
             else
                 g_utils.f_popupMessage(evt.m_errMsg, 'ok', errTitle, true);
 
@@ -462,8 +463,13 @@ function FT_confBaseObj(name, callback, busLayer)
 
             var newSrc = src.substr(0, in1);
             button.disabled = !enabled;
-            button.src = enabled ? newSrc + name + '.gif' :
-                          newSrc + name + '_disabled.gif';
+            button.src = enabled ? newSrc + name + '.gif' : newSrc + name + '.gif';
+                          //newSrc + name + '_disabled.gif';
         }
     }
+}
+
+function f_confHandleSessionTimeoutConfirm()
+{
+    g_busObj.f_userLogout();
 }

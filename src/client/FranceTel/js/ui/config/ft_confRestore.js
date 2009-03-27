@@ -73,17 +73,19 @@ function FT_confRestore(name, callback, busLayer)
                     var r = bkRec[i];
                     var content = thisObj.f_getContents(r.m_contents);
                     var restDesc = "f_handleRestoreDesc('" + r.m_name + "', '" +
-                                    r.m_file + "', '" + content + "')";
-                    var anchor = thisObj.f_renderAnchor(content, restDesc,
-                                'Click here to restore ' + "(" + r.m_name + ")");
+                                    r.m_file + "', '" + content[0] + "', '" +
+                                    content[1] + "')";
+                    var anchor = thisObj.f_renderAnchor(content[0], restDesc,
+                                'Click here to restore ' + "(" + content[0] + ")");
                     var restore = thisObj.f_renderButton(
-                                'restore', true, restDesc, 'Restore (' + r.m_name + ')');
+                                'restore', true, restDesc, 'Restore backup archive (' + content[0] + ')');
                     var download = thisObj.f_renderButton(
                                 'download', true, "f_handleDownloadRestore('" +
-                                r.m_file + "')", 'Download restore (' + r.m_name + ')');
+                                r.m_file + "')", 'Download backup archive (' + content[0] + ')');
                     var del = thisObj.f_renderButton(
-                                'delete', true, "f_deleteRestoreFile('" +
-                                r.m_name + "')", 'Delete filename (' + r.m_name + ')');
+                                'delete', true, "f_deleteRestoreFile('" + content[0] +
+                                "', '" + r.m_file + "')",
+                                'Delete backup archive (' + content[0] + ')');
 
                     vmData = [r.m_bkDate, anchor, restore, download, del]
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData);
@@ -153,9 +155,11 @@ function FT_confRestore(name, callback, busLayer)
         // last form it into:
         // "vm (type, type), vm (type, type)"
         var comma = "";
+        var vmId = '';
         for(var i=0; i<vm.length; i++)
         {
             var v = vm[i];
+            vmId += comma + v[0];
             var vmRec = g_busObj.f_getVmRecByVmId(v[0]);
 
             // for now, we only care for 2 type: conf and data
@@ -167,7 +171,7 @@ function FT_confRestore(name, callback, busLayer)
             comma = ", ";
         }
 
-        return content;
+        return [content, vmId];
     }
 
     this.f_init = function()
@@ -218,26 +222,24 @@ function f_handleBrownMyPC(vm)
     g_busObj.f_stopVM(vm);
 }
 
-function f_handleRestoreDesc(restorename, filename, content)
+function f_handleRestoreDesc(name, filename, content, vmIds)
 {
-    var data = [restorename, filename, content];
+    var data = [name, filename, content, vmIds];
     g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_DESC_ID, data);
 }
 
-function f_handleDeleteRestoreFile(e, restoreContent)
+function f_handleDeleteRestoreFile(e, filename)
 {
     var cb = function(evt)
     {
-        if(evt.f_isError())
-        {
-            alert('delete error');
-        }
-        else
-            g_configPanelObj.m_activeObj.f_loadVMData();
+        if(g_configPanelObj.m_activeObj.f_isServerError(evt, 'Configuration Restore Error'))
+            return;
+
+        g_configPanelObj.m_activeObj.f_loadVMData();
     }
 
     if(e.getAttribute('id')== 'ft_popup_message_apply')
-        g_busObj.f_deleteUserFromServer(restoreContent, cb);
+        g_busObj.f_deleteArchiveFileFromServer(filename, filename, cb);
 }
 
 function f_handleDownloadRestore(filename)
@@ -245,9 +247,9 @@ function f_handleDownloadRestore(filename)
 
 }
 
-function f_deleteRestoreFile(restoreContent)
+function f_deleteRestoreFile(content, filename)
 {
-    g_utils.f_popupMessage('Are you sure you want to delete (' + restoreContent + ')?',
-                'confirm', 'Delete Restore File', true,
-                "f_handleDeleteRestoreFile(this, '"+ restoreContent + "')");
+    g_utils.f_popupMessage('Are you sure you want to delete (' + content + ')?',
+                'confirm', 'Delete Backup Archive File', true,
+                "f_handleDeleteRestoreFile(this, '"+ filename + "')");
 }

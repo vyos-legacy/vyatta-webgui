@@ -172,6 +172,10 @@ function FT_confDashboard(name, callback, busLayer)
         return vmList;
     }
 
+    /**
+     *  if no available update version, return empty string else return
+     *  a check box input.
+     */
     this.f_handleUpdateNeedField = function(vmindex, vm, updates)
     {
         if(updates[vmindex] == undefined)

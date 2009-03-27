@@ -9,6 +9,7 @@ function FT_confRestoreDesc(name, callback, busLayer)
 {
     this.thisObjName = 'FT_confRestoreDesc';
     var thisObj = this;
+    thisObj.m_btnRestoreId = 'restoreDescButtonId';
 
     /**
      * @param name - name of configuration screens.
@@ -47,6 +48,7 @@ function FT_confRestoreDesc(name, callback, busLayer)
         //    return;
 
         var contents = thisObj.m_dataObj[2]
+        thisObj.m_chkboxFields = [];
         if(contents != undefined)
         {
             var vms = contents.split(",");
@@ -65,11 +67,15 @@ function FT_confRestoreDesc(name, callback, busLayer)
                     {
                         chkConf = thisObj.f_renderCheckbox('yes', 'config_' + vm,
                             'f_restoreCheckboxClick(this)', "");
+                        thisObj.m_chkboxFields[thisObj.m_chkboxFields.length] =
+                            'config_' + vm;
                     }
                     else if(types[j].indexOf('data') >= 0)
                     {
                         chkData = thisObj.f_renderCheckbox('yes', 'data_' + vm,
                             'f_restoreCheckboxClick(this)', "");
+                        thisObj.m_chkboxFields[thisObj.m_chkboxFields.length] =
+                            'data_' + vm;
                     }
                 }
 
@@ -77,6 +83,8 @@ function FT_confRestoreDesc(name, callback, busLayer)
                 var bodyDiv = thisObj.f_createGridRow(hd, vmData);
                 thisObj.m_body.appendChild(bodyDiv);
             }
+
+            thisObj.f_adjustDivPosition(thisObj.m_buttons);
         }
     }
 
@@ -85,9 +93,40 @@ function FT_confRestoreDesc(name, callback, busLayer)
         this.m_threadId = null;
     }
 
+    this.f_restoreSelectedVM = function()
+    {
+        var f = thisObj.m_chkboxFields;
+
+        for(var i=0; i<f.length; i++)
+        {
+            var chkbox = document.getElementById(thisObj.m_chkboxFields[i]);
+            if(chkbox != undefined && chkbox.checked)
+            {
+            }
+        }
+    }
+
     this.f_handleCheckboxClick = function(e)
     {
+        thisObj.f_updateRestoreButton();
+    }
 
+    this.f_updateRestoreButton = function()
+    {
+        var f = thisObj.m_chkboxFields;
+        var isAnyChkboxChecked = false;
+
+        for(var i=0; i<f.length; i++)
+        {
+            var chkbox = document.getElementById(thisObj.m_chkboxFields[i]);
+            if(chkbox != undefined && chkbox.checked)
+            {
+                isAnyChkboxChecked = true;
+                break;
+            }
+        }
+
+        thisObj.f_enabledDisableButton(thisObj.m_btnRestoreId, isAnyChkboxChecked);
     }
 
     this.f_init = function(dataObj)
@@ -97,11 +136,13 @@ function FT_confRestoreDesc(name, callback, busLayer)
         var hd = this.f_createColumns();
         this.m_header = this.f_createGridHeader(hd);
         this.m_body = this.f_createGridView(hd);
-        this.f_loadVMData();
 
-        var btns = [['Restore', "f_restoreDescRestore()", ''],
+        var btns = [['Restore', "f_restoreDescRestore()", '',
+                    thisObj.m_btnRestoreId],
                     ['Cancel', "f_restoreDescCancel()", '']];
         this.m_buttons = this.f_createButtons(btns);
+
+        this.f_loadVMData();
 
         return [this.m_header, this.m_body, this.m_buttons];
     }
@@ -109,9 +150,17 @@ function FT_confRestoreDesc(name, callback, busLayer)
 }
 FT_extend(FT_confRestoreDesc, FT_confBaseObj);
 
+function f_handleRestoreDescRestore(e)
+{
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+        g_configPanelObj.m_activeObj.f_restoreSelectedVM();
+}
+
 function f_restoreDescRestore()
 {
-
+    g_utils.f_popupMessage('Are you sure you want to restore the selection VM?',
+                'confirm', 'Configuration Restore Description', true,
+                "f_handleRestoreDescRestore(e)(this)");
 }
 
 function f_restoreDescCancel()

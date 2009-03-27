@@ -14,10 +14,13 @@ function FT_constanst()
     this.V_COOKIES_USER_NAME = 'userName';
     this.V_COOKIES_USER_ID = 'id';
     this.V_COOKIES_ISLOGIN = 'isLogin';
+	this.V_COOKIES_LANG = 'lang';
 
     //////////////////////////////////////////////
     // cookies value
     this.V_NOT_FOUND = 'NOTFOUND';
+	this.V_LANG_EN = 'en';
+	this.V_LANG_FR = 'fr';
 
     /////////////////////////////////////////////////
     //

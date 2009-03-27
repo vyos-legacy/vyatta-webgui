@@ -89,6 +89,11 @@ var g_utils =
         g_cookie.f_set(g_consObj.V_COOKIES_USER_ID, id, g_cookie.m_userNameExpire);
     },
 
+    f_saveLanguage: function(lang)
+    {
+        g_cookie.f_set(g_consObj.V_COOKIES_LANG, lang, g_cookie.m_userNameExpire);
+    },
+
     f_saveUserName: function(username)
     {
         g_cookie.f_set(g_consObj.V_COOKIES_USER_NAME, username, g_cookie.m_userNameExpire);
@@ -97,6 +102,11 @@ var g_utils =
     f_getUserLoginedID: function(cookieP /* cookieP is optional */)
     {
         return g_cookie.f_get(g_consObj.V_COOKIES_USER_ID);
+    },
+
+    f_getLanguage: function()
+    {
+        g_cookie.f_get(g_consObj.V_COOKIES_LANG);
     },
 
     f_getUserLoginedName: function()

@@ -188,7 +188,7 @@ sub backup_archive {
     open FILE, ">", "$metafile.txt" or die $!;
     #we'll write out xml descriptions--the same as what we display...
     print FILE "<archive>";
-    print FILE "<name>name</name>";
+    print FILE "<name>$filename</name>";
     print FILE "<file>$filename</file>";                                                                             
     print FILE "<date>$date $time</date>";
     print FILE "<contents>";

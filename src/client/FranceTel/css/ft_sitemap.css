@@ -117,3 +117,28 @@
     padding: 0px 3px 0px 2px;
     list-style-type: none;
 }
+
+.sitemap_menu ul li a
+{
+    text-decoration: none;
+} 
+
+.sitemap_menu ul li a:link
+{
+    color: #000000;
+} 
+
+.sitemap_menu ul li a:hover
+{
+    color: #FF5500;
+} 
+
+.sitemap_menu ul li a:visited
+{
+    color: #000000;
+} 
+
+.sitemap_menu ul li a:focus
+{
+    outline-style: none;
+} 

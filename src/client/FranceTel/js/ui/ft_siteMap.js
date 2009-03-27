@@ -59,7 +59,7 @@ function FT_siteMap()
 				continue;
 			}
 			var li = document.createElement('li');
-			li.setAttribute('class','sitemap_vmlink');
+			g_xbObj.f_xbSetClassAttribute(li,'sitemap_vmlink');
 			li.innerHTML = '<a href="#" onclick="f_siteMapClickHandler(\'sitemap_vmlink_' +
 			    vm.m_name + '\')"><img border="0" src="images/puce_link.gif">&nbsp;<span class="bold12">' +
 				vm.m_displayName + '</span></a>';

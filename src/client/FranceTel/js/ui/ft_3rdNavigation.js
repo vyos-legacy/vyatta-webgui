@@ -56,8 +56,8 @@ function FT_3rdNavigation()
 		var div = document.createElement('div');
 		div.style.display = 'block';
         div.style.width = '150px';		
-		div.setAttribute('id', 'sm_parent');
-		div.setAttribute('class', 'left');
+		div.setAttribute('id', 'sm_parent');		
+		g_xbObj.f_xbSetClassAttribute(div, 'left');
         return div;
 	}
 	

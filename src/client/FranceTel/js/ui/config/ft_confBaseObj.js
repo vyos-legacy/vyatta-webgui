@@ -369,13 +369,13 @@ function FT_confBaseObj(name, callback, busLayer)
         switch(text)
         {
             case 'Stop':
-                imgSrc = enable ? 'bt_stop.gif' : 'bt_stop2.gif';
+                imgSrc = enable ? 'bt_stop.gif' : 'bt_stop_disabled.gif';
                 break;
             case 'Restart':
-                imgSrc = enable ? 'bt_restart.gif' : 'bt_restart2.gif';
+                imgSrc = enable ? 'bt_restart.gif' : 'bt_restart_disabled.gif';
                 break;
             case 'Start':
-                imgSrc = enable ? 'bt_start.gif' : 'bt_start2.gif';
+                imgSrc = enable ? 'bt_start.gif' : 'bt_start_disabled.gif';
                 break;
             case 'deleteUser':
             case 'delete':
@@ -391,7 +391,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 imgSrc = 'bt_cancel.gif';
                 break;
             case 'Restore':   // button image
-                imgSrc = 'bt_restore.gif';
+                imgSrc = enable ? 'bt_restore.gif' : 'bt_restore_disabled.gif';
                 break;
         }
 

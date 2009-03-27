@@ -11,12 +11,12 @@ var g_lang =
     // Dash board screen
 
     // dashboard header
-    m_dbHdApplication : 'Application',
-    m_dbHdStatus : 'Status',
-    m_dbHdCPU : 'CPU',
-    m_dbMemory : 'Memory',
-    m_dbDiskSpace : 'Disk Space',
-    m_dbUpdateNeeded : 'Update Needed',
+    m_dbHdApplication : 'Fr Application',
+    m_dbHdStatus : 'Fr Status',
+    m_dbHdCPU : 'Fr CPU',
+    m_dbMemory : 'Fr Memory',
+    m_dbDiskSpace : 'Fr Disk Space',
+    m_dbUpdateNeeded : 'Fr Update Needed',
 
     ///////////////////////////////////////////////////////////////////
     // VM Update & History screen
@@ -54,16 +54,16 @@ var g_lang =
 	
     ///////////////////////////////////////////////////////////////////
     // Popup Message Dialog
-    m_puSessionTimeout : 'Session Time Out',
+    m_puSessionTimeout : 'in Fr Session Time Out',
     m_puSessionTimeoutMsg : 'For security reasons, your session is no longer active<br>Please re-login again.',
 
     ///////////////////////////////////////////////////////////////////
     // Login Dialog
-    m_loginPrompt : "S'il vous plaît entrer le nom d'utilisateur et mot de passe pour vous connecter.",
+    m_loginPrompt : "S'il vous plaï¿½t entrer le nom d'utilisateur et mot de passe pour vous connecter.",
     m_loginError : "Erreur d'identification",
     m_loginUnableToLogin : "Impossible de se connecter: ",	
-	m_loginContactCS : "Si vous n'avez pas de nom d'usager et votre mot de passe, contactez votre Centre de Service à la clientèle.",
-	m_loginEnableJS: "Attention: pour se connecter à l'Open Appliance programme, votre navigateur doit accepter les pop-ups et les cookies.",
+	m_loginContactCS : "Si vous n'avez pas de nom d'usager et votre mot de passe, contactez votre Centre de Service ï¿½ la clientï¿½le.",
+	m_loginEnableJS: "Attention: pour se connecter ï¿½ l'Open Appliance programme, votre navigateur doit accepter les pop-ups et les cookies.",
 	
 
     /////////////////////////////////////////

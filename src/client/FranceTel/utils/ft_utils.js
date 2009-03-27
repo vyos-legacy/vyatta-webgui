@@ -106,7 +106,7 @@ var g_utils =
 
     f_getLanguage: function()
     {
-        g_cookie.f_get(g_consObj.V_COOKIES_LANG);
+        return g_cookie.f_get(g_consObj.V_COOKIES_LANG);
     },
 
     f_getUserLoginedName: function()
@@ -114,9 +114,25 @@ var g_utils =
         return g_cookie.f_get(g_consObj.V_COOKIES_USER_NAME);
     },
 
+    f_launchHomePage: function()
+    {
+        var lang = this.f_getLanguage();
+
+        switch(lang)
+        {
+            default:
+            case g_consObj.V_LANG_EN:
+                return "ft_main.html";
+            case g_consObj.V_LANG_FR:
+                return "ft_main_fr.html";
+        }
+    },
+
     f_gotoHomePage: function()
     {
-        if (navigator.userAgent.indexOf('Chrome') > 0) 
+        var hp = this.f_launchHomePage();
+
+        if (navigator.userAgent.indexOf('Chrome') > 0)
 			location.reload(true);
 		else {
 			var loc = window.location.href;
@@ -129,14 +145,17 @@ var g_utils =
 					homepage = 'ft_main' + locale + '.html';
 				}
 			}
-			window.location = homepage;
+
+			//window.location = homepage;
+                        window.location = hp;
 		}
     },
-	
+
 	f_gotoHomePageLocale: function(locale)
 	{
-	    var homepage = 'ft_main' + locale + '.html';
-		window.location = homepage;		
+	    //var homepage = 'ft_main' + locale + '.html';
+            var homepage = this.f_launchHomePage();
+            window.location = homepage;
 	},
 
     f_cursorWait: function()
@@ -157,26 +176,26 @@ var g_utils =
 	{
         var div = document.createElement('div');
         div.setAttribute('id', 'ft_popup_div');
-		div.style.width = '300px';		      
-		div.style.backgroundColor = 'white';	
-        div.style.display = 'block';		
+		div.style.width = '300px';
+		div.style.backgroundColor = 'white';
+        div.style.display = 'block';
         div.style.overflow = 'visible';
         div.style.font = 'normal 10pt arial';
         div.style.borderTop = '2px solid #CCC';
         div.style.borderLeft = '2px solid #CCC';
         div.style.borderBottom = '2px solid #000';
-        div.style.borderRight = '2px solid #000';	
-        div.style.padding = '15px';	
-								  
+        div.style.borderRight = '2px solid #000';
+        div.style.padding = '15px';
+
 		if (isModal==true) {
 		    div.style.margin = '100px auto';
-		    div.style.textAlign = 'center';			
+		    div.style.textAlign = 'center';
 		} else {
             div.style.position = 'relative';
             div.style.top = '-265px';
             div.style.height = '70px';
-		}		
-		
+		}
+
 		return div;
 	},
 
@@ -187,14 +206,14 @@ var g_utils =
         /////////////////////////////////////////
         // set inner styling of the div tag
         var div = this.f_createPopupDiv(isModal);
-			
+
 		if (isModal==true) {
-			popDivId = 'ft_modal_popup_message'; 		
+			popDivId = 'ft_modal_popup_message';
 			var el = document.getElementById(popDivId);
-			el.style.visibility = "visible";	
+			el.style.visibility = "visible";
 		}
 		document.getElementById(popDivId).appendChild(div);
-		
+
 		var cancelHandler = "f_utilsPopupCancel('" + popDivId + "')";
 		var applyHandler = "f_utilsPopupApply('" + popDivId + "')";
 		var timeoutHandler = "f_utilsPopupTimeout('" + popDivId + "')";

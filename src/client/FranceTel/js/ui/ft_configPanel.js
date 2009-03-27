@@ -241,8 +241,9 @@ function FT_configPanel()
                 }
                 thisObj.m_selectObj = new FT_confMyProfile('My Profile', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
-                return thisObj.m_selectObj.f_getConfigurationPage();
-
+                var cmp = thisObj.m_selectObj.f_getConfigurationPage();
+				thisObj.m_selectObj.f_redraw(cmp);
+                return cmp;
             case VYA.FT_CONST.DOM_3_NAV_SUB_USER_ADD_ID:
                 var mpCb = function(){
                 }

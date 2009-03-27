@@ -143,8 +143,11 @@ g_mainFrameObj = new FT_mainFrame();
 function f_onLanguageChange() 
 {
 	var e = document.getElementById('ft_language');
-	alert('language selected: ' + e.value);
-	
+	var locale = '_' + e.value;
+	if (locale == '_en') {
+		locale = '';
+	}
+	g_utils.f_gotoHomePageLocale(locale);
 }
 
 function f_home()

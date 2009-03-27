@@ -28,6 +28,7 @@ VYA.DYN_STYLE = {
 	PRI_NAV_ITEM_TEXT_ALIGN : 'center',
 //	PRI_NAV_ITEM_BG_IMG : 'url("images/tab_nav_base.PNG")',
 	PRI_NAV_ITEM_BG_IMG : 'url("images/nav_end.PNG")',	
+	LINER_THIN : '1px solid #DEDEDE',
 	//
 	// Active
 	PRI_NAV_ACT_ITEM_BG_IMG : 'none',

@@ -106,11 +106,28 @@ var g_utils =
 
     f_gotoHomePage: function()
     {
-        if(navigator.userAgent.indexOf('Chrome') > 0)
-            location.reload(true);
-        else
-            window.location = g_consObj.V_HOME_PAGE;
+        if (navigator.userAgent.indexOf('Chrome') > 0) 
+			location.reload(true);
+		else {
+			var loc = window.location.href;
+			var index = loc.indexOf('ft_main');
+			var homepage = g_consObj.V_HOME_PAGE;
+			if (index != -1) {
+				if (loc.charAt(index+7) != '.') {
+				    //get the location code.
+					var locale = loc.substring(index+7,index+10);
+					homepage = 'ft_main' + locale + '.html';
+				}
+			}
+			window.location = homepage;
+		}
     },
+	
+	f_gotoHomePageLocale: function(locale)
+	{
+	    var homepage = 'ft_main' + locale + '.html';
+		window.location = homepage;		
+	},
 
     f_cursorWait: function()
     {

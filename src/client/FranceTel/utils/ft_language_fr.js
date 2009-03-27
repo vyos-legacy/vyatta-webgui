@@ -50,11 +50,21 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Buttons & Images
     m_imageDir : 'images/',
-
+	m_ok: 'ok',
+	
     ///////////////////////////////////////////////////////////////////
     // Popup Message Dialog
     m_puSessionTimeout : 'Session Time Out',
     m_puSessionTimeoutMsg : 'For security reasons, your session is no longer active<br>Please re-login again.',
+
+    ///////////////////////////////////////////////////////////////////
+    // Login Dialog
+    m_loginPrompt : "S'il vous plaît entrer le nom d'utilisateur et mot de passe pour vous connecter.",
+    m_loginError : "Erreur d'identification",
+    m_loginUnableToLogin : "Impossible de se connecter: ",	
+	m_loginContactCS : "Si vous n'avez pas de nom d'usager et votre mot de passe, contactez votre Centre de Service à la clientèle.",
+	m_loginEnableJS: "Attention: pour se connecter à l'Open Appliance programme, votre navigateur doit accepter les pop-ups et les cookies.",
+	
 
     /////////////////////////////////////////
     // plesae do not edit beyound dummy

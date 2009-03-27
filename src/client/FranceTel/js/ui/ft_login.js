@@ -81,9 +81,9 @@ function FT_login(busObj)
                 'class="OneButton" type="button"></div>';
 
         str += "<br><br><div id='messageContactServiceCustomer' align='center'>" +
-                  "If you have no username and password, contact your Customer Service Center.<br>";
-        str += "Warning: to connect to the Open Appliance program,";
-        str += " your browser must accept pop-ups and cookies.</div>";
+                  g_lang.m_loginContactCS + "<br>";
+        str += g_lang.m_loginEnableJS;
+		str += "</div>";
 
         return str;
     }
@@ -107,8 +107,8 @@ function f_submit()
 
     if(un.length == 0 || pw.length == 0)
     {
-        g_utils.f_popupMessage("Please enter username and password to login.",
-                              "ok", "Login error");
+        g_utils.f_popupMessage(g_lang.m_loginPrompt,
+                              g_lang.m_ok, g_lang.m_loginError);
         return;
     }
 
@@ -116,8 +116,8 @@ function f_submit()
     {
         if(event.f_isError())
         {
-            g_utils.f_popupMessage('Unable to login: ' + event.m_errMsg,
-                            "ok", "Login error");
+            g_utils.f_popupMessage(g_lang.m_loginUnableToLogin + event.m_errMsg,
+                            g_lang.m_ok, g_lang.m_loginError);
         }
         else
         {

@@ -144,8 +144,8 @@ sub backup_archive {
 		my $rc = `wget $cmd -O $bufile 2>&1`;
 		if ($rc =~ /200 OK/) {
 #		    print "SUCCESS\n";
-		    print "openssl enc -aes-256-cbc -kfile $MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc";
-		    my $resp = `openssl enc -aes-256-cbc -kfile $MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc`;
+#		    print "openssl enc -aes-256-cbc -kfile $MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc";
+		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc`;
 		    #what happens if a vm fails to backup???? how are we to identify this???
 
 		    #remove from new_collection
@@ -262,6 +262,8 @@ sub restore_archive {
 
     ##########################################################################
     #
+    # for each VM:type decrypt archive
+    #
     # for each VM:type send REST message to VM to restore. web root is a 
     # well known location.
     #
@@ -272,6 +274,7 @@ sub restore_archive {
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
+	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]`;
 	    my $cmd = "http://$ip$REST_RESTORE/$coll[$i][1]";
 	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??

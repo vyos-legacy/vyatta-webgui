@@ -29,7 +29,8 @@ function FT_confBLB(name, callback, busLayer)
                 v_type: 'html',
                 id: 'conf_blb_standalone',
                 size: '30',
-                text: '<input type="radio" name="blb_group" value="standalone" checked>&nbsp;Stand alone Open Appliance',
+                text: '<input type="radio" name="blb_group" value="standalone" checked>&nbsp;' + 
+				      g_lang.m_blbStandAloneOA,
                 v_new_row: 'true',
                 v_end_row: 'true'
             }, {
@@ -40,7 +41,8 @@ function FT_confBLB(name, callback, busLayer)
                 v_type: 'html',
                 id: 'conf_blb_association',
                 size: '30',
-                text: '<input type="radio" name="blb_group" value="association">&nbsp;BLB association',
+                text: '<input type="radio" name="blb_group" value="association">&nbsp;' + 
+				      g_lang.m_blbAssociation,
                 v_new_row: 'true',
                 v_end_row: 'true'
             }],
@@ -66,7 +68,7 @@ function FT_confBLB(name, callback, busLayer)
     
     this.f_reset = function()
     {
-        alert('reset the value to the previous state');
+       
     }
     
     this.f_apply = function()

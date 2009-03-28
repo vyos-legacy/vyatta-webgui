@@ -39,7 +39,9 @@ function FT_mainFrame(){
 		var login = document.getElementById(VYA.FT_CONST.DOM_LOGIN_CONTAINER_ID);
 		login.style.display = 'block';		
         var e = document.getElementById('welcome_admin');
-		e.innerHTML = 'welcome <b><font color="#FF6600">guest</font></b>, please sign in to the Open Appliance admin service';	
+		e.innerHTML = g_lang.m_mainFrmWelcome + ' <b><font color="#FF6600">' + 
+		  g_lang.m_mainFrmGuest + '</font></b>, ' +
+		  g_lang.m_mainFrmSignIn;	
 	}
 	
 	this.f_hideLogin = function () {
@@ -48,8 +50,9 @@ function FT_mainFrame(){
         var e = document.getElementById('welcome_admin');
 		var admin = g_busObj.f_getLoginUserRec().m_user;
 		//alert('admin: ' + admin + ' loginObj: ' + g_busObj.f_getLoginUserRec());
-		e.innerHTML = 'welcome <b><font color="#FF6600">' + 
-		    admin + '</font></b>, you are connected to the Open Appliance admin service';		
+		e.innerHTML = g_lang.m_mainFrmWelcome + ' <b><font color="#FF6600">' + 
+		    admin + '</font></b>, ' +
+			g_lang.m_mainFrmConnected;		
 	}
 	
 	this.f_logout = function() {

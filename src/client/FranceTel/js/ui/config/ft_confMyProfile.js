@@ -30,7 +30,7 @@ function FT_confMyProfile (name, callback, busLayer) {
 			items: [ {
 				v_type: 'label',
 				id: 'conf_myprofile_login_label',
-				text: 'Login',
+				text: g_lang.m_myprofLogin,
 				v_new_row: 'true',
 				font_weight: 'bold'
 			}, {
@@ -46,7 +46,7 @@ function FT_confMyProfile (name, callback, busLayer) {
 			}, {
 				v_type: 'label',
 				id: 'conf_myprofile_old_passwd_label',
-				text: 'Old password',
+				text: g_lang.m_myprofOldPasswd,
 				v_new_row: 'true'
 			}, {
 				v_type: 'password',
@@ -56,7 +56,7 @@ function FT_confMyProfile (name, callback, busLayer) {
 			}, {
 				v_type: 'label',
 				id: 'conf_myprofile_new_passwd_label',
-				text: 'New password',
+				text: g_lang.m_myprofNewPasswd,
 				v_new_row: 'true'
 			}, {
 				v_type: 'password',
@@ -66,7 +66,7 @@ function FT_confMyProfile (name, callback, busLayer) {
 			}, {
 				v_type: 'label',
 				id: 'conf_myprofile_confirm_passwd_label',
-				text: 'Confirm password',
+				text: g_lang.m_myprofConfirmPasswd,
 				v_new_row: 'true'
 			}, {
 				v_type: 'password',
@@ -112,22 +112,22 @@ function FT_confMyProfile (name, callback, busLayer) {
         var cpw = thisObj.form.conf_myprofile_confirm_passwd.value.trim();
 		
 		if (opw.length <= 0) {
-            g_utils.f_popupMessage('Old password cannot be empty', 'error', 'Error!', true);					
+            g_utils.f_popupMessage(g_lang.m_myprofOldPasswd + ' ' + g_lang.m_formNoEmpty, 'error', g_lang.m_error, true);					
 			return false;			
 		}
 		
 		if (npw.length <= 0) {
-            g_utils.f_popupMessage('New password cannot be empty', 'error', 'Error!', true);					
+            g_utils.f_popupMessage(g_lang.m_myprofOldPasswd + ' ' + g_lang.m_formNoEmpty, 'error', g_lang.m_error, true);					
 			return false;			
 		}		
 		
 		if (cpw.length <= 0) {
-            g_utils.f_popupMessage('Confirm password cannot be empty', 'error', 'Error!',true);					
+            g_utils.f_popupMessage(g_lang.m_myprofOldPasswd + ' ' + g_lang.m_formNoEmpty, 'error', g_lang.m_error,true);					
 			return false;			
 		}	
 				
 		if (npw != cpw) {
-            g_utils.f_popupMessage('New password does not match confirm password', 'error', 'Error!',true);					
+            g_utils.f_popupMessage(g_lang.m_myprofNPWnotCPW, 'error', g_lang.m_error,true);					
 			return false;
 		}		
 		return true;
@@ -139,11 +139,11 @@ function FT_confMyProfile (name, callback, busLayer) {
     this.f_resetPasswordCb = function(eventObj)
     {
         if (eventObj.f_isError()) {
-            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error',true);
+            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', g_lang.m_error, true);
         } else {
-            var message = 'Password reset successfully';
+            var message = g_lang.m_myprofPasswdRestSucessful;
             var type = 'ok';
-            var title = 'Reset password completed'
+            var title = g_lang.m_myprofResetPasswdDone;
             g_utils.f_popupMessage(message, type, title,true);
         }
     }	

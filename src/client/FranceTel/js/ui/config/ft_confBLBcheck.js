@@ -29,7 +29,7 @@ function FT_confBLBcheck(name, callback, busLayer)
             items: [{
                 v_type: 'label',
                 id: 'conf_blb_check_login_label',
-                text: 'Login',
+                text: g_lang.m_login,
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
@@ -39,7 +39,7 @@ function FT_confBLBcheck(name, callback, busLayer)
             }, {
                 v_type: 'label',
                 id: 'conf_blb_check_password_label',
-                text: 'Password',
+                text: g_lang.m_password,
                 v_new_row: 'true'
             }, {
                 v_type: 'password',
@@ -76,9 +76,9 @@ function FT_confBLBcheck(name, callback, busLayer)
     
     this.f_apply = function()
     {
-        var message = 'BLB association has completed successfully';
+        var message = g_lang.m_blbComplete;
         var type = 'ok';
-        var title = 'BLB Association';
+        var title = g_lang.m_blbAssociation;
         g_utils.f_popupMessage(message, type, title, true, 'f_confBLBcheckApply()');
     }
     

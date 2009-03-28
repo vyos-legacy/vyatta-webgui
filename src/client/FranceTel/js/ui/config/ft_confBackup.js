@@ -35,10 +35,12 @@ function FT_confBackup(name, callback, busLayer)
     {
         var cols = [];
     
-	    var config = '<input type="checkbox" id="conf_backup_config_checkall" name="config_checkall" value="config_checkall">&nbsp;Config.</input>';
-	    var data = '<input type="checkbox" id="conf_backup_data_checkall" name="data_checkall" value="data_checkall">&nbsp;Data</input>';
+	    var config = '<input type="checkbox" id="conf_backup_config_checkall" name="config_checkall" value="config_checkall">&nbsp;' +
+		    g_lang.m_backupConfig + '</input>';
+	    var data = '<input type="checkbox" id="conf_backup_data_checkall" name="data_checkall" value="data_checkall">&nbsp;' +
+		    g_lang.m_backupData + '</input>';
 
-        cols[0] = this.f_createColumn('Application', 250, 'text', '6');
+        cols[0] = this.f_createColumn(g_lang.m_backupApp, 250, 'text', '6');
         cols[1] = this.f_createColumn(config,120, 'checkbox', '32');		
         cols[2] = this.f_createColumn(data, 120, 'checkbox', '40');
 
@@ -113,7 +115,7 @@ function FT_confBackup(name, callback, busLayer)
 			}	
 		}
 		       
-        g_utils.f_popupMessage('Please select at least one application to backup', 'error', 'Error!',true);		
+        g_utils.f_popupMessage(g_lang.m_backupSelectOne, 'error', g_lang.m_error,true);		
 		
 		return false;
 	}
@@ -143,9 +145,9 @@ function FT_confBackup(name, callback, busLayer)
     this.f_oaBackupCb = function(eventObj)
 	{
         if (eventObj.f_isError()) {
-			g_utils.f_popupMessage('Backup failed: ' + eventObj.m_errMsg, 'error', 'Error!', true);
+			g_utils.f_popupMessage(g_lang.m_backupFail + ': ' + eventObj.m_errMsg, 'error', g_lang.m_error, true);
 		} else {
-			g_utils.f_popupMessage('Backup is in progress.  You will receive an email notification when the operation is finshed.', 'ok', 'Information', true);
+			g_utils.f_popupMessage(g_lang.m_backupInProgress + '.', 'ok', g_lang.m_info, true);
             g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);  			
 		}	
 	}
@@ -191,7 +193,7 @@ function FT_confBackup(name, callback, busLayer)
 			max = 2;
 		} 
 		if (thisObj.f_overflow() > max) {
-            g_utils.f_popupMessage('There are ' + max + ' backups already stored on the Open Appliance.  Please delete the oldest and try again.', 'error', 'Error!',true);
+            g_utils.f_popupMessage(g_lang.m_backupThereR + ' ' + max + ' ' + g_lang.m_backupPlsDelete+ '.', 'error', g_lang.m_error,true);
 			return;				    
 		}
 		thisObj.f_oaBackup();
@@ -279,7 +281,8 @@ function FT_confBackup(name, callback, busLayer)
 		    '<form id="conf_backup_form" class="v_form" border="0">' +
 				'<table cellspacing="0" cellpadding="0" border="0">' +
 					'<tr><td><label class="v_label">Target:</label></td></tr>' +				
-				    '<tr><td style="padding-left:35px;"><input type="radio" name="target_group" value="pc">&nbsp;My PC</td></tr>' +
+				    '<tr><td style="padding-left:35px;"><input type="radio" name="target_group" value="pc">&nbsp;'
+					+ g_lang.m_backupMyPC + '</td></tr>' +
 				    '<tr><td style="padding-left:35px;"><input type="radio" name="target_group" value="oa" checked>&nbsp;Open appliance</td></tr>' +
 				'</table>' +
 		    '</form>';		

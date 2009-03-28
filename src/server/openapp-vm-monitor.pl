@@ -53,12 +53,11 @@ sub updateOAStatus {
 }
 
 sub vmStatus {
-  my $s = shift;
+  my ($s, $status_oid) = @_;
 
-  # XXX use uptime for now
-  # TODO: actual status
-  my $oid = '.1.3.6.1.2.1.25.1.1.0';
-  my $r = $s->get_request(-varbindlist => [ $oid ]);
+  # query status
+  my $r = $s->get_request(-varbindlist => [ $status_oid ]);
+  # TODO implement result mapping
   return 'unknown' if (!defined($r));
   return 'up';
 }
@@ -134,6 +133,7 @@ sub updateVMStatus {
     last if (!defined($vm));
 
     my $ip = $vm->getIP();
+    my $status_oid = $vm->getStatusOid();
     my ($s, $err) = Net::SNMP->session(-hostname => "$ip",
                                        -community => $OA_SNMP_COMM,
                                        -timeout => 1,
@@ -141,7 +141,7 @@ sub updateVMStatus {
                                        -version => '2c');
     last if (!defined($s));
     
-    $status = vmStatus($s);
+    $status = vmStatus($s, $status_oid);
     # if no status, don't try the others
     last if ($status eq 'unknown');
 

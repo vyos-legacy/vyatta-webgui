@@ -8,16 +8,17 @@ our $OPENAPP_SNMP_COMM = 'openappliance';
 our $OPENAPP_VENDOR = 'Vyatta';
 our $OPENAPP_BFORMAT = '1';
 
-my $VMDIR = '/opt/vyatta/etc/gui/VM';
-my $LIBVIRT_DIR = '/opt/vyatta/etc/libvirt';
+our $META_DIR = '/var/oa/gui/VM';
+our $LIBVIRT_DIR = '/var/oa/libvirt';
+
 my $STATUS_DIR = '/opt/vyatta/var/run/vmstatus';
 my $HWMON_FILE = '/opt/vyatta/var/run/vm-monitor.hw';
 
 ### "static" functions
 sub getVMList {
   my $dd = undef;
-  opendir($dd, "$VMDIR") or return;
-  my @v = grep { !/^\./ && -f "$VMDIR/$_" } readdir($dd);
+  opendir($dd, "$META_DIR") or return;
+  my @v = grep { !/^\./ && -f "$META_DIR/$_" } readdir($dd);
   closedir($dd);
   return @v;
 }
@@ -74,6 +75,8 @@ my %fields = (
   _vmImgVer => undef,
   _vmVendor => undef,
   _vmBackupFormat => undef,
+  _vmLdapFormat => undef,
+  _vmStatusOid => undef,
   _vmDisplayName => undef,
 
   # status
@@ -88,7 +91,7 @@ my %fields = (
 
 sub _isValidId {
   my ($id) = @_;
-  return ($id eq $OPENAPP_ID || -r "$VMDIR/$id") ? 1 : 0;
+  return ($id eq $OPENAPP_ID || -r "$META_DIR/$id") ? 1 : 0;
 }
 
 sub _setupMeta {
@@ -102,11 +105,12 @@ sub _setupMeta {
     return;
   }
   my $fd = undef;
-  open($fd, '<', "$VMDIR/$id") or return;
+  open($fd, '<', "$META_DIR/$id") or return;
   my $data = <$fd>;
   close($fd);
   chomp($data);
-  my ($ip, $port, $uri, $ver, $vend, $bform, $dname) = split(/ /, $data, 7);
+  my ($ip, $port, $uri, $ver, $vend, $bform, $lform, $oid, $dname)
+    = split(/ /, $data, 9);
   $self->{_vmId} = $id;
   $self->{_vmIP} = $ip;
   $self->{_vmWuiPort} = $port;
@@ -114,6 +118,8 @@ sub _setupMeta {
   $self->{_vmImgVer} = $ver;
   $self->{_vmVendor} = $vend;
   $self->{_vmBackupFormat} = $bform;
+  $self->{_vmLdapFormat} = $lform;
+  $self->{_vmStatusOid} = $oid;
   $self->{_vmDisplayName} = $dname;
 }
 
@@ -183,6 +189,26 @@ sub getWuiUri {
 sub getImgVer {
   my ($self) = @_;
   return $self->{_vmImgVer};
+}
+
+sub getVendor {
+  my ($self) = @_;
+  return $self->{_vmVendor};
+}
+
+sub getBackupFormat {
+  my ($self) = @_;
+  return $self->{_vmBackupFormat};
+}
+
+sub getLdapFormat {
+  my ($self) = @_;
+  return $self->{_vmLdapFormat};
+}
+
+sub getStatusOid {
+  my ($self) = @_;
+  return $self->{_vmStatusOid};
 }
 
 sub getDisplayName {

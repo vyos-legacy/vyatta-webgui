@@ -4,7 +4,6 @@ use strict;
 use POSIX;
 use File::Temp qw(mkdtemp);
 
-my $VMDIR = '/opt/vyatta/etc/gui/VM';
 my $VIMG_DIR = '/var/vimg';
 my $NVIMG_DIR = '/var/vimg-new';
 my $IMG_DIR = '/var/xen';
@@ -324,7 +323,7 @@ sub _preInstProc {
   }
  
   # keep the metadata
-  my $meta_file = "$VMDIR/$self->{_vmId}";
+  my $meta_file = "$OpenApp::VMMgmt::META_DIR/$self->{_vmId}";
   $cmd = "cp -p $meta_file $running";
   _system($cmd);
   return 'Failed to save current state file' if ($? >> 8);

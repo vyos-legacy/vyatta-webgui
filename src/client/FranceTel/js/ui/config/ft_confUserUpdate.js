@@ -107,8 +107,13 @@ function FT_confUserUpdate(name, callback, busLayer)
         thisObj.form.conf_user_update_surname.value = thisObj.m_user.m_last;
         thisObj.form.conf_user_update_givenname.value = thisObj.m_user.m_first;
         thisObj.form.conf_user_update_email.value = thisObj.m_user.m_email;
-        
+        thisObj.f_setFocus();
     }
+	
+	this.f_setFocus = function()
+	{
+		thisObj.form.conf_user_update_surname.focus();
+	}
     
     this.f_stopLoadVMData = function()
     {

@@ -92,7 +92,13 @@ function FT_confEmailServer(name, callback, busLayer)
     this.f_loadVMData = function(element)
     {
         thisObj.m_form = document.getElementById('conf_email_srv' + "_form");
+		thisObj.f_setFocus();
     }
+	
+	this.f_setFocus = function()
+	{
+		thisObj.m_form.conf_email_srv_stmp.focus();
+	}		
     
     this.f_stopLoadVMData = function()
     {

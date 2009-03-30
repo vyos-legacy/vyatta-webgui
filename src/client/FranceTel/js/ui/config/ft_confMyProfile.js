@@ -91,8 +91,14 @@ function FT_confMyProfile (name, callback, busLayer) {
         var user = g_busObj.f_getLoginUserRec();
         var field = document.getElementById('conf_myprofile_login');
         field.innerHTML = user.m_user;
-        thisObj.form = document.getElementById('conf_my_profile' + "_form");		
+        thisObj.form = document.getElementById('conf_my_profile' + "_form");	
+		thisObj.f_setFocus();	
     }
+	
+	this.f_setFocus = function()
+	{
+		thisObj.form.conf_myprofile_old_passwd.focus();
+	}	
 	
 	this.f_redraw = function(div)
 	{

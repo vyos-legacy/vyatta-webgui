@@ -51,12 +51,14 @@ function FT_vmBusObj(busObj)
                     thisObj.m_vmDeployRecObj = thisObj.f_parseVMDeployList(err);
                     evt = new FT_eventObj(0, thisObj.m_vmDeployRecObj, '');
                 }
-                else if(thisObj.m_lastCmdSent.indexOf('open-app vm list') > 0 ||
-                    thisObj.m_lastCmdSent.indexOf('vm status') > 0)
+                else if(thisObj.m_lastCmdSent.indexOf('open-app vm list') > 0)
                 {
                     thisObj.f_parseVMSummaryData(err);
+                    evt = new FT_eventObj(0, thisObj.m_vmRecObj, '');
+                }
+                else if(thisObj.m_lastCmdSent.indexOf('vm status') > 0)
+                {
                     thisObj.f_parseVMStatus(err);
-
                     evt = new FT_eventObj(0, thisObj.m_vmRecObj, '');
                 }
             }
@@ -148,12 +150,13 @@ function FT_vmBusObj(busObj)
     this.f_parseVMSummaryData = function(response)
     {
         var vmNodes = thisObj.f_getVMNodesFromResponse(response, 'vm');
+        var vms = [];
+        var c=0;
+        vms[c++] = new FT_vmRecObj('blb', 'Business Livebox');
+        vms[c++] = new FT_vmRecObj('openapp', 'Open Appliance');
+
         if(vmNodes != null)
         {
-            var vms = [];
-            var c=0;
-            vms[c++] = new FT_vmRecObj('blb', 'Business Livebox');
-            vms[c++] = new FT_vmRecObj('openapp', 'Open Appliance');
             for(var i=0; i<vmNodes.length; i++)
             {
                 var val = vmNodes[i];
@@ -185,9 +188,9 @@ function FT_vmBusObj(busObj)
                     c++;
                 }
             }
-
-            thisObj.m_vmRecObj = vms;
         }
+
+        thisObj.m_vmRecObj = vms;
     }
 
     this.f_parseVMStatus = function(response)

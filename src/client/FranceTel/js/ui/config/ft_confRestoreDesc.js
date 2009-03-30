@@ -114,8 +114,7 @@ function FT_confRestoreDesc(name, callback, busLayer)
             alert('restore in progress....' + evt);
         }
 
-        //g_busObj.f_restore(vms, types, rec.m_file, callback);
-        g_busObj.f_restore(vms, types, null, callback);
+        g_busObj.f_restore(vms, types, rec.m_file, callback);
     }
 
     this.f_handleCheckboxClick = function(e)

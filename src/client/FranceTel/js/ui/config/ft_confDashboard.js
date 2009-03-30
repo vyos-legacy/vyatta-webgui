@@ -94,7 +94,7 @@ function FT_confDashboard(name, callback, busLayer)
                 }
 
                 thisObj.f_adjustDivPosition(thisObj.m_buttons);
-                thisObj.f_updateApplyButton();
+                thisObj.f_updateButtons();
             }
         }
 
@@ -106,8 +106,8 @@ function FT_confDashboard(name, callback, busLayer)
     {
         var f = thisObj.m_updateFields;
 
-        // update the m_updateFields of user input. so next background
-        // refresh will keep the user's input instead of overrided it.
+        // update the m_updateFields to keep user's last input. so the background
+        // refresh would not overrided user's last input.
         for(var i=0; i<f.length; i++)
         {
             var vm = f[i];
@@ -118,7 +118,10 @@ function FT_confDashboard(name, callback, busLayer)
             }
         }
 
-        thisObj.f_updateApplyButton();
+        thisObj.f_updateButtons();
+
+        // always enabled cancel button if any check box is dirty
+        thisObj.f_enabledDisableButton(thisObj.m_btnCancelId, true);
     }
 
     this.f_handleResetCheckbox = function()
@@ -134,7 +137,13 @@ function FT_confDashboard(name, callback, busLayer)
         }
     }
 
-    this.f_updateApplyButton = function()
+    this.f_updateButtons = function()
+    {
+        thisObj.f_updateButton(thisObj.m_btnUpdateId);
+        thisObj.f_updateButton(thisObj.m_btnCancelId);
+    }
+
+    this.f_updateButton = function(btnId)
     {
         var f = thisObj.m_updateFields;
         var isAnyChkboxChecked = false;
@@ -150,7 +159,7 @@ function FT_confDashboard(name, callback, busLayer)
             }
         }
 
-        thisObj.f_enabledDisableButton(thisObj.m_btnUpdateId, isAnyChkboxChecked);
+        thisObj.f_enabledDisableButton(btnId, isAnyChkboxChecked);
     }
 
     /**

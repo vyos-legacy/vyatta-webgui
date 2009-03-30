@@ -9,6 +9,9 @@ function FT_confUserRight(name, callback, busLayer)
 {
     var thisObjName = 'FT_confUserRight';
     var thisObj = this;
+    this.m_uiData = null;
+    this.m_btnApplyId = 'ur_apply_id';
+    this.m_btnCancelId = 'ur_cancel_id';
 
     /**
      * @param name - name of configuration screens.
@@ -124,6 +127,7 @@ function FT_confUserRight(name, callback, busLayer)
                     }
 
                     thisObj.f_adjustDivPosition(thisObj.m_buttons);
+                    thisObj.f_handleOnCheckBoxClick();
                 }
             }
         }
@@ -158,6 +162,38 @@ function FT_confUserRight(name, callback, busLayer)
                             'f_userRightCheckboxClick(this)'), 'no'];
 
         return null;
+    }
+
+    this.f_handleOnCheckBoxClick = function()
+    {
+        if(thisObj.m_uiData == undefined) return;
+
+        var isDirty = false;
+        for(var i=0; i<thisObj.m_uiData.length; i++)
+        {
+            var uiData = thisObj.m_uiData[i];
+            for(var j=0; j<uiData.length; j++)
+            {
+                var vm = uiData[j];
+                var eId = document.getElementById(vm[0]);
+                if(eId != null)
+                {
+                    if(eId.checked && vm[1] == 'no')
+                    {
+                        isDirty = true;
+                        break;
+                    }
+                    else if(!eId.checked && vm[1] == 'yes')
+                    {
+                        isDirty = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        thisObj.f_enabledDisableButton(thisObj.m_btnApplyId, isDirty);
+        thisObj.f_enabledDisableButton(thisObj.m_btnCancelId, isDirty);
     }
 
     this.f_handleOnApplyClick = function()
@@ -210,6 +246,8 @@ function FT_confUserRight(name, callback, busLayer)
                     eId.checked = vm[1] == 'yes' ? true : false;
             }
         }
+
+        thisObj.f_handleOnCheckBoxClick();
     }
 
     this.f_init = function()
@@ -219,8 +257,10 @@ function FT_confUserRight(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadData();
 
-        var btns = [['Apply', "f_userRightHandleApply()", 'Set selection'],
-                    ['Cancel', "f_userRightHandleCancel()", 'Reset selection']];
+        var btns = [['Apply', "f_userRightHandleApply()", 'Set selection',
+                      this.m_btnApplyId],
+                    ['Cancel', "f_userRightHandleCancel()", 'Reset selection',
+                      this.m_btnCancelId]];
         this.m_buttons = this.f_createButtons(btns);
 
         return [this.m_header, this.m_body, this.m_buttons];
@@ -248,4 +288,5 @@ function f_userRightHandleCancel(e)
 
 function f_userRightCheckboxClick(e)
 {
+    g_configPanelObj.m_activeObj.f_handleOnCheckBoxClick()
 }

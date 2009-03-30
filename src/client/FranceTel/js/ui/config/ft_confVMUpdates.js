@@ -33,9 +33,9 @@ function FT_confVMUpdates(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn('Date', 200, 'text', '6');
-        cols[1] = this.f_createColumn('Application', 200, 'text', '6');
-        cols[2] = this.f_createColumn('Status', 120, 'text', '6');
+        cols[0] = this.f_createColumn(g_lang.m_uhHdData, 200, 'text', '6');
+        cols[1] = this.f_createColumn(g_lang.m_dbHdApplication, 200, 'text', '6');
+        cols[2] = this.f_createColumn(g_lang.m_dbHdStatus, 120, 'text', '6');
         cols[3] = this.f_createColumn(' ', 120, 'button', '25');
 
         return cols;

@@ -77,13 +77,15 @@ function FT_confDashboard(name, callback, busLayer)
 
                     var img = thisObj.f_renderStatus(v.m_status);
                     var cpu = thisObj.f_renderProgressBar(v.m_cpu,
-                            'CPU Used: ' + v.m_cpu + '%');
+                            g_lang.m_dbHdCPU + ' ' + g_lang.m_dbUsed + ': ' + v.m_cpu + '%');
                     var mem = thisObj.f_renderProgressBar(v.f_getMemPercentage(),
-                            'RAM Used: Total = ' + v.m_memTotal +
-                            ', Free = ' + v.m_memFree);
+                            g_lang.m_dbMemory + ' ' + g_lang.m_dbUsed + ': ' +
+                            g_lang.m_dbTotal + ' = ' + v.m_memTotal +
+                            ', ' + g_lang.m_dbFree + ' = ' + v.m_memFree);
                     var disk = thisObj.f_renderProgressBar(v.f_getDiskPercentage(),
-                            'Disk Used: Total = ' + v.m_diskTotal +
-                            ', Free = ' + v.m_diskFree);
+                            g_lang.m_dbDiskSpace + ' ' + g_lang.m_dbUsed + ': ' +
+                            g_lang.m_dbTotal + ' = ' + v.m_diskTotal +
+                            ', ' + g_lang.m_dbFree + ' = ' + v.m_diskFree);
                     var update = thisObj.f_handleUpdateNeedField(vmIndex, v, thisObj.m_updateFields);
                     thisObj.m_updateFields[vmIndex++] = update[1];
 
@@ -200,7 +202,7 @@ function FT_confDashboard(name, callback, busLayer)
             var isChecked = vmu[2] == 'no' ? 'no' : 'yes';
 
             return [thisObj.f_renderCheckbox(isChecked, 'db_' + vm.m_name,
-                            'f_dbCheckboxClick(this)', "Version to be updated - " +
+                            'f_dbCheckboxClick(this)', g_lang.m_dbTooltipUpdateNeed +
                             vm.m_needUpdate), updates[vmindex]];
         }
         else
@@ -219,9 +221,9 @@ function FT_confDashboard(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
-        var btns = [['Update', "f_dbHandleUpdate()", 'Update selected VM(s)',
+        var btns = [['Update', "f_dbHandleUpdate()", g_lang.m_dbTooltipUpdate,
                       this.m_btnUpdateId],
-                    ['Cancel', "f_dbHandleCancel()", 'Reset selection',
+                    ['Cancel', "f_dbHandleCancel()", g_lang.m_dbTooltipCancel,
                       this.m_btnCancelId]];
         this.m_buttons = this.f_createButtons(btns);
 

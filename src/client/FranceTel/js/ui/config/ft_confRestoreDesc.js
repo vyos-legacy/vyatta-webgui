@@ -33,9 +33,9 @@ function FT_confRestoreDesc(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn('Application', 250, 'text', '6');
-        cols[1] = this.f_createColumn('Config.', 80, 'checkbox', '35');
-        cols[2] = this.f_createColumn('Data', 80, 'checkbox', '35');
+        cols[0] = this.f_createColumn(g_lang.m_dbHdApplication, 250, 'text', '6');
+        cols[1] = this.f_createColumn(g_lang.m_resDescHdConf, 80, 'checkbox', '35');
+        cols[2] = this.f_createColumn(g_lang.m_resDescHdData, 80, 'checkbox', '35');
 
         return cols;
     }

@@ -41,7 +41,7 @@ function FT_confUserRight(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn('Name', 180, 'text', '6');
+        cols[0] = this.f_createColumn(g_lang.m_name, 180, 'text', '6');
 
         var vm = g_busObj.f_getVmRecObj();
         var vmIndex = 1;

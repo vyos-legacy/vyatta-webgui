@@ -29,7 +29,7 @@ function FT_confEmailServer(name, callback, busLayer)
             items: [{
                 v_type: 'label',
                 id: 'conf_email_srv_stmp_label',
-                text: 'SMTP server address',
+                text: g_lang.m_emailStmpAddr,
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
@@ -39,7 +39,7 @@ function FT_confEmailServer(name, callback, busLayer)
             }, {
                 v_type: 'label',
                 id: 'conf_email_srv_local_machine_label',
-                text: 'Local machine name',
+                text: g_lang.m_emailLocalMachName,
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
@@ -49,7 +49,7 @@ function FT_confEmailServer(name, callback, busLayer)
             }, {
                 v_type: 'label',
                 id: 'conf_email_srv_local_email_label',
-                text: 'Local email address',
+                text: g_lang.m_emailLocalEmail,
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
@@ -59,7 +59,7 @@ function FT_confEmailServer(name, callback, busLayer)
             }, {
                 v_type: 'label',
                 id: 'conf_email_srv_auth_name_label',
-                text: 'Authorization name',
+                text: g_lang.m_emailAuthName,
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
@@ -69,7 +69,7 @@ function FT_confEmailServer(name, callback, busLayer)
             }, {
                 v_type: 'label',
                 id: 'conf_email_srv_auth_passwd_label',
-                text: 'Authorization password',
+                text: g_lang.m_emailAuthPasswd,
                 v_new_row: 'true'
             }, {
                 v_type: 'password',
@@ -100,30 +100,30 @@ function FT_confEmailServer(name, callback, busLayer)
         		
     this.f_validate = function()
     {
-        var error = 'Please fix the following errors:<br>';
+        var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
         
         if (!thisObj.f_checkIP(thisObj.m_form.conf_email_srv_stmp.value)) {
             if (!thisObj.f_checkHostname(thisObj.m_form.conf_email_srv_stmp.value)) {
-                errorInner += thisObj.f_createListItem('SMTP server address is invalid');
+                errorInner += thisObj.f_createListItem(g_lang.m_emailSmtpAddr + ' '+ g_lang.m_formInvalid);
             }
         }
         
         if (!thisObj.f_checkHostname(thisObj.m_form.conf_email_srv_local_machine.value)) {
-            errorInner += thisObj.f_createListItem('Local machine name is invalid');
+            errorInner += thisObj.f_createListItem(g_lang.m_emailLocalMachName + ' '+ g_lang.m_formInvalid);
         }
         
         if (!thisObj.f_checkEmail(thisObj.m_form.conf_email_srv_local_email.value)) {
-            errorInner += thisObj.f_createListItem('Local email address is invalid');
+            errorInner += thisObj.f_createListItem(g_lang.m_emailLocalEmail + ' '+ g_lang.m_formInvalid);
         }
         
-        errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_email_srv_auth_name, 'Authorization name cannot be empty', errorInner);
-        errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_email_srv_auth_passwd, 'Authorization password cannot be empty', errorInner);
+        errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_email_srv_auth_name, g_lang.m_emailAuthName + ' '+ g_lang.m_formNoEmpty, errorInner);
+        errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_email_srv_auth_passwd, g_lang.m_emailAuthPasswd + ' ' + g_lang.m_formNoEmpty, errorInner);
         
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
-            g_utils.f_popupMessage(error, 'error', 'Error!', true);
+            g_utils.f_popupMessage(error, 'error', g_lang.m_error, true);
 			return false;
         }
         return true;
@@ -131,7 +131,7 @@ function FT_confEmailServer(name, callback, busLayer)
     
     this.f_apply = function()
     {
-        g_utils.f_popupMessage('Email server configuration saved.', 'ok', 'Email server configuration',true);
+        g_utils.f_popupMessage(g_lang.m_emailSrvConfig + ' ' + g_lang.m_formSave, 'ok', g_lang.m_emailSrvConfig,true);
     }
     
     this.f_reset = function()

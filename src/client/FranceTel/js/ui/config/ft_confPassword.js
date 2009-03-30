@@ -26,7 +26,7 @@ function FT_confPassword (name, callback, busLayer) {
 			items: [ {
 				v_type: 'html',
 				id: 'conf_password_chg_at_login',
-				text: '<input type="radio" name="passwd_group" value="atlogin" checked>&nbsp;The user has to change his password at first login',
+				text: '<input type="radio" name="passwd_group" value="atlogin" checked>&nbsp;' + g_lang.m_passwdPolicyChangeAtLogin,
                 v_new_row: 'true',
 				v_end_row: 'true'
 			}, {
@@ -36,7 +36,7 @@ function FT_confPassword (name, callback, busLayer) {
 			}, {
 				v_type: 'html',
 				id: 'conf_password_default',
-				text: '<input type="radio" name="passwd_group" value="default">&nbsp;The user can keep his default password',
+				text: '<input type="radio" name="passwd_group" value="default">&nbsp;' + g_lang.m_passwdPolicyCanKeep,
 				v_new_row: 'true',
 				v_end_row: 'true'
 			}],				

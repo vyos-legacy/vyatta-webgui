@@ -20,13 +20,36 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // VM Update & History screen
+				
+    ///////////////////////////////////////////////////////////////////
+    // VM Update Restore
+	m_resUpdateVmName : "vm nom",		
+	m_resUpdateCurVer: "Version actuelle",
+	m_resUpdatePrevVer: "version précédente",
+	m_resUpdateFail: "Restore a échoué:",	
+
+    ///////////////////////////////////////////////////////////////////
+    // VM Schedule Update
+	m_schedUpdateSched: "S'il vous plaît le calendrier de mise à jour pour les applications suivantes",		
+	m_schedUpdateNow: "Now",
+	m_schedUpdateLater: "Ultérieure",
+	m_schedUpdateNewVer: "nouvelle version",
+	m_schedUpdateRangeChk: "vous planifiez six mois à venir",
+	m_schedUpdateDate: "Tableau date",
+	m_schedUpdateHour: "Tableau heure",
+	m_schedUpdateMinute: "Tableau minute",
+	m_schedUpdateErrorOccur: "Les erreurs suivantes se produisent lorsque nous tentons de prévoir une mise à jour:",
+
 
     ///////////////////////////////////////////////////////////////////
     // VM Restart screen
 
     ///////////////////////////////////////////////////////////////////
     // Subscribe screen
-
+    m_subscribePlease : "S'il vous plaît cliquer sur le texte suivant pour installer / supprimer une application",
+	m_subscribeInstall: "Installer une nouvelle application",
+	m_subscribeRemove: "Supprimer une nouvelle application",
+	
     ///////////////////////////////////////////////////////////////////
     // User List screen
 
@@ -35,10 +58,19 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // User Add screen
+    m_userUsername: "utilisateur",
+	m_userSurname: "nom",
+	m_userGivenName: "prénom",
+	m_userEmail: "e-mail",
 
     ///////////////////////////////////////////////////////////////////
     // User Editor screen
-
+    m_userResetPasswd: "Réinitialiser le mot de passe",
+    m_userResetPasswdConfirm: "Êtes-vous sûr de vouloir réinitialiser le mot de passe pour cet utilisateur?",
+	m_userConfirmation: "confirmation",
+	m_userResetPasswdSuccess: "Mot de passe réinitialisé avec succès",
+	m_userResetPasswdComplete: "Réinitialiser le mot de passe achevé",
+	
     ///////////////////////////////////////////////////////////////////
     // Configuration Restore Description screen
     m_confRestorDescp : 'lorem ipsum onsectetuer....',
@@ -78,6 +110,9 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // My Form
 	m_formNoEmpty : "ne peut pas être vide",		
+	m_formFixError: "S'il vous plaît corriger les erreurs suivantes:",
+	m_formInvalid: "est invalide",
+	m_formSave : "sauvé",
 	
     ///////////////////////////////////////////////////////////////////
     // My Profile
@@ -107,7 +142,38 @@ var g_lang =
 	m_blbStandAloneOA : "Autonome Open Appliance",
 	m_blbAssociation : "BLB association",		
 	m_blbComplete : "BLB association a terminé avec succès",
-			
+	
+    ///////////////////////////////////////////////////////////////////
+    // Email Server configuration
+	m_emailStmpAddr : "Adresse de serveur SMTP",	
+	m_emailLocalMachName : "Nom de la machine locale",
+	m_emailLocalEmail : "Local e-mail",
+	m_emailAuthName : "Autorisation de nom",
+	m_emailAuthPasswd : "Autorisation de mot de passe",
+	m_emailSrvConfig : "Envoi de la configuration du serveur",	
+	
+    ///////////////////////////////////////////////////////////////////
+    // LDAP Server configuration
+	m_ldapSrvLoc : "Serveur LDAP",	
+	m_ldapInOA : "Dans l'Open Appliance",
+	m_ldapInLan : "Dans la compagnie LAN",
+	m_ldapSrvAddr: "Adresse du serveur",
+	m_ldapUsrUpdateRt : "Utilisateur (mise à jour des droits)",
+	m_ldapUsrReadRt: "Utilisateur (lire droits)",
+	m_ldapPasswdUpdateRt: "Mot de passe (mise à jour des droits)",
+	m_ldapPasswdReadRt: "Mot de passe (lecture des droits)",
+		
+    ///////////////////////////////////////////////////////////////////
+    // Password Policy configuration
+	m_passwdPolicyChangeAtLogin : "L'utilisateur doit changer son mot de passe lors de la première connexion",	
+	m_passwdPolicyCanKeep : "L'utilisateur peut conserver hsi mot de passe par défaut",		
+	
+    ///////////////////////////////////////////////////////////////////
+    // NTP server configuration
+	m_ntpSrvAddr : "Adresse de serveur NTP",	
+	m_ntpTimeSrvAddr : "Adresse du serveur de temps",	
+	m_ntpTimeSrvConfig: "Le temps de configuration du serveur",	
+					
     /////////////////////////////////////////
     // plesae do not edit beyound dummy
     dummy : ''

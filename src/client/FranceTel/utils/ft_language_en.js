@@ -20,12 +20,34 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // VM Update & History screen
+				
+    ///////////////////////////////////////////////////////////////////
+    // VM Update Restore
+	m_resUpdateVmName : "vm name",		
+	m_resUpdateCurVer: "Current version",
+	m_resUpdatePrevVer: "Previous version",
+	m_resUpdateFail: "Restore failed:",
+
+    ///////////////////////////////////////////////////////////////////
+    // VM Schedule Update
+	m_schedUpdateSched: "Please schedule update for the following applications",		
+	m_schedUpdateNow: "Now",
+	m_schedUpdateLater: "Later",
+	m_schedUpdateNewVer: "new version",
+	m_schedUpdateRangeChk: "you schedule six months ahead",
+	m_schedUpdateDate: "Schedule date",
+	m_schedUpdateHour: "Schedule hour",
+	m_schedUpdateMinute: "Schedule minute",
+	m_schedUpdateErrorOccur: "The following errors occur while we try to schedule an upgrade:",
 
     ///////////////////////////////////////////////////////////////////
     // VM Restart screen
 
     ///////////////////////////////////////////////////////////////////
     // Subscribe screen
+    m_subscribePlease : "Please click on the following to install/remove an application",
+	m_subscribeInstall: "Install a new Application",
+	m_subscribeRemove: "Remove a new Application",
 
     ///////////////////////////////////////////////////////////////////
     // User List screen
@@ -35,10 +57,19 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // User Add screen
+    m_userUsername: "username",
+	m_userSurname: "surname",
+	m_userGivenName: "given name",
+	m_userEmail: "email",
 
     ///////////////////////////////////////////////////////////////////
     // User Editor screen
-
+    m_userResetPasswd: "Reset password",
+    m_userResetPasswdConfirm: "Are you sure you want to reset password for this user?",
+	m_userConfirmation: "confirmation",
+	m_userResetPasswdSuccess: "Password reset successfully",
+	m_userResetPasswdComplete: "Reset password completed",
+	
     ///////////////////////////////////////////////////////////////////
     // Configuration Restore Description screen
     m_confRestorDescp : 'lorem ipsum onsectetuer....',
@@ -78,6 +109,10 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // My Form
 	m_formNoEmpty : "cannot be empty",	
+	m_formFixError: "Please fix the following errors:",
+	m_formInvalid: "is invalid",
+	m_formSave : "saved",
+	m_formPassword: "password",
 	
     ///////////////////////////////////////////////////////////////////
     // My Profile
@@ -111,6 +146,37 @@ var g_lang =
     // BLB configuration
 	m_blbStandAloneOA : "Stand alone Open Appliance",
 	
+    ///////////////////////////////////////////////////////////////////
+    // Email Server configuration
+	m_emailStmpAddr : "SMTP server address",	
+	m_emailLocalMachNam : "Local machine name",
+	m_emailLocalEmail : "Local email address",
+	m_emailAuthName : "Authorization name",
+	m_emailAuthPasswd : "Authorization password",
+	m_emailSrvConfig : "Email server configuration",
+	
+    ///////////////////////////////////////////////////////////////////
+    // LDAP Server configuration
+	m_ldapSrvLoc : "LDAP server location",	
+	m_ldapInOA : "In the Open Appliance",
+	m_ldapInLan : "In the company LAN",
+	m_ldapSrvAddr: "Server address",
+	m_ldapUsrUpdateRt : "User (update rights)",
+	m_ldapUsrReadRt: "User (read rights)",
+	m_ldapPasswdUpdateRt: "Password (update rights)",
+	m_ldapPasswdReadRt: "Password (read rights)",
+	
+    ///////////////////////////////////////////////////////////////////
+    // Password Policy configuration
+	m_passwdPolicyChangeAtLogin : "The user has to change his password at first login",	
+	m_passwdPolicyCanKeep : "The user can keep hsi default password",			
+	
+    ///////////////////////////////////////////////////////////////////
+    // NTP server configuration
+	m_ntpSrvAddr : "NTP server address",	
+	m_ntpTimeSrvAddr : "Time server address",	
+	m_ntpTimeSrvConfig: "Time server configuration",		
+						
     /////////////////////////////////////////
     // plesae do not edit beyound dummy
     dummy : ''

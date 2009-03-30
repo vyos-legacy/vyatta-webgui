@@ -28,7 +28,7 @@ function FT_confTimeServer (name, callback, busLayer) {
 			items: [ {
 				v_type: 'label',
 				id: 'conf_time_srv_ntp_label',
-				text: 'NTP server address',
+				text: g_lang.m_ntpSrvAddr,
 				v_new_row: 'true'
 			}, {
 				v_type: 'text',
@@ -59,22 +59,22 @@ function FT_confTimeServer (name, callback, busLayer) {
     
     this.f_validate = function()
     {
-        var error = 'Please fix the following errors:<br>';
+        var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
         
 		if (thisObj.m_form.conf_time_srv_ntp.value.trim().length <= 0) {
 			return true;
 		}
         if (!thisObj.f_checkIP(thisObj.m_form.conf_time_srv_ntp.value)) {
-            if (!thisObj.f_checkHostname(thisObj.m_form.conf_time_srv_ntp.value)) {
-                errorInner += thisObj.f_createListItem('Time server address is invalid');
+            if (!thisObj.f_checkHostname(thisObj.m_form.conf_time_srv_ntp.value)) { 
+                errorInner += thisObj.f_createListItem(g_lang.m_ntpTimeSvrAddr + ' ' + g_lang.m_formInvalid);
             }
         }
        
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
-            g_utils.f_popupMessage(error, 'error', 'Error!',true);
+            g_utils.f_popupMessage(error, 'error', g_lang.m_error,true);
 			return false;
         }
         return true;
@@ -82,7 +82,7 @@ function FT_confTimeServer (name, callback, busLayer) {
 	
     this.f_apply = function()
     {
-        g_utils.f_popupMessage('Time server configuration saved.', 'ok', 'Time server configuration',true);
+        g_utils.f_popupMessage(g_lang.m_ntpTimeSrvConfig +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_ntpTimeSrvConfig,true);
     }
     
     this.f_reset = function()

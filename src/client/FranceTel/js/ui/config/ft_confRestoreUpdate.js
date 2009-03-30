@@ -33,7 +33,7 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 			items: [ {
 				v_type: 'label',
 				id: 'conf_restore_update_vm_label',
-				text: 'vm name',			
+				text: g_lang.m_resUpdateVmName,			
 				font_weight : 'bold',	
 				v_new_row : 'true'
 			}, {
@@ -44,7 +44,7 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 				v_type: 'label',
 				id: 'conf_restore_update_cver_label',
 				padding : '30px',				
-				text: 'Current version',
+				text: g_lang.m_resUpdateCurVer,
 				v_new_row: 'true'
 			}, {
 				v_type: 'label',
@@ -56,7 +56,7 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 				v_type: 'label',
 				id: 'conf_restore_update_pver_label',
 				padding : '30px',				
-				text: 'Previous version',
+				text: g_lang.m_resUpdatePrevVer,
 				v_new_row: 'true'
 			}, {
 				v_type: 'label',
@@ -98,7 +98,7 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 	this.f_restoreVmCb = function(eventObj)
 	{
         if (eventObj.f_isError()) {
-            g_utils.f_popupMessage('Restore failed: eventObj.m_errMsg', 'error', 'Error!',true);
+            g_utils.f_popupMessage(g_lang.m_resUpdateFail + ': ' + eventObj.m_errMsg, 'error', g_lang.m_error,true);
 		} else {
             g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_UPDATE_ID);                             			
 		}            

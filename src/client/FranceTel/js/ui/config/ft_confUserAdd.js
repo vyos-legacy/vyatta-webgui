@@ -31,7 +31,7 @@ function FT_confUserAdd (name, callback, busLayer)
 			items: [{
 				v_type: 'label',
 				id: 'conf_user_add_username_label',
-				text: 'username',
+				text: g_lang.m_userUsername,
 				require: 'true',
 				v_new_row: 'true'
 			}, {
@@ -42,7 +42,7 @@ function FT_confUserAdd (name, callback, busLayer)
 			}, {
 				v_type: 'label',
 				id: 'conf_user_add_surname_label',
-				text: 'surname',
+				text: g_lang.m_userSurname,
 				v_new_row: 'true'
 			}, {
 				v_type: 'text',
@@ -52,7 +52,7 @@ function FT_confUserAdd (name, callback, busLayer)
 			}, {
 				v_type: 'label',
 				id: 'conf_user_add_givenname_label',
-				text: 'given name',
+				text: g_lang.m_userGivenName,
 				v_new_row: 'true'
 			}, {
 				v_type: 'text',
@@ -62,7 +62,7 @@ function FT_confUserAdd (name, callback, busLayer)
 			}, {
 				v_type: 'label',
 				id: 'conf_user_add_email_label',
-				text: 'email',
+				text: g_lang.m_userEmail,
 				v_new_row: 'true'
 			}, {
 				v_type: 'text',
@@ -133,19 +133,20 @@ function FT_confUserAdd (name, callback, busLayer)
 		var valid = true;
 				
 		if (thisObj.form.conf_user_add_username.value.trim().length <=0 ) {
-			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">username cannot be empty</li>';
+			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">'+ g_lang.m_userUsername + ' ' + g_lang.m_formNoEmpty + '</li>';
 			valid = false;
 		}
 		if (!thisObj.f_checkEmail(thisObj.form.conf_user_add_email.value.trim())) {
-			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">email address: ' +
-			   thisObj.form.conf_user_add_email.value + ' is invalid</li>';
+			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">' + 
+			   g_lang.m_userEmail + ' ' +
+			   thisObj.form.conf_user_add_email.value + ' ' + g_lang.m_formInvalid+ '</li>';
 			valid = false;
 		}
 		if (!valid) {
 			error = error + '<ul style="padding-left:30px;">';
 			error = error + errorInner + '</ul>';
 			thisObj.f_enableClick(false);
-			g_utils.f_popupMessage(error, 'error', 'Error!',true,'f_confUserAddError()');
+			g_utils.f_popupMessage(error, 'error', g_lang.m_error,true,'f_confUserAddError()');
 		}
 		return valid;
 	}

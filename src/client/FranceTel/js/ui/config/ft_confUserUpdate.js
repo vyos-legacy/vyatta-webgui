@@ -44,7 +44,7 @@ function FT_confUserUpdate(name, callback, busLayer)
             items: [{
                 v_type: 'label',
                 id: 'conf_user_update_username_label',
-                text: 'username',
+                text: g_lang.m_userUsername,
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
@@ -54,11 +54,11 @@ function FT_confUserUpdate(name, callback, busLayer)
             }, {
                 v_type: 'html',
                 v_end_row: 'true',
-                text: '<a href="#" id="conf_user_update_reset_passwd" class="v_label_bold_right">Reset password</a>'
+                text: '<a href="#" id="conf_user_update_reset_passwd" class="v_label_bold_right">' + g_lang.m_userResetPasswd + '</a>'
             }, {
                 v_type: 'label',
                 id: 'conf_user_update_surname_label',
-                text: 'surname',
+                text: g_lang.m_userSurname,
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
@@ -68,7 +68,7 @@ function FT_confUserUpdate(name, callback, busLayer)
             }, {
                 v_type: 'label',
                 id: 'conf_user_update_givenname_label',
-                text: 'given name',
+                text: g_lang.m_userGivenName,
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
@@ -78,7 +78,7 @@ function FT_confUserUpdate(name, callback, busLayer)
             }, {
                 v_type: 'label',
                 id: 'conf_user_update_email_label',
-                text: 'email',
+                text: g_lang.m_userEmail,
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
@@ -170,7 +170,7 @@ function FT_confUserUpdate(name, callback, busLayer)
         if (eventObj.f_isError()) {
             thisObj.f_enableClick(true);
             thisObj.m_transaction.length = 0;
-            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error',true);
+            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', g_lang.m_error,true);
         } else if (thisObj.m_transaction.length > 0) {
             thisObj.f_processTransaction();
         } else {
@@ -180,9 +180,9 @@ function FT_confUserUpdate(name, callback, busLayer)
     
     this.f_resetPasswd = function()
     {
-        var message = 'Are you sure you want to reset password for this user?';
+        var message = g_lang.m_userResetPasswdConfirm;
         var type = 'confirm';
-        var title = 'Reset password confirmation';
+        var title = g_lang.m_userResetPasswd + ' ' + g_lang.m_userConfirmation;
         thisObj.f_enableClick(false);
         g_utils.f_popupMessage(message, type, title, true,'f_confUserUpdateApply(this)', 'f_confUserUpdateApply(this)');
     }
@@ -200,11 +200,11 @@ function FT_confUserUpdate(name, callback, busLayer)
     {
         if (eventObj.f_isError()) {
             thisObj.f_enableClick(false);
-            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error', true,'f_confUserUpdateMakeModal()');
+            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', g_lang.m_error, true,'f_confUserUpdateMakeModal()');
         } else {
-            var message = 'Password reset successfully';
+            var message = g_lang.m_userResetPasswdSuccess;
             var type = 'ok';
-            var title = 'Reset password completed'
+            var title = g_lang.m_userResetPasswdComplete;
             thisObj.f_enableClick(false);
             g_utils.f_popupMessage(message, type, title, true,'f_confUserUpdateMakeModal()');
         }
@@ -212,24 +212,26 @@ function FT_confUserUpdate(name, callback, busLayer)
     
     this.f_validate = function()
     {
-        var error = 'Please fix the following errors:<br>';
+        var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
         var valid = true;
         if (thisObj.form.conf_user_update_username.value.trim().length <= 0) {
-            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif)">username cannot be empty</li>';
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif)">' + 
+			                        g_lang.m_userUsername + ' ' + g_lang.m_formNoEmpty + '</li>';
             valid = false;
         }
         if (!thisObj.f_checkEmail(thisObj.form.conf_user_update_email.value.trim())) {
-            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif)">email address: ' +
-            thisObj.form.conf_user_update_email.value +
-            ' is invalid</li>';
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif)">' +
+			               g_lang.m_userEmail + ': ' +
+                           thisObj.form.conf_user_update_email.value +
+                           ' ' + g_lang.m_formInvalid + '</li>';
             valid = false;
         }
         if (!valid) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
             thisObj.f_enableClick(false);
-            g_utils.f_popupMessage(error, 'error', 'Error!',true, 'f_confUserUpdateMakeModal()');
+            g_utils.f_popupMessage(error, 'error',g_lang.m_error,true, 'f_confUserUpdateMakeModal()');
         }
         return valid;
     }

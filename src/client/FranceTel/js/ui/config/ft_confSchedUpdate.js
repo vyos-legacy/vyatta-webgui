@@ -42,7 +42,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 			items: [ {
 				v_type: 'label',
 				id: 'conf_sched_update_label',
-				text: 'Please schedule update for the following applications',			
+				text: g_lang.m_schedUpdateSched,			
 				font_weight : 'bold',	
 				colspan: '5',
 				v_new_row : 'true'
@@ -66,7 +66,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 				v_type: 'html',
 				id: 'conf_sched_update_now',
 				padding : '30px',				
-				text: '<input type="radio" name="conf_sched_update_when" id="conf_sched_update_now" value="now" checked>&nbsp;Now',
+				text: '<input type="radio" name="conf_sched_update_when" id="conf_sched_update_now" value="now" checked>&nbsp;' + g_lang.m_schedUpdateNow,
 				v_new_row: 'true',
 				v_end_row: 'true'
 			}, {
@@ -77,7 +77,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 				v_type: 'html',
 				id: 'conf_sched_update_later',
 				padding : '30px',		
-				text: '<input type="radio" name="conf_sched_update_when" id="conf_sched_update_later" value="later">&nbsp;Later',
+				text: '<input type="radio" name="conf_sched_update_when" id="conf_sched_update_later" value="later">&nbsp;' + g_lang.m_schedUpdateLater,
 				v_new_row: 'true'
 			}, {
 				v_type: 'html',
@@ -123,7 +123,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 		var text = '';
 		for (var i=0 ; i < thisObj.m_vmList.length; i++) {
 			text += thisObj.f_createListItem(thisObj.m_vmList[i].m_displayName + 
-			  '&nbsp;&nbsp;[new version: ' + thisObj.m_vmList[i].m_needUpdate + ']');
+			  '&nbsp;&nbsp;[' + g_lang.m_schedUpdateNewVer + ': ' + thisObj.m_vmList[i].m_needUpdate + ']');
 		}
 		div.innerHTML = text;
 	}
@@ -209,29 +209,29 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 		var d = new Date();
 		d = d + sixMonth;
 		if ((thisObj.m_date.getTime() - d.getTime()) > 0) {
-			alert('you schedule six month ahead');
+			g_utils.f_popupMessage(g_lang.m_schedUpdateRangeChk, 'ok', g_lang.info, true);
 		}
 		
 	}
 		
 	this.f_validate = function()
 	{
-        var error = 'Please fix the following errors:<br>';
+        var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
         if (thisObj.m_form.conf_sched_update_now.checked == true) {
 			return true;
 		}
 		var date = thisObj.m_form.conf_sched_update_cal_text.value.trim();
 		if (!thisObj.f_checkDate(date)) {
-            errorInner += thisObj.f_createListItem('Schedule date is invalid');
+            errorInner += thisObj.f_createListItem(g_lang.m_schedUpdateDate + ' ' + g_lang.m_formInvalid);
         }
 		var hour = thisObj.m_form.conf_sched_update_hour.value.trim();
 		if (!thisObj.f_checkHour(hour)) {
-            errorInner += thisObj.f_createListItem('Schedule hour is invalid');			
+            errorInner += thisObj.f_createListItem(g_lang.m_schedUpdateHour + ' ' + g_lang.m_formInvalid);			
 		}
 		var mm = thisObj.m_form.conf_sched_update_minute.value.trim();
 		if (!thisObj.f_checkMinute(mm)) {
-            errorInner += thisObj.f_createListItem('Schedule minute is invalid');			
+            errorInner += thisObj.f_createListItem(g_lang.m_schedUpdateMinute + ' ' + g_lang.m_formInvalid);			
 		}		
 		       
 		//check to see if it is greater than now.
@@ -246,7 +246,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
-            g_utils.f_popupMessage(error, 'error', 'Error!', true);
+            g_utils.f_popupMessage(error, 'error', g_lang.m_error, true);
 			return false;
         }
 
@@ -299,7 +299,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
             g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_UPDATE_ID);	
 			return;		
 		}
-		var error = 'The following errors occur while we try to schedule an upgrade:<br>';
+		var error = g_lang.m_schedUpdateErrorOccur + '<br>';
         var errorInner = '';		
 		for (var i=0; i < thisObj.m_response.length; i++) {
 			errorInner += thisObj.f_createListItem(thisObj.m_response[i]);
@@ -307,7 +307,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
-            g_utils.f_popupMessage(error, 'error', 'Error!',true);
+            g_utils.f_popupMessage(error, 'error', g_lang.m_error,true);
         }		
 	}
 	

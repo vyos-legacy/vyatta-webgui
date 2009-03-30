@@ -64,14 +64,15 @@ function FT_confSubscribe(name, callback, busLayer)
 	{
 		return (
 		'<div style="margin-left:30px; margin-top: 30px; margin-bottom: 50px;">' +
-			'<span style="font-weight: bold">Please click on the following to install/remove an application</span>' +
+			'<span style="font-weight: bold">' + 
+			g_lang.m_subscribePlease + '</span>' +
 			'<div style="margin-top:30px; margin-left: 32px;">' +
 			'<ul style="list-style-type:square;list-style-image: url(images/puce_squar.gif)">' +			
 				'<li>' +
-					'<a id="conf_subscribe_install" href="javascript:void(0)" onclick="window.open(\'http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html\')">Install a new Application</a>' +
+					'<a id="conf_subscribe_install" href="javascript:void(0)" onclick="window.open(\'http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html\')">' + g_lang.m_subscribeInstall + '</a>' +
 				'</li>' +
 				'<li>' + 
-					'<a id="conf_subscribe_remove" href="javascript:void(0)" onclick="window.open(\'http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html\')">Remove an Application</a>' +
+					'<a id="conf_subscribe_remove" href="javascript:void(0)" onclick="window.open(\'http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html\')">' + g_lang.m_subscribeRemove + '</a>' +
 				'</li>' +
 			'</ul>' + 
 			'</div>' +

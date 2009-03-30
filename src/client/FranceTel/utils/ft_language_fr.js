@@ -33,22 +33,22 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // VM Update Restore
-	m_resUpdateVmName : "vm nom",
+	m_resUpdateVmName : "vm nom",		
 	m_resUpdateCurVer: "Version actuelle",
-	m_resUpdatePrevVer: "version prï¿½cï¿½dente",
-	m_resUpdateFail: "Restore a ï¿½chouï¿½:",
+	m_resUpdatePrevVer: "version précédente",
+	m_resUpdateFail: "Restore a échoué:",	
 
     ///////////////////////////////////////////////////////////////////
     // VM Schedule Update
-	m_schedUpdateSched: "S'il vous plaï¿½t le calendrier de mise ï¿½ jour pour les applications suivantes",
+	m_schedUpdateSched: "S'il vous plaît le calendrier de mise à jour pour les applications suivantes",		
 	m_schedUpdateNow: "Now",
-	m_schedUpdateLater: "Ultï¿½rieure",
+	m_schedUpdateLater: "Ultérieure",
 	m_schedUpdateNewVer: "nouvelle version",
-	m_schedUpdateRangeChk: "vous planifiez six mois ï¿½ venir",
+	m_schedUpdateRangeChk: "vous planifiez six mois à venir",
 	m_schedUpdateDate: "Tableau date",
 	m_schedUpdateHour: "Tableau heure",
 	m_schedUpdateMinute: "Tableau minute",
-	m_schedUpdateErrorOccur: "Les erreurs suivantes se produisent lorsque nous tentons de prï¿½voir une mise ï¿½ jour:",
+	m_schedUpdateErrorOccur: "Les erreurs suivantes se produisent lorsque nous tentons de prévoir une mise à jour:",
 
 
     ///////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Subscribe screen
-    m_subscribePlease : "S'il vous plaï¿½t cliquer sur le texte suivant pour installer / supprimer une application",
+    m_subscribePlease : "S'il vous plaît cliquer sur le texte suivant pour installer / supprimer une application",
 	m_subscribeInstall: "Installer une nouvelle application",
 	m_subscribeRemove: "Supprimer une nouvelle application",
 
@@ -72,16 +72,16 @@ var g_lang =
     // User Add screen
     m_userUsername: "utilisateur",
 	m_userSurname: "nom",
-	m_userGivenName: "prï¿½nom",
+	m_userGivenName: "prénom",
 	m_userEmail: "e-mail",
 
     ///////////////////////////////////////////////////////////////////
     // User Editor screen
-    m_userResetPasswd: "Rï¿½initialiser le mot de passe",
-    m_userResetPasswdConfirm: "ï¿½tes-vous sï¿½r de vouloir rï¿½initialiser le mot de passe pour cet utilisateur?",
+    m_userResetPasswd: "Réinitialiser le mot de passe",
+    m_userResetPasswdConfirm: "Êtes-vous sûr de vouloir réinitialiser le mot de passe pour cet utilisateur?",
 	m_userConfirmation: "confirmation",
-	m_userResetPasswdSuccess: "Mot de passe rï¿½initialisï¿½ avec succï¿½s",
-	m_userResetPasswdComplete: "Rï¿½initialiser le mot de passe achevï¿½",
+	m_userResetPasswdSuccess: "Mot de passe réinitialisé avec succès",
+	m_userResetPasswdComplete: "Réinitialiser le mot de passe achevé",
 
     ///////////////////////////////////////////////////////////////////
     // Configuration Restore Description screen
@@ -109,48 +109,48 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Login Dialog
-    m_loginPrompt : "S'il vous plaï¿½t entrer le nom d'utilisateur et mot de passe pour vous connecter.",
+    m_loginPrompt : "S'il vous plaît entrer le nom d'utilisateur et mot de passe pour vous connecter.",
     m_loginError : "Erreur d'identification",
     m_loginUnableToLogin : "Impossible de se connecter: ",
-	m_loginContactCS : "Si vous n'avez pas de nom d'usager et votre mot de passe, contactez votre Centre de Service ï¿½ la clientï¿½le.",
-	m_loginEnableJS: "Attention: pour se connecter ï¿½ l'Open Appliance programme, votre navigateur doit accepter les pop-ups et les cookies.",
+	m_loginContactCS : "Si vous n'avez pas de nom d'utilisateur et votre mot de passe, contactez votre Centre de Service à la clientèle.",
+	m_loginEnableJS: "Attention: pour se connecter à l'Open Appliance programme, votre navigateur doit accepter les pop-ups et les cookies.",
 
     ///////////////////////////////////////////////////////////////////
     // Mainframe
 	m_mainFrmGuest : "visiteur",
-    m_mainFrmWelcome : "salut",
-	m_mainFrmConnected: "vous ï¿½tes connectï¿½ ï¿½ l'Open Appliance service admin",
-	m_mainFrmSignIn: "s'il vous plaï¿½t vous connecter ï¿½ l'Open Appliance service admin",
+    m_mainFrmWelcome : "salut",	
+	m_mainFrmConnected: "vous êtes connecté à l'Open Appliance service admin",
+	m_mainFrmSignIn: "s'il vous plaît vous connecter à l'Open Appliance service admin",
 
     ///////////////////////////////////////////////////////////////////
     // My Form
-	m_formNoEmpty : "ne peut pas ï¿½tre vide",
-	m_formFixError: "S'il vous plaï¿½t corriger les erreurs suivantes:",
+	m_formNoEmpty : "ne peut pas être vide",		
+	m_formFixError: "S'il vous plaît corriger les erreurs suivantes:",
 	m_formInvalid: "est invalide",
-	m_formSave : "sauvï¿½",
+	m_formSave : "sauvé",
 
     ///////////////////////////////////////////////////////////////////
     // My Profile
 	m_myprofLogin : "Login",
-	m_myprofOldPasswd : "Ancien mot de passe",
+	m_myprofOldPasswd : "Ancien mot de passe",		
 	m_myprofNewPasswd : "Nouveau mot de passe",
-	m_myprofConfirmPasswd : "Confirmer le mot de passe",
-	m_myprofNPWnotCPW : "Nouveau mot de passe ne correspond pas ï¿½ confirmer le mot de passe",
-	m_myprofPasswdRestSucessful: "Rï¿½initialisation de mot de passe avec succï¿½s",
-	m_myprofResetPasswdDone: "Rï¿½initialiser le mot de passe achevï¿½",
+	m_myprofConfirmPasswd : "Confirmer le mot de passe",	
+	m_myprofNPWnotCPW : "Nouveau mot de passe ne correspond pas à confirmer le mot de passe",
+	m_myprofPasswdRestSucessful: "Réinitialisation de mot de passe avec succès",	
+	m_myprofResetPasswdDone: "Réinitialiser le mot de passe achevé",
 
 
     ///////////////////////////////////////////////////////////////////
     // Backup configuration
 	m_backupConfig : "Config.",
-	m_backupData : "Data",
-	m_backupApp : "Application",
-	m_backupSelectOne: "S'il vous plaï¿½t choisir au moins une application de sauvegarde",
+	m_backupData : "Data",	
+	m_backupApp : "Application",	
+	m_backupSelectOne: "S'il vous plaît choisir au moins une application de sauvegarde",		
 	m_backupFail: "Pas de sauvegarde",
-	m_backupInProgress: "Sauvegarde est en cours. Vous recevrez une notification par email lors de l'opï¿½ration est finshed",
+	m_backupInProgress: "Sauvegarde est en cours. Vous recevrez une notification par email lors de l'opération est finshed",
 	m_backupThereR: "Il ya",
-	m_backupPlsDelete: "sauvegarde dï¿½jï¿½ stockï¿½es sur l'Open Appliance. S'il vous plaï¿½t supprimer le plus ancien et essayez ï¿½ nouveau",
-	m_backupMyPC: "Mon PC",
+	m_backupPlsDelete: "sauvegarde déjà stockées sur l'Open Appliance. S'il vous plaît supprimer le plus ancien et essayez à nouveau",
+	m_backupMyPC: "Mon PC",	
 
     ///////////////////////////////////////////////////////////////////
     // Restore configuration
@@ -167,8 +167,8 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // BLB configuration
 	m_blbStandAloneOA : "Autonome Open Appliance",
-	m_blbAssociation : "BLB association",
-	m_blbComplete : "BLB association a terminï¿½ avec succï¿½s",
+	m_blbAssociation : "BLB association",		
+	m_blbComplete : "BLB association a terminé avec succès",
 
     ///////////////////////////////////////////////////////////////////
     // Email Server configuration
@@ -181,19 +181,19 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // LDAP Server configuration
-	m_ldapSrvLoc : "Serveur LDAP",
+	m_ldapSrvLoc : "Serveur LDAP",	
 	m_ldapInOA : "Dans l'Open Appliance",
 	m_ldapInLan : "Dans la compagnie LAN",
 	m_ldapSrvAddr: "Adresse du serveur",
-	m_ldapUsrUpdateRt : "Utilisateur (mise ï¿½ jour des droits)",
+	m_ldapUsrUpdateRt : "Utilisateur (mise à jour des droits)",
 	m_ldapUsrReadRt: "Utilisateur (lire droits)",
-	m_ldapPasswdUpdateRt: "Mot de passe (mise ï¿½ jour des droits)",
+	m_ldapPasswdUpdateRt: "Mot de passe (mise à jour des droits)",
 	m_ldapPasswdReadRt: "Mot de passe (lecture des droits)",
 
     ///////////////////////////////////////////////////////////////////
     // Password Policy configuration
-	m_passwdPolicyChangeAtLogin : "L'utilisateur doit changer son mot de passe lors de la premiï¿½re connexion",
-	m_passwdPolicyCanKeep : "L'utilisateur peut conserver hsi mot de passe par dï¿½faut",
+	m_passwdPolicyChangeAtLogin : "L'utilisateur doit changer son mot de passe lors de la première connexion",	
+	m_passwdPolicyCanKeep : "L'utilisateur peut conserver hsi mot de passe par défaut",	
 
     ///////////////////////////////////////////////////////////////////
     // NTP server configuration

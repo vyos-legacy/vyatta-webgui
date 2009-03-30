@@ -128,7 +128,7 @@ function FT_confUserAdd (name, callback, busLayer)
 	
 	this.f_validate = function()
 	{
-		var error = 'Please fix the following errors:<br>';
+		var error = g_lang.m_formFixError + '<br>';
 		var errorInner = '';
 		var valid = true;
 				

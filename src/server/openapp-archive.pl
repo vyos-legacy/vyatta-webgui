@@ -268,6 +268,8 @@ sub restore_archive {
     # well known location.
     #
     ##########################################################################
+    my @new_coll = @coll;
+    my $coll_ct = $#new_coll;
     foreach $i (0..$#coll) {
 	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
 	next if (!defined($vm));
@@ -289,8 +291,6 @@ sub restore_archive {
     # continue until all are done or chunker kills me.
     #
     ##########################################################################
-    my @new_coll = @coll;
-    my $coll_ct = $#new_coll;
     my $progress_ct = 0;
     `echo '0' > $RESTORE_WORKSPACE_DIR/status`;
     #now that each are started, let's sequentially iterate through and retrieve

@@ -54,6 +54,17 @@ $HTTP["scheme"] == "http" {
 EOF
 fi
 
+# XXX hard-coded reverse proxy settings for now.
+# TODO make mod_proxy read VM metadata dynamically.
+cat <<EOF >/etc/lighttpd/conf-enabled/10-proxy.conf
+server.modules += ( "mod_proxy" )
+proxy.server = ( "/utm/" => ( ( "host" => "192.168.1.1",
+                                "port" => 80 ) ),
+                 "/openAppliance/3p/" => ( ( "host" => "172.16.1.101",
+                                             "port" => 8080 ) )
+               )
+EOF
+
 # XXX webgui needs suid for now
 chmod u+s /usr/lib/cgi-bin/webgui
 

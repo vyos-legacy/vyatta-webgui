@@ -10,6 +10,9 @@ chmod a+x /usr/lib/cgi-bin/notify*
 chmod a+w /var/www/archive/backup
 chmod a+w /var/www/archive/restore
 
+#create cookie file for dom0 ip address
+echo -n 192.168.0.101 > /tmp/dom0
+
 # create chunker temp directory
 mkdir -p $CHUNKER_DIR
 chmod 0777 $CHUNKER_DIR

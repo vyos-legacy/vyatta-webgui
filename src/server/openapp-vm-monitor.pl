@@ -8,7 +8,7 @@ use OpenApp::VMMgmt;
 use OpenApp::VMDeploy;
 
 my $INTERVAL_ACTIVE = 5;
-my $INTERVAL_INACTIVE = 30;
+my $INTERVAL_INACTIVE = 120;
 my $INACTIVE_TIMEOUT = 60;
 my $OA_ID = $OpenApp::VMMgmt::OPENAPP_ID;
 my $OA_SNMP_COMM = $OpenApp::VMMgmt::OPENAPP_SNMP_COMM;

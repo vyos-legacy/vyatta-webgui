@@ -56,20 +56,14 @@ function FT_confRestore(name, callback, busLayer)
                 if(thisObj.f_isServerError(evt, 'Configuration Restore  Error'))
                     return;
 
+                if(thisObj.m_div != undefined)
+                    thisObj.f_resetScreen();
+
                 var vmData = [];
                 var bkRec = evt.m_value;
                 if(bkRec == undefined) return;
 
                 thisObj.m_dataObj = bkRec;
-                if(thisObj.m_div != undefined)
-                {
-                    thisObj.f_removeDivChildren(thisObj.m_div);
-                    thisObj.f_removeDivChildren(thisObj.m_body);
-                    thisObj.m_div.appendChild(thisObj.m_header);
-                    thisObj.m_div.appendChild(thisObj.m_body);
-                    thisObj.m_div.appendChild(thisObj.m_restorePC);
-                }
-
                 for(var i=0; i<bkRec.length; i++)
                 {
                     var r = bkRec[i];
@@ -102,6 +96,15 @@ function FT_confRestore(name, callback, busLayer)
 
     this.f_stopLoadVMData = function()
     {
+    }
+
+    this.f_resetScreen = function()
+    {
+        thisObj.f_removeDivChildren(thisObj.m_div);
+        thisObj.f_removeDivChildren(thisObj.m_body);
+        thisObj.m_div.appendChild(thisObj.m_header);
+        thisObj.m_div.appendChild(thisObj.m_body);
+        thisObj.m_div.appendChild(thisObj.m_restorePC);
     }
 
     ////////////////////////////////////////////////////////
@@ -219,9 +222,25 @@ function f_handleDeleteRestoreFile(e, filename)
         g_busObj.f_deleteArchiveFileFromServer(filename, filename, cb);
 }
 
+function f_handleDownloadRestoreFile(e, filename)
+{
+    var cb = function(evt)
+    {
+        if(g_configPanelObj.m_activeObj.f_isServerError(evt, 'Configuration Restore Error'))
+            return;
+
+        g_configPanelObj.m_activeObj.f_loadVMData();
+    }
+
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+        g_busObj.f_downloadArchiveFileFromServer(filename, filename, cb);
+}
+
 function f_handleDownloadRestore(filename)
 {
-
+    g_utils.f_popupMessage('Are you sure you want to download (' + filename + ')?',
+                'confirm', 'Download Backup Archive File', true,
+                "f_handleDeleteRestoreFile(this, '"+ filename + "')");
 }
 
 function f_deleteRestoreFile(content, filename)

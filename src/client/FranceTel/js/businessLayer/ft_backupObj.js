@@ -282,7 +282,7 @@ function FT_backupObj(busObj)
         thisObj.m_guiCb = guiCb;
         var sid = g_utils.f_getUserLoginedID();
         var commas = "";
-        var aName = archName == undefined ? "" : " '" + archName + "' ";
+        var aName = archName == undefined ? "" : " '" + archName + "' target ";
         var xmlstr = "<command><id>" + sid + "</id>" +
                     "<statement>open-app archive " + type + aName + ' ';
 

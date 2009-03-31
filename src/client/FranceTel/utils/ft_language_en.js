@@ -87,6 +87,11 @@ var g_lang =
     m_confRestorDescp : 'lorem ipsum onsectetuer....',
 
     ///////////////////////////////////////////////////////////////////
+    // Hw monitor
+    m_component : 'Component',
+
+
+    ///////////////////////////////////////////////////////////////////
     // Common variables
     m_login: 'Login',
     m_name: 'Name',

@@ -119,15 +119,6 @@ function FT_confBackup(name, callback, busLayer)
 		
 		return false;
 	}
-    
-	//////////////////////////////////////////////////////////////////////////
-	////////// TODO : NEED BACKEND SUPPORT
-	////////////////////////////////////////////////////////////////////////// 
-	this.f_overflow = function() 
-	{
-		//Hard code a value for now.  It will need backend support.
-		return 1;
-	}
 	
 	//////////////////////////////////////////////////////////////////////////
 	////////// TODO : NEED BACKEND SUPPORT
@@ -147,8 +138,7 @@ function FT_confBackup(name, callback, busLayer)
         if (eventObj.f_isError()) {
 			g_utils.f_popupMessage(g_lang.m_backupFail + ': ' + eventObj.m_errMsg, 'error', g_lang.m_error, true);
 		} else {
-			g_utils.f_popupMessage(g_lang.m_backupInProgress + '.', 'ok', g_lang.m_info, true);
-            g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);  			
+			g_utils.f_popupMessage(g_lang.m_backupInProgress + '.', 'ok', g_lang.m_info, true, 'f_handleConfBackupOkCb()');
 		}	
 	}
 
@@ -175,6 +165,31 @@ function FT_confBackup(name, callback, busLayer)
 		}
 		g_busObj.f_backup(vms, mode, thisObj.f_oaBackupCb);	
 	}
+
+	//////////////////////////////////////////////////////////////////////////
+	////////// TODO : NEED BACKEND SUPPORT
+	////////////////////////////////////////////////////////////////////////// 
+	this.f_overflow = function(evt) 
+	{
+        g_utils.f_cursorDefault();		
+		var max = 3;		
+		if (g_roleManagerObj.f_isInstaller()) {
+			max = 2;
+		} 
+        if (evt != undefined && evt.m_objName == 'FT_eventObj') {
+			if (thisObj.f_isServerError(evt, g_lang.m_error)) 
+				return;
+			var bkRec = evt.m_value;
+            if(bkRec == undefined) {
+			    bkRec = new Array();	
+			}		
+			if (bkRec.length >= max) {
+				g_utils.f_popupMessage(g_lang.m_backupThereR + ' ' + max + ' ' + g_lang.m_backupPlsDelete + '.', 'error', g_lang.m_error, true);
+				return;
+			}
+			thisObj.f_oaBackup();
+		}			
+	}
 	
 	this.f_backup = function()
 	{
@@ -187,16 +202,8 @@ function FT_confBackup(name, callback, busLayer)
 			thisObj.f_pcBackup();
 			return;
 		}
-		
-		var max = 3;		
-		if (g_roleManagerObj.f_isInstaller()) {
-			max = 2;
-		} 
-		if (thisObj.f_overflow() > max) {
-            g_utils.f_popupMessage(g_lang.m_backupThereR + ' ' + max + ' ' + g_lang.m_backupPlsDelete+ '.', 'error', g_lang.m_error,true);
-			return;				    
-		}
-		thisObj.f_oaBackup();
+        g_utils.f_cursorWait();
+        thisObj.m_busLayer.f_getVMRestoreListFromServer(thisObj.f_overflow);		
 	}
 
     this.f_loadVMData = function()
@@ -333,4 +340,9 @@ function f_handleConfBackupBkCb()
 function f_handleConfBackupCancelCb()
 {
    g_configPanelObj.m_activeObj.f_reset();
+}
+
+function f_handleConfBackupOkCb()
+{
+    g_mainFrameObj.f_selectPage(VYA.FT_CONST.DOM_2_NAV_BACKUP_ID, VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);			
 }

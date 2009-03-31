@@ -39,6 +39,7 @@ if ! grep -q '^alias.url.*/utm/' \
     /etc/lighttpd/conf-enabled/10-cgi.conf; then 
   cat <<'EOF' >>/etc/lighttpd/conf-enabled/10-cgi.conf
 
+alias.url += ( "/cgi-bin/" => "/usr/lib/cgi-bin/" )
 alias.url += ( "/utm/cgi-bin/" => "/usr/lib/cgi-bin/" )
 $HTTP["url"] =~ "^/utm/cgi-bin/" {
         cgi.assign = ( "" => "" )

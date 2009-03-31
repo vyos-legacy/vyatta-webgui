@@ -49,7 +49,7 @@ div#labeltext {
     font-size: 11px;
 } 
 
-#login_form.input {
+.login_form_input {
 	color: #444444;
 	border: 1px solid #CCCCCC;	
 }

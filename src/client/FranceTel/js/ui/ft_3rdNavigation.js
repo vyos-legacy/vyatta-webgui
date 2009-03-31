@@ -228,6 +228,7 @@ function FT_3rdNavigation()
     this.f_show = function(id)
     {
         var index = thisObj.f_getIndexByLevel2Id(id);
+		//alert('3rdNav.f_show: id: ' + id + ' index: ' + index);		
         thisObj.m_menus[index].style.display = 'block';
 		thisObj.m_parent_container.appendChild(thisObj.m_menus[index]);
 		thisObj.m_parent_container.appendChild(thisObj.m_help);

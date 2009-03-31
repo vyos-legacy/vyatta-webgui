@@ -96,6 +96,11 @@ function FT_configPanel()
 
     this.f_show = function(id, desc, obj)
     {
+//		if (id == thisObj.m_selectedItem) {
+//			//if the menu item selected is the same as the currently active item, do nothing.
+//			alert('select same page, do nothing');
+//			return;
+//		}
         thisObj.f_stopPolling();
         thisObj.f_showHeader(id, desc);
 
@@ -105,11 +110,21 @@ function FT_configPanel()
         }
         thisObj.f_render(cmp);
     }
-
+    this.f_removePrev = function() 
+	{
+        if (thisObj.m_activeCmp != undefined) {
+			try {
+				thisObj.m_container.removeChild(thisObj.m_activeCmp);
+			} catch (e) {
+				; //this is ok for now because the empty component doesn't get put to the 'ft_container' by config based object.
+			}
+        }		
+	}
+	
     this.f_getComponent = function(id, obj)
     {
+		thisObj.f_removePrev();
         switch (id) {
-
             case VYA.FT_CONST.DOM_3_NAV_SUB_DASHBOARD_ID:
                 var dbcb = function(){
 
@@ -263,17 +278,10 @@ function FT_configPanel()
 
     this.f_render = function(component)
     {
-        if (thisObj.m_activeCmp != undefined) {
-			try {
-				thisObj.m_container.removeChild(thisObj.m_activeCmp);
-			} catch (e) {
-				; //this is ok for now because the empty component doesn't get put to the 'ft_container' by config based object.
-			}
-        }
+        //thisObj.f_removePrev();
         thisObj.m_selectCmp = component;
         thisObj.m_activeCmp = component;
         thisObj.m_activeObj = thisObj.m_selectObj;
-
     }
 
 }

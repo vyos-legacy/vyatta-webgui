@@ -121,7 +121,7 @@ function FT_confUserList(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
-        var btns = [['AddUser', 'f_userListAddUserCallback()', m_lang.m_ulTooltipAddUser]];
+        var btns = [['AddUser', 'f_userListAddUserCallback()', g_lang.m_ulTooltipAddUser]];
         this.m_buttons = this.f_createButtons(btns);
        
         if (g_roleManagerObj.f_isInstaller()) {

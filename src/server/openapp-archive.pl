@@ -57,8 +57,8 @@ my $ARCHIVE_ROOT_DIR = "/var/archive/$auth_user_role";
 my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
 my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
 
-my $INSTALLER_BU_LIMIT = 3;
-my $ADMIN_BU_LIMIT = 2;
+my $INSTALLER_BU_LIMIT = 2;
+my $ADMIN_BU_LIMIT = 3;
 
 my $REST_BACKUP = "/notification/archive/backup";
 my $REST_RESTORE = "/notification/archive/restore";

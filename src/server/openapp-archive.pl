@@ -310,7 +310,10 @@ sub restore_archive {
 		    #remove from new_collection
 		    $progress_ct = $progress_ct + 1;
 		    #when done write
-		    my $progress = (100 * $progress_ct) / $coll_ct;
+		    my $progress = 100;
+		    if ($coll_ct != 0) {
+			$progress = (100 * $progress_ct) / $coll_ct;
+		    }
 		    `echo '$progress' > $RESTORE_WORKSPACE_DIR/status`;
 		    delete $new_coll[$i];
 		}

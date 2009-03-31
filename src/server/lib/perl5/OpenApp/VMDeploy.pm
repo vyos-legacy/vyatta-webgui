@@ -91,6 +91,7 @@ sub _postinstLdap {
     return undef;
   }
  
+  my $server_conf = '/etc/ldap/slapd.conf';
   my $domU_confdir = '/etc/ldap/domU';
   my $domU_conf = "$domU_confdir/$vid.conf";
   my $domU_dbdir = "/var/oa/ldap/$vid/db";
@@ -102,6 +103,11 @@ sub _postinstLdap {
     $cmd = "rm -f $domU_conf";
     _system($cmd);
     return 'Cannot remove domU LDAP configuration' if ($? >> 8);
+
+    ## remove include from server config
+    $cmd = "sed -i '/^# BEGIN $vid/,/^# END $vid/{d}' $server_conf"; 
+    _system($cmd);
+    return 'Cannot remove previous LDAP server config' if ($? >> 8);
 
     ## stop LDAP server
     $err = _stopLdapServer();
@@ -162,7 +168,6 @@ EOF
   close($fd);
 
   # add 'include' to server config
-  my $server_conf = '/etc/ldap/slapd.conf';
   $cmd = "sed -i '/^# BEGIN $vid/,/^# END $vid/{d}' $server_conf"; 
   _system($cmd);
   return 'Cannot remove previous LDAP server config' if ($? >> 8);

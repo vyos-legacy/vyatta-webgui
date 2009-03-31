@@ -1,3 +1,5 @@
 #!/bin/sh
 
+rm -f /var/www/archive/restore/data/status
 wget http://$( cat /tmp/dom0 )/restore/data
+mkdir -p /var/www/archive/restore/data/status/

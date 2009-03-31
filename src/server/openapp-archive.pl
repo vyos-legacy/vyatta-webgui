@@ -302,7 +302,7 @@ sub restore_archive {
 	    my $ip = '';
 	    $ip = $vm->getIP();
 	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/archive/restore/$new_coll[$i][1]/status";
+		my $cmd = "http://$ip/archive/restore/$new_coll[$i][1]/status/";
 		#writes to specific location on disk
 		my $rc = `curl -X GET -q -I $cmd 2>&1`;
 		if ($rc =~ /200 OK/) {

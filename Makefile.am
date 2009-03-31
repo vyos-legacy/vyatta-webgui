@@ -77,6 +77,15 @@ install-exec-hook:
 	cp scripts/mandatory $(DESTDIR)/$(cgidir)/mandatory
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/
+	cp scripts/notify-backup-conf $(DESTDIR)/$(cgidir)/
+	cp scripts/notify-backup-data $(DESTDIR)/$(cgidir)/
+	cp scripts/notify-restore-conf $(DESTDIR)/$(cgidir)/
+	cp scripts/notify-restore-data $(DESTDIR)/$(cgidir)/
+
+
+	mkdir -p $(DESTDIR)/etc/lighttpd/conf-enabled/.
+	cp scripts/15-cfg.conf $(DESTDIR)/etc/lighttpd/conf-enabled/.
+
 	@mkdir -p $(DESTDIR)$(wwwdir)/utm
 	@for v in 2.2; do \
 		rm -f /tmp/ext-$$v.zip; \
@@ -91,6 +100,15 @@ install-exec-hook:
 		); \
 		rm -f /tmp/ext-$$v.zip; \
 	done
+
+	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/backup/conf
+	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/backup/data
+	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/restore/conf
+	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/restore/data
+	
+	mkdir -p $(DESTDIR)$(wwwdir)/archive/backup
+	mkdir -p $(DESTDIR)$(wwwdir)/archive/restore
+	
 	cp -r webroot/. $(DESTDIR)$(wwwdir)
 	@cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
 	@mkdir -p $(DESTDIR)$(cfgdir); \

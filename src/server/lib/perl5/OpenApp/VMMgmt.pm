@@ -95,7 +95,7 @@ sub _isValidId {
 }
 
 sub _setupMeta {
-  my ($self, $id) = @_;
+  my ($self, $id, $meta_file) = @_;
   if ($id eq $OPENAPP_ID) {
     # dom0
     $self->{_vmId} = $OPENAPP_ID;
@@ -105,7 +105,11 @@ sub _setupMeta {
     return;
   }
   my $fd = undef;
-  open($fd, '<', "$META_DIR/$id") or return;
+  if (defined($meta_file)) {
+    open($fd, '<', "$meta_file") or return;
+  } else {
+    open($fd, '<', "$META_DIR/$id") or return;
+  }
   my $data = <$fd>;
   close($fd);
   chomp($data);
@@ -144,14 +148,17 @@ sub refreshStatus {
   $self->{_vmNewUpdate} = $upd;
 }
 
+# if $meta_file is defined, just parse the file to get the metadata
 sub _setup {
-  my ($self, $id) = @_;
-  $self->_setupMeta($id);
-  $self->refreshStatus();
+  my ($self, $id, $meta_file) = @_;
+  $self->_setupMeta($id, $meta_file);
+  if (!defined($meta_file)) {
+    $self->refreshStatus();
+  }
 }
 
 sub new {
-  my ($that, $id) = @_;
+  my ($that, $id, $meta_file) = @_;
   if (!_isValidId($id)) {
     return undef;
   }
@@ -161,7 +168,7 @@ sub new {
   };
 
   bless $self, $class;
-  $self->_setup($id);
+  $self->_setup($id, $meta_file);
   return $self;
 }
 

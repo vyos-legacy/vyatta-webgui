@@ -57,8 +57,8 @@ my $ARCHIVE_ROOT_DIR = "/var/archive/$auth_user_role";
 my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
 my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
 
-my $INSTALLER_BU_LIMIT = 3;
-my $ADMIN_BU_LIMIT = 2;
+my $INSTALLER_BU_LIMIT = 2;
+my $ADMIN_BU_LIMIT = 3;
 
 my $REST_BACKUP = "/notification/archive/backup";
 my $REST_RESTORE = "/notification/archive/restore";
@@ -82,11 +82,11 @@ sub backup_archive {
     #
     ##########################################################################
     my $limit_ct = `ls $ARCHIVE_ROOT_DIR | wc -w`;
-    if ($auth_user_role eq 'installer' && $limit_ct >= $INSTALLER_BU_LIMIT) {
+    if ($auth_user_role eq 'installer' && $limit_ct >= $INSTALLER_BU_LIMIT+1) {
 	print STDERR "Your backup directory is full. Please delete an archive to make room.";
 	exit 1;
     }
-    elsif ($auth_user_role eq 'admin' && $limit_ct >= $ADMIN_BU_LIMIT) {
+    elsif ($auth_user_role eq 'admin' && $limit_ct >= $ADMIN_BU_LIMIT+1) {
 	print STDERR "Your backup directory is full. Please delete an archive to make room.";
 	exit 1;
     }
@@ -114,7 +114,7 @@ sub backup_archive {
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "http://$ip$REST_BACKUP/$coll[$i][1]";
-	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
+	    my $rc = `curl -X GET -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	    
 	}
@@ -128,6 +128,7 @@ sub backup_archive {
     ##########################################################################
     my @new_coll = @coll;
     #now that each are started, let's sequentially iterate through and retrieve
+    `rm -fr $BACKUP_WORKSPACE_DIR/* 2>/dev/null`;
     while ($#new_coll > -1) {
 	foreach $i (0..$#new_coll) {
 	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
@@ -138,7 +139,6 @@ sub backup_archive {
 		my $cmd = "http://$ip/archive/backup/$new_coll[$i][1]";
 		#writes to specific location on disk
 		my $bufile = "$BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]";
-		`rm -fr $BACKUP_WORKSPACE_DIR/* 2>/dev/null`;
 		`mkdir -p $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]`;
 
 		my $rc = `wget $cmd -O $bufile 2>&1`;
@@ -224,6 +224,7 @@ sub restore_archive {
     ##########################################################################
     `rm -fr $WEB_RESTORE_ROOT/`;
     `mkdir -p $WEB_RESTORE_ROOT/`;
+    `mkdir -p $RESTORE_WORKSPACE_DIR/`;
     `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $WEB_RESTORE_ROOT/.`;
 
     ##########################################################################
@@ -278,7 +279,7 @@ sub restore_archive {
 	if (defined $ip && $ip ne '') {
 	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]`;
 	    my $cmd = "http://$ip$REST_RESTORE/$coll[$i][1]";
-	    my $rc = `curl -X POST -q -I $cmd 2>&1`;
+	    my $rc = `curl -X GET -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	    
 	}
@@ -301,9 +302,9 @@ sub restore_archive {
 	    my $ip = '';
 	    $ip = $vm->getIP();
 	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/archive/restore/$new_coll[$i][1]/status";
+		my $cmd = "http://$ip/archive/restore/$new_coll[$i][1]/status/";
 		#writes to specific location on disk
-		my $rc = `curl -X POST -q -I $cmd 2>&1`;
+		my $rc = `curl -X GET -q -I $cmd 2>&1`;
 		if ($rc =~ /200 OK/) {
 #		    print "SUCCESS\n";
 		    #remove from new_collection

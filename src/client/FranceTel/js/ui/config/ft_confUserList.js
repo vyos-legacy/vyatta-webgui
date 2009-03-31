@@ -33,10 +33,10 @@ function FT_confUserList(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn('Name', 200, 'text', '6');
-        cols[1] = this.f_createColumn('Login', 150, 'text', '6');
-        cols[2] = this.f_createColumn('Email', 100, 'button', '35');
-        cols[3] = this.f_createColumn('Delete', 100, 'button', '35');
+        cols[0] = this.f_createColumn(g_lang.m_name, 200, 'text', '6');
+        cols[1] = this.f_createColumn(g_lang.m_login, 150, 'text', '6');
+        cols[2] = this.f_createColumn(g_lang.m_email, 100, 'button', '35');
+        cols[3] = this.f_createColumn(g_lang.m_delete, 100, 'button', '35');
 
         return cols;
     }
@@ -121,7 +121,7 @@ function FT_confUserList(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadVMData();
 
-        var btns = [['AddUser', 'f_userListAddUserCallback()', 'Create new user account']];
+        var btns = [['AddUser', 'f_userListAddUserCallback()', g_lang.m_ulTooltipAddUser]];
         this.m_buttons = this.f_createButtons(btns);
        
         if (g_roleManagerObj.f_isInstaller()) {
@@ -168,6 +168,6 @@ function f_handleUserListDeleteUser(e, username)
 function f_userListDeleteUser(username)
 {
     g_utils.f_popupMessage('Are you sure you want to delete (' + username + ') user?',
-                'confirm', 'Delete user account', true,
+                'confirm', g_lang.m_ulDeleteHeader, true,
                 "f_handleUserListDeleteUser(this, '"+ username + "')");
 }

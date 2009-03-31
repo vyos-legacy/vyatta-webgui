@@ -35,11 +35,11 @@ function FT_confRestore(name, callback, busLayer)
 
         var cols = [];
 
-        cols[0] = this.f_createColumn('Date', 120, 'text', '6');
-        cols[1] = this.f_createColumn('Content', 330, 'text', '6');
-        cols[2] = this.f_createColumn('Restore', 80, 'button', '30');
-        cols[3] = this.f_createColumn('Download', 80, 'button', '30');
-        cols[4] = this.f_createColumn('Delete', 80, 'button', '30');
+        cols[0] = this.f_createColumn(g_lang.m_uhHdDate, 120, 'text', '6');
+        cols[1] = this.f_createColumn(g_lang.m_restoreHdContent, 330, 'text', '6');
+        cols[2] = this.f_createColumn(g_lang.m_restoreHdRestore, 80, 'button', '30');
+        cols[3] = this.f_createColumn(g_lang.m_restoreHdDownload, 80, 'button', '30');
+        cols[4] = this.f_createColumn(g_lang.m_delete, 80, 'button', '30');
 
         return cols;
     }

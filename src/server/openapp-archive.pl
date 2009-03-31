@@ -224,6 +224,7 @@ sub restore_archive {
     ##########################################################################
     `rm -fr $WEB_RESTORE_ROOT/`;
     `mkdir -p $WEB_RESTORE_ROOT/`;
+    `mkdir -p $RESTORE_WORKSPACE_DIR/`;
     `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $WEB_RESTORE_ROOT/.`;
 
     ##########################################################################

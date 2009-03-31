@@ -82,11 +82,11 @@ sub backup_archive {
     #
     ##########################################################################
     my $limit_ct = `ls $ARCHIVE_ROOT_DIR | wc -w`;
-    if ($auth_user_role eq 'installer' && $limit_ct >= $INSTALLER_BU_LIMIT) {
+    if ($auth_user_role eq 'installer' && $limit_ct >= $INSTALLER_BU_LIMIT+1) {
 	print STDERR "Your backup directory is full. Please delete an archive to make room.";
 	exit 1;
     }
-    elsif ($auth_user_role eq 'admin' && $limit_ct >= $ADMIN_BU_LIMIT) {
+    elsif ($auth_user_role eq 'admin' && $limit_ct >= $ADMIN_BU_LIMIT+1) {
 	print STDERR "Your backup directory is full. Please delete an archive to make room.";
 	exit 1;
     }
@@ -128,6 +128,7 @@ sub backup_archive {
     ##########################################################################
     my @new_coll = @coll;
     #now that each are started, let's sequentially iterate through and retrieve
+    `rm -fr $BACKUP_WORKSPACE_DIR/* 2>/dev/null`;
     while ($#new_coll > -1) {
 	foreach $i (0..$#new_coll) {
 	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
@@ -138,7 +139,6 @@ sub backup_archive {
 		my $cmd = "http://$ip/archive/backup/$new_coll[$i][1]";
 		#writes to specific location on disk
 		my $bufile = "$BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]";
-		`rm -fr $BACKUP_WORKSPACE_DIR/* 2>/dev/null`;
 		`mkdir -p $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]`;
 
 		my $rc = `wget $cmd -O $bufile 2>&1`;

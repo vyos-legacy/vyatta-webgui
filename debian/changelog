@@ -1,3 +1,11 @@
+vyatta-webgui (0.2.14+fxdU+2) unstable; urgency=low
+
+  [ slioch ]
+  * more fun modifications to domU restore
+  * added vm path for restore data cmd
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 31 Mar 2009 18:22:52 -0700
+
 vyatta-webgui (0.2.14+fxdU+1) unstable; urgency=low
 
   [ An-Cheng Huang ]

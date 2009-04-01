@@ -1,3 +1,54 @@
+vyatta-webgui (0.2.14+fxdU+1) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * reorganize client files into single name space
+  * make authentication scheme work with NSS and split groups.
+  * setgid according to access level
+  * do gui backend authentication using http auth header from dom0.
+  * auto login using authentication info from dom0
+  * set domU cookie in "/" with domU-specific prefix
+
+  [ Kevin Choi ]
+  * * Fixed bug 4145 - 'stop' button may be ineffective
+
+  [ slioch ]
+  * added new cli -e flag to return command error locations, and
+    mandatory errors to be evaluated on commit error
+
+  [ An-Cheng Huang ]
+  * change https to http
+
+  [ Kevin Choi ]
+  * * removed vyatta-components then added -component-tree.js for
+    component tree view.
+
+  [ An-Cheng Huang ]
+  * update build dependency
+  * add dependency on libpam-ldap and libnss-ldap
+
+  [ slioch ]
+  * added initial REST path in dummy domU. Contains dummy backup conf
+    and data files to test retrieval for dom0
+
+  [ An-Cheng Huang ]
+  * change prefix to /utm/
+  * disable local user database checking until user management API is
+    implemented.
+
+  [ slioch ]
+  * initial checkin of rest support for domu
+  * additional cgi-bin redirection command
+  * final piece to get domU to write backups to well known location.
+  * added dummy convention on domU to retrieve dom0's ip. used on
+    communicating pull of config/data during restore.
+  * add cookie file for dom0 address
+  * added additional switch on domU restore operation to ensure success
+    status occurs after archive is pulled.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 31 Mar 2009 17:06:16 -0700
+
 vyatta-webgui (0.2.13-4) unstable; urgency=low
 
   [ Kevin Choi ]

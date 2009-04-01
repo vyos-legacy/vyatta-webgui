@@ -1,5 +1,5 @@
 #!/bin/sh
 
 rm -f /var/www/archive/restore/data/status
-wget http://$( cat /tmp/dom0 )/restore/data
+wget --no-check-certificate http://$( cat /tmp/dom0 )/restore/data -O /tmp/data
 mkdir -p /var/www/archive/restore/data/status/

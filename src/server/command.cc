@@ -78,15 +78,16 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
   string opmodecmd;
   if (user_access_level >= validate_op_cmd(username,user_access_level,cmd)) {
     //capture the backup command and direct to the chunker
-    cmd = WebGUI::mass_replace(cmd,"'","'\\''");
+//    cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
-    opmodecmd = "'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + "; " + cmd + "'";
-
+    opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + "; " + cmd;
+cout << opmodecmd << endl;
     if (multi_part_op_cmd(cmd,opmodecmd)) {
       //success
       return;
     }
 
+    cmd = WebGUI::mass_replace(cmd,"'","'\\''");
     opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + "; " + cmd + " 2>&1'";
 
     string stdout;

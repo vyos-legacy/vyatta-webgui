@@ -122,7 +122,7 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   //  opmodecmd = WebGUI::mass_replace(cmd,"'","'\\''");
   //  opmodecmd = opmodecmd + "'";
 
-  opmodecmd = WebGUI::mass_replace(cmd,"'","");
+  //opmodecmd = WebGUI::mass_replace(cmd,"'","");
 
   
   //--rcfile /etc/bash_completion -i -c

@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+6) unstable; urgency=low
+
+  [ slioch ]
+  * remove debug output that was corrupting the cgi response
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 31 Mar 2009 20:10:35 -0700
+
 vyatta-webgui (0.2+fxd0+5) unstable; urgency=low
 
   [ root ]

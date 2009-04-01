@@ -1,3 +1,607 @@
+vyatta-webgui (0.2+fxd0+5) unstable; urgency=low
+
+  [ root ]
+  * remove angle bracket conversion as user data returns xml--will
+    possibly need to revisit based on type of content returned via other
+    commands.
+  * Using built in method to allow verbatim stdout.
+  * inhibit string processing on native xml output.
+  * reworked modify op mode cmds. and backend modifications.
+  * modified script and cmds to handle modifications of rights.
+
+  [ Loi Vo ]
+  * 1. Style login screen according to the FT L&F document.
+
+  [ root ]
+  * added modify op cmd for rights for user. needed by client.
+  * added backend rights modify behavior.
+
+  [ Kevin Choi ]
+  * * support add/delete user from server in business and logic layers.
+  * * completed user list screen
+  * * additional check in for user list screen and delete user from that
+    screen
+  * * support user modify in business layer.
+  * * removed un-used files
+  * * fixed overrided ft_main.html
+  * * fixed user modify to include all changed fields
+
+  [ Loi Vo ]
+  * 1. Fix ft_confUserAdd and ft_confUserUpdate to have the right popup
+    handling.
+  * 1. Make username login field readonly
+
+  [ Kevin Choi ]
+  * * fixed null pointer error when user list is empty
+
+  [ root ]
+  * proper modify dir paths for op mode cmd to modify
+    email,last,first,password
+
+  [ Loi Vo ]
+  * Fix restore id
+  * 1. Add user role management to User List (don't show add user button
+    if installer is logged in)
+  * 1. Change ft_utils f_popup_message to accept one more argument.  The
+    last argument will be used as callback for cancel button.
+  * 1. Add schedule update screen
+
+  [ root ]
+  * worked out details for user modification. user rights op command is
+    added but is not yet functional--still working out details on
+    storage.
+  * mods based on user rights--not yet working... changed all users
+    configured to operator group.
+  * fixed out of sequence xml response when listing users.
+  * added single quote around name attribute
+
+  [ Loi Vo ]
+  * 1. Add ft_confScheduleUpdate.js
+  * 1.Modify ft_confUserAdd.js and ft_confUserUpdate.js so that the list
+    item is color coded.
+
+  [ Kevin Choi ]
+  * * add user right screen UI layout only... no businsess logic support
+    yet
+  * * save user name to cookies. this is needed additional to session id
+    for case user click on
+  * * added user right screen and business logic.
+
+  [ root ]
+  * added official support for rights and roles fields.
+  * fix list where rights have not been defined.
+
+  [ Kevin Choi ]
+  * * additional checked in for user right srceen due to the server api
+    changed to user rights
+
+  [ root ]
+  * fixed the corresponding rights delete op mode command.
+  * fixed bug in clearing of rights field
+
+  [ Kevin Choi ]
+  * * provide GUI layer the current login user role.
+
+  [ root ]
+  * removed old group membership requirements and properly encrypt
+    password. users now authenticate.
+
+  [ Kevin Choi ]
+  * * added backup/restore data structure and business logic structure
+  * * fixed object name typo
+
+  [ Loi Vo ]
+  * 1. Add two utilities functions to ui/utils/ft_utils.js
+
+  [ Kevin Choi ]
+  * * add restore description screen layout
+
+  [ Loi Vo ]
+  * Add dynamic links for restore description
+  * Oops, needs to change the ul id.
+
+  [ root ]
+  * added role level restrictions to op mode commands. access levels are
+    set in node.def files. no restriction in node.def indicates user
+    level access. failure to access cmd by access level generates
+    generic command failed message.
+
+  [ Kevin Choi ]
+  * * Fixed delete user confirmation from user list screen
+  * * set up a restore data population function
+
+  [ root ]
+  * remove vyattacfg check on auth
+
+  [ Kevin Choi ]
+  * * block user role installer/admin to be deleted from LDAP
+
+  [ Loi Vo ]
+  * 1. Fix a bug in ft_roleManager where the user role doesn't return
+    correct value.
+  * 1 Remove alert statement from ft_mainPanel.js
+
+  [ Kevin Choi ]
+  * * modified config screen base class to make grid table height
+    dynamically change base on
+  * * added new ft style button and icon images
+
+  [ root ]
+  * Installer role is now indentified by username "installer" this is
+    hardcoded. Added new api for password setting and reset. The op mode
+    commands are now:
+
+  [ Kevin Choi ]
+  * * modified files to reflect the new image filenames
+  * * fixed typo for image filename
+
+  [ root ]
+  * added restrictions for user role actor: user actor can ONLY
+    modify/add/delete their own account details.
+
+  [ Loi Vo ]
+  * 1.Add calendar component
+
+  [ root ]
+  * remove debug output
+
+  [ Kevin Choi ]
+  * * updated dashboard table column header names
+
+  [ An-Cheng Huang ]
+  * reorganize build
+
+  [ slioch ]
+  * ft is now officially chunk-o-fied.
+
+  [ root ]
+  * backup|restore op mode cmd signatures.
+
+  [ Loi Vo ]
+  * 1. Change login button to use FT supply button
+
+  [ Kevin Choi ]
+  * * check user right and user role attribute for add new user
+
+  [ An-Cheng Huang ]
+  * add VM listing op commands
+  * add missing chunker scripts and fix chunker build
+
+  [ slioch ]
+  * add chunker init script.
+
+  [ root ]
+  * fix for user rights access level on user level commands. updated
+    support in postinst for chunk
+
+  [ slioch ]
+  * added chunk hooks into webgui and response handlers on cgi side of
+    things.
+
+  [ root ]
+  * more changes to support chunk
+
+  [ Loi Vo ]
+  * 1. Fix add user case to include right='none' in the command.
+
+  [ root ]
+  * modified to bring error handling in conformance with islavista
+    webgui on command execution.
+  * open-app archive backup is now being processed by the chunker.
+  * remove extra character from output
+
+  [ An-Cheng Huang ]
+  * move state dir and remove dup file
+
+  [ Kevin Choi ]
+  * * Integrated backend api to get a list of VMs for tabs displaying.
+
+  [ root ]
+  * fix problem in chunker background processing, now outputs dummy
+    output when open-app archive backup is executed.
+
+  [ An-Cheng Huang ]
+  * add VM status query commands
+
+  [ root ]
+  * archive backup command now points to backup script. backup script
+    now partially implemented.
+
+  [ Kevin Choi ]
+  * * integrated backend api for get vm status.
+
+  [ root ]
+  * added vmlist query--now sends out backup rest msg to configured vms.
+
+  [ An-Cheng Huang ]
+  * add status update script
+
+  [ Loi Vo ]
+  * 1. Modify to support new API, which provides vm_name,
+    vm_displayName, vm_guiURL
+
+  [ root ]
+  * more code to describe full backup process--not yet working...
+
+  [ Loi Vo ]
+  * 1. Add error checking for Time server configuration
+
+  [ An-Cheng Huang ]
+  * simplify the status update script and start background processes
+    when configured.
+  * move state file creation to postinst
+
+  [ root ]
+  * more archive work, lists and deletion.
+  * reciprocol listing and metadata file. metadata is being created and
+    archived in backup file. listings iterates over archive directory
+    and returns metadata. in both cases this is stored as xml content.
+
+  [ An-Cheng Huang ]
+  * add hardware monitoring support
+  * handle new VM metadata attributes
+
+  [ root ]
+  * time, date stamp applied to archive and name, initial cut of code in
+    restore.
+
+  [ Kevin Choi ]
+  * * modify vm start to use backend's new api
+  * * updated vm business layer and vm dashboard gui layer to reflect
+    backend api changed on
+
+  [ Loi Vo ]
+  * 1. Add disable image for calendar
+  * 1. Print the new version number out.
+
+  [ An-Cheng Huang ]
+  * add VM deployment backend
+  * use empty string for no update
+  * separate id from version in deployment records
+
+  [ root ]
+  * added initial code to support rest messages for add/delete of user
+    rights.
+
+  [ Loi Vo ]
+  * 1.Adding error checking for LDAP server configuration.
+
+  [ root ]
+  * modified http rest requests to conform with spec. now check rights
+    against dynamic list of registered vms before adding.
+  * more archive mods of rest msgs.
+
+  [ Kevin Choi ]
+  * * Update HW Monitor for business layer and WUI to reflect backend's
+    new api.
+  * * created vm deploy data object
+
+  [ Loi Vo ]
+  * 1. Add vm upgrade command in ft_businessLayer and ft_vmBusObj.
+
+  [ An-Cheng Huang ]
+  * make op templates return correct exit status
+
+  [ root ]
+  * added node.def error handling--should fix problem on error return
+    codes.
+
+  [ An-Cheng Huang ]
+  * return error from VMMgmt constructor
+
+  [ root ]
+  * modified time stamps on file name to conform with ft spec.
+
+  [ Kevin Choi ]
+  * * added code to handle cancel VM Deploy Scheduler
+
+  [ root ]
+  * allow filename to be passed in for backup. When a filename is
+    specified the default filename convention is overwritten. This can
+    include directory path.
+
+  [ Kevin Choi ]
+  * * touched up work to dashboard, user list, user right vm update
+    screens
+
+  [ An-Cheng Huang ]
+  * dom0 gui should use operator group
+
+  [ root ]
+  * corrected list commands for backuped archived.
+
+  [ Loi Vo ]
+  * 1. Add modal poppup support.
+  * 1. Changes made to support modal dialog
+
+  [ An-Cheng Huang ]
+  * rework dom0 gui permissions
+  * add OA VM operation script
+
+  [ Kevin Choi ]
+  * * add language support framework structures and base classes
+
+  [ Loi Vo ]
+  * 1. Made the modification to use the new command format from backend,
+    and businees logic layer
+
+  [ root ]
+  * fixed bug in retrieve data when performing backup.
+  * more bugfixes to backup
+  * more fixes to backup vm list iteration.
+  * added status check on poll for backup complete and other fixes on
+    backup sequence.
+
+  [ An-Cheng Huang ]
+  * provide authenticated user name as env variable
+
+  [ root ]
+  * added sudo to user level cmds.
+
+  [ An-Cheng Huang ]
+  * add LdapUser module to encapsulate common LDAP operations.
+
+  [ Loi Vo ]
+  * 1. Change copy right to 2009
+
+  [ An-Cheng Huang ]
+  * change rights to a hash to optimize lookup
+  * use LdapUser module to get user role/rights for permissions.
+  * fix installer login
+
+  [ root ]
+  * more bugfixes to backup and archive creation.
+  * restore code.
+
+  [ An-Cheng Huang ]
+  * add op commands for VM start/stop/restart
+
+  [ root ]
+  * removed magic strings to common location.
+  * changed default access levels on commands to installer levels. Added
+    explicit access rights for admin and user levels to user and archive
+    commands.
+  * fixed auth level assignment error
+
+  [ An-Cheng Huang ]
+  * add access restrictions to op command templates
+
+  [ Kevin Choi ]
+  * * integrated vm start/stop screen to backend api to
+    stop/start/restart VMs
+
+  [ root ]
+  * modify root path for vyatta op mode cmds
+  * added support for role level policy on archive account as well as
+    storing/retrieving archives in separate locations.
+  * also send restore command to chunker. fixed archive deletion path.
+
+  [ Kevin Choi ]
+  * * update business layer and vm-update object to reflect backend api
+    changed by adding
+
+  [ Loi Vo ]
+  * 1. Fix a bug on Safari where OA panel is not shown
+
+  [ Kevin Choi ]
+  * * fixed typo on status succeeded
+
+  [ An-Cheng Huang ]
+  * initial implementation of upgrade/restore
+
+  [ Loi Vo ]
+  * 1. Change ft_configPanel.js so that it said 'Not Implemented' for
+    Network Monitor instead of launching Config Backup
+  * 1. Change ft_confFormObj to render restore button
+
+  [ root ]
+  * adding documentation into source. adding restore status command as
+    well as fixing bugs with archive restore.
+  * formalized directory layout for restore/backup/status/delete.
+    implemented status result.
+
+  [ Kevin Choi ]
+  * * Added user confirmation message for restart/stop VM commands
+
+  [ root ]
+  * pull restore list from archive rather than passed in list. this way
+    the restore command is fixed to the archive. clear out restore space
+    on start of restore. inline documentation on procedure.
+
+  [ Kevin Choi ]
+  * * added server error handle to screen config base class. So all
+    parent class benefit from
+
+  [ An-Cheng Huang ]
+  * need to keep OA_* env
+  * change common upgrade/restore error messages
+
+  [ root ]
+  * various bugfixes
+  * need to add dummy level node.defs so these show up as op mode cmds.
+  * more cleanup of op mode cmds.
+
+  [ Loi Vo ]
+  * 1. Fix the configuration backup/ restore mal-form command.
+  * 1. Hide "add user" button for user list if login user is installer.
+
+  [ An-Cheng Huang ]
+  * enable schedule/cancel update
+
+  [ Kevin Choi ]
+  * * create a new common library to handle enable/disable image button
+    for all config screen.
+  * * prevent user to restore back to previous version is previous
+    version is not available.
+
+  [ An-Cheng Huang ]
+  * add op command for restoring previous version of VM.
+  * restore accidentally overwritten changes
+  * add update/restore history handling
+
+  [ Loi Vo ]
+  * 1. Add support for sitemap.  Right now, it will check for the user
+    role, and
+
+  [ root ]
+  * modify list cmd. add username to chunker processed cmds.
+  * need these changes for chunker cmd mods.
+  * fix for archive listing.
+
+  [ Loi Vo ]
+  * 1. Change ft_confRestoreUpdate to use new restore command from
+    AnCheng
+  * 1. Add sub menu selection support for site map.
+  * 1. Fix the restoreVm method in ft_businessLayer.js.  It should call
+    the vmBusObj.restoreVm method instead of upgradeVm method.
+
+  [ root ]
+  * chunker environment processor change needed to run in ft
+    environment.
+
+  [ Loi Vo ]
+  * 1. Add images for sitemap
+
+  [ root ]
+  * modified cmd to work within chunker.
+
+  [ Kevin Choi ]
+  * * added restore screen to display archive list, display archive
+    description screen.
+
+  [ root ]
+  * fixes for listing of archive contents.
+
+  [ Kevin Choi ]
+  * * fixed merge confict
+
+  [ root ]
+  * modify backup location on domU
+
+  [ Loi Vo ]
+  * 1. Add Help Button to the Main Panel.  Re-style the main panel.
+
+  [ Kevin Choi ]
+  * * additional changed to config restore screen to handle delete
+    backup archive file.
+
+  [ Loi Vo ]
+  * 1. Modify to make backup configuration page to go back to the
+    restore configuration after backup is clicked.
+  * 1. Add place holder for OA configuration business logic layer.
+    Waiting for Mike to define the API.
+
+  [ root ]
+  * filled in name field in content archive.
+  * fixed bug in admin backup limit check.
+
+  [ Loi Vo ]
+  * 1. Add disabled images.
+  * 1. Fix a bug in IE where the class attribute is not set correctly.
+
+  [ Kevin Choi ]
+  * * changed config restore and config restore discription screens to
+    object structure base
+  * * fixed merged conflict
+  * fixed typo
+
+  [ root ]
+  * added support for user supplied targets.
+
+  [ Loi Vo ]
+  * 1. Fix label rendering issue on ft_confMyProfile.js
+  * 1. Fix an issue on IE where the list item in sitemap is not styled
+    correctly.
+
+  [ root ]
+  * small mod to restore msg from domU
+
+  [ Kevin Choi ]
+  * * enabled the disabled button images
+
+  [ Loi Vo ]
+  * 1. Saving user language selection to cookie file.
+
+  [ Kevin Choi ]
+  * * added index.html to support multi-lang
+
+  [ slioch ]
+  * modified crypt arguments. also added recipricol command to decrypt
+    archive on restore.
+
+  [ Loi Vo ]
+  * 1. Change BLB, BLBcheck, Backup, My Profile to support multi
+    languages.
+
+  [ An-Cheng Huang ]
+  * handle new metadata attributes and query VM-specific SNMP OID for
+    status.
+
+  [ Kevin Choi ]
+  * * worked on conf user right screen to handle enable/disable action
+    buttons base on user's
+
+  [ Loi Vo ]
+  * 1. Make changes for the following screen to support multi-languages:
+
+  [ slioch ]
+  * fix runtime error from archive perl script.
+
+  [ Loi Vo ]
+  * 1. Fix one error in ft_confUserAdd.js, where one error message is
+    not fully multi-languages support.
+  * Set default focus for the form
+
+  [ Kevin Choi ]
+  * * updated multi-lang contents
+
+  [ Loi Vo ]
+  * 1. Test: fix the mess-up in french char encoding.  Let git-pull
+    again to see if it messes up.
+
+  [ An-Cheng Huang ]
+  * initial implementation of LDAP sub-db support
+  * add hard-coded reverse proxy settings for now
+
+  [ Loi Vo ]
+  * 1. Fix typo (cut&paste) error: g_lang, not m_lang
+
+  [ slioch ]
+  * post to get for backup/restore cmds
+  * need to ensure status directory is present.
+  * fix admin/installer backup limit. fix multiple archive request from
+    single domU.
+
+  [ Loi Vo ]
+  * 1. Fix login name doesn't refresh correctly, when clicking on
+    my_profile link
+
+  [ slioch ]
+  * restore response for success
+
+  [ Loi Vo ]
+  * 1. Add the maximum number of backup archive stored in Open Appliance
+    check.
+
+  [ slioch ]
+  * admin now can bu 3 archives and installer 2.
+
+  [ Kevin Choi ]
+  * * added download user confirm message
+
+  [ An-Cheng Huang ]
+  * remove inclusion of generated config before restarting LDAP server.
+
+  [ slioch ]
+  * handle case where restore status is 0
+
+  [ Michael Larson ]
+  * need to fix webgui restore cmd handling.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 31 Mar 2009 18:35:53 -0700
+
 vyatta-webgui (0.2+fxd0+4) unstable; urgency=low
 
   [ Loi Vo ]

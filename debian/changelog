@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.14+fxdU+3) unstable; urgency=low
+
+  [ slioch ]
+  * allow load command to work when invoked
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 31 Mar 2009 19:21:03 -0700
+
 vyatta-webgui (0.2.14+fxdU+2) unstable; urgency=low
 
   [ slioch ]

@@ -81,7 +81,6 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
 //    cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
     opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + "; " + cmd;
-cout << opmodecmd << endl;
     if (multi_part_op_cmd(cmd,opmodecmd)) {
       //success
       return;

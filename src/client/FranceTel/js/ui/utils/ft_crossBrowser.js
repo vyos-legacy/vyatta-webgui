@@ -156,6 +156,12 @@ function FT_crossBrowser()
         
     }
     
+	/*
+	 * target: which element is receiving the event
+	 * eventType: which type of event
+	 * functionRef: the event handler function
+	 * capture: true: capturing phase (outer -> inner), false: bubble up phase (inner -> outer)
+	 */
     this.f_xbAttachEventListener = function(target, eventType, functionRef, capture)
     {
         if (typeof target.addEventListener != "undefined") {

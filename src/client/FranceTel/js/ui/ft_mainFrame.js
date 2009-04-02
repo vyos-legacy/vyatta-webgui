@@ -10,9 +10,8 @@ function FT_mainFrame(){
     var thisObj = this;
     this.m_vmList = undefined;
     this.m_selectedVm = undefined;
-    this.m_mainPanel = undefined;
+    this.m_tabPanel = undefined;
     this.m_priNavigation = undefined;
-    this.m_mainPanel = undefined;
 	this.m_siteMap = undefined;
 	this.m_doneInitComponent = false;
     
@@ -24,13 +23,13 @@ function FT_mainFrame(){
     this.f_init = function(){
         var logoff = document.getElementById(VYA.FT_CONST.DOM_LOGOFF_ID);
         g_xbObj.f_xbAttachEventListener(logoff, 'click', thisObj.f_handleClickLogoff, true);			
-        thisObj.m_mainPanel = new FT_mainPanel();		
+        thisObj.m_tabPanel = new FT_tabPanel();		
         thisObj.m_priNavigation = new FT_primaryNavigation();
 		thisObj.m_siteMap = new FT_siteMap();
     }
     
-	this.f_getMainPanel = function() {
-		return thisObj.m_mainPanel;
+	this.f_getTabPanel = function() {
+		return thisObj.m_tabPanel;
 	}
 	
 	this.f_login = function (loginPage) {
@@ -83,7 +82,7 @@ function FT_mainFrame(){
 		}
         var oa_2nav = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_2_NAV_ID);
         oa_2nav.style.display = 'none';
-        thisObj.m_mainPanel.f_init();
+        thisObj.m_tabPanel.f_init();
         
         thisObj.m_vmList = vmList;
         thisObj.m_priNavigation.f_init(thisObj, vmList);
@@ -95,21 +94,21 @@ function FT_mainFrame(){
      * Render this VM (based on the ID) in an external iframe.
      */
     this.f_showOther = function(vmId, urlPath){
-        thisObj.m_mainPanel.f_show(vmId, urlPath);
+        thisObj.m_tabPanel.f_show(vmId, urlPath);
     }
     
     /*
      * Render the Open Appliance Panel
      */
     this.f_showOApanel = function(vmId, urlPath){					
-        thisObj.m_mainPanel.f_show(vmId, urlPath);
+        thisObj.m_tabPanel.f_show(vmId, urlPath);
     }
 	
 	/*
 	 * Select a page inside OA
 	 */
 	this.f_selectPage = function(id, subId) {
-		thisObj.m_mainPanel.f_selectPage(id, subId);
+		thisObj.m_tabPanel.f_selectPage(id, subId);
 	}
     
     /*

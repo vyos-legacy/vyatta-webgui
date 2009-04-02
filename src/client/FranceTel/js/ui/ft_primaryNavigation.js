@@ -41,7 +41,7 @@ function FT_primaryNavigation()
     {
         //return (window.location.protocol + '//' + vm.m_ip + ':' + vm.m_guiPort  + vm.m_guiUri);
 		if (vm.m_name == 'utm') {
-			return 'UTM/ft_main_en.html';
+			return 'UTM/utm_main_en.html';
 		}
 		return vm.m_guiUri;
     }

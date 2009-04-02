@@ -155,9 +155,13 @@ function FT_confRestoreDesc(name, callback, busLayer)
 
         this.f_loadVMData();
 
-        return [this.m_header, this.m_body, this.m_buttons];
+        return [this.f_headerText(), this.m_header, this.m_body, this.m_buttons];
     }
 
+    this.f_headerText = function()
+    {
+        return this.f_createGeneralDiv(g_lang.m_confHeaderText);
+    }
 }
 FT_extend(FT_confRestoreDesc, FT_confBaseObj);
 

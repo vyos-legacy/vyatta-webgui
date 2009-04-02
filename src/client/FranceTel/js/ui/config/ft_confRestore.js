@@ -74,8 +74,8 @@ function FT_confRestore(name, callback, busLayer)
                     var restore = thisObj.f_renderButton(
                                 'restore', true, restDesc, 'Restore backup archive (' + content + ')');
                     var download = thisObj.f_renderButton(
-                                'download', true, "f_handleDownloadRestore('" +
-                                r.m_file + "')", 'Download backup archive (' + content + ')');
+                                //'download', true, "f_handleDownloadRestore('" +
+                                'download', true, r.m_file+".zip", 'Download backup archive (' + content + ')');
                     var del = thisObj.f_renderButton(
                                 'delete', true, "f_deleteRestoreFile('" + content +
                                 "', '" + r.m_file + "')",
@@ -240,7 +240,7 @@ function f_handleDownloadRestore(filename)
 {
     g_utils.f_popupMessage('Are you sure you want to download (' + filename + ')?',
                 'confirm', 'Download Backup Archive File', true,
-                "f_handleDeleteRestoreFile(this, '"+ filename + "')");
+                "f_handleDownloadRestoreFile(this, '"+ filename + "')");
 }
 
 function f_deleteRestoreFile(content, filename)

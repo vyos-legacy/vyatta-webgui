@@ -49,7 +49,7 @@ function FT_confBaseObj(name, callback, busLayer)
         div.style.backgroundColor = 'white';
         div.style.height = '300px';
         div.style.overflow = 'auto';
-        div.style.fontFamily = 'Arial';
+        div.style.fontFamily = 'Arial, sans-serif';
 
         document.getElementById('ft_container').appendChild(div);
 
@@ -66,7 +66,8 @@ function FT_confBaseObj(name, callback, busLayer)
         div.style.position = 'relative';
         div.style.border = '1px solid #CCC';
         div.style.backgroundColor = '#FF6600'//'#EFEFEF';
-        div.style.color = '#fff'
+        div.style.color = '#fff';
+        div.style.overflow = 'visible';
 
         var width = 0;
         var inner = "";
@@ -78,7 +79,7 @@ function FT_confBaseObj(name, callback, busLayer)
                               '' : 'border-right:1px solid #CCC; ';
 
             inner += '<td width="' + h[1] +'">' +
-                '<div style="padding-top:5px; height:18px; ' + rBorder + '">' +
+                '<div style="padding-top:5px; padding-bottom:5px; ' + rBorder + '">' +
                 h[0] + '</div></td>';
         }
 
@@ -175,6 +176,24 @@ function FT_confBaseObj(name, callback, busLayer)
     {
         var adVal = (thisObj.m_tableRowCounter * 28) - 20;
         div.style.top = adVal+'px';
+    }
+
+    this.f_createGeneralDiv = function(text)
+    {
+        var div = document.createElement('div');
+        div.style.position = 'relative';
+        div.style.display = 'block';
+        div.style.backgroundColor = 'white';
+        div.style.overflow = 'visible'
+
+        var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
+        innerHtml += '<tbody><tr><td>' +
+                      '<div><p>' + text + '</p>' +
+                      '</td></tr></tbody></table>';
+
+        div.innerHTML = innerHtml;
+
+        return div;
     }
 
     /**
@@ -385,8 +404,9 @@ function FT_confBaseObj(name, callback, busLayer)
                 imgSrc = 'ico_disquette.gif';
                 break;
             case 'download':
-                imgSrc = 'ico_download.gif';
-                break;
+                imgSrc = g_lang.m_imageDir + 'ico_download.gif';
+                return '<a title="' + tooltip + '" href=' + cb +
+                        '><img src="' + imgSrc + '"></a>';
             case 'Cancel':
                 imgSrc = 'bt_cancel.gif';
                 break;

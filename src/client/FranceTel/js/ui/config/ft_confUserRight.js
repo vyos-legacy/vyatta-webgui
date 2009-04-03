@@ -75,7 +75,7 @@ function FT_confUserRight(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-                if(thisObj.f_isServerError(evt, 'User Right Error'))
+                if(thisObj.f_isServerError(evt, g_lang.m_urErrorTitle))
                     return;
 
                 var ul = evt.m_value;
@@ -257,9 +257,9 @@ function FT_confUserRight(name, callback, busLayer)
         this.m_body = this.f_createGridView(hd);
         this.f_loadData();
 
-        var btns = [['Apply', "f_userRightHandleApply()", 'Set selection',
+        var btns = [['Apply', "f_userRightHandleApply()", g_lang.m_urBtnApply,
                       this.m_btnApplyId],
-                    ['Cancel', "f_userRightHandleCancel()", 'Reset selection',
+                    ['Cancel', "f_userRightHandleCancel()", g_lang.m_urBtnCancel,
                       this.m_btnCancelId]];
         this.m_buttons = this.f_createButtons(btns);
 
@@ -276,8 +276,8 @@ function f_userRightHandleApplyComfirm(e)
 
 function f_userRightHandleApply(e)
 {
-    g_utils.f_popupMessage('Are you sure you wish to commit the change?', 'confirm',
-                "Change User Right", true, 'f_userRightHandleApplyComfirm(this)');
+    g_utils.f_popupMessage(g_lang.m_urCommitChange, 'confirm',
+                g_lang.m_urConfirmTitle, true, 'f_userRightHandleApplyComfirm(this)');
 
 }
 

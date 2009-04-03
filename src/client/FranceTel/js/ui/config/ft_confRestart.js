@@ -32,8 +32,8 @@ function FT_confRestart(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn('Application', 250, 'text', '6');
-        cols[1] = this.f_createColumn('Status', 80, 'image', '35');
+        cols[0] = this.f_createColumn(g_lang.m_dbHdApplication, 250, 'text', '6');
+        cols[1] = this.f_createColumn(g_lang.m_dbHdStatus, 80, 'image', '35');
         cols[2] = this.f_createColumn('', 100, 'button', '25');
         cols[3] = this.f_createColumn('', 100, 'button', '25');
         cols[4] = this.f_createColumn('', 100, 'button', '25');
@@ -50,7 +50,7 @@ function FT_confRestart(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-                if(thisObj.f_isServerError(evt, 'VM Restart Error'))
+                if(thisObj.f_isServerError(evt, g_lang.m_restartErrorTitle))
                 {
                     thisObj.f_stopLoadVMData();
                     return;
@@ -131,10 +131,10 @@ function FT_confRestart(name, callback, busLayer)
         innerHtml += '<tbody><tr height="22">';
 
         innerHtml += '<td width="120"><div style="height:30px; padding-left:10px; ' +
-                      'padding-top:30px;"><b>Open Appliance:</b></div></td>';
+                      'padding-top:30px;"><b>' + g_lang.m_restartOA + ':</b></div></td>';
 
         innerHtml += '<td width="110">' +
-                    '<div title="Restart Open Appliance" style="height:30px; ' +
+                    '<div title="Restart ' + g_lang.m_restartOA + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<input type="image" src="images/bt_restart.gif" name="OpenAppl" ' +
                     'value="Restart" onclick="' + handleFunc +
@@ -151,8 +151,8 @@ FT_extend(FT_confRestart, FT_confBaseObj);
 
 function f_vmStop(vmId, vmName)
 {
-    g_utils.f_popupMessage('Are you sure you want to stop (' + vmName + ') VM?',
-                'confirm', 'Stop VM Process', true,
+    g_utils.f_popupMessage(g_lang.m_restartStopConfirm + ' (' + vmName + ') VM?',
+                'confirm', g_lang.m_restartStopTitle, true,
                 "f_vmHandleStop(this, '"+ vmId + "')");
 }
 function f_vmHandleStop(e, vmId)
@@ -170,10 +170,10 @@ function f_vmHandleStop(e, vmId)
 
 function f_vmRestart(vmId, vmName)
 {
-    if(vmId == 'openapp') vmName = 'Open Appliance';
+    if(vmId == 'openapp') vmName = g_lang.m_restartOA;
 
-    g_utils.f_popupMessage('Are you sure you want to restart (' + vmName + ') VM?',
-                'confirm', 'Restart VM Process', true,
+    g_utils.f_popupMessage(g_lang.m_restartConfirm + ' (' + vmName + ') VM?',
+                'confirm', g_lang.m_restartTitle, true,
                 "f_vmHandleRestart(this, '"+ vmId + "')");
 }
 function f_vmHandleRestart(e, vmId)

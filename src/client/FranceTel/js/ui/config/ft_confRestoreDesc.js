@@ -173,8 +173,8 @@ function f_handleRestoreDescRestore(e)
 
 function f_restoreDescRestore()
 {
-    g_utils.f_popupMessage('Are you sure you want to restore the selection VM?',
-                'confirm', 'Configuration Restore Description', true,
+    g_utils.f_popupMessage(g_lang.m_resDescConfirm,
+                'confirm', g_lang.m_resDescErrorTitle, true,
                 "f_handleRestoreDescRestore(this)");
 }
 

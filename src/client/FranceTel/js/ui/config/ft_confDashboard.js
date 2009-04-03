@@ -52,7 +52,7 @@ function FT_confDashboard(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-                if(thisObj.f_isServerError(evt, 'VM Dashboard Error'))
+                if(thisObj.f_isServerError(evt, g_lang.m_dbErrorTitle))
                 {
                     thisObj.f_stopLoadVMData();
                     return;

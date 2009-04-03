@@ -53,7 +53,7 @@ function FT_confRestore(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-                if(thisObj.f_isServerError(evt, 'Configuration Restore  Error'))
+                if(thisObj.f_isServerError(evt, g_lang.m_restoreErrorTitle))
                     return;
 
                 if(thisObj.m_div != undefined)
@@ -70,16 +70,18 @@ function FT_confRestore(name, callback, busLayer)
                     var content = thisObj.f_getContents(r.m_content.m_entry);
                     var restDesc = "f_handleRestoreDesc('" + r.m_file + "')";
                     var anchor = thisObj.f_renderAnchor(content, restDesc,
-                                'Click here to restore ' + "(" + content + ")");
+                                g_lang.m_restoreClickRestore + " (" + content + ")");
                     var restore = thisObj.f_renderButton(
-                                'restore', true, restDesc, 'Restore backup archive (' + content + ')');
+                                'restore', true, restDesc, g_lang.m_restoreArchive +
+                                ' (' + content + ')');
                     var download = thisObj.f_renderButton(
                                 //'download', true, "f_handleDownloadRestore('" +
-                                'download', true, r.m_file+".zip", 'Download backup archive (' + content + ')');
+                                'download', true, r.m_file+".zip",
+                                g_lang.m_restoreDownload + ' (' + content + ')');
                     var del = thisObj.f_renderButton(
                                 'delete', true, "f_deleteRestoreFile('" + content +
                                 "', '" + r.m_file + "')",
-                                'Delete backup archive (' + content + ')');
+                                g_lang.m_restoreDel + ' (' + content + ')');
 
                     vmData = [r.m_bkDate, anchor, restore, download, del]
                     var bodyDiv = thisObj.f_createGridRow(hd, vmData);
@@ -212,7 +214,7 @@ function f_handleDeleteRestoreFile(e, filename)
 {
     var cb = function(evt)
     {
-        if(g_configPanelObj.m_activeObj.f_isServerError(evt, 'Configuration Restore Error'))
+        if(g_configPanelObj.m_activeObj.f_isServerError(evt, g_lang.m_restoreErrorTitle))
             return;
 
         g_configPanelObj.m_activeObj.f_loadVMData();
@@ -226,7 +228,7 @@ function f_handleDownloadRestoreFile(e, filename)
 {
     var cb = function(evt)
     {
-        if(g_configPanelObj.m_activeObj.f_isServerError(evt, 'Configuration Restore Error'))
+        if(g_configPanelObj.m_activeObj.f_isServerError(evt, g_lang.m_restoreErrorTitle))
             return;
 
         g_configPanelObj.m_activeObj.f_loadVMData();
@@ -238,14 +240,14 @@ function f_handleDownloadRestoreFile(e, filename)
 
 function f_handleDownloadRestore(filename)
 {
-    g_utils.f_popupMessage('Are you sure you want to download (' + filename + ')?',
-                'confirm', 'Download Backup Archive File', true,
+    g_utils.f_popupMessage(g_lang.m_restoreDlConfirm + ' (' + filename + ')?',
+                'confirm', g_lang.m_restoreDownload, true,
                 "f_handleDownloadRestoreFile(this, '"+ filename + "')");
 }
 
 function f_deleteRestoreFile(content, filename)
 {
-    g_utils.f_popupMessage('Are you sure you want to delete (' + content + ')?',
-                'confirm', 'Delete Backup Archive File', true,
+    g_utils.f_popupMessage(g_lang.m_deleteConfirm + ' (' + content + ')?',
+                'confirm', g_lang.m_restoreDelTitle, true,
                 "f_handleDeleteRestoreFile(this, '"+ filename + "')");
 }

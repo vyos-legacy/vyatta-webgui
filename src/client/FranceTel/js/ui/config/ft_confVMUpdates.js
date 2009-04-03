@@ -50,7 +50,7 @@ function FT_confVMUpdates(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-                if(thisObj.f_isServerError(evt, 'VM Update Error'))
+                if(thisObj.f_isServerError(evt, g_lang.m_uhErrorTitle))
                     return;
 
                 var dep = evt.m_value;  // get vm deploy record object
@@ -132,7 +132,7 @@ function f_vmHandleDeployCancel(e, vmId)
 {
     var cb = function(evt)
     {
-        if(!g_configPanelObj.m_activeObj.f_isServerError(evt, 'VM Update Planning Error'))
+        if(!g_configPanelObj.m_activeObj.f_isServerError(evt, g_lang.m_uhErrorTitle))
             g_configPanelObj.m_activeObj.f_loadVMData();
     }
 
@@ -142,8 +142,8 @@ function f_vmHandleDeployCancel(e, vmId)
 
 function f_vmDeployCancel(vmId, vmName)
 {
-    g_utils.f_popupMessage('Are you sure you want to cancel (' + vmName + ') VM?',
-                'confirm', 'Cancel Update Schedule',true,
+    g_utils.f_popupMessage(g_lang.m_cancelConfirm + ' (' + vmName + ') VM?',
+                'confirm', g_lang.m_uhCancelTitle, true,
                 "f_vmHandleDeployCancel(this, '"+ vmId + "')");
 }
 

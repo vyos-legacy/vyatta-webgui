@@ -65,7 +65,7 @@ function FT_confUserList(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-                if(thisObj.f_isServerError(evt, 'VM Update Error'))
+                if(thisObj.f_isServerError(evt, g_lang.m_ulErrorTitle))
                     return;
 
                 var ul = evt.m_value;
@@ -80,18 +80,19 @@ function FT_confUserList(name, callback, busLayer)
                         var fName = ul[i].m_last + ' ' + ul[i].m_first;
                         var anchor = thisObj.f_renderAnchor(ul[i].m_user,
                                 "f_userListEditUser('" + ul[i].m_user + "')",
-                                'Click here to edit ' + "(" + fName + ")");
+                                g_lang.m_ulClick2Edit + " (" + fName + ")");
                         var email = ul[i].m_email != undefined ?
                                 thisObj.f_renderAnchorHref(
                                 '<img src="images/ico_mail.gif">',
                                 "mailto:" + ul[i].m_email,
-                                'Send email to ' + fName + ' at ' +
+                                g_lang.m_ulSendEmail + fName + ' at ' +
                                 ul[i].m_email) : "";
 
                         var del = g_busObj.f_isDeletableUser(ul[i].m_role) ?
                                 thisObj.f_renderButton(
                                 'deleteUser', true, "f_userListDeleteUser('" +
-                                ul[i].m_user + "')", 'Delete user (' + fName + ')'):
+                                ul[i].m_user + "')", g_lang.m_ulDeleteUser + 
+                                ' (' + fName + ')'):
                                 "";
                         var data = [fName, anchor, email, del];
 
@@ -167,7 +168,7 @@ function f_handleUserListDeleteUser(e, username)
 
 function f_userListDeleteUser(username)
 {
-    g_utils.f_popupMessage('Are you sure you want to delete (' + username + ') user?',
+    g_utils.f_popupMessage(g_lang.m_deleteConfirm + ' (' + username + ') user?',
                 'confirm', g_lang.m_ulDeleteHeader, true,
                 "f_handleUserListDeleteUser(this, '"+ username + "')");
 }

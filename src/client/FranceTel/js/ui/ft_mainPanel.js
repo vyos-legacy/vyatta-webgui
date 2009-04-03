@@ -2,7 +2,7 @@
  Document   : ft_mainPanel.js
  Created on : Feb 26, 2009, 3:19:25 PM
  Author     : Loi Vo
- Description: The main panel of the main frame
+ Description: The main panel of the tab panel
  */
 function FT_mainPanel(){
     /////////////////////////////////////
@@ -10,9 +10,7 @@ function FT_mainPanel(){
     var thisObj = this;
     this.m_2navMenu = undefined;
     this.m_3navMenu = undefined;
-    this.m_container = undefined;
 	this.m_oa_container = undefined;
-    this.m_2navSelectedItem = undefined;
     this.m_3navSelectedItem = undefined;
 	this.m_configPanel = undefined;
     
@@ -23,11 +21,7 @@ function FT_mainPanel(){
      */
     this.f_init = function(){
 
-        thisObj.m_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_ID); //'tab_content'
 		thisObj.m_oa_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID); //'oa_container'
-        thisObj.m_container.style.width = VYA.DYN_STYLE.APP_WIDTH; 
-        //thisObj.m_container.style.height = '500';
-        //thisObj.m_container.style.border = '0';
         thisObj.m_2navMenu = new FT_2ndNavigation();
         thisObj.m_2navMenu.f_init(thisObj);
         thisObj.m_3navMenu = new FT_3rdNavigation();
@@ -37,21 +31,13 @@ function FT_mainPanel(){
 		thisObj.m_configPanel.f_init(thisObj);
     }
 	
-    this.f_reset = function(){
-        while (thisObj.m_container.childNodes[0]) {
-            thisObj.m_container.removeChild(thisObj.m_container.childNodes[0]);
-        }
-    }
-    		
-	this.f_show = function(vmId, urlPath) {
-		//alert('ft_mainPanel: vmId: ' + vmId + ' urlPath: ' + urlPath);
-		thisObj.f_reset();
-		thisObj.m_2navSelectedItem = vmId;
-		if (vmId == VYA.FT_CONST.OA_ID) {
-			thisObj.f_showOApanel();
-		} else {
-			thisObj.f_showVm(vmId, urlPath);
-		}
+	this.f_show = function() {
+		thisObj.m_oa_container.style.display = 'block';
+        thisObj.m_2navMenu.f_show();
+	}
+	
+	this.f_getMainPanel = function() {
+		return thisObj.m_oa_container;
 	}
 
     this.f_selectPage = function(id, subId) {
@@ -59,32 +45,10 @@ function FT_mainPanel(){
         thisObj.m_3navMenu.f_selectItem(subId);		
 	}
 
-    this.f_showOApanel = function(){				
-		thisObj.m_oa_container.style.display = 'block';
-		thisObj.m_container.appendChild(thisObj.m_oa_container);	
-        thisObj.m_2navMenu.f_show();
-		if (g_roleManagerObj.f_isUser()) {
-			//alert('is regular user');
-			thisObj.m_2navMenu.f_selectItem(VYA.FT_CONST.DOM_2_NAV_MYPROFILE_ID);		
-		} else {
-			//alert('other user');
-			thisObj.m_2navMenu.f_selectItem(VYA.FT_CONST.DOM_2_NAV_APP_ID);
-		}
-    }
-    
-    this.f_showVm = function(vmId, urlPath){
-        var url = urlPath;
-        var ifr = document.createElement('iframe');
-        ifr.setAttribute('id', 'ifrm');
-        ifr.setAttribute('border',0);
-        ifr.setAttribute('frameBorder','0');		
-        ifr.style.width = '100%';
-        //ifr.style.height = screen.height;
-        ifr.setAttribute('height', screen.height-40);
-        thisObj.m_container.appendChild(ifr);
-        ifr.setAttribute('src', url);
-    }
-    
+    this.f_selectMenuItem = function(itemId) {
+        thisObj.m_2navMenu.f_selectItem(itemId);	    	
+	}
+
     this.f_2navSelectItemCb = function(id) {
 		//try to be smart here, but introduce a bug:
 		//  -sub menu disappear after clicking around

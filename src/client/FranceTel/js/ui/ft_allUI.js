@@ -15,5 +15,6 @@ document.write('<script type="text/javascript" src="js/ui/ft_primaryNavigation.j
 document.write('<script type="text/javascript" src="js/ui/ft_2ndNavigation.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/ft_3rdNavigation.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/ft_mainFrame.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/ft_tabPanel.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/ft_mainPanel.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/ft_main.js"></script>');

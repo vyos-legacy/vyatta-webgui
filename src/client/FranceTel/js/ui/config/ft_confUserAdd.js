@@ -124,6 +124,7 @@ function FT_confUserAdd (name, callback, busLayer)
 	
 	this.f_stopLoadVMData = function()
 	{
+		thisObj.f_detachEventListener();
 	}
 	
 	this.f_validate = function()

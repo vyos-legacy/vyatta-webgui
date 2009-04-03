@@ -1,0 +1,79 @@
+/* 
+    Document   : ft_confPanels
+    Created on : Mar 3, 2009, 2:33:52 PM
+    Author     : Kevin.Choi
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+.ft_wait_cursor
+{
+    cursor: url(../images/wait.gif), wait;
+}
+
+.ft_default_cursor
+{
+    cursor: default;
+}
+
+/***********************************************************
+ * HTML_BASED COMPONENT START
+************************************************************/
+.conf_html_base_cls {
+	display: none;	
+}
+
+.v_form {
+	border: 0;
+}
+		
+.v_form tr td {
+	text-align: left;
+}	
+
+.v_label_bold {
+	font-size: 12px;
+	font-weight: bold;
+	text-align: left;
+}
+
+.v_label_bold_right {
+	font-size: 12px;
+	font-weight: bold;		
+	margin-left: 30px;
+}
+			
+.v_form_label {
+	font-size: 11px;
+}
+
+.v_form_input {
+	color: #444444;
+	display: block;
+	border: 1px solid #CCCCCC;
+	margin-left: 30px;
+}
+
+.v_form_input_no_left_margin {
+	color: #444444;
+	display: block;
+	border: 1px solid #CCCCCC;
+	margin-left: 1px;
+}
+
+.v_button_container {
+	clear: both;
+}
+
+.v_button {
+	margin-right: 20px;
+}
+
+/***********************************************************
+ * HTML_BASED COMPONENT END
+************************************************************/

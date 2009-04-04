@@ -31,10 +31,12 @@
 .v_form {
 	border: 0;
 }
-		
+
+/*		
 .v_form tr td {
 	text-align: left;
 }	
+*/
 
 .v_label_bold {
 	font-size: 12px;

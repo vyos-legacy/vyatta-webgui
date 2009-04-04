@@ -106,7 +106,7 @@ function UTM_configPanel()
 
         var cmp = thisObj.f_getComponent(id, obj);
         if (cmp == null) {
-            cmp = thisObj.f_createEmptyComponent();
+            cmp = (new UTM_confEmptyComponent()).f_getConfigurationPage();
         }
         thisObj.f_render(cmp);
     }
@@ -144,6 +144,11 @@ function UTM_configPanel()
                 thisObj.m_selectObj = new UTM_confVPNOverview('VPNOverview', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID:
+                var mpCb = function(){
+                }
+                thisObj.m_selectObj = new UTM_confVpnS2SE('Email Server', mpCb, g_busObj);
+                thisObj.m_selectObj.f_init();
+                return thisObj.m_selectObj.f_getConfigurationPage();			
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID:
                 return (new UTM_confEmptyComponent()).f_getConfigurationPage();

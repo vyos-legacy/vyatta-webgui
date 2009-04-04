@@ -260,6 +260,7 @@ img
     margin-top: 1em;
     width: 782px;
     float: right;
+	/* border-left: 1px solid #DEDEDE; */
 } 
 
 #config_panel_title {

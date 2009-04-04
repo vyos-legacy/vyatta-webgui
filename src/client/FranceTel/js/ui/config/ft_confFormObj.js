@@ -90,95 +90,183 @@ function FT_confFormObj(name, callback, busLayer) {
         return div;
     }
     
+    this.f_createButtons = function()
+    {
+        var html = '';
+        if (this.m_config.buttons != undefined) {
+            html = html + '<div class="v_button_container"><br/><br/>';
+            for (var i = 0; i < this.m_config.buttons.length; i++) {
+                html = html + '<img id="' + this.m_config.buttons[i].id + '" class="v_button"';
+                var imgSrc = 'images/bt_apply.gif';
+                switch (this.m_config.buttons[i].text.trim().toLowerCase()) {
+                    case 'apply':
+                        imgSrc = 'images/bt_apply.gif';
+                        break;
+                    case 'update':
+                        imgSrc = 'images/bt_update.gif';
+                        break;
+                    case 'cancel':
+                        imgSrc = 'images/bt_cancel.gif';
+                        break;
+                    case 'ok':
+                        imgSrc = 'images/bt_ok.gif';
+                        break;
+                    case 'backup':
+                        imgSrc = 'images/bt_backup.gif';
+                        break;
+                    case 'restore':
+                        imgSrc = 'images/bt_restore.gif';
+                    default:
+                        break;
+                }
+                html = html + ' src="' + imgSrc + '">';
+            }
+            html = html + '</div>';
+        }
+        return html;
+    }
+    
+    this.f_checkCondition = function(exp)
+    {
+        if ((exp != undefined) && (exp == 'true')) {
+            return true;
+        }
+        return false;
+    }
+    
+    this.f_checkValue = function(exp, value)
+    {
+        if ((exp != undefined) && (exp == value)) {
+            return true;
+        }
+        return false;
+    }
+    
+    this.f_getConfigItemCls = function(configItem)
+    {
+        var iclass = 'v_form_input';
+        if (this.f_checkCondition(configItem.no_left_margin)) {
+            iclass = 'v_form_input_no_left_margin';
+        }
+        return iclass;
+    }
+    
+    this.f_configLabel = function(configItem)
+    {
+        var html = '';
+        html = html + '<label id=' + '"' + configItem.id;
+        if (this.f_checkValue(configItem.font_weight, 'bold')) {
+            if (this.f_checkCondition(configItem.v_new_row)) {
+                html = html + '" class="v_label_bold"';
+            } else {
+                html = html + '" class="v_label_bold_right"';
+            }
+        } else {
+            if (this.f_checkCondition(configItem.v_new_row)) {
+                html = html + '" class="v_label"';
+            } else {
+                html = html + '" class="v_label_right"';
+            }
+        }
+        return html;
+    }
+    
+    this.f_configPassword = function(configItem, input_class)
+    {
+        var html = '';
+        html = html + '<input type="password" id="' + configItem.id + '" class="' + input_class + '"';
+        if (this.f_checkCondition(configItem.readonly)) {
+            html = html + ' readonly style="background-color: #EFEFEF;"';
+        }
+        return html;
+    }
+    
+    this.f_configTextfield = function(configItem, input_class)
+    {
+        var html = '';
+        html = html + '<input type="text" id="' + configItem.id + '" class="' + input_class + '"';
+        if (this.f_checkCondition(configItem.readonly)) {
+            html = html + ' readonly style="background-color: #EFEFEF;"';
+        }
+        return html;
+    }
+    
+    this.f_configColspan = function(configItem)
+    {
+        var html = '';
+        if ((configItem.colspan != undefined)) {
+            html = html + '<td colspan="' + configItem.colspan + '"';
+        } else {
+            html = html + '<td';
+        }
+        return html;
+    }
+    
+    this.f_configPadding = function(configItem)
+    {
+        var html = '';
+        if ((configItem.padding != undefined)) {
+            html = html + ' style="padding-left: ' + configItem.padding + ';">';
+        } else {
+            html = html + '>';
+        }
+        return html;
+    }
+    
+    this.f_configVType = function(configItem, input_class)
+    {
+        var html = '';
+        var enclosing = '';
+        switch (configItem.v_type) {
+            case 'label':
+                enclosing = '</label>';
+                html += this.f_configLabel(configItem);
+                break;
+            case 'password':
+                html += this.f_configPassword(configItem, input_class);
+                break;
+            case 'text':
+                html += this.f_configTextfield(configItem, input_class)
+                break;
+            case 'empty':
+                html += '<br';
+                break;
+            case 'html':
+                break;
+        }
+        if (configItem.v_type != 'html') {
+            if (configItem.size != undefined) {
+                html = html + ' size="' + configItem.size + '"'
+            }            
+            html += '>';
+        }
+        if (configItem.text != undefined) {
+            html += configItem.text;
+            if (this.f_checkCondition(configItem.require)) {
+                html = html + '</label><label style="color: #FF5500; font-weight: bold; font-size:14px;padding-left: 20px; text-align:right;">*';
+            }
+        }        
+        html += enclosing;
+		
+        return html;
+    }
+    
     this.f_doLayout = function()
     {
         if (this.m_config == undefined) {
             return;
         }
-        var html = '<form id="' + this.m_config.id + '_form" class="v_form" border="0"><br/><br/>' +
-        '<table border="0" align="center">';
+        var html = '<form id="' + this.m_config.id + '_form" class="v_form" border="0"><br/><br/>';
+        html += '<table border="0" align="center">';
+        
         for (var i = 0; i < this.m_config.items.length; i++) {
-			var input_class = 'v_form_input';
-			
-			if ((this.m_config.items[i].no_left_margin != undefined) &&
-            (this.m_config.items[i].no_left_margin == 'true')) {
-                input_class = 'v_form_input_no_left_margin';
+            var input_class = this.f_getConfigItemCls(this.m_config.items[i]);
+            if (this.f_checkCondition(this.m_config.items[i].v_new_row)) {
+                html += '<tr>';
             }
-			
-            if ((this.m_config.items[i].v_new_row != undefined) &&
-            (this.m_config.items[i].v_new_row == 'true')) {
-                html = html + '<tr>';
-            }
-			
-			if ((this.m_config.items[i].colspan != undefined)) {
-				html = html + '<td colspan="' + this.m_config.items[i].colspan + '"';
-			} else {
-                html = html + '<td';
-			}
-						
-			if ((this.m_config.items[i].padding != undefined)) {
-				html = html + ' style="padding-left: ' + this.m_config.items[i].padding + ';">';
-			} else {
-                html = html + '>';
-			}
-            
-            var enclosing = '';
-            
-            switch (this.m_config.items[i].v_type) {
-                case 'label':
-                    enclosing = '</label>';
-                    html = html + '<label id=' + '"' + this.m_config.items[i].id;
-                    if ((this.m_config.items[i].font_weight != undefined) && (this.m_config.items[i].font_weight == 'bold')) {
-                        if ((this.m_config.items[i].v_new_row != undefined) &&
-                        (this.m_config.items[i].v_new_row == 'true')) {
-                            html = html + '" class="v_label_bold"';
-                        } else {
-                            html = html + '" class="v_label_bold_right"';
-                        }
-                    } else {
-                        if ((this.m_config.items[i].v_new_row != undefined) &&
-                        (this.m_config.items[i].v_new_row == 'true')) {
-                            html = html + '" class="v_label"';
-                        } else {
-                            html = html + '" class="v_label_right"';
-                        }
-                    }
-                    break;
-                case 'password':
-                    html = html + '<input type="password" id="' + this.m_config.items[i].id + '" class="' + input_class + '"';
-					if ((this.m_config.items[i].readonly != undefined) && (this.m_config.items[i].readonly=='true')) {
-						html = html + ' readonly style="background-color: #EFEFEF;"';
-					}
-                    break;
-                case 'text':
-                    html = html + '<input type="text" id="' + this.m_config.items[i].id + '" class="' + input_class + '"';
-					if ((this.m_config.items[i].readonly != undefined) && (this.m_config.items[i].readonly=='true')) {
-						html = html + ' readonly style="background-color: #EFEFEF;"';
-					}					
-                    break;
-                case 'empty':
-                    html = html + '<br';
-                    break;
-                case 'html':
-                    break;
-            }
-            
-            if (this.m_config.items[i].v_type != 'html') {
-                if (this.m_config.items[i].size != undefined) {
-                    html = html + ' size="' + this.m_config.items[i].size + '"'
-                }
-                
-                html = html + '>';
-            }
-            if (this.m_config.items[i].text != undefined) {
-                html = html + this.m_config.items[i].text;
-				if ((this.m_config.items[i].require != undefined) && 
-				    (this.m_config.items[i].require == 'true')) {
-				    html = html + '</label><label style="color: #FF5500; font-weight: bold; font-size:14px;padding-left: 20px; text-align:right;">*';
-				}
-            }
-            
-            html = html + enclosing;
+            html += this.f_configColspan(this.m_config.items[i]);
+            html += this.f_configPadding(this.m_config.items[i]);
+            html += this.f_configVType(this.m_config.items[i], input_class);
             
             if (this.m_config.items[i].v_padding != undefined) {
                 html = html + '<br><br>';
@@ -186,51 +274,14 @@ function FT_confFormObj(name, callback, busLayer) {
             
             html = html + '</td>';
             
-            if ((this.m_config.items[i].v_end_row != undefined) &&
-            (this.m_config.items[i].v_end_row == 'true')) {
+            if (this.f_checkCondition(this.m_config.items[i].v_end_row)) {
                 html = html + '</tr>';
-            }
+            }            
         }
-        html = html + '</table>';
-        if (this.m_config.buttons != undefined) {
-            html = html + '<div class="v_button_container"><br/><br/>';
-            for (var i = 0; i < this.m_config.buttons.length; i++) {
-				html = html + '<img id="' + this.m_config.buttons[i].id + '" class="v_button"';
-				var imgSrc = 'images/bt_apply.gif';
-				switch (this.m_config.buttons[i].text.trim().toLowerCase()) {
-					case 'apply':
-					    imgSrc = 'images/bt_apply.gif';
-						break;
-					case 'update':
-					    imgSrc = 'images/bt_update.gif';
-						break;
-					case 'cancel':
-					    imgSrc = 'images/bt_cancel.gif';
-						break;
-					case 'ok':
-					    imgSrc = 'images/bt_ok.gif';
-						break;
-					case 'backup':
-					    imgSrc = 'images/bt_backup.gif';
-						break;
-					case 'restore':
-					    imgSrc = 'images/bt_restore.gif';
-					default: 
-					    break;
-				}
-				html = html + ' src="' + imgSrc + '">';
-				/*
-                html = html + '<button id="' + this.m_config.buttons[i].id + '" type="button" class="v_button"';
-                if (this.m_config.buttons[i].size != undefined) {
-                    html = html + ' size="' + this.m_config_buttons[i].size + '">';
-                } else {
-                    html = html + '">';
-                }
-                html = html + this.m_config.buttons[i].text + '</button>';
-                */
-            }
-            html = html + '</div>';
-        }
+        
+        html += '</table>';
+        html += this.f_createButtons();
+        html += '</form>';
         html = html + '<br/><br/>';
         
         return html;

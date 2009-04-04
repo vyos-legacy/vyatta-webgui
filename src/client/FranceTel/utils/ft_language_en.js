@@ -214,8 +214,8 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Email Server configuration
-	m_emailStmpAddr : "SMTP server address",
-	m_emailLocalMachNam : "Local machine name",
+	m_emailSmtpAddr : "SMTP server address",
+	m_emailLocalMachName : "Local machine name",
 	m_emailLocalEmail : "Local email address",
 	m_emailAuthName : "Authorization name",
 	m_emailAuthPasswd : "Authorization password",

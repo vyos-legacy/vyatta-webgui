@@ -54,18 +54,14 @@ public:
 		GETCONFIG,
 		CLOSESESSION,
 		NOTIFICATION,
-		TOKEN,
-		VMSTATUS,
-		VMUSER};
+		TOKEN};
 
   enum ParseNode {EMPTY = 0,
 		  NEWSESSION_USER,
 		  NEWSESSION_PSWD,
 		  GETCONFIG_ID,
 		  GETCONFIG_NODE,
-		  CLICMD_ID,
-		  VMSTATUS_ID,
-		  VMUSER_ID};
+		  CLICMD_ID};
 
   enum Attributes {NOATTR = 0,
 		   OP};

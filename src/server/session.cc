@@ -149,11 +149,6 @@ Session::process_message()
       close_session();
       break;
 
-    case WebGUI::VMSTATUS:
-      if (_debug) {
-	cout << "Session::process_message(): VMSTATUS" << endl;
-      }
-      
       if (!update_session()) {
 	return false;
       }
@@ -170,11 +165,6 @@ Session::process_message()
       }
       break;
 
-    case WebGUI::VMUSER:
-      if (_debug) {
-	cout << "Session::process_message(): VMSTATUS" << endl;
-      }
-      
       if (!update_session()) {
 	return false;
       }

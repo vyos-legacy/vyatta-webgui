@@ -29,6 +29,7 @@ use strict;
 use POSIX;
 use File::Copy;
 use Getopt::Long;
+use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
 
 my ($server);
@@ -89,7 +90,7 @@ GetOptions(
     "server:s"              => \$server,
     ) or usage();
 
-elsif (defined $server ) {
+if (defined $server ) {
     set_ntp();
 }
 exit 0;

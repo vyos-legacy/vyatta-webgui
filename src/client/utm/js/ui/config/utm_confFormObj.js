@@ -8,6 +8,7 @@ function UTM_confFormObj(name, callback, busLayer)
 {
     var thisObjName = 'FT_confFormObj';
     this.m_config = undefined;
+	this.m_div = undefined;
     var thisObj = this;
     
     
@@ -26,7 +27,7 @@ function UTM_confFormObj(name, callback, busLayer)
     this.f_distructor = function()
     {
         this.f_detachEventListener();
-        FT_confFormObj.superclass.f_distructor();
+        UTM_confFormObj.superclass.f_distructor();
     }
     
     /*
@@ -66,37 +67,75 @@ function UTM_confFormObj(name, callback, busLayer)
      *         ]
      *     }
      */	
-    this.f_getConfigurationPage = function()
+    this.f_getForm = function()
     {
         var div = document.createElement('div');
         div.setAttribute('id', this.m_config.id);
-        div.setAttribute('align', 'left');
+        //div.setAttribute('align', 'left');
         div.setAttribute('class', 'conf_html_base_cls');
         /////////////////////////////////////////
         // set inner styling of the div tag
         //div.style.position = 'absolute';
-        div.style.pixelLeft = 0;
-		div.style.paddingLeft = 30;
+        //div.style.pixelLeft = 0;
+		//div.style.paddingLeft = 30;
         div.style.backgroundColor = 'white';
-        
+        div.style.display = 'block';
+
         //div.innerHTML = FT_confMyProfile.m_html.innerHTML;
         div.innerHTML = this.f_doLayout();
         //alert('form generated html: ' + div.innerHTML);
-        div.style.display = 'block';
-        
-        document.getElementById('ft_container').appendChild(div);
-        
-        this.f_attachEventListener();
-        this.f_loadVMData(div);
-        
+
         return div;
     }
     
+	this.f_getPage = function(children)
+	{
+        var div = document.createElement('div');
+        div.setAttribute('id', 'utm_confpanel_');
+        div.setAttribute('align', 'left');
+    
+        /////////////////////////////////////////
+        // set inner styling of the div tag
+        //div.style.position = 'absolute';
+        div.style.pixelLeft = 0;
+		div.style.paddingLeft = 30;		
+        div.style.backgroundColor = 'white';
+        div.style.display = 'block';
+		
+        document.getElementById('ft_container').appendChild(div);
+
+        for(var i=0; i<children.length; i++)
+            div.appendChild(children[i]);
+        this.m_div = div;
+        this.f_attachEventListener();
+        this.f_loadVMData(div);
+				
+        return this.m_div;		
+	}
+	
+    this.f_createGeneralDiv = function(text)
+    {
+        var div = document.createElement('div');
+        div.style.position = 'relative';
+        div.style.display = 'block';
+        div.style.backgroundColor = 'white';
+        div.style.overflow = 'visible'
+
+        var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
+        innerHtml += '<tbody><tr><td>' +
+                      '<div><p>' + text + '</p>' +
+                      '</td></tr></tbody></table>';
+
+        div.innerHTML = innerHtml;
+
+        return div;
+    }	
+	
     this.f_addButtonLeft = function(configButton)
     {
         var html = '<div style="float:left">';
 		if (this.f_checkValue(configButton.align, 'left')) {
-			html += this.f_addButton(configButton);
+			html += this.f_addButton(configButton, 'left');
 		}
 		html += '</div>';
 		return html;
@@ -106,16 +145,16 @@ function UTM_confFormObj(name, callback, busLayer)
     {
         var html = '<div style="float:right">';
 		if (this.f_checkValue(configButton.align, 'right')) {
-			html += this.f_addButton(configButton);
+			html += this.f_addButton(configButton, 'right');
 		}
 		html += '</div>';
 		return html;    
     }
     
-    this.f_addButton = function(configButton)
+    this.f_addButton = function(configButton, alignment)
     {
 		var html ='';
-        html = html + '<img id="' + configButton.id + '" class="v_button"';
+        html = html + '<img id="' + configButton.id + '" class="v_button_' + alignment +'"';
         var imgSrc = 'images/bt_apply.gif';
         switch (configButton.text.trim().toLowerCase()) {
             case 'apply':
@@ -161,7 +200,7 @@ function UTM_confFormObj(name, callback, busLayer)
     
     this.f_checkCondition = function(exp)
     {
-        if ((exp != undefined) && (exp == 'true')) {
+        if ((exp != undefined) && (exp != null) && (exp == 'true')) {
             return true;
         }
         return false;
@@ -178,6 +217,9 @@ function UTM_confFormObj(name, callback, busLayer)
     this.f_getConfigItemCls = function(configItem)
     {
         var iclass = 'v_form_input';
+		if ((!configItem.no_left_margin) || (configItem.no_left_margin == null)) {
+			return iclass;
+		}
         if (this.f_checkCondition(configItem.no_left_margin)) {
             iclass = 'v_form_input_no_left_margin';
         }
@@ -255,6 +297,13 @@ function UTM_confFormObj(name, callback, busLayer)
         return html;
     }
     
+    this.f_configString = function(configItem)
+    {
+        var html = '';
+        html += configItem.text;
+        return html;
+    }
+		
     this.f_configVType = function(configItem, input_class)
     {
         var html = '';
@@ -271,7 +320,7 @@ function UTM_confFormObj(name, callback, busLayer)
                 html += this.f_configTextfield(configItem, input_class)
                 break;
             case 'empty':
-                html += '<br';
+                html += '<div id="' + configItem.id + '"><br/></div';
                 break;
             case 'html':
                 break;
@@ -311,6 +360,12 @@ function UTM_confFormObj(name, callback, busLayer)
         html += '<table border="0" style="width:' + (this.m_config.width-10) + 'px; padding: 10px 5px 10px 5px;">';
         
         for (var i = 0; i < this.m_config.items.length; i++) {
+			if (this.m_config.items[i].v_type == 'string') {
+				//alert('before: ' + html);
+				html += this.f_configString(this.m_config.items[i]);
+				//alert('after: ' + html);
+				continue;
+			}
             var input_class = this.f_getConfigItemCls(this.m_config.items[i]);
             if (this.f_checkCondition(this.m_config.items[i].v_new_row)) {
                 html += '<tr>';
@@ -388,7 +443,23 @@ function UTM_confFormObj(name, callback, busLayer)
     this.f_stopLoadVMData = function()
     {
     }
-    
+
+	this.f_hideTableRow = function(id, hide)
+	{
+		var el = document.getElementById(id);
+		var p = el.parentNode;				
+		while (p) {
+			if (p.nodeName.toUpperCase() == 'TR') {
+				if (hide==true) {
+					p.style.display = 'none';
+				} else {
+					p.style.display = '';
+				}
+				break;
+			}
+			p = p.parentNode;
+		}
+	}    
     //////////////////////////////////////////////////////////////////////////////////
     //// form validation
     //////////////////////////////////////////////////////////////////////////////////
@@ -444,8 +515,7 @@ function UTM_confFormObj(name, callback, busLayer)
             return false;
         }
         return true;
-    }
-    
+    }	
 }
 
 FT_extend(UTM_confFormObj, UTM_confBaseObj);

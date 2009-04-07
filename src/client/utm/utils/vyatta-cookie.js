@@ -10,7 +10,7 @@ var g_cookie =
     m_userNameExpire: (20*60*1000),
     m_helpExpire: (5 * 60 * 60 * 1000),
 	m_langExpire: (5 * 60 * 60 * 1000),
-    m_namePrefix: 'dom0_',
+    m_namePrefix: 'utm_',
 
     /**
      * pName - the name for the cookie to be set

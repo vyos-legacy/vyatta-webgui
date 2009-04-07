@@ -75,3 +75,5 @@ function f_checkElem(elem) {
 	return elem && elem.constructor == String? document.createTextNode(elem) : elem;
 }
 
+
+

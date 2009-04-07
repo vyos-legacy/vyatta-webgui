@@ -9,7 +9,38 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     var thisObjName = 'UTM_confVpnS2SE';
     var thisObj = this;
     this.m_form = undefined;
-    
+	
+	this.m_ezItems = [
+	    'conf_vpn_s2se_preshared_key_label',
+		'conf_vpn_s2se_confirm_preshared_key_label',
+		'conf_vpn_s2se_local_network_label',
+		'conf_vpn_s2se_remote_network_label'
+	];
+						  
+	this.m_expItems = [
+	    'conf_vpn_s2sexp_ike_phase1_label',
+	    'conf_vpn_s2sexp_ike_p1_proto_label',
+		'conf_vpn_s2sexp_ike_p1_ex_mode_label',
+	    'conf_vpn_s2sexp_ike_p1_encrypt_label',
+		'conf_vpn_s2sexp_ike_p1_preshare_label',
+		'conf_vpn_s2sexp_ike_p1_confirm_preshare_label',
+		'conf_vpn_s2sexp_ike_p1_auth_label',
+		'conf_vpn_s2sexp_ike_p1_diffle_label',
+		'conf_vpn_s2sexp_ike_p1_lifetime_label',
+		'conf_vpn_s2se_basic_spacer3',
+		'conf_vpn_s2se_divider2',
+		'conf_vpn_s2se_basic_spacer4',
+		'conf_vpn_s2se_divider3',		
+		'conf_vpn_s2se_basic_spacer5',		
+		'conf_vpn_s2se_ike_p2_label',
+		'conf_vpn_s2se_ike_p2_local_network_label',
+		'conf_vpn_s2se_ike_p2_remote_network_label',
+		'conf_vpn_s2sexp_ike_p2_dfs_label',
+		'conf_vpn_s2sexp_ike_p2_lifetime_label',
+		'conf_vpn_s2sexp_ike_p2_encrypt_label',
+		'conf_vpn_s2sexp_ike_p2_auth_label'
+	]
+		    
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
@@ -21,136 +52,11 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     }
     
     this.constructor(name, callback, busLayer);
-    
+    	
     this.f_init = function()
     {
-        this.f_setConfig({
-            id: 'conf_vpn_s2se',
-			width: '500',
-            items: [{
-                v_type: 'label',
-                id: 'conf_vpn_s2se_header_label',
-                text: 'VPN connection setttings',
-                v_new_row: 'true',
-				v_end_row: 'true',
-				font_weight: 'bold',
-				align: 'left',
-				colspan : '2'
-            }, {
-                v_type: 'label',
-                id: 'conf_vpn_s2se_basic_label',
-                text: 'Basic setttings',
-                v_new_row: 'true',
-				v_end_row: 'true',
-				align: 'left',
-				colspan : '2'
-            }, {
-                v_type: 'label',
-                id: 'conf_vpn_s2se_tunnel_name_label',
-                text: 'Tunnel name',
-				v_new_row: 'true',
-				align: 'left',
-				
-            }, {
-                v_type: 'text',
-                id: 'conf_vpn_s2se_tunnel_name',
-                size: '32',
-                align: 'right',				
-                v_end_row: 'true'
-            }, {
-                v_type: 'label',
-                id: 'conf_vpn_s2se_peer_ip_label',
-                text: 'Peer IP Address/ Domain name',
-				align: 'left',				
-                v_new_row: 'true'
-            }, {
-                v_type: 'text',
-                id: 'conf_vpn_s2se_peer_ip',
-                size: '32',
-                align: 'right',					
-                v_end_row: 'true'
-            }, {
-                v_type: 'label',
-                id: 'conf_vpn_s2se_remote_device_label',
-                text: 'Remote site VPN device',
-				align: 'left',	
-                v_new_row: 'true'
-            }, {
-                v_type: 'text',
-                id: 'conf_vpn_s2se_remote_device',
-                size: '32',
-				align: 'right',	
-                v_end_row: 'true'
-            }, {
-                v_type: 'label',
-                id: 'conf_vpn_s2se_tunnel_setting_label',
-                text: 'Tunnel setttings',
-                v_new_row: 'true',
-				v_end_row: 'true',
-				align: 'left',
-				colspan : '2'
-            }, {
-                v_type: 'label',
-                id: 'conf_vpn_s2se_tunnel_config_mode_label',
-                text: 'Tunnel Configuration Mode',
-				align: 'left',	
-                v_new_row: 'true'
-            }, {
-                v_type: 'text',
-                id: 'conf_vpn_s2se_tunnel_config_mode',
-                size: '32',
-				align: 'right',	
-                v_end_row: 'true'
-            }, {
-                v_type: 'label',
-                id: 'conf_vpn_s2se_preshared_key_label',
-                text: 'Preshared Key',
-				align: 'left',	
-                v_new_row: 'true'
-            }, {
-                v_type: 'password',
-                id: 'conf_vpn_s2se_preshared_key',
-                size: '25',
-				align: 'right',	
-                v_end_row: 'true'
-            }, {
-                v_type: 'label',
-                id: 'conf_vpn_s2se_confirm_preshared_key_label',
-                text: 'Confirm Preshared Key',
-				align: 'left',	
-                v_new_row: 'true'
-            }, {
-                v_type: 'password',
-                id: 'conf_vpn_s2se_confirm_preshared_key',
-                size: '25',
-				align: 'right',	
-                v_end_row: 'true'
-            }, {
-                v_type: 'label',
-                id: 'conf_vpn_s2se_local_network_label',
-                text: 'Local Network',
-				align: 'left',	
-                v_new_row: 'true'
-            }, {
-                v_type: 'text',
-                id: 'conf_vpn_s2se_local_network',
-                size: '25',
-				align: 'right',	
-                v_end_row: 'true'
-            }, {
-                v_type: 'label',
-                id: 'conf_vpn_s2se_remote_network_label',
-                text: 'Remote Network',
-				align: 'left',	
-                v_new_row: 'true'
-            }, {
-                v_type: 'password',
-                id: 'conf_vpn_s2se_remote_network',
-                size: '25',
-				align: 'right',	
-                v_end_row: 'true'
-            }],
-            buttons: [{
+		var defObj = new UTM_confFormDefObj('conf_vpn_s2se', '500', new Array(), 
+		    [{
                 id: 'conf_vpn_s2se_update_button',
                 text: 'Update',
 				align: 'left',
@@ -165,15 +71,176 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 				align: 'right',
                 text: 'Apply',
                 onclick: this.f_handleClick
-            }]
-        })
+            }]		
+		);
+		defObj.f_addLabelBold('conf_vpn_s2se_header_label',g_lang.m_vpnS2S_VpnConSettings,'true');
+        defObj.f_addDivider('conf_vpn_s2se_divider','2');
+		defObj.f_addEmptySpace('conf_vpn_s2se_basic_spacer','2');
+		defObj.f_addLabelBold('conf_vpn_s2se_basic_label',g_lang.m_vpnS2S_BasicSettings,'true');
+		defObj.f_addInput('conf_vpn_s2se_tunnel_name', '32', g_lang.m_vpnS2S_TunnelName);
+		defObj.f_addInput('conf_vpn_s2se_peer_ip', '32', g_lang.m_vpnS2S_DomainName);		
+		defObj.f_addHtml(
+		   'conf_vpn_s2se_remote_device',
+		   '<select name="rm_device" class="v_form_input"><option value="Cisco" selected>Cisco</option><option value="vyatta">Vyatta</option></select>',
+		   g_lang.m_vpnS2Sez_RemoteVPNdevice
+		);
+		defObj.f_addEmptySpace('conf_vpn_s2se_tunnel_spacer','2');
+		defObj.f_addLabelBold('conf_vpn_s2se_tunnel_setting_label',g_lang.m_vpnS2Sez_TunnelSettings,'true');
+		defObj.f_addHtml(
+		   'conf_vpn_s2se_tunnel_config_mode',
+           '<input id="conf_vpn_s2se_tunnel_config_mode_ez" type="radio" name="conf_vpn_s2se_tunnel_mode_group" value="ez" checked>&nbsp;' + 
+				      g_lang.m_vpnS2S_EZ + '&nbsp;&nbsp;' +
+					  '<input id="conf_vpn_s2se_tunnel_config_mode_exp" type="radio" name="conf_vpn_s2se_tunnel_mode_group" value="exp">&nbsp;' +
+					  g_lang.m_vpnS2S_Expert,	
+		   g_lang.m_vpnS2Sez_TunnelConfigMode	   
+		);
+		defObj.f_addEmptySpace('conf_vpn_s2se_tunnel_spacer2','2');
+        ////----------------------Easy mode----------------------							
+		defObj.f_addPassword('conf_vpn_s2se_preshared_key','25',g_lang.m_vpnS2S_PresharedKey);
+		defObj.f_addPassword('conf_vpn_s2se_confirm_preshared_key','25',g_lang.m_vpnS2S_Confirm + ' ' + g_lang.m_vpnS2S_PresharedKey);
+		defObj.f_addHtml(
+		    'conf_vpn_s2se_local_network',
+            '<input type="text" id="conf_vpn_s2se_local_network_ip" size="16" class="v_form_input">&nbsp;/&nbsp;' +
+				      '<input type="text" id="conf_vpn_s2se_local_network_mask" size="2" class="v_form_input">',
+			g_lang.m_vpnS2S_LocalNetwork			
+		);
+		defObj.f_addHtml(
+		    'conf_vpn_s2se_remote_network',
+            '<input type="text" id="conf_vpn_s2se_remote_network_ip" size="16" class="v_form_input">&nbsp;/&nbsp;' +
+				      '<input type="text" id="conf_vpn_s2se_remote_network_mask" size="2" class="v_form_input">',
+			g_lang.m_vpnS2S_RemoteNetwork			
+		);
+		////----------------------Expert mode------------------ 
+        defObj.f_addDivider('conf_vpn_s2se_divider2','2');	
+		defObj.f_addEmptySpace('conf_vpn_s2se_basic_spacer3','2');
+		defObj.f_addLabelBold('conf_vpn_s2sexp_ike_phase1_label',g_lang.m_vpnS2Sexp_IKEnegPhase1,'true');
+		defObj.f_addHtml(
+		    'conf_vpn_s2sexp_ike_p1_proto',
+            '<select name="ike_p1_proto" class="v_form_input"><option value="ESP/Tunnel" selected>EXP/Tunnel</option></select>',
+			g_lang.m_vpnS2Sexp_IKE_p1_proto			
+		);		
+		defObj.f_addHtml(
+		    'conf_vpn_s2sexp_ike_p1_ex_mode',
+            '<select name="ike_p1_ex_mode" class="v_form_input"><option value="Aggressive" selected>Aggressive</option></select>',
+			g_lang.m_vpnS2Sexp_IKE_p1_ex_mode		
+		);			
+		defObj.f_addHtml(
+		    'conf_vpn_s2sexp_ike_p1_encrypt',
+            '<select name="ike_p1_encrypt" class="v_form_input"><option value="AES128" selected>AES128</option></select>',
+			g_lang.m_vpnS2S_Encrypt		
+		);	
+		defObj.f_addPassword('conf_vpn_s2sexp_ike_p1_preshare','25',g_lang.m_vpnS2S_PresharedKey);
+		defObj.f_addPassword('conf_vpn_s2sexp_ike_p1_confirm_preshare','25',g_lang.m_vpnS2S_Confirm + ' ' + g_lang.m_vpnS2S_PresharedKey);
+		defObj.f_addHtml(
+		    'conf_vpn_s2sexp_ike_p1_auth',
+            '<select name="ike_p1_auth" class="v_form_input"><option value="SHA1" selected>SHA1</option></select>',
+			g_lang.m_vpnS2S_Auth		
+		);			
+		defObj.f_addHtml(
+		    'conf_vpn_s2sexp_ike_p1_diffle',
+            '<select name="ike_p1_diffle" class="v_form_input"><option value="Group 5" selected>Group 5</option></select>',
+			g_lang.m_vpnS2S_Diffle		
+		);			
+		defObj.f_addPassword('conf_vpn_s2sexp_ike_p1_lifetime','25',g_lang.m_vpnS2S_LifeTime);
+		defObj.f_addEmptySpace('conf_vpn_s2se_basic_spacer4','2');
+        defObj.f_addDivider('conf_vpn_s2se_divider3','2');
+		defObj.f_addEmptySpace('conf_vpn_s2se_basic_spacer5','2');
+		defObj.f_addLabelBold('conf_vpn_s2se_ike_p2_label',g_lang.m_vpnS2Sexp_IKEphase2,'true');
+		defObj.f_addHtml(
+		    'conf_vpn_s2se_ike_p2_local_network',
+            '<input type="text" id="conf_vpn_s2se_ike_p2_local_network_ip" size="16" class="v_form_input">&nbsp;/&nbsp;' +
+				      '<input type="text" id="conf_vpn_s2se_ike_p2_local_network_mask" size="2" class="v_form_input">',
+			g_lang.m_vpnS2S_LocalNetwork	
+		);						
+		defObj.f_addHtml(
+		    'conf_vpn_s2se_ike_p2_remote_network',
+            '<input type="text" id="conf_vpn_s2se_ike_p2_remote_network_ip" size="16" class="v_form_input">&nbsp;/&nbsp;' +
+				      '<input type="text" id="conf_vpn_s2se_ike_p2_remote_network_mask" size="2" class="v_form_input">',
+			g_lang.m_vpnS2S_RemoteNetwork	
+		);						
+		defObj.f_addHtml(
+		    'conf_vpn_s2sexp_ike_p2_dfs',
+            '<select name="ike_p2_dfs" class="v_form_input"><option value="Group 5" selected>Group 5</option></select>',
+			g_lang.m_vpnS2S_DFS	
+		);							
+		defObj.f_addPassword('conf_vpn_s2sexp_ike_p2_lifetime','25',g_lang.m_vpnS2S_LifeTime);
+		defObj.f_addHtml(
+		    'conf_vpn_s2sexp_ike_p2_encrypt',
+            '<select name="ike_p2_encrypt" class="v_form_input"><option value="AES128" selected>AES128</option></select>',
+			g_lang.m_vpnS2S_Encrypt
+		);						
+		defObj.f_addHtml(
+		    'conf_vpn_s2sexp_ike_p2_auth',
+            '<select name="ike_p2_auth" class="v_form_input"><option value="SHA1" selected>SHA1</option></select>',
+			g_lang.m_vpnS2S_Auth
+		);						
+
+        this.f_setConfig(defObj);
     }
     
+    this.f_getConfigurationPage = function()
+	{
+		var children = new Array();
+		children.push(this.f_createHeader());
+		children.push(this.f_getForm());
+		
+	    return this.f_getPage(children);
+	}	
+	
+	this.f_createHeader = function()
+	{
+        var txt = 'Lorem ipsum onsectetuer adipiscing elit, sed diam ' +
+            'nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam ' +
+            'erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci ' +
+            'tation ullamcorper suscipit lobortis nisl ut aliquip ex ea ' +
+            'commodo consequat.<br><br>';
+
+        return this.f_createGeneralDiv(txt);
+    }		
+
     this.f_loadVMData = function(element)
     {
         thisObj.m_form = document.getElementById('conf_vpn_s2se' + "_form");
 		thisObj.f_setFocus();
+		this.f_showExpert(false);
+		this.f_attachListener();
     }
+	
+	this.f_showExpert = function(b)
+	{
+        if (b) {
+            for (var i=0; i < thisObj.m_expItems.length; i++) {
+				thisObj.f_hideTableRow(thisObj.m_expItems[i], false);
+			}
+            for (var i=0; i < thisObj.m_ezItems.length; i++) {
+				thisObj.f_hideTableRow(thisObj.m_ezItems[i], true);
+			}			
+		} else {
+            for (var i=0; i < thisObj.m_expItems.length; i++) {
+				thisObj.f_hideTableRow(thisObj.m_expItems[i], true);
+			}
+            for (var i=0; i < thisObj.m_ezItems.length; i++) {
+				thisObj.f_hideTableRow(thisObj.m_ezItems[i], false);
+			}		
+		}
+	}
+    
+    this.f_attachListener = function()
+    {
+        var el = document.getElementById('conf_vpn_s2se_tunnel_config_mode_ez');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);
+		el = document.getElementById('conf_vpn_s2se_tunnel_config_mode_exp');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);	
+    }
+    
+    this.f_detachListener = function()
+    {
+        var el = document.getElementById('conf_vpn_s2se_tunnel_config_mode_ez');
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);
+		el = document.getElementById('conf_vpn_s2se_tunnel_config_mode_exp');
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);	
+    }		
+	
 	
 	this.f_setFocus = function()
 	{
@@ -218,7 +285,11 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 			    thisObj.f_apply();
             } else if (id == 'conf_vpn_s2se_cancel_button') { //cancel clicked
                 thisObj.f_reset();
-            }
+            } else if (id == 'conf_vpn_s2se_tunnel_config_mode_ez') {
+				thisObj.f_showExpert(false);
+			} else if (id == 'conf_vpn_s2se_tunnel_config_mode_exp') {
+				thisObj.f_showExpert(true);
+			}
         }
     }
     

@@ -106,7 +106,8 @@ function UTM_configPanel()
 
         var cmp = thisObj.f_getComponent(id, obj);
         if (cmp == null) {
-            cmp = (new UTM_confEmptyComponent()).f_getConfigurationPage();
+            thisObj.m_selectObj = new UTM_confEmptyComponent();
+            cmp = thisObj.m_selectObj.f_getConfigurationPage();
         }
         thisObj.f_render(cmp);
     }
@@ -127,7 +128,8 @@ function UTM_configPanel()
 		
         switch (id) {
             case VYA.UTM_CONST.DOM_3_NAV_SUB_DASHBOARD_ID:
-            break;
+			    thisObj.m_selectObj = new UTM_confEmptyComponent();
+                return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_ZONE_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_FW_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_IDP_ID:
@@ -146,12 +148,13 @@ function UTM_configPanel()
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID:
                 var mpCb = function(){
                 }
-                thisObj.m_selectObj = new UTM_confVpnS2SE('Email Server', mpCb, g_busObj);
+                thisObj.m_selectObj = new UTM_confVpnS2SE('VPNS2S', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();			
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID:
-                return (new UTM_confEmptyComponent()).f_getConfigurationPage();
+			    thisObj.m_selectObj = new UTM_confEmptyComponent();
+                return thisObj.m_selectObj.f_getConfigurationPage();
         }        
     }
 
@@ -171,8 +174,9 @@ function UTM_confEmptyComponent()
 
     this.f_distructor = function(){ }	
 	this.f_loadVMData = function() { }
-	this.f_stopVMData = function() { }
+	this.f_stopLoadVMData = function() { }
 	this.f_onUnload = function() { }	
+	this.f_detachEventListener = function() {}
 	
 	this.f_getConfigurationPage =  function() 
 	{
@@ -192,4 +196,5 @@ function UTM_confEmptyComponent()
 		
         return div;		
 	}
+		
 }

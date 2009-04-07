@@ -73,6 +73,11 @@ VYA.UTM_CONST = {
     //-----Logs		
     DOM_3_NAV_SUB_LOG_ID : 'log_l2',
 		
+	//-----Dynamic menu item id.
+	//-----VPN		
+    DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID : 'vpn_remote_usr_grp_l2',
+    DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID : 'vpn_remote_usr_add_l2',			
+		
 	//-----Configuration Panel
 	DOM_3_CONFIG_PANEL_ID : 'ft_container',
 	DOM_3_CONFIG_PANEL_TITLE_ID : 'config_panel_title',

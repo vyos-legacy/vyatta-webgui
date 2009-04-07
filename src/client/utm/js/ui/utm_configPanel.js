@@ -146,11 +146,23 @@ function UTM_configPanel()
                 thisObj.m_selectObj = new UTM_confVPNOverview('VPNOverview', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID:
-                var mpCb = function(){
-                }
+                var mpCb = function(){ }
                 thisObj.m_selectObj = new UTM_confVpnS2SE('VPNS2S', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
-                return thisObj.m_selectObj.f_getConfigurationPage();			
+                return thisObj.m_selectObj.f_getConfigurationPage();	
+				
+			case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID:
+			    var mpCb = function(){ }
+                thisObj.m_selectObj = new UTM_confVpnRemoteUsrGrp('VPNRemoteUserGrp', mpCb, g_busObj);
+                thisObj.m_selectObj.f_init();
+                return thisObj.m_selectObj.f_getConfigurationPage();	
+				
+		    case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID:
+			    var mpCb = function(){ }
+                thisObj.m_selectObj = new UTM_confVpnRemoteUsrAdd('VPNRemoteUserAdd', mpCb, g_busObj);
+                thisObj.m_selectObj.f_init();
+                return thisObj.m_selectObj.f_getConfigurationPage();	
+						
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID:
 			    thisObj.m_selectObj = new UTM_confEmptyComponent();

@@ -8,6 +8,73 @@
 var g_lang =
 {
     ///////////////////////////////////////////////////////////////////
+    // General	
+	m_mainOA : 'Open Appliance',
+	m_mainLogin : 'Login',
+	m_mainLogout: 'log out',
+	m_mainUserName: 'User name',
+	m_mainPassword: 'Password',
+	m_mainWarning: 'If you have no username and password, contact your Customer Service Center.' +
+                   'Warning: to connect to the Open Appliance program your browser must accept pop-ups and cookies.',
+	m_mainWelcome: 'Welcome',
+	m_mainPleaseSignIn: 'please sign in to the Open Appliance admin service',
+	m_menuApp: 'Applications',
+	m_menuUsers: 'Users',
+	m_menuMonitor: 'Monitoring',
+	m_menuBackup: 'Backup',
+	m_menuConfig: 'Configuration',
+	m_menuMyProfile: 'My Profile',
+	m_menuDashboard: 'Dashboard',
+	m_menuUpdates: 'Updates',
+	m_menuUpdatePlan: 'Updates planning and history',
+	m_menuRestart: 'Restart',
+	m_menuRestartApp: 'Restart application or Open Appliance',
+	m_menuSubscribe: 'Subscribe',
+	m_menuSubcription: 'Subscription',
+	m_menuUserList: 'User List',
+	m_menuUserRight: 'User rights',
+	m_menuHardware : 'Hardware',
+	m_menuHardwareMonitor: 'Hardware monitor',
+	m_menuNetwork: 'Network',
+	m_menuNetworkMonitor: 'Network monitor',
+	m_menuConfigBackup: 'Configuration backup',
+	m_menuConfigRestore: 'Configuration restore',
+	m_menuEmailServer: 'Email server',
+	m_menuEmailServerConfig: 'Email server configuration',
+	m_menuTimeServer: 'Time server',
+	m_menuTimerServerConfig: 'Time server configuration',
+	m_menuUserDir: 'User directory',
+	m_menuLDAPConfig: 'LDAP server configuration',
+	m_menuBLBAssocication: 'BLB association',
+	m_menuPasswordPolicy: 'Password Policy',
+	m_menuAddUser: 'Add user',
+	m_menuUpdateUser: 'Update user',
+	m_menuUpdate: 'Update',
+	m_menuRestore: 'Restore',
+	m_menuRestoreDesc: 'Configuration restore description',
+	m_menuBLBCredCheck: 'BLB credentials check',
+	m_menuContact: 'contact',
+	m_menuSitemap: 'site map',
+	m_menuCopyRight: 'Copyright France Telecom',
+
+    ///////////////////////////////////////////////////////////////////
+    // Calendar
+	m_calToday : "aujourd'hui",
+	m_calClear : 'Clear',
+	m_calArrMonthNames : ['janv.', 'fevr.', 'mars', 'avril', 'mai', 'juin', 'juil', 'août', 'sept.', 'oct.', 'nov.', 'dec.'],
+    m_calArrWeekInits : ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+    m_calInvalidDateMsg : "La date d'entrée n'est pas valide.\n",
+    m_calOutOfRangeMsg : "La date d'entrée est hors de portée.",
+    m_calDoesNotExistMsg : "La date d'entrée n'existe pas.",
+    m_calInvalidAlert : ["Date incorrecte (", ") ignoré."],
+    m_calDateDisablingError : ["Erreur ", " la date n'est pas un objet."],
+    m_calRangeDisablingError : ["Erreur ", " devrait être composé de deux éléments."],
+    m_calDateDisplayFormat : 'dd-mm-yy',
+    m_calDateOutputFormat : 'DD/MM/YYYY',
+    //Set it to: 0 (Zero) for Sunday, 1 (One) for Monday etc..	
+    m_calWeekStart : 1,		
+	
+    ///////////////////////////////////////////////////////////////////
     // Dash board screen
 
     // dashboard header

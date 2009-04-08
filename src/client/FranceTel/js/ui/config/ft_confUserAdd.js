@@ -134,11 +134,11 @@ function FT_confUserAdd (name, callback, busLayer)
 		var valid = true;
 				
 		if (thisObj.form.conf_user_add_username.value.trim().length <=0 ) {
-			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">'+ g_lang.m_userUsername + ' ' + g_lang.m_formNoEmpty + '</li>';
+			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">'+ g_lang.m_userUsername + ' ' + g_lang.m_formNoEmpty + '</li>';
 			valid = false;
 		}
 		if (!thisObj.f_checkEmail(thisObj.form.conf_user_add_email.value.trim())) {
-			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">' + 
+			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">' + 
 			   g_lang.m_userEmail + ' ' +
 			   thisObj.form.conf_user_add_email.value + ' ' + g_lang.m_formInvalid+ '</li>';
 			valid = false;

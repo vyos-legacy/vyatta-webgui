@@ -106,7 +106,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 					'<tr>' +
 					    //'<td><input type="radio" name="conf_sched_update_when" id="conf_sched_update_later" value="later">&nbsp;Later</td>' +
 						'<td><input id= "conf_sched_update_cal_text" type="text" size="8" class="v_form_input_no_left_margin"></td>' +
-						'<td><img id= "conf_sched_update_cal" src="images/en/ico_calendar.gif"></td>' +
+						'<td><img id= "conf_sched_update_cal" src= g_lang.m_imageDir + "ico_calendar.gif"></td>' +
 						'<td><input id = "conf_sched_update_hour" type="text" size="2" class="v_form_input_no_left_margin"></td>' +
 						'<td><label>:</label></td>' +
 						'<td><input id="conf_sched_update_minute" type="text" size="2" class="v_form_input_no_left_margin"></td>' +
@@ -159,9 +159,9 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 		thisObj.f_enableTextField(b,'conf_sched_update_cal_text');
         el = document.getElementById('conf_sched_update_cal');
 		if (b) {
-			el.src = 'images/en/ico_calendar.gif';
+			el.src = g_lang.m_imageDir + 'ico_calendar.gif';
 		} else {
-			el.src = 'images/en/ico_calendar_disable.png';
+			el.src = g_lang.m_imageDir + 'ico_calendar_disable.png';
 		}		
         thisObj.f_enableTextField(b, 'conf_sched_update_hour');
         thisObj.f_enableTextField(b, 'conf_sched_update_minute');

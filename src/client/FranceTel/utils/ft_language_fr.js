@@ -164,7 +164,7 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Buttons & Images
-    m_imageDir : 'images/',
+    m_imageDir : 'images/fr/',
 	m_ok: 'ok',
 	m_error: 'Erreur',
 	m_info: 'Information',

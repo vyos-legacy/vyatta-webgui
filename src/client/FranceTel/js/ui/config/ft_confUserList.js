@@ -83,7 +83,7 @@ function FT_confUserList(name, callback, busLayer)
                                 g_lang.m_ulClick2Edit + " (" + fName + ")");
                         var email = ul[i].m_email != undefined ?
                                 thisObj.f_renderAnchorHref(
-                                '<img src="images/ico_mail.gif">',
+                                '<img src="' + g_lang.m_imageDir + 'ico_mail.gif">',
                                 "mailto:" + ul[i].m_email,
                                 g_lang.m_ulSendEmail + fName + ' at ' +
                                 ul[i].m_email) : "";

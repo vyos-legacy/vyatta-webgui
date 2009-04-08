@@ -67,7 +67,7 @@ function FT_confSubscribe(name, callback, busLayer)
 			'<span style="font-weight: bold">' + 
 			g_lang.m_subscribePlease + '</span>' +
 			'<div style="margin-top:30px; margin-left: 32px;">' +
-			'<ul style="list-style-type:square;list-style-image: url(images/puce_squar.gif)">' +			
+			'<ul style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif)">' +			
 				'<li>' +
 					'<a id="conf_subscribe_install" href="javascript:void(0)" onclick="window.open(\'http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html\')">' + g_lang.m_subscribeInstall + '</a>' +
 				'</li>' +

@@ -208,6 +208,17 @@ function FT_confBackup(name, callback, busLayer)
         thisObj.m_busLayer.f_getVMRestoreListFromServer(thisObj.f_overflow);		
 	}
 
+    this.f_filterVm = function(vm)
+	{
+	    if (vm.m_name == VYA.FT_CONST.BLB_ID) {
+			return true;
+		}	
+		if (vm.m_status != 'up') {
+			return true;
+		}
+		return false;
+	}
+
     this.f_loadVMData = function()
     {
         var cb = function(evt)
@@ -239,6 +250,10 @@ function FT_confBackup(name, callback, busLayer)
 						if (!g_roleManagerObj.f_isInstaller()) {
 							continue;
 						}
+					}
+					
+					if (thisObj.f_filterVm(v)) {
+						continue;
 					}
                     var data = thisObj.f_renderCheckbox('no','conf_backup_data_cb_' + v.m_name);
                     var config = thisObj.f_renderCheckbox('no','conf_backup_config_cb_' + v.m_name);

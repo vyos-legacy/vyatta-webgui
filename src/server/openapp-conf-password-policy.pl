@@ -32,17 +32,17 @@ use Getopt::Long;
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
 
-my ($server,$list);
+my ($set,$delete,$list);
 
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
 my $auth_user_role = $auth_user->getRole();
-if ($auth_user_role ne 'installer') {
+if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   # not authorized
   exit 1;
 }
 
-sub set_ntp {
+sub set_password_policy {
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
     if ($err != 0) {
@@ -50,15 +50,8 @@ sub set_ntp {
 	exit 1;
     }
 
-    # delete previous entry
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete system ntp-server");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system ntp-server $server");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app password-policy $set");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
@@ -74,13 +67,47 @@ sub set_ntp {
    
 }
 
-sub list_ntp {
-    #just need to pull the ip from the config
-    print "VERBATIM_OUTPUT\n";
 
-    my $out = `/opt/vyatta/sbin/vyatta-output-config.pl system ntp-server`;
-    my @values = split(' ', $out);
-    print "<ntp-server>$values[1]</ntp-server>";
+sub delete_password_policy {
+    # set up config session
+    my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
+    if ($err != 0) {
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # apply config command
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app password-policy $delete");
+    if ($err != 0) {
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # commit
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
+    if ($err != 0) {
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+   
+}
+
+sub list_password_policy {
+    my $admin = "false";
+    my $user = "false";
+    if (-e /opt/vyatta/config/active/system/open-app/password-policy/user/node.val) {
+	$user = "true";
+    }
+    if (-e /opt/vyatta/config/active/system/open-app/password-policy/admin/node.val) {
+	$admin = "true";
+    }
+
+    print "VERBATIM_OUTPUT\n";
+    print "<password-policy>";
+    print "<user>$user</user>";
+    print "<admin>$admin</admin>";
+    print "</password-policy>";
 }
 
 ##########################################################################
@@ -89,21 +116,29 @@ sub list_ntp {
 #
 ##########################################################################
 sub usage() {
-    print "       $0 --server=<ntpserver>\n";
+    print "       $0 --set=<role>\n";
+    print "       $0 --delete=<role>\n";
     print "       $0 --list\n";
     exit 0;
 }
 
 #pull commands and call command
 GetOptions(
-    "server=s"              => \$server,
-    "list:l"                => \$list,
+    "set:s"                 => \$set,
+    "delete:s"              => \$delete,
     ) or usage();
 
-if (defined $server ) {
-    set_ntp();
+
+if (defined $set ) {
+    set_password_policy();
+    exit 0;
+}
+elsif (defined $delete ) {
+    delete_password_policy();
+    exit 0;
 }
 else {
-    list_ntp();
+    list_password_policy();
+    exit 0;
 }
 exit 0;

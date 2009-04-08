@@ -1,0 +1,6 @@
+access:installer
+run: if sudo perl /opt/vyatta/sbin/vyatta-conf-ldap.pl --list; then
+       return 0
+     else
+       return 1
+     fi

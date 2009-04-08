@@ -1,5 +1,5 @@
 access:admin
-run: if sudo perl /opt/vyatta/sbin/openapp-conf-password-policy.pl --scope user; then
+run: if sudo perl /opt/vyatta/sbin/openapp-conf-password-policy.pl --set user; then
        return 0
      else
        return 1

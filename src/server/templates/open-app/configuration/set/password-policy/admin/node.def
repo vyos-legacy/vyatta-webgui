@@ -1,5 +1,5 @@
 access:installer
-run: if sudo perl /opt/vyatta/sbin/openapp-conf-password-policy.pl --scope admin; then
+run: if sudo perl /opt/vyatta/sbin/openapp-conf-password-policy.pl --set admin; then
        return 0
      else
        return 1

@@ -9,6 +9,10 @@
 function FT_confBaseObj(name, callback, busLayer)
 {
     var thisObj = this;
+    this.m_sortColPrev = -1;
+    this.m_sortCol = 0;
+    this.m_sortOrder = 'asc';   // asc or des
+
 
     /**
      * @param name - name of configuration screens.
@@ -60,7 +64,7 @@ function FT_confBaseObj(name, callback, busLayer)
         return this.m_div;
     }
 
-    this.f_createGridHeader = function(header)
+    this.f_createGridHeader = function(header, onclick)
     {
         var div = document.createElement('div');
         div.style.position = 'relative';
@@ -75,12 +79,16 @@ function FT_confBaseObj(name, callback, busLayer)
         {
             var h = header[i];
             width += h[1]
+
+            var colName = thisObj.f_createColNameHTML(h[0], i);
+            var cursor = h[4] != undefined && h[4] ? 'cursor:pointer; ': '';
             var rBorder = (i == header.length-1) || h[0].length < 2 ?
                               '' : 'border-right:1px solid #CCC; ';
 
             inner += '<td width="' + h[1] +'">' +
-                '<div style="padding-top:5px; padding-bottom:5px; ' + rBorder + '">' +
-                h[0] + '</div></td>';
+                '<div style="padding-top:5px; padding-bottom:5px; ' +
+                cursor + rBorder + '" onclick="' + onclick + '(' + i + ')">' +
+                colName + '</div></td>';
         }
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">' +
@@ -312,14 +320,31 @@ function FT_confBaseObj(name, callback, busLayer)
      * @param type - type of data to be displayed (text, image, checkbox,
      *                text input, combobox)
      * @param paddLeft - number of pixel to be padding left
+     * @param sortable - true allow sort column, else false (default)
      */
-    this.f_createColumn = function(colName, width, type, paddLeft)
+    this.f_createColumn = function(colName, width, type, paddLeft, sortable)
     {
-        var header = colName != null && colName.length > 2 ?
-            "<p valign='center' align='center'><b>" + colName + "<br></b></p>" :
-            "";
+        return [colName, width, type, paddLeft, sortable];
+    }
 
-        return [header, width, type, paddLeft];
+    this.f_createColNameHTML = function(colName, col)
+    {
+        var header = "";
+
+        if(colName != null && colName.length > 2)
+        {
+            if(thisObj.m_sortCol == col)
+            {
+                var sortIcon = thisObj.m_sortOrder == 'asc' ? '&Delta;' : '&nabla;';
+                header = "<p valign='center' align='center'><b>" +
+                      colName + "&nbsp;" + sortIcon + "<br></b></p>";
+            }
+            else
+                header = "<p valign='center' align='center'><b>" +
+                      colName + "<br></b></p>";
+        }
+
+        return header;
     }
 
     this.f_renderStatus = function(val)
@@ -486,6 +511,59 @@ function FT_confBaseObj(name, callback, busLayer)
             button.src = enabled ? newSrc + name + '.gif' : /*newSrc + name + '.gif';*/
                           newSrc + name + '_disabled.gif';
         }
+    }
+
+    this.f_sortArray = function(col, ar)
+    {
+        var si = col;
+        var sar = new Array();
+
+        //////////////////////////////////////////////////////////////////
+        // loop through the ar and place the sorting index value at begin
+        // of the string
+        for(var i=0; i<ar.length; i++)
+        {
+            var fu = ar[i];
+            var a = fu.split('|');
+            sar[i] = a[si];
+
+            for(var j=0; j<a.length; j++)
+            {
+                if(j == si) continue;
+
+                sar[i] += '|' + a[j];
+            }
+        }
+
+        // perform sorting
+        sar.sort();
+        if(si > 0)
+        {
+            ///////////////////////////////////////////
+            //
+            ar = sar;
+            for(var i=0; i<ar.length; i++)
+            {
+                var fu = ar[i];
+                var a = fu.split('|');
+                sar[i] = '';
+
+                for(var j=1; j<a.length; j++)
+                {
+                    sar[i] += (j != 1 ? '|':'') + a[j];
+
+                    if(j == si)
+                        sar[i] += '|' + a[0];
+                }
+            }
+        }
+
+        if(thisObj.m_sortOrder == 'desc')
+            sar.reverse();
+
+        thisObj.m_sortCol = col;
+        thisObj.m_sortColPrev = col;
+        return sar;
     }
 }
 

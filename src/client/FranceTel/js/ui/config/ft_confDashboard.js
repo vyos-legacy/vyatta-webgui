@@ -11,6 +11,8 @@ function FT_confDashboard(name, callback, busLayer)
     this.thisObjName = 'FT_confDashboard';
     this.m_btnUpdateId = 'ft_dbUpdateButtonId';
     this.m_btnCancelId = 'ft_dbCancelButtonId';
+    this.m_colHd = null;
+    this.m_vmRec=null;
 
     /**
      * @param name - name of configuration screens.
@@ -32,8 +34,8 @@ function FT_confDashboard(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn(g_lang.m_dbHdApplication, 180, 'text', '6');
-        cols[1] = this.f_createColumn(g_lang.m_dbHdStatus, 80, 'image', '35');
+        cols[0] = this.f_createColumn(g_lang.m_dbHdApplication, 200, 'text', '6', true);
+        cols[1] = this.f_createColumn(g_lang.m_dbHdStatus, 80, 'image', '35', true);
         cols[2] = this.f_createColumn(g_lang.m_dbHdCPU, 120, 'progress', '8');
         cols[3] = this.f_createColumn(g_lang.m_dbMemory, 120, 'progress', '8');
         cols[4] = this.f_createColumn(g_lang.m_dbDiskSpace, 120, 'progress', '8');
@@ -44,7 +46,6 @@ function FT_confDashboard(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
-        var hd = this.f_createColumns();
         thisObj.m_updateFields = [];
 
         var cb = function(evt)
@@ -58,50 +59,101 @@ function FT_confDashboard(name, callback, busLayer)
                     return;
                 }
 
-                var vm = evt.m_value;
-                if(vm == undefined) return;
+                thisObj.m_vmRec = evt.m_value;
+                if(thisObj.m_vmRec == undefined) return;
 
-                thisObj.f_removeDivChildren(thisObj.m_div);
-                thisObj.f_removeDivChildren(thisObj.m_body);
-                thisObj.m_div.appendChild(thisObj.m_header);
-                thisObj.m_div.appendChild(thisObj.m_body);
-                thisObj.m_div.appendChild(thisObj.m_buttons);
-
-                var vmIndex = 0;
-                for(var i=0; i<vm.length; i++)
-                {
-                    var v = vm[i];
-
-                    // skip business live box
-                    if(v.m_name == 'blb') continue;
-
-                    var img = thisObj.f_renderStatus(v.m_status);
-                    var cpu = thisObj.f_renderProgressBar(v.m_cpu,
-                            g_lang.m_dbHdCPU + ' ' + g_lang.m_dbUsed + ': ' + v.m_cpu + '%');
-                    var mem = thisObj.f_renderProgressBar(v.f_getMemPercentage(),
-                            g_lang.m_dbMemory + ' ' + g_lang.m_dbUsed + ': ' +
-                            g_lang.m_dbTotal + ' = ' + v.m_memTotal +
-                            ', ' + g_lang.m_dbFree + ' = ' + v.m_memFree);
-                    var disk = thisObj.f_renderProgressBar(v.f_getDiskPercentage(),
-                            g_lang.m_dbDiskSpace + ' ' + g_lang.m_dbUsed + ': ' +
-                            g_lang.m_dbTotal + ' = ' + v.m_diskTotal +
-                            ', ' + g_lang.m_dbFree + ' = ' + v.m_diskFree);
-                    var update = thisObj.f_handleUpdateNeedField(vmIndex, v, thisObj.m_updateFields);
-                    thisObj.m_updateFields[vmIndex++] = update[1];
-
-                    var vmData = [v.m_displayName, img, cpu, mem, disk, update[0]];
-
-                    var bodyDiv = thisObj.f_createGridRow(hd, vmData);
-                    thisObj.m_body.appendChild(bodyDiv);
-                }
-
-                thisObj.f_adjustDivPosition(thisObj.m_buttons);
-                thisObj.f_updateButtons();
+                thisObj.f_populateTable();
             }
         }
 
         g_utils.f_cursorWait();
         this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
+    }
+
+    this.f_populateTable = function()
+    {
+        var vm = thisObj.m_vmRec;
+        var sortCol = FT_confDashboard.superclass.m_sortCol;
+
+        thisObj.f_removeDivChildren(thisObj.m_div);
+        thisObj.f_removeDivChildren(thisObj.m_body);
+
+        // refresh header
+        thisObj.f_removeDivChildren(thisObj.m_header);
+        thisObj.m_header = thisObj.f_createGridHeader(thisObj.m_colHd,
+                            'f_dbGridHeaderOnclick');
+        thisObj.m_div.appendChild(thisObj.m_header);
+
+        thisObj.m_div.appendChild(thisObj.m_body);
+        thisObj.m_div.appendChild(thisObj.m_buttons);
+
+        var avm = thisObj.f_createSortingArray(sortCol, vm);
+        var vmIndex = 0;
+        for(var i=0; i<avm.length; i++)
+        {
+            var v = avm[i].split('|');
+
+            // skip business live box
+            if(v.m_name == 'blb') continue;
+
+            var img = thisObj.f_renderStatus(v[1]);
+            var cpu = thisObj.f_renderProgressBar(v[2],
+                    g_lang.m_dbHdCPU + ' ' + g_lang.m_dbUsed + ': ' + v[2] + '%');
+            var mem = thisObj.f_renderProgressBar(v[3],
+                    g_lang.m_dbMemory + ' ' + g_lang.m_dbUsed + ': ' +
+                    g_lang.m_dbTotal + ' = ' + v[4] +
+                    ', ' + g_lang.m_dbFree + ' = ' + v[5]);
+            var disk = thisObj.f_renderProgressBar(v[6],
+                    g_lang.m_dbDiskSpace + ' ' + g_lang.m_dbUsed + ': ' +
+                    g_lang.m_dbTotal + ' = ' + v[7] +
+                    ', ' + g_lang.m_dbFree + ' = ' + v[8]);
+            var vmObj = g_busObj.f_getVmRecByVmId(v[9]);
+            var update = thisObj.f_handleUpdateNeedField(vmIndex, vmObj, thisObj.m_updateFields);
+            thisObj.m_updateFields[vmIndex++] = update[1];
+
+            var vmData = [v[0], img, cpu, mem, disk, update[0]];
+            var bodyDiv = thisObj.f_createGridRow(this.m_colHd, vmData);
+            thisObj.m_body.appendChild(bodyDiv);
+        }
+
+        thisObj.f_adjustDivPosition(thisObj.m_buttons);
+        thisObj.f_updateButtons();
+    }
+
+    this.f_createSortingArray = function(sortIndex, vm)
+    {
+        var ar = new Array();
+
+        for(var i=0; i<vm.length; i++)
+        {
+            // compose a default table row
+            ar[i] = vm[i].m_displayName + '|' + vm[i].m_status + '|' +
+                    vm[i].m_cpu + '|' + vm[i].f_getMemPercentage() + '|' +
+                    vm[i].m_memTotal + '|' + vm[i].m_memFree + '|' +
+                    vm[i].f_getDiskPercentage() + '|' + vm[i].m_diskTotal + '|' +
+                    vm[i].m_diskFree + '|' + vm[i].m_name;
+        }
+
+        return thisObj.f_sortArray(sortIndex, ar);
+    }
+
+    this.f_handleGridSort = function(col)
+    {
+        // only col 0 & 1 allow sorting
+        if(col >= 2) return;
+
+        var order = FT_confDashboard.superclass.m_sortOrder;
+
+        if(col != FT_confDashboard.superclass.m_sortColPrev)
+            order = 'asc';
+        else if(order == 'asc')
+            order = 'desc';
+        else
+            order = 'asc';
+
+        FT_confDashboard.superclass.m_sortCol = col;
+        FT_confDashboard.superclass.m_sortOrder = order;
+        thisObj.f_populateTable();
     }
 
     this.f_handleCheckboxClick = function(chkbox)
@@ -216,9 +268,9 @@ function FT_confDashboard(name, callback, busLayer)
 
     this.f_init = function()
     {
-        var hd = this.f_createColumns();
-        this.m_header = this.f_createGridHeader(hd);
-        this.m_body = this.f_createGridView(hd);
+        this.m_colHd = this.f_createColumns();
+        this.m_header = this.f_createGridHeader(this.m_colHd, 'f_dbGridHeaderOnclick');
+        this.m_body = this.f_createGridView(this.m_colHd);
         this.f_loadVMData();
 
         var btns = [['Update', "f_dbHandleUpdate()", g_lang.m_dbTooltipUpdate,
@@ -247,4 +299,9 @@ function f_dbHandleCancel()
 function f_dbCheckboxClick(e)
 {
     g_configPanelObj.m_activeObj.f_handleCheckboxClick(e);
+}
+
+function f_dbGridHeaderOnclick(col)
+{
+    g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }

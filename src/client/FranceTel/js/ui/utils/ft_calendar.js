@@ -86,21 +86,29 @@ function FT_calendar()
             thisObj.m_InvalidAlert = ['Invalid date (', ') ignored.'];
             thisObj.m_DateDisablingError = ['Error ', ' is not a Date object.'];
             thisObj.m_RangeDisablingError = ['Error ', ' should consist of two elements.'];
+            thisObj.m_DateDisplayFormat = 'mm-dd-yy'; // e.g. 'MMM-DD-YYYY' for the US
+            thisObj.m_DateOutputFormat = 'MM/DD/YYYY'; // e.g. 'MMM-DD-YYYY' for the US	
+            //Set it to: 0 (Zero) for Sunday, 1 (One) for Monday etc..	
+            thisObj.m_WeekStart = 0;
         }
     }
     
     this.f_setLanguage = function()
     {
-        thisObj.m_Today = 'today:';
-        thisObj.m_Clear = 'Clear';
-        thisObj.m_ArrMonthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        thisObj.m_ArrWeekInits = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-        thisObj.m_InvalidDateMsg = 'The entered date is invalid.\n';
-        thisObj.m_OutOfRangeMsg = 'The entered date is out of range.';
-        thisObj.m_DoesNotExistMsg = 'The entered date does not exist.';
-        thisObj.m_InvalidAlert = ['Invalid date (', ') ignored.'];
-        thisObj.m_DateDisablingError = ['Error ', ' is not a Date object.'];
-        thisObj.m_RangeDisablingError = ['Error ', ' should consist of two elements.'];
+        thisObj.m_Today = g_lang.m_calToday;
+        thisObj.m_Clear = g_lang.m_calClear;
+        thisObj.m_ArrMonthNames = g_lang.m_calArrMonthNames;
+        thisObj.m_ArrWeekInits = g_lang.m_calArrWeekInits;
+        thisObj.m_InvalidDateMsg = g_lang.m_calInvalidDateMsg;
+        thisObj.m_OutOfRangeMsg = g_lang.m_calOutOfRangeMsg;
+        thisObj.m_DoesNotExistMsg = g_lang.m_calDoesNotExistMsg;
+        thisObj.m_InvalidAlert = g_lang.m_calInvalidAlert;
+        thisObj.m_DateDisablingError = g_lang.m_calDateDisablingError;
+        thisObj.m_RangeDisablingError = g_lang.m_calRangeDisablingError;
+        thisObj.m_DateDisplayFormat = g_lang.m_calDateDisplayFormat;
+        thisObj.m_DateOutputFormat = g_lang.m_calDateOutputFormat;	
+        //Set it to: 0 (Zero) for Sunday, 1 (One) for Monday etc..	
+        thisObj.m_WeekStart = g_lang.m_calWeekStart;
     }
     
     this.f_showCal = function(ele, source)

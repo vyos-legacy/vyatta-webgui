@@ -214,6 +214,40 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 		
 	}
 		
+	this.f_getDateEnglish = function(date) {
+		var d = '';
+		var m = '';
+		var y = '';
+		var eDate = date.trim();
+        var es = new RegExp("[.-]", "g"); 
+        
+		eDate = eDate.replace(es, "/");			
+		
+		var format = g_lang.m_calDateOutputFormat;
+		switch (format) {
+		    case 'DD/MM/YYYY':
+			    var i = eDate.indexOf('/');
+				if (i != -1) {
+			        d = eDate.substring(0,i);
+					eDate = eDate.substring(i+1,eDate.length);
+					i = eDate.indexOf('/');
+					if (i != -1) {
+						m = eDate.substring(0,i);
+						y = eDate.substring(i+1, eDate.length);
+						eDate = m + '/' + d + '/' + y;
+					} else {
+						return date; //we don't know how to convert
+					}
+				} else {
+					return date; //we don't know how to convert
+				}
+				break;
+			case 'MM/DD/YYYY':
+			    break;
+		}
+		return eDate;
+	}	
+		
 	this.f_validate = function()
 	{
         var error = g_lang.m_formFixError + '<br>';
@@ -221,7 +255,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
         if (thisObj.m_form.conf_sched_update_now.checked == true) {
 			return true;
 		}
-		var date = thisObj.m_form.conf_sched_update_cal_text.value.trim();
+		var date = thisObj.f_getDateEnglish(thisObj.m_form.conf_sched_update_cal_text.value);
 		if (!thisObj.f_checkDate(date)) {
             errorInner += thisObj.f_createListItem(g_lang.m_schedUpdateDate + ' ' + g_lang.m_formInvalid);
         }
@@ -235,7 +269,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 		}		
 		       
 		//check to see if it is greater than now.
-		thisObj.m_date = thisObj.f_getUpdateTime();
+		thisObj.m_date = thisObj.f_getUpdateTime(date);
 //COMMENT OUT THE LOCAL TIME CHECKING.  LET THE SERVER DO IT.		
 //		var  d = new Date();
 //		var diff = d.getTime() - thisObj.m_date.getTime();
@@ -254,9 +288,9 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 
 	}	
 	
-	this.f_getUpdateTime = function()
+	this.f_getUpdateTime = function(dateStr)
 	{
-		var d = thisObj.m_form.conf_sched_update_cal_text.value.trim();
+		var d = dateStr;
         var es = new RegExp("[.-]", "g"); //.
         d = d.replace(es, "/");						
 		var date = new Date(d);

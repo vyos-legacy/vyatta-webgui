@@ -52,6 +52,7 @@ sbin_SCRIPTS += src/server/vyatta-vmdeploy-op
 sbin_SCRIPTS += src/server/vyatta-vmbackup-all
 sbin_SCRIPTS += src/server/openapp-user.pl
 sbin_SCRIPTS += src/server/openapp-archive.pl
+sbin_SCRIPTS += src/server/openapp-conf-ntp.pl
 sbin_SCRIPTS += src/server/openapp-vm-query.pl
 sbin_SCRIPTS += src/server/openapp-vm-monitor.pl
 sbin_SCRIPTS += src/server/openapp-vm-deploy.pl

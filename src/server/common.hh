@@ -54,18 +54,14 @@ public:
 		GETCONFIG,
 		CLOSESESSION,
 		NOTIFICATION,
-		TOKEN,
-		VMSTATUS,
-		VMUSER};
+		TOKEN};
 
   enum ParseNode {EMPTY = 0,
 		  NEWSESSION_USER,
 		  NEWSESSION_PSWD,
 		  GETCONFIG_ID,
 		  GETCONFIG_NODE,
-		  CLICMD_ID,
-		  VMSTATUS_ID,
-		  VMUSER_ID};
+		  CLICMD_ID};
 
   enum Attributes {NOATTR = 0,
 		   OP};
@@ -85,12 +81,33 @@ public:
 		  SET};
   
   
-  enum AccessLevel {ACCESS_USER = 0,
-                    ACCESS_ADMIN = 1,
-                    ACCESS_INSTALLER = 2,
-		    ACCESS_NONE = 3};
+  enum AccessLevel {ACCESS_RESTRICTED = 0, //only allowed to change pw
+		    ACCESS_USER = 1,
+                    ACCESS_ADMIN = 2,
+                    ACCESS_INSTALLER = 3,
+		    ACCESS_NONE = 4};
   
+  /**
+   *
+   *
+   **/
+  static bool
+  is_restricted(unsigned long id);
 
+  /**
+   *
+   *
+   **/
+  static std::string
+  get_user(unsigned long id);
+
+  static bool
+  set_user(unsigned long id, const std::string &user);
+
+  /**
+   *
+   *
+   **/
   static std::string
   generate_response(std::string &token, Error err);
 

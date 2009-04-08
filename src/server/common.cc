@@ -56,6 +56,87 @@ char const* WebGUI::ErrorDesc[8] = {" ",
 
 /**
  *
+ *
+ **/
+bool
+WebGUI::is_restricted(unsigned long id)
+{
+  char buf[1025];
+  sprintf(buf, "%lu", id);
+  string file = WebGUI::VYATTA_MODIFY_FILE + buf;
+  FILE *fp = fopen(file.c_str(), "r");
+  if (!fp) {
+    return true;
+  }
+  
+  //now delimit line based on ',' and take second value
+  fgets(buf, 1024, fp);
+  string tmp(buf);
+  string::size_type pos = tmp.find(",");
+  if (pos == string::npos) {
+    return true;
+  }
+  fclose(fp);
+  string restrict = tmp.substr(pos+1,1);
+  unsigned long val = strtoul(restrict.c_str(),NULL,10);
+  return (val == 1);
+}
+
+
+
+/**
+ *
+ *
+ **/
+std::string
+WebGUI::get_user(unsigned long id)
+{
+  char buf[1025];
+  sprintf(buf, "%lu", id);
+  string file = WebGUI::VYATTA_MODIFY_FILE + buf;
+  FILE *fp = fopen(file.c_str(), "r");
+  if (!fp) {
+    return false;
+  }
+  
+  //now delimit line based on ',' and take second value
+  fgets(buf,1024,fp);
+  string tmp(buf);
+  string::size_type pos = tmp.find(",");
+  fclose(fp);
+  if (pos == string::npos) {
+    return string("");
+  }
+  return tmp.substr(0,pos);
+}
+
+/**
+ *
+ *
+ **/
+bool
+WebGUI::set_user(unsigned long id, const std::string &user)
+{
+  bool restrict = is_restricted(id);
+  
+  string flag = string((restrict == true) ? "1" : "0");
+
+  string tmp = user + "," + flag;
+
+  char buf[80];
+  sprintf(buf, "%lu", id);
+  string file = WebGUI::VYATTA_MODIFY_FILE + buf;
+  FILE *fp = fopen(file.c_str(), "w");
+  if (!fp) {
+    return false;
+  }
+  fputs(tmp.c_str(),fp);
+  fclose(fp);
+  return true;
+}
+
+/**
+ *
  **/
 std::string
 WebGUI::generate_response(string &token, Error err)

@@ -86,16 +86,10 @@ Authenticate::create_new_session()
     
     WebGUI::mkdir_p((WebGUI::CONFIG_TMP_DIR+string(buf)).c_str());
 
-    //write the username here to modify file
-    string file = WebGUI::VYATTA_MODIFY_FILE + buf;
-    FILE *fp = fopen(file.c_str(), "w");
-    if (!fp) {
+    if (WebGUI::set_user(id,msg._user) == false) {
       _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
       return false;
     }
-    fputs(msg._user.c_str(), fp);
-    fclose(fp);
-
 
     //now generate successful response
     sprintf(buf, "%d", WebGUI::SUCCESS);
@@ -236,30 +230,22 @@ Authenticate::reuse_session()
 
   DIR *dp;
   struct dirent *dirp;
-  string id_str;
   if ((dp = opendir(WebGUI::VYATTA_MODIFY_DIR.c_str())) == NULL) {
     return 0;
   }
 
+  unsigned long id = 0;
   while ((dirp = readdir(dp)) != NULL) {
     if (strncmp(dirp->d_name, ".vyattamodify_", 14) == 0) {
-      string tmp = WebGUI::VYATTA_MODIFY_DIR + string(dirp->d_name);
-      FILE *fp = fopen(tmp.c_str(),"r");
-      if (fp) {
-	char buf[1025];
-	//read value in here....
-	if (fgets(buf, 1024, fp) != 0) {
-	  if (string(buf) == _proc->get_msg()._user) {
-	    id_str = string(dirp->d_name).substr(14,24);
-	    break;
-	  }
-	}
-	fclose(fp);
+      string id_str = string(dirp->d_name).substr(14,24);
+      id = strtoul(id_str.c_str(),NULL,10);
+      string user = WebGUI::get_user(id);
+      if (user == _proc->get_msg()._user) {
+	break;
       }
     }
   }  
-  closedir(dp);
-  return strtoul(id_str.c_str(),NULL,10);
+  return id;
 }
 
 /**                                                                                                                                               
@@ -292,7 +278,11 @@ Authenticate::get_access_level(const std::string &username)
   while (iter != coll.end()) {
     if (*iter == "description:") {
       ++iter;
-      if (strncmp(iter->c_str(),"user",4) == 0) {
+      unsigned long id = _proc->_msg.id_by_val();
+      if (WebGUI::is_restricted(id)) {
+	return WebGUI::ACCESS_RESTRICTED;
+      }
+      else if (strncmp(iter->c_str(),"user",4) == 0) {
 	return WebGUI::ACCESS_USER;
       }
       else if (strncmp(iter->c_str(),"admin",5) == 0) {

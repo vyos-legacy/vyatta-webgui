@@ -1,0 +1,6 @@
+access:installer
+run: if sudo perl /opt/vyatta/sbin/vyatta-output-config.pl system ntp-server; then
+       return 0
+     else
+       return 1
+     fi

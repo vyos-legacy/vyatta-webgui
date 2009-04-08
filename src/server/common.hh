@@ -33,6 +33,9 @@ public:
 
   const static std::string OPENAPP_GUI_USER;
   const static std::string OPENAPP_GUI_GROUP;
+
+  const static std::string OPENAPP_USER_RESTRICTED_POLICY_ADMIN;
+  const static std::string OPENAPP_USER_RESTRICTED_POLICY_USER;
   
   const static std::string OA_GUI_ENV_AUTH_USER;
 
@@ -43,7 +46,8 @@ public:
 	      SERVER_FAILURE,
 	      COMMAND_ERROR,
 	      COMMIT_IN_PROGRESS,
-	      CONFIGURATION_CHANGE};
+	      CONFIGURATION_CHANGE,
+	      RESTRICTED_ACCESS};
 
 
   static char const *ErrorDesc[];
@@ -102,7 +106,7 @@ public:
   get_user(unsigned long id);
 
   static bool
-  set_user(unsigned long id, const std::string &user);
+  set_user(unsigned long id, const std::string &user, bool restricted);
 
   /**
    *

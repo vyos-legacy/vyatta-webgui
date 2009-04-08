@@ -26,8 +26,8 @@ VYA.DYN_STYLE = {
 	PRI_NAV_LAST_ITEM_BORDER_RIGHT : '1px solid #CCC',	
 	PRI_NAV_ITEM_FONT_WEIGHT : 'bold',
 	PRI_NAV_ITEM_TEXT_ALIGN : 'center',
-//	PRI_NAV_ITEM_BG_IMG : 'url("images/tab_nav_base.PNG")',
-	PRI_NAV_ITEM_BG_IMG : 'url("images/nav_end.PNG")',	
+//	PRI_NAV_ITEM_BG_IMG : 'url("images/en/tab_nav_base.PNG")',
+	PRI_NAV_ITEM_BG_IMG : 'url("images/en/nav_end.PNG")',	
 	LINER_THIN : '1px solid #DEDEDE',
 	//
 	// Active
@@ -39,8 +39,8 @@ VYA.DYN_STYLE = {
 	PRI_NAV_ACT_ITEM_BG : '#FFFFFF',	
 	//
 	// Inactive
-//	PRI_NAV_NOT_ACT_ITEM_BG_IMG : 'url("images/tab_nav_base.PNG")',
-	PRI_NAV_NOT_ACT_ITEM_BG_IMG : 'url("images/nav_end.PNG")',	
+//	PRI_NAV_NOT_ACT_ITEM_BG_IMG : 'url("images/en/tab_nav_base.PNG")',
+	PRI_NAV_NOT_ACT_ITEM_BG_IMG : 'url("images/en/nav_end.PNG")',	
 	PRI_NAV_NOT_ACT_ITEM_COLOR : '#000000',
 	PRI_NAV_NOT_ACT_ITEM_BORDER_BOTTOM : '0px solid #FFFFFF',
 	PRI_NAV_NOT_ACT_ITEM_BORDER_TOP : '0px solid #FFFFFF',	
@@ -68,11 +68,11 @@ VYA.DYN_STYLE = {
 	// Active 
     THIRD_NAV_ACT_ITEM_COLOR : '#FF5500',
 	THIRD_NAV_ACT_ITEM_FONT_WEIGHT : 'bold',
-	THIRD_NAV_ACT_ITEM_IMG_SRC : 'images/fleche_on.gif',
+	THIRD_NAV_ACT_ITEM_IMG_SRC : 'images/en/fleche_on.gif',
 	//
 	// Inactive 
     THIRD_NAV_NOT_ACT_ITEM_COLOR : '#000000',
 	THIRD_NAV_NOT_ACT_ITEM_FONT_WEIGHT : 'normal',
-	THIRD_NAV_NOT_ACT_ITEM_IMG_SRC : 'images/fleche_off.gif'	
+	THIRD_NAV_NOT_ACT_ITEM_IMG_SRC : 'images/en/fleche_off.gif'	
 	
 }

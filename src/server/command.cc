@@ -185,7 +185,6 @@ Command::validate_op_cmd(const string &username, WebGUI::AccessLevel user_access
 {
   WebGUI::AccessLevel cmd_access_level = WebGUI::ACCESS_NONE;
   //convert to op directory
-
   //first let's replace all 'asdf asdf' with node.tag string
   string tmp = cmd;
   string out_cmd;
@@ -238,6 +237,10 @@ Command::validate_op_cmd(const string &username, WebGUI::AccessLevel user_access
       }
       else if (tmp.find("access:user") != string::npos) {
 	cmd_access_level = WebGUI::ACCESS_USER;
+	break;
+      }
+      else if (tmp.find("access:restricted") != string::npos) {
+	cmd_access_level = WebGUI::ACCESS_RESTRICTED;
 	break;
       }
     }

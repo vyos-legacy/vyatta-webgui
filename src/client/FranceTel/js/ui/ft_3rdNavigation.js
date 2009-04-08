@@ -80,7 +80,7 @@ function FT_3rdNavigation()
 		div.style.paddingTop = '5px';
 		div.setAttribute('id', 'sm_help');
 		div.setAttribute('class', 'help');
-		div.innerHTML = '<img id="context_help" src = "images/img_help.gif">';
+		div.innerHTML = '<img id="context_help" src = "images/en/img_help.gif">';
         return div;		
 	}
 	

@@ -62,7 +62,7 @@ img
     height: 18px;
     margin-top: 0px;
     border-left: solid 2px #FFF;
-    background: transparent url(../images/fl_ig.gif) no-repeat 0px 3px;
+    background: transparent url(../images/en/fl_ig.gif) no-repeat 0px 3px;
     padding: 0 10px 6px 11px;
     color: #000;
     font-weight: bold;
@@ -82,7 +82,7 @@ img
 	/*
     background-image: url("../images/tab_nav_base.PNG");
     */
-	background-image: url("../images/nav_end.gif");
+	background-image: url("../images/en/nav_end.gif");
     float: left;
 } 
 
@@ -95,7 +95,7 @@ img
     border-right: 1px solid #CCC;
     background-image: url("../images/tab_nav_base.PNG");
     */
-	background-image: url("../images/nav_end.gif");	
+	background-image: url("../images/en/nav_end.gif");	
 } 
 
 .divider {
@@ -260,6 +260,7 @@ img
     margin-top: 1em;
     width: 782px;
     float: right;
+	/* border-left: 1px solid #DEDEDE; */
 } 
 
 #config_panel_title {
@@ -281,7 +282,7 @@ img
     border-top: 2px solid #DEDEDE;
     margin-bottom: 0px;
     width: 100%;
-    background: url(../images/esperluette-20.gif) top left no-repeat;
+    background: url(../images/en/esperluette-20.gif) top left no-repeat;
 } 
 
 #footer_left a {
@@ -304,7 +305,7 @@ img
     display: inline;
     margin-right: 12px;
     padding-left: 15px;
-    background: url(../images/carre.gif) no-repeat 3px;
+    background: url(../images/en/carre.gif) no-repeat 3px;
     list-style-type: none;
 } 
 
@@ -349,7 +350,7 @@ img
     height:100%;
     text-align:center;
     z-index: 1000;	
-    background-image:url(../images/ccc.gif);
+    background-image:url(../images/en/ccc.gif);
 	
 }
  

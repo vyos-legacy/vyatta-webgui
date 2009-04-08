@@ -29,7 +29,7 @@ function FT_confEmailServer(name, callback, busLayer)
             items: [{
                 v_type: 'label',
                 id: 'conf_email_srv_stmp_label',
-                text: g_lang.m_emailStmpAddr,
+                text: g_lang.m_emailSmtpAddr,
                 v_new_row: 'true'
             }, {
                 v_type: 'text',

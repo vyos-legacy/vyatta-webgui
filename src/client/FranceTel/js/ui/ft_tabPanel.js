@@ -82,13 +82,18 @@ function FT_tabPanel()
     
     this.f_setIframeHeight = function()
     {
-		var defaultSize = screen.height - 100;
+		//alert('setIframeHeight called');
+		var defaultSize = screen.height - 200;
 		var iframeName = 'main_ifrm';
-        var iframeWin = window.frames[1];/*window.frames[iframeName]*/;
+        var iframeWin = window.frames[iframeName];/*window.frames[iframeName]*/;
         var iframeEl = document.getElementById ? document.getElementById(iframeName) : document.all ? document.all[iframeName] : null;
+		if (!iframeWin) {
+		    iframeWin = iframeEl.contentWindow; /* for firefox */
+		}
         if (iframeEl && iframeWin) {
             iframeEl.style.height = "auto"; // helps resize (for some) if new doc shorter than previous
             var docHt = thisObj.f_getDocHeight(iframeWin.document);
+			//alert('docHt: ' + docHt);
             // need to add to height to be sure it will all show
             if (docHt) {
 				if (docHt > 150) {		
@@ -96,31 +101,35 @@ function FT_tabPanel()
 				} else {
 					iframeEl.style.height = defaultSize + "px";
 				}
+			} else {
+			    iframeEl.style.height = defaultSize + "px";	
 			}
         } else {
 			iframeEl.style.height = defaultSize + "px";
 		}
     }
-	
+	/*
 	this.f_resizeFrame = function() 
 	{
-		//alert('f_resizeFrame called');
+		alert('f_resizeFrame called');
         var defaultSize = screen.height - 200;		
 		var f = document.getElementById('main_ifrm');	
-		var w = window.frames[f.id];
+		var w = f.contentWindow;
+		//window.frames[f.id];
 		if (!w) {
-			//alert('window.frames[f.id] is null');
+			alert('f.contentWindow is null');
 			w = window.frames[1];
 		}
 		var h = thisObj.f_getDocHeight(w.document);
-		//alert('frame height: ' + h);
-		if (h > 100) {
+		alert('frame height: ' + h);
+		if (h > 10) {
 			f.height = h + 30;
-		} else {
+		} 
+		if (h < 20) {
 			f.height = defaultSize;
 		}			
 	}
-    
+    */
     this.f_showVm = function(vmId, urlPath)
     {
         var url = urlPath;
@@ -130,10 +139,11 @@ function FT_tabPanel()
         ifr.setAttribute('frameBorder', '0');
         ifr.style.width = '100%';
         //ifr.style.height = screen.height;
-        //ifr.setAttribute('height', screen.height-40);
+        ifr.setAttribute('height', screen.height-40);
         thisObj.m_container.appendChild(ifr);
-		ifr = document.getElementById('main_ifrm');
-        g_xbObj.f_xbAttachEventListener(ifr, 'load', thisObj.f_resizeFrame, true);				
+		ifr = document.getElementById('main_ifrm');		
+        g_xbObj.f_xbAttachEventListener(ifr, 'load', thisObj.f_setIframeHeight, true);
+		//ifr.onload = thisObj.f_resizeFrame;				
         //ifr.onload = "f_setIframeHeight('main_ifrm')";
         ifr.setAttribute('src', url);
     }

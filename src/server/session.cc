@@ -149,11 +149,6 @@ Session::process_message()
       close_session();
       break;
 
-    case WebGUI::VMSTATUS:
-      if (_debug) {
-	cout << "Session::process_message(): VMSTATUS" << endl;
-      }
-      
       if (!update_session()) {
 	return false;
       }
@@ -170,11 +165,6 @@ Session::process_message()
       }
       break;
 
-    case WebGUI::VMUSER:
-      if (_debug) {
-	cout << "Session::process_message(): VMSTATUS" << endl;
-      }
-      
       if (!update_session()) {
 	return false;
       }
@@ -284,25 +274,14 @@ Session::update_session()
     return false;
   }
 
-  FILE *fp = fopen(file.c_str(), "r");
-  if (!fp) {
+  _username = WebGUI::get_user(_processor->get_msg().id_by_val());
+  if (_username.empty()) {
     _processor->set_response(WebGUI::SESSION_FAILURE);
     return false;
   }
-
-  char name_buf[1025];
-  if (fgets(name_buf, 1024, fp) == NULL) {
-    _processor->set_response(WebGUI::SESSION_FAILURE);
-    fclose(fp);
-    return false;
-  }
-
-  _username = string(name_buf);
-
-  fclose(fp);
 
   struct passwd *pw;
-  pw = getpwnam(name_buf);
+  pw = getpwnam(_username.c_str());
   if (pw == NULL) {
     _processor->set_response(WebGUI::SESSION_FAILURE);
     return false;
@@ -311,7 +290,7 @@ Session::update_session()
 
 
   //let's check whether the user is currently a member of vyattacfg or operator group                                                                 
-  _access_level = _authenticate.get_access_level(name_buf);
+  _access_level = _authenticate.get_access_level(_username);
   if (_access_level == WebGUI::ACCESS_NONE) {
     _processor->set_response(WebGUI::SESSION_FAILURE);
     return false;

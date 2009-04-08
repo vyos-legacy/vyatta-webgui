@@ -216,6 +216,27 @@ EOF
   return undef;  
 }
 
+# notify lighttpd to reconfigure reverse proxy
+sub _notifyWuiProcess {
+  my $LIGHTTPD_PID_FILE = '/var/run/lighttpd.pid';
+  return if (! -r "$LIGHTTPD_PID_FILE");
+  my $fd = undef;
+  open($fd, '<', $LIGHTTPD_PID_FILE) or return;
+  my $pid = <$fd>;
+  close($fd);
+  chomp($pid);
+  kill('USR2', $pid);
+}
+
+# WUI-related postinst tasks
+sub _postinstWui {
+  # notify lighttpd to reconfigure reverse proxy
+  _notifyWuiProcess();
+ 
+  # done 
+  return undef;
+}
+
 # generic postinst tasks for oa-vimg packages
 # $1: vmid
 # $2: previous metadata file ('NONE' if new install)
@@ -239,6 +260,10 @@ sub oaVimgPostinst {
 
   # do LDAP-related tasks
   my $err = _postinstLdap($vid, $prev_meta);
+  return $err if (defined($err));
+
+  # do WUI-related tasks
+  $err = _postinstWui();
   return $err if (defined($err));
 
   return undef;

@@ -97,7 +97,7 @@ sub usage() {
 #pull commands and call command
 GetOptions(
     "server=s"              => \$server,
-    "list:l"                => \$list,
+    "list:s"                => \$list,
     ) or usage();
 
 if (defined $server ) {

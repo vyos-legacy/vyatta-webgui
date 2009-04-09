@@ -209,6 +209,25 @@ sub backup_archive {
     ##########################################################################
 #    print "tar -C $BACKUP_WORKSPACE_DIR -cf $ARCHIVE_ROOT_DIR/$filename.tar . 2>/dev/null";
     `tar -C $BACKUP_WORKSPACE_DIR -cf $ARCHIVE_ROOT_DIR/$filename.tar . 2>/dev/null`;
+
+    #grab admin email address...
+    my $admin_email;
+    my @output;
+    my $output;
+    @output = `ldapsearch -x -b "dc=localhost,dc=localdomain" "uid=admin"`;
+    for $output (@output) {
+#	print $output;
+	my @o = split(' ',$output);
+	if (defined $o[0] && defined $o[1]) {
+	    if ($o[0] eq 'mail:') {
+		$admin_email = $o[1];
+		last;
+	    }
+	}
+    }
+
+    #backup is now complete, let's send an email out to admin
+    `echo 'backup is finished' | /usr/bin/ssmtp $admin_email 2>/dev/null`;
 }
 
 ##########################################################################

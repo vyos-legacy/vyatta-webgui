@@ -88,7 +88,7 @@ sub set_smtp {
    
 }
 
-sub list_smpt() {
+sub list_smtp() {
     print "VERBATIM_OUTPUT\n";
     my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app smtp client`;
     
@@ -98,11 +98,11 @@ sub list_smpt() {
 # password bar
 # server 2.3.4.2
 # username harry
-    my @address = split($out[0]);
-    my @name = split($out[1]);
-    my @password = split($out[2]);
-    my @server = split($out[3]);
-    my @username = split($out[4]);
+    my @address = split(" ",$out[0]);
+    my @name = split(" ",$out[1]);
+    my @password = split(" ",$out[2]);
+    my @server = split(" ",$out[3]);
+    my @username = split(" ",$out[4]);
 
     print "<smtp-client>";
     print "<address>$address[1]</address>";

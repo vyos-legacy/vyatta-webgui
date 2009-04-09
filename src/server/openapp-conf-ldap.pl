@@ -99,11 +99,11 @@ sub list_ldap() {
     print "VERBATIM_OUTPUT\n";
     my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app ldap`;
     
-    my @address = split($out[0]);
-    my @r_password = split($out[1]);
-    my @r_username = split($out[2]);
-    my @rw_password = split($out[3]);
-    my @rw_username = split($out[4]);
+    my @address = split(" ",$out[0]);
+    my @r_password = split(" ",$out[1]);
+    my @r_username = split(" ",$out[2]);
+    my @rw_password = split(" ",$out[3]);
+    my @rw_username = split(" ",$out[4]);
 
     print "<ldap>";
     print "<address>$address[1]</address>";

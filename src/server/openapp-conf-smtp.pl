@@ -32,7 +32,7 @@ use Getopt::Long;
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
 
-my ($address,$email,$username,$password,$list);
+my ($address,$email,$username,$password,$name,$list);
 
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
@@ -73,6 +73,13 @@ sub set_smtp {
 
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp password $password");
+    if ($err != 0) {
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # apply config command
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp name $name");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
@@ -123,6 +130,7 @@ sub usage() {
     print "       $0 --email=<email>\n";
     print "       $0 --username=<username>\n";
     print "       $0 --password=<password>\n";
+    print "       $0 --name=<name>\n";
     print "       $0 --list\n";
     exit 0;
 }
@@ -133,10 +141,11 @@ GetOptions(
     "email=s"                 => \$email,
     "username=s"              => \$username,
     "password=s"              => \$password,
+    "name=s"                  => \$name,
     "list:s"                  => \$list,
     ) or usage();
 
-if (defined $address && defined $email && defined $username && defined $password ) {
+if (defined $address && defined $email && defined $username && defined $password && defined $name) {
     set_smtp();
 }
 else {

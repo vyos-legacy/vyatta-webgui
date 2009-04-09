@@ -132,8 +132,8 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Subscribe screen
     m_subscribePlease : "Please click on the following to install/remove an application",
-	m_subscribeInstall: "Install a new Application",
-	m_subscribeRemove: "Remove a new Application",
+	m_subscribeInstall: "Install a new application",
+	m_subscribeRemove: "Remove an application",
 
     ///////////////////////////////////////////////////////////////////
     // User List screen
@@ -281,8 +281,8 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Email Server configuration
-	m_emailStmpAddr : "SMTP server address",
-	m_emailLocalMachNam : "Local machine name",
+	m_emailSmtpAddr : "SMTP server address",
+	m_emailLocalMachName : "Local machine name",
 	m_emailLocalEmail : "Local email address",
 	m_emailAuthName : "Authorization name",
 	m_emailAuthPasswd : "Authorization password",
@@ -302,7 +302,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Password Policy configuration
 	m_passwdPolicyChangeAtLogin : "The user has to change his password at first login",
-	m_passwdPolicyCanKeep : "The user can keep hsi default password",
+	m_passwdPolicyCanKeep : "The user can keep his default password",
 
     ///////////////////////////////////////////////////////////////////
     // NTP server configuration

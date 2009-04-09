@@ -161,11 +161,11 @@ function FT_confUserList(name, callback, busLayer)
 
         var btns = [['AddUser', 'f_userListAddUserCallback()', g_lang.m_ulTooltipAddUser]];
         this.m_buttons = this.f_createButtons(btns);
-       
+        /*
         if (g_roleManagerObj.f_isInstaller()) {
 			thisObj.f_hideButtons();
 		}	   
-	   
+	    */ 
         return [this.m_header, this.m_body, this.m_buttons];
     }
 }

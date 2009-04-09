@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# Module: openapp-conf-smtp.pl
+# Module: openapp-conf-ntp.pl
 # 
 # **** License ****
 # This program is free software; you can redistribute it and/or modify
@@ -32,17 +32,17 @@ use Getopt::Long;
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
 
-my ($address,$email,$username,$password,$list);
+my ($set,$delete,$list);
 
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
 my $auth_user_role = $auth_user->getRole();
-if ($auth_user_role ne 'installer') {
+if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   # not authorized
   exit 1;
 }
 
-sub set_smtp {
+sub set_password_policy {
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
     if ($err != 0) {
@@ -51,28 +51,7 @@ sub set_smtp {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp address $address");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-    # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp email $email");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-    # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp username $username");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-    # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp password $password");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app password-policy $set");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
@@ -88,29 +67,47 @@ sub set_smtp {
    
 }
 
-sub list_smtp() {
-    print "VERBATIM_OUTPUT\n";
-    my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app smtp client`;
-    
-#output will look something like this:
-# address 1.1.1.1
-# name foo
-# password bar
-# server 2.3.4.2
-# username harry
-    my @address = split(" ",$out[0]);
-    my @name = split(" ",$out[1]);
-    my @password = split(" ",$out[2]);
-    my @server = split(" ",$out[3]);
-    my @username = split(" ",$out[4]);
 
-    print "<smtp-client>";
-    print "<address>$address[1]</address>";
-    print "<name>$name[1]</name>";
-    print "<password>$password[1]</password>";
-    print "<server>$server[1]</server>";
-    print "<username>$username[1]</username>";
-    print "</smpt-client>";
+sub delete_password_policy {
+    # set up config session
+    my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
+    if ($err != 0) {
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # apply config command
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app password-policy $delete");
+    if ($err != 0) {
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # commit
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
+    if ($err != 0) {
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+   
+}
+
+sub list_password_policy {
+    my $admin = "false";
+    my $user = "false";
+    if (-e /opt/vyatta/config/active/system/open-app/password-policy/user/node.val) {
+	$user = "true";
+    }
+    if (-e /opt/vyatta/config/active/system/open-app/password-policy/admin/node.val) {
+	$admin = "true";
+    }
+
+    print "VERBATIM_OUTPUT\n";
+    print "<password-policy>";
+    print "<user>$user</user>";
+    print "<admin>$admin</admin>";
+    print "</password-policy>";
 }
 
 ##########################################################################
@@ -119,27 +116,29 @@ sub list_smtp() {
 #
 ##########################################################################
 sub usage() {
-    print "       $0 --address=<address>\n";
-    print "       $0 --email=<email>\n";
-    print "       $0 --username=<username>\n";
-    print "       $0 --password=<password>\n";
+    print "       $0 --set=<role>\n";
+    print "       $0 --delete=<role>\n";
     print "       $0 --list\n";
     exit 0;
 }
 
 #pull commands and call command
 GetOptions(
-    "address=s"               => \$address,
-    "email=s"                 => \$email,
-    "username=s"              => \$username,
-    "password=s"              => \$password,
-    "list:s"                  => \$list,
+    "set:s"                 => \$set,
+    "delete:s"              => \$delete,
     ) or usage();
 
-if (defined $address && defined $email && defined $username && defined $password ) {
-    set_smtp();
+
+if (defined $set ) {
+    set_password_policy();
+    exit 0;
+}
+elsif (defined $delete ) {
+    delete_password_policy();
+    exit 0;
 }
 else {
-    list_smtp();
+    list_password_policy();
+    exit 0;
 }
 exit 0;

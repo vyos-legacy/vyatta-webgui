@@ -86,9 +86,46 @@ Authenticate::create_new_session()
     
     WebGUI::mkdir_p((WebGUI::CONFIG_TMP_DIR+string(buf)).c_str());
 
-    if (WebGUI::set_user(id,msg._user) == false) {
+
+    //apply password restriction policy here
+    /*
+      if the configuration shows that users or admin require non-default password
+      then test for default password here, if default then set restricted bit on
+      user session. Otherwise unset restricted bit.
+      
+      That should be enough. Note this means that an account will never be able
+      to support a default password.
+    */
+    bool policy_pw_restricted = false;
+    bool restricted = false;
+    if (msg._user == "admin") {
+      struct stat tmp;
+      if (stat(WebGUI::OPENAPP_USER_RESTRICTED_POLICY_ADMIN.c_str(), &tmp) == 0) {
+	policy_pw_restricted = true;
+      }
+    }
+    else if (msg._user != "installer") { //then it's a user
+      struct stat tmp;
+      if (stat(WebGUI::OPENAPP_USER_RESTRICTED_POLICY_USER.c_str(), &tmp) == 0) {
+	policy_pw_restricted = true;
+      }
+    }
+
+    if (policy_pw_restricted) {
+      if (msg._user == msg._pswd) {
+	restricted = true;
+      }
+    }
+
+    //now apply results of policy
+    if (WebGUI::set_user(id,msg._user, restricted) == false) {
+    cout << "E" << endl;
       _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
       return false;
+    }
+    else if (restricted == true) {
+      _proc->set_response(WebGUI::RESTRICTED_ACCESS);
+      return true;
     }
 
     //now generate successful response

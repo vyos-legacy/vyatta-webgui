@@ -97,25 +97,25 @@ function FT_confFormObj(name, callback, busLayer) {
             html = html + '<div class="v_button_container"><br/><br/>';
             for (var i = 0; i < this.m_config.buttons.length; i++) {
                 html = html + '<img id="' + this.m_config.buttons[i].id + '" class="v_button"';
-                var imgSrc = 'images/' + g_utils.f_getLanguage() + '/bt_apply.gif';
+                var imgSrc = g_lang.m_imageDir + '/bt_apply.gif';
                 switch (this.m_config.buttons[i].text.trim().toLowerCase()) {
                     case 'apply':
-                        imgSrc = 'images/' + g_utils.f_getLanguage() + '/bt_apply.gif';
+                        imgSrc = g_lang.m_imageDir + '/bt_apply.gif';
                         break;
                     case 'update':
-                        imgSrc = 'images/' + g_utils.f_getLanguage() + '/bt_update.gif';
+                        imgSrc =  g_lang.m_imageDir  + '/bt_update.gif';
                         break;
                     case 'cancel':
-                        imgSrc = 'images/' + g_utils.f_getLanguage() + '/bt_cancel.gif';
+                        imgSrc =  g_lang.m_imageDir  + '/bt_cancel.gif';
                         break;
                     case 'ok':
-                        imgSrc = 'images/' + g_utils.f_getLanguage() + '/bt_ok.gif';
+                        imgSrc =  g_lang.m_imageDir  + '/bt_ok.gif';
                         break;
                     case 'backup':
-                        imgSrc = 'images/' + g_utils.f_getLanguage() + '/bt_backup.gif';
+                        imgSrc =  g_lang.m_imageDir  + '/bt_backup.gif';
                         break;
                     case 'restore':
-                        imgSrc = 'images/' + g_utils.f_getLanguage() + '/bt_restore.gif';
+                        imgSrc =  g_lang.m_imageDir  + '/bt_restore.gif';
                     default:
                         break;
                 }
@@ -289,7 +289,7 @@ function FT_confFormObj(name, callback, busLayer) {
     
 	this.f_createListItem = function (item)
 	{
-		return ('<li style="list-style-type:square;list-style-image: url(images/en/puce_squar.gif);">' + item + '</li>');
+		return ('<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">' + item + '</li>');
 	}	
 	
     this.f_checkEmpty = function(field, message, err)

@@ -32,7 +32,7 @@ use Getopt::Long;
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
 
-my ($server);
+my ($server,$list);
 
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
@@ -74,6 +74,14 @@ sub set_ntp {
    
 }
 
+sub list_ntp {
+    #just need to pull the ip from the config
+    print "VERBATIM_OUTPUT\n";
+
+    my $out = `/opt/vyatta/sbin/vyatta-output-config.pl system ntp-server`;
+    my @values = split(' ', $out);
+    print "<ntp-server>$values[1]</ntp-server>";
+}
 
 ##########################################################################
 #
@@ -82,15 +90,20 @@ sub set_ntp {
 ##########################################################################
 sub usage() {
     print "       $0 --server=<ntpserver>\n";
+    print "       $0 --list\n";
     exit 0;
 }
 
 #pull commands and call command
 GetOptions(
-    "server:s"              => \$server,
+    "server=s"              => \$server,
+    "list:s"                => \$list,
     ) or usage();
 
 if (defined $server ) {
     set_ntp();
+}
+else {
+    list_ntp();
 }
 exit 0;

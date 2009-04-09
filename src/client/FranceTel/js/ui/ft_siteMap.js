@@ -61,7 +61,7 @@ function FT_siteMap()
 			var li = document.createElement('li');
 			g_xbObj.f_xbSetClassAttribute(li,'sitemap_vmlink');
 			li.innerHTML = '<a href="#" onclick="f_siteMapClickHandler(\'sitemap_vmlink_' +
-			    vm.m_name + '\')"><img border="0" src="images/puce_link.gif">&nbsp;<span class="bold12">' +
+			    vm.m_name + '\')"><img border="0" src="' + g_lang.m_imageDir +'puce_link.gif">&nbsp;<span class="bold12">' +
 				vm.m_displayName + '</span></a>';
 			ul.appendChild(li);
 		}

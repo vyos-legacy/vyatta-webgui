@@ -1,0 +1,6 @@
+access:installer
+run: if sudo perl /opt/vyatta/sbin/openapp-conf-smtp.pl --server "$4" --name "$6" --email "$8" --user "$10" --pswd "$12"; then
+       return 0
+     else
+       return 1
+     fi

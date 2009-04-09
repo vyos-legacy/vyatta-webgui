@@ -43,16 +43,22 @@ const string WebGUI::CHUNKER_UPDATE_FORMAT = "<vyatta><chunker_command><token>%s
 const string WebGUI::OPENAPP_GUI_USER = "installer";
 const string WebGUI::OPENAPP_GUI_GROUP = "vyattacfg";
 
+//admin is for user, installer is for admin
+const string WebGUI::OPENAPP_USER_RESTRICTED_POLICY_USER = "/opt/vyatta/config/active/system/open-app/password-policy/user/node.val";
+const string WebGUI::OPENAPP_USER_RESTRICTED_POLICY_ADMIN = "/opt/vyatta/config/active/system/open-app/password-policy/admin/node.val";
+
+
 const string WebGUI::OA_GUI_ENV_AUTH_USER = "OA_AUTH_USER";
 
-char const* WebGUI::ErrorDesc[8] = {" ",
+char const* WebGUI::ErrorDesc[9] = {" ",
 				    "request cannot be parsed",
 				    "authentication error",
 				    "session is not valid",
 				    "general server failure",
 				    "command failed",
 				    "commit is in progress",
-				    "configuration has changed"};
+				    "configuration has changed",
+				    "change password required"};
 
 /**
  *
@@ -115,11 +121,11 @@ WebGUI::get_user(unsigned long id)
  *
  **/
 bool
-WebGUI::set_user(unsigned long id, const std::string &user)
+WebGUI::set_user(unsigned long id, const std::string &user, bool restricted)
 {
   bool restrict = is_restricted(id);
   
-  string flag = string((restrict == true) ? "1" : "0");
+  string flag = string((restricted == true) ? "1" : "0");
 
   string tmp = user + "," + flag;
 

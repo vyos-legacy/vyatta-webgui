@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# Module: openapp-conf-smtp.pl
+# Module: openapp-conf-ldap.pl
 # 
 # **** License ****
 # This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ use Getopt::Long;
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
 
-my ($address,$email,$username,$password,$list);
+my ($address,$r_pswd,$r_user,$rw_pswd,$rw_user,$list);
 
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
@@ -42,7 +42,7 @@ if ($auth_user_role ne 'installer') {
   exit 1;
 }
 
-sub set_smtp {
+sub set_ldap {
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
     if ($err != 0) {
@@ -51,28 +51,35 @@ sub set_smtp {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp address $address");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap address $address");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp email $email");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap r-password $r_pswd");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp username $username");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap r-username $r_user");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp password $password");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap rw-password $rw_pswd");
+    if ($err != 0) {
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # apply config command
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap rw-username $rw_user");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
@@ -88,29 +95,23 @@ sub set_smtp {
    
 }
 
-sub list_smtp() {
+sub list_ldap() {
     print "VERBATIM_OUTPUT\n";
-    my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app smtp client`;
+    my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app ldap`;
     
-#output will look something like this:
-# address 1.1.1.1
-# name foo
-# password bar
-# server 2.3.4.2
-# username harry
     my @address = split(" ",$out[0]);
-    my @name = split(" ",$out[1]);
-    my @password = split(" ",$out[2]);
-    my @server = split(" ",$out[3]);
-    my @username = split(" ",$out[4]);
+    my @r_password = split(" ",$out[1]);
+    my @r_username = split(" ",$out[2]);
+    my @rw_password = split(" ",$out[3]);
+    my @rw_username = split(" ",$out[4]);
 
-    print "<smtp-client>";
+    print "<ldap>";
     print "<address>$address[1]</address>";
-    print "<name>$name[1]</name>";
-    print "<password>$password[1]</password>";
-    print "<server>$server[1]</server>";
-    print "<username>$username[1]</username>";
-    print "</smpt-client>";
+    print "<r-password>$r_password[1]</r-password>";
+    print "<r-username>$r_username[1]</r-username>";
+    print "<rw-password>$rw_password[1]</rw-password>";
+    print "<rw-username>$rw_username[1]</rw-username>";
+    print "</ldap>";
 }
 
 ##########################################################################
@@ -120,9 +121,10 @@ sub list_smtp() {
 ##########################################################################
 sub usage() {
     print "       $0 --address=<address>\n";
-    print "       $0 --email=<email>\n";
-    print "       $0 --username=<username>\n";
-    print "       $0 --password=<password>\n";
+    print "       $0 --r-pswd=<read-pswd>\n";
+    print "       $0 --r-user=<read-user>\n";
+    print "       $0 --rw-pswd=<readwrite-pswd>\n";
+    print "       $0 --rw-user=<readwrite-user>\n";
     print "       $0 --list\n";
     exit 0;
 }
@@ -130,16 +132,17 @@ sub usage() {
 #pull commands and call command
 GetOptions(
     "address=s"               => \$address,
-    "email=s"                 => \$email,
-    "username=s"              => \$username,
-    "password=s"              => \$password,
+    "r-pswd=s"                => \$r_pswd,
+    "r-user=s"                => \$r_user,
+    "rw-pswd=s"               => \$rw_pswd,
+    "rw-user=s"               => \$rw_user,
     "list:s"                  => \$list,
     ) or usage();
 
-if (defined $address && defined $email && defined $username && defined $password ) {
-    set_smtp();
+if (defined $address && defined $r_pswd && defined $r_user && defined $rw_pswd && defined $rw_user ) {
+    set_ldap();
 }
 else {
-    list_smtp();
+    list_ldap();
 }
 exit 0;

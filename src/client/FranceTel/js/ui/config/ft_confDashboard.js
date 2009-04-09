@@ -124,21 +124,34 @@ function FT_confDashboard(name, callback, busLayer)
     this.f_createSortingArray = function(sortIndex, vm)
     {
         var ar = new Array();
+        var op = '';
 
         for(var i=0; i<vm.length; i++)
         {
-            // NOTE: the order of this partition same as the order
-            // grid columns.
-            // compose a default table row
-            ar[i] = vm[i].m_displayName + '|' + vm[i].m_status + '|' +
-                    vm[i].m_cpu + '|' + vm[i].f_getMemPercentage() + '|' +
-                    vm[i].m_memTotal + '|' + vm[i].m_memFree + '|' +
-                    vm[i].f_getDiskPercentage() + '|' + vm[i].m_diskTotal + '|' +
-                    vm[i].m_diskFree + '|' + vm[i].m_name;
+            // OA is alway at the top
+            if(vm[i].m_name == 'openapp')
+                op = thisObj.f_composeSortingStr(vm[i]);
+            else
+                ar[ar.length] = thisObj.f_composeSortingStr(vm[i]);
         }
 
-        return thisObj.f_sortArray(sortIndex, ar);
+        var newArray = thisObj.f_sortArray(sortIndex, ar);
+        newArray.unshift(op);
+        return newArray;
     }
+
+    this.f_composeSortingStr = function(vm)
+    {
+        // NOTE: the order of this partition same as the order
+        // grid columns.
+        // compose a default table row
+        return  vm.m_displayName + '|' + vm.m_status + '|' +
+                    vm.m_cpu + '|' + vm.f_getMemPercentage() + '|' +
+                    vm.m_memTotal + '|' + vm.m_memFree + '|' +
+                    vm.f_getDiskPercentage() + '|' + vm.m_diskTotal + '|' +
+                    vm.m_diskFree + '|' + vm.m_name;
+    }
+
 
     this.f_handleGridSort = function(col)
     {

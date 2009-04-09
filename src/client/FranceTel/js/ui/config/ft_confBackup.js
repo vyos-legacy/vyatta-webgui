@@ -28,7 +28,7 @@ function FT_confBackup(name, callback, busLayer)
     this.f_getConfigurationPage = function()
     {
         var page = this.f_getNewPanelDiv(this.f_init());
-        page.style.height = '360px';
+        //page.style.height = '360px';
         thisObj.f_attachEventListener();			
         return page;
     }
@@ -264,7 +264,8 @@ function FT_confBackup(name, callback, busLayer)
 					//alert('adding row: vm: ' + v.m_name + ' innerHTML: ' + bodyDiv.innerHTML);
                     thisObj.m_body.appendChild(bodyDiv);
                 }
-                thisObj.f_adjustDivPosition(thisObj.m_bottom);				
+                //thisObj.f_adjustDivPosition(thisObj.m_bottom);	
+				thisObj.f_resize(15);
             }
         }
         thisObj.m_busLayer.f_getVMDataFromServer(cb);	

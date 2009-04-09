@@ -50,7 +50,7 @@ function FT_confDashboard(name, callback, busLayer)
         thisObj.m_updateFields = [];
 
         var cb = function(evt)
-        {
+        { 
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
@@ -65,6 +65,7 @@ function FT_confDashboard(name, callback, busLayer)
 
                 thisObj.f_populateTable();
             }
+			thisObj.f_resize();		
         }
 
         g_utils.f_cursorWait();

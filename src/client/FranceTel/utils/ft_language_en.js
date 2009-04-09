@@ -201,7 +201,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Popup Message Dialog
     m_puSessionTimeout : 'Session Time Out',
-    m_puSessionTimeoutMsg : 'For security reasons, your session is no longer active.<br>Please re-login again.',
+    m_puSessionTimeoutMsg : 'For security reasons, your session is no longer active.<br>Please log in again.',
 
     ///////////////////////////////////////////////////////////////////
     // Login Dialog

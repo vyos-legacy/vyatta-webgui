@@ -201,6 +201,11 @@ function FT_businessLayer()
         return this.m_userObj.m_loginUser;
     }
 
+    this.f_getUserRecByUserName = function(username)
+    {
+        return this.m_userObj.f_getUserRecByUserName(username);
+    }
+
     /**
      * Find the user from the local cache. Returns a user record
      * object that match the username.

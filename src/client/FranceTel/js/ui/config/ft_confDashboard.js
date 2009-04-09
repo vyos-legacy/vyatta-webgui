@@ -46,6 +46,7 @@ function FT_confDashboard(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
+        thisObj.f_resetSorting();
         thisObj.m_updateFields = [];
 
         var cb = function(evt)
@@ -126,6 +127,8 @@ function FT_confDashboard(name, callback, busLayer)
 
         for(var i=0; i<vm.length; i++)
         {
+            // NOTE: the order of this partition same as the order
+            // grid columns.
             // compose a default table row
             ar[i] = vm[i].m_displayName + '|' + vm[i].m_status + '|' +
                     vm[i].m_cpu + '|' + vm[i].f_getMemPercentage() + '|' +
@@ -139,21 +142,8 @@ function FT_confDashboard(name, callback, busLayer)
 
     this.f_handleGridSort = function(col)
     {
-        // only col 0 & 1 allow sorting
-        if(col >= 2) return;
-
-        var order = FT_confDashboard.superclass.m_sortOrder;
-
-        if(col != FT_confDashboard.superclass.m_sortColPrev)
-            order = 'asc';
-        else if(order == 'asc')
-            order = 'desc';
-        else
-            order = 'asc';
-
-        FT_confDashboard.superclass.m_sortCol = col;
-        FT_confDashboard.superclass.m_sortOrder = order;
-        thisObj.f_populateTable();
+        if(thisObj.f_isSortEnabled(thisObj.m_colHd, col))
+            thisObj.f_populateTable();
     }
 
     this.f_handleCheckboxClick = function(chkbox)

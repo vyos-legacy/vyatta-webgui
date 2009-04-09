@@ -30,7 +30,7 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // VM Update & History screen
-    m_uhHdData : "Date",
+    m_uhHdDate : "Date",
     m_uhErrorTitle : "VM Update Error",
     m_uhCancelTitle : 'Cancel Update Schedule',
 
@@ -126,7 +126,7 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Buttons & Images
-    m_imageDir : 'images/',
+    m_imageDir : 'images/en/',
 	m_ok: 'ok',
 	m_error: 'Error',
 	m_info: 'Information',
@@ -214,8 +214,8 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Email Server configuration
-	m_emailSmtpAddr : "SMTP server address",
-	m_emailLocalMachName : "Local machine name",
+	m_emailStmpAddr : "SMTP server address",
+	m_emailLocalMachNam : "Local machine name",
 	m_emailLocalEmail : "Local email address",
 	m_emailAuthName : "Authorization name",
 	m_emailAuthPasswd : "Authorization password",

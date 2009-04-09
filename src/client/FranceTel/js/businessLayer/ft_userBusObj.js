@@ -253,6 +253,17 @@ function FT_userBusObj(busObj)
         return false;
     }
 
+    this.f_getUserRecByUserName = function(username)
+    {
+        for(var i=0; i<this.m_userList.length; i++)
+        {
+            if(this.m_userList[i].m_user == username)
+                return this.m_userList[i];
+        }
+
+        return null;
+    }
+
     /**
      * add userRec to server
      * To set username, last, first, pw to server. Use userObj.m_type to

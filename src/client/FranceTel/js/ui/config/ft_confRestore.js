@@ -10,6 +10,7 @@ function FT_confRestore(name, callback, busLayer)
     this.thisObjName = 'FT_confRestore';
     var thisObj = this;
     this.m_dataObj = null;
+    this.m_colHd = null;
 
     /**
      * @param name - name of configuration screens.
@@ -35,8 +36,8 @@ function FT_confRestore(name, callback, busLayer)
 
         var cols = [];
 
-        cols[0] = this.f_createColumn(g_lang.m_uhHdDate, 120, 'text', '6');
-        cols[1] = this.f_createColumn(g_lang.m_restoreHdContent, 330, 'text', '6');
+        cols[0] = this.f_createColumn(g_lang.m_uhHdDate, 120, 'text', '6', true);
+        cols[1] = this.f_createColumn(g_lang.m_restoreHdContent, 330, 'text', '6', true);
         cols[2] = this.f_createColumn(g_lang.m_restoreHdRestore, 80, 'button', '30');
         cols[3] = this.f_createColumn(g_lang.m_restoreHdDownload, 80, 'button', '30');
         cols[4] = this.f_createColumn(g_lang.m_delete, 80, 'button', '30');
@@ -46,7 +47,7 @@ function FT_confRestore(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
-        var hd = this.f_createColumns();
+        thisObj.f_resetSorting();
 
         var cb = function(evt)
         {
@@ -56,44 +57,78 @@ function FT_confRestore(name, callback, busLayer)
                 if(thisObj.f_isServerError(evt, g_lang.m_restoreErrorTitle))
                     return;
 
-                if(thisObj.m_div != undefined)
-                    thisObj.f_resetScreen();
-
-                var vmData = [];
                 var bkRec = evt.m_value;
                 if(bkRec == undefined) return;
 
                 thisObj.m_dataObj = bkRec;
-                for(var i=0; i<bkRec.length; i++)
-                {
-                    var r = bkRec[i];
-                    var content = thisObj.f_getContents(r.m_content.m_entry);
-                    var restDesc = "f_handleRestoreDesc('" + r.m_file + "')";
-                    var anchor = thisObj.f_renderAnchor(content, restDesc,
-                                g_lang.m_restoreClickRestore + " (" + content + ")");
-                    var restore = thisObj.f_renderButton(
-                                'restore', true, restDesc, g_lang.m_restoreArchive +
-                                ' (' + content + ')');
-                    var download = thisObj.f_renderButton(
-                                //'download', true, "f_handleDownloadRestore('" +
-                                'download', true, r.m_file+".zip",
-                                g_lang.m_restoreDownload + ' (' + content + ')');
-                    var del = thisObj.f_renderButton(
-                                'delete', true, "f_deleteRestoreFile('" + content +
-                                "', '" + r.m_file + "')",
-                                g_lang.m_restoreDel + ' (' + content + ')');
-
-                    vmData = [r.m_bkDate, anchor, restore, download, del]
-                    var bodyDiv = thisObj.f_createGridRow(hd, vmData);
-                    thisObj.m_body.appendChild(bodyDiv);
-                }
-
-                thisObj.f_adjustDivPosition(thisObj.m_restorePC);
+                thisObj.f_populateTable();
             }
         }
 
         g_utils.f_cursorWait();
         thisObj.m_busLayer.f_getVMRestoreListFromServer(cb);
+    }
+
+    this.f_populateTable = function()
+    {
+        if(thisObj.m_div != undefined)
+            thisObj.f_resetScreen();
+
+        var sortCol = FT_confDashboard.superclass.m_sortCol;
+        var rRec = thisObj.f_createSortingArray(sortCol, thisObj.m_dataObj);
+
+        // create table row
+        var vmData = [];
+        for(var i=0; i<rRec.length; i++)
+        {
+            var r = rRec[i].split('|');
+
+            var content = r[1];
+            var restDesc = "f_handleRestoreDesc('" + r[2] + "')";
+            var anchor = thisObj.f_renderAnchor(content, restDesc,
+                        g_lang.m_restoreClickRestore + " (" + content + ")");
+            var restore = thisObj.f_renderButton(
+                        'restore', true, restDesc, g_lang.m_restoreArchive +
+                        ' (' + content + ')');
+            var download = thisObj.f_renderButton(
+                        //'download', true, "f_handleDownloadRestore('" +
+                        'download', true, r[2]+".zip",
+                        g_lang.m_restoreDownload + ' (' + content + ')');
+            var del = thisObj.f_renderButton(
+                        'delete', true, "f_deleteRestoreFile('" + content +
+                        "', '" + r[2] + "')",
+                        g_lang.m_restoreDel + ' (' + content + ')');
+
+            vmData = [r[0], anchor, restore, download, del]
+            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData);
+            thisObj.m_body.appendChild(bodyDiv);
+        }
+
+        thisObj.f_adjustDivPosition(thisObj.m_restorePC);
+    }
+
+    this.f_createSortingArray = function(sortIndex, vm)
+    {
+        var ar = new Array();
+
+        for(var i=0; i<vm.length; i++)
+        {
+            var content = thisObj.f_getContents(vm[i].m_content.m_entry);
+
+            // NOTE: the order of this partition same as the order
+            // grid columns.
+            // compose a default table row
+            ar[i] = vm[i].m_bkDate + '|' + content + '|' +
+                    vm[i].m_file;
+        }
+
+        return thisObj.f_sortArray(sortIndex, ar);
+    }
+
+    this.f_handleGridSort = function(col)
+    {
+        if(thisObj.f_isSortEnabled(thisObj.m_colHd, col))
+            thisObj.f_populateTable();
     }
 
     this.f_stopLoadVMData = function()
@@ -104,6 +139,9 @@ function FT_confRestore(name, callback, busLayer)
     {
         thisObj.f_removeDivChildren(thisObj.m_div);
         thisObj.f_removeDivChildren(thisObj.m_body);
+        thisObj.f_removeDivChildren(thisObj.m_header);
+        thisObj.m_header = thisObj.f_createGridHeader(thisObj.m_colHd,
+                            'f_restoreGridHeaderOnclick');
         thisObj.m_div.appendChild(thisObj.m_header);
         thisObj.m_div.appendChild(thisObj.m_body);
         thisObj.m_div.appendChild(thisObj.m_restorePC);
@@ -142,9 +180,10 @@ function FT_confRestore(name, callback, busLayer)
 
     this.f_init = function()
     {
-        var hd = this.f_createColumns();
-        this.m_header = this.f_createGridHeader(hd);
-        this.m_body = this.f_createGridView(hd);
+        this.m_colHd = this.f_createColumns();
+        this.m_header = this.f_createGridHeader(this.m_colHd,
+                                    'f_restoreGridHeaderOnclick');
+        this.m_body = this.f_createGridView(this.m_colHd);
         this.m_restorePC = this.f_createRestoreFromPC();
         this.f_loadVMData();
 
@@ -250,4 +289,9 @@ function f_deleteRestoreFile(content, filename)
     g_utils.f_popupMessage(g_lang.m_deleteConfirm + ' (' + content + ')?',
                 'confirm', g_lang.m_restoreDelTitle, true,
                 "f_handleDeleteRestoreFile(this, '"+ filename + "')");
+}
+
+function f_restoreGridHeaderOnclick(col)
+{
+    g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }

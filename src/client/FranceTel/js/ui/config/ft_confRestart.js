@@ -9,6 +9,8 @@ function FT_confRestart(name, callback, busLayer)
 {
     this.thisObjName = 'FT_confRestart';
     var thisObj = this;
+    this.m_colHd = null;
+    this.m_vmRec = null;
 
     /**
      * @param name - name of configuration screens.
@@ -32,8 +34,8 @@ function FT_confRestart(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn(g_lang.m_dbHdApplication, 250, 'text', '6');
-        cols[1] = this.f_createColumn(g_lang.m_dbHdStatus, 80, 'image', '35');
+        cols[0] = this.f_createColumn(g_lang.m_dbHdApplication, 250, 'text', '6', true);
+        cols[1] = this.f_createColumn(g_lang.m_dbHdStatus, 80, 'image', '35', true);
         cols[2] = this.f_createColumn('', 100, 'button', '25');
         cols[3] = this.f_createColumn('', 100, 'button', '25');
         cols[4] = this.f_createColumn('', 100, 'button', '25');
@@ -43,7 +45,7 @@ function FT_confRestart(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
-        var hd = this.f_createColumns();
+        thisObj.f_resetSorting();
 
         var cb = function(evt)
         {
@@ -56,49 +58,80 @@ function FT_confRestart(name, callback, busLayer)
                     return;
                 }
 
-                var vm = evt.m_value;
-                if(vm == undefined) return;
-
-                thisObj.f_removeDivChildren(thisObj.m_div);
-                thisObj.f_removeDivChildren(thisObj.m_body);
-                thisObj.m_div.appendChild(thisObj.m_header);
-                thisObj.m_div.appendChild(thisObj.m_body);
-                thisObj.m_div.appendChild(thisObj.m_button);
-
-                for(var i=0; i<vm.length; i++)
-                {
-                    var v = vm[i];
-
-                    //////////////////////////////////
-                    // skip open appliance
-                    if(v.m_name == 'openapp' || v.m_name == 'blb') continue;
-
-                    var enabled = v.m_status == 'up' ? true : false;
-
-                    var img = thisObj.f_renderStatus(v.m_status);
-                    var restart = thisObj.f_renderButton(
-                                'Restart', enabled, "f_vmRestart('" +
-                                v.m_name + "', '" + v.m_displayName + "')",
-                                'Restart ' + v.m_name);
-                    var stop = thisObj.f_renderButton(
-                                'Stop', enabled, "f_vmStop('" +
-                                v.m_name + "', '" + v.m_displayName + "')",
-                                'Stop ' + v.m_name);
-                    var start = thisObj.f_renderButton(
-                                'Start', !enabled, "f_vmHandleStart('" +
-                                v.m_name + "')", 'Start ' + v.m_name);
-                    var vmData = [v.m_displayName, img, restart, stop, start];
-
-                    var bodyDiv = thisObj.f_createGridRow(hd, vmData);
-                    thisObj.m_body.appendChild(bodyDiv);
-                }
-
-                thisObj.f_adjustDivPosition(thisObj.m_button);
+                thisObj.m_vmRec = evt.m_value;
+                if(thisObj.m_vmRec == undefined) return;
+                thisObj.f_populateTable();
             }
         }
 
         g_utils.f_cursorWait();
         this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
+    }
+
+    this.f_populateTable = function()
+    {
+        thisObj.f_removeDivChildren(thisObj.m_div);
+        thisObj.f_removeDivChildren(thisObj.m_body);
+        thisObj.f_removeDivChildren(thisObj.m_header);
+        thisObj.m_header = thisObj.f_createGridHeader(thisObj.m_colHd,
+                            'f_restartGridHeaderOnclick');
+        thisObj.m_div.appendChild(thisObj.m_header);
+        thisObj.m_div.appendChild(thisObj.m_body);
+        thisObj.m_div.appendChild(thisObj.m_button);
+
+        var sortCol = FT_confDashboard.superclass.m_sortCol;
+        var vm = thisObj.f_createSortingArray(sortCol, thisObj.m_vmRec);
+        for(var i=0; i<vm.length; i++)
+        {
+            var v = vm[i].split('|');
+
+            //////////////////////////////////
+            // skip open appliance
+            if(v[0] == 'openapp' || v[0] == 'blb') continue;
+
+            var enabled = v[1] == 'up' ? true : false;
+
+            var img = thisObj.f_renderStatus(v[1]);
+            var restart = thisObj.f_renderButton(
+                        'Restart', enabled, "f_vmRestart('" +
+                        v[0] + "', '" + v[2] + "')",
+                        'Restart ' + v[0]);
+            var stop = thisObj.f_renderButton(
+                        'Stop', enabled, "f_vmStop('" +
+                        v[0] + "', '" + v[2] + "')",
+                        'Stop ' + v[0]);
+            var start = thisObj.f_renderButton(
+                        'Start', !enabled, "f_vmHandleStart('" +
+                        v[0] + "', '" + v[2] + "')", 'Start ' + v[0]);
+            var vmData = [v[2], img, restart, stop, start];
+
+            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData);
+            thisObj.m_body.appendChild(bodyDiv);
+        }
+
+        thisObj.f_adjustDivPosition(thisObj.m_button);
+    }
+
+    this.f_createSortingArray = function(sortIndex, vm)
+    {
+        var ar = new Array();
+
+        for(var i=0; i<vm.length; i++)
+        {
+            // NOTE: the order of this partition same as the order
+            // grid columns.
+            // compose a default table row
+            ar[i] = vm[i].m_name + '|' + vm[i].m_status + '|' +
+                    vm[i].m_displayName;
+        }
+
+        return thisObj.f_sortArray(sortIndex, ar);
+    }
+
+    this.f_handleGridSort = function(col)
+    {
+        if(thisObj.f_isSortEnabled(thisObj.m_colHd, col))
+            thisObj.f_populateTable();
     }
 
     this.f_stopLoadVMData = function()
@@ -109,9 +142,9 @@ function FT_confRestart(name, callback, busLayer)
 
     this.f_init = function()
     {
-        var hd = this.f_createColumns();
-        this.m_header = this.f_createGridHeader(hd);
-        this.m_body = this.f_createGridView(hd);
+        this.m_colHd = this.f_createColumns();
+        this.m_header = this.f_createGridHeader(this.m_colHd, 'f_restartGridHeaderOnclick');
+        this.m_body = this.f_createGridView(this.m_colHd);
         this.m_button = this.f_createOARestart();
         this.f_loadVMData();
 
@@ -197,4 +230,9 @@ function f_vmHandleStart(vm)
     }
 
     g_busObj.f_startVM(vm, cb);
+}
+
+function f_restartGridHeaderOnclick(col)
+{
+    g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }

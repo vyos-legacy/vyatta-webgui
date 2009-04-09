@@ -9,6 +9,7 @@
 function FT_confBaseObj(name, callback, busLayer)
 {
     var thisObj = this;
+    this.m_allowSort = false;
     this.m_sortColPrev = -1;
     this.m_sortCol = 0;
     this.m_sortOrder = 'asc';   // asc or des
@@ -24,6 +25,7 @@ function FT_confBaseObj(name, callback, busLayer)
         this.m_name = name;
         this.m_containerCb = callback;
         this.m_treadId = null;
+        this.m_allowSort = false;
     }
     this.constructor(name, callback, busLayer);
 
@@ -52,7 +54,7 @@ function FT_confBaseObj(name, callback, busLayer)
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.height = '300px';
-        div.style.overflow = 'auto';
+        div.style.overflow = 'visible';
         div.style.fontFamily = 'Arial, sans-serif';
 
         document.getElementById('ft_container').appendChild(div);
@@ -69,8 +71,7 @@ function FT_confBaseObj(name, callback, busLayer)
         var div = document.createElement('div');
         div.style.position = 'relative';
         div.style.border = '1px solid #CCC';
-        div.style.backgroundColor = '#FF6600'//'#EFEFEF';
-        div.style.color = '#fff';
+        div.style.backgroundColor = '#EFEFEF';//'#FF6600'//'#EFEFEF';
         div.style.overflow = 'visible';
 
         var width = 0;
@@ -324,6 +325,9 @@ function FT_confBaseObj(name, callback, busLayer)
      */
     this.f_createColumn = function(colName, width, type, paddLeft, sortable)
     {
+        if(sortable != undefined && sortable)
+            thisObj.m_allowSort = true;
+
         return [colName, width, type, paddLeft, sortable];
     }
 
@@ -335,7 +339,11 @@ function FT_confBaseObj(name, callback, busLayer)
         {
             if(thisObj.m_sortCol == col)
             {
-                var sortIcon = thisObj.m_sortOrder == 'asc' ? '&Delta;' : '&nabla;';
+                var sortIcon = thisObj.m_sortOrder == 'asc' ? 
+                    '<img src="' + g_lang.m_imageDir + 'sortAsc.gif"/>' :
+                    '<img src="' + g_lang.m_imageDir + 'sortDesc.gif"/>';
+
+                if(!thisObj.m_allowSort) sortIcon = '';
                 header = "<p valign='center' align='center'><b>" +
                       colName + "&nbsp;" + sortIcon + "<br></b></p>";
             }
@@ -353,10 +361,10 @@ function FT_confBaseObj(name, callback, busLayer)
         {
             default:
                 return '<span title="Status is unknow" align="center">' +
-                        '<img src="' + g_lang.m_imageDir + 'statusUnknown.gif" </span>';
+                        '<img src="' + g_lang.m_imageDir + 'statusUnknown.gif"/></span>';
             case 'down':
                 return '<span title="Status is down" align="center">' +
-                        '<img src="' + g_lang.m_imageDir + 'statusDown.gif" </span>';
+                        '<img src="' + g_lang.m_imageDir + 'statusDown.gif"/> </span>';
             case 'up':
                 return '<span title="Status is up" align="center">' +
                         '<img src="' + g_lang.m_imageDir + 'statusUp.gif"/> </span>';
@@ -511,6 +519,34 @@ function FT_confBaseObj(name, callback, busLayer)
             button.src = enabled ? newSrc + name + '.gif' : /*newSrc + name + '.gif';*/
                           newSrc + name + '_disabled.gif';
         }
+    }
+
+    this.f_resetSorting = function()
+    {
+        thisObj.m_sortOrder = 'asc';
+        thisObj.m_sortCol = 0;
+    }
+
+    this.f_isSortEnabled = function(colHeader, col)
+    {
+        // check for header sorting is allow or not
+        var chd = colHeader[col];
+        if(chd[4] == undefined || chd[4] == false)
+            return false;
+
+        var order = thisObj.m_sortOrder;
+
+        if(col != thisObj.m_sortColPrev)
+            order = 'asc';
+        else if(order == 'asc')
+            order = 'desc';
+        else
+            order = 'asc';
+
+        thisObj.m_sortCol = col;
+        thisObj.m_sortOrder = order;
+
+        return true;
     }
 
     this.f_sortArray = function(col, ar)

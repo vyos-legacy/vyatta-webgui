@@ -8,9 +8,11 @@
 function FT_confBackup(name, callback, busLayer)
 {
     this.thisObjName = 'FT_confBackup';
-	this.m_vmName = [];
-	var thisObj = this;
-	this.m_bottom = undefined;
+    this.m_vmName = [];
+    var thisObj = this;
+    this.m_bottom = undefined;
+    this.m_colHd = null;
+    this.m_bkRec = null;
 
     /**
      * @param name - name of configuration screens.
@@ -208,8 +210,6 @@ function FT_confBackup(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
-        var hd = this.f_createColumns();
-
         var cb = function(evt)
         {
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
@@ -245,31 +245,19 @@ function FT_confBackup(name, callback, busLayer)
 					thisObj.m_vmName.push(v.m_name);
                     vmData[i] = [v.m_displayName, config, data];
 
-                    var bodyDiv = thisObj.f_createGridRow(hd, vmData[i]);
+                    var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData[i]);
 					//alert('adding row: vm: ' + v.m_name + ' innerHTML: ' + bodyDiv.innerHTML);
                     thisObj.m_body.appendChild(bodyDiv);
                 }
                 thisObj.f_adjustDivPosition(thisObj.m_bottom);				
-				//////////////////////////////////////////////////////////
-				//// adding the check all, check all to the last row
-				//////////////////////////////////////////////////////////
-				/*
-				var cAllData ='<input type="checkbox" id="conf_backup_data_checkall" name="data_checkall" value="data_checkall">&nbsp;Check All</a>';
-				var cAllConfig = '<input type="checkbox" id="conf_backup_config_checkall" name="data_checkall" value="data_checkall">&nbsp;Check All</a>';
-				var row = ['&nbsp;&nbsp;', cAllConfig, cAllData];
-				var bDiv = thisObj.f_createGridRow(hd, row);
-				thisObj.m_body.appendChild(bDiv);
-				*/
             }
         }
         thisObj.m_busLayer.f_getVMDataFromServer(cb);	
-        //this.m_treadId = this.m_busLayer.f_startVMRequestThread(cb);
     }
 
     this.f_stopLoadVMData = function()
     {
 		thisObj.f_detachEventListener();
-        //this.m_busLayer.f_stopVMRequestThread(this.m_treadId);
     }
 	
     /**
@@ -312,10 +300,10 @@ function FT_confBackup(name, callback, busLayer)
 
     this.f_init = function()
     {
-        var hd = thisObj.f_createColumns();
-        this.m_header = thisObj.f_createGridHeader(hd);
-        this.m_body = thisObj.f_createGridView(hd);
-		this.m_target = thisObj.f_createTargetView();
+        this.m_colHd = thisObj.f_createColumns();
+        this.m_header = thisObj.f_createGridHeader(this.m_colHd, 'f_bkGridHeaderOnclick');
+        this.m_body = thisObj.f_createGridView(this.m_colHd);
+        this.m_target = thisObj.f_createTargetView();
 		
         thisObj.f_loadVMData();
 
@@ -345,4 +333,9 @@ function f_handleConfBackupCancelCb()
 function f_handleConfBackupOkCb()
 {
     g_mainFrameObj.f_selectPage(VYA.FT_CONST.DOM_2_NAV_BACKUP_ID, VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);			
+}
+
+function f_bkGridHeaderOnclick(col)
+{
+    g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }

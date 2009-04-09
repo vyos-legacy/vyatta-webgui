@@ -12,6 +12,8 @@ function FT_confUserRight(name, callback, busLayer)
     this.m_uiData = null;
     this.m_btnApplyId = 'ur_apply_id';
     this.m_btnCancelId = 'ur_cancel_id';
+    this.m_colHd = null;
+    this.m_uRec = null;
 
     /**
      * @param name - name of configuration screens.
@@ -41,7 +43,7 @@ function FT_confUserRight(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn(g_lang.m_name, 180, 'text', '6');
+        cols[0] = this.f_createColumn(g_lang.m_name, 180, 'text', '6', true);
 
         var vm = g_busObj.f_getVmRecObj();
         var vmIndex = 1;
@@ -61,6 +63,9 @@ function FT_confUserRight(name, callback, busLayer)
     {
         thisObj.f_removeDivChildren(thisObj.m_div);
         thisObj.f_removeDivChildren(thisObj.m_body);
+        thisObj.f_removeDivChildren(thisObj.m_header);
+        thisObj.m_header = thisObj.f_createGridHeader(thisObj.m_colHd,
+                            'f_urGridHeaderOnclick');
         thisObj.m_div.appendChild(thisObj.m_header);
         thisObj.m_div.appendChild(thisObj.m_body);
         thisObj.m_div.appendChild(thisObj.m_buttons);
@@ -68,7 +73,7 @@ function FT_confUserRight(name, callback, busLayer)
 
     this.f_loadData = function()
     {
-        var hd = this.f_createColumns();
+        thisObj.f_resetSorting();
 
         var cb = function(evt)
         {
@@ -83,57 +88,90 @@ function FT_confUserRight(name, callback, busLayer)
 
                 if(ul != undefined && ul.m_userList != null)
                 {
-                    thisObj.f_clearViewRow();
-                    ul = ul.m_userList;
-                    var vm = g_busObj.f_getVmRecObj();
-
-                    // create table row
-                    var c=0;
-                    for(var i=0; i<ul.length; i++)
-                    {
-                        if(ul[i].m_role == 'admin' || ul[i] == 'installer')
-                            continue;
-
-                        var fName = ul[i].m_last + ' ' + ul[i].m_first;
-                        var un = ul[i].m_user;
-                        var data = [fName];
-
-                        // create table column
-                        var dataIndex = 0;
-                        var uiData = [];
-                        for(var j=0; j<vm.length; j++)
-                        {
-                            if(!thisObj.f_showThisVM(vm[j].m_name))
-                                continue;
-
-                            var vn = g_utils.f_replace(vm[j].m_name, " ", "");
-                            var right = thisObj.f_createUserRightsCheckbox(
-                                    vn, un, ul[i]);
-                            if(right != null)
-                            {
-                                uiData[dataIndex] = [un+vn, right[1],
-                                            un, vm[j].m_name];
-                                data[1+dataIndex++] = right[0];
-                            }
-                        }
-
-                        // uiData contains username, vmname and checkbox element id and
-                        // 'yes'/'no' where yes is check
-                        // etc. id (username+vmName), check/no check, username, vmname
-                        thisObj.m_uiData[c++] = uiData;
-
-                        var bodyDiv = thisObj.f_createGridRow(hd, data);
-                        thisObj.m_body.appendChild(bodyDiv);
-                    }
-
-                    thisObj.f_adjustDivPosition(thisObj.m_buttons);
-                    thisObj.f_handleOnCheckBoxClick();
+                    thisObj.m_uRec = ul.m_userList;
+                    thisObj.f_populateTable();
                 }
             }
         }
 
         g_utils.f_cursorWait();
         this.m_busLayer.f_getUserListFromServer(cb);
+    }
+
+    this.f_populateTable = function()
+    {
+        thisObj.f_clearViewRow();
+
+        var sortCol = FT_confDashboard.superclass.m_sortCol;
+        var ulRec = thisObj.f_createSortingArray(sortCol, thisObj.m_uRec);
+        var vm = g_busObj.f_getVmRecObj();
+
+        // create table row
+        var c=0;
+        for(var i=0; i<ulRec.length; i++)
+        {
+            var ul = ulRec[i].split('|');
+
+            if(ul[4] == 'admin' || ul[4] == 'installer')
+                continue;
+
+            var fName = ul[1] + ' ' + ul[2];
+            var un = ul[0];
+            var data = [fName];
+
+            // create table column
+            var dataIndex = 0;
+            var uiData = [];
+            for(var j=0; j<vm.length; j++)
+            {
+                if(!thisObj.f_showThisVM(vm[j].m_name))
+                    continue;
+
+                var vn = g_utils.f_replace(vm[j].m_name, " ", "");
+                var right = thisObj.f_createUserRightsCheckbox(
+                        vn, un, g_busObj.f_getUserRecByUserName(ul[0]));
+                if(right != null)
+                {
+                    uiData[dataIndex] = [un+vn, right[1],
+                                un, vm[j].m_name];
+                    data[1+dataIndex++] = right[0];
+                }
+            }
+
+            // uiData contains username, vmname and checkbox element id and
+            // 'yes'/'no' where yes is check
+            // etc. id (username+vmName), check/no check, username, vmname
+            thisObj.m_uiData[c++] = uiData;
+
+            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, data);
+            thisObj.m_body.appendChild(bodyDiv);
+        }
+
+        thisObj.f_adjustDivPosition(thisObj.m_buttons);
+        thisObj.f_handleOnCheckBoxClick();
+    }
+
+    this.f_createSortingArray = function(sortIndex, vm)
+    {
+        var ar = new Array();
+
+        for(var i=0; i<vm.length; i++)
+        {
+            // NOTE: the order of this partition same as the order
+            // grid columns.
+            // compose a default table row
+            ar[i] = vm[i].m_user + '|' + vm[i].m_last + '|' +
+                    vm[i].m_first + '|' + vm[i].m_email + '|' +
+                    vm[i].m_role;
+        }
+
+        return thisObj.f_sortArray(sortIndex, ar);
+    }
+
+    this.f_handleGridSort = function(col)
+    {
+        if(thisObj.f_isSortEnabled(thisObj.m_colHd, col))
+            thisObj.f_populateTable();
     }
 
     this.f_stopLoadVMData = function()
@@ -252,9 +290,9 @@ function FT_confUserRight(name, callback, busLayer)
 
     this.f_init = function()
     {
-        var hd = this.f_createColumns();
-        this.m_header = this.f_createGridHeader(hd);
-        this.m_body = this.f_createGridView(hd);
+        this.m_colHd = this.f_createColumns();
+        this.m_header = this.f_createGridHeader(this.m_colHd, 'f_urGridHeaderOnclick');
+        this.m_body = this.f_createGridView(this.m_colHd);
         this.f_loadData();
 
         var btns = [['Apply', "f_userRightHandleApply()", g_lang.m_urBtnApply,
@@ -266,6 +304,7 @@ function FT_confUserRight(name, callback, busLayer)
         return [this.m_header, this.m_body, this.m_buttons];
     }
 }
+
 FT_extend(FT_confUserRight, FT_confBaseObj);
 
 function f_userRightHandleApplyComfirm(e)
@@ -289,4 +328,9 @@ function f_userRightHandleCancel(e)
 function f_userRightCheckboxClick(e)
 {
     g_configPanelObj.m_activeObj.f_handleOnCheckBoxClick()
+}
+
+function f_urGridHeaderOnclick(col)
+{
+    g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }

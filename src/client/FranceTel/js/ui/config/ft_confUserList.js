@@ -9,6 +9,8 @@ function FT_confUserList(name, callback, busLayer)
 {
     this.thisObjName = 'FT_confUserList';
     var thisObj = this;
+    this.m_colHd = null;
+    this.m_uRec = null;
 
     /**
      * @param name - name of configuration screens.
@@ -33,8 +35,8 @@ function FT_confUserList(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn(g_lang.m_name, 200, 'text', '6');
-        cols[1] = this.f_createColumn(g_lang.m_login, 150, 'text', '6');
+        cols[0] = this.f_createColumn(g_lang.m_name, 200, 'text', '6', true);
+        cols[1] = this.f_createColumn(g_lang.m_login, 150, 'text', '6', true);
         cols[2] = this.f_createColumn(g_lang.m_email, 100, 'button', '35');
         cols[3] = this.f_createColumn(g_lang.m_delete, 100, 'button', '35');
 
@@ -42,14 +44,17 @@ function FT_confUserList(name, callback, busLayer)
     }
 
     this.f_hideButtons = function()
-	{
-		thisObj.m_buttons.style.display = 'none';
-	}
+    {
+            thisObj.m_buttons.style.display = 'none';
+    }
 
     this.f_clearViewRow = function()
     {
         thisObj.f_removeDivChildren(thisObj.m_div);
         thisObj.f_removeDivChildren(thisObj.m_body);
+        thisObj.f_removeDivChildren(thisObj.m_header);
+        thisObj.m_header = thisObj.f_createGridHeader(thisObj.m_colHd,
+                            'f_ulGridHeaderOnclick');
         thisObj.m_div.appendChild(thisObj.m_header);
         thisObj.m_div.appendChild(thisObj.m_body);
         thisObj.m_div.appendChild(thisObj.m_buttons);		
@@ -58,7 +63,7 @@ function FT_confUserList(name, callback, busLayer)
     this.f_loadVMData = function()
     {
         var thisObj = this;
-        var hd = this.f_createColumns();
+        thisObj.f_resetSorting();
 
         var cb = function(evt)
         {
@@ -68,45 +73,77 @@ function FT_confUserList(name, callback, busLayer)
                 if(thisObj.f_isServerError(evt, g_lang.m_ulErrorTitle))
                     return;
 
-                var ul = evt.m_value;
+                thisObj.m_uRec = evt.m_value;
 
-                if(ul != undefined && ul.m_userList != null)
+                if(thisObj.m_uRec != undefined && thisObj.m_uRec.m_userList != null)
                 {
-                    thisObj.f_clearViewRow();
-                    ul = ul.m_userList;
-
-                    for(var i=0; i<ul.length; i++)
-                    {
-                        var fName = ul[i].m_last + ' ' + ul[i].m_first;
-                        var anchor = thisObj.f_renderAnchor(ul[i].m_user,
-                                "f_userListEditUser('" + ul[i].m_user + "')",
-                                g_lang.m_ulClick2Edit + " (" + fName + ")");
-                        var email = ul[i].m_email != undefined ?
-                                thisObj.f_renderAnchorHref(
-                                '<img src="images/ico_mail.gif">',
-                                "mailto:" + ul[i].m_email,
-                                g_lang.m_ulSendEmail + fName + ' at ' +
-                                ul[i].m_email) : "";
-
-                        var del = g_busObj.f_isDeletableUser(ul[i].m_role) ?
-                                thisObj.f_renderButton(
-                                'deleteUser', true, "f_userListDeleteUser('" +
-                                ul[i].m_user + "')", g_lang.m_ulDeleteUser + 
-                                ' (' + fName + ')'):
-                                "";
-                        var data = [fName, anchor, email, del];
-
-                        var bodyDiv = thisObj.f_createGridRow(hd, data);
-                        thisObj.m_body.appendChild(bodyDiv);
-                    }
-
-                    thisObj.f_adjustDivPosition(thisObj.m_buttons);
+                    thisObj.m_uRec = thisObj.m_uRec.m_userList;
+                    thisObj.f_populateTable();
                 }
             }
         }
 
         g_utils.f_cursorWait();
         this.m_busLayer.f_getUserListFromServer(cb);
+    }
+
+    this.f_populateTable = function()
+    {
+        thisObj.f_clearViewRow();
+
+        var sortCol = FT_confDashboard.superclass.m_sortCol;
+        var ulRec = thisObj.f_createSortingArray(sortCol, thisObj.m_uRec);
+        for(var i=0; i<ulRec.length; i++)
+        {
+            var ul = ulRec[i].split('|');
+
+            var fName = ul[0] + ' ' + ul[1];
+            var anchor = thisObj.f_renderAnchor(ul[2],
+                    "f_userListEditUser('" + ul[2] + "')",
+                    g_lang.m_ulClick2Edit + " (" + fName + ")");
+            var email = ul[3] != undefined ?
+                    thisObj.f_renderAnchorHref(
+                    '<img src="images/ico_mail.gif">',
+                    "mailto:" + ul[3],
+                    g_lang.m_ulSendEmail + fName + ' at ' +
+                    ul[3]) : "";
+
+            var del = g_busObj.f_isDeletableUser(ul[4]) ?
+                    thisObj.f_renderButton(
+                    'deleteUser', true, "f_userListDeleteUser('" +
+                    ul[2] + "')", g_lang.m_ulDeleteUser +
+                    ' (' + fName + ')'):
+                    "";
+            var data = [fName, anchor, email, del];
+
+            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, data);
+            thisObj.m_body.appendChild(bodyDiv);
+        }
+
+        thisObj.f_adjustDivPosition(thisObj.m_buttons);
+    }
+
+    this.f_createSortingArray = function(sortIndex, vm)
+    {
+        var ar = new Array();
+
+        for(var i=0; i<vm.length; i++)
+        {
+            // NOTE: the order of this partition same as the order
+            // grid columns.
+            // compose a default table row
+            ar[i] = vm[i].m_first + '|' + vm[i].m_last + '|' +
+                    vm[i].m_user + '|' + vm[i].m_email + '|' +
+                    vm[i].m_role;
+        }
+
+        return thisObj.f_sortArray(sortIndex, ar);
+    }
+
+    this.f_handleGridSort = function(col)
+    {
+        if(thisObj.f_isSortEnabled(thisObj.m_colHd, col))
+            thisObj.f_populateTable();
     }
 
     this.f_stopLoadVMData = function()
@@ -117,9 +154,9 @@ function FT_confUserList(name, callback, busLayer)
 
     this.f_init = function()
     {
-        var hd = this.f_createColumns();
-        this.m_header = this.f_createGridHeader(hd);
-        this.m_body = this.f_createGridView(hd);
+        this.m_colHd = this.f_createColumns();
+        this.m_header = this.f_createGridHeader(this.m_colHd, 'f_ulGridHeaderOnclick');
+        this.m_body = this.f_createGridView(this.m_colHd);
         this.f_loadVMData();
 
         var btns = [['AddUser', 'f_userListAddUserCallback()', g_lang.m_ulTooltipAddUser]];
@@ -171,4 +208,9 @@ function f_userListDeleteUser(username)
     g_utils.f_popupMessage(g_lang.m_deleteConfirm + ' (' + username + ') user?',
                 'confirm', g_lang.m_ulDeleteHeader, true,
                 "f_handleUserListDeleteUser(this, '"+ username + "')");
+}
+
+function f_ulGridHeaderOnclick(col)
+{
+    g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }

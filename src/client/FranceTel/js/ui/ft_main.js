@@ -10,10 +10,12 @@ g_xbObj.f_xbOnDomReady(function(){
     g_mainFrameObj.f_init();
 
 	if(!g_busObj.f_isLogin()) {
+		g_mainFrameObj.f_hideHeader(true);
         var loginDiv = g_loginObj.f_getLoginPage();
 		g_mainFrameObj.f_login(loginDiv);
     } else {
-		g_mainFrameObj.f_hideLogin();
+		g_mainFrameObj.f_hideHeader(false);		
+		g_mainFrameObj.f_hideLogin(true);
         g_busObj.f_getVMSummaryDataFromServer(function(evt){
             if (evt.f_isError()) {
                 alert('Error: ' + evt.m_errMsg);

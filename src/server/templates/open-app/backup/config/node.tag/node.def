@@ -1,1 +1,0 @@
-run: sudo perl /opt/vyatta/sbin/openapp-backup-restore.pl --backup "$4" --config

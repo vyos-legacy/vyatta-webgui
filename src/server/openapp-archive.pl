@@ -31,6 +31,9 @@ use File::Copy;
 use Getopt::Long;
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
+use Vyatta::Config;
+use Vyatta::Misc;
+use Vyatta::TypeChecker;
 
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
@@ -53,12 +56,10 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
 #
 #
 ##########################################################################
-my $ARCHIVE_ROOT_DIR = "/var/archive/$auth_user_role";
+my $ARCHIVE_BASE_DIR = "var/archive";
+my $ARCHIVE_ROOT_DIR = "$ARCHIVE_BASE_DIR/$auth_user_role";
 my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
 my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
-
-my $INSTALLER_BU_LIMIT = 2;
-my $ADMIN_BU_LIMIT = 3;
 
 my $REST_BACKUP = "/notification/archive/backup";
 my $REST_RESTORE = "/notification/archive/restore";
@@ -66,7 +67,26 @@ my $MAC_ADDR = "/sys/class/net/eth0/address";
 my $WEB_RESTORE_ROOT="/var/www/restore";
 
 
-my ($backup,$filename,$restore,$restore_target,$restore_status,$list,$delete);
+my $INSTALLER_BU_LIMIT = 2;
+my $ADMIN_BU_LIMIT = 3;
+##########################################################################
+#
+# override these values if found in the configuration tree
+#
+##########################################################################
+my $config = new Vyatta::Config;
+
+my $option = $config->returnValue("system open-app archive installer");
+if (defined $option) {
+    $INSTALLER_BU_LIMIT = $option;
+}
+	
+my $option = $config->returnValue("system open-app archive admin");
+if (defined $option) {
+    $ADMIN_BU_LIMIT = $option;
+}
+
+my ($backup,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$delete);
 
 ##########################################################################
 #
@@ -90,6 +110,13 @@ sub backup_archive {
 	print STDERR "Your backup directory is full. Please delete an archive to make room.";
 	exit 1;
     }
+
+    ##########################################################################
+    #
+    # Set the status of the backup to 0%
+    #
+    ##########################################################################
+    `echo '0' > $BACKUP_WORKSPACE_DIR/status`;
 
 
     ##########################################################################
@@ -186,6 +213,7 @@ sub backup_archive {
     open FILE, ">", "$metafile.txt" or die $!;
     #we'll write out xml descriptions--the same as what we display...
     print FILE "<archive>";
+    print FILE "<owner>$auth_user_role</owner>";
     print FILE "<name>$filename</name>";
     print FILE "<file>$filename</file>";                                                                             
     print FILE "<date>$date $time</date>";
@@ -226,6 +254,13 @@ sub backup_archive {
 	}
     }
 
+    ##########################################################################
+    #
+    # Set the status of the backup to 100%
+    #
+    ##########################################################################
+    `echo '100' > $BACKUP_WORKSPACE_DIR/status`;
+
     #backup is now complete, let's send an email out to admin
     `echo 'backup is finished' | /usr/bin/ssmtp $admin_email 2>/dev/null`;
 }
@@ -244,7 +279,15 @@ sub restore_archive {
     `rm -fr $WEB_RESTORE_ROOT/`;
     `mkdir -p $WEB_RESTORE_ROOT/`;
     `mkdir -p $RESTORE_WORKSPACE_DIR/`;
-    `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $WEB_RESTORE_ROOT/.`;
+
+    #test for failure here
+    my $err = `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $WEB_RESTORE_ROOT/.`;
+    if ($err =~ /No such file/) {
+	my $err = `tar xf $ARCHIVE_BASE_DIR/admin/$restore.tar -C $WEB_RESTORE_ROOT/.`;
+	if ($err =~ /No such file/) {
+	    return;
+	}
+    }
 
     ##########################################################################
     #
@@ -274,6 +317,10 @@ sub restore_archive {
 	    }
 	    if (lstat("$WEB_RESTORE_ROOT/$filename/conf")) {
 		$coll[$i] = {$filename,"conf"};
+		$i = $i + 1;
+	    }
+	    if (lstat("$WEB_RESTORE_ROOT/$filename/all")) {
+		$coll[$i] = {$filename,"all"};
 		$i = $i + 1;
 	    }
 	}
@@ -355,13 +402,14 @@ sub restore_archive {
 #
 # Generates the following xml
 # <archive>
+#   <owner>owner</owner>
 #   <name>name</name>
 #   <file>file</file>
 #   <date>date</date>
 #   <contents>
 #     <entry>
 #       <vm>vm</vm>
-#       <type>data|conf</type>
+#       <type>data|conf|all</type>
 #     </entry>
 #   </contents>
 # </archive>
@@ -386,7 +434,50 @@ sub list_archive {
 	my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
 	print $output[0];
     } 
+
+#if installer than also return admin archives
+    if ($auth_user_role eq 'installer') {
+	my @files = <$ARCHIVE_BASE_DIR/admin/*.tar>;
+	foreach $file (@files) {
+	    my @name = split('/',$file);
+	    #just open up meta data file and squirt out contents...
+	    #now chop off the last period
+	    my @name2 = split('\.',$name[4]);
+	    
+	    my $metafile;
+	    my @metafile = split('\.',$name[3]);
+	    my $output;
+	    my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
+	    print $output[0];
+	} 
+    }
+
     #done
+}
+
+##########################################################################
+#
+# get archive: return archive to host
+#
+##########################################################################
+sub get_archive {
+    print "VERBATIM_OUTPUT\n";
+    my $file = "$ARCHIVE_ROOT_DIR/$get.tar";
+    if (-e $file) {
+	open(FILE, "<$file") or die "Can't open archive"; 
+	my @f = <FILE>;
+	print(@f);
+	close(FILE);
+    }
+    elsif ($auth_user_role eq 'installer') { #will blindly try admin as well
+	my $file = "$ARCHIVE_BASE_DIR/admin/$get.tar";
+	if (-e $file) {
+	    open(FILE, "<$file") or die "Can't open archive"; 
+	    my @f = <FILE>;
+	    print(@f);
+	    close(FILE);
+	}
+    }
 }
 
 ##########################################################################
@@ -397,6 +488,10 @@ sub list_archive {
 sub delete_archive {
     my $file = "$ARCHIVE_ROOT_DIR/$delete.tar";
     unlink($file);
+    if ($auth_user_role eq 'installer') { #will blindly try admin as well
+	my $file = "$ARCHIVE_BASE_DIR/admin/$delete.tar";
+	unlink($file);
+    }
 }
 
 ##########################################################################
@@ -405,8 +500,28 @@ sub delete_archive {
 #
 ##########################################################################
 sub restore_status {
-    my $out = `cat $RESTORE_WORKSPACE_DIR/status`;
-    print $out;
+    my $file = "$RESTORE_WORKSPACE_DIR/status";
+    if (-e $file) {
+	my $out = `cat $file`;
+	print $out;
+	return;
+    }
+    print "100";
+}
+
+##########################################################################
+#
+# status of backup
+#
+##########################################################################
+sub backup_status {
+    my $file = "$BACKUP_WORKSPACE_DIR/status";
+    if (-e $file) {
+	my $out = `cat $file`;
+	print $out;
+	return;
+    }
+    print "100";
 }
 
 
@@ -422,7 +537,9 @@ sub usage() {
     print "       $0 --restore=<restore>\n";
     print "       $0 --restore-target=<restore_target>\n";
     print "       $0 --restore-status\n";
+    print "       $0 --backup-status\n";
     print "       $0 --list=<list>\n";
+    print "       $0 --get=<get>\n";
     print "       $0 --delete=<delete>\n";
     exit 0;
 }
@@ -434,7 +551,9 @@ GetOptions(
     "restore=s"             => \$restore,
     "restore-target:s"      => \$restore_target,
     "restore-status:s"      => \$restore_status,
+    "backup-status:s"       => \$backup_status,
     "list:s"                => \$list,
+    "get:s"                 => \$get,
     "delete=s"              => \$delete,
     ) or usage();
 
@@ -446,6 +565,9 @@ elsif ( defined $restore ) {
 }
 elsif ( defined $restore_status ) {
     restore_status();
+}
+elsif ( defined $backup_status ) {
+    backup_status();
 }
 elsif (defined $list ) {
     list_archive();

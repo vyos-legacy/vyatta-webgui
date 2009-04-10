@@ -43,10 +43,23 @@ function FT_mainFrame(){
 		  g_lang.m_mainFrmSignIn;	
 	}
 	
-	this.f_hideLogin = function () {
+	this.f_hideHeader = function(hide) {
+		var header = document.getElementById(VYA.FT_CONST.DOM_HEADER_ID);
+		if (hide) {
+			header.style.display = 'none';
+		} else {
+			header.style.display = 'block';
+		}
+	}
+	
+	this.f_hideLogin = function (hide) {
 		var login = document.getElementById(VYA.FT_CONST.DOM_LOGIN_CONTAINER_ID);
-		login.style.display = 'none';
-        var e = document.getElementById('welcome_admin');
+		if (hide) {
+			login.style.display = 'none';
+		} else {
+			login.style.display = 'true';
+		}
+        var e = document.getElementById('welcome_admin');		
 		var admin = g_busObj.f_getLoginUserRec().m_user;
 		//alert('admin: ' + admin + ' loginObj: ' + g_busObj.f_getLoginUserRec());
 		e.innerHTML = g_lang.m_mainFrmWelcome + ' <b><font color="#FF6600">' + 
@@ -160,8 +173,9 @@ function f_home()
 
 function f_contact()
 {
-	var url = "http://orange.com/en_EN/tools/contact/index.html";
-	window.open(url, 'Download');
+	//var url = "http://orange.com/en_EN/tools/contact/index.html";	
+	var url= g_utils.f_getContactPage();	
+	window.open(url, g_lang.m_menuContact, 'height=155, width=285,scrollbars=no');
 }
 
 

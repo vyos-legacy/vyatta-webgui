@@ -86,7 +86,7 @@ if (defined $option) {
     $ADMIN_BU_LIMIT = $option;
 }
 
-my ($backup,$filename,$restore,$restore_target,$restore_status,$list,$delete);
+my ($backup,$filename,$restore,$restore_target,$restore_status,$list,$get,$delete);
 
 ##########################################################################
 #
@@ -443,6 +443,31 @@ sub list_archive {
 
 ##########################################################################
 #
+# get archive: return archive to host
+#
+##########################################################################
+sub get_archive {
+    print "VERBATIM_OUTPUT\n";
+    my $file = "$ARCHIVE_ROOT_DIR/$get.tar";
+    if (-e $file) {
+	open(FILE, "<$file") or die "Can't open archive"; 
+	my @f = <FILE>;
+	print(@f);
+	close(FILE);
+    }
+    elsif ($auth_user_role eq 'installer') { #will blindly try admin as well
+	my $file = "$ARCHIVE_BASE_DIR/admin/$get.tar";
+	if (-e $file) {
+	    open(FILE, "<$file") or die "Can't open archive"; 
+	    my @f = <FILE>;
+	    print(@f);
+	    close(FILE);
+	}
+    }
+}
+
+##########################################################################
+#
 # delete archive...
 #
 ##########################################################################
@@ -479,6 +504,7 @@ sub usage() {
     print "       $0 --restore-target=<restore_target>\n";
     print "       $0 --restore-status\n";
     print "       $0 --list=<list>\n";
+    print "       $0 --get=<get>\n";
     print "       $0 --delete=<delete>\n";
     exit 0;
 }
@@ -491,6 +517,7 @@ GetOptions(
     "restore-target:s"      => \$restore_target,
     "restore-status:s"      => \$restore_status,
     "list:s"                => \$list,
+    "get:s"                => \$get,
     "delete=s"              => \$delete,
     ) or usage();
 

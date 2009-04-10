@@ -56,7 +56,8 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
 #
 #
 ##########################################################################
-my $ARCHIVE_ROOT_DIR = "/var/archive/$auth_user_role";
+my $ARCHIVE_BASE_DIR = "var/archive";
+my $ARCHIVE_ROOT_DIR = "$ARCHIVE_BASE_DIR/$auth_user_role";
 my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
 my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
 
@@ -205,6 +206,7 @@ sub backup_archive {
     open FILE, ">", "$metafile.txt" or die $!;
     #we'll write out xml descriptions--the same as what we display...
     print FILE "<archive>";
+    print FILE "<owner>$auth_user_role</owner>";
     print FILE "<name>$filename</name>";
     print FILE "<file>$filename</file>";                                                                             
     print FILE "<date>$date $time</date>";
@@ -374,6 +376,7 @@ sub restore_archive {
 #
 # Generates the following xml
 # <archive>
+#   <owner>owner</owner>
 #   <name>name</name>
 #   <file>file</file>
 #   <date>date</date>
@@ -405,6 +408,24 @@ sub list_archive {
 	my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
 	print $output[0];
     } 
+
+#if installer than also return admin archives
+    if ($auth_user_role eq 'installer') {
+	my @files = <$ARCHIVE_BASE_DIR/admin/*.tar>;
+	foreach $file (@files) {
+	    my @name = split('/',$file);
+	    #just open up meta data file and squirt out contents...
+	    #now chop off the last period
+	    my @name2 = split('\.',$name[4]);
+	    
+	    my $metafile;
+	    my @metafile = split('\.',$name[3]);
+	    my $output;
+	    my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
+	    print $output[0];
+	} 
+    }
+
     #done
 }
 

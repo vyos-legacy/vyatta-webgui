@@ -42,7 +42,7 @@ function FT_3rdNavigation()
                 if (childClassAttr == VYA.FT_CONST.DOM_MAIN_PANEL_SUB_MENU_CLS) {
                     containerDiv.childNodes[0].style.marginTop = VYA.DYN_STYLE.THIRD_NAV_MARGIN_TOP;
                     containerDiv.childNodes[0].style.display = 'none';
-                    thisObj.m_menus.push(containerDiv.childNodes[0]);
+                    thisObj.m_menus.push(g_roleManagerObj.f_applyRole2subMenu(containerDiv.childNodes[0]));
                     thisObj.f_attachEventHandler(containerDiv.childNodes[0]);
 					thisObj.f_initId2DescTable(containerDiv.childNodes[0]);
                 }

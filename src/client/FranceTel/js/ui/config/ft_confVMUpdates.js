@@ -60,6 +60,7 @@ function FT_confVMUpdates(name, callback, busLayer)
 
                 thisObj.f_populateTable();
             }
+            thisObj.f_resize();
         }
 
         g_utils.f_cursorWait();

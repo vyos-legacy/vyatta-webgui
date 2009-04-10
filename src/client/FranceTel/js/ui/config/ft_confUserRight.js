@@ -91,6 +91,7 @@ function FT_confUserRight(name, callback, busLayer)
                     thisObj.m_uRec = ul.m_userList;
                     thisObj.f_populateTable();
                 }
+                thisObj.f_resize();
             }
         }
 

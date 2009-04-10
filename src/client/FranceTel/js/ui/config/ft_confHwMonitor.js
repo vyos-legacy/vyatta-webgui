@@ -68,6 +68,7 @@ function FT_confHwMonitor(name, callback, busLayer)
                     var bodyDiv = thisObj.f_createGridRow(hd, hwData);
                     thisObj.m_body.appendChild(bodyDiv);
                 }
+                thisObj.f_resize();
             }
         }
 

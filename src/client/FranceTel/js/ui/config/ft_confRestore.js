@@ -64,6 +64,7 @@ function FT_confRestore(name, callback, busLayer)
                 thisObj.m_dataObj = bkRec;
                 thisObj.f_populateTable();
             }
+            thisObj.f_resize();
         }
 
         g_utils.f_cursorWait();

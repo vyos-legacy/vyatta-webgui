@@ -77,8 +77,7 @@ function FT_confUserAdd (name, callback, busLayer)
 			}, {
 				id: 'conf_user_add_cancel_button',
 				text: 'Cancel',
-				onclick: this.f_handleClick,
-				onkeydown: this.f_handleKeydown
+				onclick: this.f_handleClick
 			}]
 		})
 	}
@@ -185,7 +184,8 @@ function FT_confUserAdd (name, callback, busLayer)
         if (target != undefined) {
             var id = target.getAttribute('id');
             if (id == 'conf_user_add_cancel_button') { //cancel clicked
-               g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID);
+                g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID);
+				return false;			   
             }
         }
     }		

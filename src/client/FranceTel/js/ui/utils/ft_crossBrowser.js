@@ -221,6 +221,19 @@ function FT_crossBrowser()
             event.preventDefault();
         }
     }
+	
+	this.f_xbStopEvent = function(event)
+	{
+	  if (typeof event.stopPropagation != "undefined")
+	  {
+	    event.stopPropagation();
+	  }
+	  else
+	  {
+	    event.cancelBubble = true;
+	  }
+	}
+	
     
     this.f_xbGetEventTarget = function(event)
     {

@@ -93,8 +93,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 			}, {
 				id: 'conf_sched_update_cancel_button',
 				text: 'Cancel',
-				onclick: this.f_handleClick,
-				onkeydown: this.f_handleKeydown
+				onclick: this.f_handleClick
 			}]
 		})  
     }
@@ -427,6 +426,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
             var id = target.getAttribute('id');
             if (id == 'conf_sched_update_cancel_button') { //cancel clicked
                 g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_DASHBOARD_ID); 
+				return false;			
             }
         }
     }

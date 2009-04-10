@@ -122,8 +122,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
 			}, {
 				id: 'conf_ldap_server_cancel_button',
 				text: 'Cancel',
-				onclick: this.f_handleClick,
-				onkeydown: this.f_handleKeydown
+				onclick: this.f_handleClick
 			}]
 		})  
     }
@@ -202,6 +201,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
             var id = target.getAttribute('id');
             if (id == 'conf_ldap_server_cancel_button') { //cancel clicked
                 thisObj.f_reset();
+				return false;				
             }
         }
     }

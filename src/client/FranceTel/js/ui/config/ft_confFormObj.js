@@ -326,10 +326,7 @@ function FT_confFormObj(name, callback, busLayer) {
         for (var i = 0; i < this.m_config.buttons.length; i++) {
             var id = this.m_config.buttons[i].id;
             var b = document.getElementById(id);
-            g_xbObj.f_xbAttachEventListener(b, 'click', this.m_config.buttons[i].onclick, true);
-			if (this.m_config.buttons[i].onkeydown) {
-				g_xbObj.f_xbAttachEventListener(b, 'keydown', this.m_config.buttons[i].onkeydown, true);
-			}			
+            g_xbObj.f_xbAttachEventListener(b, 'click', this.m_config.buttons[i].onclick, true);			
         }
     }
     
@@ -338,10 +335,7 @@ function FT_confFormObj(name, callback, busLayer) {
         for (var i = 0; i < this.m_config.buttons.length; i++) {
             var id = this.m_config.buttons[i].id;
             var b = document.getElementById(id);
-            g_xbObj.f_xbDetachEventListener(b, 'click', this.m_config.buttons[i].onclick, true);
-			if (this.m_config.buttons[i].onkeydown) {
-				g_xbObj.f_xbDetachEventListener(b, 'keydown', this.m_config.buttons[i].onkeydown, true);
-			}				
+            g_xbObj.f_xbDetachEventListener(b, 'click', this.m_config.buttons[i].onclick, true);				
         }
     }
     

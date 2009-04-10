@@ -75,7 +75,6 @@ my $ADMIN_BU_LIMIT = 3;
 ##########################################################################
 my $config = new Vyatta::Config;
 
-$config->setLevel("system open-app smtp");
 my $option = $config->returnValue("system open-app archive installer");
 if (defined $option) {
     $INSTALLER_BU_LIMIT = $option;

@@ -111,6 +111,13 @@ sub backup_archive {
 	exit 1;
     }
 
+    ##########################################################################
+    #
+    # Set the status of the backup to 0%
+    #
+    ##########################################################################
+    `echo '0' > $BACKUP_WORKSPACE_DIR/status`;
+
 
     ##########################################################################
     #
@@ -246,6 +253,13 @@ sub backup_archive {
 	    }
 	}
     }
+
+    ##########################################################################
+    #
+    # Set the status of the backup to 100%
+    #
+    ##########################################################################
+    `echo '100' > $BACKUP_WORKSPACE_DIR/status`;
 
     #backup is now complete, let's send an email out to admin
     `echo 'backup is finished' | /usr/bin/ssmtp $admin_email 2>/dev/null`;
@@ -487,6 +501,16 @@ sub delete_archive {
 ##########################################################################
 sub restore_status {
     my $out = `cat $RESTORE_WORKSPACE_DIR/status`;
+    print $out;
+}
+
+##########################################################################
+#
+# status of backup
+#
+##########################################################################
+sub backup_status {
+    my $out = `cat $BACKUP_WORKSPACE_DIR/status`;
     print $out;
 }
 

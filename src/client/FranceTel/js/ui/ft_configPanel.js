@@ -11,7 +11,8 @@ function FT_configPanel()
     var thisObj = this;
     this.m_parent = undefined;
     this.m_selectedItem = undefined;
-    this.m_container = undefined; //the configuration panel
+    this.m_container = undefined; //the configuration panel - the config_panel div, which contains the  title, and the ft_container
+    this.m_ft_container = undefined; //the ft_container div.
     this.m_parent_container = undefined; //the OA container which includes left menu + config panel
     this.m_currentDesc = undefined;//current description text
     this.m_title = undefined; //the title container for the header
@@ -31,9 +32,11 @@ function FT_configPanel()
         thisObj.m_parent = p;
         thisObj.m_parent_container = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID);
         //Obtain a reference to the div tag: 'ft_container' in the html.
-        thisObj.m_container = document.getElementById(VYA.FT_CONST.DOM_3_CONFIG_PANEL_ID);
+        thisObj.m_container = document.getElementById(VYA.FT_CONST.DOM_3_CONFIG_PANEL_ID);    //config_panel
+		thisObj.m_ft_container = document.getElementById(VYA.FT_CONST.DOM_3_FT_CONTAINER_ID); //ft_container
         thisObj.m_title = document.getElementById(VYA.FT_CONST.DOM_3_CONFIG_PANEL_TITLE_ID);
         thisObj.m_container.parentNode.removeChild(thisObj.m_container);
+		thisObj.m_ft_container.parentNode.removeChild(thisObj.m_ft_container);
         //initialize the dynamic sub menu
         thisObj.f_initDynSubMenu();
     }
@@ -114,16 +117,34 @@ function FT_configPanel()
 	{
         if (thisObj.m_activeCmp != undefined) {
 			try {
-				thisObj.m_container.removeChild(thisObj.m_activeCmp);
+				thisObj.m_container.removeChild(thisObj.m_ft_container);				
+				thisObj.m_ft_container.removeChild(thisObj.m_activeCmp);
 			} catch (e) {
 				; //this is ok for now because the empty component doesn't get put to the 'ft_container' by config based object.
 			}
         }		
 	}
 	
+	this.f_addFTcontainer = function()
+	{
+		thisObj.m_container.appendChild(thisObj.m_ft_container);		
+	}
+	
+	this.f_showFTcontainer = function()
+	{
+		thisObj.m_ft_container.style.display = 'block';
+	}
+	
+	this.f_redrawFTcontainer = function()
+	{
+		thisObj.m_ft_container.style.display = 'none';
+		thisObj.m_ft_container.style.display = 'block';
+	}
+	
     this.f_getComponent = function(id, obj)
     {
 		thisObj.f_removePrev();
+		thisObj.f_addFTcontainer();
         switch (id) {
             case VYA.FT_CONST.DOM_3_NAV_SUB_DASHBOARD_ID:
                 var dbcb = function(){
@@ -278,10 +299,10 @@ function FT_configPanel()
 
     this.f_render = function(component)
     {
-        //thisObj.f_removePrev();
         thisObj.m_selectCmp = component;
         thisObj.m_activeCmp = component;
         thisObj.m_activeObj = thisObj.m_selectObj;
+		thisObj.f_showFTcontainer();
     }
 
 }

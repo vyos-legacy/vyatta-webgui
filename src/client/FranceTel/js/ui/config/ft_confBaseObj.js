@@ -50,21 +50,45 @@ function FT_confBaseObj(name, callback, busLayer)
 
         /////////////////////////////////////////
         // set inner styling of the div tag
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-        div.style.height = '300px';
-        div.style.overflow = 'visible';
+        //div.style.height = '300px';
+        //div.style.overflow = 'visible';
         div.style.fontFamily = 'Arial, sans-serif';
-
-        document.getElementById('ft_container').appendChild(div);
 
         for(var i=0; i<children.length; i++)
             div.appendChild(children[i]);
+			
+        document.getElementById('ft_container').appendChild(div);
 
         this.m_div = div;
         return this.m_div;
     }
+
+    this.f_reflow = function() 
+	{
+        var body = document.getElementsByTagName( "body" )[0];
+        var bodyClass = body.className;
+        body.className = "reflow";
+        body.className = bodyClass;		
+	}
+
+    this.f_resize = function(padding)
+	{
+		var h = 0;
+		for (var i=0; this.m_div.childNodes[i]; i++) {
+			h += this.m_div.childNodes[i].offsetHeight;
+		}
+		h = h + (thisObj.m_tableRowCounter * 28);
+		if (padding) {
+			h += padding;
+		}
+
+		this.m_div.style.height = h + 'px';
+		document.getElementById('ft_container').style.height = h + 'px';
+		this.f_reflow();
+	}
 
     this.f_createGridHeader = function(header, onclick)
     {

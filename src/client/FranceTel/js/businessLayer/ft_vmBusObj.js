@@ -209,7 +209,14 @@ function FT_vmBusObj(busObj)
 
         // pbx vm
         vm = thisObj.f_findVM('pbx', vms);
-        finalVmsList[c++] = vm == null ? new FT_vmRecObj('pbx', 'Telephony'):vm;
+        if(vm == null)
+        {
+            vm = new FT_vmRecObj('pbx', 'Telephony');
+            vm.m_ip = document.domain;
+            vm.m_guiUri = g_oaConfig.m_pbxURI;
+            vm.m_guiPort = g_oaConfig.m_pbxPort;
+        }
+        finalVmsList[c++] = vm;
 
         // utm vm
         vm = thisObj.f_findVM('utm', vms);

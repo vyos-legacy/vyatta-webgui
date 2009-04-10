@@ -177,6 +177,9 @@ function FT_backupObj(busObj)
                         else if(cNode.nodeName == 'date' &&
                             cNode.firstChild != undefined)
                             arch[c].m_bkDate = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == 'owner' &&
+                            cNode.firstChild != undefined)
+                            arch[c].m_bkBy = cNode.firstChild.nodeValue;
                         else if(cNode.nodeName == 'contents' &&
                             cNode.firstChild != undefined)
                             arch[c].m_content = thisObj.f_parseContent(cNode);

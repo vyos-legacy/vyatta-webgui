@@ -122,7 +122,8 @@ function FT_confLDAPserver (name, callback, busLayer) {
 			}, {
 				id: 'conf_ldap_server_cancel_button',
 				text: 'Cancel',
-				onclick: this.f_handleClick
+				onclick: this.f_handleClick,
+				onkeydown: this.f_handleKeydown
 			}]
 		})  
     }
@@ -172,7 +173,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
 	
 	this.f_reset = function()
 	{
-		
+		alert('reset form');
 	}
     
     this.f_handleClick = function(e)
@@ -189,7 +190,21 @@ function FT_confLDAPserver (name, callback, busLayer) {
                 thisObj.f_reset();               
             }
         }
-    }	    
+    }	
+	
+    this.f_handleKeydown = function(e)
+    {
+        if(e.keyCode != 13)	{
+			return;
+		}	
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if (target != undefined) {
+            var id = target.getAttribute('id');
+            if (id == 'conf_ldap_server_cancel_button') { //cancel clicked
+                thisObj.f_reset();
+            }
+        }
+    }
 }
 
 FT_extend(FT_confLDAPserver, FT_confFormObj);

@@ -93,7 +93,8 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 			}, {
 				id: 'conf_sched_update_cancel_button',
 				text: 'Cancel',
-				onclick: this.f_handleClick
+				onclick: this.f_handleClick,
+				onkeydown: this.f_handleKeydown
 			}]
 		})  
     }
@@ -414,7 +415,21 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 				thisObj.f_showCal(e);
 			}
         }
-    }	    
+    }	
+	
+	this.f_handleKeydown = function(e)
+    {
+        if(e.keyCode != 13)	{
+			return;
+		}	
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if (target != undefined) {
+            var id = target.getAttribute('id');
+            if (id == 'conf_sched_update_cancel_button') { //cancel clicked
+                g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_DASHBOARD_ID); 
+            }
+        }
+    }
 }
 
 FT_extend(FT_confSchedUpdate, FT_confFormObj);

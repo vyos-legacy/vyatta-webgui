@@ -116,7 +116,7 @@ function FT_confFormObj(name, callback, busLayer) {
         if (this.m_config.buttons != undefined) {
             html = html + '<div class="v_button_container"><br/><br/>';
             for (var i = 0; i < this.m_config.buttons.length; i++) {
-                html = html + '<img id="' + this.m_config.buttons[i].id + '" class="v_button"';
+                html = html + '<input type="image" id="' + this.m_config.buttons[i].id + '" class="v_button"';
                 var imgSrc = g_lang.m_imageDir + '/bt_apply.gif';
                 switch (this.m_config.buttons[i].text.trim().toLowerCase()) {
                     case 'apply':
@@ -276,7 +276,7 @@ function FT_confFormObj(name, callback, busLayer) {
         if (this.m_config == undefined) {
             return;
         }
-        var html = '<form id="' + this.m_config.id + '_form" class="v_form" border="0"><br/><br/>';
+        var html = '<form id="' + this.m_config.id + '_form" onsubmit="return false;" class="v_form" border="0"><br/><br/>';
         html += '<table border="0" align="center">';
         
         for (var i = 0; i < this.m_config.items.length; i++) {
@@ -327,6 +327,9 @@ function FT_confFormObj(name, callback, busLayer) {
             var id = this.m_config.buttons[i].id;
             var b = document.getElementById(id);
             g_xbObj.f_xbAttachEventListener(b, 'click', this.m_config.buttons[i].onclick, true);
+			if (this.m_config.buttons[i].onkeydown) {
+				g_xbObj.f_xbAttachEventListener(b, 'keydown', this.m_config.buttons[i].onkeydown, true);
+			}			
         }
     }
     
@@ -336,6 +339,9 @@ function FT_confFormObj(name, callback, busLayer) {
             var id = this.m_config.buttons[i].id;
             var b = document.getElementById(id);
             g_xbObj.f_xbDetachEventListener(b, 'click', this.m_config.buttons[i].onclick, true);
+			if (this.m_config.buttons[i].onkeydown) {
+				g_xbObj.f_xbDetachEventListener(b, 'keydown', this.m_config.buttons[i].onkeydown, true);
+			}				
         }
     }
     

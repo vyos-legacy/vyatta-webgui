@@ -47,7 +47,8 @@ function FT_confPassword (name, callback, busLayer) {
 			}, {
 				id: 'conf_password_cancel_button',
 				text: 'Cancel',
-				onclick: this.f_handleClick
+				onclick: this.f_handleClick,
+				onkeydown: this.f_handleKeydown
 			}]
 		})  
     }
@@ -71,7 +72,26 @@ function FT_confPassword (name, callback, busLayer) {
                 alert('Password Policy cancel button clicked');               
             }
         }
-    }	    
+    }
+	
+	this.f_reset = function() 
+	{
+		
+	}
+	
+	this.f_handleKeydown = function(e)
+    {
+        if(e.keyCode != 13)	{
+			return;
+		}	
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if (target != undefined) {
+            var id = target.getAttribute('id');
+            if (id == 'conf_password_cancel_button') { //cancel clicked
+                thisObj.f_reset();
+            }
+        }
+    }
 }
 
 FT_extend(FT_confPassword, FT_confFormObj);

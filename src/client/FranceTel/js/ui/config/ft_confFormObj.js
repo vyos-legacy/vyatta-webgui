@@ -8,7 +8,7 @@ function FT_confFormObj(name, callback, busLayer) {
     var thisObjName = 'FT_confFormObj';
     this.m_config = undefined;
 	var thisObj = this;
-    
+    this.m_div = undefined;
     
     /**
      * @param name - name of configuration screens.
@@ -86,10 +86,30 @@ function FT_confFormObj(name, callback, busLayer) {
         
         this.f_attachEventListener();
         this.f_loadVMData(div);
-        
+        this.m_div = div;
+		this.f_resize(20);
         return div;
     }
-    
+
+    this.f_resize = function(padding)
+    {
+		 if (this.m_id !=  g_configPanelObj.m_selectedItem) {
+			 return;
+		 }		
+		 var h = this.m_div.offsetHeight;
+		 //var id = f_elemGetAttribute(this.m_div, 'id');
+		 var ft = document.getElementById('ft_container');
+		 //console.log('div id: ' + id + ' div.height: ' + h + ' ft.height.before: ' + ft.style.height);
+		 if (padding) {
+		 	h += padding;
+		 } 
+         ft.style.height = h + 'px';
+		 //console.log('ft.height.after: ' + ft.style.height);
+		 //alert('ft_container height: ' + document.getElementById('ft_container').style.height);
+         this.f_reflow();
+    }
+	
+	
     this.f_createButtons = function()
     {
         var html = '';

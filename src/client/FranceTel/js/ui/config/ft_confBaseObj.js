@@ -13,7 +13,7 @@ function FT_confBaseObj(name, callback, busLayer)
     this.m_sortColPrev = -1;
     this.m_sortCol = 0;
     this.m_sortOrder = 'asc';   // asc or des
-
+    this.m_id = undefined;
 
     /**
      * @param name - name of configuration screens.
@@ -41,6 +41,10 @@ function FT_confBaseObj(name, callback, busLayer)
             this.m_threadId = null;
         }
     }
+
+    this.f_setId = function(id) {
+		this.m_id = id;
+	} 
 
     this.f_getNewPanelDiv = function(children)
     {
@@ -77,6 +81,10 @@ function FT_confBaseObj(name, callback, busLayer)
 
     this.f_resize = function(padding)
     {
+		if (this.m_id !=  g_configPanelObj.m_selectedItem) {
+			//to avoid the race condition between callback from server, and user click event.
+			return;
+		}
         var h = 0;
         for (var i=0; this.m_div.childNodes[i]; i++) {
             h += this.m_div.childNodes[i].offsetHeight;

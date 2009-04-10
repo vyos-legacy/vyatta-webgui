@@ -27,7 +27,7 @@ function FT_roleManager()
 
 		switch (thisObj.m_user.m_role) {
 			case uo.V_ROLE_ADMIN:
-			    thisObj.f_hideConfig();
+			    //thisObj.f_hideConfig();
 				break;
 			case uo.V_ROLE_INSTALL:
 			    break;
@@ -40,6 +40,32 @@ function FT_roleManager()
                 				
         return (document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_2_NAV_ID));				
 	}
+		
+    this.f_applyRole2subMenu = function(subMenu) {
+        if (!thisObj.f_isAdmin()) {
+			return subMenu;
+		}
+		var id = f_elemGetAttribute(subMenu, 'id');
+		if (id == VYA.FT_CONST.DOM_3_NAV_CONFIG_ID) {
+            var ulHref = f_elemGetFirstChildByNodeName(subMenu, 'UL');		
+			if (ulHref != null) {
+				for (var i=0; ulHref.childNodes[i];) {
+				    var sid = f_elemGetAttribute(ulHref.childNodes[i],'id');
+					if (sid != null) {						
+						if ((sid == VYA.FT_CONST.DOM_3_NAV_SUB_TIME_SRV_ID) ||
+						    (sid == VYA.FT_CONST.DOM_3_NAV_SUB_BLB_ID)) {
+						    ulHref.removeChild(ulHref.childNodes[i]);		
+						} else {
+							i++;
+						}
+					} else {
+						i++;
+					}
+				}
+			}	
+		} 
+		return subMenu;		
+	}		
 		
 	this.f_hideConfig = function() {
 		var menu = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_2_NAV_UL_ID);

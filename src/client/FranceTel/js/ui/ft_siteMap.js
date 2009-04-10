@@ -71,11 +71,20 @@ function FT_siteMap()
 	this.f_checkRole = function()
 	{
 		if (g_roleManagerObj.f_isAdmin()) {
-			thisObj.f_hideConfig();
+			thisObj.f_applyRole2Config();
 		} else if (g_roleManagerObj.f_isUser()) {
 			thisObj.f_showOnlyMyProfile();
 			thisObj.m_div.style.width = '300px';
 		}
+	}
+	
+	this.f_applyRole2Config = function()
+	{
+	    var config = document.getElementById('sitemap_sm_config_ul');
+		var ntp = document.getElementById('time_serv_l2_sitemap');
+		var blb = document.getElementById('blb_l2_sitemap');
+		config.removeChild(ntp);
+		config.removeChild(blb);		
 	}
 	
 	this.f_hideConfig = function()

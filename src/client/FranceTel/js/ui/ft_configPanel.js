@@ -127,7 +127,8 @@ function FT_configPanel()
 	
 	this.f_addFTcontainer = function()
 	{
-		thisObj.m_container.appendChild(thisObj.m_ft_container);		
+		thisObj.m_container.appendChild(thisObj.m_ft_container);	
+		thisObj.f_showFTcontainer();	
 	}
 	
 	this.f_showFTcontainer = function()
@@ -151,6 +152,7 @@ function FT_configPanel()
 
                 }
                 thisObj.m_selectObj = new FT_confDashboard('Dashboard', dbcb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
             case VYA.FT_CONST.DOM_3_NAV_SUB_UPDATE_ID:
@@ -158,12 +160,14 @@ function FT_configPanel()
 
                 }
                 thisObj.m_selectObj = new FT_confVMUpdates('Update', dbcb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
             case VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confRestoreUpdate('Restore', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init(obj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
@@ -171,6 +175,7 @@ function FT_configPanel()
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confSchedUpdate('Update', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init(obj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
@@ -179,12 +184,14 @@ function FT_configPanel()
 
                 }
                 thisObj.m_selectObj = new FT_confRestart('Restart', dbcb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
             case VYA.FT_CONST.DOM_3_NAV_SUB_SUBCRIBE_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confSubscribe('Subscription', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
@@ -193,18 +200,21 @@ function FT_configPanel()
 
                 }
                 thisObj.m_selectObj = new FT_confUserList('db', dbcb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.FT_CONST.DOM_3_NAV_SUB_USER_RIGHT_ID:
                 var dbcb = function(){
 
                 }
                 thisObj.m_selectObj = new FT_confUserRight('UserRight', dbcb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
             case VYA.FT_CONST.DOM_3_NAV_SUB_HARDWARE_ID:
                 var hwCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confHwMonitor('Hardware Monitor', hwCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
             case VYA.FT_CONST.DOM_3_NAV_SUB_NETWORK_ID:
@@ -214,6 +224,7 @@ function FT_configPanel()
 
                 }
                 thisObj.m_selectObj = new FT_confBackup('Backup', dbcb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
             case VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID:
@@ -221,6 +232,7 @@ function FT_configPanel()
 
                 }
                 thisObj.m_selectObj = new FT_confRestore('Restore', dbcb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
             case VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_DESC_ID:
@@ -228,12 +240,14 @@ function FT_configPanel()
 
                 }
                 thisObj.m_selectObj = new FT_confRestoreDesc('RestoreDesc', dbcb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage(obj);
 
             case VYA.FT_CONST.DOM_3_NAV_SUB_EMAIL_SRV_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confEmailServer('Email Server', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
@@ -241,6 +255,7 @@ function FT_configPanel()
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confTimeServer('Time Server', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
@@ -248,6 +263,7 @@ function FT_configPanel()
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confLDAPserver('LDAP Server', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
@@ -255,6 +271,7 @@ function FT_configPanel()
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confBLB('BLB Association', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
@@ -262,6 +279,7 @@ function FT_configPanel()
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confBLBcheck('BLB credentials check', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
@@ -269,6 +287,7 @@ function FT_configPanel()
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confPassword('Password Policy', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
@@ -276,14 +295,16 @@ function FT_configPanel()
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confMyProfile('My Profile', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 var cmp = thisObj.m_selectObj.f_getConfigurationPage();
-				thisObj.m_selectObj.f_redraw(cmp);
+				//thisObj.m_selectObj.f_redraw(cmp);
                 return cmp;
             case VYA.FT_CONST.DOM_3_NAV_SUB_USER_ADD_ID:
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confUserAdd('Add user', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
@@ -291,6 +312,7 @@ function FT_configPanel()
                 var mpCb = function(){
                 }
                 thisObj.m_selectObj = new FT_confUserUpdate('Update user', mpCb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init(obj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
         }
@@ -302,7 +324,7 @@ function FT_configPanel()
         thisObj.m_selectCmp = component;
         thisObj.m_activeCmp = component;
         thisObj.m_activeObj = thisObj.m_selectObj;
-		thisObj.f_showFTcontainer();
+		//thisObj.f_showFTcontainer();
     }
 
 }

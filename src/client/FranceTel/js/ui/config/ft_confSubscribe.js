@@ -8,7 +8,8 @@ function FT_confSubscribe(name, callback, busLayer)
 {
 	var thisObjName = 'FT_confSubscribe';
 	var thisObj = this;
-	
+	this.m_div = undefined;
+	this.m_id = undefined;
 	
 	/**
 	 * @param name - name of configuration screens.
@@ -56,9 +57,34 @@ function FT_confSubscribe(name, callback, busLayer)
 		
 		this.f_attachEventListener();
 		this.f_loadVMData(div);
+		this.m_div = div;
+		this.f_resize(60);
 		
 		return div;
 	}
+
+    this.f_reflow = function()
+    {
+       var body = document.getElementsByTagName( "body" )[0];
+       var bodyClass = body.className;
+
+       body.className = "reflow";
+       body.className = bodyClass;
+    }
+
+    this.f_resize = function(padding)
+    {
+		 var h = this.m_div.offsetHeight;
+		 if (padding) {
+		 	h += padding;
+		 } 
+         document.getElementById('ft_container').style.height = h + 'px';
+         this.f_reflow();
+    }
+	
+    this.f_setId = function(id) {
+		this.m_id = id;
+	} 	
 
     this.f_doLayout = function()
 	{

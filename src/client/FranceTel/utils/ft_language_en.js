@@ -8,7 +8,9 @@
 var g_lang =
 {
     ///////////////////////////////////////////////////////////////////
-    // General	
+    // General
+    m_tableTooltip1 : 'Click here to perform sorting.',
+
 	m_mainOA : 'Open Appliance',
 	m_mainLogin : 'Login',
 	m_mainLogout: 'log out',
@@ -98,6 +100,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // VM Update & History screen
     m_uhHdDate : "Date",
+    m_uhHdWho : 'Backup By',
     m_uhErrorTitle : "VM Update Error",
     m_uhCancelTitle : 'Cancel Update Schedule',
 
@@ -201,7 +204,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Popup Message Dialog
     m_puSessionTimeout : 'Session Time Out',
-    m_puSessionTimeoutMsg : 'For security reasons, your session is no longer active.<br>Please re-login again.',
+    m_puSessionTimeoutMsg : 'For security reasons, your session is no longer active.<br>Please log in again.',
 
     ///////////////////////////////////////////////////////////////////
     // Login Dialog

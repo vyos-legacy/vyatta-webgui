@@ -200,7 +200,7 @@ function FT_confUserAdd (name, callback, busLayer)
 		var loginUser = g_busObj.f_getLoginUserObj();
 		switch (loginUser.m_role) {
 			case loginUser.V_ROLE_INSTALL:
-				role = loginUser.V_ROLE_ADMIN;
+				role = loginUser.V_ROLE_USER;
 				break;
 			case loginUser.V_ROLE_ADMIN:
 				role = loginUser.V_ROLE_USER;

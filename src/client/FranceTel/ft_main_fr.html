@@ -38,58 +38,7 @@
                             </select>
                         </div>
                     </nobr>
-                    <!-- **** login start **** -->
-                    <div id="login_background">
-                        <br>
-                        <br>
-                        <div id="login_page">
-                            <div id="ft_login_container" align="center">
-                                <div id="bar">
-                                    <div id="labeltext">
-                                        Login
-                                    </div>
-                                </div>
-                                <div id="login_content" align="center">
-                                    <div id="login_form">
-                                        <table id="ft_table" align="center" width="100%">
-                                            <tbody>
-                                                <tr>
-                                                    <td class="alignLeft">
-                                                        Nom d'usager
-                                                    </td>
-                                                    <td class="alignLeft">
-                                                        <input id="username" name="username" class="login_form_input" size="64" type="text" onkeydown="f_LoginKeyPressHandler(event)">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="alignLeft">
-                                                        Mot de passe
-                                                    </td>
-                                                    <td class="alignLeft">
-                                                        <input id="password" name="password" class="login_form_input" size="64" type="password" onkeydown="f_LoginKeyPressHandler(event)">
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <br>
-                                        <br>
-                                        <div align="center">
-                                            <img id="goto22" src="images/fr/bt_login.gif" onclick="f_submit()">
-                                        </div>
-                                    </div>
-                                    <div id='messageContactServiceCustomer' align='center'>
-                                        <p>
-                                            Si vous n'avez pas de nom d'usager et votre mot de passe, contactez votre Centre de Service à la clientèle.<br/>
-                                            Attention: pour se connecter à l'Open Appliance programme, votre navigateur doit accepter les pop-ups et les cookies.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <br>
-                        <br>
-                    </div>
-                    <!-- **** login end **** --><!-- **** welcome start **** -->
+                    <!-- **** welcome start **** -->
                     <div id="welcome">
                         <span id="welcome_admin">Bienvenue invité, s'il vous plaît vous connecter à l'Open Appliance service admin</span>
                         <a href="#" id="logoff" class="logoff" onfocus="this.blur();"><img border="0" src="images/fr/puce_simple.gif">&nbsp;log out</a>
@@ -105,6 +54,61 @@
                     <!-- **** pri nav end **** -->
                 </div>
                 <!-- **** header end **** -->
+                    <!-- **** login start **** -->
+                    <div id="login_background">
+                        <div id="login_page">                       	
+                            <div id="ft_login_container" align="center">
+                                <div align='center'><img src='images/fr/op_login_image.gif'></div>  
+                                <br/><br/><br/><br/> 								
+								<!--                            	
+                                <div id="bar">
+                                    <div id="labeltext">
+                                        Login
+                                    </div>
+                                </div>
+								-->
+                                <div id="login_content" align="center">
+                                    <div id="login_form">
+                                        <table id="ft_table" align="center" width="100%">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="alignLeft">
+                                                        Nom d'usager
+                                                    </td>
+                                                    <td class="alignLeft">
+                                                        <input id="username" name="username" class="login_form_input" size="32" type="text" onkeydown="f_LoginKeyPressHandler(event)">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="alignLeft">
+                                                        Mot de passe
+                                                    </td>
+                                                    <td class="alignLeft">
+                                                        <input id="password" name="password" class="login_form_input" size="32" type="password" onkeydown="f_LoginKeyPressHandler(event)">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <br>
+                                        <br>
+                                        <div align="center">
+                                            <img id="goto22" src="images/fr/bt_login.gif" onclick="f_submit()">
+                                        </div>
+                                    </div>
+									<br/><br/><br/>
+                                    <div id='messageContactServiceCustomer' align='center'>
+                                        <p>
+                                            Si vous n'avez pas de nom d'usager et votre mot de passe, contactez votre Centre de Service à la clientèle.<br/>
+                                            Attention: pour se connecter à l'Open Appliance programme, votre navigateur doit accepter les pop-ups et les cookies.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                    </div>
+                    <!-- **** login end **** -->				
                 <div id="tab_content">
                 </div>
                 <div id="oa_container">

@@ -305,6 +305,10 @@ sub restore_archive {
 		$coll[$i] = {$filename,"conf"};
 		$i = $i + 1;
 	    }
+	    if (lstat("$WEB_RESTORE_ROOT/$filename/all")) {
+		$coll[$i] = {$filename,"all"};
+		$i = $i + 1;
+	    }
 	}
 	closedir(DIR);
     }
@@ -391,7 +395,7 @@ sub restore_archive {
 #   <contents>
 #     <entry>
 #       <vm>vm</vm>
-#       <type>data|conf</type>
+#       <type>data|conf|all</type>
 #     </entry>
 #   </contents>
 # </archive>

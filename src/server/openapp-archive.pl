@@ -265,7 +265,15 @@ sub restore_archive {
     `rm -fr $WEB_RESTORE_ROOT/`;
     `mkdir -p $WEB_RESTORE_ROOT/`;
     `mkdir -p $RESTORE_WORKSPACE_DIR/`;
-    `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $WEB_RESTORE_ROOT/.`;
+
+    #test for failure here
+    my $err = `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $WEB_RESTORE_ROOT/.`;
+    if ($err =~ /No such file/) {
+	my $err = `tar xf $ARCHIVE_BASE_DIR/admin/$restore.tar -C $WEB_RESTORE_ROOT/.`;
+	if ($err =~ /No such file/) {
+	    return;
+	}
+    }
 
     ##########################################################################
     #
@@ -437,6 +445,10 @@ sub list_archive {
 sub delete_archive {
     my $file = "$ARCHIVE_ROOT_DIR/$delete.tar";
     unlink($file);
+    if ($auth_user_role eq 'installer') { #will blindly try admin as well
+	my $file = "$ARCHIVE_BASE_DIR/admin/$delete.tar";
+	unlink($file);
+    }
 }
 
 ##########################################################################

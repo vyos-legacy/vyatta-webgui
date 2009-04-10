@@ -127,6 +127,20 @@ var g_utils =
                 return "ft_main_fr.html";
         }
     },
+	
+    f_getContactPage: function()
+    {
+		var loc = window.location.href;
+		var index = loc.indexOf('ft_main');
+		var homepage = g_consObj.V_HOME_PAGE;
+		var locale = '_en';
+		if (index != -1) {
+			if (loc.charAt(index+7) != '.') {
+				locale = loc.substring(index+7, index+10);
+			}
+		}
+		return 'ft_contact' + locale + '.html';
+    },	
 
     f_gotoHomePage: function()
     {
@@ -232,12 +246,10 @@ var g_utils =
                 }
                 var cancelCb = ccb == undefined ? cancelHandler : cancelHandler + ";" + ccb;
                 cb = cb == undefined ? applyHandler : applyHandler + ";" + cb;
-                buttonsDiv = '<div align="center"><input id="ft_popup_message_apply" '+
-                          'src="' + g_lang.m_imageDir + 'bt_apply.gif" ' +
+                buttonsDiv = '<div align="center"><input id="ft_popup_message_apply" src="' + g_lang.m_imageDir + 'bt_apply.gif" ' +
                           'type="image" onclick="' + cb + '">&nbsp;&nbsp;' +
                           '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-                          '<input id="ft_popup_message_cancel" src="' +
-                          g_lang.m_imageDir + 'bt_cancel.gif" ' +
+                          '<input id="ft_popup_message_cancel" src="' + g_lang.m_imageDir + 'bt_cancel.gif" ' +
                           'type="image" onclick="' + cancelCb + '"></div>';
                 innerHtml += '<tbody><tr height="65">' +
                       '<td width="48"><img src="' + g_lang.m_imageDir + 'ft_confirm.PNG"></td>' +

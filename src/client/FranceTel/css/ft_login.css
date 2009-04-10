@@ -8,14 +8,12 @@
 
 #login_background {
     clear: both;
-    background: #E7E7E7;
+    background: #FFFFFF;
 	margin: 5px 0px 5px 0px; 
 } 
 
 #login_page {
-	width: 604px;
     background: #FFFFFF;
-	margin: 5px 0px 5px 0px; 
 } 
 
 div#bar {
@@ -38,9 +36,8 @@ div#labeltext {
 } 
 
 #login_content {
-    margin-top: -45px;
+    /* margin-top: -45px; */
     width: 602px;
-    border: 1px solid #CCC;
     display: block;
 } 
 

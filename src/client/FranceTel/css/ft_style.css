@@ -24,6 +24,9 @@ img
     margin: 0 20px 0 20px;
 }
 
+#header {
+	display : none;
+}
 .reflow { 
     border-right: 2px solid transparent; 
 }

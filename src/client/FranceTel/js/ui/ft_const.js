@@ -23,6 +23,7 @@ VYA.FT_CONST = {
 	DOM_LOGOFF_ID : 'logoff',
 	
 	//-----Header Section
+    DOM_HEADER_ID : 'header',
 	DOM_WELCOME_ID : 'welcome',
 	DOM_LOGIN_CONTAINER_ID: 'login_background',
 	

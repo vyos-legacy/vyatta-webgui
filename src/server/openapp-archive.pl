@@ -31,6 +31,9 @@ use File::Copy;
 use Getopt::Long;
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
+use Vyatta::Config;
+use Vyatta::Misc;
+use Vyatta::TypeChecker;
 
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
@@ -57,14 +60,31 @@ my $ARCHIVE_ROOT_DIR = "/var/archive/$auth_user_role";
 my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
 my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
 
-my $INSTALLER_BU_LIMIT = 2;
-my $ADMIN_BU_LIMIT = 3;
-
 my $REST_BACKUP = "/notification/archive/backup";
 my $REST_RESTORE = "/notification/archive/restore";
 my $MAC_ADDR = "/sys/class/net/eth0/address";
 my $WEB_RESTORE_ROOT="/var/www/restore";
 
+
+my $INSTALLER_BU_LIMIT = 2;
+my $ADMIN_BU_LIMIT = 3;
+##########################################################################
+#
+# override these values if found in the configuration tree
+#
+##########################################################################
+my $config = new Vyatta::Config;
+
+$config->setLevel("system open-app smtp");
+my $option = $config->returnValue("system open-app archive installer");
+if (defined $option) {
+    $INSTALLER_BU_LIMIT = $option;
+}
+	
+my $option = $config->returnValue("system open-app archive admin");
+if (defined $option) {
+    $ADMIN_BU_LIMIT = $option;
+}
 
 my ($backup,$filename,$restore,$restore_target,$restore_status,$list,$delete);
 

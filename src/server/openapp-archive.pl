@@ -86,7 +86,7 @@ if (defined $option) {
     $ADMIN_BU_LIMIT = $option;
 }
 
-my ($backup,$filename,$restore,$restore_target,$restore_status,$list,$get,$delete);
+my ($backup,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$delete);
 
 ##########################################################################
 #
@@ -527,6 +527,7 @@ sub usage() {
     print "       $0 --restore=<restore>\n";
     print "       $0 --restore-target=<restore_target>\n";
     print "       $0 --restore-status\n";
+    print "       $0 --backup-status\n";
     print "       $0 --list=<list>\n";
     print "       $0 --get=<get>\n";
     print "       $0 --delete=<delete>\n";
@@ -540,8 +541,9 @@ GetOptions(
     "restore=s"             => \$restore,
     "restore-target:s"      => \$restore_target,
     "restore-status:s"      => \$restore_status,
+    "backup-status:s"       => \$backup_status,
     "list:s"                => \$list,
-    "get:s"                => \$get,
+    "get:s"                 => \$get,
     "delete=s"              => \$delete,
     ) or usage();
 
@@ -553,6 +555,9 @@ elsif ( defined $restore ) {
 }
 elsif ( defined $restore_status ) {
     restore_status();
+}
+elsif ( defined $backup_status ) {
+    backup_status();
 }
 elsif (defined $list ) {
     list_archive();

@@ -500,8 +500,13 @@ sub delete_archive {
 #
 ##########################################################################
 sub restore_status {
-    my $out = `cat $RESTORE_WORKSPACE_DIR/status`;
-    print $out;
+    my $file = "$RESTORE_WORKSPACE_DIR/status";
+    if (-e $file) {
+	my $out = `cat $file`;
+	print $out;
+	return;
+    }
+    print "100";
 }
 
 ##########################################################################
@@ -510,8 +515,13 @@ sub restore_status {
 #
 ##########################################################################
 sub backup_status {
-    my $out = `cat $BACKUP_WORKSPACE_DIR/status`;
-    print $out;
+    my $file = "$BACKUP_WORKSPACE_DIR/status";
+    if (-e $file) {
+	my $out = `cat $file`;
+	print $out;
+	return;
+    }
+    print "100";
 }
 
 

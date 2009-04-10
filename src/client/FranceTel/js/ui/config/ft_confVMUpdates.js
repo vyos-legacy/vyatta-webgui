@@ -144,7 +144,7 @@ function FT_confVMUpdates(name, callback, busLayer)
             return thisObj.f_renderButton('Cancel', true, cb,
                     'Cancel ' + vmName);
         }
-        else if(status == 'failed' || status == 'succeeded')
+        else if(status == 'failed' || status == 'succeeded' || 'restored')
         {
             cb = "f_vmDeployRestore('" + vmId + "', '" + vmName + "')";
             return thisObj.f_renderButton('Restore', prevVer == undefined ?

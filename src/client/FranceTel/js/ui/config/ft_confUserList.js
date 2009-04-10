@@ -80,8 +80,8 @@ function FT_confUserList(name, callback, busLayer)
                     thisObj.m_uRec = thisObj.m_uRec.m_userList;
                     thisObj.f_populateTable();
                 }
+                thisObj.f_resize();
             }
-			thisObj.f_resize();
         }
 
         g_utils.f_cursorWait();

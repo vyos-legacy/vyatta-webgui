@@ -111,7 +111,7 @@ function FT_confRestoreDesc(name, callback, busLayer)
 
         var callback = function(evt)
         {
-            alert('restore in progress....' + evt);
+            //alert('restore in progress....' + evt);
         }
 
         g_busObj.f_restore(vms, types, rec.m_file, callback);

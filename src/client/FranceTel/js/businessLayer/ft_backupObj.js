@@ -66,6 +66,7 @@ function FT_backupContentRec()
 function FT_backupRec(bkDate, name, file, content)
 {
     this.m_bkDate = bkDate;
+    this.m_bkBy = 'admin';
     this.m_name = name;
     this.m_file = file;
     this.m_content = content;   // data type : FT_backupContentRec

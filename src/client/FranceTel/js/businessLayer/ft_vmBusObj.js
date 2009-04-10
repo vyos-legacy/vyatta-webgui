@@ -150,11 +150,11 @@ function FT_vmBusObj(busObj)
     this.f_parseVMSummaryData = function(response)
     {
         var vmNodes = thisObj.f_getVMNodesFromResponse(response, 'vm');
+
+        ///////////////////////////////////////////
+        // parse vms from server response
         var vms = [];
         var c=0;
-        vms[c++] = new FT_vmRecObj('blb', 'Business Livebox');
-        vms[c++] = new FT_vmRecObj('openapp', 'Open Appliance');
-
         if(vmNodes != null)
         {
             for(var i=0; i<vmNodes.length; i++)
@@ -190,7 +190,53 @@ function FT_vmBusObj(busObj)
             }
         }
 
-        thisObj.m_vmRecObj = vms;
+        ////////////////////////////////////////////////////////////
+        // server may not provide all the vm we need and the sorting
+        // order we want. So we need to get some work done here....
+        var finalVmsList = []; 
+        c = 0;  // vm counter
+        
+        // prepare BLB vm
+        var vm = thisObj.f_findVM('blb', vms);
+        var userRec = g_busObj.f_getLoginUserObj();
+        if(userRec.m_loginUser.m_role == userRec.V_ROLE_ADMIN ||
+            userRec.m_loginUser.m_role == userRec.V_ROLE_INSTALL)
+            finalVmsList[c++] = vm == null ? new FT_vmRecObj('blb', 'Business Livebox'):vm;
+
+        // prepare OA vm
+        vm = thisObj.f_findVM('openapp', vms);
+        finalVmsList[c++] = vm == null ? new FT_vmRecObj('openapp', 'Open Appliance'):vm;
+
+        // pbx vm
+        vm = thisObj.f_findVM('pbx', vms);
+        finalVmsList[c++] = vm == null ? new FT_vmRecObj('pbx', 'Telephony'):vm;
+
+        // utm vm
+        vm = thisObj.f_findVM('utm', vms);
+        finalVmsList[c++] = vm == null ? new FT_vmRecObj('utm', 'UTM'):vm;
+
+        // other rest of vms
+        for(var i=0; i<vms.length; i++)
+        {
+            if(vms[i].m_name == 'blb' || vms[i].m_name == 'openapp' ||
+                vms[i].m_name == 'pbx' || vms[i].m_name == 'utm')
+                continue;
+            else
+                finalVmsList[c++] = vms[i];
+        }
+
+        thisObj.m_vmRecObj = finalVmsList;
+    }
+
+    this.f_findVM = function(vmId, vms)
+    {
+        for(var i=0; i<vms.length; i++)
+        {
+            if(vms[i].m_name == vmId)
+                return vms[i];
+        }
+
+        return null;
     }
 
     this.f_parseVMStatus = function(response)

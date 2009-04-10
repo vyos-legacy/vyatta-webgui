@@ -59,43 +59,45 @@ function FT_confBaseObj(name, callback, busLayer)
 
         for(var i=0; i<children.length; i++)
             div.appendChild(children[i]);
-			
+
         document.getElementById('ft_container').appendChild(div);
 
         this.m_div = div;
         return this.m_div;
     }
 
-    this.f_reflow = function() 
-	{
-        var body = document.getElementsByTagName( "body" )[0];
-        var bodyClass = body.className;
-        body.className = "reflow";
-        body.className = bodyClass;		
-	}
+    this.f_reflow = function()
+    {
+       var body = document.getElementsByTagName( "body" )[0];
+       var bodyClass = body.className;
+
+       body.className = "reflow";
+       body.className = bodyClass;
+    }
 
     this.f_resize = function(padding)
-	{
-		var h = 0;
-		for (var i=0; this.m_div.childNodes[i]; i++) {
-			h += this.m_div.childNodes[i].offsetHeight;
-		}
-		h = h + (thisObj.m_tableRowCounter * 28);
-		if (padding) {
-			h += padding;
-		}
+    {
+        var h = 0;
+        for (var i=0; this.m_div.childNodes[i]; i++) {
+            h += this.m_div.childNodes[i].offsetHeight;
+        }
 
-		this.m_div.style.height = h + 'px';
-		document.getElementById('ft_container').style.height = h + 'px';
-		this.f_reflow();
-	}
+        h = h + (thisObj.m_tableRowCounter * 28);
+        if (padding) {
+            h += padding;
+        }
+
+         this.m_div.style.height = h + 'px';
+         document.getElementById('ft_container').style.height = h + 'px';
+         this.f_reflow();
+    }
 
     this.f_createGridHeader = function(header, onclick)
     {
         var div = document.createElement('div');
         div.style.position = 'relative';
         div.style.border = '1px solid #CCC';
-        div.style.backgroundColor = '#EFEFEF';//'#FF6600'//'#EFEFEF';
+        div.style.backgroundColor = '#EFEFEF';//'#FF6600'
         div.style.overflow = 'visible';
 
         var width = 0;
@@ -105,15 +107,22 @@ function FT_confBaseObj(name, callback, busLayer)
             var h = header[i];
             width += h[1]
 
+            var cursor = '';
+            var tooltip = '';
+            if(h[4] != undefined && h[4])
+            {
+                tooltip = 'title="' + g_lang.m_tableTooltip1 + '" ';
+                cursor = 'cursor:pointer; ';
+            }
+
             var colName = thisObj.f_createColNameHTML(h[0], i);
-            var cursor = h[4] != undefined && h[4] ? 'cursor:pointer; ': '';
             var rBorder = (i == header.length-1) || h[0].length < 2 ?
                               '' : 'border-right:1px solid #CCC; ';
 
             inner += '<td width="' + h[1] +'">' +
                 '<div style="padding-top:5px; padding-bottom:5px; ' +
-                cursor + rBorder + '" onclick="' + onclick + '(' + i + ')">' +
-                colName + '</div></td>';
+                cursor + rBorder + '" onclick="' + onclick + '(' + i + ')" ' +
+                tooltip + '>' + colName + '</div></td>';
         }
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">' +

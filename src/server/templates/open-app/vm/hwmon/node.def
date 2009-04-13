@@ -1,6 +1,6 @@
 help: Return OpenAppliance hardware monitoring data
 access:admin
-run: sudo touch /opt/vyatta/var/run/vm-monitor.state
+run: sudo touch /var/run/vm-monitor.state
      if /opt/vyatta/sbin/openapp-vm-query.pl --hwmon; then
        return 0
      else

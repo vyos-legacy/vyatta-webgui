@@ -11,8 +11,8 @@ our $OPENAPP_BFORMAT = '1';
 our $META_DIR = '/var/oa/gui/VM';
 our $LIBVIRT_DIR = '/var/oa/libvirt';
 
-my $STATUS_DIR = '/opt/vyatta/var/run/vmstatus';
-my $HWMON_FILE = '/opt/vyatta/var/run/vm-monitor.hw';
+my $STATUS_DIR = '/var/run/vmstatus';
+my $HWMON_FILE = '/var/run/vmstatus.hw';
 
 ### "static" functions
 sub getVMList {

@@ -12,7 +12,7 @@ my $INTERVAL_INACTIVE = 120;
 my $INACTIVE_TIMEOUT = 60;
 my $OA_ID = $OpenApp::VMMgmt::OPENAPP_ID;
 my $OA_SNMP_COMM = $OpenApp::VMMgmt::OPENAPP_SNMP_COMM;
-my $STATE_FILE = '/opt/vyatta/var/run/vm-monitor.state';
+my $STATE_FILE = '/var/run/vm-monitor.state';
 
 sub updateOAStatus {
   # cpu

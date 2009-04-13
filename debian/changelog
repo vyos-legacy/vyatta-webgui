@@ -1,3 +1,21 @@
+vyatta-webgui (0.2.14+fxdU+4) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Remove old UTM file.
+  * 1. Add new utm files.
+  * 1. Add VpnS2S screen. (incomplete)
+  * 1. Add utm_confFormDefObj.js to define form field items.
+  * 1. Add Vpn Remote User Add/ Edit screen.
+  * 1. Add Vpn Remote User Group screen (forget to check-inf from last
+    time)
+  * 1. Add index.html to /utm
+  * 1. Merge FT style changes from dom0 to utm.
+  * 1. Add m_imageDir to utm_language_en.js and utm_languange_fr.js
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 13 Apr 2009 16:06:39 -0700
+
 vyatta-webgui (0.2.14+fxdU+3) unstable; urgency=low
 
   [ slioch ]

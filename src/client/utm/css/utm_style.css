@@ -265,7 +265,7 @@ img
 	padding: 10px;
     width: 795px;
     float: right;
-	/* border-left: 1px solid #DEDEDE; */
+	border: 1px solid #CCCCCC;	
 } 
 
 #config_panel {
@@ -289,6 +289,13 @@ img
     text-align: left;
     padding: 0;
     margin: 0;
+}
+
+.config_panel_img {
+	height : 32px;
+	margin-right: 10px;
+	margin-left: 0;
+	padding: 0;
 }
 
 /**************************************************/

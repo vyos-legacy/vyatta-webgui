@@ -56,6 +56,10 @@ var g_lang =
     m_vpnRUadd_UserPasswd : "User Password",	
     m_vpnRUadd_VPNGroup : "VPN Group",			
 		
+    ///////////////////////////////////////////////////////////////////
+    // Buttons and Images
+    m_imageDir : 'images/fr/',
+			
     /////////////////////////////////////////
     // plesae do not edit beyound dummy
     dummy : ''

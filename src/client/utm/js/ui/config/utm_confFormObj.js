@@ -153,27 +153,28 @@ function UTM_confFormObj(name, callback, busLayer)
     
     this.f_addButton = function(configButton, alignment)
     {
-		var html ='';
-        html = html + '<img id="' + configButton.id + '" class="v_button_' + alignment +'"';
+		var html ='';		
+        html = html + '<input type="image" id="' + configButton.id + '" class="v_button_' + alignment +'"';
+				
         var imgSrc = 'images/bt_apply.gif';
         switch (configButton.text.trim().toLowerCase()) {
             case 'apply':
-                imgSrc = 'images/en/bt_apply.gif';
+                imgSrc = g_lang.m_imageDir + 'bt_apply.gif';
                 break;
             case 'update':
-                imgSrc = 'images/en/bt_update.gif';
+                imgSrc = g_lang.m_imageDir + 'bt_update.gif';
                 break;
             case 'cancel':
-                imgSrc = 'images/en/bt_cancel.gif';
+                imgSrc = g_lang.m_imageDir + 'bt_cancel.gif';
                 break;
             case 'ok':
-                imgSrc = 'images/en/bt_ok.gif';
+                imgSrc = g_lang.m_imageDir + 'bt_ok.gif';
                 break;
             case 'backup':
-                imgSrc = 'images/en/bt_backup.gif';
+                imgSrc = g_lang.m_imageDir + 'bt_backup.gif';
                 break;
             case 'restore':
-                imgSrc = 'images/en/bt_restore.gif';
+                imgSrc = g_lang.m_imageDir + 'bt_restore.gif';
             default:
                 break;
         }

@@ -261,6 +261,8 @@ function FT_vmBusObj(busObj)
                     if(vmIndex == null) continue;
 
                     var vmr = thisObj.m_vmRecObj[vmIndex];
+                    vmr.m_isDeployed = true;
+
                     for(var j=0; j<val.childNodes.length; j++)
                     {
                         if(val.childNodes == undefined || val.childNodes[j] == null)
@@ -493,6 +495,7 @@ function FT_vmRecObj(id, displayName)
 {
     var thisObj = this;
     this.m_name = id;   // vm id
+    this.m_isDeployed = false;
     this.m_displayName = displayName;  // vm display name
     this.m_ip = null;
     this.m_guiPort = null;

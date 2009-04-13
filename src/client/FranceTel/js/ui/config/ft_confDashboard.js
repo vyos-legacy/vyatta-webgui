@@ -95,9 +95,6 @@ function FT_confDashboard(name, callback, busLayer)
         {
             var v = avm[i].split('|');
 
-            // skip business live box
-            if(v.m_name == 'blb') continue;
-
             var img = thisObj.f_renderStatus(v[1]);
             var cpu = thisObj.f_renderProgressBar(v[2],
                     g_lang.m_dbHdCPU + ' ' + g_lang.m_dbUsed + ': ' + v[2] + '%');
@@ -129,6 +126,9 @@ function FT_confDashboard(name, callback, busLayer)
 
         for(var i=0; i<vm.length; i++)
         {
+            // skip business live box and un-deploy vm
+            if(vm[i].m_name == 'blb' || !vm[i].m_isDeployed) continue;
+
             // OA is alway at the top
             if(vm[i].m_name == 'openapp')
                 op = thisObj.f_composeSortingStr(vm[i]);

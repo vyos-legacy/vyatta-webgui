@@ -86,10 +86,6 @@ function FT_confRestart(name, callback, busLayer)
         {
             var v = vm[i].split('|');
 
-            //////////////////////////////////
-            // skip open appliance
-            if(v[0] == 'openapp' || v[0] == 'blb') continue;
-
             var enabled = v[1] == 'up' ? true : false;
 
             var img = thisObj.f_renderStatus(v[1]);
@@ -119,10 +115,15 @@ function FT_confRestart(name, callback, busLayer)
 
         for(var i=0; i<vm.length; i++)
         {
+            //////////////////////////////////
+            // skip open appliance, blb and undeploy vm
+            if(vm[i].m_name == 'openapp' || vm[i].m_name == 'blb' ||
+                !vm[i].m_isDeployed) continue;
+
             // NOTE: the order of this partition same as the order
             // grid columns.
             // compose a default table row
-            ar[i] = vm[i].m_name + '|' + vm[i].m_status + '|' +
+            ar[ar.length] = vm[i].m_name + '|' + vm[i].m_status + '|' +
                     vm[i].m_displayName;
         }
 

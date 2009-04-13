@@ -31,9 +31,12 @@ function FT_confUserRight(name, callback, busLayer)
         return this.f_getNewPanelDiv(this.f_init());
     }
 
-    this.f_showThisVM = function(vmName)
+    this.f_showThisVM = function(vm)
     {
-        if(vmName == 'blb' || vmName == 'openapp')
+        //////////////////////////////////
+        // skip open appliance, blb and undeploy vm
+        if(vm.m_name == 'openapp' || vm.m_name == 'blb' ||
+            !vm.m_isDeployed)
             return false;
 
         return true;
@@ -49,7 +52,7 @@ function FT_confUserRight(name, callback, busLayer)
         var vmIndex = 1;
         for(var i=0; i<vm.length; i++)
         {
-            if(!this.f_showThisVM(vm[i].m_name))
+            if(!this.f_showThisVM(vm[i]))
                 continue;
 
             cols[vmIndex++] = this.f_createColumn(vm[i].m_displayName,
@@ -125,7 +128,7 @@ function FT_confUserRight(name, callback, busLayer)
             var uiData = [];
             for(var j=0; j<vm.length; j++)
             {
-                if(!thisObj.f_showThisVM(vm[j].m_name))
+                if(!thisObj.f_showThisVM(vm[j]))
                     continue;
 
                 var vn = g_utils.f_replace(vm[j].m_name, " ", "");
@@ -161,7 +164,7 @@ function FT_confUserRight(name, callback, busLayer)
             // NOTE: the order of this partition same as the order
             // grid columns.
             // compose a default table row
-            ar[i] = vm[i].m_user + '|' + vm[i].m_last + '|' +
+            ar[ar.length] = vm[i].m_user + '|' + vm[i].m_last + '|' +
                     vm[i].m_first + '|' + vm[i].m_email + '|' +
                     vm[i].m_role;
         }

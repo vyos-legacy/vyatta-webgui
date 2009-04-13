@@ -51,7 +51,7 @@ sub set_password_policy {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app password-policy $set");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app password-policy $set true");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
@@ -77,7 +77,7 @@ sub delete_password_policy {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app password-policy $delete");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete system open-app password-policy $delete");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
@@ -96,17 +96,20 @@ sub delete_password_policy {
 sub list_password_policy {
     my $admin = "false";
     my $user = "false";
-    if (-e /opt/vyatta/config/active/system/open-app/password-policy/user/node.val) {
+    if (-e "/opt/vyatta/config/active/system/open-app/password-policy/user/node.val") {
 	$user = "true";
     }
-    if (-e /opt/vyatta/config/active/system/open-app/password-policy/admin/node.val) {
+    if (-e "/opt/vyatta/config/active/system/open-app/password-policy/admin/node.val") {
 	$admin = "true";
     }
 
     print "VERBATIM_OUTPUT\n";
     print "<password-policy>";
     print "<user>$user</user>";
-    print "<admin>$admin</admin>";
+    #don't let the admin see the installer settings.
+    if ($auth_user_role eq 'installer') {
+	print "<admin>$admin</admin>";
+    }
     print "</password-policy>";
 }
 
@@ -124,8 +127,9 @@ sub usage() {
 
 #pull commands and call command
 GetOptions(
-    "set:s"                 => \$set,
-    "delete:s"              => \$delete,
+    "set=s"                 => \$set,
+    "delete=s"              => \$delete,
+    "list"                  => \$list,
     ) or usage();
 
 

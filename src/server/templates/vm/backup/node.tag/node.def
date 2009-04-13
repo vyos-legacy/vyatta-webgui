@@ -1,9 +1,0 @@
-run: tfile=$(mktemp /tmp/vmbackup.XXXXXXXXX)
-     sg users -c "if /opt/vyatta/sbin/vyatta-vmbackup.pl backup '$3' \
-                      >&/dev/null; then rm -f $tfile; fi"
-     if [ -f "$tfile" ]; then
-       rm -f $tfile
-       return 1
-     else
-       return 0
-     fi

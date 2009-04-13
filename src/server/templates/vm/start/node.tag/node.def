@@ -1,1 +1,0 @@
-run: sh -c "/opt/vyatta/sbin/vyatta-vmop.pl '$3' start"

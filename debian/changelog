@@ -1,3 +1,147 @@
+vyatta-webgui (0.2+fxd0+7) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * added conf restore description screen header text
+
+  [ Loi Vo ]
+  * 1. Sepearate tab related to ft_tabPanel.js
+  * 1. Hard-coded UTM url link on the client side for now.
+  * 1.Remove unused images
+
+  [ Kevin Choi ]
+  * * updated multi-lang English content to config screens.
+
+  [ Loi Vo ]
+  * 1. Implement dynamically resize the iframe:
+  * 1. Refactor ft_confFormObj.js
+  * 1. Fix email label
+
+  [ slioch ]
+  * remove poc 2 user handling code from server
+  * initial checkin supporting ntp server configuration.
+  * modified layout of conf command. added get equivalent.
+  * initial checkin to support ft specific configuration.
+  * addiitonal configuation accessors
+  * bugfixes in open-app configuration
+  * work on configuration support for smtp client access
+
+  [ Michael Larson ]
+  * support for restricted access for users via session file. will be
+    used to enforce policy on password change.
+
+  [ Loi Vo ]
+  * 1. Fixing a new line before the starting of the warning message.
+  * 1.Add en/images and fr/images.
+  * 1. Change to support french images.
+  * 1. Oops, missing this file.
+  * 1. in18 the calendar component.
+  * 1. Remove hardcoded link to UTM.
+
+  [ Michael Larson ]
+  * finished implementation of restricted mode access when password-
+    policy is set for user or admin. new error code when policy is set
+    and
+
+  [ An-Cheng Huang ]
+  * ask lighttpd to reconfigure reverse proxy during vimg package
+    postinst.
+
+  [ Michael Larson ]
+  * more support for op mode side of configuration for smtp,ldap
+  * op mode side support for password policy configuration.
+
+  [ Kevin Choi ]
+  * * added a grid table sorting library.
+
+  [ Michael Larson ]
+  * a bevy of changes to support dom0 functionality.
+  * misc bugfixes in dom0 feature testing.
+  * more bugs fixed.
+
+  [ Loi Vo ]
+  * 1. Fixing all the images link to use  g_lang.m_imageDir
+  * 1. Remove all images from the top level
+  * 1. Fix config backup: don't show BLB and down VM.
+
+  [ Kevin Choi ]
+  * * added table sorting to VM update, Restart, UserList, UserRight,
+    Restore and dashboard conf
+  * * updated dashboard screen sorting: open app is alway at the top.
+
+  [ Michael Larson ]
+  * added all option to backup and restore op mode commands. This should
+    be all that is required to add additional mode.
+  * missing argument for smtp server name added.
+
+  [ Kevin Choi ]
+  * * fixed images dir to support France button images.
+
+  [ slioch ]
+  * smtp support--final piece email out msg on backup completion.
+    untested at this point.
+
+  [ Loi Vo ]
+  * 1. Fix the following:
+  * 1. Fix Item #3- Section 3.3 from FT feedback:
+
+  [ Kevin Choi ]
+  * * adding index page to redirect to the main page.
+
+  [ slioch ]
+  * added capability to override backup limit in configuration tree.
+
+  [ Michael Larson ]
+  * bug fix on applying limit value from configuration.
+  * add listing support of archives for admin+installer. will need to
+    follow up with submission enabling restore/delete operations for
+    installer on admin
+  * added delete and restore support for installer over admin archives
+
+  [ Loi Vo ]
+  * 1. Fix the following:
+
+  [ Michael Larson ]
+  * support added for third archive type: "all"
+  * add support for get command on archive. can be used to return
+    archive to pc.
+  * added backup status. client can check backup status before starting
+    new backup process and allow user to cancel or override.
+  * accessors for backup status
+  * mod status return results if status file not found.
+
+  [ Kevin Choi ]
+  * * Fixed tab order per spec. as BLB, OA, PBX, UTM so on...
+
+  [ Loi Vo ]
+  * 1. Fix the following:
+
+  [ Kevin Choi ]
+  * * adjust div size to fit frame size height
+  * * added a html file to handle the un-deploy VM PBX screen
+
+  [ Loi Vo ]
+  * 1. Add key listener to form
+
+  [ Michael Larson ]
+  * partial implementation of remote ldap access
+
+  [ Loi Vo ]
+  * 1. Don't add key listener for cancel button.  User the form default.
+
+  [ Michael Larson ]
+  * bugfixes on password-policy
+  * additional files needed for the op mode side of things in order to
+    recognize the delete command.
+  * bugfixes on client-host interaction for ldap
+
+  [ Kevin Choi ]
+  * * changed undeployed PBX VM file content and used proxy uri instead
+    of url
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 13 Apr 2009 11:26:34 -0700
+
 vyatta-webgui (0.2+fxd0+6) unstable; urgency=low
 
   [ slioch ]

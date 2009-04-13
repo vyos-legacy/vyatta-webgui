@@ -97,4 +97,6 @@ install-exec-hook:
 	cd templates-cfg; $(cpiop) $(DESTDIR)$(cfgdir)
 	@mkdir -p $(DESTDIR)$(opdir); \
 	cd templates-op; $(cpiop) $(DESTDIR)$(opdir)
-
+	@mkdir -p $(DESTDIR)/etc/ldap
+	cp src/server/misc/slapd.conf $(DESTDIR)/etc/ldap/.	
+	cp src/server/misc/openapp.conf $(DESTDIR)/etc/ldap/.

@@ -32,7 +32,7 @@ use Getopt::Long;
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
 
-my ($address,$email,$username,$password,$name,$list);
+my ($server,$email,$username,$pswd,$name,$list);
 
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
@@ -51,35 +51,35 @@ sub set_smtp {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp address $address");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client address $server");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp email $email");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client email $email");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp username $username");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client username $username");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp password $password");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client password $pswd");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp name $name");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client name $name");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
@@ -137,15 +137,15 @@ sub usage() {
 
 #pull commands and call command
 GetOptions(
-    "address=s"               => \$address,
+    "server=s"                => \$server,
     "email=s"                 => \$email,
     "username=s"              => \$username,
-    "password=s"              => \$password,
+    "pswd=s"                  => \$pswd,
     "name=s"                  => \$name,
     "list:s"                  => \$list,
     ) or usage();
 
-if (defined $address && defined $email && defined $username && defined $password && defined $name) {
+if (defined $server && defined $email && defined $username && defined $pswd && defined $name) {
     set_smtp();
 }
 else {

@@ -44,7 +44,7 @@ function FT_confBaseObj(name, callback, busLayer)
 
     this.f_setId = function(id) {
 		this.m_id = id;
-	} 
+	}
 
     this.f_getNewPanelDiv = function(children)
     {
@@ -380,7 +380,7 @@ function FT_confBaseObj(name, callback, busLayer)
         {
             if(thisObj.m_sortCol == col)
             {
-                var sortIcon = thisObj.m_sortOrder == 'asc' ? 
+                var sortIcon = thisObj.m_sortOrder == 'asc' ?
                     '<img src="' + g_lang.m_imageDir + 'sortAsc.gif"/>' :
                     '<img src="' + g_lang.m_imageDir + 'sortDesc.gif"/>';
 

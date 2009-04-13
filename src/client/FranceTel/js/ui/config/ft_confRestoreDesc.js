@@ -25,6 +25,7 @@ function FT_confRestoreDesc(name, callback, busLayer)
     this.f_getConfigurationPage = function(dataObj)
     {
         var page = this.f_getNewPanelDiv(this.f_init(dataObj));
+        this.f_loadVMData();
 
         return page;
     }
@@ -153,8 +154,6 @@ function FT_confRestoreDesc(name, callback, busLayer)
                     thisObj.m_btnRestoreId],
                     ['Cancel', "f_restoreDescCancel()", '']];
         this.m_buttons = this.f_createButtons(btns);
-
-        this.f_loadVMData();
 
         return [this.f_headerText(), this.m_header, this.m_body, this.m_buttons];
     }

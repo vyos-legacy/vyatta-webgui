@@ -216,10 +216,10 @@ function FT_confRestore(name, callback, busLayer)
         div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-        div.style.height = '40px';
+        div.style.height = '45px';
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
-        innerHtml += '<tbody><tr height="45">';
+        innerHtml += '<tbody><tr height="40">';
 
         innerHtml += '<td width="200" colspan="2" valign="bottom">' +
                       '<div style="height:20px; padding-left:3px; ' +
@@ -233,7 +233,7 @@ function FT_confRestore(name, callback, busLayer)
                     'value="Go" title="Click here to start restore from my PC" onclick="' +
                     handleFunc + '></div></td>';
 
-        innerHtml += '</tr></tbody></table>';
+        innerHtml += '</tr><tr height="20"><td></td></tr></tbody></table>';
 
         div.innerHTML = innerHtml;
         return div;

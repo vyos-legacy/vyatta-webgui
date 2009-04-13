@@ -117,7 +117,7 @@ sub list_smtp() {
     print "<name>$name[1]</name>";
     print "<password>$password[1]</password>";
     print "<username>$username[1]</username>";
-    print "</smpt-client>";
+    print "</smtp-client>";
 }
 
 ##########################################################################

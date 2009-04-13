@@ -10,7 +10,6 @@ var g_oaConfig =
     m_oaRefreshTime : 5000,     // 5 seconds
 
     /////////////////////////////
-    // un-deploy PBX info
-    m_pbxURI : 'Kevin/ft_undeployPBXInfo.html',
-    m_pbxPort : '8080'
+    // un-deploy PBX html file
+    m_pbxURI : 'ft_undeployPBXInfo.html'
 }

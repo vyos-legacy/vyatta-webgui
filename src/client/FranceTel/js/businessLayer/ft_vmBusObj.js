@@ -213,8 +213,8 @@ function FT_vmBusObj(busObj)
         {
             vm = new FT_vmRecObj('pbx', 'Telephony');
             vm.m_ip = document.domain;
-            vm.m_guiUri = g_oaConfig.m_pbxURI;
-            vm.m_guiPort = g_oaConfig.m_pbxPort;
+            var uri = document.URL.split('/');
+            vm.m_guiUri = '/' + uri[uri.length-2] + '/' + g_oaConfig.m_pbxURI;
         }
         finalVmsList[c++] = vm;
 

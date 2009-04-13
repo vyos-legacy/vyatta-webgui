@@ -355,7 +355,7 @@ function FT_businessLayer()
     this.f_startVMRequestThread = function(cb)
     {
         // create a new thread object
-        thisObj.m_reqThread = new FT_thread(8000);
+        thisObj.m_reqThread = new FT_thread(g_oaConfig.m_oaRefreshTime);
 
         var guiCb = cb;
         var callback = function()
@@ -446,7 +446,7 @@ function FT_businessLayer()
     this.f_startHWMonitorRequestThread = function(cb)
     {
         // create a new thread object
-        thisObj.m_reqThread = new FT_thread(8000 /*8 sec*/);
+        thisObj.m_reqThread = new FT_thread(g_oaConfig.m_oaRefreshTime);
 
         var guiCb = cb;
         var callback = function()

@@ -56,6 +56,7 @@ sbin_SCRIPTS += src/server/openapp-conf-ntp.pl
 sbin_SCRIPTS += src/server/openapp-conf-smtp.pl
 sbin_SCRIPTS += src/server/openapp-conf-ldap.pl
 sbin_SCRIPTS += src/server/openapp-conf-password-policy.pl
+sbin_SCRIPTS += scripts/vyatta-smtp.pl
 sbin_SCRIPTS += src/server/openapp-vm-query.pl
 sbin_SCRIPTS += src/server/openapp-vm-monitor.pl
 sbin_SCRIPTS += src/server/openapp-vm-deploy.pl

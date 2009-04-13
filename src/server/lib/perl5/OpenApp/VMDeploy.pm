@@ -5,9 +5,9 @@ use POSIX;
 use File::Temp qw(mkdtemp);
 use OpenApp::VMMgmt;
 
-my $VIMG_DIR = '/var/vimg';
-my $NVIMG_DIR = '/var/vimg-new';
-my $IMG_DIR = '/var/xen';
+my $VIMG_DIR = '/var/oa/vimg';
+my $NVIMG_DIR = '/var/oa/vimg-new';
+my $IMG_DIR = '/var/oa/xen';
 my $LDAP_ROOT = '/var/oa/ldap';
 my $STATUS_FILE = 'current/status';
 my $SCHED_FILE = 'current/sched';

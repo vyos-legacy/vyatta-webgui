@@ -1,2 +1,2 @@
 help: Configure smtp client
-end:expression: exec "sudo ${vyatta_sbindir}/vyatta-smtp.pl"
+end:expression: exec "sudo /opt/vyatta/sbin/vyatta-smtp.pl"

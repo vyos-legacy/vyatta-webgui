@@ -142,7 +142,8 @@ function FT_confEmailServer(name, callback, busLayer)
     
     this.f_reset = function()
     {
-    
+        alert('reset form');
+		return false;
     }
     
     this.f_handleClick = function(e)
@@ -160,6 +161,21 @@ function FT_confEmailServer(name, callback, busLayer)
             }
         }
     }
+	
+    this.f_handleKeydown = function(e)
+    {
+        if(e.keyCode != 13)	{
+			return false;
+		}	
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if (target != undefined) {
+            var id = target.getAttribute('id');
+            if (id == 'conf_email_server_cancel_button') { //cancel clicked
+                thisObj.f_reset();			
+				return false;				
+            }
+        }
+    }	
     
 }
 

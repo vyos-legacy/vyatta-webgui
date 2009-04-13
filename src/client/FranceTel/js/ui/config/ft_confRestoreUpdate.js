@@ -120,7 +120,22 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
                 g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_UPDATE_ID);                             
             }
         }
-    }	    
+    }	  
+	
+	this.f_handleKeydown = function(e)
+    {
+        if(e.keyCode != 13)	{
+			return;
+		}	
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if (target != undefined) {
+            var id = target.getAttribute('id');
+            if (id == 'conf_restore_update_cancel_button') { //cancel clicked
+                g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_UPDATE_ID);  
+				return false;				
+            }
+        }
+    }
 }
 
 FT_extend(FT_confRestoreUpdate, FT_confFormObj);

@@ -175,6 +175,21 @@ function FT_confUserAdd (name, callback, busLayer)
 		}
 	} 
 	
+    this.f_handleKeydown = function(e)
+    {
+        if(e.keyCode != 13)	{
+			return;
+		}	
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if (target != undefined) {
+            var id = target.getAttribute('id');
+            if (id == 'conf_user_add_cancel_button') { //cancel clicked
+                g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID);
+				return false;			   
+            }
+        }
+    }		
+	
 	this.f_handleKeyUpUsername = function(e) 
 	{
 	    thisObj.override = false;

@@ -1,5 +1,5 @@
 access:installer
-run: if sudo perl /opt/vyatta/sbin/openapp-conf-ldap.pl --server "$4" --ruser "$6" --rpswd "$8" --rwuser "$10" --rwpswd "$12"; then
+run: if sudo perl /opt/vyatta/sbin/openapp-conf-ldap.pl --address "$6" --ruser "$8" --rpswd "${10}" --rwuser "${12}" --rwpswd "${14}"; then
        return 0
      else
        return 1

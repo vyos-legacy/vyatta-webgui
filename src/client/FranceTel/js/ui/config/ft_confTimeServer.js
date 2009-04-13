@@ -111,6 +111,21 @@ function FT_confTimeServer (name, callback, busLayer) {
             }
         }
     }	   
+	
+    this.f_handleKeydown = function(e)
+    {
+        if(e.keyCode != 13)	{
+			return;
+		}	
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if (target != undefined) {
+            var id = target.getAttribute('id');
+            if (id == 'conf_time_server_cancel_button') { //cancel clicked
+                thisObj.f_reset();
+				return false;			
+            }
+        }
+    }	
 }
 
 FT_extend(FT_confTimeServer, FT_confFormObj);

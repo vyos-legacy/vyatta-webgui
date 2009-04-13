@@ -32,7 +32,9 @@ use Getopt::Long;
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
 
-my ($address,$r_pswd,$r_user,$rw_pswd,$rw_user,$list);
+my $slap_file = "/etc/ldap/remote.conf";
+
+my ($address,$rpswd,$ruser,$rwpswd,$rwuser,$local_db,$list);
 
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
@@ -58,28 +60,28 @@ sub set_ldap {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap r-password $r_pswd");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap r-password $rpswd");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap r-username $r_user");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap r-username $ruser");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap rw-password $rw_pswd");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap rw-password $rwpswd");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap rw-username $rw_user");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap rw-username $rwuser");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
@@ -95,18 +97,57 @@ sub set_ldap {
    
 }
 
+
+##########################################################################
+#
+# change ldap target (true or false) for local
+#
+##########################################################################
+sub set_ldap_target() {
+#create include file
+    #write the following to the end of the main /etc/ldap/slapd.conf file:
+
+#need include include /etc/ldap/remote.conf in the main slapd.conf below the directory entry of the db
+
+
+
+    #now create the file.
+    if ($local_db eq 'true') {
+	#should clear file that is included by slapd.conf
+	`echo '' > $slap_file`;
+    }
+    else {
+	#should write into file that is include by slapd.conf
+	#will write into file the following:
+	
+	open(FILE, ">$slap_file") or die "Can't open archive"; 
+	print FILE "overlay translucent\n";
+	print FILE "uri ldap://$address:389\n";
+	close(FILE);
+#haven't figured out password access yet....
+
+    }
+}
+
+##########################################################################
+#
+# return ldap configuration values
+#
+##########################################################################
 sub list_ldap() {
     print "VERBATIM_OUTPUT\n";
     my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app ldap`;
     
     my @address = split(" ",$out[0]);
-    my @r_password = split(" ",$out[1]);
-    my @r_username = split(" ",$out[2]);
-    my @rw_password = split(" ",$out[3]);
-    my @rw_username = split(" ",$out[4]);
+    my @local_db = split(" ",$out[1]);
+    my @r_password = split(" ",$out[2]);
+    my @r_username = split(" ",$out[3]);
+    my @rw_password = split(" ",$out[4]);
+    my @rw_username = split(" ",$out[5]);
 
     print "<ldap>";
     print "<address>$address[1]</address>";
+    print "<local>$local_db[1]</local>";
     print "<r-password>$r_password[1]</r-password>";
     print "<r-username>$r_username[1]</r-username>";
     print "<rw-password>$rw_password[1]</rw-password>";
@@ -121,10 +162,10 @@ sub list_ldap() {
 ##########################################################################
 sub usage() {
     print "       $0 --address=<address>\n";
-    print "       $0 --r-pswd=<read-pswd>\n";
-    print "       $0 --r-user=<read-user>\n";
-    print "       $0 --rw-pswd=<readwrite-pswd>\n";
-    print "       $0 --rw-user=<readwrite-user>\n";
+    print "       $0 --rpswd=<read-pswd>\n";
+    print "       $0 --ruser=<read-user>\n";
+    print "       $0 --rwpswd=<readwrite-pswd>\n";
+    print "       $0 --rwuser=<readwrite-user>\n";
     print "       $0 --list\n";
     exit 0;
 }
@@ -132,15 +173,19 @@ sub usage() {
 #pull commands and call command
 GetOptions(
     "address=s"               => \$address,
-    "r-pswd=s"                => \$r_pswd,
-    "r-user=s"                => \$r_user,
-    "rw-pswd=s"               => \$rw_pswd,
-    "rw-user=s"               => \$rw_user,
+    "rpswd=s"                => \$rpswd,
+    "ruser=s"                => \$ruser,
+    "rwpswd=s"               => \$rwpswd,
+    "rwuser=s"               => \$rwuser,
+    "local=s"                 => \$local_db,
     "list:s"                  => \$list,
     ) or usage();
 
-if (defined $address && defined $r_pswd && defined $r_user && defined $rw_pswd && defined $rw_user ) {
+if (defined $address && defined $rpswd && defined $ruser && defined $rwpswd && defined $rwuser ) {
     set_ldap();
+}
+elsif (defined $local_db) {
+    set_ldap_target();
 }
 else {
     list_ldap();

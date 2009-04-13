@@ -104,12 +104,32 @@ sub set_ldap {
 #
 ##########################################################################
 sub set_ldap_target() {
-#create include file
-    #write the following to the end of the main /etc/ldap/slapd.conf file:
+    if ($local_db ne 'true' || $local_db ne 'false') {
+	exit 1;
+    }
 
-#need include include /etc/ldap/remote.conf in the main slapd.conf below the directory entry of the db
+    # set up config session
+    my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
+    if ($err != 0) {
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
 
+    # apply config command
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap local $local_db");
+    if ($err != 0) {
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
 
+    # commit
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
+    if ($err != 0) {
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+   
 
     #now create the file.
     if ($local_db eq 'true') {

@@ -106,16 +106,16 @@ sub list_smtp() {
 # server 2.3.4.2
 # username harry
     my @address = split(" ",$out[0]);
-    my @name = split(" ",$out[1]);
-    my @password = split(" ",$out[2]);
-    my @server = split(" ",$out[3]);
+    my @email = split(" ",$out[1]);
+    my @name = split(" ",$out[2]);
+    my @password = split(" ",$out[3]);
     my @username = split(" ",$out[4]);
 
     print "<smtp-client>";
     print "<address>$address[1]</address>";
+    print "<email>$email[1]</email>";
     print "<name>$name[1]</name>";
     print "<password>$password[1]</password>";
-    print "<server>$server[1]</server>";
     print "<username>$username[1]</username>";
     print "</smpt-client>";
 }

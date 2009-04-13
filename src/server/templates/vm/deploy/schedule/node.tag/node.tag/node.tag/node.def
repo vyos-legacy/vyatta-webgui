@@ -1,5 +1,0 @@
-run: if /opt/vyatta/sbin/vyatta-vmdeploy-op schedule "$4" "$5" "$6"; then
-       return 0
-     else
-       return 1
-     fi

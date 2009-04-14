@@ -1,10 +1,11 @@
-statedir = $(localstatedir)/run
+statedir = /var/run
 wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
 initddir = /etc/init.d
 opdir = $(datadir)/vyatta-op/templates
 cfgdir = $(datadir)/vyatta-cfg/templates
 oaperldir = $(datadir)/perl5/OpenApp
+guiconfdir = $(sysconfdir)/gui
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
@@ -68,6 +69,9 @@ oaperl_DATA = src/server/lib/perl5/OpenApp/VMMgmt.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/VMDeploy.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/LdapUser.pm
 
+guiconf_DATA = src/server/misc/slapd.conf
+guiconf_DATA += src/server/misc/openapp.conf
+
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 
 cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
@@ -97,6 +101,3 @@ install-exec-hook:
 	cd templates-cfg; $(cpiop) $(DESTDIR)$(cfgdir)
 	@mkdir -p $(DESTDIR)$(opdir); \
 	cd templates-op; $(cpiop) $(DESTDIR)$(opdir)
-	@mkdir -p $(DESTDIR)/etc/ldap
-	cp src/server/misc/slapd.conf $(DESTDIR)/etc/ldap/.	
-	cp src/server/misc/openapp.conf $(DESTDIR)/etc/ldap/.

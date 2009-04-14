@@ -51,7 +51,22 @@ function FT_confTimeServer (name, callback, busLayer) {
     this.f_loadVMData = function(element)
     {
         thisObj.m_form = document.getElementById('conf_time_srv' + "_form");	
-		thisObj.f_setFocus();	
+		thisObj.f_setFocus();
+		var cb = function(evt)
+        {
+            if(evt != undefined && evt.m_objName == 'FT_eventObj')
+            {
+		        if (evt.f_isError()) {
+					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+					return;
+				}				
+                var ntp = evt.m_value;
+                if(ntp == undefined)  
+				    return;
+                thisObj.m_form.conf_time_srv_ntp.value = ntp.m_ntp;					
+            }
+        }
+        thisObj.m_busLayer.f_getOAConfig(cb, 'ntp server');		
     }
 	
 	this.f_setFocus = function()
@@ -88,12 +103,23 @@ function FT_confTimeServer (name, callback, busLayer) {
 	
     this.f_apply = function()
     {
-        g_utils.f_popupMessage(g_lang.m_ntpTimeSrvConfig +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_ntpTimeSrvConfig,true);
+		var ntp = new FT_ntpServer(thisObj.m_form.conf_time_srv_ntp.value);
+		
+        var cb = function(evt) {
+		    if (evt.f_isError()) {
+		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
+		    } else {
+                g_utils.f_popupMessage(g_lang.m_ntpTimeSrvConfig +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_ntpTimeSrvConfig,true);
+		    }			
+		}	
+		thisObj.m_busLayer.f_setOAConfig(cb, ntp);
+		return false;		
     }
     
     this.f_reset = function()
     {
-    
+        thisObj.f_loadVMData();
+		return false;    
     }	
 	
     this.f_handleClick = function(e)

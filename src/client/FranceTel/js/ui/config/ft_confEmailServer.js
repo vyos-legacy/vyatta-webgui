@@ -28,12 +28,12 @@ function FT_confEmailServer(name, callback, busLayer)
             id: 'conf_email_srv',
             items: [{
                 v_type: 'label',
-                id: 'conf_email_srv_stmp_label',
+                id: 'conf_email_srv_smtp_label',
                 text: g_lang.m_emailSmtpAddr,
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
-                id: 'conf_email_srv_stmp',
+                id: 'conf_email_srv_smtp',
                 size: '64',
                 v_end_row: 'true'
             }, {
@@ -93,11 +93,31 @@ function FT_confEmailServer(name, callback, busLayer)
     {
         thisObj.m_form = document.getElementById('conf_email_srv' + "_form");
 		thisObj.f_setFocus();
+		
+        var cb = function(evt)
+        {
+            if(evt != undefined && evt.m_objName == 'FT_eventObj')
+            {
+		        if (evt.f_isError()) {
+					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+					return;
+				}				
+                var em = evt.m_value;
+                if(em == undefined)  
+				    return;
+				thisObj.m_form.conf_email_srv_smtp.value = em.m_smtp;
+				thisObj.m_form.conf_email_srv_local_machine.value = em.m_machine;
+				thisObj.m_form.conf_email_srv_local_email.value = em.m_email;
+				thisObj.m_form.conf_email_srv_auth_name.value = em.m_name;
+				thisObj.m_form.conf_email_srv_auth_passwd.value = em.m_passwd;
+            }
+        }
+        thisObj.m_busLayer.f_getOAConfig(cb, 'smtp');					
     }
 	
 	this.f_setFocus = function()
 	{
-		thisObj.m_form.conf_email_srv_stmp.focus();
+		thisObj.m_form.conf_email_srv_smtp.focus();
 	}		
     
     this.f_stopLoadVMData = function()
@@ -109,8 +129,8 @@ function FT_confEmailServer(name, callback, busLayer)
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
         
-        if (!thisObj.f_checkIP(thisObj.m_form.conf_email_srv_stmp.value)) {
-            if (!thisObj.f_checkHostname(thisObj.m_form.conf_email_srv_stmp.value)) {
+        if (!thisObj.f_checkIP(thisObj.m_form.conf_email_srv_smtp.value)) {
+            if (!thisObj.f_checkHostname(thisObj.m_form.conf_email_srv_smtp.value)) {
                 errorInner += thisObj.f_createListItem(g_lang.m_emailSmtpAddr + ' '+ g_lang.m_formInvalid);
             }
         }
@@ -137,12 +157,25 @@ function FT_confEmailServer(name, callback, busLayer)
     
     this.f_apply = function()
     {
-        g_utils.f_popupMessage(g_lang.m_emailSrvConfig + ' ' + g_lang.m_formSave, 'ok', g_lang.m_emailSrvConfig,true);
+		var em = new FT_emailServer(thisObj.m_form.conf_email_srv_smtp.value, 
+		                            thisObj.m_form.conf_email_srv_local_machine.value, 
+									thisObj.m_form.conf_email_srv_local_email.value, 
+									thisObj.m_form.conf_email_srv_auth_name.value, 
+									thisObj.m_form.conf_email_srv_auth_passwd.value);
+        var cb = function(evt) {
+		    if (evt.f_isError()) {
+		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
+		    } else {
+			    g_utils.f_popupMessage(g_lang.m_emailSrvConfig + ' ' + g_lang.m_formSave, 'ok', g_lang.m_emailSrvConfig,true);
+		    }			
+		}	
+		thisObj.m_busLayer.f_setOAConfig(cb, em);
+		return false;
     }
     
     this.f_reset = function()
     {
-        alert('reset form');
+        thisObj.f_loadVMData();
 		return false;
     }
     

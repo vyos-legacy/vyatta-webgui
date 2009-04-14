@@ -49,10 +49,10 @@ function FT_confLDAPserver (name, callback, busLayer) {
 				v_end_row: 'true'
 			}, {
 				v_type: 'html',
-				id: 'conf_ldap_srv_in_ldap',
+				id: 'conf_ldap_srv_in_lan',
 				padding : '30px',				
 				size: '30',
-				text: '<input id="conf_ldap_srv_in_ldap" type="radio" name="loc_group" value="lan">&nbsp;' + g_lang.m_ldapInLan,
+				text: '<input id="conf_ldap_srv_in_lan" type="radio" name="loc_group" value="lan">&nbsp;' + g_lang.m_ldapInLan,
 				v_new_row: 'true',
 				v_end_row: 'true'
 			}, {
@@ -127,9 +127,41 @@ function FT_confLDAPserver (name, callback, busLayer) {
 		})  
     }
 	
+	this.f_setFocus = function() {
+		
+	}
+	
     this.f_loadVMData = function(element)
     {
-        thisObj.m_form = document.getElementById('conf_ldap_srv' + "_form");			
+        thisObj.m_form = document.getElementById('conf_ldap_srv' + "_form");	
+		thisObj.f_setFocus();
+		
+        var cb = function(evt)
+        {
+            if(evt != undefined && evt.m_objName == 'FT_eventObj')
+            {
+		        if (evt.f_isError()) {
+					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+					return;
+				}				
+                var ldap = evt.m_value;
+                if(ldap == undefined)  
+				    return;
+				thisObj.m_form.conf_ldap_srv_server_addr.value = ldap.m_ldap;	
+                thisObj.m_form.conf_ldap_srv_user_update.value = ldap.m_update_username;
+				thisObj.m_form.conf_ldap_srv_user_update_passwd.value = ldap.m_update_userpasswd;		
+				thisObj.m_form.conf_ldap_srv_user_read.value = ldap.m_read_username;
+				thisObj.m_form.conf_ldap_srv_user_read_passwd.value = ldap.m_read_userpasswd;
+				if (ldap.m_type == 'oa') {
+		            thisObj.m_form.conf_ldap_srv_in_oa.checked = true;
+					thisObj.m_form.conf_ldap_srv_in_lan.checked = false;
+				} else {
+		            thisObj.m_form.conf_ldap_srv_in_oa.checked = false;
+					thisObj.m_form.conf_ldap_srv_in_lan.checked = true;					
+				}
+            }
+        }
+        thisObj.m_busLayer.f_getOAConfig(cb, 'ldap');					
     }
     
     this.f_stopLoadVMData = function()
@@ -165,14 +197,63 @@ function FT_confLDAPserver (name, callback, busLayer) {
 		
 	}
 	
+	this.f_setLdapLocation = function()
+	{
+		var type = 'lan';
+		
+		if (thisObj.m_form.conf_ldap_srv_in_oa.checked == true) {
+			type = 'oa';
+		} else {
+			type = 'lan';
+		}		
+		var cb = function(evt) {
+		    if (evt.f_isError()) {
+		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
+		    } else {
+                thisObj.f_setLdapConfig();
+		    }				
+		}
+		thisObj.m_busLayer.f_setLDAPlocation(cb, type);
+	}
+	
+	this.f_setLdapConfig = function()
+	{
+		var type = 'lan';
+		
+		if (thisObj.m_form.conf_ldap_srv_in_oa.checked == true) {
+			type = 'oa';
+		} else {
+			type = 'lan';
+		}
+		
+		var ldap = new FT_ldapServer(type /* oa | lan */, 
+		                             thisObj.m_form.conf_ldap_srv_server_addr.value, 
+									 thisObj.m_form.conf_ldap_srv_user_update.value, 
+									 thisObj.m_form.conf_ldap_srv_user_update_passwd.value, 
+									 thisObj.m_form.conf_ldap_srv_user_read.value, 
+									 thisObj.m_form.conf_ldap_srv_user_read_passwd.value);
+			
+        var cb = function(evt) {
+		    if (evt.f_isError()) {
+		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
+		    } else {
+                g_utils.f_popupMessage(g_lang.m_menuLDAPConfig +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_menuLDAPConfig,true);
+		    }			
+		}	
+		thisObj.m_busLayer.f_setOAConfig(cb, ldap);		
+	}
+	
 	this.f_apply = function()
 	{
-		
+        thisObj.f_setLdapLocation();
+		//thisObj.f_setLdapConfig();
+		return false;			
 	}
 	
 	this.f_reset = function()
 	{
-		alert('reset form');
+        thisObj.f_loadVMData();
+		return false; 	
 	}
     
     this.f_handleClick = function(e)

@@ -1,4 +1,4 @@
-access:installer
+access:admin
 run: if sudo perl /opt/vyatta/sbin/openapp-conf-ldap.pl --address "$6" --ruser "$8" --rpswd "${10}" --rwuser "${12}" --rwpswd "${14}"; then
        return 0
      else

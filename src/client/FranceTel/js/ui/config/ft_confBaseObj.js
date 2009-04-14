@@ -478,9 +478,10 @@ function FT_confBaseObj(name, callback, busLayer)
                 imgSrc = 'ico_disquette.gif';
                 break;
             case 'download':
-                imgSrc = g_lang.m_imageDir + 'ico_download.gif';
-                return '<a title="' + tooltip + '" href=' + cb +
-                        '><img src="' + imgSrc + '"></a>';
+                imgSrc = 'ico_download.gif';
+                //return '<a title="' + tooltip + '" href=' + cb +
+                //        '><img src="' + imgSrc + '"></a>';
+                break;
             case 'Cancel':
                 imgSrc = 'bt_cancel.gif';
                 break;

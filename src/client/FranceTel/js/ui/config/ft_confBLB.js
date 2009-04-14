@@ -61,6 +61,16 @@ function FT_confBLB(name, callback, busLayer)
     
     this.f_loadVMData = function(element)
     {
+		var cb = function(evt)
+        {
+            if(evt != undefined && evt.m_objName == 'FT_eventObj')
+            {
+                var response = evt.m_value;
+                if(response == undefined)  
+				    return;
+            }
+        }
+        //thisObj.m_busLayer.f_getOAConfig(cb, 'blb');				
     }
     
     this.f_stopLoadVMData = function()

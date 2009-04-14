@@ -93,8 +93,7 @@ function FT_confRestore(name, callback, busLayer)
                         'restore', true, restDesc, g_lang.m_restoreArchive +
                         ' (' + content + ')');
             var download = thisObj.f_renderButton(
-                        //'download', true, "f_handleDownloadRestore('" +
-                        'download', true, r[3]+".zip",
+                        'download', true, "f_handleDownloadRestore('" + r[3]+"')",
                         g_lang.m_restoreDownload + ' (' + content + ')');
             var del = thisObj.f_renderButton(
                         'delete', true, "f_deleteRestoreFile('" + content +

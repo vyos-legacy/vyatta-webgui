@@ -516,6 +516,11 @@ function FT_businessLayer()
         thisObj.m_backup.f_deleteArchiveFile(arName, arFile, guiCb);
     }
 
+    this.f_downloadArchiveFileFromServer = function(arName, arFile, guiCb)
+    {
+        thisObj.m_backup.f_downloadArchiveFile(arName, arFile, guiCb);
+    }
+
     /**
      * backup vm config/data/both
      * @param vms - list of vms to be backup. ex. [vm1, vm2, vm3,...] array type

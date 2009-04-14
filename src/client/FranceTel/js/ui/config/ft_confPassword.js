@@ -6,6 +6,8 @@
  */
 function FT_confPassword (name, callback, busLayer) {
     var thisObjName = 'ft_confPassword';
+    var thisObj = this;	
+	this.m_form = undefined;
     
     /**
      * @param name - name of configuration screens.
@@ -26,7 +28,7 @@ function FT_confPassword (name, callback, busLayer) {
 			items: [ {
 				v_type: 'html',
 				id: 'conf_password_chg_at_login',
-				text: '<input type="radio" name="passwd_group" value="atlogin" checked>&nbsp;' + g_lang.m_passwdPolicyChangeAtLogin,
+				text: '<input type="radio" id="conf_password_chg_at_login" name="passwd_group" value="mchange" checked>&nbsp;' + g_lang.m_passwdPolicyChangeAtLogin,
                 v_new_row: 'true',
 				v_end_row: 'true'
 			}, {
@@ -36,7 +38,7 @@ function FT_confPassword (name, callback, busLayer) {
 			}, {
 				v_type: 'html',
 				id: 'conf_password_default',
-				text: '<input type="radio" name="passwd_group" value="default">&nbsp;' + g_lang.m_passwdPolicyCanKeep,
+				text: '<input type="radio" id="conf_password_default" name="passwd_group" value="default">&nbsp;' + g_lang.m_passwdPolicyCanKeep,
 				v_new_row: 'true',
 				v_end_row: 'true'
 			}],				
@@ -52,10 +54,34 @@ function FT_confPassword (name, callback, busLayer) {
 		})  
     }
 	
+	this.f_setFocus = function() {
+		
+	}
+	
     this.f_loadVMData = function(element)
     {
-    }
-    
+        thisObj.m_form = document.getElementById('conf_password' + "_form");	
+		thisObj.f_setFocus();
+		
+        var cb = function(evt)
+        {
+            if(evt != undefined && evt.m_objName == 'FT_eventObj')
+            {
+                var pp = evt.m_value;
+                if(pp == undefined)  
+				    return;
+				if (pp.m_type == 'mchange') {
+					thisObj.m_form.conf_password_chg_at_login.checked = true;
+					thisObj.m_form.conf_password_default.checked = false;
+				} else {
+					thisObj.m_form.conf_password_chg_at_login.checked = false;
+					thisObj.m_form.conf_password_default.checked = true;					
+				}
+            }
+        }
+        thisObj.m_busLayer.f_getOAConfig(cb, 'password-policy');					
+    }	
+	
     this.f_stopLoadVMData = function()
     {
     }
@@ -66,16 +92,39 @@ function FT_confPassword (name, callback, busLayer) {
         if (target != undefined) {
             var id = target.getAttribute('id');
             if (id == 'conf_password_apply_button') { //apply clicked
-                alert('Password Policy apply button clicked');
+                thisObj.f_apply();
             } else if (id == 'conf_password_cancel_button') { //cancel clicked
-                alert('Password Policy cancel button clicked');               
+                thisObj.f_reset();               
             }
         }
     }
 	
+	this.f_apply = function() 
+	{
+		var type = 'mchange';
+		
+		if (thisObj.m_form.conf_password_chg_at_login.checked == true) {
+			type = 'mchange';
+		} else {
+			type = 'default';
+		}
+		
+        var pp = new FT_passwordPolicy(type);		
+        var cb = function(evt) {
+		    if (evt.f_isError()) {
+		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
+		    } else {
+                g_utils.f_popupMessage(g_lang.m_menuPasswordPolicy +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_menuPasswordPolicy,true);
+		    }			
+		}	
+		thisObj.m_busLayer.f_setOAConfig(cb, pp);
+		return false;			
+	}
+	
 	this.f_reset = function() 
 	{
-		
+        thisObj.f_loadVMData();
+		return false; 		
 	}
 	
 	this.f_handleKeydown = function(e)

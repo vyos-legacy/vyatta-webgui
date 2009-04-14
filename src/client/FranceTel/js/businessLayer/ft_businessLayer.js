@@ -61,7 +61,7 @@ function FT_businessLayer()
     this.m_userObj = new FT_userBusObj(this);
     this.m_vm = new FT_vmBusObj(this);
     this.m_backup = new FT_backupObj(this);
-    //this.m_oaConfig = new FT_oaConfigObj(this);
+    this.m_oaConfig = new FT_oaConfigObj(this);
 
     ///////////////////////////////
     // functions
@@ -549,6 +549,26 @@ function FT_businessLayer()
 	{
 		thisObj.m_vm.f_restoreVm(vm, ver, guiCb);
 	}
+	
+    ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    // oa configuration start here.....
+    this.f_getOAConfigObj = function()
+    {
+        return thisObj.m_oaConfig;
+    }	
+	
+	this.f_getOAConfig = function(guiCb, type) { //smtp | ldap | ntp server | password-policy
+		return thisObj.m_oaConfig.f_getConfig(guiCb, type);
+	}
+	
+	this.f_setOAConfig = function(guiCb, obj) {
+		return thisObj.m_oaConfig.f_setConfig(guiCb, obj);
+	}
+	
+	this.f_setLDAPlocation = function(guiCb, where) {
+		return thisObj.m_oaConfig.f_setLDAPlocation(guiCb, where);
+	}	
 }
 
 ///////////////////////////////////////////////

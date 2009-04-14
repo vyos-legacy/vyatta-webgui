@@ -1,3 +1,35 @@
+vyatta-webgui (0.2+fxd0+8) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * remove poc2 command templates
+
+  [ Kevin Choi ]
+  * * changed to handle un-deploy vm property to dashboard, restart and
+    user right screens
+
+  [ Michael Larson ]
+  * bugfixes for smtp portion
+
+  [ An-Cheng Huang ]
+  * change directories for images, packages, and run-time state.
+
+  [ Kevin Choi ]
+  * * fixed div size adjustment
+
+  [ Michael Larson ]
+  * mods to email notification command
+  * added ldap conf files to package installation. Contains included
+    file hook so installer can configure ldap as mirror.
+  * more bug fixes: smtp and ldap interaction.
+  * typo on xml closing tag.
+  * added hook to retrieve archive
+
+  [ An-Cheng Huang ]
+  * remove generated section from slapd config
+  * set up ldap conf files during postinst
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 14 Apr 2009 13:14:53 -0700
+
 vyatta-webgui (0.2+fxd0+7) unstable; urgency=low
 
   [ Kevin Choi ]

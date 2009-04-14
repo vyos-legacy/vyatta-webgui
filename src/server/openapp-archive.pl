@@ -575,4 +575,7 @@ elsif (defined $list ) {
 elsif (defined $delete ) {
     delete_archive();
 }
+elsif (defined $get ) {
+    get_archive();
+}
 exit 0;

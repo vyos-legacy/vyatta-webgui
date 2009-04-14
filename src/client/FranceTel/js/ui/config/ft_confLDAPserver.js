@@ -140,6 +140,10 @@ function FT_confLDAPserver (name, callback, busLayer) {
         {
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
+		        if (evt.f_isError()) {
+					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+					return;
+				}				
                 var ldap = evt.m_value;
                 if(ldap == undefined)  
 				    return;
@@ -242,6 +246,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
 	this.f_apply = function()
 	{
         thisObj.f_setLdapLocation();
+		//thisObj.f_setLdapConfig();
 		return false;			
 	}
 	

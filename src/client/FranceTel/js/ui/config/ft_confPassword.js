@@ -67,6 +67,10 @@ function FT_confPassword (name, callback, busLayer) {
         {
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
+		        if (evt.f_isError()) {
+					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+					return;
+				}				
                 var pp = evt.m_value;
                 if(pp == undefined)  
 				    return;

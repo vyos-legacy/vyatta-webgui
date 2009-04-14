@@ -135,6 +135,9 @@ function FT_backupObj(busObj)
                     thisObj.m_archiveRec = thisObj.f_parseRestoreData(err);
                     evt = new FT_eventObj(0, thisObj.m_archiveRec, '');
                 }
+                else if(thisObj.m_lastCmdSent.indexOf('archive get') > 0)
+                {
+                }
                 else if(thisObj.m_lastCmdSent.indexOf('archive restore status') > 0)
                 {
 
@@ -260,6 +263,17 @@ function FT_backupObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
                     "<statement>open-app archive delete '" + arFile +
+                    "'</statement></command>";
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_downloadArchiveFile = function(arName, arFile, cb)
+    {
+        thisObj.m_guiCb = cb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                    "<statement>open-app archive get '" + arFile +
                     "'</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

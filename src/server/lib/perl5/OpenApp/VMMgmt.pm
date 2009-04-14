@@ -26,6 +26,8 @@ sub getVMList {
 sub updateStatus {
   my ($id, $st, $cpu, $dall, $dfree, $mall, $mfree, $upd) = @_;
   my $fd = undef;
+  # make sure the directory exists
+  mkdir($STATUS_DIR);
   open($fd, '>', "$STATUS_DIR/$id") or return;
   print $fd "$st $cpu $dall $dfree $mall $mfree $upd\n";
   close($fd);

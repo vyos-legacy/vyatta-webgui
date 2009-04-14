@@ -1,3 +1,25 @@
+vyatta-webgui (0.2+fxd0+9) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add OA banner images.
+
+  [ Kevin Choi ]
+  * * Added first batch code supported restore download archive file to
+    pc.
+
+  [ Loi Vo ]
+  * 1. Change ft_main.html/ ft_main_fr.html to use the OA banner.
+
+  [ Michael Larson ]
+  * bugfixes--bugs found by loi
+
+  [ An-Cheng Huang ]
+  * remove hard-coded proxy config
+  * change pid file path
+  * make sure state directory exists
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 14 Apr 2009 16:19:13 -0700
+
 vyatta-webgui (0.2+fxd0+8) unstable; urgency=low
 
   [ An-Cheng Huang ]

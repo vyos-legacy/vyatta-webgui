@@ -56,7 +56,7 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
 #
 #
 ##########################################################################
-my $ARCHIVE_BASE_DIR = "var/archive";
+my $ARCHIVE_BASE_DIR = "/var/archive";
 my $ARCHIVE_ROOT_DIR = "$ARCHIVE_BASE_DIR/$auth_user_role";
 my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
 my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
@@ -434,6 +434,16 @@ sub list_archive {
 	my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
 	print $output[0];
     } 
+    
+    if ($auth_user_role eq 'installer' && $#files+1 >= $INSTALLER_BU_LIMIT) {
+	print "<limit>true</limit>";
+    }
+    elsif ($auth_user_role eq 'admin' && $#files+1 >= $ADMIN_BU_LIMIT) {
+	print "<limit>true</limit>";
+    }
+    else {
+	print "<limit>false</limit>";
+    }
 
 #if installer than also return admin archives
     if ($auth_user_role eq 'installer') {

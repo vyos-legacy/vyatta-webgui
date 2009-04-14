@@ -55,15 +55,9 @@ $HTTP["scheme"] == "http" {
 EOF
 fi
 
-# XXX hard-coded reverse proxy settings for now.
-# TODO make mod_proxy read VM metadata dynamically.
+# enable mod_proxy
 cat <<EOF >/etc/lighttpd/conf-enabled/10-proxy.conf
 server.modules += ( "mod_proxy" )
-proxy.server = ( "/utm/" => ( ( "host" => "192.168.1.1",
-                                "port" => 80 ) ),
-                 "/openAppliance/3p/" => ( ( "host" => "172.16.1.101",
-                                             "port" => 8080 ) )
-               )
 EOF
 
 # XXX webgui needs suid for now
@@ -73,9 +67,6 @@ chmod u+s /usr/lib/cgi-bin/webgui
 for g in adm sudo users quaggavty vyattacfg operator; do
   adduser www-data $g >&/dev/null
 done
-
-# create vm monitor state file
-touch /opt/vyatta/var/run/vm-monitor.state
 
 # remove init links
 update-rc.d -f lighttpd remove

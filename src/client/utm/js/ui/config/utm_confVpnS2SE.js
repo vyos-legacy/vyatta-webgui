@@ -239,17 +239,17 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     this.f_attachListener = function()
     {
         var el = document.getElementById('conf_vpn_s2se_tunnel_config_mode_ez');
-        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
 		el = document.getElementById('conf_vpn_s2se_tunnel_config_mode_exp');
-        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);	
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);	
     }
     
     this.f_detachListener = function()
     {
         var el = document.getElementById('conf_vpn_s2se_tunnel_config_mode_ez');
-        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
 		el = document.getElementById('conf_vpn_s2se_tunnel_config_mode_exp');
-        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);	
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);	
     }		
 	
 	
@@ -277,11 +277,12 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     
     this.f_apply = function()
     {
+		alert('apply');
     }
     
     this.f_reset = function()
     {
-    
+        alert('reset');
     }
     
     this.f_handleClick = function(e)

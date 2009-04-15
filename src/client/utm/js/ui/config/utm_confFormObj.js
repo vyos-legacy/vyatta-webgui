@@ -348,7 +348,7 @@ function UTM_confFormObj(name, callback, busLayer)
         if (this.m_config == undefined) {
             return;
         }
-        var html = '<form id="' + this.m_config.id + '_form" class="v_form" border="0" style="width:' +
+        var html = '<form id="' + this.m_config.id + '_form" onsubmit="return false;" class="v_form" border="0" style="width:' +
         this.m_config.width +
         'px;"><br/><br/>';
         if (g_xbObj.m_isIE == true) {
@@ -419,7 +419,7 @@ function UTM_confFormObj(name, callback, busLayer)
         for (var i = 0; i < this.m_config.buttons.length; i++) {
             var id = this.m_config.buttons[i].id;
             var b = document.getElementById(id);
-            g_xbObj.f_xbAttachEventListener(b, 'click', this.m_config.buttons[i].onclick, true);
+            g_xbObj.f_xbAttachEventListener(b, 'click', this.m_config.buttons[i].onclick, false);
         }
     }
     
@@ -428,7 +428,7 @@ function UTM_confFormObj(name, callback, busLayer)
         for (var i = 0; i < this.m_config.buttons.length; i++) {
             var id = this.m_config.buttons[i].id;
             var b = document.getElementById(id);
-            g_xbObj.f_xbDetachEventListener(b, 'click', this.m_config.buttons[i].onclick, true);
+            g_xbObj.f_xbDetachEventListener(b, 'click', this.m_config.buttons[i].onclick, false);
         }
     }
     
@@ -461,6 +461,9 @@ function UTM_confFormObj(name, callback, busLayer)
 			p = p.parentNode;
 		}
 	}    
+    this.f_handleClick = function(e)
+	{
+	}	
     //////////////////////////////////////////////////////////////////////////////////
     //// form validation
     //////////////////////////////////////////////////////////////////////////////////

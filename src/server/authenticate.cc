@@ -268,29 +268,22 @@ Authenticate::reuse_session()
   DIR *dp;
   struct dirent *dirp;
   string id_str;
+  unsigned long id = 0;
   if ((dp = opendir(WebGUI::VYATTA_MODIFY_DIR.c_str())) == NULL) {
     return 0;
   }
 
   while ((dirp = readdir(dp)) != NULL) {
     if (strncmp(dirp->d_name, ".vyattamodify_", 14) == 0) {
-      string tmp = WebGUI::VYATTA_MODIFY_DIR + string(dirp->d_name);
-      FILE *fp = fopen(tmp.c_str(),"r");
-      if (fp) {
-        char buf[1025];
-        //read value in here....                                                
-        if (fgets(buf, 1024, fp) != 0) {
-          if (string(buf) == _proc->get_msg()._user) {
-            id_str = string(dirp->d_name).substr(14,24);
-            break;
-          }
-        }
-        fclose(fp);
+      id_str = string(dirp->d_name).substr(14,24);
+      id = strtoul(id_str.c_str(),NULL,10);
+      if (WebGUI::get_user(id) == _proc->get_msg()._user) {
+	break;
       }
     }
   }
   closedir(dp);
-  return strtoul(id_str.c_str(),NULL,10);
+  return id;
 }
 
 /**                                                                                                                                               

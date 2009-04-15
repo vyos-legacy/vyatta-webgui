@@ -11,6 +11,7 @@ g_xbObj.f_xbOnDomReady(function(){
 
 	if(!g_busObj.f_isLogin()) {
 		g_mainFrameObj.f_hideHeader(true);
+		g_mainFrameObj.f_setBannerImage();		
         var loginDiv = g_loginObj.f_getLoginPage();
 		g_mainFrameObj.f_login(loginDiv);
     } else {

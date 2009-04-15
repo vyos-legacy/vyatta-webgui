@@ -114,8 +114,22 @@ var g_utils =
         return g_cookie.f_get(g_consObj.V_COOKIES_USER_NAME);
     },
 
-    f_launchHomePage: function()
+    f_getIsSAOA: function()
+	{
+		return g_cookie.f_get(g_consObj.V_COOKIES_SAOA);
+	},
+
+    f_launchHomePage: function(isSAOA)
     {
+		try {
+		    if ((isSAOA != undefined) && (isSAOA != null)) {
+				if (isSAOA) {
+					g_cookie.f_set(g_consObj.V_COOKIES_SAOA, 'true', g_cookie.m_userNameExpire);
+				} else {
+					g_cookie.f_set(g_consObj.V_COOKIES_SAOA, 'false', g_cookie.m_userNameExpire);
+				}
+			}	
+		} catch (e) {}
         var lang = this.f_getLanguage();
 
         switch(lang)

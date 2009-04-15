@@ -52,6 +52,17 @@ function FT_mainFrame(){
 		}
 	}
 	
+	this.f_setBannerImage = function() {
+		var img = document.getElementById('login_banner');
+		var isSAOA = g_utils.f_getIsSAOA();
+
+		if (isSAOA == 'true') {
+		    img.src = g_lang.m_imageDir + 'oa_banner.gif';	
+		} else {
+		    img.src = g_lang.m_imageDir + 'op_login_image.gif';					
+		}
+	}
+	
 	this.f_hideLogin = function (hide) {
 		var login = document.getElementById(VYA.FT_CONST.DOM_LOGIN_CONTAINER_ID);
 		if (hide) {

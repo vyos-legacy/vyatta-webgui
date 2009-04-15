@@ -17,10 +17,14 @@ function FT_confFormObj(name, callback, busLayer) {
      */
     this.constructor = function(name, callback, busLayer)
     {
-        FT_confFormObj.superclass.constructor(name, callback, busLayer);
+        this.privateConstructor(name, callback, busLayer);
     }
     
-	this.constructor(name, callback, busLayer);
+    this.privateConstructor = function(name, callback, busLayer)
+    {
+        FT_confFormObj.superclass.constructor(name, callback, busLayer);
+    }	
+	this.privateConstructor(name, callback, busLayer);
 	
     this.f_distructor = function()
     {

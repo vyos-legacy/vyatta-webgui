@@ -410,10 +410,37 @@ function FT_businessLayer()
     // VM update/deploy session start here.....
     /**
      * to get a list of vm deploy list from server
+     * @param guiCb - gui callback funtion
+     * @param withThread - true to run the thread
+     * @return thread id if withThread is true, else null
      */
-    this.f_getVMUpdateListFromServer = function(guiCb)
+    this.f_getVMUpdateListFromServer = function(guiCb, withThread)
     {
-        thisObj.m_vm.f_getVMUpdateListFromServer(guiCb);
+        var threadId = null;
+
+        if(withThread != undefined && withThread)
+        {
+            // create a new thread object
+            thisObj.m_reqThread = new FT_thread(g_oaConfig.m_oaRefreshTime);
+
+            var cb = guiCb;
+            var callback = function()
+            {
+                thisObj.m_vm.f_getVMUpdateListFromServer(cb);
+            }
+
+            // start to run
+            threadId = thisObj.m_reqThread.f_start(callback);
+        }
+
+        thisObj.m_vm.f_getVMUpdateListFromServer(cb);
+        return threadId;
+    }
+
+    this.f_stopGetVMUpdateListFromServerThread = function(threadId)
+    {
+        if(threadId != null)
+            thisObj.m_reqThread.f_stop(threadId);
     }
 
     /**

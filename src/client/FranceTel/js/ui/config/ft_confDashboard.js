@@ -232,7 +232,7 @@ function FT_confDashboard(name, callback, busLayer)
         for(var i=0; i<f.length; i++)
         {
             var vm = f[i];
-            if(vm[2] != 'no')
+            if(vm[2] != 'no' && vm[2] != 'n/a')
                 vmList[index++] = vm[1].m_name;
         }
 
@@ -255,14 +255,21 @@ function FT_confDashboard(name, callback, busLayer)
             var vmu = updates[vmindex];
 
             // we want to keep user's last input
-            var isChecked = vmu[2] == 'no' ? 'no' : 'yes';
+            var isChecked = 'yes';
+            if(vmu[2] == 'no')
+                isChecked = 'no';
+            else
+                updates[vmindex] = [vm.m_needUpdate, vm, vm.m_needUpdate];
 
             return [thisObj.f_renderCheckbox(isChecked, 'db_' + vm.m_name,
                             'f_dbCheckboxClick(this)', g_lang.m_dbTooltipUpdateNeed +
                             vm.m_needUpdate), updates[vmindex]];
         }
         else
+        {
+            updates[vmindex] = [vm.m_needUpdate, vm, 'n/a' /*user input*/];
             return ["", updates[vmindex]];
+        }
     }
 
     this.f_stopLoadVMData = function()

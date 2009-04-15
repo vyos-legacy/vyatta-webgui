@@ -262,6 +262,7 @@ function FT_vmBusObj(busObj)
 
                     var vmr = thisObj.m_vmRecObj[vmIndex];
                     vmr.m_isDeployed = true;
+                    vmr.m_needUpdate = 'no';
 
                     for(var j=0; j<val.childNodes.length; j++)
                     {

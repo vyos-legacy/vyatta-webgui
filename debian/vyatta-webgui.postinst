@@ -28,11 +28,25 @@ ln -sf /etc/lighttpd/conf-available/10-cgi.conf /etc/lighttpd/conf-enabled/
 ln -sf /etc/lighttpd/conf-available/10-ssl.conf /etc/lighttpd/conf-enabled/
 
 # fix debian cgi config file
-sed -i '/^\$HTTP.*127\.0\.0\.1/,/^}$/{s/^\(.*\)$/# \1/}' \
-  /etc/lighttpd/conf-enabled/10-cgi.conf
-if ! grep -q '^alias.url' /etc/lighttpd/conf-enabled/10-cgi.conf; then 
-  echo 'alias.url += ( "/cgi-bin/" => "/usr/lib/cgi-bin/" )' \
-    >>/etc/lighttpd/conf-enabled/10-cgi.conf
+cgi_conf=/etc/lighttpd/conf-enabled/10-cgi.conf
+sed -i '/^\$HTTP.*127\.0\.0\.1/,/^}$/{s/^\(.*\)$/# \1/}' $cgi_conf
+if ! grep -q '^alias.url' $cgi_conf; then 
+  echo 'alias.url += ( "/cgi-bin/" => "/usr/lib/cgi-bin/" )' >>$cgi_conf
+fi
+
+# allow index.cgi in /FranceTel/
+if ! grep -q 'HTTP.*/FranceTel/' $cgi_conf; then
+cat <<'EOF' >>$cgi_conf
+$HTTP["url"] =~ "^/FranceTel/" {
+  cgi.assign = ( ".cgi" => "" )
+}
+EOF
+fi
+
+# allow index.cgi
+if ! grep -q '^index-file.names.*index.cgi' /etc/lighttpd/lighttpd.conf; then
+  sed -i '/^index-file.names/{s/"index.php"/"index.cgi", "index.php"/}' \
+    /etc/lighttpd/lighttpd.conf
 fi
 
 # enable mod_redirect

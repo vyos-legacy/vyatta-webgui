@@ -1,3 +1,19 @@
+vyatta-webgui (0.2+fxd0+11) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Fix stackOverflow in Safari due to constructor issue.
+  * 1. Forget to commit changes for ft_confFormObj.js
+  * 1. Change the order so that if the cookie does not exist, it
+    defaults to Stand Alone OA banner
+
+  [ Kevin Choi ]
+  * * fixed FT feedback bugs:
+
+  [ An-Cheng Huang ]
+  * replace login page with CGI
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 15 Apr 2009 19:36:37 -0700
+
 vyatta-webgui (0.2+fxd0+10) unstable; urgency=low
 
   [ Michael Larson ]

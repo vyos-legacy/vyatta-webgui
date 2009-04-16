@@ -56,10 +56,10 @@ function FT_mainFrame(){
 		var img = document.getElementById('login_banner');
 		var isSAOA = g_utils.f_getIsSAOA();
 
-		if (isSAOA == 'true') {
-		    img.src = g_lang.m_imageDir + 'oa_banner.gif';	
-		} else {
+		if (isSAOA == 'false') {
 		    img.src = g_lang.m_imageDir + 'op_login_image.gif';					
+		} else {
+		    img.src = g_lang.m_imageDir + 'oa_banner.gif';	
 		}
 	}
 	

@@ -18,6 +18,10 @@ const unsigned long WebGUI::ID_RANGE = 2147483647UL;
 const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = 1800UL;
 //const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = (unsigned long)99999999;
 
+const string WebGUI::VYATTA_TEMP_CONFIG_DIR = "/opt/vyatta/config/tmp/new_config_"; 
+const string WebGUI::VYATTA_CHANGES_ONLY_DIR = "/tmp/changes_only_"; 
+const string WebGUI::VYATTA_ACTIVE_CONFIGURATION_DIR = "/opt/vyatta/config/active"; 
+
 const string WebGUI::OP_COMMAND_DIR = "/opt/vyatta/share/vyatta-op/templates";
 const string WebGUI::ACTIVE_CONFIG_DIR = "/opt/vyatta/config/active";
 const string WebGUI::CONFIG_TMP_DIR = "/opt/vyatta/config/tmp/tmp_";
@@ -49,6 +53,9 @@ const string WebGUI::OPENAPP_USER_RESTRICTED_POLICY_ADMIN = "/opt/vyatta/config/
 
 
 const string WebGUI::OA_GUI_ENV_AUTH_USER = "OA_AUTH_USER";
+
+const string WebGUI::OA_GUI_ENV_SESSION_ID = "OS_SESSION_USER";
+
 
 char const* WebGUI::ErrorDesc[9] = {" ",
 				    "request cannot be parsed",
@@ -240,39 +247,29 @@ WebGUI::remove_session(unsigned long id)
   char buf[40];
   sprintf(buf, "%lu", id);
   string val(buf);
-  remove_session(val);
+  discard_session(val);
 }
 
 /**
  *
- **/
+  **/
 void
 WebGUI::discard_session(string &id)
 {
   string cmd,stdout;
-  cmd = "sudo umount " + WebGUI::LOCAL_CONFIG_DIR + id;
-  cmd += ";rm -fr " + WebGUI::LOCAL_CHANGES_ONLY + id;
-  cmd += ";mkdir -p " + WebGUI::LOCAL_CHANGES_ONLY + id;
   bool dummy;
-  execute(cmd,stdout,dummy);
+  cmd = "sudo umount " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+  //  cmd += ";sudo rm -fr " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "/ " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id + "/";
+  cmd += ";sudo rm -fr " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "/{.*,*} >&/dev/null ; /bin/true";
+  cmd += ";mkdir -p " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "/";
+  cmd += ";mkdir -p " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id + "/";
+  cmd += ";sudo mount -t "+WebGUI::unionfs()+" -o dirs=" + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "=rw:" + WebGUI::VYATTA_ACTIVE_CONFIGURATION_DIR + "=ro "+WebGUI::unionfs()+" " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+  execute(cmd,stdout,dummy,true,true);
+  
 
-}
-
-/**
- *
- **/
-void
-WebGUI::remove_session(string &id)
-{
-  string cmd,stdout;
-  cmd = "sudo umount " + WebGUI::LOCAL_CONFIG_DIR + id;
-  bool dummy;
-  execute(cmd, stdout, dummy);
-  cmd = "rm -fr " + WebGUI::LOCAL_CHANGES_ONLY + id + " 2>/dev/null";
-  cmd += ";rm -fr " + WebGUI::CONFIG_TMP_DIR + id + " 2>/dev/null";
-  cmd += ";rm -fr " + WebGUI::LOCAL_CONFIG_DIR + id + " 2>/dev/null";
-  cmd += ";rm -f " + WebGUI::VYATTA_MODIFY_FILE + id + " 2>/dev/null";
-  execute(cmd, stdout, dummy);
+  //now clean out web archive location
+  cmd = "rm -fr /var/www/archive/" + id + "/*";
+  execute(cmd,stdout,dummy,true,true);
 }
 
 

@@ -9,6 +9,10 @@ public:
 
   const static unsigned long SESSION_TIMEOUT_WINDOW;
 
+  const static std::string VYATTA_TEMP_CONFIG_DIR;
+  const static std::string VYATTA_CHANGES_ONLY_DIR;
+  const static std::string VYATTA_ACTIVE_CONFIGURATION_DIR;
+
   const static std::string OP_COMMAND_DIR;
   const static std::string ACTIVE_CONFIG_DIR;
   const static std::string CONFIG_TMP_DIR;
@@ -38,6 +42,8 @@ public:
   const static std::string OPENAPP_USER_RESTRICTED_POLICY_USER;
   
   const static std::string OA_GUI_ENV_AUTH_USER;
+
+  const static std::string OA_GUI_ENV_SESSION_ID;
 
   enum Error {SUCCESS = 0,
 	      MALFORMED_REQUEST,

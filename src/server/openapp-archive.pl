@@ -86,7 +86,7 @@ if (defined $option) {
     $ADMIN_BU_LIMIT = $option;
 }
 
-my ($backup,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$delete);
+my ($backup,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$put_archive,$delete);
 
 ##########################################################################
 #
@@ -435,16 +435,6 @@ sub list_archive {
 	print $output[0];
     } 
     
-    if ($auth_user_role eq 'installer' && $#files+1 >= $INSTALLER_BU_LIMIT) {
-	print "<limit>true</limit>";
-    }
-    elsif ($auth_user_role eq 'admin' && $#files+1 >= $ADMIN_BU_LIMIT) {
-	print "<limit>true</limit>";
-    }
-    else {
-	print "<limit>false</limit>";
-    }
-
 #if installer than also return admin archives
     if ($auth_user_role eq 'installer') {
 	my @files = <$ARCHIVE_BASE_DIR/admin/*.tar>;
@@ -460,6 +450,16 @@ sub list_archive {
 	    my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
 	    print $output[0];
 	} 
+    }
+
+    if ($auth_user_role eq 'installer' && $#files+1 >= $INSTALLER_BU_LIMIT) {
+	print "<limit>true</limit>";
+    }
+    elsif ($auth_user_role eq 'admin' && $#files+1 >= $ADMIN_BU_LIMIT) {
+	print "<limit>true</limit>";
+    }
+    else {
+	print "<limit>false</limit>";
     }
 
     #done
@@ -479,6 +479,9 @@ sub get_archive {
     my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
 
 # ?? header("Content-Length:
+    #let's clean out directory first
+    `rm -fr /var/www/archive/$OA_SESSION_ID/*`;
+    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
 
     print "VERBATIM_OUTPUT\n";
     my $file = "$ARCHIVE_ROOT_DIR/$get_archive.tar";
@@ -493,6 +496,33 @@ sub get_archive {
 	    print "archive/$OA_SESSION_ID/$get_archive.tar";
 	}
     }
+}
+
+##########################################################################
+#
+# put archive: client has uploaded a file, now put in archive directory
+#
+##########################################################################
+sub put_archive {
+    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
+
+    #first check for archive limit
+    my $limit_ct = `ls $ARCHIVE_ROOT_DIR | wc -w`;
+    if ($auth_user_role eq 'installer' && $limit_ct >= $INSTALLER_BU_LIMIT+1) {
+	print STDERR "Your backup directory is full. Please delete an archive to make room.";
+	exit 1;
+    }
+    elsif ($auth_user_role eq 'admin' && $limit_ct >= $ADMIN_BU_LIMIT+1) {
+	print STDERR "Your backup directory is full. Please delete an archive to make room.";
+	exit 1;
+    }
+
+    #very simple now, copy to archive directory and that's it!
+    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
+
+    print "VERBATIM_OUTPUT\n";
+    `cp /var/www/archive/$OA_SESSION_ID/$put_archive.tar $ARCHIVE_ROOT_DIR/.`;
+    `rm -fr /var/www/archive/$OA_SESSION_ID/*`;
 }
 
 ##########################################################################
@@ -556,6 +586,7 @@ sub usage() {
     print "       $0 --list=<list>\n";
     print "       $0 --get=<get>\n";
     print "       $0 --get-archive=<get-archive>\n";
+    print "       $0 --put-archive=<put-archive>\n";
     print "       $0 --delete=<delete>\n";
     exit 0;
 }
@@ -571,6 +602,7 @@ GetOptions(
     "list:s"                => \$list,
     "get:s"                 => \$get,
     "get-archive:s"         => \$get_archive,
+    "put-archive:s"         => \$put_archive,
     "delete=s"              => \$delete,
     ) or usage();
 
@@ -592,7 +624,10 @@ elsif (defined $list ) {
 elsif (defined $delete ) {
     delete_archive();
 }
-elsif (defined $get ) {
+elsif (defined $get_archive ) {
     get_archive();
+}
+elsif (defined $put_archive ) {
+    put_archive();
 }
 exit 0;

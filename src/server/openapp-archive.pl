@@ -86,7 +86,7 @@ if (defined $option) {
     $ADMIN_BU_LIMIT = $option;
 }
 
-my ($backup,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$delete);
+my ($backup,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$delete);
 
 ##########################################################################
 #
@@ -471,21 +471,26 @@ sub list_archive {
 #
 ##########################################################################
 sub get_archive {
+
+#NEED TO ADD THE FOLLOWING HEADERS TO THE RESPONSE
+#    header("Content-type: application/octet-stream");
+#    header("Content-Disposition: attachment; filename=\"testfile.zip\"");
+
+    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
+
+# ?? header("Content-Length:
+
     print "VERBATIM_OUTPUT\n";
-    my $file = "$ARCHIVE_ROOT_DIR/$get.tar";
+    my $file = "$ARCHIVE_ROOT_DIR/$get_archive.tar";
     if (-e $file) {
-	open(FILE, "<$file") or die "Can't open archive"; 
-	my @f = <FILE>;
-	print(@f);
-	close(FILE);
+	`cp $file /var/www/archive/$OA_SESSION_ID/$get_archive.tar`;
+	print "archive/$OA_SESSION_ID/$get_archive.tar";
     }
     elsif ($auth_user_role eq 'installer') { #will blindly try admin as well
-	my $file = "$ARCHIVE_BASE_DIR/admin/$get.tar";
+	my $file = "$ARCHIVE_BASE_DIR/admin/$get_archive.tar";
 	if (-e $file) {
-	    open(FILE, "<$file") or die "Can't open archive"; 
-	    my @f = <FILE>;
-	    print(@f);
-	    close(FILE);
+	    `cp $file /var/www/archive/$OA_SESSION_ID/$get_archive.tar`;
+	    print "archive/$OA_SESSION_ID/$get_archive.tar";
 	}
     }
 }
@@ -550,6 +555,7 @@ sub usage() {
     print "       $0 --backup-status\n";
     print "       $0 --list=<list>\n";
     print "       $0 --get=<get>\n";
+    print "       $0 --get-archive=<get-archive>\n";
     print "       $0 --delete=<delete>\n";
     exit 0;
 }
@@ -564,6 +570,7 @@ GetOptions(
     "backup-status:s"       => \$backup_status,
     "list:s"                => \$list,
     "get:s"                 => \$get,
+    "get-archive:s"         => \$get_archive,
     "delete=s"              => \$delete,
     ) or usage();
 

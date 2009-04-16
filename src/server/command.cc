@@ -92,11 +92,15 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
     string stdout;
     bool verbatim = false;
 
+    setenv(WebGUI::OA_GUI_ENV_SESSION_ID.c_str(),_proc->get_msg().id().c_str(),1);
+
     if (WebGUI::execute(opmodecmd,stdout,verbatim,true) == 0) {
       err = WebGUI::SUCCESS;
     } else {
       err = WebGUI::COMMAND_ERROR;
     }
+
+    unsetenv(WebGUI::OA_GUI_ENV_SESSION_ID.c_str());
 
     if (!verbatim) {
       stdout = WebGUI::mass_replace(stdout, "&", "&amp;");

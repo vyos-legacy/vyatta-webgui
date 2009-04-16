@@ -50,6 +50,9 @@ const string WebGUI::OPENAPP_USER_RESTRICTED_POLICY_ADMIN = "/opt/vyatta/config/
 
 const string WebGUI::OA_GUI_ENV_AUTH_USER = "OA_AUTH_USER";
 
+const string WebGUI::OA_GUI_ENV_SESSION_ID = "OS_SESSION_USER";
+
+
 char const* WebGUI::ErrorDesc[9] = {" ",
 				    "request cannot be parsed",
 				    "authentication error",

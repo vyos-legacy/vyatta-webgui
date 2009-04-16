@@ -31,6 +31,11 @@ function FT_mainPanel(){
 		thisObj.m_configPanel.f_init(thisObj);
     }
 	
+	this.f_stopPolling = function() 
+	{
+		thisObj.m_configPanel.f_stopPolling();
+	}
+	
 	this.f_show = function() {
 		thisObj.m_oa_container.style.display = 'block';
         thisObj.m_2navMenu.f_show();

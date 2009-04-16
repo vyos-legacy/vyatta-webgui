@@ -27,6 +27,11 @@ function FT_mainFrame(){
         thisObj.m_priNavigation = new FT_primaryNavigation();
 		thisObj.m_siteMap = new FT_siteMap();
     }
+	
+	this.f_resizeChildIframe = function(h)
+	{
+		this.m_tabPanel.f_resizeChildIframe(h);
+	}
     
 	this.f_getTabPanel = function() {
 		return thisObj.m_tabPanel;
@@ -187,6 +192,11 @@ function f_contact()
 	//var url = "http://orange.com/en_EN/tools/contact/index.html";	
 	var url= g_utils.f_getContactPage();	
 	window.open(url, g_lang.m_menuContact, 'height=155, width=285,scrollbars=no');
+}
+
+function f_resizeChildIframe(h)
+{
+	g_mainFrameObj.f_resizeChildIframe(h);
 }
 
 

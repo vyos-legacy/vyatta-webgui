@@ -276,6 +276,10 @@ WebGUI::remove_session(string &id)
   cmd += ";rm -fr " + WebGUI::LOCAL_CONFIG_DIR + id + " 2>/dev/null";
   cmd += ";rm -f " + WebGUI::VYATTA_MODIFY_FILE + id + " 2>/dev/null";
   execute(cmd, stdout, dummy);
+
+  //now clean out web archive location
+  cmd = "rm -fr /var/www/archive/" + id + "/*";
+  execute(cmd, stdout, dummy);
 }
 
 

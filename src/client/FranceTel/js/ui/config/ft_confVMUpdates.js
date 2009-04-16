@@ -45,6 +45,7 @@ function FT_confVMUpdates(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
+        thisObj.f_stopLoadVMData();
         thisObj.f_resetSorting();
 
         var cb = function(evt)
@@ -64,12 +65,12 @@ function FT_confVMUpdates(name, callback, busLayer)
         }
 
         g_utils.f_cursorWait();
-        this.m_busLayer.f_getVMUpdateListFromServer(cb);
+        this.m_threadId = this.m_busLayer.f_getVMUpdateListFromServer(cb, true);
     }
 
     this.f_stopLoadVMData = function()
     {
-        this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
+        this.m_busLayer.f_stopGetVMUpdateListFromServerThread(this.m_threadId);
         this.m_threadId = null;
     },
 
@@ -97,7 +98,7 @@ function FT_confVMUpdates(name, callback, busLayer)
             var vmData = [dep[0], vmRec.m_displayName + " (" +
                           dep[4] + ")",
                           thisObj.f_createRenderStatus(dep[2],
-                          dep[5].m_msg), button];
+                          dep[5]), button];
 
             var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData);
             thisObj.m_body.appendChild(bodyDiv);
@@ -130,7 +131,7 @@ function FT_confVMUpdates(name, callback, busLayer)
 
     this.f_createRenderStatus = function(status, msg)
     {
-        if(msg == undefined || msg.length == 0)
+        if(msg == undefined || msg.length == 0 || msg == 'undefined')
             return "<p>"+status+"</p>";
         else
             return '<p title="' + msg + '">' + status + '</p>';
@@ -145,7 +146,7 @@ function FT_confVMUpdates(name, callback, busLayer)
             return thisObj.f_renderButton('Cancel', true, cb,
                     'Cancel ' + vmName);
         }
-        else if(status == 'failed' || status == 'succeeded' || 'restored')
+        else if(status == 'failed' || status == 'succeeded' || status == 'restored')
         {
             cb = "f_vmDeployRestore('" + vmId + "', '" + vmName + "')";
             return thisObj.f_renderButton('Restore', prevVer == undefined ?

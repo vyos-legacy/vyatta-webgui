@@ -59,9 +59,9 @@ function FT_mainFrame(){
 	
 	this.f_setBannerImage = function() {
 		var img = document.getElementById('login_banner');
-		var isSAOA = g_utils.f_getIsSAOA();
+		var isBLB = g_utils.f_getIsBLB();
 
-		if (isSAOA == 'false') {
+		if (isBLB == g_consObj.V_BLB_YES) {
 		    img.src = g_lang.m_imageDir + 'op_login_image.gif';					
 		} else {
 		    img.src = g_lang.m_imageDir + 'oa_banner.gif';	

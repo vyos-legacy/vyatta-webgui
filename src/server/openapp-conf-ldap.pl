@@ -104,7 +104,7 @@ sub set_ldap {
 #
 ##########################################################################
 sub set_ldap_target() {
-    if ($local_db ne 'true' || $local_db ne 'false') {
+    if ($local_db ne 'true' && $local_db ne 'false') {
 	exit 1;
     }
 
@@ -165,13 +165,29 @@ sub list_ldap() {
     my @rw_password = split(" ",$out[4]);
     my @rw_username = split(" ",$out[5]);
 
+    my $o;
     print "<ldap>";
-    print "<address>$address[1]</address>";
-    print "<local>$local_db[1]</local>";
-    print "<r-password>$r_password[1]</r-password>";
-    print "<r-username>$r_username[1]</r-username>";
-    print "<rw-password>$rw_password[1]</rw-password>";
-    print "<rw-username>$rw_username[1]</rw-username>";
+    for $o (@out) {
+	my @vals = split(" ",$o);
+	if ($vals[0] eq "address") {
+	    print "<address>$vals[1]</address>";
+	}
+	elsif ($vals[0] eq "local") {
+	    print "<local>$vals[1]</local>";
+	}
+	elsif ($vals[0] eq "r-password") {
+	    print "<r-password>$vals[1]</r-password>";
+	}
+	elsif ($vals[0] eq "r-username") {
+	    print "<r-username>$vals[1]</r-username>";
+	}
+	elsif ($vals[0] eq "rw-password") {
+	    print "<rw-password>$vals[1]</rw-password>";
+	}
+	elsif ($vals[0] eq "rw-username") {
+	    print "<rw-username>$vals[1]</rw-username>";
+	}
+    }
     print "</ldap>";
 }
 

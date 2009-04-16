@@ -15,6 +15,7 @@ function FT_constanst()
     this.V_COOKIES_USER_ID = 'id';
     this.V_COOKIES_ISLOGIN = 'isLogin';
 	this.V_COOKIES_LANG = 'lang';
+	this.V_COOKIES_SAOA = 'isSAOA';
 
     //////////////////////////////////////////////
     // cookies value

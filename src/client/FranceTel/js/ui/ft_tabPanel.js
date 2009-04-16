@@ -11,7 +11,8 @@ function FT_tabPanel()
     var thisObj = this;
     this.m_container = undefined;
     this.m_mainPanel = undefined;
-    
+    this.threadId = undefined;
+	
     ///////////////////////////////////////
     // functions    
     /*
@@ -24,6 +25,7 @@ function FT_tabPanel()
         thisObj.m_container.style.width = VYA.DYN_STYLE.APP_WIDTH;
         thisObj.m_mainPanel = new FT_mainPanel();
         thisObj.m_mainPanel.f_init();
+		//thisObj.threadId = setInterval(thisObj.f_scrollRemove, 5000);
     }
     
     this.f_reset = function()
@@ -33,7 +35,7 @@ function FT_tabPanel()
             thisObj.m_container.removeChild(thisObj.m_container.childNodes[0]);
         }
     }
-    
+    	
     this.f_show = function(vmId, urlPath)
     {
         //alert('ft_tabPanel.f_show: vmId: ' + vmId + ' urlPath: ' + urlPath);
@@ -97,7 +99,7 @@ function FT_tabPanel()
             // need to add to height to be sure it will all show
             if (docHt) {
 				if (docHt > 150) {		
-				    iframeEl.style.height = docHt + 30 + "px";						
+				    iframeEl.style.height = docHt + 30 + "px";	
 				} else {
 					iframeEl.style.height = defaultSize + "px";
 				}
@@ -107,6 +109,7 @@ function FT_tabPanel()
         } else {
 			iframeEl.style.height = defaultSize + "px";
 		}
+		//console.log('set ifrm height to: ' + iframeEl.style.height);							
     }
 	/*
 	this.f_resizeFrame = function() 
@@ -147,5 +150,34 @@ function FT_tabPanel()
         //ifr.onload = "f_setIframeHeight('main_ifrm')";
         ifr.setAttribute('src', url);
     }
+	
+	this.f_adjustIframeHeight = function()
+	{
+		var ifr = document.getElementById('main_ifrm');
+        ifr.style.height = "auto";		
+        var iframeWin = window.frames['main_ifrm'];/*window.frames[iframeName]*/;
+		if (!iframeWin) {
+		    iframeWin = ifr.contentWindow; /* for firefox */
+		}	
+		var d = iframeWin.document;
+		var r = (d.compatMode=='BackCompat') ? d.body : d.documentElement;
+		//console.log('r.scrollHeight: ' + r.scrollHeight + ' r.clientHeight: ' + r.clientHeight);
+		var isVS = r.scrollHeight > r.clientHeight;
+		if (isVS) {
+			ifr.style.height = (r.scrollHeight + 20) + 'px';
+		}	
+	}
+	
+	this.f_scrollRemove = function()
+	{
+		try {
+			var ifr = document.getElementById('main_ifrm');
+			if (ifr) {
+				//console.log('tick...');
+			    thisObj.f_adjustIframeHeight();
+			}
+		} catch (e) { //console.log('f_scrollRemove exception:' + e)
+		}
+	}
     
 }

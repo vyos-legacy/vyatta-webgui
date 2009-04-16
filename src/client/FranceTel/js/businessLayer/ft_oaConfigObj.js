@@ -103,8 +103,9 @@ function FT_oaConfigObj (busObj)
 
         if(response.f_isError != null) { //This is server error case.
             //alert('response.f_isError is not null');
-            if(noUICallback == undefined || !noUICallback)
-                thisObj.m_guiCb(response);
+            if (noUICallback == undefined || !noUICallback) {
+				thisObj.m_guiCb(response);
+			} 
         } else {
             var evt = new FT_eventObj(0, thisObj, '');
 
@@ -407,8 +408,8 @@ function FT_oaConfigObj (busObj)
 			en = 'disable';
 		}
         var xmlstr = "<command><id>" + sid + "</id>" +
-                     "<statement mode='op'>open-app configuration set ldap local " + 
-					 en + "</statement></command>";
+                     "<statement mode='op'>open-app configuration set ldap local '" + 
+					 en + "'</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);		
 	}

@@ -9,6 +9,10 @@ public:
 
   const static unsigned long SESSION_TIMEOUT_WINDOW;
 
+  const static std::string VYATTA_TEMP_CONFIG_DIR;
+  const static std::string VYATTA_CHANGES_ONLY_DIR;
+  const static std::string VYATTA_ACTIVE_CONFIGURATION_DIR;
+
   const static std::string OP_COMMAND_DIR;
   const static std::string ACTIVE_CONFIG_DIR;
   const static std::string CONFIG_TMP_DIR;

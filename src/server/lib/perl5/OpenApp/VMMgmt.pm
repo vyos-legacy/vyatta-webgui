@@ -1,6 +1,8 @@
 package OpenApp::VMMgmt;
 
 use strict;
+use lib '/opt/vyatta/share/perl5';
+use OpenApp::VMDeploy;
 
 our $OPENAPP_ID = 'openapp';
 our $OPENAPP_DNAME = 'OpenAppliance';
@@ -263,6 +265,16 @@ sub getMemFree {
 
 sub getUpdateAvail {
   my ($self) = @_;
+  my $dep = new OpenApp::VMDeploy($self->{_vmId});
+  if (defined($dep)) {
+    my ($sched) = $dep->checkSched();
+    my ($st) = $dep->checkStatus();
+    if ("$sched" eq 'scheduled' || "$st" eq 'upgrading'
+        || "$st" eq 'restoring') {
+      # in these cases, pretend there is no update.
+      return '';
+    }
+  }
   return $self->{_vmNewUpdate};
 }
 

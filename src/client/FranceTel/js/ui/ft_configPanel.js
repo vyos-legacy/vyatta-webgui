@@ -323,7 +323,7 @@ function FT_configPanel()
     {
         thisObj.m_selectCmp = component;
         thisObj.m_activeCmp = component;
-        thisObj.m_activeObj = thisObj.m_selectObj;
+        thisObj.m_activeObj = thisObj.m_selectObj;		
 		//thisObj.f_showFTcontainer();
     }
 

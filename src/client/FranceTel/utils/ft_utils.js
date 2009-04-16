@@ -114,19 +114,19 @@ var g_utils =
         return g_cookie.f_get(g_consObj.V_COOKIES_USER_NAME);
     },
 
-    f_getIsSAOA: function()
+    f_getIsBLB: function()
 	{
-		return g_cookie.f_get(g_consObj.V_COOKIES_SAOA);
+		return g_cookie.f_get(g_consObj.V_COOKIES_BLB);
 	},
 
-    f_launchHomePage: function(isSAOA)
+    f_launchHomePage: function(isBLB)
     {
 		try {
-		    if ((isSAOA != undefined) && (isSAOA != null)) {
-				if (isSAOA) {
-					g_cookie.f_set(g_consObj.V_COOKIES_SAOA, 'true', g_cookie.m_userNameExpire);
+		    if ((isBLB != undefined) && (isBLB != null)) {
+				if (isBLB) {
+					g_cookie.f_set(g_consObj.V_COOKIES_BLB, g_consObj.V_BLB_YES, g_cookie.m_userNameExpire);
 				} else {
-					g_cookie.f_set(g_consObj.V_COOKIES_SAOA, 'false', g_cookie.m_userNameExpire);
+					g_cookie.f_set(g_consObj.V_COOKIES_BLB, g_consObj.V_BLB_NO, g_cookie.m_userNameExpire);
 				}
 			}	
 		} catch (e) {}

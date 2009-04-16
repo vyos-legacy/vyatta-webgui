@@ -12,6 +12,7 @@ function FT_tabPanel()
     this.m_container = undefined;
     this.m_mainPanel = undefined;
     this.threadId = undefined;
+	this.m_selectedId = undefined;
 	
     ///////////////////////////////////////
     // functions    
@@ -30,6 +31,12 @@ function FT_tabPanel()
     
     this.f_reset = function()
     {
+		if (thisObj.m_selectedId) {
+			if (thisObj.m_selectedId == 'oa') {
+				//stop the polling thread
+				thisObj.m_mainPanel.f_stopPolling();
+			}
+		}
         while (thisObj.m_container.childNodes[0]) {
 			//alert(thisObj.m_container.childNodes[0].nodeName);
             thisObj.m_container.removeChild(thisObj.m_container.childNodes[0]);
@@ -42,8 +49,10 @@ function FT_tabPanel()
         thisObj.f_reset();
         
         if (vmId == VYA.FT_CONST.OA_ID) {
+			thisObj.m_selectedId = 'oa';
             thisObj.f_showOApanel();
         } else {
+			thisObj.m_selectedId = 'ifrm';
             thisObj.f_showVm(vmId, urlPath);
         }
     }
@@ -141,6 +150,7 @@ function FT_tabPanel()
         ifr.setAttribute('border', 0);
         ifr.setAttribute('frameBorder', '0');
         ifr.style.width = '100%';
+		ifr.style.overflowX = 'hidden';
         //ifr.style.height = screen.height;
         ifr.setAttribute('height', screen.height-40);
         thisObj.m_container.appendChild(ifr);
@@ -180,4 +190,11 @@ function FT_tabPanel()
 		}
 	}
     
+	this.f_resizeChildIframe = function(h)
+	{
+		var ifr = document.getElementById('main_ifrm');
+		if (ifr) {
+			ifr.style.height = h + 'px';
+		}
+	}
 }

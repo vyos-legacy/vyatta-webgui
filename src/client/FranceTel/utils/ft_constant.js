@@ -15,13 +15,15 @@ function FT_constanst()
     this.V_COOKIES_USER_ID = 'id';
     this.V_COOKIES_ISLOGIN = 'isLogin';
 	this.V_COOKIES_LANG = 'lang';
-	this.V_COOKIES_SAOA = 'isSAOA';
+	this.V_COOKIES_BLB = 'blb';
 
     //////////////////////////////////////////////
     // cookies value
     this.V_NOT_FOUND = 'NOTFOUND';
 	this.V_LANG_EN = 'en';
 	this.V_LANG_FR = 'fr';
+	this.V_BLB_YES = 'yes';
+	this.V_BLB_NO = 'no';	
 
     /////////////////////////////////////////////////
     //

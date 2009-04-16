@@ -201,11 +201,11 @@ var g_utils =
     },
 
     f_createPopupDiv : function(isModal)
-	{
+    {
         var div = document.createElement('div');
         div.setAttribute('id', 'ft_popup_div');
-		div.style.width = '300px';
-		div.style.backgroundColor = 'white';
+        div.style.width = '300px';
+        div.style.backgroundColor = 'white';
         div.style.display = 'block';
         div.style.overflow = 'visible';
         div.style.font = 'normal 10pt arial';
@@ -214,18 +214,39 @@ var g_utils =
         div.style.borderBottom = '2px solid #000';
         div.style.borderRight = '2px solid #000';
         div.style.padding = '15px';
+        div.style.textAlign = 'center';
 
-		if (isModal==true) {
-		    div.style.margin = '100px auto';
-		    div.style.textAlign = 'center';
-		} else {
-            div.style.position = 'relative';
-            div.style.top = '-265px';
-            div.style.height = '70px';
-		}
+        return div;
+    },
 
-		return div;
-	},
+    f_centerPopupDiv: function(div, isModal)
+    {
+        var html = document.body.parentNode;
+        var scrollx = html.scrollLeft;
+        var scrolly = html.scrollTop;
+        var x = html.clientWidth;
+        var y = html.clientHeight;
+        var hDiv = div.clientHeight;
+        var wDiv = div.clientWidth;
+        var wOffset = scrollx + (x - 300)/2;
+        var hOffset = scrolly + (y - hDiv)/2;
+
+        var o = div.style;
+        o.position = 'relative';
+        o.top = hOffset + 'px';
+        o.left = wOffset + 'px';
+
+        if(isModal)
+        {
+            var bk = document.getElementById('ft_modal_popup_message');
+            if(bk != undefined)
+            {
+                o = bk.style;
+                o.height = html.scrollHeight + 'px';
+                o.width = html.scrollWidth + 'px';
+            }
+        }
+    },
 
     f_popupMessage: function(message, type, title, isModal, cb, ccb)
     {
@@ -235,17 +256,17 @@ var g_utils =
         // set inner styling of the div tag
         var div = this.f_createPopupDiv(isModal);
 
-		if (isModal==true) {
-			popDivId = 'ft_modal_popup_message';
-			var el = document.getElementById(popDivId);
-			el.style.visibility = "visible";
-		}
-		document.getElementById(popDivId).appendChild(div);
+        if (isModal==true) {
+                popDivId = 'ft_modal_popup_message';
+                var el = document.getElementById(popDivId);
+                el.style.visibility = "visible";
+        }
+        document.getElementById(popDivId).appendChild(div);
 
-		var cancelHandler = "f_utilsPopupCancel('" + popDivId + "')";
-		var applyHandler = "f_utilsPopupApply('" + popDivId + "')";
-		var timeoutHandler = "f_utilsPopupTimeout('" + popDivId + "')";
-		var okHandler = "f_utilsPopupOk('" + popDivId + "')";
+        var cancelHandler = "f_utilsPopupCancel('" + popDivId + "')";
+        var applyHandler = "f_utilsPopupApply('" + popDivId + "')";
+        var timeoutHandler = "f_utilsPopupTimeout('" + popDivId + "')";
+        var okHandler = "f_utilsPopupOk('" + popDivId + "')";
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
 
@@ -254,10 +275,8 @@ var g_utils =
         {
             case 'confirm': // yes/no or apply/cancel
                 if(title != undefined)
-                {
-                    div.style.height = '100px';
                     message = '<b>' + title + '</b><br><br>' + message;
-                }
+
                 var cancelCb = ccb == undefined ? cancelHandler : cancelHandler + ";" + ccb;
                 cb = cb == undefined ? applyHandler : applyHandler + ";" + cb;
                 buttonsDiv = '<div align="center"><input id="ft_popup_message_apply" src="' + g_lang.m_imageDir + 'bt_apply.gif" ' +
@@ -324,11 +343,15 @@ var g_utils =
                 break;
         }
 
+        this.f_centerPopupDiv(div, isModal);
+
         innerHtml += '</tr><tr height="28">' +
                       '<td valign="bottom" colspan="2">' + buttonsDiv + '</td>' +
                       '</tr></table>';
 
         div.innerHTML = innerHtml;
+
+        
         return div;
     },
 

@@ -1,3 +1,22 @@
+vyatta-webgui (0.2+fxd0+10) unstable; urgency=low
+
+  [ Michael Larson ]
+  * added limit field to archive list. moved archive limit check to
+    backend due to requirement to make limits configurable via conf
+    file.
+  * fix for session reuse by different user accounts in server
+  * simplify where necessary. take into account restricted mode that is
+    now maintained in session file when reusing session id.
+
+  [ Loi Vo ]
+  * 1. Implement the logic of selection different banner based on cookie
+    set by the backend.  The cookie name is isSAOA.  If the cookie has
+    value 'true', it is a stand alone OA, false means otherwise.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 15 Apr 2009 17:36:54 -0700
+
 vyatta-webgui (0.2+fxd0+9) unstable; urgency=low
 
   [ Loi Vo ]

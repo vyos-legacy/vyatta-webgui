@@ -303,7 +303,7 @@ sub new {
   return ((-d "$VIMG_DIR/$id/current") ? $self : undef);
 }
 
-sub _checkSched {
+sub checkSched {
   my ($self) = @_;
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
   my $sched_file = "$vdir/$SCHED_FILE";
@@ -315,7 +315,7 @@ sub _checkSched {
   return ($sched, $job, $ver, $time);
 }
 
-sub _checkStatus {
+sub checkStatus {
   my ($self) = @_;
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
   my $st_file = "$vdir/$STATUS_FILE";
@@ -370,7 +370,7 @@ sub _clearSched {
 
 sub sched {
   my ($self, $ver, $time) = @_;
-  my ($scheduled) = $self->_checkSched();
+  my ($scheduled) = $self->checkSched();
   return "'$self->{_vmId}' update already scheduled"
     if ($scheduled eq 'scheduled');
 
@@ -398,7 +398,7 @@ sub sched {
 
 sub cancel {
   my ($self) = @_;
-  my ($scheduled, $job, $ver, $time) = $self->_checkSched();
+  my ($scheduled, $job, $ver, $time) = $self->checkSched();
   return "No scheduled update for '$self->{_vmId}'"
     if ($scheduled ne 'scheduled');
   
@@ -414,7 +414,7 @@ sub cancel {
 
 sub schedRestore {
   my ($self, $ver) = @_;
-  my ($scheduled) = $self->_checkSched();
+  my ($scheduled) = $self->checkSched();
   return "'$self->{_vmId}' update already scheduled"
     if ($scheduled eq 'scheduled');
 
@@ -446,7 +446,7 @@ sub getHist {
   my @records = ();
 
   # get sched record
-  my ($scheduled, $job, $ver, $time) = $self->_checkSched();
+  my ($scheduled, $job, $ver, $time) = $self->checkSched();
   if (defined($scheduled)) {
     my %shash = (
                   _time => $time,
@@ -460,7 +460,7 @@ sub getHist {
 
   # get status record
   my ($st, $ver, $msg);
-  ($st, $ver, $time, $msg) = $self->_checkStatus();
+  ($st, $ver, $time, $msg) = $self->checkStatus();
   if (defined($st)) {
     my %shash = (
                   _time => $time,

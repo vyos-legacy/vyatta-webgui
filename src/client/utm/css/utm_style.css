@@ -20,7 +20,7 @@ img
 }
 
 #main {
-    width: 980px;
+    width: 975px;
     margin: 0;
 }
 
@@ -94,7 +94,7 @@ img
     font-size: 12px;
     font-family: "Helvetica Neue 75 bold", Helvetica, Arial, sans-serif;
     font-weight: bold;
-    width: 120px;
+    width: 100px;
 	/*
     border-right: 1px solid #CCC;
     background-image: url("../images/tab_nav_base.PNG");

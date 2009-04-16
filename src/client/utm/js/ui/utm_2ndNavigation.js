@@ -42,6 +42,11 @@ function UTM_2ndNavigation(){
         thisObj.m_parent_container.appendChild(thisObj.m_menu);
     }
     
+	this.f_getHeight = function() 
+	{
+		return thisObj.m_menu.offsetHeight;
+	}
+	
     this.f_hide = function(){
 		//alert('2_f_hide called');
         thisObj.m_menu.style.display = 'none';

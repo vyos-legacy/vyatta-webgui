@@ -12,7 +12,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 	
 	this.m_ezItems = [
 	    'conf_vpn_rug_preshared_key_label',
-		'conf_vpn_rug_confirm_preshared_key_label',
+		'conf_vpn_rug_confirm_preshared_key_label'
 	];
 							  
 	this.m_expItems = [
@@ -216,7 +216,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
         thisObj.m_form = document.getElementById('conf_vpn_rug' + "_form");
 		thisObj.f_setFocus();
 		this.f_showExpert(false);
-		this.f_attachListener();
+		this.f_attachListener();			
     }
 	
 	this.f_showExpert = function(b)
@@ -236,6 +236,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 				thisObj.f_hideTableRow(thisObj.m_ezItems[i], false);
 			}		
 		}
+		g_utmMainPanel.f_requestResize();
 	}
     
     this.f_attachListener = function()

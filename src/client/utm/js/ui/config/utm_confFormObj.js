@@ -76,7 +76,7 @@ function UTM_confFormObj(name, callback, busLayer)
         var div = document.createElement('div');
         div.setAttribute('id', this.m_config.id);
         //div.setAttribute('align', 'left');
-        div.setAttribute('class', 'conf_html_base_cls');
+        //div.setAttribute('class', 'conf_html_base_cls');
         /////////////////////////////////////////
         // set inner styling of the div tag
         //div.style.position = 'absolute';
@@ -105,11 +105,11 @@ function UTM_confFormObj(name, callback, busLayer)
 		div.style.paddingLeft = 30;		
         div.style.backgroundColor = 'white';
         div.style.display = 'block';
-		
-        document.getElementById('ft_container').appendChild(div);
 
         for(var i=0; i<children.length; i++)
             div.appendChild(children[i]);
+		
+        document.getElementById('ft_container').appendChild(div);
         this.m_div = div;
         this.f_attachEventListener();
         this.f_loadVMData(div);
@@ -123,7 +123,7 @@ function UTM_confFormObj(name, callback, busLayer)
         div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-        div.style.overflow = 'visible'
+        div.style.overflow = 'visible';		
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr><td>' +
@@ -451,6 +451,7 @@ function UTM_confFormObj(name, callback, busLayer)
 
 	this.f_hideTableRow = function(id, hide)
 	{
+		//alert('f_hideTableRow.id: ' + id);
 		var el = document.getElementById(id);
 		var p = el.parentNode;				
 		while (p) {
@@ -465,6 +466,32 @@ function UTM_confFormObj(name, callback, busLayer)
 			p = p.parentNode;
 		}
 	}    
+	
+    this.f_getHeight = function()
+	{
+		var h = 0;
+		for (var i=0; this.m_div.childNodes[i]; i++) {
+			h += this.m_div.childNodes[i].offsetHeight;
+		}
+		return h;		
+	}	
+	
+    this.f_resize = function(padding)
+    {
+		 /*
+		 if (this.m_id !=  g_configPanelObj.m_selectedItem) {
+			 return;
+		 }
+		 */		
+		 var h = this.f_getHeight();
+		 var ft = document.getElementById('ft_container');
+		 if (padding) {
+		 	h += padding;
+		 } 
+         ft.style.height = h + 'px';
+         this.f_reflow();
+    }
+		
     this.f_handleClick = function(e)
 	{
 	}	

@@ -203,18 +203,27 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     }	
 	
 	this.f_createTestLink = function()
-	{
+	{		
 		var txt = '<a href="#" onclick="f_loadVpnLink(\'usrGrp\')">Remote User Group</a><br/>' +
 		          '<a href="#" onclick="f_loadVpnLink(\'usr\')">Remote User</a><br/>';
-		return this.f_createGeneralDiv(txt);
+				  
+        var div = document.createElement('div');
+        div.style.position = 'relative';
+        div.style.display = 'block';
+        div.style.backgroundColor = 'white';
+        div.style.overflow = 'visible';
+		
+		div.innerHTML = txt;
+				  
+		return div;
 	}	
-
+	
     this.f_loadVMData = function(element)
     {
         thisObj.m_form = document.getElementById('conf_vpn_s2se' + "_form");
 		thisObj.f_setFocus();
 		this.f_showExpert(false);
-		this.f_attachListener();
+		this.f_attachListener();	
     }
 	
 	this.f_showExpert = function(b)
@@ -234,6 +243,9 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 				thisObj.f_hideTableRow(thisObj.m_ezItems[i], false);
 			}		
 		}
+		var ft = document.getElementById('ft_container');
+		//alert('div height: ' + thisObj.f_getHeight() + ' ft.height: ' + ft.style.height);
+		g_utmMainPanel.f_requestResize();
 	}
     
     this.f_attachListener = function()

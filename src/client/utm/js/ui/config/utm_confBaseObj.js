@@ -80,13 +80,19 @@ function UTM_confBaseObj(name, callback, busLayer)
         body.className = bodyClass;		
 	}
 
-    this.f_resize = function(padding)
+    this.f_getHeight = function()
 	{
 		var h = 0;
 		for (var i=0; this.m_div.childNodes[i]; i++) {
 			h += this.m_div.childNodes[i].offsetHeight;
 		}
 		h = h + (thisObj.m_tableRowCounter * 28);
+		return h;		
+	}
+
+    this.f_resize = function(padding)
+	{
+		var h = this.f_getHeight();
 		if (padding) {
 			h += padding;
 		}

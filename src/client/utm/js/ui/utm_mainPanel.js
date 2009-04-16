@@ -19,8 +19,8 @@ function UTM_mainPanel(){
     /*
      * Initialization function
      */
-    this.f_init = function(){
-
+    this.f_init = function()
+	{
 		thisObj.m_oa_container = document.getElementById(VYA.UTM_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID); //'oa_container'
         thisObj.m_2navMenu = new UTM_2ndNavigation();
         thisObj.m_2navMenu.f_init(thisObj);
@@ -30,6 +30,25 @@ function UTM_mainPanel(){
 		g_configPanelObj = thisObj.m_configPanel;
 		thisObj.m_configPanel.f_init(thisObj);
     }
+	
+	this.f_getHeight = function()
+	{
+        var h1 = thisObj.m_2navMenu.f_getHeight();		
+		var h2 = thisObj.m_configPanel.f_getHeight();
+		//alert('h1: ' + h1 + ' h2:' + h2);
+		return (h1+h2);
+	}
+	
+	this.f_requestResize = function()
+	{
+		var h = thisObj.f_getHeight();
+		//alert('utm_mainPanel.requestResize to: ' + h);
+		var padding = 30;
+		if (g_xbObj.m_isIE == true) {
+			padding = 40;
+		}
+		window.parent.f_resizeChildIframe(h+padding);
+	}
 	
 	this.f_show = function() {
 		thisObj.m_oa_container.style.display = 'block';

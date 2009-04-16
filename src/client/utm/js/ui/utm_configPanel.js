@@ -82,6 +82,12 @@ function UTM_configPanel()
         }
     }
 
+    this.f_getHeight = function()
+	{
+		var h = thisObj.m_container.offsetHeight;
+		return h;
+	}
+
     this.f_showPage = function(id, obj)
     {
         //Lookup the id2desc in the hidden link first
@@ -196,7 +202,9 @@ function UTM_configPanel()
         thisObj.m_selectCmp = component;
         thisObj.m_activeCmp = component;
         thisObj.m_activeObj = thisObj.m_selectObj;
-		thisObj.f_showFTcontainer();
+		//thisObj.f_showFTcontainer();
+        thisObj.f_redrawFTcontainer();		
+        g_utmMainPanel.f_requestResize();		
     }
 
 }

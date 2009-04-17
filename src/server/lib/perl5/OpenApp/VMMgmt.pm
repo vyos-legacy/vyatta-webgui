@@ -269,8 +269,8 @@ sub getUpdateAvail {
   if (defined($dep)) {
     my ($sched) = $dep->checkSched();
     my ($st) = $dep->checkStatus();
-    if ("$sched" eq 'scheduled' || "$st" eq 'upgrading'
-        || "$st" eq 'restoring') {
+    if ("$sched" eq 'Scheduled' || "$st" eq 'Upgrading'
+        || "$st" eq 'Restoring') {
       # in these cases, pretend there is no update.
       return '';
     }

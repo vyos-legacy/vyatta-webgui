@@ -372,7 +372,7 @@ sub sched {
   my ($self, $ver, $time) = @_;
   my ($scheduled) = $self->checkSched();
   return "'$self->{_vmId}' update already scheduled"
-    if ($scheduled eq 'scheduled');
+    if ($scheduled eq 'Scheduled');
 
   # schedule update
   my $upg_cmd = '/opt/vyatta/sbin/openapp-vm-upgrade.pl --action=upgrade '
@@ -391,7 +391,7 @@ sub sched {
   my $tstr = `date -d '$t' +'%H:%M %d.%m.%y'`;
   chomp($tstr);
 
-  $self->_writeSched('scheduled', $j, $ver, $tstr);
+  $self->_writeSched('Scheduled', $j, $ver, $tstr);
   # success
   return undef;
 }
@@ -400,14 +400,14 @@ sub cancel {
   my ($self) = @_;
   my ($scheduled, $job, $ver, $time) = $self->checkSched();
   return "No scheduled update for '$self->{_vmId}'"
-    if ($scheduled ne 'scheduled');
+    if ($scheduled ne 'Scheduled');
   
   # cancel update
   my $cmd = "sudo atrm '$job'";
   _system($cmd);
   return 'Failed to cancel scheduled update' if ($? >> 8);
   
-  $self->_writeSched('cancelled', '0', $ver, $time);
+  $self->_writeSched('Canceled', '0', $ver, $time);
   # success
   return undef;
 }
@@ -416,7 +416,7 @@ sub schedRestore {
   my ($self, $ver) = @_;
   my ($scheduled) = $self->checkSched();
   return "'$self->{_vmId}' update already scheduled"
-    if ($scheduled eq 'scheduled');
+    if ($scheduled eq 'Scheduled');
 
   # schedule restore
   my $upg_cmd = '/opt/vyatta/sbin/openapp-vm-upgrade.pl --action=restore'
@@ -483,7 +483,7 @@ sub _preUpgradeProc {
   my ($self, $vver) = @_;
   # write status
   my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
-  $self->_writeStatus('upgrading', $vver, $time, '');
+  $self->_writeStatus('Upgrading', $vver, $time, '');
 
   # arrange new/current/prev packages
   my $new_pkg = "oa-vimg-$self->{_vmId}_${vver}_all.deb";
@@ -512,7 +512,7 @@ sub _preRestoreProc {
   my ($self, $vver) = @_;
   # write status
   my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
-  $self->_writeStatus('restoring', $vver, $time, '');
+  $self->_writeStatus('Restoring', $vver, $time, '');
 
   # arrange current/prev packages
   my $cur_dir = "$VIMG_DIR/$self->{_vmId}/current";
@@ -642,12 +642,12 @@ sub upgrade {
   if (defined($err)) {
     # error. write status.
     my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
-    $self->_writeStatus('failed', $vver, $time, $err);
+    $self->_writeStatus('Failed', $vver, $time, $err);
     return $err;
   } else {
     # success. write status.
     my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
-    $self->_writeStatus('succeeded', $vver, $time, "Upgrade $vver succeeded");
+    $self->_writeStatus('Succeeded', $vver, $time, "Upgrade $vver succeeded");
     return undef;
   } 
 }
@@ -674,12 +674,12 @@ sub restore {
   if (defined($err)) {
     # error. write status.
     my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
-    $self->_writeStatus('failed', $vver, $time, $err);
+    $self->_writeStatus('Failed', $vver, $time, $err);
     return $err;
   } else {
     # success. write status.
     my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
-    $self->_writeStatus('succeeded', $vver, $time, "Restore $vver succeeded");
+    $self->_writeStatus('Succeeded', $vver, $time, "Restore $vver succeeded");
     return undef;
   } 
 }

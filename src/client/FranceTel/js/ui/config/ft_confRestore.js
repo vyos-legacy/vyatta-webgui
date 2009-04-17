@@ -210,7 +210,6 @@ function FT_confRestore(name, callback, busLayer)
 
     this.f_createRestoreFromPC = function()
     {
-        var handleFunc = "f_handleBrownMyPC('OpenAppliance')";
         var div = document.createElement('div');
         div.style.position = 'relative';
         div.style.display = 'block';
@@ -225,24 +224,30 @@ function FT_confRestore(name, callback, busLayer)
                       'padding-top:3px;"><b>Restore from my PC</b></div></td>';
 
         innerHtml += '<tr height="22"><td>' +
-                      '<input id="mypcFile" name="mypcfile" type="file" ></td>'+
+                      '<input id="ft_mypcFile" name="mypcfile" type="file" ></td>'+
                     '<div title="Browse my pc" style="padding-left:20px">' +
                     '<input type="button" name="OpenAppl" ' +
                     'style="cursor:pointer;" ' +
                     'value="Go" title="Click here to start restore from my PC" onclick="' +
-                    handleFunc + '></div></td>';
+                     'f_handleBrownMyPC()"></div></td>';
 
         innerHtml += '</tr><tr height="20"><td></td></tr></tbody></table>';
 
         div.innerHTML = innerHtml;
         return div;
     }
+
+    this.f_restoreFromPC = function()
+    {
+        var id = document.getElementById('ft_mypcFile');
+        alert(id.value);
+    }
 }
 FT_extend(FT_confRestore, FT_confBaseObj);
 
-function f_handleBrownMyPC(vm)
+function f_handleBrownMyPC()
 {
-    g_busObj.f_stopVM(vm);
+    g_configPanelObj.m_activeObj.f_restoreFromPC();
 }
 
 function f_handleRestoreDesc(filename)

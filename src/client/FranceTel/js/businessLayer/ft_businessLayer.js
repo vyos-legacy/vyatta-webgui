@@ -545,7 +545,12 @@ function FT_businessLayer()
 
     this.f_downloadArchiveFileFromServer = function(arName, arFile, guiCb)
     {
-        thisObj.m_backup.f_downloadArchiveFile(arName, arFile, guiCb);
+        thisObj.m_backup.f_loadArchiveFile(arFile, guiCb, 'get');
+    }
+
+    this.f_uploadArchiveFileFromServer = function(arName, arFile, guiCb)
+    {
+        thisObj.m_backup.f_loadArchiveFile(arFile, guiCb, 'put');
     }
 
     /**

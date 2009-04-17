@@ -66,9 +66,10 @@ function FT_backupContentRec()
 function FT_backupRec(bkDate, name, file, content)
 {
     this.m_bkDate = bkDate;
-    this.m_bkBy = 'admin';
+    this.m_bkBy = 'admin';    // owner
     this.m_name = name;
     this.m_file = file;
+    this.m_limit = false;       // limit of backup allow for each role
     this.m_content = content;   // data type : FT_backupContentRec
 
     // below is the sample response string from server for the get restore list:
@@ -106,6 +107,7 @@ function FT_backupObj(busObj)
     this.m_guiCb = null;
     this.m_busObj = busObj;
     this.m_archiveRec = null;
+    this.m_downloadFile = null;
 
     /////////////////////////////////////////
     /**
@@ -137,6 +139,7 @@ function FT_backupObj(busObj)
                 }
                 else if(thisObj.m_lastCmdSent.indexOf('archive get') > 0)
                 {
+                    window.location = this.m_downloadFile;
                 }
                 else if(thisObj.m_lastCmdSent.indexOf('archive restore status') > 0)
                 {
@@ -171,21 +174,29 @@ function FT_backupObj(busObj)
                         var cNode = val.childNodes[j];
                         if(cNode == undefined) continue;
 
-                        if(cNode.nodeName == 'name' &&
-                            cNode.firstChild != undefined)
-                            arch[c].m_name = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'file' &&
-                            cNode.firstChild != undefined)
-                            arch[c].m_file = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'date' &&
-                            cNode.firstChild != undefined)
-                            arch[c].m_bkDate = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'owner' &&
-                            cNode.firstChild != undefined)
-                            arch[c].m_bkBy = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'contents' &&
-                            cNode.firstChild != undefined)
-                            arch[c].m_content = thisObj.f_parseContent(cNode);
+                        if(cNode.firstChild != undefined)
+                        {
+                            switch(cNode.nodeName)
+                            {
+                                case 'name':
+                                  arch[c].m_name = cNode.firstChild.nodeValue;
+                                break;
+                                case 'file':
+                                  arch[c].m_file = cNode.firstChild.nodeValue;
+                                break;
+                                case 'date':
+                                  arch[c].m_bkDate = cNode.firstChild.nodeValue;
+                                break;
+                                case 'owner':
+                                  arch[c].m_bkBy = cNode.firstChild.nodeValue;
+                                break;
+                                case 'limit':
+                                  arch[c].m_limit = cNode.firstChild.nodeValue;
+                                break;
+                                case 'contents':
+                                  arch[c].m_content = thisObj.f_parseContent(cNode);
+                            }
+                        }
                     }
                     c++;
                 }
@@ -268,15 +279,18 @@ function FT_backupObj(busObj)
                               thisObj.f_respondRequestCallback);
     }
 
-    this.f_downloadArchiveFile = function(arName, arFile, cb)
+    this.f_loadArchiveFile = function(arFile, cb, type)
     {
         thisObj.m_guiCb = cb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
-                    "<statement>open-app archive get '" + arFile +
+                    "<statement>open-app archive " + type + " '" + arFile +
                     "'</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
+
+        if(type == 'get')
+            this.m_downloadFile = arFile + '.tar';
     }
 
     /**

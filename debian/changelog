@@ -1,3 +1,47 @@
+vyatta-webgui (0.2+fxd0+12) unstable; urgency=low
+
+  [ Michael Larson ]
+  * get archive now returns session specific path to archive.
+  * remove web archive location on session timeout
+  * brought over current session management code from main source
+    stream. should fix dangling mount point problem as well as enforce
+    session clean up at point webgui is invoked
+  * minor reworking of upload/download commands
+
+  [ Loi Vo ]
+  * 1. Add f_stopPolling() to ft_mainPanel.js to cancel polling for dom0
+    data when the user is on domU tab.
+
+  [ Kevin Choi ]
+  * * fixed the popup dialog to display in the center of screen regard
+    where the scrollbars are.
+
+  [ Michael Larson ]
+  * archive upload command, 2-pass approach.
+
+  [ Loi Vo ]
+  * 1. Change function name, and cookie name to BLB to match the cookie
+    name being used from backend.
+
+  [ An-Cheng Huang ]
+  * hide update if already scheduled or in progress
+
+  [ Kevin Choi ]
+  * * updated un-deploy vm pbx local html content
+
+  [ Michael Larson ]
+  * change accessor levels for ldap and smtp to admin
+  * fix for chunker to account for restricted mode stored in session
+    file.
+
+  [ slioch ]
+  * use fixed gid/uid for installer in background process--brings this
+    in line with webgui.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 17 Apr 2009 11:08:58 -0700
+
 vyatta-webgui (0.2+fxd0+11) unstable; urgency=low
 
   [ Loi Vo ]

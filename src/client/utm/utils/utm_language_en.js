@@ -10,6 +10,36 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Dash board screen
 
+    ////////////////////////////////////////////////////////////////////
+    // common
+    m_name : 'Name',
+    m_enabled : 'Enabled',
+    m_delete : 'Delete',
+    m_group : 'Group',
+    m_username : 'User Name',
+    m_status : 'Status',
+    m_ipAddr : 'IP Address',
+
+    ///////////////////////////////////////////////////////////////////
+    // VPN Overview
+    m_vpnOverviewHeader : 'Lorem ipsum onsectetuer adipiscing elit, sed diam ' +
+            'nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam ' +
+            'erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci ' +
+            'tation ullamcorper suscipit lobortis nisl ut aliquip ex ea ' +
+            'commodo consequat.',
+    m_vpnOVSource : 'Source',
+    m_vpnOVDest : 'Destination',
+    m_vpnOVPeerDomainName : 'Peer Address /Domain name',
+    m_vpnOVConfNode : 'Configuration Node',
+    m_vpnOVLocal : 'Local',
+    m_vpnOVS2S : 'Site to site connections',
+    m_vpnOVRemote : 'Remote Users',
+
+    ///////////////////////////////////////////////////////////////////
+    // VPN RemoteUser View
+    m_vpnRemoteviewHeader : 'This page enables you to configure a Virtual ' +
+        'Private Network (VPN) Server to connect remote users.',
+
 
     ///////////////////////////////////////////////////////////////////
     // VPN General

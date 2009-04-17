@@ -13,27 +13,16 @@ function UTM_confBaseObj(name, callback, busLayer)
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
+     * @param busLayer
      */
     this.constructor = function(name, callback, busLayer)
     {
-        this.privateConstructor(name, callback, busLayer);
-    }
-
-    /**
-     * Private constructor
-     * @param {Object} name
-     * @param {Object} callback
-     * @param {Object} busLayer
-     */
-    this.privateConstructor = function(name, callback, busLayer)
-	{
-		this.m_busLayer = busLayer;
+        this.m_busLayer = busLayer;
         this.m_name = name;
         this.m_containerCb = callback;
         this.m_treadId = null;
-        this.m_allowSort = false;
-	}
-	this.privateConstructor(name, callback, busLayer);
+    }
+    this.constructor(name, callback, busLayer);
 
     /**
      * call this function when this object is no longer used. it will
@@ -63,44 +52,14 @@ function UTM_confBaseObj(name, callback, busLayer)
         div.style.overflow = 'visible';
         div.style.fontFamily = 'Arial, sans-serif';
 
+        document.getElementById('ft_container').appendChild(div);
+
         for(var i=0; i<children.length; i++)
             div.appendChild(children[i]);
-
-        document.getElementById('ft_container').appendChild(div);
 
         this.m_div = div;
         return this.m_div;
     }
-
-    this.f_reflow = function() 
-	{
-        var body = document.getElementsByTagName( "body" )[0];
-        var bodyClass = body.className;
-        body.className = "reflow";
-        body.className = bodyClass;		
-	}
-
-    this.f_getHeight = function()
-	{
-		var h = 0;
-		for (var i=0; this.m_div.childNodes[i]; i++) {
-			h += this.m_div.childNodes[i].offsetHeight;
-		}
-		h = h + (thisObj.m_tableRowCounter * 28);
-		return h;		
-	}
-
-    this.f_resize = function(padding)
-	{
-		var h = this.f_getHeight();
-		if (padding) {
-			h += padding;
-		}
-
-		this.m_div.style.height = h + 'px';
-		document.getElementById('ft_container').style.height = h + 'px';
-		this.f_reflow();
-	}
 
     this.f_createGridHeader = function(header)
     {

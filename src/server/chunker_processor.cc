@@ -72,23 +72,11 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
 {
   //set up to run as user id...
 
-  string file = WebGUI::VYATTA_MODIFY_FILE + token;
-  struct stat buf;
-  if (stat(file.c_str(), &buf) != 0) {
-    return;
-  }
-  FILE *fp = fopen(file.c_str(), "r");
-  if (!fp) {
-    return;
-  }
-  char name_buf[1025];
-  if (fgets(name_buf, 1024, fp) == NULL) {
-    fclose(fp);
-    return;
-  }
-  fclose(fp);
+  unsigned long id = strtoul(token.c_str(),NULL,10);
+  string name = WebGUI::get_user(id);
+
   struct passwd *pw;
-  pw = getpwnam(name_buf);
+  pw = getpwnam(name.c_str());
   if (pw == NULL) {
     return;
   }

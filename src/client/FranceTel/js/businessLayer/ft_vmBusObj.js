@@ -561,7 +561,7 @@ function FT_vmRecObj(id, displayName)
         var s=0;
         for(var i=0; i<node.childNodes.length; i++)
         {
-            if(node.childNodes.nodeName == 'scheduled')
+            if(node.childNodes.nodeName == 'Scheduled')
                 this.m_deploys[s++] = node.childNodes.firstChild.nodeValue;
         }
     }

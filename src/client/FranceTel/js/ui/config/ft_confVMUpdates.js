@@ -140,13 +140,13 @@ function FT_confVMUpdates(name, callback, busLayer)
     this.f_createRenderButton = function(vmId, vmName, status, prevVer)
     {
         var cb = '';
-        if(status == 'scheduled')
+        if(status == 'Scheduled')
         {
             cb = "f_vmDeployCancel('" + vmId + "', '" + vmName + "')";
             return thisObj.f_renderButton('Cancel', true, cb,
                     'Cancel ' + vmName);
         }
-        else if(status == 'failed' || status == 'succeeded' || status == 'restored')
+        else if(status == 'Failed' || status == 'Succeeded')
         {
             cb = "f_vmDeployRestore('" + vmId + "', '" + vmName + "')";
             return thisObj.f_renderButton('Restore', prevVer == undefined ?

@@ -234,7 +234,7 @@ function FT_backupObj(busObj)
             if(cn[i].nodeName == 'msg')
             {
                 var vm = cn[i].childNodes;
-                for(var j=0; i<vm.length; j++)
+                for(var j=0; j<vm.length; j++)
                 {
                     if(vm != undefined && vm[j] != undefined &&
                         vm[j].nodeName == 'archive')

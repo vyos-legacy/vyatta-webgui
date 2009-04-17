@@ -83,10 +83,19 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
 
   //move this up the timeline in the future, but this is where we will initially set the uid/gid
   //retreive username, then use getpwnam() from here to populate below
-  if (setgid(pw->pw_gid) != 0) {
+  // NOTE: we always run the GUI process as a fixed user/group combo
+  uid_t guid = 0;
+  gid_t ggid = 0;
+  if (WebGUI::get_gui_uid(guid) != 0 || WebGUI::get_gui_gid(ggid) != 0) {
     return;
   }
-  if (setuid(pw->pw_uid) != 0) {
+
+  //move this up the timeline in the future, but this is where we will initially set the uid/gid
+  //retreive username, then use getpwnam() from here to populate below
+  if (setgid(ggid) != 0) {
+    return;
+  }
+  if (setuid(guid) != 0) {
     return;
   }
 

@@ -5,7 +5,7 @@ use strict;
 print "Content-type: text/html\n";
 
 # TODO actually get BLB setting
-print "Set-Cookie: dom0_blb=no\n\n";
+print "Set-Cookie: dom0_blb=no; Path=/\n\n";
 
 my $ifile = '/var/www/FranceTel/ft_main.html';
 my $lline = $ENV{'HTTP_COOKIE'};

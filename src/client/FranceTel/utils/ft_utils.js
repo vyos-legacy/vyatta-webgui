@@ -228,13 +228,13 @@ var g_utils =
         var y = html.clientHeight;
         var hDiv = div.clientHeight;
         var wDiv = div.clientWidth;
-        var wOffset = scrollx + (x - 300)/2;
+        var wOffset = scrollx + (x - 300)/2;		
         var hOffset = scrolly + (y - hDiv)/2;
-
+	        
         var o = div.style;
-        o.position = 'relative';
+        o.position = 'absolute';
         o.top = hOffset + 'px';
-        o.left = wOffset + 'px';
+		o.left = wOffset + 'px';
 
         if(isModal)
         {
@@ -246,6 +246,7 @@ var g_utils =
                 o.width = html.scrollWidth + 'px';
             }
         }
+		
     },
 
     f_popupMessage: function(message, type, title, isModal, cb, ccb)
@@ -261,7 +262,6 @@ var g_utils =
                 var el = document.getElementById(popDivId);
                 el.style.visibility = "visible";
         }
-        document.getElementById(popDivId).appendChild(div);
 
         var cancelHandler = "f_utilsPopupCancel('" + popDivId + "')";
         var applyHandler = "f_utilsPopupApply('" + popDivId + "')";
@@ -343,14 +343,14 @@ var g_utils =
                 break;
         }
 
-        this.f_centerPopupDiv(div, isModal);
-
         innerHtml += '</tr><tr height="28">' +
                       '<td valign="bottom" colspan="2">' + buttonsDiv + '</td>' +
                       '</tr></table>';
 
         div.innerHTML = innerHtml;
 
+        document.getElementById(popDivId).appendChild(div);
+        this.f_centerPopupDiv(div, isModal);
         
         return div;
     },

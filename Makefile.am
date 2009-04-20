@@ -57,6 +57,7 @@ sbin_SCRIPTS += src/server/openapp-conf-ntp.pl
 sbin_SCRIPTS += src/server/openapp-conf-smtp.pl
 sbin_SCRIPTS += src/server/openapp-conf-ldap.pl
 sbin_SCRIPTS += src/server/openapp-conf-password-policy.pl
+sbin_SCRIPTS += src/server/openapp-conf-blb.pl
 sbin_SCRIPTS += scripts/vyatta-smtp.pl
 sbin_SCRIPTS += src/server/openapp-vm-query.pl
 sbin_SCRIPTS += src/server/openapp-vm-monitor.pl
@@ -68,6 +69,7 @@ sbin_SCRIPTS += src/server/openapp-vimg-postinst.pl
 oaperl_DATA = src/server/lib/perl5/OpenApp/VMMgmt.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/VMDeploy.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/LdapUser.pm
+oaperl_DATA += src/server/lib/perl5/OpenApp/Conf.pm
 
 guiconf_DATA = src/server/misc/slapd.conf
 guiconf_DATA += src/server/misc/openapp.conf

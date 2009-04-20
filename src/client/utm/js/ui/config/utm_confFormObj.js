@@ -553,5 +553,5 @@ function UTM_confFormObj(name, callback, busLayer)
     }	
 }
 
-FT_extend(UTM_confFormObj, UTM_confBaseObj);
+UTM_extend(UTM_confFormObj, UTM_confBaseObj);
 

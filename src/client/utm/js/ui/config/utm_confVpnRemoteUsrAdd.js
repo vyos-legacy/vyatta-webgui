@@ -131,5 +131,5 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     
 }
 
-FT_extend(UTM_confVpnRemoteUsrAdd, UTM_confFormObj);
+UTM_extend(UTM_confVpnRemoteUsrAdd, UTM_confFormObj);
 

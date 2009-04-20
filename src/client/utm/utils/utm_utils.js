@@ -1,11 +1,11 @@
 /*
-    Document   : ft_utils.js
+    Document   : utm_utils.js
     Created on : Feb 25, 2009, 2:35:25 PM
     Author     : Kevin.Choi
     Description:
 */
 
-FT_extend = function(subClass, baseClass)
+UTM_extend = function(subClass, baseClass)
 {
    function inheritance() {}
    inheritance.prototype = baseClass.prototype;
@@ -17,7 +17,7 @@ FT_extend = function(subClass, baseClass)
 }
 
 /////////////////////////////////////////////////////////////////////////
-function FT_thread(interval)
+function UTM_thread(interval)
 {
     this.m_isRun = false;
     this.m_interval = interval == undefined ? 8000/* 8 sec default*/ : interval;
@@ -43,7 +43,7 @@ function FT_thread(interval)
 
 //////////////////////////////////////////////////////////////////////////////
 // sorting table
-function FT_sortingTable()
+function UTM_sortingTable()
 {
     var thisObj = this;
     this.m_table = null;		// Table object
@@ -444,7 +444,7 @@ function FT_sortingTable()
             return false;
     }
 }
-g_sortTable = new FT_sortingTable();
+g_sortTable = new UTM_sortingTable();
 function sortTable(index, obj)
 {
     g_sortTable.f_sortTable(index, obj);
@@ -466,7 +466,7 @@ var g_utils =
         if(!this.m_clock_isClockRan)
         {
             // create a thread to run every one second
-            this.m_thread = new FT_thread(1000);
+            this.m_thread = new UTM_thread(1000);
 
             var clockRuns = function()
             {

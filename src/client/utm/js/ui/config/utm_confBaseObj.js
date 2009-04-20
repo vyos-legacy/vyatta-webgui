@@ -61,13 +61,13 @@ function UTM_confBaseObj(name, callback, busLayer)
         return this.m_div;
     }
 
-    this.f_createGridHeader = function(header)
+    this.f_createGridHeader = function(header, onclick)
     {
         var div = document.createElement('div');
         div.style.position = 'relative';
         div.style.border = '1px solid #CCC';
-        div.style.backgroundColor = '#FF6600'//'#EFEFEF';
-        div.style.color = '#fff';
+        div.style.backgroundColor = '#EFEFEF';
+        div.style.color = '#000';
         div.style.overflow = 'visible';
 
         var width = 0;
@@ -76,16 +76,27 @@ function UTM_confBaseObj(name, callback, busLayer)
         {
             var h = header[i];
             width += h[1]
+
+            var cursor = '';
+            var tooltip = '';
+            if(h[4] != undefined && h[4])
+            {
+                tooltip = 'title="' + g_lang.m_tableTooltip1 + '" ';
+                cursor = 'cursor:pointer; ';
+            }
+
+            var colName = thisObj.f_createColNameHTML(h[0], i);
             var rBorder = (i == header.length-1) || h[0].length < 2 ?
                               '' : 'border-right:1px solid #CCC; ';
 
             inner += '<td width="' + h[1] +'">' +
-                '<div style="padding-top:5px; padding-bottom:5px; ' + rBorder + '">' +
-                h[0] + '</div></td>';
+                '<div style="padding-top:5px; padding-bottom:5px; ' +
+                cursor + rBorder + '" onclick="' + onclick + '(' + i + ')" ' +
+                tooltip + '>' + colName + '</div></td>';
         }
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">' +
-                      '<thead><tr>' + inner +
+                      '<thead><tr height="25">' + inner +
                       '</tr></thead></table>';
 
         div.style.width = width + 'px';
@@ -332,14 +343,38 @@ function UTM_confBaseObj(name, callback, busLayer)
      * @param type - type of data to be displayed (text, image, checkbox,
      *                text input, combobox)
      * @param paddLeft - number of pixel to be padding left
+     * @param sortable - true allow sort column, else false (default)
      */
-    this.f_createColumn = function(colName, width, type, paddLeft)
+    this.f_createColumn = function(colName, width, type, paddLeft, sortable)
     {
-        var header = colName != null && colName.length > 2 ?
-            "<p valign='center' align='center'><b>" + colName + "<br></b></p>" :
-            "";
+        if(sortable != undefined && sortable)
+            thisObj.m_allowSort = true;
 
-        return [header, width, type, paddLeft];
+        return [colName, width, type, paddLeft, sortable];
+    }
+
+    this.f_createColNameHTML = function(colName, col)
+    {
+        var header = "";
+
+        if(colName != null && colName.length > 2)
+        {
+            if(thisObj.m_sortCol == col)
+            {
+                var sortIcon = thisObj.m_sortOrder == 'asc' ?
+                    '<img src="' + g_lang.m_imageDir + 'sortAsc.gif"/>' :
+                    '<img src="' + g_lang.m_imageDir + 'sortDesc.gif"/>';
+
+                if(!thisObj.m_allowSort) sortIcon = '';
+                header = "<p valign='center' align='center'><b>" +
+                      colName + "&nbsp;" + sortIcon + "<br></b></p>";
+            }
+            else
+                header = "<p valign='center' align='center'><b>" +
+                      colName + "<br></b></p>";
+        }
+
+        return header;
     }
 
     this.f_renderStatus = function(val)

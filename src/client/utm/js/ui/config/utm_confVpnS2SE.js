@@ -319,7 +319,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     
 }
 
-FT_extend(UTM_confVpnS2SE, UTM_confFormObj);
+UTM_extend(UTM_confVpnS2SE, UTM_confFormObj);
 
 function f_loadVpnLink(id)
 {		

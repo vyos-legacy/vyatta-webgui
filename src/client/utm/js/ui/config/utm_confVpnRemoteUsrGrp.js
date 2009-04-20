@@ -309,5 +309,5 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     
 }
 
-FT_extend(UTM_confVpnRemoteUsrGrp, UTM_confFormObj);
+UTM_extend(UTM_confVpnRemoteUsrGrp, UTM_confFormObj);
 

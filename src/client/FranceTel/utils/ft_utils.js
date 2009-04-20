@@ -128,7 +128,7 @@ var g_utils =
 				} else {
 					g_cookie.f_set(g_consObj.V_COOKIES_BLB, g_consObj.V_BLB_NO, g_cookie.m_userNameExpire);
 				}
-			}	
+			}
 		} catch (e) {}
         var lang = this.f_getLanguage();
 
@@ -141,7 +141,7 @@ var g_utils =
                 return "ft_main_fr.html";
         }
     },
-	
+
     f_getContactPage: function()
     {
 		var loc = window.location.href;
@@ -154,7 +154,7 @@ var g_utils =
 			}
 		}
 		return 'ft_contact' + locale + '.html';
-    },	
+    },
 
     f_gotoHomePage: function()
     {
@@ -227,14 +227,13 @@ var g_utils =
         var x = html.clientWidth;
         var y = html.clientHeight;
         var hDiv = div.clientHeight;
-        var wDiv = div.clientWidth;
-        var wOffset = scrollx + (x - 300)/2;		
+        var wOffset = scrollx + (x - 300)/2;
         var hOffset = scrolly + (y - hDiv)/2;
-	        
+
         var o = div.style;
         o.position = 'absolute';
         o.top = hOffset + 'px';
-		o.left = wOffset + 'px';
+        o.left = wOffset + 'px';
 
         if(isModal)
         {
@@ -246,7 +245,6 @@ var g_utils =
                 o.width = html.scrollWidth + 'px';
             }
         }
-		
     },
 
     f_popupMessage: function(message, type, title, isModal, cb, ccb)
@@ -262,6 +260,7 @@ var g_utils =
                 var el = document.getElementById(popDivId);
                 el.style.visibility = "visible";
         }
+        document.getElementById(popDivId).appendChild(div);
 
         var cancelHandler = "f_utilsPopupCancel('" + popDivId + "')";
         var applyHandler = "f_utilsPopupApply('" + popDivId + "')";
@@ -348,10 +347,8 @@ var g_utils =
                       '</tr></table>';
 
         div.innerHTML = innerHtml;
-
-        document.getElementById(popDivId).appendChild(div);
         this.f_centerPopupDiv(div, isModal);
-        
+
         return div;
     },
 

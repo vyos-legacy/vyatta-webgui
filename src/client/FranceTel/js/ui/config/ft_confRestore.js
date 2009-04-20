@@ -216,7 +216,8 @@ function FT_confRestore(name, callback, busLayer)
         div.style.backgroundColor = 'white';
         div.style.height = '45px';
 
-        var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
+        var innerHtml = '<form enctype="multipart/form-data" method="post">' +
+                      '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr height="40">';
 
         innerHtml += '<td width="200" colspan="2" valign="bottom">' +
@@ -231,7 +232,7 @@ function FT_confRestore(name, callback, busLayer)
                     'value="Go" title="Click here to start restore from my PC" onclick="' +
                      'f_handleBrownMyPC()"></div></td>';
 
-        innerHtml += '</tr><tr height="20"><td></td></tr></tbody></table>';
+        innerHtml += '</tr><tr height="20"><td></td></tr></tbody></table></form>';
 
         div.innerHTML = innerHtml;
         return div;
@@ -240,7 +241,17 @@ function FT_confRestore(name, callback, busLayer)
     this.f_restoreFromPC = function()
     {
         var id = document.getElementById('ft_mypcFile');
-        alert(id.value);
+        var fn = id.value;
+
+        if(fn.indexOf('.tar') == -1)
+        {
+            g_utils.f_popupMessage(g_lang.m_resoteUploadErrFileType,
+                'error', g_lang.m_restoreUploadTitle, true, null, null);
+            return;
+        }
+
+        var forms = document.forms;
+        forms[0].submit();
     }
 }
 FT_extend(FT_confRestore, FT_confBaseObj);

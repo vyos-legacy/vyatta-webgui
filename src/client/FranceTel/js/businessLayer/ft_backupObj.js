@@ -139,7 +139,7 @@ function FT_backupObj(busObj)
                 }
                 else if(thisObj.m_lastCmdSent.indexOf('archive get') > 0)
                 {
-                    window.location = this.m_downloadFile;
+                    window.location = thisObj.m_downloadFile;
                 }
                 else if(thisObj.m_lastCmdSent.indexOf('archive restore status') > 0)
                 {
@@ -290,7 +290,7 @@ function FT_backupObj(busObj)
                               thisObj.f_respondRequestCallback);
 
         if(type == 'get')
-            this.m_downloadFile = arFile + '.tar';
+            thisObj.m_downloadFile = '../archive/' + sid + '/' + arFile + '.tar';
     }
 
     /**

@@ -100,8 +100,7 @@ function FT_confBLB(name, callback, busLayer)
     
     this.f_apply = function()
     {
-        var el = document.getElementById('blb_group');
-        if (el.target_group[0].checked == true) {
+        if (thisObj.m_form.conf_blb_standalone.checked == true) {
             thisObj.f_applyStandAlone();
         } else {
             thisObj.f_applyAssociation();

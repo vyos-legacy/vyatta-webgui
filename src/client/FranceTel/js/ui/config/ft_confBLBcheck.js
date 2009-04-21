@@ -88,7 +88,8 @@ function FT_confBLBcheck(name, callback, busLayer)
 	{
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
-						
+			
+		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_blb_check_login, g_lang.m_mainLogin + ' ' + g_lang.m_formNoEmpty, errorInner);
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_blb_check_password, g_lang.m_password + ' ' + g_lang.m_formNoEmpty, errorInner);
 			   		   
         if (errorInner.trim().length > 0) {
@@ -110,11 +111,11 @@ function FT_confBLBcheck(name, callback, busLayer)
 			
         var cb = function(evt) {
 		    if (evt.f_isError()) {
-		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
+		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true,'f_confBLBcheckApply()');			    
 		    } else {
-                g_utils.f_popupMessage(g_lang.m_menuBLBAssocication +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_menuBLBCredCheck, true);
+                g_utils.f_popupMessage(g_lang.m_menuBLBAssocication +  ' ' + g_lang.m_formSave,   
+				                       'ok', g_lang.m_menuBLBCredCheck, true, 'f_confBLBcheckApply()');
 		    }	
-			g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_BLB_ID);	
 		}	
 		thisObj.m_busLayer.f_setOAConfig(cb, blb);					
     }

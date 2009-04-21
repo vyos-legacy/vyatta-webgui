@@ -152,22 +152,6 @@ function UTM_businessLayer()
     }
 
     /**
-     * get vpn site-2-site mode
-     */
-    this.f_vpnGetSite2SiteMode = function(guicb)
-    {
-        thisObj.f_getVPNObject().f_getSite2SiteMode(guicb);
-    }
-
-    /**
-     * set vpn site-2site mode
-     */
-    this.f_vpnSetSite2SiteMode = function(mode, guicb)
-    {
-        thisObj.f_getVPNObject().f_setSite2SiteMode(mode, guicb);
-    }
-
-    /**
      * get vpn site2site easy mode configurations
      */
     this.f_vpnGetSite2SiteEasyConfig = function(guicb)
@@ -181,6 +165,22 @@ function UTM_businessLayer()
     this.f_vpnSetSite2SiteEasyConfig = function(vpnRec, guicb)
     {
         thisObj.f_getVPNObject().f_setSite2SiteConfig(vpnRec, 'easy', guicb);
+    }
+
+    /**
+     * get vpn site2site export mode configurations
+     */
+    this.f_vpnGetSite2SiteExportConfig = function(guicb)
+    {
+        thisObj.f_getVPNObject().f_getSite2SiteConfig('expert', guicb);
+    }
+
+    /**
+     * set vpn site2site export mode configuration fields
+     */
+    this.f_vpnSetSite2SiteExportConfig = function(vpnRec, guicb)
+    {
+        thisObj.f_getVPNObject().f_setSite2SiteConfig(vpnRec, 'expert', guicb);
     }
 }
 

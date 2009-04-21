@@ -23,7 +23,7 @@ function FT_crossBrowser()
     this.f_xbIdentifyBrowser = function()
     {
         var agent = navigator.userAgent.toLowerCase();
-        
+		
         if (typeof navigator.vendor != "undefined" &&
         navigator.vendor == "KDE" &&
         typeof window.sidebar != "undefined") {
@@ -74,6 +74,42 @@ function FT_crossBrowser()
         return false;
     }
     
+	/**
+	 * This function we purposely use object detection instead of agent string because IE8
+	 * uses 3 rendering engines (IE8 standard, IE7 compatibility, IE6 quirks).  Depending 
+	 * on the user compatibility settings for each site, IE8 will dynamically set the agent 
+	 * string dynamically, as follows:
+	 *   a. If the site is in the compatibility list view, the version token is set to msie7.0
+	 *   b. If the site is in the compatibility list view, and the site owner uses the X-UA-Compatible
+	 *      meta tag with ie=8, the version token is set to msie8.0
+	 *   c. If the site is not in the compatibility list view, the version token is set to msie8.0
+	 */
+	this.f_xbIsIE8plus = function()
+	{
+		if (thisObj.m_isIE) {
+			if (typeof XDomainRequest != "undefined") {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * This function detect true IE7 from IE8 mocking IE7 in the user agent string
+	 */
+	this.f_xbIsIE7 = function()
+	{
+		if (thisObj.m_isIE) {
+			if (typeof XDomainRequest != "undefined") {
+				return false; //this is IE8 mocking IE7 in the user agent string
+			}
+			if (thisObj.m_browserVer == 'ie7') {
+				return true;
+			}
+		}
+		return false;
+	}	
+	
     this.f_xbIdentifyOS = function()
     {
         var agent = navigator.userAgent.toLowerCase();

@@ -28,27 +28,27 @@ sub write_smtp {
 	
     my $option = $config->returnValue("address");
     if (defined $option) {
-	print FILE_LCK "Mailhub " . $option . "\n";
+	print FILE_LCK "Mailhub=" . $option . "\n";
     }
     
     $option = $config->returnValue("email");
     if (defined $option) {
-	print FILE_LCK "FromLineOverride  " . $option . "\n";
+	print FILE_LCK "FromLineOverride=" . $option . "\n";
     }
     
     $option = $config->returnValue("username");
     if (defined $option) {
-	print FILE_LCK "AuthUser  " . $option . "\n";
+	print FILE_LCK "AuthUser=" . $option . "\n";
     }
     
     $option = $config->returnValue("password");
     if (defined $option) {
-	print FILE_LCK "AuthPass  " . $option . "\n";
+	print FILE_LCK "AuthPass=" . $option . "\n";
     }
     
     $option = $config->returnValue("name");
     if (defined $option) {
-	print FILE_LCK "Hostname  " . $option . "\n";
+	print FILE_LCK "Hostname=" . $option . "\n";
     }
 }
 

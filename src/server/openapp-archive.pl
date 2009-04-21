@@ -262,7 +262,9 @@ sub backup_archive {
     `echo '100' > $BACKUP_WORKSPACE_DIR/status`;
 
     #backup is now complete, let's send an email out to admin
-    `echo 'backup is finished: $filename' | /usr/sbin/ssmtp $admin_email 2>/dev/null`;
+    #echo -e "To: mike@lrlart.com\nSubject: backup is finished" | /usr/sbin/ssmtp mike@lrlart.com
+
+    `echo -e 'To: $admin_email\nSubject: backup is finished: $filename' | /usr/sbin/ssmtp $admin_email 2>/dev/null`;
 }
 
 ##########################################################################

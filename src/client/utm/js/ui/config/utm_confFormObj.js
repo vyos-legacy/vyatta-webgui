@@ -495,6 +495,44 @@ function UTM_confFormObj(name, callback, busLayer)
     this.f_handleClick = function(e)
 	{
 	}	
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //// Combobox convenience functions
+    //////////////////////////////////////////////////////////////////////////////////	
+	this.f_getComboBoxSelectedValue = function(cb)
+	{
+		var i = cb.selectedIndex;
+		return cb.options[i].value;
+	}
+	
+	this.f_getComboBoxSelectedName = function(cb)
+	{
+		var i = cb.selectedIndex;
+		return cb.options[i].text;
+	}	
+	
+	this.f_setComboBoxSelectionByValue = function(cb, value)
+	{
+		for (var i=0; i < cb.options.length; i++) {
+		    if (cb.options[i].value == value) {
+				cb.options[i].selected = true;
+			} else {
+				cb.options[i].selected = false;
+			}	
+		}
+	}
+	
+	this.f_setComboBoxSelectionByName = function(cb, name)
+	{
+		for (var i=0; i < cb.options.length; i++) {
+		    if (cb.options[i].text == name) {
+				cb.options[i].selected = true;
+			} else {
+				cb.options[i].selected = false;
+			}	
+		}
+	}	
+	
     //////////////////////////////////////////////////////////////////////////////////
     //// form validation
     //////////////////////////////////////////////////////////////////////////////////

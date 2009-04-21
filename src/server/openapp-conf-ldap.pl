@@ -39,7 +39,7 @@ my ($address,$rpswd,$ruser,$rwpswd,$rwuser,$local_db,$list);
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
 my $auth_user_role = $auth_user->getRole();
-if ($auth_user_role ne 'installer') {
+if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   # not authorized
   exit 1;
 }

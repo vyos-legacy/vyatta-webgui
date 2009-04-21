@@ -1,0 +1,3 @@
+help: Get current OpenAppliance BLB configuration settings
+access:installer
+run: /opt/vyatta/sbin/openapp-conf-blb.pl --status

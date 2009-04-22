@@ -254,6 +254,8 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Restore configuration
     m_restoreErrorTitle : 'Configuration Restore Error',
+    m_restoreUploadTitle : 'Upload Restore File',
+    m_resoteUploadErrFileType : 'Upload file type not support.',
     m_restoreHdContent : 'Content',
     m_restoreHdRestore : 'Restore',
     m_restoreHdDownload : 'Download',

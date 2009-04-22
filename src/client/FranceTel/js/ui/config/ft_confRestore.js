@@ -216,7 +216,7 @@ function FT_confRestore(name, callback, busLayer)
         div.style.backgroundColor = 'white';
         div.style.height = '45px';
 
-        var innerHtml = '<form enctype="multipart/form-data" method="post">' +
+        var innerHtml = '<form method="post" enctype="multipart/form-data" action="/cgi-bin/uploader.pl">' +
                       '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr height="40">';
 
@@ -238,6 +238,33 @@ function FT_confRestore(name, callback, busLayer)
         return div;
     }
 
+    this.f_createHiddenIframe = function(uploadFilename)
+    {
+        ///////////////////////
+        // input element
+        var input = document.createElement('input');
+        input.name = 'pcFile'
+        input.type = 'file';
+        //input.value = uploadFilename;
+
+        //////////////////////
+        // form element
+        var iform = document.createElement('form');
+        iform.method = 'post';
+        iform.enctype = 'multipart/form-data';
+        iform.appendChild(input);
+
+        /////////////////////////
+        // iframe element
+        var iframe = document.createElement('iframe');
+        iframe.appendChild(iform);
+        iframe.className = 'hidden';
+        iframe.frameBorder = '0';
+        document.body.appendChild(iframe);
+
+        iform.submit();
+    }
+
     this.f_restoreFromPC = function()
     {
         var id = document.getElementById('ft_mypcFile');
@@ -250,8 +277,18 @@ function FT_confRestore(name, callback, busLayer)
             return;
         }
 
+        //thisObj.f_createHiddenIframe(fn);
         var forms = document.forms;
         forms[0].submit();
+
+        var cb = function()
+        {
+            alert('upload comleted');
+        }
+
+        fn = fn.substring(0, fn.length-4);
+        g_busObj.f_uploadArchiveFileFromServer(fn, fn, cb);
+        g_utils.f_launchHomePage();
     }
 }
 FT_extend(FT_confRestore, FT_confBaseObj);

@@ -41,6 +41,7 @@ cgi_PROGRAMS += src/server/chunker
 
 cgi_SCRIPTS = src/server/webgui-oa
 cgi_SCRIPTS += scripts/chunker_cmd
+cgi_SCRIPTS += src/server/openapp-uploader.pl
 
 sbin_PROGRAMS = src/server/test
 
@@ -59,6 +60,7 @@ sbin_SCRIPTS += src/server/openapp-conf-ldap.pl
 sbin_SCRIPTS += src/server/openapp-conf-password-policy.pl
 sbin_SCRIPTS += src/server/openapp-conf-blb.pl
 sbin_SCRIPTS += scripts/vyatta-smtp.pl
+sbin_SCRIPTS += scripts/enterprise-mib.pl
 sbin_SCRIPTS += src/server/openapp-vm-query.pl
 sbin_SCRIPTS += src/server/openapp-vm-monitor.pl
 sbin_SCRIPTS += src/server/openapp-vm-deploy.pl

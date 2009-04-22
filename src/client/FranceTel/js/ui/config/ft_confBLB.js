@@ -7,7 +7,9 @@
 function FT_confBLB(name, callback, busLayer)
 {
     var thisObjName = 'ft_confBLB';
-	var  thisObj = this;
+	var thisObj = this;
+	this.m_form = undefined;
+	this.m_blb = undefined;
     
     /**
      * @param name - name of configuration screens.
@@ -30,7 +32,7 @@ function FT_confBLB(name, callback, busLayer)
                 v_type: 'html',
                 id: 'conf_blb_standalone',
                 size: '30',
-                text: '<input type="radio" name="blb_group" value="standalone" checked>&nbsp;' + 
+                text: '<input type="radio" id="conf_blb_standalone" name="blb_group" value="standalone" checked>&nbsp;' + 
 				      g_lang.m_blbStandAloneOA,
                 v_new_row: 'true',
                 v_end_row: 'true'
@@ -42,7 +44,7 @@ function FT_confBLB(name, callback, busLayer)
                 v_type: 'html',
                 id: 'conf_blb_association',
                 size: '30',
-                text: '<input type="radio" name="blb_group" value="association">&nbsp;' + 
+                text: '<input type="radio" id="conf_blb_association" name="blb_group" value="association">&nbsp;' + 
 				      g_lang.m_blbAssociation,
                 v_new_row: 'true',
                 v_end_row: 'true'
@@ -61,18 +63,32 @@ function FT_confBLB(name, callback, busLayer)
     
     this.f_loadVMData = function(element)
     {
+        this.m_form = document.getElementById('conf_blb_form');
+		
 		var cb = function(evt)
         {
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-                var response = evt.m_value;
-                if(response == undefined)  
+		        if (evt.f_isError()) {
+					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+					return;
+				}					
+                thisObj.m_blb = evt.m_value;
+                if(thisObj.m_blb == undefined)  
 				    return;
+					
+				if (thisObj.m_blb.m_type == 'standalone') {
+		            thisObj.m_form.conf_blb_standalone.checked = true;
+					thisObj.m_form.conf_blb_association.checked = false;
+				} else {
+		            thisObj.m_form.conf_blb_standalone.checked = false;
+					thisObj.m_form.conf_blb_association.checked = true;					
+				}										
             }
         }
-        //thisObj.m_busLayer.f_getOAConfig(cb, 'blb');				
+        thisObj.m_busLayer.f_getOAConfig(cb, 'blb');				
     }
-    
+		
     this.f_stopLoadVMData = function()
     {
     }
@@ -84,8 +100,7 @@ function FT_confBLB(name, callback, busLayer)
     
     this.f_apply = function()
     {
-        var el = document.getElementById('blb_group');
-        if (el.target_group[0].checked == true) {
+        if (thisObj.m_form.conf_blb_standalone.checked == true) {
             thisObj.f_applyStandAlone();
         } else {
             thisObj.f_applyAssociation();
@@ -94,12 +109,25 @@ function FT_confBLB(name, callback, busLayer)
 	
 	this.f_applyStandAlone = function()
 	{
+        thisObj.m_blb.m_type = 'standalone';
+		thisObj.m_blb.m_username = '';
+		thisObj.m_blb.m_passwd = '';
+			
+        var cb = function(evt) {
+		    if (evt.f_isError()) {
+		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
+		    } else {
+                g_utils.f_popupMessage(g_lang.m_menuBLBAssocication +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_menuBLBAssocication,true);
+		    }			
+		}	
+		thisObj.m_busLayer.f_setOAConfig(cb, thisObj.m_blb);	
 		
 	}
 	
 	this.f_applyAssociation = function()
 	{
-        g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_BLB_CHECK_ID);			
+		thisObj.m_blb.m_type = 'association';
+        g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_BLB_CHECK_ID, thisObj.m_blb);			
 	}
     
     this.f_handleClick = function(e)

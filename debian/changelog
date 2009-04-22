@@ -1,3 +1,27 @@
+vyatta-webgui (0.2+fxd0+14) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * add BLB configuration
+
+  [ Loi Vo ]
+  * 1. Fix the issue where popup modal dialog is not positioned
+    correctly on IE7
+
+  [ Kevin Choi ]
+  * * completed coding for upload/download restore archive files.
+    integration and test are still
+  * * revert cross browser fixed for center popup dialog
+
+  [ Michael Larson ]
+  * bugfixes for archive download/upload
+
+  [ An-Cheng Huang ]
+  * add WUI op-command interface for BLB configuration.
+  * remove unused templates
+  * actually use BLB config to set cookie in index CGI.
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 21 Apr 2009 00:21:20 -0700
+
 vyatta-webgui (0.2+fxd0+13) unstable; urgency=low
 
   [ An-Cheng Huang ]

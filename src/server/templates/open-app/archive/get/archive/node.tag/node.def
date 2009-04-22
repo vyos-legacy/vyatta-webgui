@@ -1,2 +1,2 @@
 access:admin
-run: sudo perl /opt/vyatta/sbin/openapp-archive.pl --get-archive "$6"
+run: sudo perl /opt/vyatta/sbin/openapp-archive.pl --get-archive "$4"

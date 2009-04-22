@@ -2,10 +2,20 @@
 
 use strict;
 
+use lib '/opt/vyatta/share/perl5';
+use Vyatta::Config;
+
 print "Content-type: text/html\n";
 
-# TODO actually get BLB setting
-print "Set-Cookie: dom0_blb=no; Path=/\n\n";
+# get BLB setting
+my $cfg = new Vyatta::Config;
+## workaround: need to set this because we don't have the environment
+$cfg->{_active_dir_base} = '/opt/vyatta/config/active';
+my $blb = 'no';
+if ($cfg->existsOrig('system open-app blb-association')) {
+  $blb = 'yes';
+}
+print "Set-Cookie: dom0_blb=$blb; Path=/\n\n";
 
 my $ifile = '/var/www/FranceTel/ft_main.html';
 my $lline = $ENV{'HTTP_COOKIE'};

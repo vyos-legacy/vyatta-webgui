@@ -280,7 +280,7 @@ function FT_configPanel()
                 }
                 thisObj.m_selectObj = new FT_confBLBcheck('BLB credentials check', mpCb, g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				
-                thisObj.m_selectObj.f_init();
+                thisObj.m_selectObj.f_init(obj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
             case VYA.FT_CONST.DOM_3_NAV_SUB_PASSWORD_ID:

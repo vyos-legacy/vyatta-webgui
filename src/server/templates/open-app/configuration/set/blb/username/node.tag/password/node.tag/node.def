@@ -1,0 +1,3 @@
+help: Password for BLB association
+access:installer
+run: /opt/vyatta/sbin/openapp-conf-blb.pl --user "$6" --pass "$8"

@@ -49,6 +49,14 @@ function FT_blb(type /* oa | blb */, username, passwd)
     this.m_type = type;
     this.m_username = username;
 	this.m_passwd = passwd;
+	
+	this.f_setCmd = function() {			
+		if (this.m_type == 'standalone') {
+			return "set blb standalone";
+		} else {
+			return "set blb username '" + this.m_username + "' password '" + this.m_passwd + "'";
+		}
+	}	
 }
 
 function FT_passwordPolicy(type /* mchange | default */)
@@ -67,7 +75,7 @@ function FT_passwordPolicy(type /* mchange | default */)
 	}
 	
 	this.f_setCmd = function() {			
-		if (type == 'mchange') {
+		if (this.m_type == 'mchange') {
 			return "set password-policy " + this.f_scope();
 		} else {
 			return "delete password-policy " + this.f_scope();
@@ -263,7 +271,24 @@ function FT_oaConfigObj (busObj)
 	
     this.f_parseBlb = function(response)
     {
-        return new FT_blb('oa', '', '')
+        var obj = new FT_blb('standalone', '', '');
+        var val = thisObj.f_getConfigNodeFromResponse(response, 'blbconf');	
+		obj.m_type = val.getAttribute('mode');
+		
+		for (var i=0; i < val.childNodes.length; i++) {
+			var cNode = val.childNodes[i];
+			var cNodeValue = '';
+			if (cNode.childNodes[0]) {
+				cNodeValue = cNode.childNodes[0].nodeValue;
+			}
+			
+			switch (cNode.nodeName) {
+                case 'username':
+				    obj.m_username = cNodeValue;
+					break;				
+			}
+		}	
+		return obj;		
     }	
 	
     this.f_parsePasswdPolicy = function(response)
@@ -327,12 +352,20 @@ function FT_oaConfigObj (busObj)
     }	
 	
     /**
-     *  retrieve oa password policy configuration
+     *  retrieve oa ldap configuration
      */
     this.f_getLdap = function(guiCb)
     {
         thisObj.f_getConfig(guiCb, 'ldap');
     }
+	
+    /**
+     *  retrieve oa blb configuration
+     */
+    this.f_getLdap = function(guiCb)
+    {
+        thisObj.f_getConfig(guiCb, 'blb');
+    }	
 		
     /**
      *  retrieve oa configuration

@@ -41,6 +41,7 @@ cgi_PROGRAMS += src/server/chunker
 
 cgi_SCRIPTS = src/server/webgui-oa
 cgi_SCRIPTS += scripts/chunker_cmd
+cgi_SCRIPTS += src/server/openapp-uploader.pl
 
 sbin_PROGRAMS = src/server/test
 

@@ -523,8 +523,10 @@ sub put_archive {
     `mkdir -p /var/www/archive/$OA_SESSION_ID`;
 
     print "VERBATIM_OUTPUT\n";
-    `cp /var/www/archive/$OA_SESSION_ID/$put_archive.tar $ARCHIVE_ROOT_DIR/.`;
-    `rm -fr /var/www/archive/$OA_SESSION_ID/*`;
+    `cp /tmp/$put_archive.tar $ARCHIVE_ROOT_DIR/.`;
+    `rm -f /tmp/$put_archive.tar`;
+#   `cp /var/www/archive/$OA_SESSION_ID/$put_archive.tar $ARCHIVE_ROOT_DIR/.`;
+#    `rm -fr /var/www/archive/$OA_SESSION_ID/*`;
 }
 
 ##########################################################################

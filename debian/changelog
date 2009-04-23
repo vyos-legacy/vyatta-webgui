@@ -1,3 +1,41 @@
+vyatta-webgui (0.2+fxd0+15) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add f_isIE8plus and f_isIE7 to detect IE8, and IE7.
+  * 1. Fix some minor bugs in blb assocication.
+
+  [ Michael Larson ]
+  * allow admin access to ldap and smtp configuration
+  * fixes with smtp client behavior
+  * add initial cut of rest msg support for utms from dom0. returns list
+    of active users per assigned utm
+  * bugfix to rest message support active users
+
+  [ Justin Fletcher ]
+  * Add enterprise MIB
+
+  [ slioch ]
+  * added form handling script for archive uploading and handing off to
+    op mode handler
+  * name change of uploader script to match client form.
+
+  [ Kevin Choi ]
+  * * added code to handle backup archive file to server using html post
+    method.
+  * * Instead of hard-code the install new VM and remove VM URL link to
+    the page. I changed it
+
+  [ Michael Larson ]
+  * removed debug statement from uploader
+
+  [ slioch ]
+  * remove sudo on invoked scripts.
+
+  [ An-Cheng Huang ]
+  * add libvirt-based autostart on boot
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 23 Apr 2009 00:18:56 -0700
+
 vyatta-webgui (0.2+fxd0+14) unstable; urgency=low
 
   [ An-Cheng Huang ]

@@ -1,5 +1,5 @@
 access:installer
-run: if sudo perl /opt/vyatta/sbin/openapp-conf-password-policy.pl --delete admin; then
+run: if perl /opt/vyatta/sbin/openapp-conf-password-policy.pl --delete admin; then
        return 0
      else
        return 1

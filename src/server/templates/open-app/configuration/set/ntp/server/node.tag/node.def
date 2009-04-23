@@ -1,5 +1,5 @@
 access:installer
-run: if sudo perl /opt/vyatta/sbin/openapp-conf-ntp.pl --server "$6"; then
+run: if perl /opt/vyatta/sbin/openapp-conf-ntp.pl --server "$6"; then
        return 0
      else
        return 1

@@ -96,5 +96,8 @@ EOF
 # set up ldap conf files
 cp $guiconfdir/{slapd,openapp}.conf /etc/ldap/
 
+# set up oa-autostart init
+update-rc.d oa-autostart defaults 91
+
 exit 0
 

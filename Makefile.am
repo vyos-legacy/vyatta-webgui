@@ -77,6 +77,7 @@ guiconf_DATA = src/server/misc/slapd.conf
 guiconf_DATA += src/server/misc/openapp.conf
 
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
+initd_SCRIPTS += scripts/oa-autostart
 
 cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
 	cpio -0pd

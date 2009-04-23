@@ -1,3 +1,16 @@
+vyatta-webgui (0.2.14+fxdU+7) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * setup vpn business layer object and data structures
+  * * modified vpn bus layer api called due to backend changed
+
+  [ Loi Vo ]
+  * 1. Fix a typo (lowercase/ uppercase) in utm_vpnBusObj.js
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 23 Apr 2009 00:15:30 -0700
+
 vyatta-webgui (0.2.14+fxdU+6) unstable; urgency=low
 
   [ Loi Vo ]

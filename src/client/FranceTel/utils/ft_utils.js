@@ -178,6 +178,16 @@ var g_utils =
                         window.location = hp;
 		}
     },
+	
+	f_getHomePagePrefix : function()
+	{
+		var loc = window.location.href;
+		var index = loc.indexOf('ft_main');
+		if (index != -1) {
+			return loc.substring(0, index);
+		}
+		return 'javascript://';
+	},
 
 	f_gotoHomePageLocale: function(locale)
 	{

@@ -313,7 +313,7 @@ function FT_confFormObj(name, callback, busLayer) {
     
 	this.f_createListItem = function (item)
 	{
-		return ('<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">' + item + '</li>');
+		return ('<li style="list-style-type:square;list-style-image: url(' + g_utils.f_getHomePagePrefix() + '/' + g_lang.m_imageDir + 'puce_squar.gif);">' + item + '</li>');
 	}	
 	
     this.f_checkEmpty = function(field, message, err)

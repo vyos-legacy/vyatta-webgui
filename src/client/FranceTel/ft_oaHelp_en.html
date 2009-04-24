@@ -1,0 +1,125 @@
+<!--
+ **********************************************************
+ * FTR&D/BIZZ/DIAM
+ **********************************************************
+ * Project     : Business Livebox
+ *
+ * Copyright France Telecom  2007,  All Rights Reserved.
+ *
+ **********************************************************
+ * File Name   : HelpRouterManagementInstaller_en.html
+ *
+ * Created     : 17/07/2007
+ * Author      : France Telecom
+ *
+ **********************************************************
+-->
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="../../css/style.css">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Business Livebox Help : Business Livebox activation</title>
+</head>
+<body>
+<a name="haut"></a>
+
+<div id="helpcontent">
+
+<span class="print_close">
+	<a href="#" class="print" onClick="print()">  print </a> |
+	<a href="#" class="close" onClick="window.close()"> close </a>
+</span>
+
+<h2>Business Livebox activation</h2>
+
+<p>The <b>Business Livebox activation</b> page is used to configure the username and password for the PPP connection established on the ADSL link.</p>
+
+  <h3><a name="auth">Network access parameters</a></h3>
+
+	<ul>
+		<li>The <b>Username</b> field comprises 1 to 64 characters.</li>
+		<li>The <b>Password</b> field comprises 1 to 60 characters.</li>
+
+
+    <li>The <b>PPP connection status</b> parameter indicates whether the connection
+      is <span class="colorGreen colorhelp">UP</span> or <span class="colorRed colorhelp">
+      DOWN</span>. To update this status the user must use the "Refresh" button
+      in their browser. When the username or password are updated the status will
+      probably remain <span class="colorRed colorhelp">DOWN</span> after the page
+      is refreshed and will take several seconds to change to <span class="colorGreen colorhelp">UP</span>.</li>
+
+    <li>The <b>apply</b> button establishes  the PPP connection with the defined parameters.</li>
+
+    <li>The <b>cancel</b> button resets to default the values entered in the Username
+      and Password fields. </li>
+
+		<li>When the username or password are updated, the message "<b>Operation successful</b>" is displayed in the right side of the window.</li>
+	</ul>
+
+	<span class="titleMessError">Error messages:</span>
+	<table>
+	  <tr>
+		<td><b>Field</b></td>
+		<td><b>Format rule</b></td>
+		<td><b>Error message</b></td>
+	  </tr>
+	  <tr>
+		<td rowspan="3"><b>Username</b></td>
+		<td>Field empty</td>
+		<td>Username is empty! Please correct.</td>
+	  </tr>
+	  <tr>
+		<td>Field longer than 64 characters</td>
+		<td>No message, the editing box is limited to 64 characters</td>
+	  </tr>
+	  <tr>
+		<td>Forbidden characters:
+			<ul>
+				<li>exclamation mark ! </li>
+				<li>question mark ?</li>
+				<li>single quote '</li>
+				<li>double quote "</li>
+
+          <li>space </li>
+				<li>tab</li>
+			</ul>
+		</td>
+
+      <td>Forbidden characters in username! Space, tab and ! ' ? " are forbidden.
+        Please correct.</td>
+	  </tr>
+	  <tr>
+		<td rowspan="3"><b>Password</b></td>
+		<td>Field empty</td>
+		<td>Password is empty! Please correct.
+	</td>
+	  </tr>
+	  <tr>
+		<td>Field longer than 60 characters</td>
+		<td>No message, the editing box is limited to 60 characters and ignores any further input.</td>
+	  </tr>
+	  <tr>
+		<td>Forbidden characters:
+			<ul>
+				<li>exclamation mark ! </li>
+				<li>question mark ?</li>
+				<li>single quote '</li>
+				<li>double quote "</li>
+
+          <li>space </li>
+				<li>tab</li>
+			</ul>
+		</td>
+
+      <td>Forbidden characters in password! Space, tab, extended ASCII characters
+        and ! ' ? " are forbidden. Please correct.</td>
+	  </tr>
+	</table>
+
+  <a href="#haut" class="backtop" onFocus="this.blur();">top</a>
+
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,130 @@
+<!--
+ **********************************************************
+ * FTR&D/BIZZ/DIAM
+ **********************************************************
+ * Project     : Business Livebox
+ *
+ * Copyright France Telecom  2007,  All Rights Reserved.
+ *
+ **********************************************************
+ * File Name   : HelpRouterManagementInstaller_fr.html
+ *
+ * Created     : 17/07/2007
+ * Author      : France Telecom
+ *
+ **********************************************************
+-->
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="../../css/style.css">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>HelpRouterManagementInstaller</title>
+</head>
+<body>
+<a name="haut"></a>
+
+<div id="helpcontent">
+
+<span class="print_close">
+	<a href="#" class="print" onClick="print()">imprimer</a> |
+	<a href="#" class="close" onClick="window.close()">fermer</a>
+</span>
+
+<h2>Activation de la Business Livebox</h2>
+
+<p>La page <b>Activation de la Business Livebox</b> permet de configurer le login et le mot de passe de la connexion PPP établie sur le lien ADSL.</p>
+
+	<h3><a name="auth">Authentification du Routeur</a></h3>
+
+	<ul>
+		<li>Le champ <b>Login</b> est constitué de 1 à 64 caractères.</li>
+
+    <li>Le champ <b>Mot de passe</b> est constitué de 1 à 60 caractères.</li>
+
+
+    <li>Le paramètre <b>&Eacute;tat de la Connexion PPP</b> indique l'état de
+      la connexion : <span class="colorGreen colorhelp">CONNECTE</span> ou <span class="colorRed colorhelp">
+      NON CONNECTE</span>. Son état doit être rafraîchi par l'utilisateur à l'aide
+      du bouton "Actualiser" du navigateur. Après une mise à jour du Login/Mot
+      de Passe, l'état restera probablement à <span class="colorRed colorhelp">NON
+      CONNECTE</span> après le rafraîchissement de la page, le passage à l'état
+      <span class="colorGreen colorhelp">CONNECTE</span> n'est pas fait immédiatement.</li>
+
+    <li>Le bouton <b>valider</b> active la connexion PPP avec lesparamètres définis.</li>
+
+    <li>Le bouton <b>annuler</b> supprime les caractères saisis dans les champs
+      Login et Mot de passe.</li>
+
+
+    <li>Suite à une mise à jour du Login/Mot de passe, le message <b>"Opération
+      réussie"</b> est affiché sur la partie droite de la fenêtre.</li>
+	</ul>
+
+	<span class="titleMessError">Messages d'erreur :</span>
+	<table>
+	  <tr>
+		<td><b>Champ</b></td>
+		<td><b>Règle de Format</b></td>
+		<td><b>Message d'erreur</b></td>
+	  </tr>
+	  <tr>
+		<td rowspan="3"><b>Login</b></td>
+		<td>Champ vide</td>
+		<td>Login vide ! Merci de corriger.</td>
+	  </tr>
+	  <tr>
+		<td>Champ supérieur à 64 caractères</td>
+		<td>Aucun message, la boîte d'édition est limitée à 64 caractères</td>
+	  </tr>
+	  <tr>
+		<td>Caractères interdits :
+			<ul>
+				<li>exclamation ! </li>
+				<li>interrogation ?</li>
+				<li>simple-quote '</li>
+				<li>double-quote "</li>
+
+          <li>espace </li>
+				<li>tabulation</li>
+			</ul>
+		</td>
+
+      <td>Caractères interdits dans le Login ! Espace, tabulation ou ! ' ? " ne
+        sont pas autorisés. Merci de corriger.</td>
+	  </tr>
+	  <tr>
+		<td rowspan="3"><b>Mot de Passe</b></td>
+		<td>Champ vide</td>
+		<td>Mot de passe vide ! Merci de corriger.
+	</td>
+	  </tr>
+	  <tr>
+		<td>Champ supérieur à 60 caractères</td>
+		<td>Aucun message, la boîte d'édition est limitée à 60 caractères et n'accepte plus de caractère au-delà.</td>
+	  </tr>
+	  <tr>
+		<td>Caractères interdits :
+			<ul>
+				<li>exclamation ! </li>
+				<li>interrogation ?</li>
+				<li>simple-quote '</li>
+				<li>double-quote "</li>
+
+          <li>espace </li>
+				<li>tabulation</li>
+			</ul>
+		</td>
+
+      <td>Caractères interdits dans le mot de passe ! Espace, tabulation, caract&egrave;res
+        ASCII &eacute;tendus ou ! ' ? " ne sont pas autorisés. Merci de corriger.</td>
+	  </tr>
+	</table>
+
+	<a href="#haut" class="backtop" onFocus="this.blur();">haut de page</a>
+
+</div>
+
+
+
+</body>
+</html>

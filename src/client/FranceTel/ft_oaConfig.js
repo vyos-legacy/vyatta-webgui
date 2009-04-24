@@ -11,19 +11,32 @@ var g_oaConfig =
     // OA WUI Dashboard screen refresh time.
     m_oaRefreshTime : 5000,     // 5 seconds
 
+    ///////////////////////////////////////
+    // OA WUI help URL link
+    // For example: 'www.orange-bussiness.com/help/somefile.html',
+    m_oaHelpURL_en : 'ft_oaHelp_en.html',
+    m_oaHelpURL_fr : 'ft_oaHelp_fr.html',
+
+    ///////////////////////////////////////
+    // OA WUI contact URL link
+    // // For example: 'www.orange-bussiness.com/contact/somefile.html',
+    m_oaContactURL_en : 'ft_contact_en.html',
+    m_oaContactURL_fr : 'ft_contact_fr.html',
+
     ////////////////////////////////////////////////////////////////////////
+    // un-deploy PBX application URL link
     // un-deploy PBX html file. OA WUI will display this file if PBX is not
     // deployed.
-    m_pbxURI : 'ft_undeployPBXInfo.html',
+    m_pbxURI_en : 'ft_undeployPBXInfo_en.html',
+    m_pbxURI_fr : 'ft_undeployPBXInfo_fr.html',
 
-    ////////////////////////////////////////////////
-    // URL link to subscribe for install a new application
+    ///////////////////////////////////////////////////////////////
+    // install new application URL link
     m_installNewVM : "http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html",
 
     /////////////////////////////////////////////////
-    // URL link to subscribe for remove application
+    // remove application URL link
     m_removeVM : "http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html",
-
 
     /////////////////////////////////////////
     // please do not edit beyong this line

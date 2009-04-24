@@ -211,10 +211,14 @@ function FT_vmBusObj(busObj)
         vm = thisObj.f_findVM('pbx', vms);
         if(vm == null)
         {
+            var pbxURL = g_oaConfig.m_pbxURI_en;
+            if(g_utils.f_getLanguage() == g_consObj.V_LANG_FR)
+                pbxURL = g_oaConfig.m_pbxURI_fr;
+
             vm = new FT_vmRecObj('pbx', 'Telephony');
             vm.m_ip = document.domain;
             var uri = document.URL.split('/');
-            vm.m_guiUri = '/' + uri[uri.length-2] + '/' + g_oaConfig.m_pbxURI;
+            vm.m_guiUri = '/' + uri[uri.length-2] + '/' + pbxURL;
         }
         finalVmsList[c++] = vm;
 
@@ -561,7 +565,7 @@ function FT_vmRecObj(id, displayName)
         var s=0;
         for(var i=0; i<node.childNodes.length; i++)
         {
-            if(node.childNodes.nodeName == 'Scheduled')
+            if(node.childNodes.nodeName == 'scheduled')
                 this.m_deploys[s++] = node.childNodes.firstChild.nodeValue;
         }
     }

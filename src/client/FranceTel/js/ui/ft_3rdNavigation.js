@@ -80,7 +80,9 @@ function FT_3rdNavigation()
 		div.style.paddingTop = '5px';
 		div.setAttribute('id', 'sm_help');
 		div.setAttribute('class', 'help');
-		div.innerHTML = '<img id="context_help" src = "' + g_lang.m_imageDir + 'img_help.gif">';
+		div.innerHTML = '<input id="context_help" type="image" src="' +
+                        g_lang.m_imageDir + 'img_help.gif" onclick="' +
+                        'f_onOAHelpClick()">';
         return div;		
 	}
 	
@@ -287,5 +289,14 @@ function FT_3rdNavigation()
             thisObj.m_parent.f_3navSelectItemCb(id, desc);
         }
     }
+    
+}
+
+function f_onOAHelpClick()
+{
+    if(g_utils.f_getLanguage() == g_consObj.V_LANG_FR)
+        window.open(g_oaConfig.m_oaHelpURL_fr);
+    else
+        window.open(g_oaConfig.m_oaHelpURL_en);
     
 }

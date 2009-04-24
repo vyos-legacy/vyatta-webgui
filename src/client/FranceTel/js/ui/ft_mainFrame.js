@@ -190,8 +190,12 @@ function f_home()
 function f_contact()
 {
 	//var url = "http://orange.com/en_EN/tools/contact/index.html";	
-	var url= g_utils.f_getContactPage();	
-	window.open(url, g_lang.m_menuContact, 'height=155, width=285,scrollbars=no');
+	//var url= g_utils.f_getContactPage();
+	//window.open(url, g_lang.m_menuContact, 'height=155, width=285,scrollbars=no');
+    if(g_utils.f_getLanguage() == g_consObj.V_LANG_FR)
+        window.open(g_oaConfig.m_oaContactURL_fr);
+    else
+        window.open(g_oaConfig.m_oaContactURL_en);
 }
 
 function f_resizeChildIframe(h)

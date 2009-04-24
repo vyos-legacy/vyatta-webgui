@@ -17,7 +17,25 @@ function FT_crossBrowser()
     this.m_isSafari = false;
     this.m_browserVer = undefined;
     this.m_domReadyCb = undefined;
-    
+
+    this.f_getBrowserAgent = function()
+    {
+        if(thisObj.m_isIE)
+            return 'ie';
+        else if(thisObj.m_isGecko)
+            return 'gecko';
+        else if(thisObj.m_isOpera)
+            return 'opera';
+        else if(thisObj.m_isKDE)
+            return 'kde';
+        else if(thisObj.m_isIE5mac)
+            return 'iemac';
+        else if(thisObj.m_isSafari)
+            return 'safari';
+        else
+            return 'safari';
+    }
+
     ///////////////////////////////////////
     // functions
     this.f_xbIdentifyBrowser = function()

@@ -42,12 +42,14 @@ src_server_webgui_LDADD += -lpam
 src_server_webgui_LDADD += /usr/lib/libglib-2.0.la
 src_server_webgui_LDADD += src/lib/libclibe.a
 
-
 cgi_PROGRAMS = src/server/webgui
 cgi_PROGRAMS += src/server/chunker
 cgi_PROGRAMS += src/server/test
 cgi_PROGRAMS += src/server/chunker_test
+
 cgi_SCRIPTS = src/server/webgui-wrap
+
+sbin_SCRIPTS = scripts/enterprise-mib.pl
 
 # library
 AM_CFLAGS = -I src/lib -Wall -I /usr/include/glib-2.0 \

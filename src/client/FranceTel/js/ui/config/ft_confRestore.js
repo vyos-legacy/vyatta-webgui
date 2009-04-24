@@ -188,7 +188,7 @@ function FT_confRestore(name, callback, busLayer)
         this.m_restorePC = this.f_createRestoreFromPC();
         this.f_loadVMData();
 
-        return [this.m_header, this.m_body];
+        return [this.m_header, this.m_body, this.m_restorePC];
     }
 
     this.f_launchRestoreDescription = function(fn)
@@ -214,7 +214,7 @@ function FT_confRestore(name, callback, busLayer)
         div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-        div.style.height = '45px';
+        div.style.overflow = 'visible';
 
         var innerHtml = '<form method="post" enctype="multipart/form-data" action="/cgi-bin/uploader.pl">' +
                       '<table cellspacing="0" cellpadding="0" border="0">';
@@ -222,17 +222,17 @@ function FT_confRestore(name, callback, busLayer)
 
         innerHtml += '<td width="200" colspan="2" valign="bottom">' +
                       '<div style="height:20px; padding-left:3px; ' +
-                      'padding-top:3px;"><b>Restore from my PC</b></div></td>';
+                      'padding-top:3px;"><b>Restore from my PC</b></div></td></tr>';
 
-        innerHtml += '<tr height="22"><td>' +
-                      '<input id="ft_mypcFile" name="mypcfile" type="file" ></td>'+
-                    '<div title="Browse my pc" style="padding-left:20px">' +
+        innerHtml += '<tr height="30"><td><div>' +
+                    '<input id="ft_mypcFile" name="mypcfile" type="file" ></div></td>'+
+                    '<td><div title="Browse my pc" style="padding-left:20px">' +
                     '<input type="button" name="OpenAppl" ' +
                     'style="cursor:pointer;" ' +
                     'value="Go" title="Click here to start restore from my PC" onclick="' +
                      'f_handleBrownMyPC()"></div></td>';
 
-        innerHtml += '</tr><tr height="20"><td></td></tr></tbody></table></form>';
+        innerHtml += '</tr></tbody></table></form>';
 
         div.innerHTML = innerHtml;
         return div;

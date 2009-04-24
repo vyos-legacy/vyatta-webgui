@@ -88,7 +88,7 @@ function FT_confBaseObj(name, callback, busLayer)
 		if (this.m_id !=  g_configPanelObj.m_selectedItem) {
 			//to avoid the race condition between callback from server, and user click event.
 			return;
-		}
+    }
         var h = 0;
         for (var i=0; this.m_div.childNodes[i]; i++) {
             h += this.m_div.childNodes[i].offsetHeight;
@@ -175,7 +175,7 @@ function FT_confBaseObj(name, callback, busLayer)
         div.style.position = 'relative';
         div.style.borderBottom = '1px dotted #CCC';
         div.style.backgroundColor = 'white';
-        div.style.paddingTop = '0px';
+        div.style.paddingTop = '3px';
         div.style.paddingBottom = '0px';
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
@@ -193,28 +193,30 @@ function FT_confBaseObj(name, callback, busLayer)
             var rBorder = '';
             var lPadding = h[3] == undefined ? "padding-left:5px; " :
                           'padding-left:' + h[3] + 'px; ';
-            var tPadding = '8px';
+            var tPadding = '5px';
             switch(h[2])
             {
                 case 'text':
-                case 'image':
                 case 'checkbox':
-                    tPadding = '8px';
+                    tPadding = '5px';
                     break;
-                case 'button':
+                case 'image':
                     tPadding = '3px';
                     break;
+                case 'button':
+                    tPadding = '2px';
+                    break;
                 case 'progress':
-                    tPadding = '4px';
+                    tPadding = '2px';
                     break;
             }
 
             innerHtml += '<td cellspacing="0" cellpadding="0" width="' +
-                        fWidth +'"><div style="height:28px; ' + lBorder + rBorder +
+                        fWidth +'"><div style="height:20px; ' + lBorder + rBorder +
                         ' padding-top:0px; padding-bottom:0px; ' +
-                        ' margin-top:0px; margin-bottom: 0px"' +
-                        '<div style="' + lPadding + 'padding-top:' +
-                        tPadding + ';">' + data[i] + '</div></div></td>';
+                        ' margin-top:0px; margin-bottom: 0px; ' +
+                        lPadding + 'padding-top:' +
+                        tPadding + ';">' + data[i] + '</div></td>';
         }
 
         innerHtml += '</tr></tbody></table>' ;
@@ -228,7 +230,7 @@ function FT_confBaseObj(name, callback, busLayer)
 
     this.f_adjustDivPosition = function(div)
     {
-        var adVal = (thisObj.m_tableRowCounter * 28) - 20;
+        var adVal = (thisObj.m_tableRowCounter * 28) - 10;
         div.style.top = adVal+'px';
     }
 
@@ -272,13 +274,14 @@ function FT_confBaseObj(name, callback, busLayer)
         {
             var btn = buttons[i];
             var elId = btn[3] == undefined ? "" : 'id="' + btn[3] + '" ';
+            var cursor = thisObj.f_getCursor(true);
 
             switch(btn[0])
             {
                 case 'AddUser':
                 innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
-                    'padding-top:15px;" >' +
+                    'padding-top:15px; ' + cursor + '">' +
                     '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_addUser.gif" ' + elId + ' name="addUser" ' +
                     'value="addUser" onclick="' + btn[1] +
@@ -287,7 +290,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 case 'Cancel':
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
-                    'padding-top:15px;" >' +
+                    'padding-top:15px; ' + cursor + '">' +
                     '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_cancel.gif" ' + elId + ' name="cancel" ' +
                     'value="Cancel" onclick="' + btn[1] +
@@ -296,7 +299,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 case 'Restore':
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
-                    'padding-top:15px;" >' +
+                    'padding-top:15px; ' + cursor + '">' +
                     '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_restore.gif" ' + elId + ' name="restore" ' +
                     'value="Restore" onclick="' + btn[1] +
@@ -305,7 +308,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 case 'Apply':
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
-                    'padding-top:15px;" >' +
+                    'padding-top:15px; ' + cursor + '">' +
                     '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_apply.gif" ' + elId + ' name="apply" ' +
                     'value="apply" onclick="' + btn[1] +
@@ -314,7 +317,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 case 'Update':
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
-                    'padding-top:15px;" >' +
+                    'padding-top:15px; ' + cursor + '">' +
                     '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_update.gif" ' + elId + ' name="update" ' +
                     'value="Update" onclick="' + btn[1] +
@@ -323,7 +326,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 case 'Backup':
                     innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
-                    'padding-top:15px;" >' +
+                    'padding-top:15px; ' + cursor + '">' +
                     '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_backup.gif" ' + elId + ' name="backup" ' +
                     'value="Backup" onclick="' + btn[1] +
@@ -331,7 +334,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 break;
                 default:
                     innerHtml += '<td><div style="height:30px; ' +
-                        'padding-top:15px;" >' +
+                        'padding-top:15px; ' + cursor + '">' +
                         '<input type="button" name="' + btn[0] +
                         '" value="' + btn[0] + '" onclick="' +
                         btn[1] + '" title="' + btn[2] + '" ' +
@@ -495,9 +498,12 @@ function FT_confBaseObj(name, callback, busLayer)
         }
 
         var disabled = enable ? '' : 'disabled';
-        return '<input type="image" title="' + tooltip + '" name="' +
+        var cursor = thisObj.f_getCursor(enable);
+
+        return '<div style="' + cursor + '"><input type="image" title="' +
+                        tooltip + '" name="' +
                         text + '" src="' + g_lang.m_imageDir + imgSrc + '" ' + disabled +
-                        ' onclick="' + cb + '">';
+                        ' onclick="' + cb + '"></div>';
     }
 
     this.f_renderProgressBar = function(val, tooltip)
@@ -646,6 +652,27 @@ function FT_confBaseObj(name, callback, busLayer)
         thisObj.m_sortCol = col;
         thisObj.m_sortColPrev = col;
         return sar;
+    }
+
+    /**
+     * @param enable : true if <div> is mouse enable for clicking
+     */
+    this.f_getCursor = function(enable)
+    {
+        //alert(g_xbObj.f_getBrowserAgent());
+        switch(g_xbObj.f_getBrowserAgent())
+        {
+            case 'ie':
+                return enable ? 'cursor:pointer;' : "";
+            case 'gecko':
+                return enable ? 'cursor:pointer;' : 'cursor:default;';
+            default:
+            case 'opera':
+            case 'kde':
+            case 'iemac':
+            case 'safari':
+                return '';
+        }
     }
 }
 

@@ -155,6 +155,7 @@ function FT_confRestart(name, callback, busLayer)
 
     this.f_createOARestart = function()
     {
+        var cursor = thisObj.f_getCursor(true);
         var handleFunc = "f_vmRestart('openapp')";
         var div = document.createElement('div');
         div.style.position = 'relative';
@@ -170,10 +171,11 @@ function FT_confRestart(name, callback, busLayer)
 
         innerHtml += '<td width="110">' +
                     '<div title="Restart ' + g_lang.m_restartOA + '" style="height:30px; ' +
-                    'padding-top:15px;" >' +
-                    '<input type="image" src="' + g_lang.m_imageDir + 'bt_restart.gif" name="OpenAppl" ' +
+                    'padding-top:15px; ' + cursor + '">' +
+                    '<input type="image" src="' + g_lang.m_imageDir +
+                    'bt_restart.gif" name="OpenAppl" ' +
                     'value="Restart" onclick="' + handleFunc +
-                    '></div></td>';
+                    '"></div></td>';
 
         innerHtml += '</tr></tbody></table>';
 

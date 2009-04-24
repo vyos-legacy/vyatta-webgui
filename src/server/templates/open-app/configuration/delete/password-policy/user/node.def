@@ -1,5 +1,5 @@
 access:admin
-run: if sudo perl /opt/vyatta/sbin/openapp-conf-password-policy.pl --delete user; then
+run: if perl /opt/vyatta/sbin/openapp-conf-password-policy.pl --delete user; then
        return 0
      else
        return 1

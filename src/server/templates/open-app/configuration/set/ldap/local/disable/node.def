@@ -1,5 +1,5 @@
 access:admin
-run: if sudo perl /opt/vyatta/sbin/openapp-conf-ldap.pl --local false; then
+run: if perl /opt/vyatta/sbin/openapp-conf-ldap.pl --local false; then
        return 0
      else
        return 1

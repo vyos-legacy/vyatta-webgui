@@ -93,32 +93,37 @@ function FT_tabPanel()
     
     this.f_setIframeHeight = function()
     {
-		//alert('setIframeHeight called');
+		var iframeName = 'main_ifrm';		
+		var iframeEl = document.getElementById ? document.getElementById(iframeName) : document.all ? document.all[iframeName] : null;
 		var defaultSize = screen.height - 200;
-		var iframeName = 'main_ifrm';
-        var iframeWin = window.frames[iframeName];/*window.frames[iframeName]*/;
-        var iframeEl = document.getElementById ? document.getElementById(iframeName) : document.all ? document.all[iframeName] : null;
-		if (!iframeWin) {
-		    iframeWin = iframeEl.contentWindow; /* for firefox */
-		}
-        if (iframeEl && iframeWin) {
-            iframeEl.style.height = "auto"; // helps resize (for some) if new doc shorter than previous
-            var docHt = thisObj.f_getDocHeight(iframeWin.document);
-			//alert('docHt: ' + docHt);
-            // need to add to height to be sure it will all show
-            if (docHt) {
-				if (docHt > 150) {		
-				    iframeEl.style.height = docHt + 30 + "px";	
+		
+		try {
+			//alert('setIframeHeight called');
+			var iframeWin = window.frames[iframeName];/*window.frames[iframeName]*/
+			if (!iframeWin) {
+				iframeWin = iframeEl.contentWindow; /* for firefox */
+			}
+			if (iframeEl && iframeWin) {
+				iframeEl.style.height = "auto"; // helps resize (for some) if new doc shorter than previous
+				var docHt = thisObj.f_getDocHeight(iframeWin.document);
+				//alert('docHt: ' + docHt);
+				// need to add to height to be sure it will all show
+				if (docHt) {
+					if (docHt > 150) {
+						iframeEl.style.height = docHt + 30 + "px";
+					} else {
+						iframeEl.style.height = defaultSize + "px";
+					}
 				} else {
 					iframeEl.style.height = defaultSize + "px";
 				}
 			} else {
-			    iframeEl.style.height = defaultSize + "px";	
+				iframeEl.style.height = defaultSize + "px";
 			}
-        } else {
-			iframeEl.style.height = defaultSize + "px";
-		}
-		//console.log('set ifrm height to: ' + iframeEl.style.height);							
+		//console.log('set ifrm height to: ' + iframeEl.style.height);			
+		} catch (e) {
+			iframeEl.style.height = defaultSize + "px"; //catch the 'Permission denied' exception when the user has links to cross domain site.
+		}				
     }
 	/*
 	this.f_resizeFrame = function() 

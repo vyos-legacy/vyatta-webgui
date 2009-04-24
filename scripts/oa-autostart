@@ -1,0 +1,56 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          oa-autostart
+# Required-Start:    xend vyatta-ofr
+# Should-Start:
+# Required-Stop:     xend vyatta-ofr
+# Should-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start OA VMs
+# Description:       Start VMs automatically when OpenApp boots
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+OA_VMCFG_DIR=/var/oa/libvirt
+
+start () {
+  log_daemon_msg "Starting OpenAppliance VMs"
+  # this assumes the config files are "sorted" for start ordering
+  cfgs=($(find $OA_VMCFG_DIR -name '*.xml' | sort))
+  ret=0
+  for cfg in ${cfgs[@]}; do
+    f=$(basename $cfg)
+    log_progress_msg "${f%%.xml}"
+    if ! virsh create $cfg >/dev/null; then
+      ret=1
+      echo -n '!'
+    fi
+  done
+  log_end_msg $ret
+}
+
+stop () {
+  : # do nothing
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+
+  stop)
+    stop
+    ;;
+
+  restart|force-reload)
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop|restart|force-reload}"
+    exit 3
+    ;;
+esac
+
+exit 0

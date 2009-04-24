@@ -193,9 +193,11 @@ function f_contact()
 	//var url= g_utils.f_getContactPage();
 	//window.open(url, g_lang.m_menuContact, 'height=155, width=285,scrollbars=no');
     if(g_utils.f_getLanguage() == g_consObj.V_LANG_FR)
-        window.open(g_oaConfig.m_oaContactURL_fr);
+        window.open(g_oaConfig.m_oaContactURL_fr,
+                      g_lang.m_menuContact, 'height=155, width=285,scrollbars=no');
     else
-        window.open(g_oaConfig.m_oaContactURL_en);
+        window.open(g_oaConfig.m_oaContactURL_en,
+                      g_lang.m_menuContact, 'height=155, width=285,scrollbars=no');
 }
 
 function f_resizeChildIframe(h)

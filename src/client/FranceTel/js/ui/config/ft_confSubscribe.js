@@ -88,8 +88,14 @@ function FT_confSubscribe(name, callback, busLayer)
 
     this.f_doLayout = function()
     {
-        var iVM = "'" + g_oaConfig.m_installNewVM + "'";
-        var rVM = "'" + g_oaConfig.m_removeVM + "'";
+        var iVM = "'" + g_oaConfig.m_installNewVM_en + "'";
+        var rVM = "'" + g_oaConfig.m_removeVM_en + "'";
+        if(g_utils.f_getLanguage() == g_consObj.V_LANG_FR)
+        {
+            iVM = "'" + g_oaConfig.m_installNewVM_fr + "'";
+            rVM = "'" + g_oaConfig.m_removeVM_fr + "'";
+        }
+
         return (
           '<div style="margin-left:30px; margin-top: 30px; margin-bottom: 50px;">' +
             '<span style="font-weight: bold">' +

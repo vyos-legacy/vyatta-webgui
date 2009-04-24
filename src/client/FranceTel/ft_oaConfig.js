@@ -32,11 +32,13 @@ var g_oaConfig =
 
     ///////////////////////////////////////////////////////////////
     // install new application URL link
-    m_installNewVM : "http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html",
+    m_installNewVM_en : "http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html",
+    m_installNewVM_fr : "http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html",
 
     /////////////////////////////////////////////////
     // remove application URL link
-    m_removeVM : "http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html",
+    m_removeVM_en : "http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html",
+    m_removeVM_fr : "http://www.orange-business.com/en/mnc2/footer/about/regions/north-america/index.html",
 
     /////////////////////////////////////////
     // please do not edit beyong this line

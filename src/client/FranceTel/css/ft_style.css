@@ -69,7 +69,7 @@ img
     height: 18px;
     margin-top: 0px;
     border-left: solid 2px #FFF;
-    background: transparent url(../images/en/fl_ig.gif) no-repeat 0px 3px;
+    /*background: transparent url(../images/en/fl_ig.gif) no-repeat 0px 3px;*/
     padding: 0 10px 6px 11px;
     color: #000;
     font-weight: bold;
@@ -86,10 +86,7 @@ img
 
 .nav1 {
     height: 40px;
-	/*
-    background-image: url("../images/tab_nav_base.PNG");
-    */
-	background-image: url("../images/en/nav_end.gif");
+	/* background-image: url("../images/en/nav_end.gif"); */
     float: left;
 } 
 
@@ -98,12 +95,9 @@ img
     font-family: "Helvetica Neue 75 bold", Helvetica, Arial, sans-serif;
     font-weight: bold;
     width: 120px;
-	/*
-    border-right: 1px solid #CCC;
-    background-image: url("../images/tab_nav_base.PNG");
-    */
-	background-image: url("../images/en/nav_end.gif");	
+	/* background-image: url("../images/en/nav_end.gif"); */	
 } 
+
 
 .divider {
     border-right: 1px solid #CCC;

@@ -98,24 +98,23 @@ function FT_confUserList(name, callback, busLayer)
         {
             var ul = ulRec[i].split('|');
 
-            var fName = ul[0] + ' ' + ul[1];
-            var anchor = thisObj.f_renderAnchor(ul[2],
-                    "f_userListEditUser('" + ul[2] + "')",
-                    g_lang.m_ulClick2Edit + " (" + fName + ")");
-            var email = ul[3] != undefined ?
+            var anchor = thisObj.f_renderAnchor(ul[1],
+                    "f_userListEditUser('" + ul[1] + "')",
+                    g_lang.m_ulClick2Edit + " (" + ul[0] + ")");
+            var email = ul[2] != undefined ?
                     thisObj.f_renderAnchorHref(
                     '<img src="' + g_lang.m_imageDir + 'ico_mail.gif">',
-                    "mailto:" + ul[3],
-                    g_lang.m_ulSendEmail + fName + ' at ' +
-                    ul[3]) : "";
+                    "mailto:" + ul[2],
+                    g_lang.m_ulSendEmail + ul[0] + ' at ' +
+                    ul[2]) : "";
 
-            var del = g_busObj.f_isDeletableUser(ul[4]) ?
+            var del = g_busObj.f_isDeletableUser(ul[3]) ?
                     thisObj.f_renderButton(
                     'deleteUser', true, "f_userListDeleteUser('" +
-                    ul[2] + "')", g_lang.m_ulDeleteUser +
-                    ' (' + fName + ')'):
+                    ul[1] + "')", g_lang.m_ulDeleteUser +
+                    ' (' + ul[0] + ')'):
                     "";
-            var data = [fName, anchor, email, del];
+            var data = [ul[0], anchor, email, del];
 
             var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, data);
             thisObj.m_body.appendChild(bodyDiv);
@@ -133,7 +132,7 @@ function FT_confUserList(name, callback, busLayer)
             // NOTE: the order of this partition same as the order
             // grid columns.
             // compose a default table row
-            ar[i] = vm[i].m_first + '|' + vm[i].m_last + '|' +
+            ar[i] = vm[i].m_last + ' ' + vm[i].m_first + '|' +
                     vm[i].m_user + '|' + vm[i].m_email + '|' +
                     vm[i].m_role;
         }

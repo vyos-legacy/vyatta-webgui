@@ -116,12 +116,11 @@ function FT_confUserRight(name, callback, busLayer)
         {
             var ul = ulRec[i].split('|');
 
-            if(ul[4] == 'admin' || ul[4] == 'installer')
+            if(ul[3] == 'admin' || ul[3] == 'installer')
                 continue;
 
-            var fName = ul[1] + ' ' + ul[2];
-            var un = ul[0];
-            var data = [fName];
+            var un = ul[1];
+            var data = [ul[0]];
 
             // create table column
             var dataIndex = 0;
@@ -133,7 +132,7 @@ function FT_confUserRight(name, callback, busLayer)
 
                 var vn = g_utils.f_replace(vm[j].m_name, " ", "");
                 var right = thisObj.f_createUserRightsCheckbox(
-                        vn, un, g_busObj.f_getUserRecByUserName(ul[0]));
+                        vn, un, g_busObj.f_getUserRecByUserName(ul[1]));
                 if(right != null)
                 {
                     uiData[dataIndex] = [un+vn, right[1],
@@ -164,8 +163,8 @@ function FT_confUserRight(name, callback, busLayer)
             // NOTE: the order of this partition same as the order
             // grid columns.
             // compose a default table row
-            ar[ar.length] = vm[i].m_user + '|' + vm[i].m_last + '|' +
-                    vm[i].m_first + '|' + vm[i].m_email + '|' +
+            ar[ar.length] = vm[i].m_last + ' ' + vm[i].m_first + '|' +
+                    vm[i].m_user + '|' + vm[i].m_email + '|' +
                     vm[i].m_role;
         }
 

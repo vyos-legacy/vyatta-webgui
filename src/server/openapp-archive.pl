@@ -116,6 +116,7 @@ sub backup_archive {
     # Set the status of the backup to 0%
     #
     ##########################################################################
+    `mkdir -p $BACKUP_WORKSPACE_DIR`;
     `echo '0' > $BACKUP_WORKSPACE_DIR/status`;
 
 

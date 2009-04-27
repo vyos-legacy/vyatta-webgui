@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.14+fxdU+8) unstable; urgency=low
+
+  [ Justin Fletcher ]
+  * Add enterprise MIB
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 27 Apr 2009 11:57:05 -0700
+
 vyatta-webgui (0.2.14+fxdU+7) unstable; urgency=low
 
   [ Kevin Choi ]

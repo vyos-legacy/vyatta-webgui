@@ -288,7 +288,12 @@ function FT_confRestore(name, callback, busLayer)
 
         fn = fn.substring(0, fn.length-4);
         g_busObj.f_uploadArchiveFileFromServer(fn, fn, cb);
-        g_utils.f_launchHomePage();
+
+        /////////////////////////////////////////////
+        // set initial load page to this page
+        g_cookie.f_set(g_consObj.V_COOKIES_INIT_LOAD_PAGE, g_consObj.V_LOAD_RESTORE,
+                        g_cookie.m_userNameExpire);
+        window.location = g_utils.f_launchHomePage();
     }
 }
 FT_extend(FT_confRestore, FT_confBaseObj);

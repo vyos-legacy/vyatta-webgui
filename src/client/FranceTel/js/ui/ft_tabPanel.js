@@ -69,9 +69,28 @@ function FT_tabPanel()
         if (g_roleManagerObj.f_isUser()) {
             //alert('is regular user');
             thisObj.m_mainPanel.f_selectMenuItem(VYA.FT_CONST.DOM_2_NAV_MYPROFILE_ID);
-        } else {
+        } 
+        else
+        {
             //alert('other user');
-            thisObj.m_mainPanel.f_selectMenuItem(VYA.FT_CONST.DOM_2_NAV_APP_ID);
+            /////////////////////////////////////////////////////////
+            // try to load initial page if there are any define in cookie
+            if(g_cookie.f_get(g_consObj.V_COOKIES_INIT_LOAD_PAGE,
+                              g_cookie.V_NOT_FOUND) == g_consObj.V_LOAD_RESTORE)
+            {
+                thisObj.m_mainPanel.f_selectMenuItem(VYA.FT_CONST.DOM_2_NAV_BACKUP_ID);
+                g_cookie.f_set(g_consObj.V_COOKIES_INIT_LOAD_PAGE, g_consObj.V_NOT_FOUND,
+                        g_cookie.m_userNameExpire);
+
+                //////////////////////////////////////////////
+                // for some reasions, select the menu item above
+                // did not display the data. we delay and call
+                // select menu item again.
+                g_thisTabPanel = thisObj.m_mainPanel.m_3navMenu;
+                setTimeout('f_tabPanelSelectMenuItem()', 100);
+            }
+            else
+                thisObj.m_mainPanel.f_selectMenuItem(VYA.FT_CONST.DOM_2_NAV_APP_ID);
         }
     }
     
@@ -202,4 +221,8 @@ function FT_tabPanel()
 			ifr.style.height = h + 'px';
 		}
 	}
+}
+function f_tabPanelSelectMenuItem()
+{
+    g_thisTabPanel.f_selectItem(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);
 }

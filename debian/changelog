@@ -20,9 +20,19 @@ vyatta-webgui (0.2+fxd0+16) unstable; urgency=low
   [ slioch ]
   * need to account for directory creation for bu status file
 
+<<<<<<< HEAD:debian/changelog
   [ Kevin Choi ]
 
  -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 24 Apr 2009 21:59:50 +0000
+=======
+  [ Loi Vo ]
+  * 1. Fix login page to show the right message depending on the oa
+    configure (standalone or blb)
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 27 Apr 2009 12:13:41 -0700
+>>>>>>> 279de5ea16fb9198e58dec54fc96aea7b0ff2bce:debian/changelog
 
 vyatta-webgui (0.2+fxd0+15) unstable; urgency=low
 

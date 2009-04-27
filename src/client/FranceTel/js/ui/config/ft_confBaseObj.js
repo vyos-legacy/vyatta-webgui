@@ -85,10 +85,11 @@ function FT_confBaseObj(name, callback, busLayer)
 
     this.f_resize = function(padding)
     {
-		if (this.m_id !=  g_configPanelObj.m_selectedItem) {
-			//to avoid the race condition between callback from server, and user click event.
-			return;
-    }
+	if (this.m_id !=  g_configPanelObj.m_selectedItem ||
+            this.m_div == undefined)
+	//to avoid the race condition between callback from server, and user click event.
+            return;
+    
         var h = 0;
         for (var i=0; this.m_div.childNodes[i]; i++) {
             h += this.m_div.childNodes[i].offsetHeight;

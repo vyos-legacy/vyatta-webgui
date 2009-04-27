@@ -14,16 +14,18 @@ function FT_constanst()
     this.V_COOKIES_USER_NAME = 'userName';
     this.V_COOKIES_USER_ID = 'id';
     this.V_COOKIES_ISLOGIN = 'isLogin';
-	this.V_COOKIES_LANG = 'lang';
-	this.V_COOKIES_BLB = 'blb';
+    this.V_COOKIES_LANG = 'lang';
+    this.V_COOKIES_BLB = 'blb';
+    this.V_COOKIES_INIT_LOAD_PAGE = 'initLoadPage';
 
     //////////////////////////////////////////////
     // cookies value
     this.V_NOT_FOUND = 'NOTFOUND';
-	this.V_LANG_EN = 'en';
-	this.V_LANG_FR = 'fr';
-	this.V_BLB_YES = 'yes';
-	this.V_BLB_NO = 'no';	
+    this.V_LANG_EN = 'en';
+    this.V_LANG_FR = 'fr';
+    this.V_BLB_YES = 'yes';
+    this.V_BLB_NO = 'no';
+    this.V_LOAD_RESTORE = 'restore';
 
     /////////////////////////////////////////////////
     //

@@ -86,6 +86,9 @@ var g_cookie =
       {
         if(keys[i].indexOf(g_consObj.V_COOKIES_LANG) >= 0)
             continue;
+			
+        if(keys[i].indexOf(g_consObj.V_COOKIES_BLB) >= 0)
+            continue;			
 
         var avp = keys[i].match(new RegExp('^\\s*([^\\s]+)=([^\\s]*)\\s*$'));
         if (avp != undefined && avp[1] != undefined)

@@ -129,6 +129,9 @@ function FT_backupObj(busObj)
         {
             var evt = new FT_eventObj(0, thisObj, '');
 
+            if(thisObj.m_lastCmdSent == undefined)
+                thisObj.m_lastCmdSent = cmdSent;
+
             var err = response.getElementsByTagName('error');
             if(err != null && err[0] != null)
             {

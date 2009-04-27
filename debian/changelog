@@ -1,3 +1,33 @@
+vyatta-webgui (0.2+fxd0+16) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Fix:
+  * 1. Fix a nagging "This page contains non secure items" from IE.
+
+  [ Kevin Choi ]
+  * * added help html file for English and Franch versions
+  * * supported France version for subscribe add/remove VM
+
+  [ Loi Vo ]
+  * 1. Remove unused background image (But #14 filed by Justin in
+    OpenApplianceBug
+
+  [ Kevin Choi ]
+  * * fine tune text aligments for cross broswer issues and other
+    details issues.
+  * * fixed table sorting for user list screen and user right screen.
+
+  [ slioch ]
+  * need to account for directory creation for bu status file
+
+  [ Loi Vo ]
+  * 1. Fix login page to show the right message depending on the oa
+    configure (standalone or blb)
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 27 Apr 2009 12:13:41 -0700
+
 vyatta-webgui (0.2+fxd0+15) unstable; urgency=low
 
   [ Loi Vo ]

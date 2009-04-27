@@ -264,8 +264,8 @@ function FT_confBackup(name, callback, busLayer)
 					//alert('adding row: vm: ' + v.m_name + ' innerHTML: ' + bodyDiv.innerHTML);
                     thisObj.m_body.appendChild(bodyDiv);
                 }
-                //thisObj.f_adjustDivPosition(thisObj.m_bottom);	
-				thisObj.f_resize(15);
+                thisObj.f_adjustDivPosition(thisObj.m_bottom);	
+				thisObj.f_resize(10);
             }
         }
         thisObj.m_busLayer.f_getVMDataFromServer(cb);	
@@ -282,11 +282,9 @@ function FT_confBackup(name, callback, busLayer)
     this.f_createTargetView = function()
 	{
 		var div = document.createElement('div');
+        div.style.position = 'relative';		
 		div.style.display = 'block';
-		div.style.marginTop = '15px';
-		div.style.marginBottom = '15px';
 		div.style.backgroundColor = 'white';
-		div.style.height = '50px';
 		
 		var innerHtml = 
 		    '<form id="conf_backup_form" class="v_form" border="0">' +
@@ -304,13 +302,12 @@ function FT_confBackup(name, callback, busLayer)
     }		
 		
 	this.f_createBottom = function()
-	{
+	{		
         var div = document.createElement('div');
         div.style.position = 'relative';
-        //div.style.borderBottom = '1px dotted #CCC';
+		div.style.display = 'block';		
         div.style.backgroundColor = 'white';
-        div.style.paddingTop = '0px';
-        div.style.paddingBottom = '0px';		
+
 		return div;
 	}	
 

@@ -21,7 +21,7 @@ debian/vyatta-webgui.postrm
 debian/files
 debian/vyatta-webgui.debhelper.log
 autom4te.cache
-config
+/config
 configure
 confdefs.h
 conftest

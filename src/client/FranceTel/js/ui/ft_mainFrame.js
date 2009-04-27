@@ -57,14 +57,17 @@ function FT_mainFrame(){
 		}
 	}
 	
-	this.f_setBannerImage = function() {
+	this.f_setBannerImage = function() {		
 		var img = document.getElementById('login_banner');
+		var warningDiv = document.getElementById('messageContactServiceCustomer');
 		var isBLB = g_utils.f_getIsBLB();
 
 		if (isBLB == g_consObj.V_BLB_YES) {
-		    img.src = g_lang.m_imageDir + 'op_login_image.gif';					
+		    img.src = g_lang.m_imageDir + 'op_login_image.gif';		
+			warningDiv.innerHTML = g_lang.m_mainBLBWarning;			
 		} else {
 		    img.src = g_lang.m_imageDir + 'oa_banner.gif';	
+			warningDiv.innerHTML = g_lang.m_mainWarning;
 		}
 	}
 	

@@ -14,8 +14,10 @@ var g_lang =
 	m_mainLogout: 'log out',
 	m_mainUserName: 'User name',
 	m_mainPassword: 'Password',
-	m_mainWarning: 'If you have no username and password, contact your Customer Service Center.' +
-                   'Warning: to connect to the Open Appliance program your browser must accept pop-ups and cookies.',
+	m_mainWarning: "<p>Si vous ne possédez pas de login et/ou de mot de passe, contacter votre Centre Service Client<br/>" +
+                   "Attention ! Pour pouvoir vous connecter au programme de configuration de l'Open Appliance, votre navigateur doit accepter les pop-up et cookies</p>",
+	m_mainBLBWarning: "<p>Si vous ne possédez pas de login et/ou de mot de passe, contacter votre Centre Service Client<br/>" +
+                   "Attention ! Pour pouvoir vous connecter au programme de configuration de la Business Livebox, votre navigateur doit accepter les pop-up et cookies</p>",				   
 	m_mainWelcome: 'Welcome',
 	m_mainPleaseSignIn: 'please sign in to the Open Appliance admin service',
 	m_menuApp: 'Applications',

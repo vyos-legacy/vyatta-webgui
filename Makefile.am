@@ -6,6 +6,7 @@ cgidir = /usr/lib/cgi-bin
 initddir = /etc/init.d
 cfgdir = $(datadir)/vyatta-cfg/templates
 opdir = $(datadir)/vyatta-op/templates
+guidir = $(datadir)/vyatta-gui/templates
 
 AM_CPPFLAGS = -I src/server -I src/lib -Wall -DDEBUG -g \
               -I /usr/include/glib-2.0 -I /usr/lib/glib-2.0/include
@@ -117,4 +118,6 @@ install-exec-hook:
 	cd templates-cfg; $(cpiop) $(DESTDIR)$(cfgdir)
 	@mkdir -p $(DESTDIR)$(opdir); \
 	cd templates-op; $(cpiop) $(DESTDIR)$(opdir)
+	@mkdir -p $(DESTDIR)$(guidir); \
+	cd templates-gui; $(cpiop) $(DESTDIR)$(guidir)
 

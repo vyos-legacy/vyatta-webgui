@@ -3,6 +3,7 @@ package OpenApp::VMDeploy;
 use strict;
 use POSIX;
 use File::Temp qw(mkdtemp);
+use File::Copy 'mv';
 use OpenApp::VMMgmt;
 
 my $VIMG_DIR = '/var/oa/vimg';
@@ -39,6 +40,28 @@ sub getUpdateList {
     push @ret, [ $1, $2 ];
   }
   return \@ret;
+}
+
+sub installNewVM {
+  my ($vid, $ver) = @_;
+  my $vimg = "oa-vimg-${vid}_${ver}_all.deb";
+  return "VM $vid version $ver does not exist" if (! -r "$NVIMG_DIR/$vimg");
+
+  my $vdir = "$VIMG_DIR/$vid";
+  # ignore any mkdir errors
+  mkdir($vdir);
+  mkdir("$vdir/current");
+  mkdir("$vdir/prev");
+
+  return "Failed to move package file: $!"
+    if (!mv("$NVIMG_DIR/$vimg","$vdir/current"));
+
+  # install package
+  system("dpkg -i $vdir/current/$vimg");
+  return "Failed to install package $vdir/current/$vimg" if ($? >> 8);
+ 
+  # run postinst 
+  return oaVimgPostinst($vid, 'NONE');
 }
 
 sub vmCheckPrev {

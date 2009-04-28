@@ -69,6 +69,11 @@ sub getHwMonData {
   return ($nic, $disk, $cpu, $fan);
 }
 
+sub isValidId {
+  my ($id) = @_;
+  return ($id eq $OPENAPP_ID || -r "$META_DIR/$id") ? 1 : 0;
+}
+
 ### data
 my %fields = (
   # metadata
@@ -92,11 +97,6 @@ my %fields = (
   _vmMemFree => undef,
   _vmNewUpdate => undef
 );
-
-sub _isValidId {
-  my ($id) = @_;
-  return ($id eq $OPENAPP_ID || -r "$META_DIR/$id") ? 1 : 0;
-}
 
 sub _setupMeta {
   my ($self, $id, $meta_file) = @_;
@@ -163,7 +163,7 @@ sub _setup {
 
 sub new {
   my ($that, $id, $meta_file) = @_;
-  if (!_isValidId($id)) {
+  if (!isValidId($id)) {
     return undef;
   }
   my $class = ref ($that) || $that;

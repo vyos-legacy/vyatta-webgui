@@ -27,6 +27,20 @@ sub vmCheckUpdate {
   return "$1";
 }
 
+sub getUpdateList {
+  my $dd = undef;
+  opendir($dd, "$NVIMG_DIR") or return [];
+  my @V = grep { /^oa-vimg-.*\.deb$/
+                 && -f "$NVIMG_DIR/$_" } readdir($dd);
+  closedir($dd);
+  my @ret = ();
+  for my $v (@V) {
+    $v =~ /^oa-vimg-([^_]+)_([^_]+)_all.deb$/;
+    push @ret, [ $1, $2 ];
+  }
+  return \@ret;
+}
+
 sub vmCheckPrev {
   my $vid = shift;
   my $dd = undef;

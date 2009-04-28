@@ -273,6 +273,10 @@ sub get_last_act_time {
   }
 }
 
+sub installNewVMs {
+  my @updates = OpenApp::VMDeploy::getUpdateList();
+}
+
 while (1) {
   updateOAStatus();
   my @VMs = OpenApp::VMMgmt::getVMList();
@@ -280,6 +284,7 @@ while (1) {
     updateVMStatus($vm);
   }
   updateHwMon();
+  installNewVMs();
 
   my $cur_time = time();
   my $to_sleep = $INTERVAL_ACTIVE;

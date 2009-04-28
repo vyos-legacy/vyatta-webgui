@@ -111,13 +111,20 @@ sub list_smtp() {
     my @password = split(" ",$out[3]);
     my @username = split(" ",$out[4]);
 
-    print "<smtp-client>";
-    print "<address>$address[1]</address>";
-    print "<email>$email[1]</email>";
-    print "<name>$name[1]</name>";
-    print "<password>$password[1]</password>";
-    print "<username>$username[1]</username>";
-    print "</smtp-client>";
+    if ($address[1] eq '' || 
+	$email[1] eq '' ||
+	$name[1] eq '') {
+	print "<smtp-client><address></address><email></email><name></name><password></password><username></username></smtp-client>";
+    }
+    else {
+	print "<smtp-client>";
+	print "<address>$address[1]</address>";
+	print "<email>$email[1]</email>";
+	print "<name>$name[1]</name>";
+	print "<password>$password[1]</password>";
+	print "<username>$username[1]</username>";
+	print "</smtp-client>";
+    }
 }
 
 ##########################################################################

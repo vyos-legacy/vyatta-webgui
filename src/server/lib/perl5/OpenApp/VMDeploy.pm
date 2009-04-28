@@ -232,9 +232,60 @@ sub _notifyWuiProcess {
 sub _postinstWui {
   # notify lighttpd to reconfigure reverse proxy
   _notifyWuiProcess();
+
+#  _configureDomUAccess();
  
   # done 
   return undef;
+}
+
+sub _configureDomUAccess {
+    my @VMs = OpenApp::VMMgmt::getVMList();
+
+    my $fd_read;
+    my $fd_write;
+    if (open($fd_read, '<', "/etc/lighttpd/lighttpd.conf")) {
+	#need to replace entry already there...
+	if (open($fd_write, '>', "/etc/lighttpd/lighttpd.conf.lck")) {
+	    my @in = <$fd_read>;
+	    my $in;
+	    my $write_out = "true";
+	    for $in (@in) {
+		if ($in =~ "^####vmaccesslist-start####") {
+		    $write_out = "false";
+		}
+		elsif($in =~ "^####vmaccesslist-end####") {
+		    $write_out = "true";
+		    next;
+		}
+		if ($write_out eq "true") {
+		    print $fd_write $in;
+		}
+	    }
+	    #now prepend our vm access list section
+	    print $fd_write "####vmaccesslist-start####\n";
+	    my $vid;
+	    for $vid (@VMs) {
+		my $vm = new OpenApp::VMMgmt($vid);
+		next if (!defined($vm));
+		
+		#need to escape out the ip address for perl processing
+		my $domU = $vm->getIP();
+		$domU =~ s/\./\\\./g;
+
+		print $fd_write "\$HTTP[\"remoteip\"] !~ \"(".$domU.")\" {\n";
+		print $fd_write "\t\$HTTP[\"url\"] =~ \"^/".$vm->getId()."-root/\" {\n";
+		print $fd_write "\t\turl.access-deny = (\"\")\n";
+		print $fd_write "\t}\n";
+		print $fd_write "}\n";
+	    }
+	    print $fd_write "####vmaccesslist-end####\n";
+	}
+    }
+    
+    #now restart the server
+    `cp /etc/lighttpd/lighttpd.conf.lck /etc/lighttpd/lighttpd.conf`;
+    `/etc/init.d/lighttpd restart`;
 }
 
 # generic postinst tasks for oa-vimg packages

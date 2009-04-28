@@ -103,7 +103,7 @@ function FT_businessLayer()
         if(r.readyState == 4)
         {
             if(r.status == 200)
-            {
+            {						
                 var response = r.responseXML;
                 var error = thisObj.f_parseResponseError(response, false);
 

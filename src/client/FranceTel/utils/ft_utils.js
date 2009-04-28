@@ -159,23 +159,20 @@ var g_utils =
     f_gotoHomePage: function()
     {
         var hp = this.f_launchHomePage();
-
-        if (navigator.userAgent.indexOf('Chrome') > 0)
-			location.reload(true);
-		else {
-			var loc = window.location.href;
-			var index = loc.indexOf('ft_main');
-			var homepage = g_consObj.V_HOME_PAGE;
-			if (index != -1) {
-				if (loc.charAt(index+7) != '.') {
-				    //get the location code.
-					var locale = loc.substring(index+7,index+10);
-					homepage = 'ft_main' + locale + '.html';
-				}
+		
+        if (typeof navigator.vendor != "undefined") {
+			var i = navigator.vendor.indexOf("Apple Computer, Inc.");
+			if (i >= 0) {
+				window.location.reload(true);
 			}
-
-			//window.location = homepage;
-                        window.location = hp;
+		}
+		
+        if (navigator.userAgent.indexOf('Chrome') > 0) {
+			location.reload(true);
+		} else if (typeof window.opera != "undefined") {
+			window.location.reload(true);
+		} else {
+			window.location = hp;
 		}
     },
 	

@@ -193,8 +193,12 @@ function FT_userBusObj(busObj)
      */
     this.f_isLogin = function()
     {
-        var isLogin = g_cookie.f_get(g_consObj.V_COOKIES_USER_ID) ==
-                              g_consObj.V_NOT_FOUND ? false : true;
+		var isLogin = true;
+		var cid = g_cookie.f_get(g_consObj.V_COOKIES_USER_ID);
+		
+		if ((cid == g_consObj.V_NOT_FOUND) || (cid == null) || (cid.trim().length <= 0)) {
+			isLogin = false;
+		}
 
         if(isLogin)
         {

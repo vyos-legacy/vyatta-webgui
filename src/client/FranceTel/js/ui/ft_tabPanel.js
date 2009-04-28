@@ -29,6 +29,16 @@ function FT_tabPanel()
 		//thisObj.threadId = setInterval(thisObj.f_scrollRemove, 5000);
     }
     
+	this.f_stopPolling = function()
+	{
+		if (thisObj.m_selectedId) {
+			if (thisObj.m_selectedId == 'oa') {
+				//stop the polling thread
+				thisObj.m_mainPanel.f_stopPolling();
+			}
+		}		
+	}
+	
     this.f_reset = function()
     {
 		if (thisObj.m_selectedId) {

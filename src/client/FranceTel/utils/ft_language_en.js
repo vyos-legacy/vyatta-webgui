@@ -19,7 +19,7 @@ var g_lang =
 	m_mainWarning: '<p>If you have no username and password, contact your Customer Service Center<br/>' +
                    'Warning: to connect to the Open Appliance program, your browser must accept pop-ups and cookies</p>',
 	m_mainBLBWarning: '<p>If you have no username and password, contact your Customer Service Center<br/>' +
-                   'Warning: to connect to the Business Livebox configuration program, your browser must accept pop-ups and cookies</p>',				   
+                   'Warning: to connect to the Business Livebox configuration program, your browser must accept pop-ups and cookies</p>',
 	m_mainWelcome: 'Welcome',
 	m_mainPleaseSignIn: 'please sign in to the Open Appliance admin service',
 	m_menuApp: 'Applications',
@@ -75,9 +75,9 @@ var g_lang =
     m_calRangeDisablingError : ['Error ', ' should consist of two elements.'],
     m_calDateDisplayFormat : 'mm-dd-yy',
     m_calDateOutputFormat : 'MM/DD/YYYY',
-    //Set it to: 0 (Zero) for Sunday, 1 (One) for Monday etc..	
-    m_calWeekStart : 0,	
-		
+    //Set it to: 0 (Zero) for Sunday, 1 (One) for Monday etc..
+    m_calWeekStart : 0,
+
     ///////////////////////////////////////////////////////////////////
     // Dash board screen
 
@@ -257,7 +257,7 @@ var g_lang =
     // Restore configuration
     m_restoreErrorTitle : 'Configuration Restore Error',
     m_restoreUploadTitle : 'Upload Restore File',
-    m_resoteUploadErrFileType : 'Upload file type not support.',
+    m_resoteUploadErrFileType : 'File type is not supported.',
     m_restoreHdContent : 'Content',
     m_restoreHdRestore : 'Restore',
     m_restoreHdDownload : 'Download',
@@ -266,8 +266,9 @@ var g_lang =
     m_restoreDelTitle : 'Delete Backup Archive File',
     m_restoreDel : 'Delete backup archive',
     m_restoreDlConfirm : 'Are you sure you want to download',
-    m_restoreDownload : 'Download backup archive',
-
+    m_restoreDownload : "Download backup archive",
+    m_restoreRestorePC : "Restore from my PC",
+    m_restoreFromMyPCTip : "Click here to start restore from my PC",
 
     ///////////////////////////////////////////////////////////////////
     // Restore Desc. configuration

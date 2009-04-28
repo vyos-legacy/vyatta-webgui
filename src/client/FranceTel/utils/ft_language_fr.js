@@ -9,6 +9,8 @@ var g_lang =
 {
     ///////////////////////////////////////////////////////////////////
     // General	
+	m_tableTooltip1 : "Cliquez ici pour faire le tri",
+
 	m_mainOA : 'Open Appliance',
 	m_mainLogin : 'Login',
 	m_mainLogout: 'log out',
@@ -80,15 +82,15 @@ var g_lang =
     // Dash board screen
 
     // dashboard header
-    m_dbHdApplication : 'Application',
-    m_dbHdStatus : 'Status',
-    m_dbHdCPU : 'CPU',
-    m_dbMemory : 'Memory',
-    m_dbDiskSpace : 'Disk Space',
-    m_dbUpdateNeeded : 'Update Needed',
-    m_dbTooltipUpdateNeed : 'Version to be updated - ',
-    m_dbTooltipCancel : 'Reset selection',
-    m_dbTooltipUpdate : 'Update selected VM(s)',
+    m_dbHdApplication : "Application",
+    m_dbHdStatus : "Status",
+    m_dbHdCPU : "CPU",
+    m_dbMemory : "Memory",
+    m_dbDiskSpace : "Disk Space",
+    m_dbUpdateNeeded : "Update Needed",
+    m_dbTooltipUpdateNeed : "Version to be updated - ",
+    m_dbTooltipCancel : "Reset selection",
+    m_dbTooltipUpdate : "Update selected VM(s)",
     m_dbUsed : "Used",
     m_dbTotal : "Total",
     m_dbFree : "Free",
@@ -100,9 +102,9 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // VM Update & History screen
     m_uhHdDate : "Date",
-    m_uhHdWho : 'Backup By',
-    m_uhErrorTitle : "VM Update Error",
-    m_uhCancelTitle : 'Cancel Update Schedule',
+    m_uhHdWho : "Sauvegarde En",
+    m_uhErrorTitle : "Erreur de mise à jour de VM",
+    m_uhCancelTitle : "Annuler la mise à jour de l'annexe",
 
     ///////////////////////////////////////////////////////////////////
     // VM Update Restore
@@ -130,8 +132,8 @@ var g_lang =
     m_restartErrorTitle : 'VM Restart Error',
     m_restartTitle : 'Restart VM',
     m_restartStopTitle : 'Stop VM',
-    m_restartConfirm : 'Are you sure you want to restart',
-    m_restartStopConfirm : 'Are you sure you want to stop',
+    m_restartConfirm : "Êtes-vous sûr de vouloir redémarrer",
+    m_restartStopConfirm : "Êtes-vous sûr de vouloir arrêter",
 
     ///////////////////////////////////////////////////////////////////
     // Subscribe screen
@@ -141,20 +143,20 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // User List screen
-    m_ulErrorTitle : 'Get User List Error',
-    m_ulTooltipAddUser : 'Create new user account',
-    m_ulDeleteHeader : 'Delete User Account',
-    m_ulClick2Edit : 'Click here to edit',
-    m_ulSendEmail : 'Send email to',
-    m_ulDeleteUser : 'Delete user',
+    m_ulErrorTitle : "Get User List erreur",
+    m_ulTooltipAddUser : "Créer un nouveau compte utilisateur",
+    m_ulDeleteHeader : "Supprimer des comptes utilisateur",
+    m_ulClick2Edit : "Cliquez ici pour modifier",
+    m_ulSendEmail : "Envoyer un e-mail à",
+    m_ulDeleteUser : "Supprimer l'utilisateur",
 
     ///////////////////////////////////////////////////////////////////
     // User Right screen
-    nm_urErrorTitle : 'User Right Error',
-    m_urConfirmTitle : 'Change User Right',
-    m_urCommitChange : 'Are you sure you wish to commit the change?',
-    m_urBtnApply : 'Set selection',
-    m_urBtnCancel : 'Reset selection',
+    nm_urErrorTitle : "Erreur de droit de l'utilisateur",
+    m_urConfirmTitle : "changement droit de l'utilisateur",
+    m_urCommitChange : "Êtes-vous sûr de vouloir engager le changement?",
+    m_urBtnApply : "de sélection fixés",
+    m_urBtnCancel : "Réinitialiser la sélection",
 
     ///////////////////////////////////////////////////////////////////
     // User Add screen
@@ -182,11 +184,11 @@ var g_lang =
             'erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci ' +
             'tation ullamcorper suscipit lobortis nisl ut aliquip ex ea ' +
             'commodo consequat.<br><br>',
-    m_cancelConfirm : 'Are you sure you want to cancel',
-    m_deleteConfirm : 'Are you sure you want to delete',
+    m_cancelConfirm : 'Êtes-vous sûr de vouloir annuler',
+    m_deleteConfirm : 'Êtes-vous sûr de vouloir supprimer',
     m_login: 'Login',
-    m_name: 'Name',
-    m_delete: 'Delete',
+    m_name: 'Nom',
+    m_delete: "Supprimer",
     m_email: 'Email',
     m_password :'Password',
 
@@ -199,8 +201,8 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Popup Message Dialog
-    m_puSessionTimeout : 'in Fr Session Time Out',
-    m_puSessionTimeoutMsg : 'For security reasons, your session is no longer active<br>Please re-login again.',
+    m_puSessionTimeout : "Session Time Out",
+    m_puSessionTimeoutMsg : "Pour des raisons de sécurité, votre session n'est plus active<br>S'il vous plaît ré-ouvrir une nouvelle session.",
 
     ///////////////////////////////////////////////////////////////////
     // Login Dialog
@@ -249,25 +251,27 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Restore configuration
-    m_restoreErrorTitle : 'Configuration Restore Error',
-    m_restoreUploadTitle : 'Upload Restore File',
-    m_resoteUploadErrFileType : 'Upload file type not support.',
-    m_restoreHdContent : 'Content',
-    m_restoreHdRestore : 'Restore',
-    m_restoreHdDownload : 'Download',
-    m_restoreClickRestore : 'Click here to restore',
-    m_restoreArchive : 'Restore backup archive',
-    m_restoreDelTitle : 'Delete Backup Archive File',
-    m_restoreDel : 'Delete backup archive',
-    m_restoreDlConfirm : 'Are you sure you want to download',
-    m_restoreDownload : 'Download backup archive',
+    m_restoreErrorTitle : "Rétablir la configuration d'erreur",
+    m_restoreUploadTitle : "Envoyer dossier de restauration",
+    m_resoteUploadErrFileType : "Type de fichier n'est pas pris en charge.",
+    m_restoreHdContent : "Contenu",
+    m_restoreHdRestore : "Sestaurer",
+    m_restoreHdDownload : "Télécharger",
+    m_restoreClickRestore : "Cliquez ici pour rétablir la",
+    m_restoreArchive : "Restaurer la sauvegarde des archives",
+    m_restoreDelTitle : "Supprimer le fichier d'archive de sauvegarde",
+    m_restoreDel : "Supprimer la sauvegarde des archives",
+    m_restoreDlConfirm : "Etes-vous sûr que vous voulez télécharger",
+    m_restoreDownload : "Télécharger archive de sauvegarde",
+    m_restoreRestorePC : "Restaurer à partir de mon PC",
+    m_restoreFromMyPCTip : "Cliquez ici pour commencer la restauration de mon PC",
 
     ///////////////////////////////////////////////////////////////////
     // Restore Desc. configuration
-    m_resDescErrorTitle : 'Configuration Restore Description',
-    m_resDescConfirm : 'Are you sure you want to restore the selection VM?',
-    m_resDescHdConf : 'Config.',
-    m_resDescHdData : 'Data',
+    m_resDescErrorTitle : "Configuration Restore Description",
+    m_resDescConfirm : "Etes-vous sûr que vous voulez restaurer la sélection VM?",
+    m_resDescHdConf : "Config.",
+    m_resDescHdData : "Data",
 
     ///////////////////////////////////////////////////////////////////
     // BLB configuration

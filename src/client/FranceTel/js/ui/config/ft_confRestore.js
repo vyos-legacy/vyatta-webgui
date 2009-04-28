@@ -222,14 +222,14 @@ function FT_confRestore(name, callback, busLayer)
 
         innerHtml += '<td width="200" colspan="2" valign="bottom">' +
                       '<div style="height:20px; padding-left:3px; ' +
-                      'padding-top:3px;"><b>Restore from my PC</b></div></td></tr>';
+                      'padding-top:3px;"><b>' + g_lang.m_restoreRestorePC + '</b></div></td></tr>';
 
         innerHtml += '<tr height="30"><td><div>' +
                     '<input id="ft_mypcFile" name="mypcfile" type="file" ></div></td>'+
                     '<td><div title="Browse my pc" style="padding-left:20px">' +
                     '<input type="button" name="OpenAppl" ' +
                     'style="cursor:pointer;" ' +
-                    'value="Go" title="Click here to start restore from my PC" onclick="' +
+                    'value="Go" title="' + g_lang.m_restoreFromMyPCTip + '" onclick="' +
                      'f_handleBrownMyPC()"></div></td>';
 
         innerHtml += '</tr></tbody></table></form>';

@@ -510,9 +510,9 @@ function FT_confBaseObj(name, callback, busLayer)
     this.f_renderProgressBar = function(val, tooltip)
     {
         var bgColor = 'green';
-        if(val >= 90)
+        if(val >= 80)
             bgColor = 'red';
-        else if(val >= 60 && val <80)
+        else if(val >= 60)
             bgColor = 'orange';
 
         return '<div title="' + tooltip + '" style="position:relative; ' +

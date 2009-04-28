@@ -14,7 +14,9 @@ extern "C" {
 #include "rl_str_proc.hh"
 #include "systembase.hh"
 #include "multirespcmd.hh"
+#include "guicmdhandler.hh"
 #include "command.hh"
+
 
 using namespace std;
 
@@ -155,6 +157,14 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     else if (strncmp(tmp.c_str(),"show session",12) == 0) {
       tmp = "/opt/vyatta/sbin/vyatta-output-config.pl -all";
     }
+  }
+  else if (_proc->get_msg()._conf_mode == WebGUI::PROC) { //gui mode command
+    Message msg = _proc->get_msg();
+    GUICmdHandler gui_hand(msg);
+    WebGUI::Error err = gui_hand.process();
+    string err_str = gui_hand.get_response_str();
+    _proc->set_response(err, err_str);
+    return;
   }
   else { //operational mode command
     if (strcmp(tmp.c_str(),"reboot") == 0) {

@@ -47,6 +47,9 @@ const string WebGUI::CHUNKER_UPDATE_FORMAT = "<vyatta><chunker_command><token>%s
 
 const string WebGUI::MANDATORY_NODE_FILE = "/usr/lib/cgi-bin/mandatory";
 
+const string WebGUI::OA_GUI_ENV_AUTH_USER = "OA_AUTH_USER";
+const string WebGUI::OA_GUI_ENV_SESSION_ID = "OA_SESSION_ID";
+
 char const* WebGUI::ErrorDesc[10] = {" ",
 				    "request cannot be parsed",
 				    "authentication error",

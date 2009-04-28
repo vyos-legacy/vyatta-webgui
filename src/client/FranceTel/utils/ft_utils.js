@@ -121,7 +121,6 @@ var g_utils =
 
     f_launchHomePage: function(isBLB)
     {
-		/* let the backend set the blb cookie
 		try {
 		    if ((isBLB != undefined) && (isBLB != null)) {
 				if (isBLB) {
@@ -131,7 +130,6 @@ var g_utils =
 				}
 			}
 		} catch (e) {}
-		*/
         var lang = this.f_getLanguage();
 
         switch(lang)
@@ -146,21 +144,10 @@ var g_utils =
 
     f_getContactPage: function()
     {
-		var locale = '_en';
-        var lang = this.f_getLanguage();
-		switch(lang) {
-            case g_consObj.V_LANG_EN:
-                return 'ft_contact_en.html';
-            case g_consObj.V_LANG_FR:
-                return "ft_contact_fr.html";
-			default:
-			    break;			
-		}		
-		
 		var loc = window.location.href;
 		var index = loc.indexOf('ft_main');
 		var homepage = g_consObj.V_HOME_PAGE;
-						
+		var locale = '_en';
 		if (index != -1) {
 			if (loc.charAt(index+7) != '.') {
 				locale = loc.substring(index+7, index+10);

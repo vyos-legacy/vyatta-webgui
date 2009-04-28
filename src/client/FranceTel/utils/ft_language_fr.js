@@ -95,10 +95,14 @@ var g_lang =
     m_dbStatusUp : "Status is Up",
     m_dbStatusDown : "Status is Down",
     m_dbStatusUnknown : "Status is Unknown",
+    m_dbErrorTitle : 'VM Dashboard Error',
 
     ///////////////////////////////////////////////////////////////////
     // VM Update & History screen
-    m_uhHdData : "Date",
+    m_uhHdDate : "Date",
+    m_uhHdWho : 'Backup By',
+    m_uhErrorTitle : "VM Update Error",
+    m_uhCancelTitle : 'Cancel Update Schedule',
 
     ///////////////////////////////////////////////////////////////////
     // VM Update Restore
@@ -122,6 +126,12 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // VM Restart screen
+    m_restartOA : 'Open Appliance',
+    m_restartErrorTitle : 'VM Restart Error',
+    m_restartTitle : 'Restart VM',
+    m_restartStopTitle : 'Stop VM',
+    m_restartConfirm : 'Are you sure you want to restart',
+    m_restartStopConfirm : 'Are you sure you want to stop',
 
     ///////////////////////////////////////////////////////////////////
     // Subscribe screen
@@ -131,11 +141,20 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // User List screen
+    m_ulErrorTitle : 'Get User List Error',
     m_ulTooltipAddUser : 'Create new user account',
     m_ulDeleteHeader : 'Delete User Account',
+    m_ulClick2Edit : 'Click here to edit',
+    m_ulSendEmail : 'Send email to',
+    m_ulDeleteUser : 'Delete user',
 
     ///////////////////////////////////////////////////////////////////
     // User Right screen
+    nm_urErrorTitle : 'User Right Error',
+    m_urConfirmTitle : 'Change User Right',
+    m_urCommitChange : 'Are you sure you wish to commit the change?',
+    m_urBtnApply : 'Set selection',
+    m_urBtnCancel : 'Reset selection',
 
     ///////////////////////////////////////////////////////////////////
     // User Add screen
@@ -158,6 +177,13 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Common variables
+    m_confHeaderText : 'Lorem ipsum onsectetuer adipiscing elit, sed diam ' +
+            'nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam ' +
+            'erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci ' +
+            'tation ullamcorper suscipit lobortis nisl ut aliquip ex ea ' +
+            'commodo consequat.<br><br>',
+    m_cancelConfirm : 'Are you sure you want to cancel',
+    m_deleteConfirm : 'Are you sure you want to delete',
     m_login: 'Login',
     m_name: 'Name',
     m_delete: 'Delete',
@@ -223,13 +249,23 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Restore configuration
+    m_restoreErrorTitle : 'Configuration Restore Error',
+    m_restoreUploadTitle : 'Upload Restore File',
+    m_resoteUploadErrFileType : 'Upload file type not support.',
     m_restoreHdContent : 'Content',
     m_restoreHdRestore : 'Restore',
     m_restoreHdDownload : 'Download',
-    m_restoreHdDelete : 'Delete',
+    m_restoreClickRestore : 'Click here to restore',
+    m_restoreArchive : 'Restore backup archive',
+    m_restoreDelTitle : 'Delete Backup Archive File',
+    m_restoreDel : 'Delete backup archive',
+    m_restoreDlConfirm : 'Are you sure you want to download',
+    m_restoreDownload : 'Download backup archive',
 
     ///////////////////////////////////////////////////////////////////
     // Restore Desc. configuration
+    m_resDescErrorTitle : 'Configuration Restore Description',
+    m_resDescConfirm : 'Are you sure you want to restore the selection VM?',
     m_resDescHdConf : 'Config.',
     m_resDescHdData : 'Data',
 

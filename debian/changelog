@@ -1,3 +1,35 @@
+vyatta-webgui (0.2+fxd0+18) unstable; urgency=low
+
+  [ Michael Larson ]
+  * add hook in deployment for lighttpd update re: site access
+
+  [ Loi Vo ]
+  * 1. Fix some layout issues on configuration backup.
+
+  [ Kevin Choi ]
+  * * update multi-lang for France
+
+  [ slioch ]
+  * added new statement mode level for form handler support.
+
+  [ An-Cheng Huang ]
+  * force init links removal
+  * add util functions for new VM autoinstall
+
+  [ Loi Vo ]
+  * 1. Make 'In the Open Appliance' default selection for LDAP config.
+
+  [ Kevin Choi ]
+  * * fixed bug# 4306 - user prompt message
+
+  [ slioch ]
+  * fix for bug 4307. perform additional validation on server side when
+    retreiving values.
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Tue, 28 Apr 2009 22:09:58 +0000
+
 vyatta-webgui (0.2+fxd0+17) unstable; urgency=low
 
   [ Kevin Choi ]

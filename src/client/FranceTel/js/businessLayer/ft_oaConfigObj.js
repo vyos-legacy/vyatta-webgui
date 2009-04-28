@@ -231,7 +231,7 @@ function FT_oaConfigObj (busObj)
     this.f_parseLdap = function(response)
     {
 		var val = thisObj.f_getConfigNodeFromResponse(response, 'ldap');	
-        var obj = new FT_ldapServer('', '', '', '', '', '');
+        var obj = new FT_ldapServer('oa', '', '', '', '', '');
 
 		for (var i=0; i < val.childNodes.length; i++) {
 			var cNode = val.childNodes[i];

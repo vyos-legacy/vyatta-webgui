@@ -14,6 +14,14 @@ my $OA_ID = $OpenApp::VMMgmt::OPENAPP_ID;
 my $OA_SNMP_COMM = $OpenApp::VMMgmt::OPENAPP_SNMP_COMM;
 my $STATE_FILE = '/var/run/vm-monitor.state';
 
+# take care of forked processes
+$SIG{CHLD} = 'IGNORE';
+sub fdRedirect {
+  open STDOUT, '>', '/dev/null';
+  open STDERR, '>&STDOUT';
+  open STDIN, '<', '/dev/null';
+}
+
 sub updateOAStatus {
   # cpu
   # XXX this takes 1 second (can't use 1st sample)
@@ -123,9 +131,10 @@ sub updateVMStatus {
   # check update availability
   $upd_avail = OpenApp::VMDeploy::vmCheckUpdate($vid);
   
-  # check libvirt status
-  system("sudo virsh -c xen:/// domstate $vid >&/dev/null");
-  if ($? >> 8) {
+  # check libvirt status.
+  # can't use system() when ignoring SIGCHLD (wrong exit status).
+  my $lvs = `sudo virsh -c xen:/// domstate $vid 2>&1`;
+  if ($lvs =~ /^error:/) {
     # vm doesn't exist
     $status = 'down';
   }
@@ -274,7 +283,17 @@ sub get_last_act_time {
 }
 
 sub installNewVMs {
-  my @updates = OpenApp::VMDeploy::getUpdateList();
+  my $uref = OpenApp::VMDeploy::getUpdateList();
+  for my $aref (@{$uref}) {
+    my ($vmid, $ver) = @{$aref};
+    next if ("$vmid" eq '' || OpenApp::VMMgmt::isValidId($vmid));
+    # we've got a new VM to install
+    next if (fork());
+    # child process here. exec the newinst script.
+    fdRedirect();
+    exec('/opt/vyatta/sbin/openapp-vimg-newinst.pl', $vmid, $ver)
+      or exit 1;
+  }
 }
 
 while (1) {

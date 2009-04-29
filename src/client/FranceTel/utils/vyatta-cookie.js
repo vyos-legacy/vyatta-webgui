@@ -29,6 +29,8 @@ var g_cookie =
 
     f_set_raw: function(pName, pValue, pExpires, pPath)
     {
+//        opera.postError('f_set_raw cookie: name=' + pName + ' value=' + pValue);
+				
         var expires = g_consObj.V_NOT_FOUND;
 
         if(pExpires != undefined)
@@ -64,6 +66,11 @@ var g_cookie =
         var cookie = document.cookie.match(new RegExp('(^|;)\\s*' +
                       escape(pName) + '=([^;\\s]*)'));
 
+//        if (cookie) {
+//			opera.postError('f_get_raw cookie: name=' + pName + ' value=' + unescape(cookie[2]));
+//		} else {
+//			opera.postError('f_get_raw cookie: name=' + pName + ' is undefined');
+//		}
         return (cookie ? unescape(cookie[2]) : g_consObj.V_NOT_FOUND);
     },
 

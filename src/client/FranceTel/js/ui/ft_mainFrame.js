@@ -87,6 +87,7 @@ function FT_mainFrame(){
 	}
 	
 	this.f_logout = function() {
+		thisObj.m_tabPanel.f_stopPolling();
 	    g_busObj.f_userLogout();	
 	}
 	

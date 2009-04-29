@@ -1,5 +1,5 @@
 /*
-    Document   : ft_language_en.js
+    Document   : ft_language_fr.js
     Created on : Mar 23, 2009, 2:18:11 PM
     Author     : Kevin.Choi
     Description:
@@ -167,6 +167,8 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // User Editor screen
+    m_userResetPasswdExit : "L'utilisateur existe déjà",
+    m_userResetPasswdNotExit : "L'utilisateur n'existe pas",
     m_userResetPasswd: "Réinitialiser le mot de passe",
     m_userResetPasswdConfirm: "Êtes-vous sûr de vouloir réinitialiser le mot de passe pour cet utilisateur?",
 	m_userConfirmation: "confirmation",

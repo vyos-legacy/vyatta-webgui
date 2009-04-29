@@ -237,6 +237,9 @@ function FT_userBusObj(busObj)
 
     this.f_isThisUserExist = function(username)
     {
+        if(username == 'admin' || username == 'installer')
+            return true;
+
         // if the login user is USER_ROLE, they only can change their own profile
         if(this.m_loginUser.m_role == thisObj.V_ROLE_USER)
         {
@@ -281,7 +284,7 @@ function FT_userBusObj(busObj)
 
         if(this.f_isThisUserExist(userRec.m_user))
         {
-            var evt = new FT_eventObj(9, '', "User already exist");
+            var evt = new FT_eventObj(9, '', g_lang.m_userResetPasswdExit);
             guiCb(evt);
             return;
         }
@@ -330,7 +333,7 @@ function FT_userBusObj(busObj)
 
         if(!this.f_isThisUserExist(userRec.m_user))
         {
-            var evt = new FT_eventObj(9, '', "User is not existed");
+            var evt = new FT_eventObj(9, '', g_lang.m_userResetPasswdNotExit);
             guiCb(evt);
             return;
         }
@@ -362,7 +365,7 @@ function FT_userBusObj(busObj)
 
         if(!this.f_isThisUserExist(userRec.m_user))
         {
-            var evt = new FT_eventObj(9, '', "User is not existed");
+            var evt = new FT_eventObj(9, '', "User does not exist");
             guiCb(evt);
             return;
         }

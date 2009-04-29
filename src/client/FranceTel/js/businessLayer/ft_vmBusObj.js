@@ -199,8 +199,8 @@ function FT_vmBusObj(busObj)
         // prepare BLB vm
         var vm = thisObj.f_findVM('blb', vms);
         var userRec = g_busObj.f_getLoginUserObj();
-        var isPwRole = userRec.m_loginUser.m_role == userRec.V_ROLE_ADMIN ||
-                        userRec.m_loginUser.m_role == userRec.V_ROLE_INSTALL ?
+        var role = userRec.m_loginUser.m_role;
+        var isPwRole = role == userRec.V_ROLE_ADMIN || role == userRec.V_ROLE_INSTALL ?
                         true : false;
         if(isPwRole)
             finalVmsList[c++] = vm == null ? new FT_vmRecObj('blb', 'Business Livebox'):vm;

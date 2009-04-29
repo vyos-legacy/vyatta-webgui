@@ -166,6 +166,8 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // User Editor screen
+    m_userResetPasswdExit : "User already exist",
+    m_userResetPasswdNotExit : "User does not exist",
     m_userResetPasswd: "Reset password",
     m_userResetPasswdConfirm: "Are you sure you want to reset password for this user?",
 	m_userConfirmation: "confirmation",

@@ -38,6 +38,9 @@ public:
 
   const static std::string MANDATORY_NODE_FILE;
 
+  const static std::string OA_GUI_ENV_AUTH_USER;
+  const static std::string OA_GUI_ENV_SESSION_ID;
+
   enum Error {SUCCESS = 0,
 	      MALFORMED_REQUEST,
 	      AUTHENTICATION_FAILURE,
@@ -70,7 +73,8 @@ public:
 
   enum Attributes {NOATTR = 0,
 		   OP,
-		   CONF};
+		   CONF,
+		   PROC};
 
   enum NodeType {NONE,
 			 TEXT,

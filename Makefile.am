@@ -6,11 +6,12 @@ cgidir = /usr/lib/cgi-bin
 initddir = /etc/init.d
 cfgdir = $(datadir)/vyatta-cfg/templates
 opdir = $(datadir)/vyatta-op/templates
+procdir = $(datadir)/vyatta-proc/templates
 
 AM_CPPFLAGS = -I src/server -I src/lib -Wall -DDEBUG -g \
               -I /usr/include/glib-2.0 -I /usr/lib/glib-2.0/include
 
-CLEANFILES = src/server/main.o src/server/manager.o src/server/session.o src/server/processor.o src/server/sessionexchange.o src/server/sessionexchangefile.o src/server/sessionexchangesocket.o src/server/sessionexchangestdio.o src/server/test.o src/server/authenticate.o src/server/common.o src/server/command.o src/server/configuration.o src/server/rl_str_proc.o src/server/multirespcmd.o
+CLEANFILES = src/server/main.o src/server/manager.o src/server/session.o src/server/processor.o src/server/sessionexchange.o src/server/sessionexchangefile.o src/server/sessionexchangesocket.o src/server/sessionexchangestdio.o src/server/test.o src/server/authenticate.o src/server/common.o src/server/command.o src/server/configuration.o src/server/rl_str_proc.o src/server/multirespcmd.o src/server/guicmdhandler.o
 
 src_server_chunker_SOURCES = src/server/chunker_main.cc
 src_server_chunker_SOURCES += src/server/chunker_manager.cc
@@ -36,6 +37,7 @@ src_server_webgui_SOURCES += src/server/command.cc
 src_server_webgui_SOURCES += src/server/configuration.cc
 src_server_webgui_SOURCES += src/server/rl_str_proc.cc
 src_server_webgui_SOURCES += src/server/multirespcmd.cc
+src_server_webgui_SOURCES += src/server/guicmdhandler.cc
 
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
@@ -117,4 +119,6 @@ install-exec-hook:
 	cd templates-cfg; $(cpiop) $(DESTDIR)$(cfgdir)
 	@mkdir -p $(DESTDIR)$(opdir); \
 	cd templates-op; $(cpiop) $(DESTDIR)$(opdir)
+	@mkdir -p $(DESTDIR)$(procdir); \
+	cd templates-gui; $(cpiop) $(DESTDIR)$(procdir)
 

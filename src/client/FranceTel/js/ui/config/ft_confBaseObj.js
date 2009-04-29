@@ -95,7 +95,7 @@ function FT_confBaseObj(name, callback, busLayer)
             h += this.m_div.childNodes[i].offsetHeight;
         }
 
-        h = h + (thisObj.m_tableRowCounter * 28);
+        h = h + (thisObj.m_tableRowCounter * 31);
         if (padding) {
             h += padding;
         }
@@ -231,7 +231,7 @@ function FT_confBaseObj(name, callback, busLayer)
 
     this.f_adjustDivPosition = function(div)
     {
-        var adVal = (thisObj.m_tableRowCounter * 28) - 10;
+        var adVal = (thisObj.m_tableRowCounter * 31) - 10;
         div.style.top = adVal+'px';
     }
 

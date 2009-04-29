@@ -85,6 +85,7 @@ install-exec-hook:
 	cp scripts/notify-backup-data $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-restore-conf $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-restore-data $(DESTDIR)/$(cgidir)/
+	cp scripts/vyatta-proc $(DESTDIR)/$(cgidir)/
 
 
 	mkdir -p $(DESTDIR)/etc/lighttpd/conf-enabled/.

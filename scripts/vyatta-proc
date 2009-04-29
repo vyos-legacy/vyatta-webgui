@@ -1,5 +1,5 @@
 
-declare vyatta_proc_templates='/opt/vyatta/share/templates/vyatta-proc'
+declare vyatta_proc_templates='/opt/vyatta/share/vyatta-proc/templates/'
 
 
 declare -r _vyatta_proc_last_comp_init='>>>>>>LASTCOMP<<<<<<'

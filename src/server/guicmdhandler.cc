@@ -86,14 +86,12 @@ GUICmdHandler::process()
   string opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + "; " + cmd;
   
   cmd = WebGUI::mass_replace(cmd,"'","'\\''");
-  opmodecmd = "/bin/bash --rcfile /usr/lib/cgi-bin/vyatta-proc -i -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + "; " + handler + " < " + data + " 2>&1'";
+  opmodecmd = "/bin/bash --rcfile /usr/lib/cgi-bin/vyatta-proc -i -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + ";_vyatta_proc_run " + handler + " < " + data + " 2>&1'";
   
   string stdout;
   bool verbatim = false;
   
   setenv(WebGUI::OA_GUI_ENV_SESSION_ID.c_str(),_msg.id().c_str(),1);
-  
-  cout << "F: " << opmodecmd << endl;
 
   WebGUI::Error err;
   if (WebGUI::execute(opmodecmd,stdout,true) == 0) {

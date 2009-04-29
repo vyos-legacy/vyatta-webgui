@@ -95,10 +95,15 @@ function FT_confRestore(name, callback, busLayer)
             var download = thisObj.f_renderButton(
                         'download', true, "f_handleDownloadRestore('" + r[3]+"')",
                         g_lang.m_restoreDownload + ' (' + content + ')');
-            var del = thisObj.f_renderButton(
+
+            var del = '';
+            if(thisObj.f_okToDisplayDeleteButton(r))
+            {
+                del = thisObj.f_renderButton(
                         'delete', true, "f_deleteRestoreFile('" + content +
                         "', '" + r[3] + "')",
                         g_lang.m_restoreDel + ' (' + content + ')');
+            }
 
             vmData = [r[0], r[1], anchor, restore, download, del]
             var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData);
@@ -106,6 +111,19 @@ function FT_confRestore(name, callback, busLayer)
         }
 
         thisObj.f_adjustDivPosition(thisObj.m_restorePC);
+    }
+
+    this.f_okToDisplayDeleteButton = function(r)
+    {
+        var userRec = g_busObj.f_getLoginUserObj();
+        var role = userRec.m_loginUser.m_role;
+
+        if(role == userRec.V_ROLE_ADMIN && r[1] == 'admin')
+            return true;
+        else if(role == userRec.V_ROLE_INSTALL && r[1] == 'installer')
+            return true;
+        else
+            return false;
     }
 
     this.f_createSortingArray = function(sortIndex, vm)

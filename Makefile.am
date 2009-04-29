@@ -120,5 +120,5 @@ install-exec-hook:
 	@mkdir -p $(DESTDIR)$(opdir); \
 	cd templates-op; $(cpiop) $(DESTDIR)$(opdir)
 	@mkdir -p $(DESTDIR)$(procdir); \
-	cd templates-gui; $(cpiop) $(DESTDIR)$(procdir)
+	cd templates-proc; $(cpiop) $(DESTDIR)$(procdir)
 

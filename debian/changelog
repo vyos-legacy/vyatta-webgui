@@ -1,3 +1,21 @@
+vyatta-webgui (0.2+fxd0+23) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fixed bug# 4326 - enabled admin/installer to change their password
+
+  [ Loi Vo ]
+  * More fix for bug: [4308].  Do the following:
+
+  [ Michael Larson ]
+  * add support for installer pw modfication. there still appears to be
+    a problem on the front-end when attempting installer pw change.
+  * remove file not meant for this world.
+  * additional cleanup on installer pw change
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 29 Apr 2009 10:18:23 +0000
+
 vyatta-webgui (0.2+fxd0+22) unstable; urgency=low
 
   * 1. Fix bug: 4309

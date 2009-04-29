@@ -1,3 +1,12 @@
+vyatta-webgui (0.2+fxd0+21) unstable; urgency=low
+
+  * * fixed bug# 4319 and 4320 - block users without rights to access
+    VMs
+  * * Modified restore configuration page to hide the delete icon from
+    user who's not own the
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 29 Apr 2009 07:41:15 +0000
+
 vyatta-webgui (0.2+fxd0+20) unstable; urgency=low
 
   [ Michael Larson ]

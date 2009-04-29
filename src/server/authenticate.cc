@@ -123,9 +123,12 @@ Authenticate::create_new_session()
       return false;
     }
     else if (restricted == true) {
-      _proc->_msg.set_id(id);
-      _proc->set_response(WebGUI::RESTRICTED_ACCESS);
-      return true;
+      sprintf(buf, "%d", WebGUI::RESTRICTED_ACCESS);
+      char buf1[40];
+      sprintf(buf1, "%lu", id);
+      string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->_msg._token+"</token><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code><msg>change password required</msg></error></vyatta>";
+      _proc->set_response(tmpstr);
+      return false;
     }
 
     //now generate successful response

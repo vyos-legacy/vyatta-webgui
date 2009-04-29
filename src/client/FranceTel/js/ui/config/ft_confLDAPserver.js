@@ -130,12 +130,49 @@ function FT_confLDAPserver (name, callback, busLayer) {
 	this.f_setFocus = function() {
 		
 	}
+
+	this.f_enableTextField = function(b, id)
+	{
+		var el = document.getElementById(id);
+		el.readOnly = (!b);
+		if (b) {
+			el.style.backgroundColor = '#FFFFFF';
+		} else {
+			el.style.backgroundColor = '#EFEFEF';			
+		}		
+	}
+	
+	this.f_enable = function(b)
+	{
+		thisObj.f_enableTextField(b,'conf_ldap_srv_server_addr');		
+        thisObj.f_enableTextField(b, 'conf_ldap_srv_user_update');
+        thisObj.f_enableTextField(b, 'conf_ldap_srv_user_update_passwd');
+		thisObj.f_enableTextField(b, 'conf_ldap_srv_user_read');
+		thisObj.f_enableTextField(b, 'conf_ldap_srv_user_read_passwd');		
+	}
+	
+    this.f_attachListener = function()
+    {
+        var el = document.getElementById('conf_ldap_srv_in_oa');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);
+		el = document.getElementById('conf_ldap_srv_in_lan');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, true);	
+    }
+    
+    this.f_detachListener = function()
+    {
+        var el = document.getElementById('conf_ldap_srv_in_oa');
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);
+		el = document.getElementById('conf_ldap_srv_in_lan');
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, true);		
+    }	
 	
     this.f_loadVMData = function(element)
     {
         thisObj.m_form = document.getElementById('conf_ldap_srv' + "_form");	
 		thisObj.f_setFocus();
-		
+		thisObj.f_attachListener();	
+				
         var cb = function(evt)
         {
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
@@ -155,9 +192,11 @@ function FT_confLDAPserver (name, callback, busLayer) {
 				if (ldap.m_type == 'oa') {
 		            thisObj.m_form.conf_ldap_srv_in_oa.checked = true;
 					thisObj.m_form.conf_ldap_srv_in_lan.checked = false;
+					thisObj.f_enable(false);
 				} else {
 		            thisObj.m_form.conf_ldap_srv_in_oa.checked = false;
-					thisObj.m_form.conf_ldap_srv_in_lan.checked = true;					
+					thisObj.m_form.conf_ldap_srv_in_lan.checked = true;		
+					thisObj.f_enable(true);			
 				}
             }
         }
@@ -166,6 +205,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
     
     this.f_stopLoadVMData = function()
     {
+		thisObj.f_detachListener();		
     }
 	
 	this.f_validate = function() 
@@ -210,7 +250,9 @@ function FT_confLDAPserver (name, callback, busLayer) {
 		    if (evt.f_isError()) {
 		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
 		    } else {
-                thisObj.f_setLdapConfig();
+				if (type == 'lan') {
+					thisObj.f_setLdapConfig();
+				}
 		    }				
 		}
 		thisObj.m_busLayer.f_setLDAPlocation(cb, type);
@@ -268,7 +310,12 @@ function FT_confLDAPserver (name, callback, busLayer) {
                 thisObj.f_apply();
             } else if (id == 'conf_ldap_server_cancel_button') { //cancel clicked
                 thisObj.f_reset();               
-            }
+            } else if (id == 'conf_ldap_srv_in_lan') {
+				thisObj.f_enable(true);
+				thisObj.m_form.conf_ldap_srv_server_addr.focus();
+			} else if (id == 'conf_ldap_srv_in_oa') {
+				thisObj.f_enable(false);
+			} 
         }
     }	
 	

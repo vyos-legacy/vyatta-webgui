@@ -50,6 +50,12 @@ const string WebGUI::MANDATORY_NODE_FILE = "/usr/lib/cgi-bin/mandatory";
 const string WebGUI::OA_GUI_ENV_AUTH_USER = "OA_AUTH_USER";
 const string WebGUI::OA_GUI_ENV_SESSION_ID = "OA_SESSION_ID";
 
+const string WebGUI::TEMPLATE_CFG_ROOT = "/opt/vyatta/share/vyatta-cfg/templates";
+const string WebGUI::TEMPLATE_OP_ROOT = "/opt/vyatta/share/vyatta-op/templates";
+const string WebGUI::TEMPLATE_PROC_ROOT = "/opt/vyatta/share/vyatta-proc/templates";
+
+
+
 char const* WebGUI::ErrorDesc[10] = {" ",
 				    "request cannot be parsed",
 				    "authentication error",

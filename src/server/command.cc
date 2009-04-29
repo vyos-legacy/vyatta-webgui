@@ -159,6 +159,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     }
   }
   else if (_proc->get_msg()._conf_mode == WebGUI::PROC) { //gui mode command
+    
     Message msg = _proc->get_msg();
     GUICmdHandler gui_hand(msg);
     WebGUI::Error err = gui_hand.process();

@@ -285,9 +285,6 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
 	  if (strcmp(attr[i+1],"op") == 0) {
 	    m->_conf_mode = WebGUI::OP;
 	  }
-	  else if (strcmp(attr[i+1],"proc") == 0) {
-	    m->_conf_mode = WebGUI::PROC;
-	  }
 	  else {
 	    m->_conf_mode = WebGUI::CONF;
 	  }
@@ -313,6 +310,9 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
 	if (strcmp(attr[i],"mode") == 0) {
 	  if (strcmp(attr[i+1],"op") == 0) {
 	    m->_conf_mode = WebGUI::OP;
+	  }
+	  else if (strcmp(attr[i+1],"proc") == 0) {
+	    m->_conf_mode = WebGUI::PROC;
 	  }
 	  else {
 	    m->_conf_mode = WebGUI::CONF;

@@ -41,6 +41,10 @@ public:
   const static std::string OA_GUI_ENV_AUTH_USER;
   const static std::string OA_GUI_ENV_SESSION_ID;
 
+  const static std::string TEMPLATE_CFG_ROOT;
+  const static std::string TEMPLATE_OP_ROOT;
+  const static std::string TEMPLATE_PROC_ROOT;
+
   enum Error {SUCCESS = 0,
 	      MALFORMED_REQUEST,
 	      AUTHENTICATION_FAILURE,

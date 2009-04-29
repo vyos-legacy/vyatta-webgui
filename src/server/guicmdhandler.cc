@@ -5,6 +5,7 @@
  * Date: 2009
  */
 #include <string.h>
+#include <iostream>
 #include <string>
 #include <vector>
 #include "rl_str_proc.hh"
@@ -22,9 +23,15 @@ GUICmdHandler::process()
 {
   string cmd = string(_msg._request);
   //parse the command and data segments
-  size_t start_pos = cmd.find("<command>");
-  size_t end_pos = cmd.find("</command>");
-  string command = cmd.substr(start_pos,end_pos);
+  size_t start_pos = cmd.find("<handler>");
+  if (start_pos == string::npos) {
+    return WebGUI::COMMAND_ERROR;  
+  }
+  size_t end_pos = cmd.find("</handler>");
+  if (start_pos == string::npos) {
+    return WebGUI::COMMAND_ERROR;  
+  }
+  string command = cmd.substr(start_pos+9,end_pos-start_pos-9);
 
   if (command.empty()) {
     //return error
@@ -34,9 +41,11 @@ GUICmdHandler::process()
 
   //WILL ALLOW EMPTY DATA FIELDS
   start_pos = cmd.find("<data>");
-  end_pos = cmd.find("</data>");
-  string data = cmd.substr(start_pos,end_pos);
-
+  end_pos = cmd.find("</data>"); 
+  string data;
+  if (start_pos != string::npos && end_pos != string::npos) {
+    data = cmd.substr(start_pos,end_pos - start_pos);
+  }
   //parse the node.def that contains the specific command
   StrProc str_proc(command, " ");
   
@@ -50,15 +59,18 @@ GUICmdHandler::process()
   }
   path += "node.def";
 
+
   //now read in the command
   string handler;
-  FILE *fp = fopen(path.c_str(),"r");
+  string full_path = WebGUI::TEMPLATE_PROC_ROOT + "/" + path;
+  FILE *fp = fopen(full_path.c_str(),"r");
   if (fp) {
     char buf[1025];
     while (fgets(buf,1024,fp) != 0) {
       if (strncmp(buf,"run:",4) == 0) {
 	string tmp(buf);
-	handler = tmp.substr(4,tmp.length());
+	handler = tmp.substr(4,tmp.length()-4);
+	break;
       }
     }
   }
@@ -74,13 +86,15 @@ GUICmdHandler::process()
   string opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + "; " + cmd;
   
   cmd = WebGUI::mass_replace(cmd,"'","'\\''");
-  opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + "; " + cmd + " 2>&1'";
+  opmodecmd = "/bin/bash --rcfile /usr/lib/cgi-bin/vyatta-proc -i -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + "; " + handler + " < " + data + " 2>&1'";
   
   string stdout;
   bool verbatim = false;
   
   setenv(WebGUI::OA_GUI_ENV_SESSION_ID.c_str(),_msg.id().c_str(),1);
   
+  cout << "F: " << opmodecmd << endl;
+
   WebGUI::Error err;
   if (WebGUI::execute(opmodecmd,stdout,true) == 0) {
     err = WebGUI::SUCCESS;

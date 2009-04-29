@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+24) unstable; urgency=low
+
+  * UNRELEASED
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 29 Apr 2009 10:26:39 +0000
+
 vyatta-webgui (0.2+fxd0+23) unstable; urgency=low
 
   [ Kevin Choi ]

@@ -124,17 +124,25 @@ function FT_businessLayer()
     {
         var errCode = 0;
         var errmsg = '';
-
+        var errSid = '';
+		
         var err = response.getElementsByTagName('error');
         if(err != null && err[0] != null)
         {
             var cn = err[0].childNodes;
             for(var i=0; i<cn.length; i++)
             {
-                if(cn[i].nodeName == 'code')
-                    errCode = Number(cn[i].firstChild.nodeValue);
-                else if(cn[i].nodeName == 'msg' && errCode != 0)
-                    errmsg = cn[i].firstChild.nodeValue;
+                if (cn[i].nodeName == 'code') {
+					errCode = Number(cn[i].firstChild.nodeValue);
+					if (errCode == 8) {
+					    var sid = response.getElementsByTagName('id');
+                        if (sid != undefined && sid[0] != undefined) {
+							errSid = sid[0].firstChild.nodeValue;
+						}
+					}
+				} else if (cn[i].nodeName == 'msg' && errCode != 0) {
+					errmsg = cn[i].firstChild.nodeValue;
+				}
             }
         }
 
@@ -143,8 +151,12 @@ function FT_businessLayer()
             // prompt msg here...
 
         }
-
-        return new FT_eventObj(errCode, '', errmsg);
+        
+		var rvalue = new FT_eventObj(errCode, '', errmsg);
+		if (errSid.length > 0) {
+			rvalue.m_sid = errSid;
+		}
+        return rvalue;
     }
 
     ////////////////////////////////////////////////////

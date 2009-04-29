@@ -123,12 +123,12 @@ function FT_confMyProfile (name, callback, busLayer) {
 		}
 		
 		if (npw.length <= 0) {
-            g_utils.f_popupMessage(g_lang.m_myprofOldPasswd + ' ' + g_lang.m_formNoEmpty, 'error', g_lang.m_error, true);					
+            g_utils.f_popupMessage(g_lang.m_myprofNewPasswd + ' ' + g_lang.m_formNoEmpty, 'error', g_lang.m_error, true);					
 			return false;			
 		}		
 		
 		if (cpw.length <= 0) {
-            g_utils.f_popupMessage(g_lang.m_myprofOldPasswd + ' ' + g_lang.m_formNoEmpty, 'error', g_lang.m_error,true);					
+            g_utils.f_popupMessage(g_lang.m_myprofConfirmPasswd + ' ' + g_lang.m_formNoEmpty, 'error', g_lang.m_error,true);					
 			return false;			
 		}	
 				

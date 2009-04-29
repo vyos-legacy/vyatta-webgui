@@ -13,6 +13,7 @@ function FT_eventObj(errCode, value, errMsg)
     this.m_errCode = errCode == undefined ? 0 : errCode;
     this.m_value = value;
     this.m_errMsg = errMsg;
+	this.m_sid = undefined;
 
     this.f_isError = function()
     {

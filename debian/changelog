@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+22) unstable; urgency=low
+
+  * 1. Fix bug: 4309
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 29 Apr 2009 18:10:04 +0000
+
 vyatta-webgui (0.2+fxd0+21) unstable; urgency=low
 
   * * fixed bug# 4319 and 4320 - block users without rights to access

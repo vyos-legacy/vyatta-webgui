@@ -142,8 +142,7 @@ sub modify_user {
 	if (defined($oldpassword) && $oldpassword ne NULL) {
 	    if ($modify eq 'installer') {
 		#go through system cmds
-		my $PASS;
-		`PASS=\`mkpasswd installer\`; usermod -p $PASS $password`;
+		`PASS=\`mkpasswd $password\`; usermod -p \$PASS installer`;
 	    }
 	    else {
 		my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -a $oldpassword -s $password -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");
@@ -159,8 +158,7 @@ sub modify_user {
 	    #this is a reset operation then
 	    if ($modify eq 'installer') {
 		#go through system cmds
-		my $PASS;
-		`PASS=\`mkpasswd installer\`; usermod -p $PASS installer`;
+		`PASS=\`mkpasswd installer\`; usermod -p \$PASS installer`;
 	    }
 	    else {
 		my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -s $password -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");

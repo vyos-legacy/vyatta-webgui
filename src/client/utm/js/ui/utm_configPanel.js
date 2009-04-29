@@ -33,10 +33,10 @@ function UTM_configPanel()
         thisObj.m_parent_container = document.getElementById(VYA.UTM_CONST.DOM_MAIN_PANEL_OA_CONTAINER_ID);
         //Obtain a reference to the div tag: 'ft_container' in the html.
         thisObj.m_container = document.getElementById(VYA.UTM_CONST.DOM_3_CONFIG_PANEL_ID);
-        thisObj.m_ft_container = document.getElementById(VYA.UTM_CONST.DOM_3_FT_CONTAINER_ID);		
+        thisObj.m_ft_container = document.getElementById(VYA.UTM_CONST.DOM_3_FT_CONTAINER_ID);
         thisObj.m_title = document.getElementById(VYA.UTM_CONST.DOM_3_CONFIG_PANEL_TITLE_ID);
         thisObj.m_container.parentNode.removeChild(thisObj.m_container);
-        thisObj.m_ft_container.parentNode.removeChild(thisObj.m_ft_container);		
+        thisObj.m_ft_container.parentNode.removeChild(thisObj.m_ft_container);
         //initialize the dynamic sub menu
         thisObj.f_initDynSubMenu();
     }
@@ -120,34 +120,34 @@ function UTM_configPanel()
         }
         thisObj.f_render(cmp);
     }
-    this.f_removePrev = function() 
+    this.f_removePrev = function()
 	{
         if (thisObj.m_activeCmp != undefined) {
 			try {
-				thisObj.m_container.removeChild(thisObj.m_ft_container);				
+				thisObj.m_container.removeChild(thisObj.m_ft_container);
 				thisObj.m_ft_container.removeChild(thisObj.m_activeCmp);
 			} catch (e) {
 				; //this is ok for now because the empty component doesn't get put to the 'ft_container' by config based object.
 			}
-        }		
+        }
 	}
 
 	this.f_addFTcontainer = function()
 	{
-		thisObj.m_container.appendChild(thisObj.m_ft_container);		
+		thisObj.m_container.appendChild(thisObj.m_ft_container);
 	}
-	
+
 	this.f_showFTcontainer = function()
 	{
 		thisObj.m_ft_container.style.display = 'block';
 	}
-	
+
 	this.f_redrawFTcontainer = function()
 	{
 		thisObj.m_ft_container.style.display = 'none';
 		thisObj.m_ft_container.style.display = 'block';
 	}
-		
+
     this.f_getComponent = function(id, obj)
     {
 		thisObj.f_removePrev();
@@ -166,34 +166,35 @@ function UTM_configPanel()
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EXPERT_WEBF_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_IMP2P_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID:
-                var dbcb = function(){
-
-                }
+                var dbcb = function(){}
                 thisObj.m_selectObj = new UTM_confVPNOverview('VPNOverview', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID:
                 var mpCb = function(){ }
                 thisObj.m_selectObj = new UTM_confVpnS2SE('VPNS2S', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
-                return thisObj.m_selectObj.f_getConfigurationPage();	
-				
-			case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID:
+                return thisObj.m_selectObj.f_getConfigurationPage();
+
+	    case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID:
 			    var mpCb = function(){ }
                 thisObj.m_selectObj = new UTM_confVpnRemoteUsrGrp('VPNRemoteUserGrp', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
-                return thisObj.m_selectObj.f_getConfigurationPage();	
-				
+                return thisObj.m_selectObj.f_getConfigurationPage();
+
 		    case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID:
 			    var mpCb = function(){ }
                 thisObj.m_selectObj = new UTM_confVpnRemoteUsrAdd('VPNRemoteUserAdd', mpCb, g_busObj);
                 thisObj.m_selectObj.f_init();
-                return thisObj.m_selectObj.f_getConfigurationPage();	
-						
+                return thisObj.m_selectObj.f_getConfigurationPage();
+
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_ID:
+                var dbcb = function(){}
+                thisObj.m_selectObj = new UTM_confVPNRemoteview('VPNRemoteView', dbcb, g_busObj);
+                return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID:
 			    thisObj.m_selectObj = new UTM_confEmptyComponent();
                 return thisObj.m_selectObj.f_getConfigurationPage();
-        }        
+        }
     }
 
     this.f_render = function(component)
@@ -203,8 +204,8 @@ function UTM_configPanel()
         thisObj.m_activeCmp = component;
         thisObj.m_activeObj = thisObj.m_selectObj;
 		//thisObj.f_showFTcontainer();
-        thisObj.f_redrawFTcontainer();		
-        g_utmMainPanel.f_requestResize();		
+        thisObj.f_redrawFTcontainer();
+        g_utmMainPanel.f_requestResize();
     }
 
 }
@@ -213,13 +214,13 @@ function UTM_confEmptyComponent()
 {
     var thisObj = this;
 
-    this.f_distructor = function(){ }	
+    this.f_distructor = function(){ }
 	this.f_loadVMData = function() { }
 	this.f_stopLoadVMData = function() { }
-	this.f_onUnload = function() { }	
+	this.f_onUnload = function() { }
 	this.f_detachEventListener = function() {}
-	
-	this.f_getConfigurationPage =  function() 
+
+	this.f_getConfigurationPage =  function()
 	{
         var div = document.createElement('div');
         div.style.display = 'block';
@@ -232,10 +233,10 @@ function UTM_confEmptyComponent()
         var text = document.createElement('h1');
         text.innerHTML = 'Under Construction';
         div.appendChild(text);
-		
+
 		document.getElementById(VYA.UTM_CONST.DOM_3_FT_CONTAINER_ID).appendChild(div);
-		
-        return div;		
+
+        return div;
 	}
-		
+
 }

@@ -365,7 +365,7 @@ function FT_userBusObj(busObj)
 
         if(!this.f_isThisUserExist(userRec.m_user))
         {
-            var evt = new FT_eventObj(9, '', "User does not exist");
+            var evt = new FT_eventObj(9, '', g_lang.m_userResetPasswdNotExit);
             guiCb(evt);
             return;
         }
@@ -391,7 +391,7 @@ function FT_userBusObj(busObj)
 
         if(!this.f_isThisUserExist(userRec.m_user))
         {
-            var evt = new FT_eventObj(9, '', "User is not existed");
+            var evt = new FT_eventObj(9, '', g_lang.m_userResetPasswdNotExit);
             guiCb(evt);
             return;
         }

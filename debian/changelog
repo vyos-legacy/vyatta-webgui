@@ -1,3 +1,14 @@
+vyatta-webgui (0.2+fxd0+20) unstable; urgency=low
+
+  [ Michael Larson ]
+  * additional fix to allow restricted login to receive session id.
+
+  [ An-Cheng Huang ]
+  * handle libvirt config files with priorities
+  * start new VM after auto install
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 28 Apr 2009 19:35:45 -0700
+
 vyatta-webgui (0.2+fxd0+19) unstable; urgency=low
 
   [ Loi Vo ]

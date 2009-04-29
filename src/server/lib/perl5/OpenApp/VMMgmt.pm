@@ -229,7 +229,12 @@ sub getDisplayName {
 
 sub getLibvirtCfg {
   my ($self) = @_;
-  return "$LIBVIRT_DIR/$self->{_vmId}.xml";
+  my $dd;
+  opendir($dd, "$LIBVIRT_DIR") or return '';
+  my @v = grep { /^(\d\d-)?$self->{_vmId}\.xml$/ } readdir($dd);
+  closedir($dd);
+  return '' if ("$v[0]" eq '');
+  return "$LIBVIRT_DIR/$v[0]";
 }
 
 ### getters for VM status

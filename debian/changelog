@@ -1,3 +1,23 @@
+vyatta-webgui (0.2.14+fxdU+9) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Re-checkin missing files.
+
+  [ Kevin Choi ]
+  * * re-add missing files
+
+  [ slioch ]
+  * commands are now template-gui aware
+  * added support for gui templates
+  * cgi support for new process mode, compiles, but untested
+
+  [ Kevin Choi ]
+  * * re-checked in override content.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 28 Apr 2009 19:23:55 -0700
+
 vyatta-webgui (0.2.14+fxdU+8) unstable; urgency=low
 
   [ Justin Fletcher ]

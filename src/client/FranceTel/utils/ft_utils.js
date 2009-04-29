@@ -207,11 +207,11 @@ var g_utils =
         body.className = 'ft_default_cursor';
     },
 
-    f_createPopupDiv : function(isModal)
+    f_createPopupDiv : function(isModal, width)
     {
         var div = document.createElement('div');
         div.setAttribute('id', 'ft_popup_div');
-        div.style.width = '300px';
+        div.style.width = width + 'px';
         div.style.backgroundColor = 'white';
         div.style.display = 'block';
         div.style.overflow = 'visible';
@@ -226,7 +226,7 @@ var g_utils =
         return div;
     },
 
-    f_centerPopupDiv: function(div, isModal)
+    f_centerPopupDiv: function(div, isModal, width)
     {
         var html = document.body.parentNode;
         var scrollx = html.scrollLeft;
@@ -234,7 +234,7 @@ var g_utils =
         var x = html.clientWidth;
         var y = html.clientHeight;
         var hDiv = div.clientHeight;
-        var wOffset = scrollx + (x - 300)/2;
+        var wOffset = scrollx + (x - width)/2;
         var hOffset = scrolly + (y - hDiv)/2;
 
         var o = div.style;
@@ -260,7 +260,7 @@ var g_utils =
 
         /////////////////////////////////////////
         // set inner styling of the div tag
-        var div = this.f_createPopupDiv(isModal);
+        var div = this.f_createPopupDiv(isModal, 300);
 
         if (isModal==true) {
                 popDivId = 'ft_modal_popup_message';
@@ -354,7 +354,7 @@ var g_utils =
                       '</tr></table>';
 
         div.innerHTML = innerHtml;
-        this.f_centerPopupDiv(div, isModal);
+        this.f_centerPopupDiv(div, isModal, 300);
 
         return div;
     },

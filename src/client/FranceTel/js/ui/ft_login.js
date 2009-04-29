@@ -114,13 +114,21 @@ function f_submit()
 
     var cb = function(event)
     {
-        if(event.f_isError())
-        {
-            g_utils.f_popupMessage(g_lang.m_loginUnableToLogin + event.m_errMsg,
-                            g_lang.m_ok, g_lang.m_loginError);
-        }
-        else
-        {
+        if(event.f_isError()) {
+			if (event.m_errCode == 8) {
+				//this is the case which requires the user to change his/her password at login.
+                g_utils.f_saveUserLoginId(event.m_sid);		
+				g_utils.f_saveUserName(un);
+				var cb = function()
+				{
+				};
+				var dialog = new FT_changePassword('Change Password', cb, g_busObj);
+				dialog.f_init(un);
+				dialog.f_getConfigurationPage();
+			} else {
+				g_utils.f_popupMessage(g_lang.m_loginUnableToLogin + event.m_errMsg, g_lang.m_ok, g_lang.m_loginError);
+			}
+        } else {
             g_utils.f_saveUserLoginId(event.m_value.m_sid);
             g_utils.f_saveUserName(un);
             g_utils.f_gotoHomePage();

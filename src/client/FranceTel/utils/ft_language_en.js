@@ -232,6 +232,12 @@ var g_lang =
 	m_formPassword: "password",
 
     ///////////////////////////////////////////////////////////////////
+    // Password change dialog
+	m_passwordChangePlease : "Please change your password to continue",
+	m_passwordChangeSuccess: "The new password has been saved.",
+	m_passwordChangeRelogin: "Please click ok button to relogin with the new password",
+
+    ///////////////////////////////////////////////////////////////////
     // My Profile
 	m_myprofLogin : "Login",
 	m_myprofOldPasswd : "Old password",

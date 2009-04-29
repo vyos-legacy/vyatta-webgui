@@ -1,3 +1,14 @@
+vyatta-webgui (0.2+fxd0+25) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * additional fixed bug 4326 to use language variable instead of
+    static text.
+
+  [ Loi Vo ]
+  * Fix bug: [4324]
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 29 Apr 2009 19:45:14 +0000
+
 vyatta-webgui (0.2+fxd0+24) unstable; urgency=low
 
   * UNRELEASED

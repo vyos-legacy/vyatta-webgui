@@ -1,3 +1,22 @@
+vyatta-webgui (0.2+fxd0+19) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Fix a cross-browser issue which:
+  * 1. Remove quote per Mike's comment on bug: 4308
+
+  [ An-Cheng Huang ]
+  * add script for new VM install
+  * remove unused script
+  * add auto install mechanism for new VMs
+
+  [ slioch ]
+  * set session id on restricted access accounts
+
+  [ Kevin Choi ]
+  * * fixed bug 4321 - re-calculate grid row height for missing user
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 29 Apr 2009 01:14:22 +0000
+
 vyatta-webgui (0.2+fxd0+18) unstable; urgency=low
 
   [ Michael Larson ]

@@ -199,8 +199,10 @@ function FT_vmBusObj(busObj)
         // prepare BLB vm
         var vm = thisObj.f_findVM('blb', vms);
         var userRec = g_busObj.f_getLoginUserObj();
-        if(userRec.m_loginUser.m_role == userRec.V_ROLE_ADMIN ||
-            userRec.m_loginUser.m_role == userRec.V_ROLE_INSTALL)
+        var isPwRole = userRec.m_loginUser.m_role == userRec.V_ROLE_ADMIN ||
+                        userRec.m_loginUser.m_role == userRec.V_ROLE_INSTALL ?
+                        true : false;
+        if(isPwRole)
             finalVmsList[c++] = vm == null ? new FT_vmRecObj('blb', 'Business Livebox'):vm;
 
         // prepare OA vm
@@ -209,7 +211,7 @@ function FT_vmBusObj(busObj)
 
         // pbx vm
         vm = thisObj.f_findVM('pbx', vms);
-        if(vm == null)
+        if(vm == null && isPwRole)
         {
             var pbxURL = g_oaConfig.m_pbxURI_en;
             if(g_utils.f_getLanguage() == g_consObj.V_LANG_FR)
@@ -220,13 +222,17 @@ function FT_vmBusObj(busObj)
             var uri = document.URL.split('/');
             vm.m_guiUri = '/' + uri[uri.length-2] + '/' + pbxURL;
         }
-        finalVmsList[c++] = vm;
+        if(vm != null)
+            finalVmsList[c++] = vm;
 
-        // utm vm
+        // utm/security vm
         vm = thisObj.f_findVM('utm', vms);
-        finalVmsList[c++] = vm == null ? new FT_vmRecObj('utm', 'UTM'):vm;
+        if(vm == null && isPwRole)
+            vm = new FT_vmRecObj('utm', 'Security');
+        if(vm != null)
+            finalVmsList[c++] = vm;
 
-        // other rest of vms
+        // the rest of other vms
         for(var i=0; i<vms.length; i++)
         {
             if(vms[i].m_name == 'blb' || vms[i].m_name == 'openapp' ||

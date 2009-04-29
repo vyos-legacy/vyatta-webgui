@@ -118,12 +118,12 @@ Authenticate::create_new_session()
     }
 
     //now apply results of policy
-    if (WebGUI::set_user(id,msg._user, restricted) == false) {
-    cout << "E" << endl;
+    if (WebGUI::set_user(id,msg._user,restricted) == false) {
       _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
       return false;
     }
     else if (restricted == true) {
+      _proc->_msg.set_id(id);
       _proc->set_response(WebGUI::RESTRICTED_ACCESS);
       return true;
     }

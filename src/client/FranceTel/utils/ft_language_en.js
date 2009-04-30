@@ -257,7 +257,7 @@ var g_lang =
 	m_backupApp : "Application",
 	m_backupSelectOne: "Please select at least one application to backup",
 	m_backupFail: "Backup failed",
-	m_backupInProgress: "Backup is in progress.  You will receive an email notification when the operation is finshed",
+	m_backupInProgress: "Backup is in progress.  You will receive an email notification when the operation is finished",
 	m_backupThereR: "There are",
 	m_backupPlsDelete: "backups already stored on the Open Appliance.  Please delete the oldest and try again",
 	m_backupMyPC: "My PC",

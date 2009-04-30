@@ -1,6 +1,6 @@
 #!/bin/sh
 
 rm -f /var/www/archive/restore/conf/status
-wget --no-check-certificate http://192.168.0.101/restore/domU-test/conf -O /tmp/config
+wget --no-check-certificate http://192.168.0.101/restore/utm/conf -O /tmp/config
 /bin/bash --rcfile /etc/bash_completion -i -c "/opt/vyatta/sbin/vyatta-load-config.pl /tmp/config"
 mkdir -p /var/www/archive/restore/conf/status/

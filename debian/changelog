@@ -1,3 +1,27 @@
+vyatta-webgui (0.2+fxd0+29) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * clean up console output
+
+  [ Michael Larson ]
+  * ldap configuration fixes.
+
+  [ Loi Vo ]
+  * 1. Further enhancement such that we will do the auto-login, once the
+    user change their password.
+
+  [ An-Cheng Huang ]
+  * sync critical update stats
+
+  [ Kevin Choi ]
+  * * supported critical vm upgraded
+  * * fixed merged conflicted from previous checked in.
+
+  [ An-Cheng Huang ]
+  * change ldapscripts defaults
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 30 Apr 2009 13:51:58 -0700
+
 vyatta-webgui (0.2+fxd0+28) unstable; urgency=low
 
   * 1. Change the relogin to log in again

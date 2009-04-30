@@ -18,7 +18,7 @@ OA_VMCFG_DIR=/var/oa/libvirt
 start () {
   log_daemon_msg "Starting OpenAppliance VMs"
   # this assumes the config files are "sorted" for start ordering
-  cfgs=($(find $OA_VMCFG_DIR -name '*.xml' | sort))
+  cfgs=($(find $OA_VMCFG_DIR -name '*.xml' 2>/dev/null | sort))
   ret=0
   for cfg in ${cfgs[@]}; do
     f=$(basename $cfg)

@@ -140,29 +140,37 @@ sub modify_user {
     }
     elsif (defined($password) && $password ne NULL) {
 	if (defined($oldpassword) && $oldpassword ne NULL) {
-	    my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -a $oldpassword -s $password -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");
-#	    print FILE "replace: userPassword\n";
-#	    my @output = `/usr/sbin/slappasswd -s $password`;
-#	    print FILE "userPassword: ".$output[0]."\n";
-	    close FILE;
-	    unlink($conf_file);
-	    if ($err != 0) {
-		exit 1;
+	    if ($modify eq 'installer') {
+		#go through system cmds
+		my $PASS;
+		`PASS=\`mkpasswd installer\`; usermod -p $PASS $password`;
 	    }
-	    return;
+	    else {
+		my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -a $oldpassword -s $password -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");
+		close FILE;
+		unlink($conf_file);
+		if ($err != 0) {
+		    exit 1;
+		}
+		return;
+	    }
 	}
 	else {
 	    #this is a reset operation then
-	    my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -s $password -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");
-#	    print FILE "replace: userPassword\n";
-#	    my @output = `/usr/sbin/slappasswd -s $password`;
-#	    print FILE "userPassword: ".$output[0]."\n";
-	    close FILE;
-	    unlink($conf_file);
-	    if ($err != 0) {
-		exit 1;
+	    if ($modify eq 'installer') {
+		#go through system cmds
+		my $PASS;
+		`PASS=\`mkpasswd installer\`; usermod -p $PASS installer`;
 	    }
-	    return;
+	    else {
+		my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -s $password -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");
+		close FILE;
+		unlink($conf_file);
+		if ($err != 0) {
+		    exit 1;
+		}
+		return;
+	    }
 	}
     }
     print FILE "\n";

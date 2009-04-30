@@ -1,3 +1,27 @@
+vyatta-webgui (0.2.14+fxdU+10) unstable; urgency=low
+
+  [ slioch ]
+  * hardcode fixed dom0 ip in restore scripts.
+  * missed reference to template-gui in makefile
+  * additional checkin supporting proc mode-->not yet working, yet.
+  * more fixes for proc mode cmd
+  * site-to-site-easy support for new proc mode cmd. script not complete
+    yet.
+  * utm side fix for restore. now hardwire path to utm on restore
+    operation
+  * add support for installed name reference in restore scripts.
+  * move rest directory support to makefile.
+
+  [ An-Cheng Huang ]
+  * webroot is no more
+
+  [ slioch ]
+  * convert rest msg to be consitent.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 30 Apr 2009 16:37:59 -0700
+
 vyatta-webgui (0.2.14+fxdU+9) unstable; urgency=low
 
   [ Loi Vo ]

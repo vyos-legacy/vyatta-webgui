@@ -69,7 +69,7 @@ function FT_backupRec(bkDate, name, file, content)
     this.m_bkBy = 'admin';    // owner
     this.m_name = name;
     this.m_file = file;
-    this.m_limit = false;       // limit of backup allow for each role
+    //this.m_limit = false;       // limit of backup allow for each role
     this.m_content = content;   // data type : FT_backupContentRec
 
     // below is the sample response string from server for the get restore list:
@@ -108,6 +108,7 @@ function FT_backupObj(busObj)
     this.m_busObj = busObj;
     this.m_archiveRec = null;
     this.m_downloadFile = null;
+    this.m_limit = true;
 
     /////////////////////////////////////////
     /**
@@ -156,13 +157,14 @@ function FT_backupObj(busObj)
             if(thisObj.m_guiCb != undefined)
                 thisObj.m_guiCb(evt);
         }
-    }
+    };
 
     this.f_parseRestoreData = function(response)
     {
         var reNodes = thisObj.f_getRestoreNodesFromResponse(response);
         if(reNodes != null)
         {
+            thisObj.m_limit = true;
             var arch = [];
             var c=0;
             for(var i=0; i<reNodes.length; i++)
@@ -193,9 +195,9 @@ function FT_backupObj(busObj)
                                 case 'owner':
                                   arch[c].m_bkBy = cNode.firstChild.nodeValue;
                                 break;
-                                case 'limit':
-                                  arch[c].m_limit = cNode.firstChild.nodeValue;
-                                break;
+                                //case 'limit':
+                                //  arch[c].m_limit = cNode.firstChild.nodeValue;
+                                //break;
                                 case 'contents':
                                   arch[c].m_content = thisObj.f_parseContent(cNode);
                             }
@@ -203,11 +205,15 @@ function FT_backupObj(busObj)
                     }
                     c++;
                 }
+                else if(val.nodeName == 'limit' && val.firstChild != undefined)
+                {
+                    thisObj.m_limit = val.firstChild.nodeValue;
+                }
             }
         }
 
         return arch;
-    }
+    };
 
     this.f_parseContent = function(node)
     {
@@ -238,7 +244,7 @@ function FT_backupObj(busObj)
         }
 
         return content;
-    }
+    };
 
     this.f_getRestoreNodesFromResponse = function(response)
     {
@@ -258,7 +264,7 @@ function FT_backupObj(busObj)
         }
 
         return null;
-    }
+    };
 
     this.f_convertMode = function(mode)
     {
@@ -269,7 +275,7 @@ function FT_backupObj(busObj)
             default:
             case 2: return 'both';
         }
-    }
+    };
 
     this.f_deleteArchiveFile = function(arName, arFile, cb)
     {
@@ -280,7 +286,7 @@ function FT_backupObj(busObj)
                     "'</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
-    }
+    };
 
     this.f_loadArchiveFile = function(arFile, cb, type)
     {
@@ -294,7 +300,7 @@ function FT_backupObj(busObj)
 
         if(type == 'get')
             thisObj.m_downloadFile = '../archive/' + sid + '/' + arFile + '.tar';
-    }
+    };
 
     /**
      *  send backup/restore command to server to perform vm backup/resstore.
@@ -323,18 +329,18 @@ function FT_backupObj(busObj)
 
         for(var i=0; i<vms.length; i++)
         {
-			if (i == 0) {
-				xmlstr += "'";
-			} else {
-				commas = ",";
-			}
+            if (i == 0) {
+                    xmlstr += "'";
+            } else {
+                    commas = ",";
+            }
             xmlstr += commas + vms[i] + ":" + modes[i];
         }
 
         xmlstr += "'</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
-    }
+    };
 
     /**
      *  retrieve list of restore vm from server
@@ -347,7 +353,7 @@ function FT_backupObj(busObj)
                      "<statement>open-app archive list</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
-    }
+    };
 
     /**
      *  retrieve list of restore vm from server
@@ -355,5 +361,5 @@ function FT_backupObj(busObj)
     this.f_getVMBackupList = function(guiCb)
     {
         thisObj.m_guiCb = guiCb;
-    }
+    };
 }

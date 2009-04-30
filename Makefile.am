@@ -114,9 +114,7 @@ install-exec-hook:
 	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/restore/data
 	
 	mkdir -p $(DESTDIR)$(wwwdir)/archive/backup
-
 	
-	cp -r webroot/. $(DESTDIR)$(wwwdir)
 	@cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
 	@mkdir -p $(DESTDIR)$(cfgdir); \
 	cd templates-cfg; $(cpiop) $(DESTDIR)$(cfgdir)

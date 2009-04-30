@@ -95,7 +95,10 @@ sub do_status {
     my $dfree = $vm->getDiskFree();
     my $mall = $vm->getMemAll();
     my $mfree = $vm->getMemFree();
-    my $upd = $vm->getUpdateAvail();
+    my ($upd, $crit) = $vm->getUpdateAvail();
+    if ("$crit" ne '') {
+      $crit = " critical='$crit'";
+    }
     print <<EOF;
       <vmstatus id='$vid'>
         <state>$st</state>
@@ -104,7 +107,7 @@ sub do_status {
         <diskFree>$dfree</diskFree>
         <memAll>$mall</memAll>
         <memFree>$mfree</memFree>
-        <updAvail>$upd</updAvail>
+        <updAvail$crit>$upd</updAvail>
       </vmstatus>
 EOF
   }

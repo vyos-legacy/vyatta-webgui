@@ -1,3 +1,17 @@
+vyatta-webgui (0.2+fxd0+28) unstable; urgency=low
+
+  * 1. Change the relogin to log in again
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 30 Apr 2009 10:56:26 +0000
+
+vyatta-webgui (0.2+fxd0+27) unstable; urgency=low
+
+  * add support for critical update tracking/scheduling/install.
+  * move vm operations into common libraries
+  * default time for critical update auto-install
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 29 Apr 2009 19:36:37 -0700
+
 vyatta-webgui (0.2+fxd0+26) unstable; urgency=low
 
   * UNRELEASED

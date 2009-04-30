@@ -8,12 +8,16 @@ use OpenApp::VMMgmt;
 
 my $VIMG_DIR = '/var/oa/vimg';
 my $NVIMG_DIR = '/var/oa/vimg-new';
+my $CVIMG_DIR = '/var/oa/vimg-critical';
 my $IMG_DIR = '/var/oa/xen';
 my $LDAP_ROOT = '/var/oa/ldap';
 my $STATUS_FILE = 'current/status';
 my $SCHED_FILE = 'current/sched';
 my $HIST_FILE = 'current/hist';
 my $RUNNING_FILE = 'current/running_meta';
+
+my $UPD_URG_CONTROL = 'OA-Update-Urgency';
+my $CRITICAL_UPDATE_AUTO_INST_INTVL = 3600 * 24; # 24 hours
 
 ### "static" functions
 sub vmCheckUpdate {
@@ -23,9 +27,123 @@ sub vmCheckUpdate {
   my @v = grep { /^oa-vimg-${vid}_.*\.deb$/
                  && -f "$NVIMG_DIR/$_" } readdir($dd);
   closedir($dd);
-  return '' if (!defined($v[0]));
+  return ('', '') if (!defined($v[0]));
   $v[0] =~ /^oa-vimg-${vid}_([^_]+)_all.deb$/;
-  return "$1";
+  my ($ver, $crit) = ($1, '');
+  if (isCriticalPkg($vid, $ver)) {
+    my $dl = getCritUpdateDeadline($vid, $ver);
+    if (!defined($dl)) {
+      # not synced yet. return no update for now.
+      $ver = '';
+    } else {
+      $crit = epoch2time($dl);
+    }
+  }
+  return ($ver, $crit);
+}
+
+sub _checkSched {
+  my ($vid) = @_;
+  my $vdir = "$VIMG_DIR/$vid";
+  my $sched_file = "$vdir/$SCHED_FILE";
+  my $fd = undef;
+  open($fd, '<', "$sched_file") or return (undef, undef, undef, undef);
+  my $data = <$fd>;
+  chomp($data);
+  my ($sched, $job, $ver, $time) = split(/ /, $data, 4);
+  return ($sched, $job, $ver, $time);
+}
+
+sub time2epoch {
+  my ($t) = @_;
+  if ($t eq 'now') {
+    return time;
+  }
+  if (!($t =~ /^(\d+):(\d+) (\d+)\.(\d+)\.0?(\d)$/)) {
+    return undef;
+  }
+  my ($h, $m, $D, $M, $Y) = ($1, $2, $3, $4, $5);
+  return POSIX::strftime('%s', 0, $m, $h, $D, $M - 1, $Y + 100);
+}
+
+sub epoch2time {
+  my ($e) = @_;
+  return POSIX::strftime('%H:%M %d.%m.%y', localtime($e));
+}
+
+sub isCriticalPkg {
+  my ($vid, $ver) = @_;
+  my $vimg = "$NVIMG_DIR/oa-vimg-${vid}_${ver}_all.deb";
+  return 0 if (! -r "$vimg");
+  my $urg = `dpkg-deb -f $vimg $UPD_URG_CONTROL`;
+  chomp $urg;
+  return (($urg =~ /^critical/) ? 1 : 0);
+}
+
+sub recordCriticalUpdate {
+  my ($vid, $ver) = @_;
+  my $vimg = "oa-vimg-${vid}_${ver}_all.deb";
+  return if (! -r "$NVIMG_DIR/$vimg"); # package doesn't exist
+  return if (-l "$CVIMG_DIR/$vimg"); # already recorded
+  symlink("$NVIMG_DIR/$vimg", "$CVIMG_DIR/$vimg");
+}
+
+sub recordCriticalUpdates {
+  my $uref = getUpdateList();
+  for my $aref (@{$uref}) {
+    my ($vmid, $ver) = @{$aref};
+    next if (!OpenApp::VMMgmt::isValidId($vmid));
+    next if (!isCriticalPkg($vmid, $ver));
+    # we've got a critical update package.
+    # record it, i.e., keep the receive time. if it's already recorded,
+    # this should be nop.
+    recordCriticalUpdate($vmid, $ver);
+  }
+}
+
+sub getCritUpdateDeadline {
+  my ($vid, $ver) = @_;
+  my $ln = "$CVIMG_DIR/oa-vimg-${vid}_${ver}_all.deb";
+  return undef if (! -l $ln);
+  my $mtime = (lstat($ln))[9];
+  return ($mtime + $CRITICAL_UPDATE_AUTO_INST_INTVL);
+}
+
+sub getCritUpdateInstList {
+  my $dd = undef;
+  opendir($dd, "$CVIMG_DIR") or return [];
+  my @V = grep { /^oa-vimg-.*\.deb$/
+                 && -l "$CVIMG_DIR/$_" } readdir($dd);
+  closedir($dd);
+
+  my @ret = ();
+  my $curtime = time;
+  for my $v (@V) {
+    my @st;
+    if (!(@st = stat("$CVIMG_DIR/$v"))) {
+      # update no longer there (probably installed). clean it up.
+      unlink("$CVIMG_DIR/$v");
+      next;
+    }
+
+    $v =~ /^oa-vimg-([^_]+)_([^_]+)_all.deb$/;
+    my ($vid, $ver) = ($1, $2);
+    
+    my ($sched, $job, $sver, $time) = _checkSched($vid);
+    # skip it if this particular version is already scheduled.
+    next if ($sched eq 'Scheduled' && $sver eq $ver);
+    # TODO define how to handle scenario where a different version is
+    # scheduled. for now install the critical update anyway.
+
+    my $dl = getCritUpdateDeadline($vid, $ver);
+    next if (!defined($dl) || $curtime < $dl); # doesn't exist or not yet
+
+    # the critical update was received more than X seconds ago (X is the
+    # fixed interval for critical update auto install). return it to be
+    # installed.
+    push @ret, [ $vid, $ver ];
+  }
+  return \@ret;
 }
 
 sub getUpdateList {
@@ -393,14 +511,7 @@ sub new {
 
 sub checkSched {
   my ($self) = @_;
-  my $vdir = "$VIMG_DIR/$self->{_vmId}";
-  my $sched_file = "$vdir/$SCHED_FILE";
-  my $fd = undef;
-  open($fd, '<', "$sched_file") or return (undef, undef, undef, undef);
-  my $data = <$fd>;
-  chomp($data);
-  my ($sched, $job, $ver, $time) = split(/ /, $data, 4);
-  return ($sched, $job, $ver, $time);
+  return _checkSched($self->{_vmId});
 }
 
 sub checkStatus {
@@ -461,6 +572,18 @@ sub sched {
   my ($scheduled) = $self->checkSched();
   return "'$self->{_vmId}' update already scheduled"
     if ($scheduled eq 'Scheduled');
+
+  if (isCriticalPkg($self->{_vmId}, $ver)) {
+    # critical update. make sure scheduled time is before the deadline.
+    my $dl = getCritUpdateDeadline($self->{_vmId}, $ver);
+    return "'$self->{_vmId}' cannot be scheduled at this time"
+      if (!defined($dl)); # not synced yet
+    my $stime = time2epoch($time);
+    my $deadline = epoch2time($dl);
+    if (!defined($stime) || $stime > $dl) {
+      $time = $deadline;
+    }
+  }
 
   # schedule update
   my $upg_cmd = '/opt/vyatta/sbin/openapp-vm-upgrade.pl --action=upgrade '
@@ -651,9 +774,7 @@ sub _preInstProc {
   # TODO do backup
 
   # stop the VM
-  $cmd = '/opt/vyatta/sbin/openapp-vm-op.pl --action=stop '
-         . "--vm='$self->{_vmId}'"; 
-  _system($cmd);
+  OpenApp::VMMgmt::shutdownVM($self->{_vmId});
   return 'Failed to stop VM' if ($? >> 8);
     
   return undef;
@@ -686,9 +807,7 @@ sub _postInstProc {
   return $err if (defined($err));
 
   # start the VM
-  my $cmd = '/opt/vyatta/sbin/openapp-vm-op.pl --action=start '
-            . "--vm='$self->{_vmId}'"; 
-  _system($cmd);
+  OpenApp::VMMgmt::startVM($self->{_vmId});
   return 'Failed to start VM' if ($? >> 8);
 
   # check if it was running before install

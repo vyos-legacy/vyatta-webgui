@@ -2,6 +2,7 @@
 
 use strict;
 use Getopt::Long;
+use POSIX qw(setsid);
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
@@ -15,8 +16,6 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   exit 1;
 }
 
-# take care of forked processes
-$SIG{CHLD} = 'IGNORE';
 sub fdRedirect {
   open STDOUT, '>', '/dev/null';
   open STDERR, '>&STDOUT';
@@ -45,12 +44,17 @@ if ($vmid eq $OpenApp::VMMgmt::OPENAPP_ID) {
     exit 1;
   }
 
-  if (fork()) {
+  my $pid = undef;
+  if (!defined($pid = fork())) {
+    print "Cannot create process for operation\n";
+    exit 1;
+  } elsif ($pid) {
     # parent: return success
     exit 0;
   } else {
     # child: reboot
     fdRedirect();
+    setsid();
     system('sleep 5 ; sudo /sbin/reboot >&/dev/null');
     exit 0;
   }
@@ -62,35 +66,17 @@ if (! -f "$lv_cfg") {
   exit 1;
 }
 
-sub waitVmShutOff {
-  my $vm = shift;
-  # max 180 seconds
-  for my $i (0 .. 90) {
-    sleep 2;
-    my $st = `sudo virsh -c xen:/// domstate $vm`;
-    last if ($st =~ /shut off/ || $st =~ /error: failed to get domain/);
-  }
-}
-
-sub shutdownVm {
-  my $vm = shift;
-  system("sudo virsh -c xen:/// shutdown $vm");
-  waitVmShutOff($vm);
-  system("sudo virsh -c xen:/// destroy $vm");
-}
-
 # TODO: make sure start/stop/restart are disallowed during upgrade/restore
 
 if ($action eq 'start') {
-  system("sudo virsh -c xen:/// create $lv_cfg");
-  # this always returns -1
+  OpenApp::VMMgmt::startVM($vmid);
   exit 0;
 } elsif ($action eq 'stop') {
-  shutdownVm($vmid);
+  OpenApp::VMMgmt::shutdownVM($vmid);
   exit 0;
 } elsif ($action eq 'restart') {
-  shutdownVm($vmid);
-  system("sudo virsh -c xen:/// create $lv_cfg");
+  OpenApp::VMMgmt::shutdownVM($vmid);
+  OpenApp::VMMgmt::startVM($vmid);
   exit 0;
 }
 

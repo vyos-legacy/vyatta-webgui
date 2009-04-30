@@ -1,6 +1,7 @@
 help: Return VM deployment records
 access:admin
-run: if /opt/vyatta/sbin/openapp-vm-deploy.pl --list; then
+run: sudo touch /var/run/vm-monitor.state
+     if /opt/vyatta/sbin/openapp-vm-deploy.pl --list; then
        return 0
      else
        return 1

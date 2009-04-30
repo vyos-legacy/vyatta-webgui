@@ -238,7 +238,7 @@ var g_lang =
     // Password change dialog
 	m_passwordChangePlease : "Please change your password to continue",
 	m_passwordChangeSuccess: "The new password has been saved.",
-	m_passwordChangeRelogin: "Please click ok button to relogin with the new password",
+	m_passwordChangeRelogin: "Please click ok button to log in again with the new password",
 
     ///////////////////////////////////////////////////////////////////
     // My Profile

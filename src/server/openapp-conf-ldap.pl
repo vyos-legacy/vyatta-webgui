@@ -32,7 +32,7 @@ use Getopt::Long;
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
 
-my $slap_file = "/etc/ldap/remote.conf";
+my $slap_file = "/etc/ldap/openapp.conf";
 
 my ($address,$rpswd,$ruser,$rwpswd,$rwuser,$local_db,$list);
 
@@ -94,7 +94,12 @@ sub set_ldap {
 	exit 1;
     }
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-   
+
+    #this shouldn't be set w/o being active according to wireframe
+    #NEED to pull this from the configuration tree and insert....
+    my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app ldap address`;
+    my @address = split(" ",$out[0]);
+    `sudo echo -e "overlay transluscent\nuri ldap://$address[1]:389\n" > $slap_file`;
 }
 
 
@@ -129,21 +134,19 @@ sub set_ldap_target() {
 	exit 1;
     }
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-   
 
     #now create the file.
     if ($local_db eq 'true') {
 	#should clear file that is included by slapd.conf
-	`echo '' > $slap_file`;
+	`sudo echo '' > $slap_file`;
     }
     else {
 	#should write into file that is include by slapd.conf
 	#will write into file the following:
-	
-	open(FILE, ">$slap_file") or die "Can't open archive"; 
-	print FILE "overlay translucent\n";
-	print FILE "uri ldap://$address:389\n";
-	close(FILE);
+	my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app ldap address`;
+    	my @address = split(" ",$out[0]);
+	`sudo echo -e "overlay transluscent\nuri ldap://$address[1]:389\n" > $slap_file`;
+
 #haven't figured out password access yet....
 
     }

@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+31) unstable; urgency=low
+
+  * 1. Fix bug: 4308
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 30 Apr 2009 19:24:57 +0000
+
 vyatta-webgui (0.2+fxd0+30) unstable; urgency=low
 
   [ Michael Larson ]

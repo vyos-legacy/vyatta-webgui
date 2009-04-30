@@ -107,11 +107,11 @@ install-exec-hook:
 		rm -f /tmp/ext-$$v.zip; \
 	done
 
-	mkdir -p $(DESTDIR)$(wwwdir)/notification/users
-	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/backup/conf
-	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/backup/data
-	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/restore/conf
-	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/restore/data
+	mkdir -p $(DESTDIR)$(wwwdir)/notifications/users
+	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/backup/conf
+	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/backup/data
+	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/restore/conf
+	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/restore/data
 	
 	mkdir -p $(DESTDIR)$(wwwdir)/archive/backup
 	

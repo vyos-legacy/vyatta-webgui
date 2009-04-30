@@ -27,9 +27,19 @@ sub vmCheckUpdate {
   my @v = grep { /^oa-vimg-${vid}_.*\.deb$/
                  && -f "$NVIMG_DIR/$_" } readdir($dd);
   closedir($dd);
-  return '' if (!defined($v[0]));
+  return ('', '') if (!defined($v[0]));
   $v[0] =~ /^oa-vimg-${vid}_([^_]+)_all.deb$/;
-  return "$1";
+  my ($ver, $crit) = ($1, '');
+  if (isCriticalPkg($vid, $ver)) {
+    my $dl = getCritUpdateDeadline($vid, $ver);
+    if (!defined($dl)) {
+      # not synced yet. return no update for now.
+      $ver = '';
+    } else {
+      $crit = epoch2time($dl);
+    }
+  }
+  return ($ver, $crit);
 }
 
 sub _checkSched {
@@ -70,13 +80,6 @@ sub isCriticalPkg {
   return (($urg =~ /^critical/) ? 1 : 0);
 }
 
-sub isCriticalUpdate {
-  my ($vid, $ver) = @_;
-  my $vimg = "$NVIMG_DIR/oa-vimg-${vid}_${ver}_all.deb";
-  my $ln = "$CVIMG_DIR/oa-vimg-${vid}_${ver}_all.deb";
-  return ((-r "$vimg" && -l "$ln") ? 1 : 0);
-}
-
 sub recordCriticalUpdate {
   my ($vid, $ver) = @_;
   my $vimg = "oa-vimg-${vid}_${ver}_all.deb";
@@ -101,6 +104,7 @@ sub recordCriticalUpdates {
 sub getCritUpdateDeadline {
   my ($vid, $ver) = @_;
   my $ln = "$CVIMG_DIR/oa-vimg-${vid}_${ver}_all.deb";
+  return undef if (! -l $ln);
   my $mtime = (lstat($ln))[9];
   return ($mtime + $CRITICAL_UPDATE_AUTO_INST_INTVL);
 }
@@ -132,7 +136,7 @@ sub getCritUpdateInstList {
     # scheduled. for now install the critical update anyway.
 
     my $dl = getCritUpdateDeadline($vid, $ver);
-    next if ($curtime < $dl); # not yet
+    next if (!defined($dl) || $curtime < $dl); # doesn't exist or not yet
 
     # the critical update was received more than X seconds ago (X is the
     # fixed interval for critical update auto install). return it to be
@@ -569,9 +573,11 @@ sub sched {
   return "'$self->{_vmId}' update already scheduled"
     if ($scheduled eq 'Scheduled');
 
-  if (isCriticalUpdate($self->{_vmId}, $ver)) {
+  if (isCriticalPkg($self->{_vmId}, $ver)) {
     # critical update. make sure scheduled time is before the deadline.
     my $dl = getCritUpdateDeadline($self->{_vmId}, $ver);
+    return "'$self->{_vmId}' cannot be scheduled at this time"
+      if (!defined($dl)); # not synced yet
     my $stime = time2epoch($time);
     my $deadline = epoch2time($dl);
     if (!defined($stime) || $stime > $dl) {

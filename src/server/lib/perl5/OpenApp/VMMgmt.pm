@@ -74,6 +74,39 @@ sub isValidId {
   return ($id eq $OPENAPP_ID || -r "$META_DIR/$id") ? 1 : 0;
 }
 
+sub _getLibvirtCfg {
+  my ($id) = @_;
+  my $dd;
+  opendir($dd, "$LIBVIRT_DIR") or return '';
+  my @v = grep { /^(\d\d-)?$id\.xml$/ } readdir($dd);
+  closedir($dd);
+  return '' if ("$v[0]" eq '');
+  return "$LIBVIRT_DIR/$v[0]";
+}
+
+sub startVM {
+  my ($id) = @_;
+  my $lv_cfg = _getLibvirtCfg($id);
+  system("sudo virsh -c xen:/// create $lv_cfg");
+}
+
+sub _waitVmShutOff {
+  my $vm = shift;
+  # max 180 seconds
+  for my $i (0 .. 90) {
+    sleep 2;
+    my $st = `sudo virsh -c xen:/// domstate $vm`;
+    last if ($st =~ /shut off/ || $st =~ /error: failed to get domain/);
+  }
+}
+
+sub shutdownVM {
+  my ($id) = @_;
+  system("sudo virsh -c xen:/// shutdown $id");
+  _waitVmShutOff($id);
+  system("sudo virsh -c xen:/// destroy $id");
+}
+
 ### data
 my %fields = (
   # metadata
@@ -229,12 +262,7 @@ sub getDisplayName {
 
 sub getLibvirtCfg {
   my ($self) = @_;
-  my $dd;
-  opendir($dd, "$LIBVIRT_DIR") or return '';
-  my @v = grep { /^(\d\d-)?$self->{_vmId}\.xml$/ } readdir($dd);
-  closedir($dd);
-  return '' if ("$v[0]" eq '');
-  return "$LIBVIRT_DIR/$v[0]";
+  return _getLibvirtCfg($self->{_vmId});
 }
 
 ### getters for VM status

@@ -769,9 +769,7 @@ sub _preInstProc {
   # TODO do backup
 
   # stop the VM
-  $cmd = '/opt/vyatta/sbin/openapp-vm-op.pl --action=stop '
-         . "--vm='$self->{_vmId}'"; 
-  _system($cmd);
+  OpenApp::VMMgmt::shutdownVM($self->{_vmId});
   return 'Failed to stop VM' if ($? >> 8);
     
   return undef;
@@ -804,9 +802,7 @@ sub _postInstProc {
   return $err if (defined($err));
 
   # start the VM
-  my $cmd = '/opt/vyatta/sbin/openapp-vm-op.pl --action=start '
-            . "--vm='$self->{_vmId}'"; 
-  _system($cmd);
+  OpenApp::VMMgmt::startVM($self->{_vmId});
   return 'Failed to start VM' if ($? >> 8);
 
   # check if it was running before install

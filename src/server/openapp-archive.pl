@@ -61,8 +61,8 @@ my $ARCHIVE_ROOT_DIR = "$ARCHIVE_BASE_DIR/$auth_user_role";
 my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
 my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
 
-my $REST_BACKUP = "/notification/archive/backup";
-my $REST_RESTORE = "/notification/archive/restore";
+my $REST_BACKUP = "/notifications/archive/backup";
+my $REST_RESTORE = "/notifications/archive/restore";
 my $MAC_ADDR = "/sys/class/net/eth0/address";
 my $WEB_RESTORE_ROOT="/var/www/restore";
 

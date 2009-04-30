@@ -79,7 +79,7 @@ sub add_user {
 	system("ldapadduser $add operator");
 	
 	#post message to all registered VMs:
-	#POST /notification/users/[username]
+	#POST /notifications/users/[username]
 
 	
 	
@@ -98,7 +98,7 @@ sub add_user {
 	    my $ip = '';
 	    $ip = $vm->getIP();
 	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/notification/users/$add";
+		my $cmd = "http://$ip/notifications/users/$add";
 		my $rc = `curl -X POST -q -I $cmd 2>&1`;
 		#if error returned from curl, remove from list here and notify of error??
 	    }
@@ -187,7 +187,7 @@ sub modify_user {
 #
 sub del_user {
     # post notification to VMs: 
-    # DELETE /notification/users/[username]
+    # DELETE /notifications/users/[username]
     if (defined($rights) && $rights ne NULL) {
 	my $conf_file = "/tmp/user-".$$;
 #    print "$conf_file\n";
@@ -211,7 +211,7 @@ sub del_user {
 	    $ip = $vm->getIP();
 	}
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notification/users/$delete";
+	    my $cmd = "http://$ip/notifications/users/$delete";
 	    my $rc = `curl -X PUT -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	}
@@ -227,7 +227,7 @@ sub del_user {
 	    $ip = $vm->getIP();
 	}
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notification/users/$delete";
+	    my $cmd = "http://$ip/notifications/users/$delete";
 	    my $rc = `curl -X DELETE -q -I $cmd 2>&1`;
 	    #if error returned from curl, remove from list here and notify of error??
 	}

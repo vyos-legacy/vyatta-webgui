@@ -97,7 +97,8 @@ var g_lang =
     m_dbStatusUp : "Status is Up",
     m_dbStatusDown : "Status is Down",
     m_dbStatusUnknown : "Status is Unknown",
-    m_dbErrorTitle : 'VM Dashboard Error',
+    m_dbErrorTitle : "VM Dashboard Error",
+    m_dbCriticalUpdate : "A critical update will be installed automatically for",
 
     ///////////////////////////////////////////////////////////////////
     // VM Update & History screen

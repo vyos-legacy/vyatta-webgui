@@ -22,13 +22,13 @@ function FT_confDashboard(name, callback, busLayer)
     this.constructor = function(name, callback, busLayer)
     {
         FT_confDashboard.superclass.constructor(name, callback, busLayer);
-    }
+    };
     this.constructor(name, callback, busLayer);
 
     this.f_getConfigurationPage = function()
     {
         return this.f_getNewPanelDiv(this.f_init());
-    }
+    };
 
     this.f_createColumns = function()
     {
@@ -42,7 +42,7 @@ function FT_confDashboard(name, callback, busLayer)
         cols[5] = this.f_createColumn(g_lang.m_dbUpdateNeeded, 130, 'checkbox', '55');
 
         return cols;
-    }
+    };
 
     this.f_loadVMData = function()
     {
@@ -66,11 +66,11 @@ function FT_confDashboard(name, callback, busLayer)
                 thisObj.f_populateTable();
             }
             thisObj.f_resize();
-        }
+        };
 
         g_utils.f_cursorWait();
         this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
-    }
+    };
 
     this.f_populateTable = function()
     {
@@ -91,6 +91,7 @@ function FT_confDashboard(name, callback, busLayer)
 
         var avm = thisObj.f_createSortingArray(sortCol, vm);
         var vmIndex = 0;
+        var vmCriticalUpdate = '';
         for(var i=0; i<avm.length; i++)
         {
             var v = avm[i].split('|');
@@ -113,11 +114,23 @@ function FT_confDashboard(name, callback, busLayer)
             var vmData = [v[0], img, cpu, mem, disk, update[0]];
             var bodyDiv = thisObj.f_createGridRow(this.m_colHd, vmData);
             thisObj.m_body.appendChild(bodyDiv);
+
+            if(v[10] != 'null' || v[10] == null)
+            {
+                if(vmCriticalUpdate.length > 0)
+                    vmCriticalUpdate += ' and ';
+                vmCriticalUpdate += "<u>" + v[0] + ' on ' + v[10] + "</u>";
+            }
         }
 
+        if(vmCriticalUpdate != '')
+        {
+            var text = "* " + g_lang.m_dbCriticalUpdate + " " + vmCriticalUpdate;
+            thisObj.m_body.appendChild(thisObj.f_createGridMsgRow(text));
+        }
         thisObj.f_adjustDivPosition(thisObj.m_buttons);
         thisObj.f_updateButtons();
-    }
+    };
 
     this.f_createSortingArray = function(sortIndex, vm)
     {
@@ -139,7 +152,7 @@ function FT_confDashboard(name, callback, busLayer)
         var newArray = thisObj.f_sortArray(sortIndex, ar);
         newArray.unshift(op);
         return newArray;
-    }
+    };
 
     this.f_composeSortingStr = function(vm)
     {
@@ -150,15 +163,14 @@ function FT_confDashboard(name, callback, busLayer)
                     vm.m_cpu + '|' + vm.f_getMemPercentage() + '|' +
                     vm.m_memTotal + '|' + vm.m_memFree + '|' +
                     vm.f_getDiskPercentage() + '|' + vm.m_diskTotal + '|' +
-                    vm.m_diskFree + '|' + vm.m_name;
-    }
-
+                    vm.m_diskFree + '|' + vm.m_name + '|' + vm.m_criticalUpdate;
+    };
 
     this.f_handleGridSort = function(col)
     {
         if(thisObj.f_isSortEnabled(thisObj.m_colHd, col))
             thisObj.f_populateTable();
-    }
+    };
 
     this.f_handleCheckboxClick = function(chkbox)
     {
@@ -180,7 +192,7 @@ function FT_confDashboard(name, callback, busLayer)
 
         // always enabled cancel button if any check box is dirty
         thisObj.f_enabledDisableButton(thisObj.m_btnCancelId, true);
-    }
+    };
 
     this.f_handleResetCheckbox = function()
     {
@@ -189,17 +201,17 @@ function FT_confDashboard(name, callback, busLayer)
         for(var i=0; i<f.length; i++)
         {
             var vm = f[i];
-            var chkbox = document.getElementById('db_' + vm[1].m_name)
+            var chkbox = document.getElementById('db_' + vm[1].m_name);
             if(chkbox != undefined)
                 chkbox.checked = true;
         }
-    }
+    };
 
     this.f_updateButtons = function()
     {
         thisObj.f_updateButton(thisObj.m_btnUpdateId);
         thisObj.f_updateButton(thisObj.m_btnCancelId);
-    }
+    };
 
     this.f_updateButton = function(btnId)
     {
@@ -209,7 +221,7 @@ function FT_confDashboard(name, callback, busLayer)
         for(var i=0; i<f.length; i++)
         {
             var vm = f[i];
-            var chkbox = document.getElementById('db_' + vm[1].m_name)
+            var chkbox = document.getElementById('db_' + vm[1].m_name);
             if(chkbox != undefined && chkbox.checked)
             {
                 isAnyChkboxChecked = true;
@@ -218,7 +230,7 @@ function FT_confDashboard(name, callback, busLayer)
         }
 
         thisObj.f_enabledDisableButton(btnId, isAnyChkboxChecked);
-    }
+    };
 
     /**
      * get a list of vm id who's checkbox is checked for update
@@ -237,7 +249,7 @@ function FT_confDashboard(name, callback, busLayer)
         }
 
         return vmList;
-    }
+    };
 
     /**
      *  if no available update version, return empty string else return
@@ -270,12 +282,12 @@ function FT_confDashboard(name, callback, busLayer)
             updates[vmindex] = [vm.m_needUpdate, vm, 'n/a' /*user input*/];
             return ["", updates[vmindex]];
         }
-    }
+    };
 
     this.f_stopLoadVMData = function()
     {
         this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
-    }
+    };
 
     this.f_init = function()
     {
@@ -291,8 +303,9 @@ function FT_confDashboard(name, callback, busLayer)
         this.m_buttons = this.f_createButtons(btns);
 
         return [this.m_header, this.m_body, this.m_buttons];
-    }
-}
+    };
+
+};
 FT_extend(FT_confDashboard, FT_confBaseObj);
 
 

@@ -26,12 +26,12 @@ sub getVMList {
 }
 
 sub updateStatus {
-  my ($id, $st, $cpu, $dall, $dfree, $mall, $mfree, $upd) = @_;
+  my ($id, $st, $cpu, $dall, $dfree, $mall, $mfree, $upd, $crit) = @_;
   my $fd = undef;
   # make sure the directory exists
   mkdir($STATUS_DIR);
   open($fd, '>', "$STATUS_DIR/$id") or return;
-  print $fd "$st $cpu $dall $dfree $mall $mfree $upd\n";
+  print $fd "$st $cpu $dall $dfree $mall $mfree $upd $crit\n";
   close($fd);
 }
 
@@ -128,7 +128,8 @@ my %fields = (
   _vmDiskFree => undef,
   _vmMemAll => undef,
   _vmMemFree => undef,
-  _vmNewUpdate => undef
+  _vmNewUpdate => undef,
+  _vmCritUpdate => undef
 );
 
 sub _setupMeta {
@@ -175,7 +176,8 @@ sub refreshStatus {
   my $data = <$fd>;
   close($fd);
   chomp($data);
-  my ($st, $cpu, $dall, $dfree, $mall, $mfree, $upd) = split(/ /, $data);
+  my ($st, $cpu, $dall, $dfree, $mall, $mfree, $upd, $crit)
+    = split(/ /, $data, 8);
   $self->{_vmState} = $st;
   $self->{_vmCpu} = $cpu;
   $self->{_vmDiskAll} = $dall;
@@ -183,6 +185,7 @@ sub refreshStatus {
   $self->{_vmMemAll} = $mall;
   $self->{_vmMemFree} = $mfree;
   $self->{_vmNewUpdate} = $upd;
+  $self->{_vmCritUpdate} = $crit;
 }
 
 # if $meta_file is defined, just parse the file to get the metadata
@@ -305,10 +308,10 @@ sub getUpdateAvail {
     if ("$sched" eq 'Scheduled' || "$st" eq 'Upgrading'
         || "$st" eq 'Restoring') {
       # in these cases, pretend there is no update.
-      return '';
+      return ('', '');
     }
   }
-  return $self->{_vmNewUpdate};
+  return ($self->{_vmNewUpdate}, $self->{_vmCritUpdate});
 }
 
 1;

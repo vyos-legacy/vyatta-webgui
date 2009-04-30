@@ -54,9 +54,9 @@ sub updateOAStatus {
   $disk_total = int($disk_total / 1024);
   $disk_free = int($disk_free / 1024);
 
-  # XXX hardwired state and updateAvail
+  # XXX hardwired state, updateAvail, and updCritTime
   OpenApp::VMMgmt::updateStatus($OA_ID, 'up', $cpu_util, $disk_total,
-                                $disk_free, $mem_total, $mem_free, '');
+                                $disk_free, $mem_total, $mem_free, '', '');
 }
 
 sub vmStatus {
@@ -125,10 +125,10 @@ sub updateVMStatus {
   my $vid = shift;
   my $vm = new OpenApp::VMMgmt($vid);
   my ($status, $cpu_util, $mem_total, $mem_free, $disk_total, $disk_free,
-      $upd_avail) = ('unknown', 0, 0, 0, 0, 0, '');
+      $upd_avail, $upd_crit) = ('unknown', 0, 0, 0, 0, 0, '', '');
 
   # check update availability
-  $upd_avail = OpenApp::VMDeploy::vmCheckUpdate($vid);
+  ($upd_avail, $upd_crit) = OpenApp::VMDeploy::vmCheckUpdate($vid);
   
   # check libvirt status.
   # can't use system() when ignoring SIGCHLD (wrong exit status).
@@ -161,7 +161,7 @@ sub updateVMStatus {
 
   OpenApp::VMMgmt::updateStatus($vid, $status, $cpu_util, $disk_total,
                                 $disk_free, $mem_total, $mem_free,
-                                $upd_avail);
+                                $upd_avail, $upd_crit);
 }
 
 sub getHw1Nic {

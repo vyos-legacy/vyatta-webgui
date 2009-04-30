@@ -273,6 +273,7 @@ function FT_vmBusObj(busObj)
                     var vmr = thisObj.m_vmRecObj[vmIndex];
                     vmr.m_isDeployed = true;
                     vmr.m_needUpdate = 'no';
+                    vmr.m_criticalUpdate = null;
 
                     for(var j=0; j<val.childNodes.length; j++)
                     {
@@ -281,27 +282,36 @@ function FT_vmBusObj(busObj)
 
                         var cNode = val.childNodes[j];
 
-                        if(cNode.nodeName == 'state' &&
-                            cNode.firstChild != undefined)
-                            vmr.m_status = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'cpu' &&
-                            cNode.firstChild != undefined)
-                            vmr.m_cpu = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'diskAll' &&
-                            cNode.firstChild != undefined)
-                            vmr.m_diskTotal = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'diskFree' &&
-                            cNode.firstChild != undefined)
-                            vmr.m_diskFree = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'memAll' &&
-                            cNode.firstChild != undefined)
-                            vmr.m_memTotal = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'memFree' &&
-                            cNode.firstChild != undefined)
-                            vmr.m_memFree = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == 'updAvail' &&
-                            cNode.firstChild != undefined)
-                            vmr.m_needUpdate = cNode.firstChild.nodeValue;
+                        if(cNode.firstChild != undefined)
+                        {
+                            var fcnode = cNode.firstChild;
+                            switch(cNode.nodeName)
+                            {
+                                case 'state':
+                                    vmr.m_status = fcnode.nodeValue;
+                                    break;
+                                case 'cpu':
+                                    vmr.m_cpu = fcnode.nodeValue;
+                                    break;
+                                case 'diskAll':
+                                    vmr.m_diskTotal = fcnode.nodeValue;
+                                    break;
+                                case 'diskFree':
+                                    vmr.m_diskFree = fcnode.nodeValue;
+                                    break;
+                                case 'memAll':
+                                    vmr.m_memTotal = fcnode.nodeValue;
+                                    break;
+                                case 'memFree':
+                                    vmr.m_memFree = fcnode.nodeValue;
+                                    break;
+                                case 'updAvail':
+                                    vmr.m_needUpdate = fcnode.nodeValue;
+                                    if(cNode.getAttribute != null)
+                                        vmr.m_criticalUpdate = cNode.getAttribute('critical');
+                                    break;
+                            }
+                        }
                     }
 
                     thisObj.m_vmRecObj[vmIndex] = vmr;
@@ -520,6 +530,7 @@ function FT_vmRecObj(id, displayName)
     this.m_diskFree = 0;
     this.m_guiURL = null;
     this.m_needUpdate = 'no';   // value : 'no' or version number
+    this.m_criticalUpdate = null;
 
 
     this.f_setVMSummaryValues = function(id, disName, ip, port, uri)

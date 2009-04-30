@@ -23,13 +23,13 @@ function FT_confUserRight(name, callback, busLayer)
     this.constructor = function(name, callback, busLayer)
     {
         FT_confUserRight.superclass.constructor(name, callback, busLayer);
-    }
+    };
     this.constructor(name, callback, busLayer);
 
     this.f_getConfigurationPage = function()
     {
         return this.f_getNewPanelDiv(this.f_init());
-    }
+    };
 
     this.f_showThisVM = function(vm)
     {
@@ -40,7 +40,7 @@ function FT_confUserRight(name, callback, busLayer)
             return false;
 
         return true;
-    }
+    };
 
     this.f_createColumns = function()
     {
@@ -60,7 +60,7 @@ function FT_confUserRight(name, callback, busLayer)
         }
 
         return cols;
-    }
+    };
 
     this.f_clearViewRow = function()
     {
@@ -72,7 +72,7 @@ function FT_confUserRight(name, callback, busLayer)
         thisObj.m_div.appendChild(thisObj.m_header);
         thisObj.m_div.appendChild(thisObj.m_body);
         thisObj.m_div.appendChild(thisObj.m_buttons);
-    }
+    };
 
     this.f_loadData = function()
     {
@@ -96,11 +96,11 @@ function FT_confUserRight(name, callback, busLayer)
                 }
                 thisObj.f_resize();
             }
-        }
+        };
 
         g_utils.f_cursorWait();
         this.m_busLayer.f_getUserListFromServer(cb);
-    }
+    };
 
     this.f_populateTable = function()
     {
@@ -152,7 +152,7 @@ function FT_confUserRight(name, callback, busLayer)
 
         thisObj.f_adjustDivPosition(thisObj.m_buttons);
         thisObj.f_handleOnCheckBoxClick();
-    }
+    };
 
     this.f_createSortingArray = function(sortIndex, vm)
     {
@@ -169,17 +169,17 @@ function FT_confUserRight(name, callback, busLayer)
         }
 
         return thisObj.f_sortArray(sortIndex, ar);
-    }
+    };
 
     this.f_handleGridSort = function(col)
     {
         if(thisObj.f_isSortEnabled(thisObj.m_colHd, col))
             thisObj.f_populateTable();
-    }
+    };
 
     this.f_stopLoadVMData = function()
     {
-    }
+    };
 
     this.f_createUserRightsCheckbox = function(vmName, userName, ul)
     {
@@ -203,7 +203,7 @@ function FT_confUserRight(name, callback, busLayer)
                             'f_userRightCheckboxClick(this)'), 'no'];
 
         return null;
-    }
+    };
 
     this.f_handleOnCheckBoxClick = function()
     {
@@ -235,7 +235,7 @@ function FT_confUserRight(name, callback, busLayer)
 
         thisObj.f_enabledDisableButton(thisObj.m_btnApplyId, isDirty);
         thisObj.f_enabledDisableButton(thisObj.m_btnCancelId, isDirty);
-    }
+    };
 
     this.f_handleOnApplyClick = function()
     {
@@ -266,11 +266,11 @@ function FT_confUserRight(name, callback, busLayer)
                 thisObj.f_loadData();
             else if(evt != undefined && evt.f_isError())
                 alert(evt.m_errMsg);
-        }
+        };
 
         if(cmdStr.length > 0)
             g_busObj.f_modifyUserRightToServer(cmdStr, cb);
-    }
+    };
 
     this.f_resetUserInput = function()
     {

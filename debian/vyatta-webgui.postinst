@@ -97,6 +97,17 @@ EOF
 cp $guiconfdir/{slapd,openapp}.conf /etc/ldap/
 chmod a+w /etc/ldap/openapp.conf
 
+# set up ldapscripts config
+lsconf=/etc/ldapscripts/ldapscripts.conf
+sed -i '/^# BEGIN OA CONF/,/^# END OA CONF/{d}' $lsconf
+cat <<EOF >>$lsconf
+# BEGIN OA CONF
+UIDSTART=30000
+USHELL=/bin/false
+UHOMES=/tmp
+# END OA CONF
+EOF
+
 # set up oa-autostart init
 update-rc.d oa-autostart defaults 91
 

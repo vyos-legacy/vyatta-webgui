@@ -17,8 +17,7 @@ my $HIST_FILE = 'current/hist';
 my $RUNNING_FILE = 'current/running_meta';
 
 my $UPD_URG_CONTROL = 'OA-Update-Urgency';
-#my $CRITICAL_UPDATE_AUTO_INST_INTVL = 3600 * 24; # 24 hours
-my $CRITICAL_UPDATE_AUTO_INST_INTVL = 120;
+my $CRITICAL_UPDATE_AUTO_INST_INTVL = 3600 * 24; # 24 hours
 
 ### "static" functions
 sub vmCheckUpdate {

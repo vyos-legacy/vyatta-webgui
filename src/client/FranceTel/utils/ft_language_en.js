@@ -261,6 +261,8 @@ var g_lang =
 	m_backupThereR: "There are",
 	m_backupPlsDelete: "backups already stored on the Open Appliance.  Please delete the oldest and try again",
 	m_backupMyPC: "My PC",
+    m_backupTooltipCancel : 'Reset selection',
+    m_backupTooltipBackup : 'Backup selected applications',	
 
     ///////////////////////////////////////////////////////////////////
     // Restore configuration

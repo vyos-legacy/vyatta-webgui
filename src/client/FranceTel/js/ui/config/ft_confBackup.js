@@ -13,6 +13,8 @@ function FT_confBackup(name, callback, busLayer)
     this.m_bottom = undefined;
     this.m_colHd = null;
     this.m_bkRec = null;
+    this.m_btnBackupId = 'ft_confBackupBtnBkId';	
+    this.m_btnCancelId = 'ft_confBackupBtnCancelId';		
 
     /**
      * @param name - name of configuration screens.
@@ -167,31 +169,6 @@ function FT_confBackup(name, callback, busLayer)
 		}
 		g_busObj.f_backup(vms, mode, thisObj.f_oaBackupCb);	
 	}
-
-	//////////////////////////////////////////////////////////////////////////
-	////////// TODO : NEED BACKEND SUPPORT
-	////////////////////////////////////////////////////////////////////////// 
-	this.f_overflow = function(evt) 
-	{
-        g_utils.f_cursorDefault();		
-		var max = 3;		
-		if (g_roleManagerObj.f_isInstaller()) {
-			max = 2;
-		} 
-        if (evt != undefined && evt.m_objName == 'FT_eventObj') {
-			if (thisObj.f_isServerError(evt, g_lang.m_error)) 
-				return;
-			var bkRec = evt.m_value;
-            if(bkRec == undefined) {
-			    bkRec = new Array();	
-			}		
-			if (bkRec.length >= max) {
-				g_utils.f_popupMessage(g_lang.m_backupThereR + ' ' + max + ' ' + g_lang.m_backupPlsDelete + '.', 'error', g_lang.m_error, true);
-				return;
-			}
-			thisObj.f_oaBackup();
-		}			
-	}
 	
 	this.f_backup = function()
 	{
@@ -205,7 +182,7 @@ function FT_confBackup(name, callback, busLayer)
 			return;
 		}
         g_utils.f_cursorWait();
-        thisObj.m_busLayer.f_getVMRestoreListFromServer(thisObj.f_overflow);		
+        thisObj.f_oaBackup();	
 	}
 
     this.f_filterVm = function(vm)
@@ -217,6 +194,23 @@ function FT_confBackup(name, callback, busLayer)
 			return true;
 		}
 		return false;
+	}
+
+    this.f_checkOverflow = function()
+	{
+		var cb = function(evt)
+		{
+			if (evt.f_isError()) {
+				g_utils.f_popupMessage(eventObj.m_errMsg, 'error', g_lang.m_error, true);
+			} else {
+			    if (thisObj.m_busLayer.m_backup.m_limit == true) { //the limit has been reached
+				    thisObj.f_enabledDisableButton(thisObj.m_btnBackupId,false);
+				} else {
+				    thisObj.f_enabledDisableButton(thisObj.m_btnBackupId,true);		
+				}
+			}
+		}
+        thisObj.m_busLayer.f_getVMRestoreListFromServer(cb);						
 	}
 
     this.f_loadVMData = function()
@@ -266,6 +260,7 @@ function FT_confBackup(name, callback, busLayer)
                 }
                 thisObj.f_adjustDivPosition(thisObj.m_bottom);	
 				thisObj.f_resize(10);
+				thisObj.f_checkOverflow();
             }
         }
         thisObj.m_busLayer.f_getVMDataFromServer(cb);	
@@ -320,8 +315,8 @@ function FT_confBackup(name, callback, busLayer)
 		
         thisObj.f_loadVMData();
 
-        var btns = [['Backup', 'f_handleConfBackupBkCb()'],
-		            ['Cancel', 'f_handleConfBackupCancelCb()']];
+        var btns = [['Backup', 'f_handleConfBackupBkCb()', g_lang.m_backupTooltipBackup , this.m_btnBackupId],
+		            ['Cancel', 'f_handleConfBackupCancelCb()', g_lang.m_backupTooltipCancel, this.m_btnCancelId]];
         this.m_buttons = thisObj.f_createButtons(btns);
         
 		this.m_bottom = thisObj.f_createBottom();
@@ -350,5 +345,5 @@ function f_handleConfBackupOkCb()
 
 function f_bkGridHeaderOnclick(col)
 {
-    g_configPanelObj.m_activeObj.f_handleGridSort(col);
+    //g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }

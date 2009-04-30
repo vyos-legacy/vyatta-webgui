@@ -207,7 +207,11 @@ function FT_backupObj(busObj)
                 }
                 else if(val.nodeName == 'limit' && val.firstChild != undefined)
                 {
-                    thisObj.m_limit = val.firstChild.nodeValue;
+					if (val.firstChild.nodeValue == 'true') {
+						thisObj.m_limit = true;
+					} else if (val.firstChild.nodeValue == 'false') {
+						thisObj.m_limit = false;
+					}
                 }
             }
         }

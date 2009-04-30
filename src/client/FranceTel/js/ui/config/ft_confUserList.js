@@ -20,13 +20,13 @@ function FT_confUserList(name, callback, busLayer)
     this.constructor = function(name, callback, busLayer)
     {
         FT_confUserList.superclass.constructor(name, callback, busLayer);
-    }
+    };
     this.constructor(name, callback, busLayer);
 
     this.f_getConfigurationPage = function()
     {
         return this.f_getNewPanelDiv(this.f_init());
-    }
+    };
 
     /**
      * define your column header here....
@@ -41,12 +41,12 @@ function FT_confUserList(name, callback, busLayer)
         cols[3] = this.f_createColumn(g_lang.m_delete, 100, 'button', '35');
 
         return cols;
-    }
+    };
 
     this.f_hideButtons = function()
     {
             thisObj.m_buttons.style.display = 'none';
-    }
+    };
 
     this.f_clearViewRow = function()
     {
@@ -58,7 +58,7 @@ function FT_confUserList(name, callback, busLayer)
         thisObj.m_div.appendChild(thisObj.m_header);
         thisObj.m_div.appendChild(thisObj.m_body);
         thisObj.m_div.appendChild(thisObj.m_buttons);		
-    }
+    };
 
     this.f_loadVMData = function()
     {
@@ -82,11 +82,11 @@ function FT_confUserList(name, callback, busLayer)
                 }
                 thisObj.f_resize();
             }
-        }
+        };
 
         g_utils.f_cursorWait();
         this.m_busLayer.f_getUserListFromServer(cb);
-    }
+    };
 
     this.f_populateTable = function()
     {
@@ -121,7 +121,7 @@ function FT_confUserList(name, callback, busLayer)
         }
 
         thisObj.f_adjustDivPosition(thisObj.m_buttons);
-    }
+    };
 
     this.f_createSortingArray = function(sortIndex, vm)
     {
@@ -138,19 +138,19 @@ function FT_confUserList(name, callback, busLayer)
         }
 
         return thisObj.f_sortArray(sortIndex, ar);
-    }
+    };
 
     this.f_handleGridSort = function(col)
     {
         if(thisObj.f_isSortEnabled(thisObj.m_colHd, col))
             thisObj.f_populateTable();
-    }
+    };
 
     this.f_stopLoadVMData = function()
     {
         //this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
         this.m_threadId = null;
-    }
+    };
 
     this.f_init = function()
     {
@@ -167,8 +167,8 @@ function FT_confUserList(name, callback, busLayer)
 		}	   
 	    */ 
         return [this.m_header, this.m_body, this.m_buttons];
-    }
-}
+    };
+};
 FT_extend(FT_confUserList, FT_confBaseObj);
 
 function f_userListAddUserCallback()
@@ -197,7 +197,7 @@ function f_handleUserListDeleteUser(e, username)
         }
         else
             g_configPanelObj.m_activeObj.f_loadVMData();
-    }
+    };
 
     if(e.getAttribute('id')== 'ft_popup_message_apply')
         g_busObj.f_deleteUserFromServer(username, cb);

@@ -168,6 +168,35 @@ function FT_confBaseObj(name, callback, busLayer)
 
         div.style.width = (width) + 'px';
         return div;
+    };
+
+    // insert a plain text row at the bottom of grid
+    this.f_createGridMsgRow = function(text)
+    {
+        var div = document.createElement('div');
+        div.style.position = 'relative';
+        div.style.borderBottom = '0px';
+        div.style.backgroundColor = 'white';
+        div.style.paddingTop = '3px';
+        div.style.paddingBottom = '0px';
+
+        var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
+        innerHtml += '<tbody><tr height="28" cellspacing="0" cellpadding="0">';
+
+        innerHtml += '<td cellspacing="0" cellpadding="0">' +
+                        '<div style="height:20px; color:red;' +
+                        ' padding-top:0px; padding-bottom:0px; ' +
+                        ' margin-top:0px; margin-bottom: 0px; ' +
+                        'padding-left: 10px; padding-top: 5px;"><b>' +
+                        text + '</b></div></td>';
+
+        innerHtml += '</tr></tbody></table>' ;
+
+        div.style.width = '700px';
+        div.innerHTML = innerHtml;
+
+        thisObj.m_tableRowCounter++;
+        return div;
     }
 
     this.f_createGridRow = function(header, data)

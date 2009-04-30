@@ -98,6 +98,7 @@ var g_lang =
     m_dbStatusDown : "Status is Down",
     m_dbStatusUnknown : "Status is Unknown",
     m_dbErrorTitle : 'VM Dashboard Error',
+    m_dbCriticalUpdate : "Une mise à jour critique sera installé automatiquement pour",
 
     ///////////////////////////////////////////////////////////////////
     // VM Update & History screen
@@ -228,12 +229,6 @@ var g_lang =
 	m_formInvalid: "est invalide",
 	m_formSave : "sauvé",
 
-    ///////////////////////////////////////////////////////////////////
-    // Password change dialog
-	m_passwordChangePlease : "S'il vous plaît changer votre mot de passe pour continuer",
-	m_passwordChangeSuccess: "Le nouveau mot de passe a été enregistré.",
-	m_passwordChangeRelogin: "S'il vous plaît cliquez sur OK pour une reconnexion avec le nouveau mot de passe",
-		
     ///////////////////////////////////////////////////////////////////
     // My Profile
 	m_myprofLogin : "Login",

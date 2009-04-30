@@ -7,7 +7,7 @@
 
 function FT_confHwMonitor(name, callback, busLayer)
 {
-    this.thisObjName = 'FT_confHwMonitor',
+    this.thisObjName = 'FT_confHwMonitor';
 
     /**
      * @param name - name of configuration screens.
@@ -17,13 +17,13 @@ function FT_confHwMonitor(name, callback, busLayer)
     this.constructor = function(name, callback, busLayer)
     {
         FT_confHwMonitor.superclass.constructor(name, callback, busLayer);
-    }
+    };
     this.constructor(name, callback, busLayer);
 
     this.f_getConfigurationPage = function()
     {
         return this.f_getNewPanelDiv(this.f_init());
-    }
+    };
 
     this.f_createColumns = function()
     {
@@ -34,7 +34,7 @@ function FT_confHwMonitor(name, callback, busLayer)
         cols[1] = this.f_createColumn('Status', 100, 'image', '45');
 
         return cols;
-    }
+    };
 
     this.f_loadVMData = function()
     {
@@ -70,17 +70,17 @@ function FT_confHwMonitor(name, callback, busLayer)
                 }
                 thisObj.f_resize();
             }
-        }
+        };
 
         g_utils.f_cursorWait();
         this.m_threadId = this.m_busLayer.f_startHWMonitorRequestThread(cb);
-    }
+    };
 
     this.f_stopLoadVMData = function()
     {
         this.m_busLayer.f_stopHWMonitorRequestThread(this.m_threadId);
         this.m_threadId = null;
-    }
+    };
 
     this.f_init = function()
     {
@@ -90,6 +90,6 @@ function FT_confHwMonitor(name, callback, busLayer)
         this.f_loadVMData();
 
         return [this.m_header, this.m_body];
-    }
-}
+    };
+};
 FT_extend(FT_confHwMonitor, FT_confBaseObj);

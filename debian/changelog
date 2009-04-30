@@ -1,3 +1,25 @@
+vyatta-webgui (0.2+fxd0+30) unstable; urgency=low
+
+  [ Michael Larson ]
+  * enforce consistent use of notification root.
+
+  [ Kevin Choi ]
+  * * updated business layout to add a flag to check whether user has
+    reached their configured
+
+  [ Michael Larson ]
+  * convert rest root to be consistent with client docs
+
+  [ Loi Vo ]
+  * Fix Bug 4331.  Add checking from server.  Gray out backup button if
+    the limit reaches.
+  * 1. Fix a typo
+
+  [ Kevin Choi ]
+  * * fixed bug 4332 - make the last row from table to be removed
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 01 May 2009 00:49:05 +0000
+
 vyatta-webgui (0.2+fxd0+29) unstable; urgency=low
 
   [ An-Cheng Huang ]

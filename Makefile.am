@@ -107,13 +107,14 @@ install-exec-hook:
 		rm -f /tmp/ext-$$v.zip; \
 	done
 
+	mkdir -p $(DESTDIR)$(wwwdir)/notification/users
 	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/backup/conf
 	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/backup/data
 	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/restore/conf
 	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/restore/data
 	
 	mkdir -p $(DESTDIR)$(wwwdir)/archive/backup
-	mkdir -p $(DESTDIR)$(wwwdir)/archive/restore
+
 	
 	cp -r webroot/. $(DESTDIR)$(wwwdir)
 	@cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)

@@ -2,6 +2,7 @@
 
 use strict;
 
+use POSIX qw(setsid);
 use Net::SNMP;
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::VMMgmt;
@@ -14,8 +15,6 @@ my $OA_ID = $OpenApp::VMMgmt::OPENAPP_ID;
 my $OA_SNMP_COMM = $OpenApp::VMMgmt::OPENAPP_SNMP_COMM;
 my $STATE_FILE = '/var/run/vm-monitor.state';
 
-# take care of forked processes
-$SIG{CHLD} = 'IGNORE';
 sub fdRedirect {
   open STDOUT, '>', '/dev/null';
   open STDERR, '>&STDOUT';
@@ -288,22 +287,46 @@ sub installNewVMs {
     my ($vmid, $ver) = @{$aref};
     next if ("$vmid" eq '' || OpenApp::VMMgmt::isValidId($vmid));
     # we've got a new VM to install
-    next if (fork());
+    my $pid = undef;
+    next if (!defined($pid = fork()) || $pid);
     # child process here. exec the newinst script.
     fdRedirect();
+    setsid();
     exec('/opt/vyatta/sbin/openapp-vimg-newinst.pl', $vmid, $ver)
+      or exit 1;
+  }
+}
+
+sub processCriticalUpdates {
+  OpenApp::VMDeploy::recordCriticalUpdates();
+ 
+  # get the list of critical updates that should be installed now
+  my $uref = OpenApp::VMDeploy::getCritUpdateInstList();
+  for my $aref (@{$uref}) {
+    # install critical update
+    my ($vmid, $ver) = @{$aref};
+    my $pid = undef;
+    next if (!defined($pid = fork()) || $pid);
+    # child process here. exec the upgrade script.
+    fdRedirect();
+    setsid();
+    exec('/opt/vyatta/sbin/openapp-vm-upgrade.pl', '--action=upgrade',
+         "--vm=$vmid", "--ver=$ver")
       or exit 1;
   }
 }
 
 while (1) {
   updateOAStatus();
+  # install new VMs (may be critical) before processing critical
+  installNewVMs();
+  # process critical before updating updAvail for VMs
+  processCriticalUpdates();
   my @VMs = OpenApp::VMMgmt::getVMList();
   for my $vm (@VMs) {
     updateVMStatus($vm);
   }
   updateHwMon();
-  installNewVMs();
 
   my $cur_time = time();
   my $to_sleep = $INTERVAL_ACTIVE;

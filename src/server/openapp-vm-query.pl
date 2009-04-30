@@ -96,6 +96,12 @@ sub do_status {
     my $mall = $vm->getMemAll();
     my $mfree = $vm->getMemFree();
     my $upd = $vm->getUpdateAvail();
+    my $crit = '';
+    if ("$upd" ne '' && OpenApp::VMDeploy::isCriticalUpdate($vid, $upd)) {
+      my $dl = OpenApp::VMDeploy::getCritUpdateDeadline($vid, $upd);
+      my $deadline = OpenApp::VMDeploy::epoch2time($dl);
+      $crit = " critical='$deadline'";
+    }
     print <<EOF;
       <vmstatus id='$vid'>
         <state>$st</state>
@@ -104,7 +110,7 @@ sub do_status {
         <diskFree>$dfree</diskFree>
         <memAll>$mall</memAll>
         <memFree>$mfree</memFree>
-        <updAvail>$upd</updAvail>
+        <updAvail$crit>$upd</updAvail>
       </vmstatus>
 EOF
   }

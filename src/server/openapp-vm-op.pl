@@ -2,11 +2,13 @@
 
 use strict;
 use Getopt::Long;
+use POSIX qw(setsid);
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::VMMgmt;
 use OpenApp::LdapUser;
 
 # authenticated user
+if (undef) { # disable this check for now
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
 my $auth_user_role = $auth_user->getRole();
@@ -14,9 +16,8 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   # not authorized
   exit 1;
 }
+}
 
-# take care of forked processes
-$SIG{CHLD} = 'IGNORE';
 sub fdRedirect {
   open STDOUT, '>', '/dev/null';
   open STDERR, '>&STDOUT';
@@ -45,12 +46,17 @@ if ($vmid eq $OpenApp::VMMgmt::OPENAPP_ID) {
     exit 1;
   }
 
-  if (fork()) {
+  my $pid = undef;
+  if (!defined($pid = fork())) {
+    print "Cannot create process for operation\n";
+    exit 1;
+  } elsif ($pid) {
     # parent: return success
     exit 0;
   } else {
     # child: reboot
     fdRedirect();
+    setsid();
     system('sleep 5 ; sudo /sbin/reboot >&/dev/null');
     exit 0;
   }

@@ -307,7 +307,7 @@ function FT_vmBusObj(busObj)
                                     break;
                                 case 'updAvail':
                                     vmr.m_needUpdate = fcnode.nodeValue;
-                                    if(cNode.getAttribute != null)
+                                    if(cNode.getAttribute('critical') != null)
                                         vmr.m_criticalUpdate = cNode.getAttribute('critical');
                                     break;
                             }

@@ -1,3 +1,12 @@
+vyatta-webgui (0.2+fxd0+33) unstable; urgency=low
+
+  * Fix when there is no item in the archive list, the limit tag is not
+    included in the return from the backend.  We need to set the default
+    value for the m_limit value to false, so that the backup button is
+    not grayed out by default.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 01 May 2009 11:11:35 +0000
+
 vyatta-webgui (0.2+fxd0+32) unstable; urgency=low
 
   * don't start vm monitor if we are not deployed

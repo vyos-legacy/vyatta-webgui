@@ -1,3 +1,11 @@
+vyatta-webgui (0.2.14+fxdU+11) unstable; urgency=low
+
+  * copy config.boot to "save" location on restore notification
+  * use the "other" config loader script for the utm.
+  * modified conf script for handle utm restore
+
+ -- slioch <slioch@eng-140.vyatta.com>  Fri, 01 May 2009 11:27:27 -0700
+
 vyatta-webgui (0.2.14+fxdU+10) unstable; urgency=low
 
   [ slioch ]

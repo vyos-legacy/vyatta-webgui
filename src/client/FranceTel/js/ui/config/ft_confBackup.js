@@ -260,7 +260,7 @@ function FT_confBackup(name, callback, busLayer)
                 }
                 thisObj.f_adjustDivPosition(thisObj.m_bottom);	
 				thisObj.f_resize(10);
-				thisObj.f_checkOverflow();
+				setTimeout('f_handleBackupOverflowCheck()', 100);
             }
         }
         thisObj.m_busLayer.f_getVMDataFromServer(cb);	
@@ -327,6 +327,11 @@ function FT_confBackup(name, callback, busLayer)
     }
 }
 FT_extend(FT_confBackup, FT_confBaseObj);
+
+function f_handleBackupOverflowCheck()
+{
+    g_configPanelObj.m_activeObj.f_checkOverflow();	
+}
 
 function f_handleConfBackupBkCb()
 {

@@ -16,5 +16,7 @@ update: if [ ! -f /etc/lighttpd/server.pem ]; then
         if [ -r /var/run/vm-monitor.pid ]; then
           kill $(cat /var/run/vm-monitor.pid)
         fi
-        nohup /opt/vyatta/sbin/openapp-vm-monitor.pl >&/dev/null &
-        jobs -p %1 >/var/run/vm-monitor.pid
+        if [ -f /proc/xen/capabilities ]; then
+          nohup /opt/vyatta/sbin/openapp-vm-monitor.pl >&/dev/null &
+          jobs -p %1 >/var/run/vm-monitor.pid
+        fi

@@ -108,7 +108,7 @@ function FT_backupObj(busObj)
     this.m_busObj = busObj;
     this.m_archiveRec = null;
     this.m_downloadFile = null;
-    this.m_limit = true;
+    this.m_limit = false;
 
     /////////////////////////////////////////
     /**
@@ -211,8 +211,10 @@ function FT_backupObj(busObj)
 						thisObj.m_limit = true;
 					} else if (val.firstChild.nodeValue == 'false') {
 						thisObj.m_limit = false;
+					} else { //set default to false
+						thisObj.m_limit = false;
 					}
-                }
+                } 
             }
         }
 

@@ -2,5 +2,5 @@
 
 rm -f /var/www/archive/restore/conf/status
 wget --no-check-certificate http://192.168.0.101/restore/$( cat /opt/vyatta/etc/vmmeta )/conf -O /opt/vyatta/etc/config/config.boot
-/bin/bash --rcfile /etc/bash_completion -i -c "/opt/vyatta/sbin/vyatta-load-config.pl /opt/vyatta/etc/config/config.boot"
+/bin/bash --rcfile /etc/bash_completion -i -c "/opt/vyatta/sbin/vyatta-config-loader.pl /opt/vyatta/etc/config/config.boot"
 mkdir -p /var/www/archive/restore/conf/status/

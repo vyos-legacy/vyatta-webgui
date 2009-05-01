@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+34) unstable; urgency=low
+
+  * 1. Fix a infinite sending out archive list command, seeing on
+    Kevin's machine.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 01 May 2009 11:49:21 +0000
+
 vyatta-webgui (0.2+fxd0+33) unstable; urgency=low
 
   * Fix when there is no item in the archive list, the limit tag is not

@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+32) unstable; urgency=low
+
+  * don't start vm monitor if we are not deployed
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 30 Apr 2009 18:21:02 -0700
+
 vyatta-webgui (0.2+fxd0+31) unstable; urgency=low
 
   * 1. Fix bug: 4308

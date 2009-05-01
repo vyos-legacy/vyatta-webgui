@@ -252,6 +252,8 @@ function FT_confLDAPserver (name, callback, busLayer) {
 		    } else {
 				if (type == 'lan') {
 					thisObj.f_setLdapConfig();
+				} else {
+                    g_utils.f_popupMessage(g_lang.m_menuLDAPConfig +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_menuLDAPConfig,true);				
 				}
 		    }				
 		}

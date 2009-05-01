@@ -59,7 +59,11 @@ function FT_confRestore(name, callback, busLayer)
                     return;
 
                 var bkRec = evt.m_value;
-                if(bkRec == undefined) return;
+                if(bkRec == undefined)
+                {
+                    thisObj.f_resetScreen();
+                    return;
+                }
 
                 thisObj.m_dataObj = bkRec;
                 thisObj.f_populateTable();

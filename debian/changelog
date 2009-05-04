@@ -1,3 +1,38 @@
+vyatta-webgui (0.2+fxd0+35) unstable; urgency=low
+
+  * Fix bug [4341].
+  * 1. Fix an error on IE.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 01 May 2009 19:47:59 +0000
+
+vyatta-webgui (0.2+fxd0+34) unstable; urgency=low
+
+  * 1. Fix a infinite sending out archive list command, seeing on
+    Kevin's machine.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 01 May 2009 11:49:21 +0000
+
+vyatta-webgui (0.2+fxd0+33) unstable; urgency=low
+
+  * Fix when there is no item in the archive list, the limit tag is not
+    included in the return from the backend.  We need to set the default
+    value for the m_limit value to false, so that the backup button is
+    not grayed out by default.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 01 May 2009 11:11:35 +0000
+
+vyatta-webgui (0.2+fxd0+32) unstable; urgency=low
+
+  * don't start vm monitor if we are not deployed
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 30 Apr 2009 18:21:02 -0700
+
+vyatta-webgui (0.2+fxd0+31) unstable; urgency=low
+
+  * 1. Fix bug: 4308
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 30 Apr 2009 19:24:57 +0000
+
 vyatta-webgui (0.2+fxd0+30) unstable; urgency=low
 
   [ Michael Larson ]

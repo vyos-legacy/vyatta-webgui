@@ -25,7 +25,7 @@ function FT_confBackup(name, callback, busLayer)
     {
         FT_confBackup.superclass.constructor(name, callback, busLayer);
     }
-    this.constructor(name, callback, busLayer);
+	this.constructor(name, callback, busLayer);
 
     this.f_getConfigurationPage = function()
     {
@@ -169,6 +169,19 @@ function FT_confBackup(name, callback, busLayer)
 		}
 		g_busObj.f_backup(vms, mode, thisObj.f_oaBackupCb);	
 	}
+		
+	this.f_overflow = function(evt) 
+	{
+		if (evt.f_isError()) {
+			g_utils.f_popupMessage(eventObj.m_errMsg, 'error', g_lang.m_error, true);
+		} else {
+			if (thisObj.m_busLayer.m_backup.m_limit == true) { //the limit has been reached
+			    g_utils.f_popupMessage(g_lang.m_backupPlsDelete + '!', 'error', g_lang.m_error, true);
+                return;
+			} 
+			thisObj.f_oaBackup();
+		}					
+	}
 	
 	this.f_backup = function()
 	{
@@ -181,9 +194,9 @@ function FT_confBackup(name, callback, busLayer)
 			thisObj.f_pcBackup();
 			return;
 		}
-        g_utils.f_cursorWait();
-        thisObj.f_oaBackup();	
-	}
+        //g_utils.f_cursorWait();
+        thisObj.m_busLayer.f_getVMRestoreListFromServer(thisObj.f_overflow);		
+	}	
 
     this.f_filterVm = function(vm)
 	{
@@ -194,23 +207,6 @@ function FT_confBackup(name, callback, busLayer)
 			return true;
 		}
 		return false;
-	}
-
-    this.f_checkOverflow = function()
-	{
-		var cb = function(evt)
-		{
-			if (evt.f_isError()) {
-				g_utils.f_popupMessage(eventObj.m_errMsg, 'error', g_lang.m_error, true);
-			} else {
-			    if (thisObj.m_busLayer.m_backup.m_limit == true) { //the limit has been reached
-				    thisObj.f_enabledDisableButton(thisObj.m_btnBackupId,false);
-				} else {
-				    thisObj.f_enabledDisableButton(thisObj.m_btnBackupId,true);		
-				}
-			}
-		}
-        thisObj.m_busLayer.f_getVMRestoreListFromServer(cb);						
 	}
 
     this.f_loadVMData = function()
@@ -260,7 +256,6 @@ function FT_confBackup(name, callback, busLayer)
                 }
                 thisObj.f_adjustDivPosition(thisObj.m_bottom);	
 				thisObj.f_resize(10);
-				thisObj.f_checkOverflow();
             }
         }
         thisObj.m_busLayer.f_getVMDataFromServer(cb);	

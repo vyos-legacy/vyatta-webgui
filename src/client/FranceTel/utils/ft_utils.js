@@ -43,6 +43,7 @@ function FT_thread(interval)
 
 var g_utils =
 {
+	m_homePage : '',
     m_clock_serverTime : null,
     m_clock_isClockRan : false,
     m_clock_secTime : null,
@@ -119,46 +120,14 @@ var g_utils =
 		return g_cookie.f_get(g_consObj.V_COOKIES_BLB);
 	},
 
-    f_launchHomePage: function(isBLB)
+    f_getHomePage: function()
     {
-		try {
-		    if ((isBLB != undefined) && (isBLB != null)) {
-				if (isBLB) {
-					g_cookie.f_set(g_consObj.V_COOKIES_BLB, g_consObj.V_BLB_YES, g_cookie.m_userNameExpire);
-				} else {
-					g_cookie.f_set(g_consObj.V_COOKIES_BLB, g_consObj.V_BLB_NO, g_cookie.m_userNameExpire);
-				}
-			}
-		} catch (e) {}
-        var lang = this.f_getLanguage();
-
-        switch(lang)
-        {
-            default:
-            case g_consObj.V_LANG_EN:
-                return "ft_main.html";
-            case g_consObj.V_LANG_FR:
-                return "ft_main_fr.html";
-        }
-    },
-
-    f_getContactPage: function()
-    {
-		var loc = window.location.href;
-		var index = loc.indexOf('ft_main');
-		var homepage = g_consObj.V_HOME_PAGE;
-		var locale = '_en';
-		if (index != -1) {
-			if (loc.charAt(index+7) != '.') {
-				locale = loc.substring(index+7, index+10);
-			}
-		}
-		return 'ft_contact' + locale + '.html';
+	    return g_utils.m_homePage;	
     },
 
     f_gotoHomePage: function()
     {
-        var hp = this.f_launchHomePage();
+        var hp = this.f_getHomePage();
 		
         if (typeof navigator.vendor != "undefined") {
 			var i = navigator.vendor.indexOf("Apple Computer, Inc.");
@@ -175,23 +144,6 @@ var g_utils =
 			window.location = hp;
 		}
     },
-	
-	f_getHomePagePrefix : function()
-	{
-		var loc = window.location.href;
-		var index = loc.indexOf('ft_main');
-		if (index != -1) {
-			return loc.substring(0, index);
-		}
-		return 'javascript://';
-	},
-
-	f_gotoHomePageLocale: function(locale)
-	{
-	    //var homepage = 'ft_main' + locale + '.html';
-            var homepage = this.f_launchHomePage();
-            window.location = homepage;
-	},
 
     f_cursorWait: function()
     {

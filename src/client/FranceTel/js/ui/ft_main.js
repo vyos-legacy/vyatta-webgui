@@ -8,7 +8,8 @@ g_xbObj.f_xbOnDomReady(function(){
      + ' isIE5mac:' + g_isIE5mac + ' browserVer:' + g_browserVer);
      */
     g_mainFrameObj.f_init();
-
+    g_utils.m_homePage = window.location.href;
+	
     if(!g_busObj.f_isLogin()) {
             g_mainFrameObj.f_hideHeader(true);
             g_mainFrameObj.f_setBannerImage();

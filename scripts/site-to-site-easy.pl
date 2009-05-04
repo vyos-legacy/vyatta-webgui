@@ -30,11 +30,43 @@ use POSIX;
 use File::Copy;
 use Getopt::Long;
 
-my ($get);
+my ($set,$get);
 
 
+##########################################################################
+#
+# execute_set
+#
+##########################################################################
 sub execute_set {
     my ($tunnelname,$peerip,$presharedkey,$lnet,$rnet);
+
+    #parse the key value pairs
+    my $pair;
+    my @pair = split(",",$set);
+    my $p;
+    for $p (@pair) {
+	my @vals = split(":",$p);
+	if ($vals[0] eq "tunnelname") {
+	    $tunnelname = $vals[1];
+	}
+	elsif ($vals[0] eq "peerip") {
+	    $peerip = $vals[1];
+	}
+	elsif ($vals[0] eq "presharedkey") {
+	    $presharedkey = $vals[1];
+	}
+	elsif ($vals[0] eq "lnet") {
+	    $lnet = $vals[1];
+	}
+	elsif ($vals[0] eq "rnet") {
+	    $rnet = $vals[1];
+	}
+    }
+
+    if (!defined $tunnelname || !defined $peerip || !defined $presharedkey || !defined $lnet || !defined $rnet) {
+	exit 1;
+    }
 
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
@@ -68,7 +100,7 @@ sub execute_set {
 
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set get vpn ipsec site-to-site peer <name> tunnel <number> local-subnet $lnet");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer <name> tunnel <number> local-subnet $lnet");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
@@ -76,7 +108,7 @@ sub execute_set {
 
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set set vpn ipsec site-to-site peer <name> tunnel <number> remote-subnet $rnet");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer <name> tunnel <number> remote-subnet $rnet");
     if ($err != 0) {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
@@ -92,13 +124,18 @@ sub execute_set {
    
 }
 
+##########################################################################
+#
+# execute_get
+#
+##########################################################################
 sub execute_get {
     #just need to pull the ip from the config
     print "VERBATIM_OUTPUT\n";
 
-    my $out = `/opt/vyatta/sbin/vyatta-output-config.pl system ntp-server`;
+    my $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site`;
     my @values = split(' ', $out);
-    print "<ntp-server>$values[1]</ntp-server>";
+    print "<site-to-site-easy>$values[1]</site-to-site-easy>";
 }
 
 ##########################################################################

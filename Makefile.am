@@ -50,9 +50,9 @@ cgi_PROGRAMS += src/server/test
 cgi_PROGRAMS += src/server/chunker_test
 
 cgi_SCRIPTS = src/server/webgui-wrap
-cgi_SCRIPTS += scripts/site-to-site-easy.pl
 
 sbin_SCRIPTS = scripts/enterprise-mib.pl
+sbin_SCRIPTS += scripts/site-to-site-easy.pl
 
 # library
 AM_CFLAGS = -I src/lib -Wall -I /usr/include/glib-2.0 \

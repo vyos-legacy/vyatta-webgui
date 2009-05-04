@@ -242,7 +242,7 @@ function FT_confBaseObj(name, callback, busLayer)
             }
 
             innerHtml += '<td cellspacing="0" cellpadding="0" width="' +
-                        fWidth +'"><div style="height:20px; ' + lBorder + rBorder +
+                        fWidth +'"><div style=" ' + lBorder + rBorder +
                         ' padding-top:0px; padding-bottom:0px; ' +
                         ' margin-top:0px; margin-bottom: 0px; ' +
                         lPadding + 'padding-top:' +

@@ -149,8 +149,8 @@ function FT_confVMUpdates(name, callback, busLayer)
         else if(status == 'Failed' || status == 'Succeeded')
         {
             cb = "f_vmDeployRestore('" + vmId + "', '" + vmName + "')";
-            return thisObj.f_renderButton('Restore', prevVer == undefined ?
-                false:true, cb, 'Restore ' + vmName);
+            return thisObj.f_renderButton('Restore', prevVer == undefined ||
+                prevVer == 'undefined' ? false:true, cb, 'Restore ' + vmName);
         }
 
         return "";

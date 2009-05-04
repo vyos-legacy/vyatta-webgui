@@ -179,11 +179,7 @@ function f_onLanguageChange()
 {
 	var e = document.getElementById('ft_language');
 	g_utils.f_saveLanguage(e.value);
-	var locale = '_' + e.value;
-	if (locale == '_en') {
-		locale = '';
-	}
-	g_utils.f_gotoHomePageLocale(locale);
+    g_utils.f_gotoHomePage();
 }
 
 function f_home()
@@ -193,9 +189,6 @@ function f_home()
 
 function f_contact()
 {
-	//var url = "http://orange.com/en_EN/tools/contact/index.html";	
-	//var url= g_utils.f_getContactPage();
-	//window.open(url, g_lang.m_menuContact, 'height=155, width=285,scrollbars=no');
     if(g_utils.f_getLanguage() == g_consObj.V_LANG_FR)
         window.open(g_oaConfig.m_oaContactURL_fr,
                       g_lang.m_menuContact, 'height=155, width=285,scrollbars=no');

@@ -34,16 +34,16 @@ if ! grep -q '^alias.url' $cgi_conf; then
   echo 'alias.url += ( "/cgi-bin/" => "/usr/lib/cgi-bin/" )' >>$cgi_conf
 fi
 
-# allow index.cgi in /FranceTel/
-if ! grep -q 'HTTP.*/FranceTel/' $cgi_conf; then
+# allow index.cgi
+if ! grep -q 'HTTP.*"/\$"' $cgi_conf; then
 cat <<'EOF' >>$cgi_conf
-$HTTP["url"] =~ "^/FranceTel/" {
+$HTTP["url"] =~ "/$" {
   cgi.assign = ( ".cgi" => "" )
 }
 EOF
 fi
 
-# allow index.cgi
+# enable index.cgi
 if ! grep -q '^index-file.names.*index.cgi' /etc/lighttpd/lighttpd.conf; then
   sed -i '/^index-file.names/{s/"index.php"/"index.cgi", "index.php"/}' \
     /etc/lighttpd/lighttpd.conf

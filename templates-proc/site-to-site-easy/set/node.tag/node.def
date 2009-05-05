@@ -1,0 +1,1 @@
+run: perl /opt/vyatta/sbin/site-to-site-easy.pl --set "$2"

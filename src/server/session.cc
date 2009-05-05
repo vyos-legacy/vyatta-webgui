@@ -84,7 +84,6 @@ Session::process_message()
   if (_debug) {
     cout << "Session::process_message(), entering" << endl;
   }
-
   //parse the message, and compute the response back
   if (_processor->parse() == true) {
     if (_debug) {
@@ -115,14 +114,14 @@ Session::process_message()
       if (_debug) {
 	cout << "Session::process_message(): CLICMD" << endl;
       }
-
       if (!commit()) {
 	return false;
       }
-
+      /*
       if (!update_session()) {
 	return false;
-      }
+	}
+      */
       _command.execute_command(_access_level);
       break;
 

@@ -52,6 +52,7 @@ cgi_PROGRAMS += src/server/chunker_test
 cgi_SCRIPTS = src/server/webgui-wrap
 
 sbin_SCRIPTS = scripts/enterprise-mib.pl
+sbin_SCRIPTS += scripts/site-to-site-easy.pl
 
 # library
 AM_CFLAGS = -I src/lib -Wall -I /usr/include/glib-2.0 \
@@ -85,6 +86,7 @@ install-exec-hook:
 	cp scripts/notify-backup-data $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-restore-conf $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-restore-data $(DESTDIR)/$(cgidir)/
+	cp scripts/vyatta-proc $(DESTDIR)/$(cgidir)/
 
 
 	mkdir -p $(DESTDIR)/etc/lighttpd/conf-enabled/.
@@ -105,20 +107,19 @@ install-exec-hook:
 		rm -f /tmp/ext-$$v.zip; \
 	done
 
-	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/backup/conf
-	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/backup/data
-	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/restore/conf
-	mkdir -p $(DESTDIR)$(wwwdir)/notification/archive/restore/data
+	mkdir -p $(DESTDIR)$(wwwdir)/notifications/users
+	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/backup/conf
+	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/backup/data
+	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/restore/conf
+	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/restore/data
 	
 	mkdir -p $(DESTDIR)$(wwwdir)/archive/backup
-	mkdir -p $(DESTDIR)$(wwwdir)/archive/restore
 	
-	cp -r webroot/. $(DESTDIR)$(wwwdir)
 	@cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
 	@mkdir -p $(DESTDIR)$(cfgdir); \
 	cd templates-cfg; $(cpiop) $(DESTDIR)$(cfgdir)
 	@mkdir -p $(DESTDIR)$(opdir); \
 	cd templates-op; $(cpiop) $(DESTDIR)$(opdir)
 	@mkdir -p $(DESTDIR)$(procdir); \
-	cd templates-gui; $(cpiop) $(DESTDIR)$(procdir)
+	cd templates-proc; $(cpiop) $(DESTDIR)$(procdir)
 

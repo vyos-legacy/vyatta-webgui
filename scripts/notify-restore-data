@@ -1,5 +1,5 @@
 #!/bin/sh
 
 rm -f /var/www/archive/restore/data/status
-wget --no-check-certificate http://$( cat /tmp/dom0 )/restore/domU-test/data -O /tmp/data
+wget --no-check-certificate http://192.168.0.101/restore/$( cat /opt/vyatta/etc/vmmeta )/data -O /tmp/data
 mkdir -p /var/www/archive/restore/data/status/

@@ -1,5 +1,1 @@
-run: if perl /opt/vyatta/sbin/site-to-site-easy.pl --get $2
-     	return 0				   
-     else	
-     	return 1
-     fi
+run: perl /opt/vyatta/sbin/site-to-site-easy.pl --get

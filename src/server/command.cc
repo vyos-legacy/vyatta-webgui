@@ -159,11 +159,11 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     }
   }
   else if (_proc->get_msg()._conf_mode == WebGUI::PROC) { //gui mode command
+    
     Message msg = _proc->get_msg();
     GUICmdHandler gui_hand(msg);
-    WebGUI::Error err = gui_hand.process();
-    string err_str = gui_hand.get_response_str();
-    _proc->set_response(err, err_str);
+    err = gui_hand.process();
+    resp = gui_hand.get_response_str();
     return;
   }
   else { //operational mode command

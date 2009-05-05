@@ -1,3 +1,55 @@
+vyatta-webgui (0.2.14+fxdU+11) unstable; urgency=low
+
+  * copy config.boot to "save" location on restore notification
+  * use the "other" config loader script for the utm.
+  * modified conf script for handle utm restore
+
+ -- slioch <slioch@eng-140.vyatta.com>  Fri, 01 May 2009 11:27:27 -0700
+
+vyatta-webgui (0.2.14+fxdU+10) unstable; urgency=low
+
+  [ slioch ]
+  * hardcode fixed dom0 ip in restore scripts.
+  * missed reference to template-gui in makefile
+  * additional checkin supporting proc mode-->not yet working, yet.
+  * more fixes for proc mode cmd
+  * site-to-site-easy support for new proc mode cmd. script not complete
+    yet.
+  * utm side fix for restore. now hardwire path to utm on restore
+    operation
+  * add support for installed name reference in restore scripts.
+  * move rest directory support to makefile.
+
+  [ An-Cheng Huang ]
+  * webroot is no more
+
+  [ slioch ]
+  * convert rest msg to be consitent.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 30 Apr 2009 16:37:59 -0700
+
+vyatta-webgui (0.2.14+fxdU+9) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Re-checkin missing files.
+
+  [ Kevin Choi ]
+  * * re-add missing files
+
+  [ slioch ]
+  * commands are now template-gui aware
+  * added support for gui templates
+  * cgi support for new process mode, compiles, but untested
+
+  [ Kevin Choi ]
+  * * re-checked in override content.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 28 Apr 2009 19:23:55 -0700
+
 vyatta-webgui (0.2.14+fxdU+8) unstable; urgency=low
 
   [ Justin Fletcher ]

@@ -53,7 +53,9 @@ VYA.UTM_CONST = {
 	DOM_3_NAV_SUB_DASHBOARD_ID : 'dashboard_l2',
     //-----Firewall		
 	DOM_3_NAV_SUB_ZONE_ID : 'zone_l2',
-	DOM_3_NAV_SUB_FW_ID : 'firewall_l2',	
+	DOM_3_NAV_SUB_FW_ID : 'firewall_l2',
+        DOM_3_NAV_SUB_FW_CUSTOM_ID : 'firewall_custom_l2',
+
     //-----IDP	
 	DOM_3_NAV_SUB_EASY_IDP_ID : 'easy_idp_l2',
 	DOM_3_NAV_SUB_EXPERT_IDP_ID: 'expert_idp_l2',

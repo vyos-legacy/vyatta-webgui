@@ -58,6 +58,22 @@ var g_lang =
     m_fireLevelBdBlock : "The access to internet is blocked all users.",
 
     ///////////////////////////////////////////////////////////////////
+    // Firewall Security Customize Level
+    m_fireCustAppService : "Application<br>/Service",
+    m_fireCustProtocol : "Protocol",
+    m_fireCustSrcIpAddr : "Source IP<br> address",
+    m_fireCustSrcMaskIpAddr : "Source mask IP<br>address",
+    m_fireCustSrcPort : "Source port<small><br>Enter single port number or<br>port range(200-300)</small>",
+    m_fireCustDestIpAddr : "Destination IP<br>address",
+    m_fireCustDestMaskIpAddr : "Destination mask<br>IP address",
+    m_fireCustDestPort : "Destination<br>port<small><br>Enter single<br>port number or<br>port range(200-300)</small>",
+    m_fireCustAction : "Action",
+    m_fireCustLog : "Log",
+    m_fireCustOrder : "Order",
+    m_fireCustEnable : "Enable",
+    m_fireCustDelete : "Delete",
+
+    ///////////////////////////////////////////////////////////////////
     // VPN General
     m_vpn_BasicSettings : "Basic settings",
 	m_vpn_auth: "Authentication",

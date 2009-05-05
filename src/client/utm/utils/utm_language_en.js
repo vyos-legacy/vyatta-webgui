@@ -22,11 +22,11 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // VPN Overview
-    m_vpnOverviewHeader : 'Lorem ipsum onsectetuer adipiscing elit, sed diam ' +
-            'nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam ' +
-            'erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci ' +
-            'tation ullamcorper suscipit lobortis nisl ut aliquip ex ea ' +
-            'commodo consequat.',
+    m_vpnOverviewHeader : "Lorem ipsum onsectetuer adipiscing elit, sed diam " +
+            "nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam " +
+            "erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci " +
+            "tation ullamcorper suscipit lobortis nisl ut aliquip ex ea " +
+            "commodo consequat.",
     m_vpnOVSource : 'Source',
     m_vpnOVDest : 'Destination',
     m_vpnOVPeerDomainName : 'Peer Address /Domain name',
@@ -37,9 +37,25 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // VPN RemoteUser View
-    m_vpnRemoteviewHeader : 'This page enables you to configure a Virtual ' +
-        'Private Network (VPN) Server to connect remote users.',
+    m_vpnRemoteviewHeader : "This page enables you to configure a Virtual " +
+        "Private Network (VPN) Server to connect remote users.",
 
+    ///////////////////////////////////////////////////////////////////
+    // Firewall Security Level
+    m_fireLevelColName : "Security Level",
+    m_fireLevelHeader : "Lerem ipsum onsectetuer adipiscing elit, sed diam nonummy" +
+                    " nibh euismod tincidunt ut looreet dolore magna aliquam erat " +
+                    "volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation",
+    m_fireLevelHdAuth : "Authorize All",
+    m_fireLevelBdAuth : "Firewall functionality is disabled. All incoming and outgoing traffic is authorized.",
+    m_fireLevelHdStand : "Standard",
+    m_fireLevelBdStand : "All incoming traffic blocked/outgoing traffic alloed except Netbios.",
+    m_fireLevelHdAdvan : "Advanced",
+    m_fireLevelBdAdvan : "All incoming and outgoing traffic blocked except those involving internet browsing and email.",
+    m_fireLevelHdCustom : "Customized",
+    m_fireLevelBdCustom : "Customisation of Advanced Profile.",
+    m_fireLevelHdBlock : "Block All",
+    m_fireLevelBdBlock : "The access to internet is blocked all users.",
 
     ///////////////////////////////////////////////////////////////////
     // VPN General

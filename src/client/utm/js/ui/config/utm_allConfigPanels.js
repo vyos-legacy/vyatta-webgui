@@ -8,6 +8,7 @@
 document.write('<script type="text/javascript" src="js/ui/config/utm_confBaseObj.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confFormDefObj.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confFormObj.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confFireLevel.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confvpnOverview.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confvpnRemoteview.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confVpnRemoteUsrGrp.js"></script>');

@@ -70,8 +70,8 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
-        var hds2s = this.f_createGroupColumns();
-        var hdRemote = this.f_createUserColumns();
+        //this.m_hds2s = this.f_createGroupColumns();
+        //this.m_hdRemote = this.f_createUserColumns();
         thisObj.m_updateFields = [];
 
         var cb = function(evt)
@@ -81,59 +81,15 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             {
 
             }
-        }
+        };
 
         g_utils.f_cursorWait();
         //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
-    }
+    };
 
     this.f_handleCheckboxClick = function(chkbox)
     {
 
-    }
-
-    this.f_updateButtons = function()
-    {
-        thisObj.f_updateButton(thisObj.m_btnUpdateId);
-        thisObj.f_updateButton(thisObj.m_btnCancelId);
-    }
-
-    this.f_updateButton = function(btnId)
-    {
-        var f = thisObj.m_updateFields;
-        var isAnyChkboxChecked = false;
-
-        for(var i=0; i<f.length; i++)
-        {
-            var vm = f[i];
-            var chkbox = document.getElementById('db_' + vm[1].m_name)
-            if(chkbox != undefined && chkbox.checked)
-            {
-                isAnyChkboxChecked = true;
-                break;
-            }
-        }
-
-        thisObj.f_enabledDisableButton(btnId, isAnyChkboxChecked);
-    }
-
-    /**
-     * get a list of vm id who's checkbox is checked for update
-     */
-    this.f_getUpdateList = function()
-    {
-        var vmList = [];
-        var index = 0;
-        var f = thisObj.m_updateFields;
-
-        for(var i=0; i<f.length; i++)
-        {
-            var vm = f[i];
-            if(vm[2] != 'no')
-                vmList[index++] = vm[1].m_name;
-        }
-
-        return vmList;
     }
 
     this.f_stopLoadVMData = function()
@@ -142,8 +98,8 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
 
     this.f_init = function()
     {
-        var hdgroup = this.f_createGroupColumns();
-        var hdruser = this.f_createUserColumns();
+        this.m_hds2s = this.f_createGroupColumns();
+        this.m_hdRemote = this.f_createUserColumns();
         this.m_anchorGroups = this.f_createAnchorDiv('<b>Groups:</b>', 'group');
         this.m_anchorUsers = this.f_createAnchorDiv('<b>Users:</b>', 'user');
         this.m_dummy = this.f_createAnchorDiv('', '');

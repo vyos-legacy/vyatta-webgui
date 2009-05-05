@@ -85,12 +85,16 @@ function UTM_confBaseObj(name, callback, busLayer)
                 cursor = 'cursor:pointer; ';
             }
 
-            var colName = thisObj.f_createColNameHTML(h[0], i);
+            var align = h[5] == undefined ? 'center' : h[5];
+            var pLeft = align == "center" ? 0 : h[3];
+
+            var colName = thisObj.f_createColNameHTML(h[0], i, h[5]);
             var rBorder = (i == header.length-1) || h[0].length < 2 ?
                               '' : 'border-right:1px solid #CCC; ';
 
-            inner += '<td width="' + h[1] +'">' +
+            inner += '<td width="' + h[1] + '" align="' + align + '">' +
                 '<div style="padding-top:5px; padding-bottom:5px; ' +
+                'padding-left:' + pLeft + 'px;" ' +
                 cursor + rBorder + '" onclick="' + onclick + '(' + i + ')" ' +
                 tooltip + '>' + colName + '</div></td>';
         }
@@ -105,7 +109,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         return div;
     }
 
-    this.f_createGridView = function(header)
+    this.f_createGridView = function(header, isBorder)
     {
         thisObj.m_tableRowCounter = 0;
         var div = document.createElement('div');
@@ -113,7 +117,12 @@ function UTM_confBaseObj(name, callback, busLayer)
         div.style.backgroundColor = 'white';
         div.style.height = '50px';
         div.style.overflow = 'visible';
-        div.style.border = '1px solid #CCC';
+
+        if(isBorder == undefined || isBorder)
+            div.style.border = '1px solid #CCC';
+        else
+            div.style.border = '0px solid #CCC';
+
         div.style.color = '#000';
 
         var width = 0;
@@ -127,7 +136,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         return div;
     }
 
-    this.f_createGridRow = function(header, data)
+    this.f_createGridRow = function(header, data, height)
     {
         var div = document.createElement('div');
         div.style.position = 'relative';
@@ -136,8 +145,10 @@ function UTM_confBaseObj(name, callback, busLayer)
         div.style.paddingTop = '0px';
         div.style.paddingBottom = '0px';
 
+        var rHeight = height == undefined ? 28 : height;
+
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
-        innerHtml += '<tbody><tr height="28" cellspacing="0" cellpadding="0">';
+        innerHtml += '<tbody><tr height="' + rHeight + '" cellspacing="0" cellpadding="0">';
 
         var width = 0;
         for(var i=0; i<data.length; i++)
@@ -157,6 +168,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                 case 'text':
                 case 'image':
                 case 'checkbox':
+                case 'radio':
                     tPadding = '8px';
                     break;
                 case 'button':
@@ -165,10 +177,12 @@ function UTM_confBaseObj(name, callback, busLayer)
                 case 'progress':
                     tPadding = '4px';
                     break;
+                default:
+                    tPadding = '0px';
             }
 
             innerHtml += '<td cellspacing="0" cellpadding="0" width="' +
-                        fWidth +'"><div style="height:28px; ' + lBorder + rBorder +
+                        fWidth +'"><div style=" ' + lBorder + rBorder +
                         ' padding-top:0px; padding-bottom:0px; ' +
                         ' margin-top:0px; margin-bottom: 0px"' +
                         '<div style="' + lPadding + 'padding-top:' +
@@ -184,9 +198,14 @@ function UTM_confBaseObj(name, callback, busLayer)
         return div;
     }
 
+    this.f_increateTableRowCounter = function(rows)
+    {
+        thisObj.m_tableRowCounter = thisObj.m_tableRowCounter + rows;
+    }
+
     this.f_adjustDivPosition = function(div)
     {
-        var adVal = (thisObj.m_tableRowCounter * 28) - 20;
+        var adVal = (thisObj.m_tableRowCounter * 31) - 10;
         div.style.top = adVal+'px';
     }
 
@@ -344,16 +363,17 @@ function UTM_confBaseObj(name, callback, busLayer)
      *                text input, combobox)
      * @param paddLeft - number of pixel to be padding left
      * @param sortable - true allow sort column, else false (default)
+     * @param align - 'left', 'center', or 'right'
      */
-    this.f_createColumn = function(colName, width, type, paddLeft, sortable)
+    this.f_createColumn = function(colName, width, type, paddLeft, sortable, align)
     {
         if(sortable != undefined && sortable)
             thisObj.m_allowSort = true;
 
-        return [colName, width, type, paddLeft, sortable];
+        return [colName, width, type, paddLeft, sortable, align];
     }
 
-    this.f_createColNameHTML = function(colName, col)
+    this.f_createColNameHTML = function(colName, col, align)
     {
         var header = "";
 
@@ -366,11 +386,11 @@ function UTM_confBaseObj(name, callback, busLayer)
                     '<img src="' + g_lang.m_imageDir + 'sortDesc.gif"/>';
 
                 if(!thisObj.m_allowSort) sortIcon = '';
-                header = "<p valign='center' align='center'><b>" +
+                header = "<p valign='center' align='" + align + "'><b>" +
                       colName + "&nbsp;" + sortIcon + "<br></b></p>";
             }
             else
-                header = "<p valign='center' align='center'><b>" +
+                header = "<p valign='center' align='" + align + "'><b>" +
                       colName + "<br></b></p>";
         }
 
@@ -406,6 +426,15 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         return '<input id="' + elId + '" type="checkbox" ' + checked +
                 ' title="' + tooltip + '" onclick="' + cb + '"/>';
+    }
+
+    this.f_renderRadio = function(val, elId, cb, name, tooltip)
+    {
+        var checked = val == 'yes' ? 'checked' : '';
+        tooltip = tooltip == undefined ? "" : tooltip;
+
+        return '<input id="' + elId + '" type="radio" ' + checked +
+                ' name="' + name + '" title="' + tooltip + '" onclick="' + cb + '"/>';
     }
 
     this.f_renderCombobox = function(options, val)
@@ -541,6 +570,14 @@ function UTM_confBaseObj(name, callback, busLayer)
             button.src = enabled ? newSrc + name + '.gif' : /*newSrc + name + '.gif';*/
                           newSrc + name + '_disabled.gif';
         }
+    }
+
+    /**
+     * to be override by sub-class
+     */
+    this.f_stopLoadVMData = function()
+    {
+
     }
 }
 

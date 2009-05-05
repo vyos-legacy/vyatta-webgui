@@ -305,7 +305,7 @@ Command::multi_part_op_cmd(std::string &cmd)
   resp = WebGUI::mass_replace(resp, ">", "&gt;");
 
   //will build out special response here:
-  string msg = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->_msg._token+"</token><error><code>0</code><msg segment='"+token+"'>"+resp+"</msg></error></vyatta>";  
+  string msg = "<?xml version='1.0' encoding='utf-8'?><openappliance><token>"+_proc->_msg._token+"</token><error><code>0</code><msg segment='"+token+"'>"+resp+"</msg></error></openappliance>";  
   _proc->set_response(msg);
   return true;
 }

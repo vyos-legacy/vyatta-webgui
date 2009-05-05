@@ -188,8 +188,6 @@ sub execute_set {
 	exit 1;
     }
 
-
-
     # commit
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
     if ($err != 0) {

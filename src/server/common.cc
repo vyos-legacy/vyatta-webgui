@@ -42,8 +42,8 @@ const string WebGUI::CHUNKER_RESP_INIT="/usr/lib/cgi-bin/etc/init.d/vyatta-webgu
 const string WebGUI::CHUNKER_RESP_PID = "/usr/lib/cgi-bin/var/run";
 const string WebGUI::CHUNKER_SOCKET = "/tmp/browser_pager";
 const unsigned long WebGUI::CHUNKER_MAX_WAIT_TIME = 2; //seconds
-const string WebGUI::CHUNKER_MSG_FORMAT = "<vyatta><chunker_command><token>%s</token><statement>%s</statement></chunker_command></vyatta>\0\0";
-const string WebGUI::CHUNKER_UPDATE_FORMAT = "<vyatta><chunker_command><token>%s</token><statement></statement></chunker_command></vyatta>\0\0";
+const string WebGUI::CHUNKER_MSG_FORMAT = "<openappliance><chunker_command><token>%s</token><statement>%s</statement></chunker_command></openappliance>\0\0";
+const string WebGUI::CHUNKER_UPDATE_FORMAT = "<openappliance><chunker_command><token>%s</token><statement></statement></chunker_command></openappliance>\0\0";
 
 const string WebGUI::MANDATORY_NODE_FILE = "/usr/lib/cgi-bin/mandatory";
 
@@ -75,7 +75,7 @@ WebGUI::generate_response(string &token, Error err)
 {
     char buf[40];
     sprintf(buf, "%d", err);
-    return ("<?xml version='1.0' encoding='utf-8'?><vyatta><error><token>"+token+"</token><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[err])+"</msg></error></vyatta>");
+    return ("<?xml version='1.0' encoding='utf-8'?><openappliance><error><token>"+token+"</token><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[err])+"</msg></error></openappliance>");
 }
 
 /**

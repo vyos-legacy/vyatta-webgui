@@ -48,15 +48,15 @@ Configuration::get_config()
   }/*
   else if (_proc->get_msg()._conf_mode == WebGUI::CONF) {
     string root_node = _proc->get_msg()._root_node;
-    foobar = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->get_msg()._token+"</token>";
+    foobar = "<?xml version='1.0' encoding='utf-8'?><openappliance><token>"+_proc->get_msg()._token+"</token>";
     get_full_level(root_node,foobar,true); //make this recursive
-    foobar += "</vyatta>";
+    foobar += "</openappliance>";
     }*/
   else {
     string root_node = _proc->get_msg()._root_node;
-    foobar = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->get_msg()._token+"</token>";
+    foobar = "<?xml version='1.0' encoding='utf-8'?><openappliance><token>"+_proc->get_msg()._token+"</token>";
     get_full_level(root_node,foobar,false);
-    foobar += "</vyatta>";
+    foobar += "</openappliance>";
   }
   _proc->set_response(foobar);
 }
@@ -70,7 +70,7 @@ Configuration::get_full_op_level()
   string rel_tmpl_path;
   DIR *dp;
   struct dirent *dirp;
-  string out = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->get_msg()._token+"</token>";
+  string out = "<?xml version='1.0' encoding='utf-8'?><openappliance><token>"+_proc->get_msg()._token+"</token>";
 
   //first convert root request into template path
   StrProc str_proc(_proc->get_msg()._root_node, "/");
@@ -101,7 +101,7 @@ Configuration::get_full_op_level()
 
   string tmpl_path = WebGUI::OP_TEMPLATE_DIR + "/" + rel_tmpl_path;
   if ((dp = opendir(tmpl_path.c_str())) == NULL) {
-    out += "</vyatta>";
+    out += "</openappliance>";
     return out;
   }
 
@@ -156,7 +156,7 @@ Configuration::get_full_op_level()
   }
 
   closedir(dp);
-  out += "</vyatta>";
+  out += "</openappliance>";
   return out;
 }
 
@@ -198,7 +198,7 @@ Configuration::get_full_level(const std::string &root_node, std::string &out, bo
   map<string,WebGUI::NodeState> dir_coll = get_conf_dir(rel_config_path);
   string tmpl_path = WebGUI::CFG_TEMPLATE_DIR + "/" + rel_tmpl_path;
   if ((dp = opendir(tmpl_path.c_str())) == NULL) {
-    out += "</vyatta>";
+    out += "</openappliance>";
     return;
   }
 

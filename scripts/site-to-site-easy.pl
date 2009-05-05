@@ -207,12 +207,35 @@ sub execute_set {
 #
 ##########################################################################
 sub execute_get {
-    #just need to pull the ip from the config
-    print "VERBATIM_OUTPUT\n";
+    #pull these values from the configuration
+    my @values;
+    my $out;
+    print "<site-to-site-easy>";
+    $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site peer`;
+    @values = split(' ', $out);
 
-    my $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site`;
-    my @values = split(' ', $out);
-    print "<site-to-site-easy>$values[1]</site-to-site-easy>";
+    my $peer = $values[1];
+    if ($peer eq '') {
+	print "</site-to-site-easy>";
+    }
+    print "<peerip>$values[1]</peerip>";
+    $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site peer $peer tunnel`;
+    @values = split(' ', $out);
+    my $tunnelname = $values[1];
+    if ($tunnelname eq '') {
+	print "</site-to-site-easy>";
+    }
+    print "<tunnelname>$values[1]</tunnelname>";
+    $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site peer $peer authentication pre-shared-secret`;
+    @values = split(' ', $out);
+    print "<presharedkey>$values[1]</presharedkey>";
+    $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site peer $peer tunnel $tunnelname local-subnet`;
+    @values = split(' ', $out);
+    print "<lnet>$values[1]</lnet>";
+    $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site peer $peer tunnel $tunnelname remote-subnet`;
+    @values = split(' ', $out);
+    print "<rnet>$values[1]</rnet>";
+    print "</site-to-site-easy>";
 }
 
 ##########################################################################

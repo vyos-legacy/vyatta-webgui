@@ -72,7 +72,6 @@ GUICmdHandler::process()
   
   setenv(WebGUI::OA_GUI_ENV_SESSION_ID.c_str(),_msg.id().c_str(),1);
   WebGUI::Error err;
-
   if (WebGUI::execute(opmodecmd,stdout,true) == 0) {
     err = WebGUI::SUCCESS;
   } else {

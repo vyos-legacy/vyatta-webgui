@@ -47,25 +47,25 @@ sub execute_set {
     my $p;
     for $p (@pair) {
 	my @vals = split(":",$p);
-	if ($vals[0] eq "tunnelname") {
+	if ($vals[0] eq 'tunnelname') {
 	    $tunnelname = $vals[1];
 	}
-	elsif ($vals[0] eq "peerip") {
+	elsif ($vals[0] eq 'peerip') {
 	    $peerip = $vals[1];
 	}
-	elsif ($vals[0] eq "presharedkey") {
+	elsif ($vals[0] eq 'presharedkey') {
 	    $presharedkey = $vals[1];
 	}
-	elsif ($vals[0] eq "lnet") {
+	elsif ($vals[0] eq 'lnet') {
 	    $lnet = $vals[1];
 	}
-	elsif ($vals[0] eq "rnet") {
+	elsif ($vals[0] eq 'rnet') {
 	    $rnet = $vals[1];
 	}
     }
 
     if (!defined $tunnelname || !defined $peerip || !defined $presharedkey || !defined $lnet || !defined $rnet) {
-	print ("<error name='site-to-site-easy'><code>1</code>");
+	print ("<error name='site-to-site-easy' code=1>");
 	if (!defined $tunnelname) {
 	    print("<key>tunnelname</key>");
 	}

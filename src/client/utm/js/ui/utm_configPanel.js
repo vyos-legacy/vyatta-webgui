@@ -161,6 +161,10 @@ function UTM_configPanel()
                 var dbcb = function(){}
                 thisObj.m_selectObj = new UTM_confFireLevel('FirewallLevel', dbcb, g_busObj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
+            case VYA.UTM_CONST.DOM_3_NAV_SUB_FW_CUSTOM_ID:
+                var dbcb = function(){}
+                thisObj.m_selectObj = new UTM_confFireCustom('FirewallCustomized', dbcb, g_busObj);
+                return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_IDP_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EXPERT_IDP_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_AVS_ID:

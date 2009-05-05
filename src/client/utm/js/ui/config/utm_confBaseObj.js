@@ -172,9 +172,9 @@ function UTM_confBaseObj(name, callback, busLayer)
                     tPadding = '8px';
                     break;
                 case 'button':
-                    tPadding = '3px';
-                    break;
                 case 'progress':
+                case 'textField':
+                case 'combo':
                     tPadding = '4px';
                     break;
                 default:
@@ -227,7 +227,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         return div;
     }
 
-    this.f_createAnchorDiv = function(refText, tooltip)
+    this.f_createAnchorDiv = function(refText, tooltip, ref)
     {
         var div = document.createElement('div');
         div.style.position = 'relative';
@@ -237,8 +237,8 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr><td>' +
-                      '<div><a title="' + tooltip + '" href="">' +
-                      refText + '</a>' +
+                      '<div><a title="' + tooltip + '" href="#" onclick="' +
+                      ref + '">' + refText + '</a>' +
                       '</td></tr></tbody></table>';
 
         div.innerHTML = innerHtml;

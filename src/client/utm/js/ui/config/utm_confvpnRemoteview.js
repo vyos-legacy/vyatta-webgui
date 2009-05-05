@@ -100,13 +100,13 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
         this.m_hds2s = this.f_createGroupColumns();
         this.m_hdRemote = this.f_createUserColumns();
-        this.m_anchorGroups = this.f_createAnchorDiv('<b>Groups:</b>', 'group');
-        this.m_anchorUsers = this.f_createAnchorDiv('<b>Users:</b>', 'user');
+        this.m_anchorGroups = this.f_createAnchorDiv('<b>Groups:</b>', 'group', 'f_vpnRemoteViewGroupHandler()');
+        this.m_anchorUsers = this.f_createAnchorDiv('<b>Users:</b>', 'user', 'f_vpnRemoteViewUserHandler()');
         this.m_dummy = this.f_createAnchorDiv('', '');
-        this.m_headerGroups = this.f_createGridHeader(hdgroup);
-        this.m_bodyGroups = this.f_createGridView(hdgroup);
-        this.m_headerUsers = this.f_createGridHeader(hdruser);
-        this.m_bodyUsers = this.f_createGridView(hdruser);
+        this.m_headerGroups = this.f_createGridHeader(this.m_hds2s);
+        this.m_bodyGroups = this.f_createGridView(this.m_hds2s);
+        this.m_headerUsers = this.f_createGridHeader(this.m_hdRemote);
+        this.m_bodyUsers = this.f_createGridView(this.m_hdRemote);
 
         this.f_loadVMData();
 
@@ -132,4 +132,14 @@ function f_vpnRemoteViewGroupChkboxCb(e)
 function f_vpnRemoteViewUserChkboxCb(e)
 {
     g_configPanelObj.m_activeObj.f_usersChkboxCb();
+}
+
+function f_vpnRemoteViewGroupHandler()
+{
+    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID);
+}
+
+function f_vpnRemoteViewUserHandler()
+{
+    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID);
 }

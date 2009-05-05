@@ -78,7 +78,8 @@ function UTM_confFireLevel(name, callback, busLayer)
     this.f_initGridData = function()
     {
         var custom = g_lang.m_fireLevelBdCustom + "&nbsp;&nbsp;&nbsp;<input type='" +
-                      "image' src='" + g_lang.m_imageDir + "bt_cancel.gif'>";
+                      "image' src='" + g_lang.m_imageDir + "bt_cancel.gif' " +
+                      "onclick='f_fireLevelConfigHandler()'>";
         var radioIds = [this.m_rdAuthAllId, this.m_rdStandId,
                         this.m_rdAdvanId, this.m_rdCustomId, this.m_rdBlockId];
         var rdHeaders = [g_lang.m_fireLevelHdAuth, g_lang.m_fireLevelHdStand,
@@ -129,6 +130,11 @@ function UTM_confFireLevel(name, callback, busLayer)
 }
 UTM_extend(UTM_confFireLevel, UTM_confBaseObj);
 
+
+function f_fireLevelConfigHandler(e)
+{
+    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_CUSTOM_ID);
+}
 
 function f_fireLevelApplyHandler(e)
 {

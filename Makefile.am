@@ -7,6 +7,7 @@ initddir = /etc/init.d
 cfgdir = $(datadir)/vyatta-cfg/templates
 opdir = $(datadir)/vyatta-op/templates
 procdir = $(datadir)/vyatta-proc/templates
+oaperldir = $(datadir)/perl5/OpenApp
 
 AM_CPPFLAGS = -I src/server -I src/lib -Wall -DDEBUG -g \
               -I /usr/include/glib-2.0 -I /usr/lib/glib-2.0/include
@@ -53,6 +54,8 @@ cgi_SCRIPTS = src/server/webgui-wrap
 
 sbin_SCRIPTS = scripts/enterprise-mib.pl
 sbin_SCRIPTS += scripts/site-to-site-easy.pl
+
+oaperl_DATA = src/server/lib/perl5/OpenApp/Conf.pm
 
 # library
 AM_CFLAGS = -I src/lib -Wall -I /usr/include/glib-2.0 \

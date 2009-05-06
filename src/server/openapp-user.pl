@@ -31,6 +31,7 @@ use POSIX;
 use File::Copy;
 use Getopt::Long;
 use OpenApp::VMMgmt;
+use OpenApp::Rest;
 
 my ($list,$delete,$modify,$add,$password,$oldpassword,$lastname,$firstname,$email,$role,$rights);
 
@@ -99,8 +100,10 @@ sub add_user {
 	    $ip = $vm->getIP();
 	    if (defined $ip && $ip ne '') {
 		my $cmd = "http://$ip/notifications/users/$add";
-		my $rc = `curl -X POST -q -I $cmd 2>&1`;
+		my $err = OpenApp::Rest::send("POST",$cmd);
 		#if error returned from curl, remove from list here and notify of error??
+		
+
 	    }
 	}
     }

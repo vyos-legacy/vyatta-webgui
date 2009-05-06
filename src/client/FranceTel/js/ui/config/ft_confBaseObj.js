@@ -509,7 +509,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 break;
             case 'deleteUser':
             case 'delete':
-                imgSrc = 'ico_delete.gif';
+                imgSrc = enable ? 'ico_delete.gif' : 'ico_delete_disabled.gif';
                 break;
             case 'restore':   // ico image
                 imgSrc = 'ico_disquette.gif';

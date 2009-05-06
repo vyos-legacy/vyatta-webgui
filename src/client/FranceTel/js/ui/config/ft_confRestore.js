@@ -100,14 +100,11 @@ function FT_confRestore(name, callback, busLayer)
                         'download', true, "f_handleDownloadRestore('" + r[3]+"')",
                         g_lang.m_restoreDownload + ' (' + content + ')');
 
-            var del = '';
-            if(thisObj.f_okToDisplayDeleteButton(r))
-            {
-                del = thisObj.f_renderButton(
-                        'delete', true, "f_deleteRestoreFile('" + content +
-                        "', '" + r[3] + "')",
-                        g_lang.m_restoreDel + ' (' + content + ')');
-            }
+            var del = thisObj.f_renderButton('delete',
+                    thisObj.f_okToDisplayDeleteButton(r)?true:false,
+                    "f_deleteRestoreFile('" + content +
+                    "', '" + r[3] + "')",
+                    g_lang.m_restoreDel + ' (' + content + ')');
 
             vmData = [r[0], r[1], anchor, restore, download, del]
             var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData);

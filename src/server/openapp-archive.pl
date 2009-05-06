@@ -34,6 +34,7 @@ use OpenApp::LdapUser;
 use Vyatta::Config;
 use Vyatta::Misc;
 use Vyatta::TypeChecker;
+use OpenApp::Rest;
 
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
@@ -142,7 +143,7 @@ sub backup_archive {
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "http://$ip$REST_BACKUP/$coll[$i][1]";
-	    my $rc = `curl -X GET -q -I $cmd 2>&1`;
+	    my $err = OpenApp::Rest::send("GET",$cmd);
 	    #if error returned from curl, remove from list here and notify of error??
 	    
 	}
@@ -348,7 +349,7 @@ sub restore_archive {
 	if (defined $ip && $ip ne '') {
 	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]`;
 	    my $cmd = "http://$ip$REST_RESTORE/$coll[$i][1]";
-	    my $rc = `curl -X GET -q -I $cmd 2>&1`;
+	    my $err = OpenApp::Rest::send("GET",$cmd);
 	    #if error returned from curl, remove from list here and notify of error??
 	    
 	}

@@ -215,7 +215,7 @@ sub del_user {
 	}
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "http://$ip/notifications/users/$delete";
-	    my $rc = `curl -X PUT -q -I $cmd 2>&1`;
+	    my $err = OpenApp::Rest::send("PUT",$cmd);
 	    #if error returned from curl, remove from list here and notify of error??
 	}
 
@@ -231,7 +231,7 @@ sub del_user {
 	}
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "http://$ip/notifications/users/$delete";
-	    my $rc = `curl -X DELETE -q -I $cmd 2>&1`;
+	    my $err = OpenApp::Rest::send("DELETE",$cmd);
 	    #if error returned from curl, remove from list here and notify of error??
 	}
 

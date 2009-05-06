@@ -1,3 +1,30 @@
+vyatta-webgui (0.2+fxd0+36) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * remove hard-coded path to facilitate testing
+
+  [ Loi Vo ]
+  * 1. Make index.cgi the only officical entry to OA main screen (per
+    Ancheng's request)
+
+  [ Kevin Choi ]
+  * * adjust grid row height to fixed cross browser issues
+
+  [ slioch ]
+  * server side bugfix for 4361.
+
+  [ Michael Larson ]
+  * added common rest support module, checks xml response code.
+  * add common rest module support for remainder of archive and user
+    functions
+  * syslog on rest msg error. rest handler cleanup. op mode cmd for
+    backup to pc cmd and handler initial implementation.
+
+  [ Kevin Choi ]
+  * * added delete disabled icon
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 06 May 2009 21:08:29 +0000
+
 vyatta-webgui (0.2+fxd0+35) unstable; urgency=low
 
   * Fix bug [4341].

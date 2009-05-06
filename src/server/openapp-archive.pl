@@ -87,7 +87,7 @@ if (defined $option) {
     $ADMIN_BU_LIMIT = $option;
 }
 
-my ($backup,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$put_archive,$delete);
+my ($backup,$backup_get,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$put_archive,$delete);
 
 ##########################################################################
 #
@@ -144,8 +144,9 @@ sub backup_archive {
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "http://$ip$REST_BACKUP/$coll[$i][1]";
 	    my $err = OpenApp::Rest::send("GET",$cmd);
-	    #if error returned from curl, remove from list here and notify of error??
-	    
+	    if ($err != 0) {
+		`logger 'Rest notification error in response from $ip when starting backup'`;
+	    }
 	}
     }
     
@@ -271,6 +272,28 @@ sub backup_archive {
 
 ##########################################################################
 #
+# Same as a separate backup and get except archive doesn't reside on dom0
+#
+##########################################################################
+sub backup_and_get_archive {
+# The behavior is:
+# 1) client requests backup-and-get archive
+# 2) server spins off request as background process (chunker)
+# 3) server performs backup and sets status flag to false
+# 4) upon completion of backup archive is copied to location
+# 5) status flag is set to true
+# 6) no provision is enabled to remove file.
+#
+   #first perform backup w/o normal limit
+    backup_archive();
+
+    #then a get accessor
+    get_archive();
+}
+
+
+##########################################################################
+#
 #
 #
 ##########################################################################
@@ -350,8 +373,9 @@ sub restore_archive {
 	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]`;
 	    my $cmd = "http://$ip$REST_RESTORE/$coll[$i][1]";
 	    my $err = OpenApp::Rest::send("GET",$cmd);
-	    #if error returned from curl, remove from list here and notify of error??
-	    
+	    if ($err != 0) {
+		`logger 'Rest notification error in response from $ip when starting archive'`;
+	    }
 	}
     }
 
@@ -584,6 +608,7 @@ sub backup_status {
 ##########################################################################
 sub usage() {
     print "Usage: $0 --backup=<backup>\n";
+    print "       $0 --backup-get=<backup>\n";
     print "       $0 --name=<optional filename>\n";
     print "       $0 --restore=<restore>\n";
     print "       $0 --restore-target=<restore_target>\n";
@@ -600,6 +625,7 @@ sub usage() {
 #pull commands and call command
 GetOptions(
     "backup:s"              => \$backup,
+    "backup-get:s"          => \$backup_get,
     "filename:s"            => \$filename,
     "restore=s"             => \$restore,
     "restore-target:s"      => \$restore_target,
@@ -614,6 +640,9 @@ GetOptions(
 
 if ( defined $backup ) {
     backup_archive();
+}
+elsif ( defined $backup_get ) {
+    backup_and_get_archive();
 }
 elsif ( defined $restore ) {
     restore_archive();

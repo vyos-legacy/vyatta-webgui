@@ -19,6 +19,11 @@ img
   border: 0 none;
 }
 
+input, textarea { 
+    font-family: arial, serif; 
+	font-size: 11px; 
+}
+
 #main {
     width: 975px;
     margin: 0;

@@ -54,8 +54,6 @@ VYA.UTM_CONST = {
     //-----Firewall		
 	DOM_3_NAV_SUB_ZONE_ID : 'zone_l2',
 	DOM_3_NAV_SUB_FW_ID : 'firewall_l2',
-        DOM_3_NAV_SUB_FW_CUSTOM_ID : 'firewall_custom_l2',
-
     //-----IDP	
 	DOM_3_NAV_SUB_EASY_IDP_ID : 'easy_idp_l2',
 	DOM_3_NAV_SUB_EXPERT_IDP_ID: 'expert_idp_l2',
@@ -78,8 +76,13 @@ VYA.UTM_CONST = {
 	//-----Dynamic menu item id.
 	//-----VPN		
     DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID : 'vpn_remote_usr_grp_l2',
-    DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID : 'vpn_remote_usr_add_l2',			
-		
+    DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID : 'vpn_remote_usr_add_l2',	
+	//-----Firewall		
+    DOM_3_NAV_SUB_FW_CUSTOM_ID : 'firewall_custom_l2',
+    //-----WEB FILTERING		 
+    DOM_3_NAV_SUB_EASY_WEBF_BY_URL_ID : 'easy_webf_by_url_l2',	
+    DOM_3_NAV_SUB_EASY_WEBF_BY_WORD_ID : 'easy_webf_by_word_l2',
+			
 	//-----Configuration Panel
 	DOM_3_CONFIG_PANEL_ID : 'config_panel',
 	DOM_3_FT_CONTAINER_ID : 'ft_container',	

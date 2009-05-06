@@ -135,6 +135,7 @@ var g_lang =
     m_url_ezAlways : "Always",			
     m_url_ezOn : "ON",	
 	m_url_ezOff : "OFF",	
+	m_url_ezWebSiteAddress : "Web sites' addresses",
 		
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images

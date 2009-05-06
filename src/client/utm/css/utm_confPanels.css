@@ -84,6 +84,26 @@
 	margin-left: 20px;
 }
 
+.cell {
+    width: 14px;
+} 
+
+.maintd {
+    border: 1px solid #DEDEDE;
+    padding: 1px 1px 1px 1px;
+} 
+
+.maintd_bold {
+    border: 1px solid #DEDEDE;
+    padding: 1px 1px 1px 1px;
+    font-weight: bold;
+} 
+
+.date_row {
+    font-family: Arial;
+    font-size: 8px;
+}
+
 /***********************************************************
  * HTML_BASED COMPONENT END
 ************************************************************/

@@ -17,12 +17,17 @@ function UTM_confBaseObj(name, callback, busLayer)
      */
     this.constructor = function(name, callback, busLayer)
     {
-        this.m_busLayer = busLayer;
+        this.privateConstructor(name, callback, busLayer);
+    }
+
+    this.privateConstructor = function(name, callback, busLayer)
+	{
+		this.m_busLayer = busLayer;
         this.m_name = name;
         this.m_containerCb = callback;
         this.m_treadId = null;
-    }
-    this.constructor(name, callback, busLayer);
+	}
+	this.privateConstructor(name, callback, busLayer);	
 
     /**
      * call this function when this object is no longer used. it will
@@ -579,6 +584,15 @@ function UTM_confBaseObj(name, callback, busLayer)
     {
 
     }
+	
+    this.f_reflow = function()
+    {
+       var body = document.getElementsByTagName( "body" )[0];
+       var bodyClass = body.className;
+
+       body.className = "reflow";
+       body.className = bodyClass;
+    }	
 }
 
 function f_confHandleSessionTimeoutConfirm()

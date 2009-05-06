@@ -593,3 +593,4 @@ function UTM_confFormObj(name, callback, busLayer)
 
 UTM_extend(UTM_confFormObj, UTM_confBaseObj);
 
+EMPTY_ROW = { v_type: 'empty', v_new_row: 'true',v_end_row: 'true'};

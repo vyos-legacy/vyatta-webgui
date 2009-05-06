@@ -170,6 +170,10 @@ function UTM_configPanel()
             case VYA.UTM_CONST.DOM_3_NAV_SUB_AVS_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_APS_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID:
+                var mpCb = function(){ }
+                thisObj.m_selectObj = new UTM_confUrlEz('UrlEz', mpCb, g_busObj);
+                thisObj.m_selectObj.f_init();
+                return thisObj.m_selectObj.f_getConfigurationPage();			
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EXPERT_WEBF_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_IMP2P_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID:

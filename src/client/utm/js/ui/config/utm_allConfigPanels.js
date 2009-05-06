@@ -15,5 +15,7 @@ document.write('<script type="text/javascript" src="js/ui/config/utm_confvpnRemo
 document.write('<script type="text/javascript" src="js/ui/config/utm_confVpnRemoteUsrGrp.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confVpnRemoteUsrAdd.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confVpnS2SE.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlEz.js"></script>');
+
 
 

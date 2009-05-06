@@ -49,11 +49,15 @@ function UTM_confVpnS2SE(name, callback, busLayer)
      */
     this.constructor = function(name, callback, busLayer)
     {
-        UTM_confVpnS2SE.superclass.constructor(name, callback, busLayer);
+        this.privateConstructor(name, callback, busLayer);
     }
-    
-    this.constructor(name, callback, busLayer);
-    	
+	
+    this.privateConstructor = function(name, callback, busLayer)
+    {
+        UTM_confVpnS2SE.superclass.constructor(name, callback, busLayer);
+    }			
+    this.privateConstructor(name, callback, busLayer);			
+		
     this.f_init = function()
     {
 		var o = new UTM_vpnRecord();

@@ -86,6 +86,7 @@ install-exec-hook:
 	cp scripts/notify-backup-data $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-restore-conf $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-restore-data $(DESTDIR)/$(cgidir)/
+	cp scripts/notify-user $(DESTDIR)/$(cgidir)/
 	cp scripts/vyatta-proc $(DESTDIR)/$(cgidir)/
 
 

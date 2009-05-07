@@ -20,6 +20,7 @@ Depends: libexpat1 (>= 1.95.8-4),
  libc6,
  adduser,
  libnet-snmp-perl,
+ libnet-ldap-perl,
  vyatta-cfg,
  vyatta-op
 Description: Vyatta WebGUI

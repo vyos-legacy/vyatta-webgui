@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+37) unstable; urgency=low
+
+  * BLB integration phase 1
+  * add Net::LDAP module
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 06 May 2009 19:14:19 -0700
+
 vyatta-webgui (0.2+fxd0+36) unstable; urgency=low
 
   [ An-Cheng Huang ]

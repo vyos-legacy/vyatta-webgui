@@ -14,3 +14,4 @@ source /etc/bash_completion
 /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end 
 
 mkdir -p /var/www/archive/restore/conf/status/
+echo '<?xml version="1.0" encoding="utf-8"?><openappliance><token></token><error><code>0</code><msg></msg></error></openappliance>'

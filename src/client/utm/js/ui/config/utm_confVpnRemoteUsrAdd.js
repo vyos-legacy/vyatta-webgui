@@ -17,10 +17,14 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
      */
     this.constructor = function(name, callback, busLayer)
     {
-        UTM_confVpnRemoteUsrAdd.superclass.constructor(name, callback, busLayer);
+        this.privateConstructor(name, callback, busLayer);
     }
-    
-    this.constructor(name, callback, busLayer);
+
+    this.privateConstructor = function(name, callback, busLayer)
+    {
+        UTM_confVpnRemoteUsrAdd.superclass.constructor(name, callback, busLayer);
+    }			
+    this.privateConstructor(name, callback, busLayer);	    
     	
     this.f_init = function()
     {

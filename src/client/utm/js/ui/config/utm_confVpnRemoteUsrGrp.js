@@ -46,10 +46,15 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
      */
     this.constructor = function(name, callback, busLayer)
     {
-        UTM_confVpnRemoteUsrGrp.superclass.constructor(name, callback, busLayer);
+        this.privateConstructor(name, callback, busLayer);
     }
+
+    this.privateConstructor = function(name, callback, busLayer)
+    {
+        UTM_confVpnRemoteUsrGrp.superclass.constructor(name, callback, busLayer);
+    }			
+    this.privateConstructor(name, callback, busLayer);	
     
-    this.constructor(name, callback, busLayer);
     	
     this.f_init = function()
     {

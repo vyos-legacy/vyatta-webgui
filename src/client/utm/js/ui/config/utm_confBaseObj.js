@@ -9,6 +9,7 @@ function UTM_confBaseObj(name, callback, busLayer)
 {
     var thisObj = this;
     this.thisObjName = 'UTM_confBaseObj';
+    this.m_colorGridRow = false;
 
     /**
      * @param name - name of configuration screens.
@@ -77,7 +78,7 @@ function UTM_confBaseObj(name, callback, busLayer)
             var h = header[i];
             width += h[1]
 
-            var cursor = '';
+            var cursor = ' ';
             var tooltip = '';
             if(h[4] != undefined && h[4])
             {
@@ -92,15 +93,16 @@ function UTM_confBaseObj(name, callback, busLayer)
             var rBorder = (i == header.length-1) || h[0].length < 2 ?
                               '' : 'border-right:1px solid #CCC; ';
 
-            inner += '<td width="' + h[1] + '" align="' + align + '">' +
+            inner += '<td width="' + h[1] + '" align="' + align + 
+                '" valign="top" style="' + rBorder + '">' +
                 '<div style="padding-top:5px; padding-bottom:5px; ' +
-                'padding-left:' + pLeft + 'px;" ' +
-                cursor + rBorder + '" onclick="' + onclick + '(' + i + ')" ' +
+                'padding-left:' + pLeft + 'px; ' +
+                cursor + '" onclick="' + onclick + '(' + i + ')" ' +
                 tooltip + '>' + colName + '</div></td>';
         }
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">' +
-                      '<thead><tr height="25">' + inner +
+                      '<thead><tr>' + inner +
                       '</tr></thead></table>';
 
         div.style.width = width + 'px';
@@ -134,7 +136,12 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         div.style.width = (width) + 'px';
         return div;
-    }
+    };
+
+    this.f_colorGridBackgroundRow = function(isColor)
+    {
+        thisObj.m_colorGridRow = isColor;
+    };
 
     this.f_createGridRow = function(header, data, height)
     {
@@ -147,8 +154,12 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         var rHeight = height == undefined ? 28 : height;
 
+        var bkc = thisObj.m_tableRowCounter%2 == 0 || !thisObj.m_colorGridRow ?
+                  "#FFFFFF" : "#F9F9FF";
+
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
-        innerHtml += '<tbody><tr height="' + rHeight + '" cellspacing="0" cellpadding="0">';
+        innerHtml += '<tbody><tr height="' + rHeight + 
+                    '" cellspacing="0" cellpadding="0" bgcolor=' + bkc + '>';
 
         var width = 0;
         for(var i=0; i<data.length; i++)
@@ -271,6 +282,15 @@ function UTM_confBaseObj(name, callback, busLayer)
 
             switch(btn[0])
             {
+                case 'Add':
+                innerHtml += '<td>' +
+                    '<div title="' + btn[2] + '" style="height:30px; ' +
+                    'padding-top:15px;" >' +
+                    '<input type="image" src="' + g_lang.m_imageDir +
+                    'add.PNG" ' + elId + ' name="addFireWall" ' +
+                    'value="addFireWall" onclick="' + btn[1] +
+                    '"></div></td>';
+                break;
                 case 'AddUser':
                 innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
@@ -305,6 +325,15 @@ function UTM_confBaseObj(name, callback, busLayer)
                     '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_apply.gif" ' + elId + ' name="apply" ' +
                     'value="apply" onclick="' + btn[1] +
+                    '"></div></td>';
+                break;
+                case 'Save':
+                innerHtml += '<td>' +
+                    '<div title="' + btn[2] + '" style="height:30px; ' +
+                    'padding-top:15px;" >' +
+                    '<input type="image" src="' + g_lang.m_imageDir +
+                    'save.PNG" ' + elId + ' name="saveFireWall" ' +
+                    'value="saveFireWall" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
                 case 'Update':
@@ -437,9 +466,9 @@ function UTM_confBaseObj(name, callback, busLayer)
                 ' name="' + name + '" title="' + tooltip + '" onclick="' + cb + '"/>';
     }
 
-    this.f_renderCombobox = function(options, val)
+    this.f_renderCombobox = function(options, val, width)
     {
-        var cb = '<select>';
+        var cb = '<select style="width:' + width + 'px;">';
 
         for(var i=0; i<options.length; i++)
         {
@@ -452,6 +481,13 @@ function UTM_confBaseObj(name, callback, busLayer)
         }
 
         return cb;
+    }
+
+    this.f_renderTextField = function(elId, val, tooltip, width)
+    {
+        return '<input id="' + elId + '" type="text" value="' +
+                val + '" name="' + name + '" title="' + tooltip + 
+                '" style="width:' + width + 'px;"/>';
     }
 
     this.f_renderAnchor = function(text, link, tooltip)
@@ -577,7 +613,7 @@ function UTM_confBaseObj(name, callback, busLayer)
      */
     this.f_stopLoadVMData = function()
     {
-
+        this.f_colorGridBackgroundRow(false);
     }
 }
 

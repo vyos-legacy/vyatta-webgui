@@ -59,8 +59,11 @@ function UTM_confFireLevel(name, callback, busLayer)
             }
         }
 
+        var r = document.getElementById(thisObj.m_rdAuthAllId);
+        if(r != null)
+            r.checked = true;
 
-        g_utils.f_cursorWait();
+        //g_utils.f_cursorWait();
         //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
     };
 
@@ -119,6 +122,7 @@ function UTM_confFireLevel(name, callback, busLayer)
         this.m_buttons = this.f_createButtons(btns);
         this.f_adjustDivPosition(this.m_buttons);
 
+        window.setTimeout("f_testing()", 500);
         return [this.f_headerText(), this.m_gridHeader,
                 this.m_gridBody, this.m_buttons];
     };
@@ -144,4 +148,9 @@ function f_fireLevelApplyHandler(e)
 function f_fireLevelCancelHandler(e)
 {
     g_configPanelObj.m_activeObj.f_usersChkboxCb();
+}
+
+function f_testing()
+{
+    g_configPanelObj.m_activeObj.f_loadVMData();
 }

@@ -67,6 +67,7 @@ sbin_SCRIPTS += src/server/openapp-vm-deploy.pl
 sbin_SCRIPTS += src/server/openapp-vm-op.pl
 sbin_SCRIPTS += src/server/openapp-vm-upgrade.pl
 sbin_SCRIPTS += src/server/openapp-vimg-newinst.pl
+sbin_SCRIPTS += scripts/blb-login
 
 oaperl_DATA = src/server/lib/perl5/OpenApp/VMMgmt.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/VMDeploy.pm

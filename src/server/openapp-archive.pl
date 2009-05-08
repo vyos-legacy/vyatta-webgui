@@ -45,6 +45,8 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
 }
 
 
+my $auth_user_role = "admin";
+
 ##########################################################################
 # Directory layout is as follows:
 # /var/archive                               #root directory
@@ -87,6 +89,12 @@ if (defined $option) {
     $ADMIN_BU_LIMIT = $option;
 }
 
+my $backup_timeout = 3600; #one hour
+my $option = $config->returnValue("system open-app archive backup timeout");
+if (defined $option) {
+    $backup_timeout = $option;
+}
+
 my ($backup,$backup_get,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$put_archive,$delete);
 
 ##########################################################################
@@ -126,22 +134,41 @@ sub backup_archive {
     # Parse passed in backup list and send out REST message to VMs
     #
     ##########################################################################
-    my @coll;
-    my $coll;
+    my $hash_coll = {};
     my $archive;
     my @archive = split(',',$backup);
     my $i = 0;
     for $archive (@archive) {
+	my $bu;
 	my @bu = split(':',$archive);
-	$coll[$i] = [ @bu ];
-	$i = $i + 1;
+	if ($bu[1] eq 'data') {
+	    $hash_coll->{$bu[0]} != 1;
+	}
+	elsif ($bu[1] eq 'conf') {
+	    $hash_coll->{$bu[0]} |= 2;
+	}
     }
-    foreach $i (0..$#coll) {
-	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
+
+
+    my $key;
+    my $value;
+    my %hash_coll;
+    while (($key, $value) = each %hash_coll) {
+	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
+	    my $cmd = "http://$ip/backup/backupArchive?";
+	    if ($value == 1) {
+		$cmd .= "data=true&conf=false";
+	    }
+	    elsif ($value == 2) {
+		$cmd .= "data=false&conf=true";
+	    }
+	    else {
+		$cmd .= "data=true&conf=true";
+	    }
 	    my $obj = new OpenApp::Rest();
 	    my $err = $obj->send("GET",$cmd);
 	    if ($err->{_success} != 0) {
@@ -156,34 +183,58 @@ sub backup_archive {
     # polling until all bu's have been pulled.
     #
     ##########################################################################
-    my @new_coll = @coll;
+    my %new_hash_coll = %hash_coll;
     #now that each are started, let's sequentially iterate through and retrieve
     `rm -fr $BACKUP_WORKSPACE_DIR/* 2>/dev/null`;
-    while ($#new_coll > -1) {
-	foreach $i (0..$#new_coll) {
-	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
-	    next if (!defined($vm));
-	    my $ip = '';
-	    $ip = $vm->getIP();
-	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/archive/backup/$new_coll[$i][1]";
+
+    #now need overall time for this process
+    my $end_time = time() + $backup_timeout;
+
+    while (($key, $value) = each %new_hash_coll) {
+	my $vm = new OpenApp::VMMgmt($key);
+	next if (!defined($vm));
+	my $ip = '';
+	$ip = $vm->getIP();
+	if (defined $ip && $ip ne '') {
+	    my $cmd = "http://$ip/backup/getArchive?";
+	    if ($value == 1) {
+		$cmd .= "data=true&conf=false";
+	    }
+	    elsif ($value == 2) {
+		$cmd .= "data=false&conf=true";
+	    }
+	    else {
+		$cmd .= "data=true&conf=true";
+	    }
+	    my $obj = new OpenApp::Rest();
+	    my $err = $obj->send("GET",$cmd);
+	    if ($err->{_http_code} == 302) { #redirect means server is done with archive
+		#now parse the new location...
+		my $header = $err->{_header};
+		my $archive_location = get_archive_location($header);
+
+		#and retrieve the archive
 		#writes to specific location on disk
-		my $bufile = "$BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]";
-		`mkdir -p $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]`;
+		my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
+		`mkdir -p $BACKUP_WORKSPACE_DIR/$key`;
 
 		my $rc = `wget $cmd -O $bufile 2>&1`;
 		if ($rc =~ /200 OK/) {
-#		    print "SUCCESS\n";
-#		    print "openssl enc -aes-256-cbc -kfile $MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc";
-		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1] -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc`;
-		    #what happens if a vm fails to backup???? how are we to identify this???
+		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$key -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+		}		
 
-		    #remove from new_collection
-		    delete $new_coll[$i];
-		}
+		#and remove from poll collection
+		delete $new_hash_coll{$key};
+	    }
+	    else {
+		next;
 	    }
 	}
-	sleep 1;
+	sleep 5;
+	if (time() > $end_time) {
+	    `logger 'backup was unable to retrieve all requested backups'`;
+	    last;
+	}
     }
 
     ##########################################################################
@@ -221,12 +272,12 @@ sub backup_archive {
     print FILE "<file>$filename</file>";                                                                             
     print FILE "<date>$date $time</date>";
     print FILE "<contents>";
-    foreach $i (0..$#coll) {
-	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
+    while (($key, $value) = each %hash_coll) {
+	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
 	print FILE "<entry>";
-	print FILE "<vm>$coll[$i][0]</vm>";
-	print FILE "<type>$coll[$i][1]</type>";
+	print FILE "<vm>$key</vm>";
+	print FILE "<type>$value</type>";
 	print FILE "</entry>";
     }    
     print FILE "</contents>";
@@ -252,6 +303,27 @@ sub backup_archive {
     #echo -e "To: mike@lrlart.com\nSubject: backup is finished" | /usr/sbin/ssmtp mike@lrlart.com
 
     `echo -e 'To: $admin_email\nSubject: backup is finished: $filename' | /usr/sbin/ssmtp $auth_user->getMail() 2>/dev/null`;
+}
+
+##########################################################################
+#
+# Infer location from response header parameter
+#
+##########################################################################
+sub get_archive_location {
+    my ($header) = @_;
+    
+    #looking for Location: in header
+    my @tmp = split $header, " ";
+    my $flag = 0;
+    foreach my $tmp (@tmp) {
+	if ($flag == 1) {
+	    return $tmp;
+	}
+	if ($tmp eq 'Location:') {
+	    $flag = 1;
+	}
+    }
 }
 
 ##########################################################################

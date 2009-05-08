@@ -10,7 +10,8 @@ my %fields = (
     _success => undef,
     _http_code => undef,
     _rest_code => undef,
-    _body => undef
+    _body => undef,
+    _header => undef
 );
 
 sub _setup {
@@ -64,9 +65,10 @@ sub send {
   if ($pos < 0) {
       return $self;
   }
+  
+  $self->{_header} = substr $out, 0, $pos-1;
 
   my $body =  substr $out, $pos;
-
   if (length($body) > 0) {
       my $opt = XMLin($body);
       #now parse the rest code

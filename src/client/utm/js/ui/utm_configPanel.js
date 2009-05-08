@@ -162,9 +162,11 @@ function UTM_configPanel()
             case VYA.UTM_CONST.DOM_3_NAV_SUB_ZONE_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_FW_ID:
                 thisObj.m_selectObj = new UTM_confFireLevel('FirewallLevel', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_FW_CUSTOM_ID:
                 thisObj.m_selectObj = new UTM_confFireCustom('FirewallCustomized', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_IDP_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EXPERT_IDP_ID:
@@ -172,37 +174,44 @@ function UTM_configPanel()
             case VYA.UTM_CONST.DOM_3_NAV_SUB_APS_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID:
                 thisObj.m_selectObj = new UTM_confUrlEz('UrlEz', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();					
 			case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_BY_URL_ID:
 				thisObj.m_selectObj = new UTM_confUrlEzByUrl('UrlEzByUrl', cb, g_busObj);
-				thisObj.m_selectObj.f_init();
+	            thisObj.m_selectObj.f_setId(id);				
 				return thisObj.m_selectObj.f_getConfigurationPage();		
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EXPERT_WEBF_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_IMP2P_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID:
                 thisObj.m_selectObj = new UTM_confVPNOverview('VPNOverview', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID:
                 thisObj.m_selectObj = new UTM_confVpnS2SE('VPNS2S', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
 	        case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID:
                 thisObj.m_selectObj = new UTM_confVpnRemoteUsrGrp('VPNRemoteUserGrp', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
 		    case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID:
                 thisObj.m_selectObj = new UTM_confVpnRemoteUsrAdd('VPNRemoteUserAdd', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 thisObj.m_selectObj.f_init();
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_ID:
                 thisObj.m_selectObj = new UTM_confVPNRemoteview('VPNRemoteView', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID:
 			    thisObj.m_selectObj = new UTM_confEmptyComponent();
+	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
         }
     }

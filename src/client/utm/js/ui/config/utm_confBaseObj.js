@@ -9,7 +9,8 @@ function UTM_confBaseObj(name, callback, busLayer)
     var thisObj = this;
     this.thisObjName = 'UTM_confBaseObj';
     this.m_colorGridRow = false;
-
+    this.m_id = undefined;
+	
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
@@ -41,6 +42,10 @@ function UTM_confBaseObj(name, callback, busLayer)
         }
     }
     
+    this.f_setId = function(id) {
+		this.m_id = id;
+	}
+		
     this.f_getPanelDiv = function(children)
     {
         var div = document.createElement('div');
@@ -223,7 +228,12 @@ function UTM_confBaseObj(name, callback, busLayer)
         var adVal = (thisObj.m_tableRowCounter * 31) - 10;
         div.style.top = adVal + 'px';
     }
-    
+
+    this.f_adjustDivPositionByPixel = function(div, pixel)
+    {
+        div.style.top = pixel + 'px';
+    }	
+		    
     this.f_createGeneralDiv = function(text)
     {
         var div = document.createElement('div');
@@ -292,12 +302,30 @@ function UTM_confBaseObj(name, callback, busLayer)
 
             switch(btn[0])
             {
+                case 'AddInner':
+                innerHtml += '<td>' +
+                    '<div title="' + btn[2] + '" style="height:30px; ' +
+                    'padding-top:5px;padding-left:5px;padding-bottom:10px" >' +
+                    '<input type="image" src="' + g_lang.m_imageDir +
+                    'bt_add.PNG" ' + elId + ' name="addFireWall" ' +
+                    'value="add" onclick="' + btn[1] +
+                    '"></div></td>';
+                break;		
+				case 'Back':
+                innerHtml += '<td>' +
+                    '<div title="' + btn[2] + '" style="height:30px; ' +
+                    'padding-top:15px;" >' +
+                    '<input type="image" src="' + g_lang.m_imageDir +
+                    'bt_back.png" ' + elId + ' name="back" ' +
+                    'value="back" onclick="' + btn[1] +
+                    '"></div></td>';
+                break;
                 case 'Add':
                 innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<input type="image" src="' + g_lang.m_imageDir +
-                    'add.PNG" ' + elId + ' name="addFireWall" ' +
+                    'bt_add.PNG" ' + elId + ' name="addFireWall" ' +
                     'value="addFireWall" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -703,10 +731,10 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_resize = function(padding)
     {
         if (this.m_id != g_configPanelObj.m_selectedItem ||
-        this.m_div == undefined) 
-            //to avoid the race condition between callback from server, and user click event.
-            return;
-        
+		this.m_div == undefined) {
+			//to avoid the race condition between callback from server, and user click event.
+			return;
+		}
         var h = 0;
         for (var i = 0; this.m_div.childNodes[i]; i++) {
             h += this.m_div.childNodes[i].offsetHeight;

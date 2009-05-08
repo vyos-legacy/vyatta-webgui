@@ -241,22 +241,6 @@ sub backup_archive {
 #    print "tar -C $BACKUP_WORKSPACE_DIR -cf $ARCHIVE_ROOT_DIR/$filename.tar . 2>/dev/null";
     `tar -C $BACKUP_WORKSPACE_DIR -cf $ARCHIVE_ROOT_DIR/$filename.tar . 2>/dev/null`;
 
-    #grab admin email address...
-    my $admin_email;
-    my @output;
-    my $output;
-    @output = `ldapsearch -x -b "dc=localhost,dc=localdomain" "uid=admin"`;
-    for $output (@output) {
-#	print $output;
-	my @o = split(' ',$output);
-	if (defined $o[0] && defined $o[1]) {
-	    if ($o[0] eq 'mail:') {
-		$admin_email = $o[1];
-		last;
-	    }
-	}
-    }
-
     ##########################################################################
     #
     # Set the status of the backup to 100%
@@ -267,7 +251,7 @@ sub backup_archive {
     #backup is now complete, let's send an email out to admin
     #echo -e "To: mike@lrlart.com\nSubject: backup is finished" | /usr/sbin/ssmtp mike@lrlart.com
 
-    `echo -e 'To: $admin_email\nSubject: backup is finished: $filename' | /usr/sbin/ssmtp $admin_email 2>/dev/null`;
+    `echo -e 'To: $admin_email\nSubject: backup is finished: $filename' | /usr/sbin/ssmtp $auth_user->getMail() 2>/dev/null`;
 }
 
 ##########################################################################

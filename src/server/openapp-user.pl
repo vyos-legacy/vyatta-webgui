@@ -216,8 +216,9 @@ sub del_user {
 	}
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "http://$ip/notifications/users/$delete";
-	    my $err = OpenApp::Rest::send("PUT",$cmd);
-	    if ($err != 0) {
+	    my $obj = new OpenApp::Rest();
+	    my $err = $obj->send("PUT",$cmd);
+	    if ($err->{_success} != 0) {
 		`logger 'Rest notification error in response from $ip when removing user $delete'`;
 	    }
 	}
@@ -232,9 +233,10 @@ sub del_user {
 		my $ip = $vm->getIP();
 		if (defined $ip && $ip ne '') {
 		    my $cmd = "http://$ip/notifications/users/$delete";
-		    my $err = OpenApp::Rest::send("DELETE",$cmd);
-		    if ($err != 0) {
-			`logger 'Rest notification error in response from $ip when deleting user $delete'`;
+		    my $obj = new OpenApp::Rest();
+		    my $err = $obj->send("DELETE",$cmd);
+		    if ($err->{_success} != 0) {
+			`logger Rest notification error in response from $ip when deleting user $delete'`;
 		    }
 		}
 	    }

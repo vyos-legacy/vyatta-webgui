@@ -142,9 +142,9 @@ sub backup_archive {
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip$REST_BACKUP/$coll[$i][1]";
-	    my $err = OpenApp::Rest::send("GET",$cmd);
-	    if ($err != 0) {
+	    my $obj = new OpenApp::Rest();
+	    my $err = $obj->send("GET",$cmd);
+	    if ($err->{_success} != 0) {
 		`logger 'Rest notification error in response from $ip when starting backup'`;
 	    }
 	}
@@ -372,8 +372,9 @@ sub restore_archive {
 	if (defined $ip && $ip ne '') {
 	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]`;
 	    my $cmd = "http://$ip$REST_RESTORE/$coll[$i][1]";
-	    my $err = OpenApp::Rest::send("GET",$cmd);
-	    if ($err != 0) {
+	    my $obj = new OpenApp::Rest();
+	    my $err = $obj->send("GET",$cmd);
+	    if ($err->{_success} != 0) {
 		`logger 'Rest notification error in response from $ip when starting archive'`;
 	    }
 	}

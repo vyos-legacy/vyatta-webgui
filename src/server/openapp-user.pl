@@ -100,13 +100,11 @@ sub add_user {
 	    $ip = $vm->getIP();
 	    if (defined $ip && $ip ne '') {
 		my $cmd = "http://$ip/notifications/users/$add";
-		my $err = OpenApp::Rest::send("POST",$cmd);
-		if ($err != 0) {
+		my $obj = new OpenApp::Rest();
+		my $err = $obj->send("POST",$cmd);
+		if ($err->{_success} != 0) {
 		    `logger 'Rest notification error in response from $ip when adding user $add'`;
 		}
-		#if error returned from curl, remove from list here and notify of error??
-		
-
 	    }
 	}
     }

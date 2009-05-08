@@ -3,6 +3,9 @@
 ### BEGIN INIT INFO
 ### END INIT INFO
 
+declare action=$1
+declare timeout=$2
+
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 . /lib/lsb/init-functions
@@ -17,10 +20,10 @@ if [ -r /etc/default/$NAME ]; then
 	. /etc/default/$NAME
 fi
 
-case $1 in
+case $action in
 	start)
 		echo "Starting PAGER server"
-  		start-stop-daemon --start --quiet --oknodo --background -m --pidfile $PIDFILE --startas $DAEMON -- -p $PIDFILE 
+  		start-stop-daemon --start --quiet --oknodo --background -m --pidfile $PIDFILE --startas $DAEMON -- -p $PIDFILE -k $timeout
   		;;
 	stop)
 		echo "Stopping PAGER server"
@@ -30,7 +33,7 @@ case $1 in
 		rm -f $PIDFILE >/dev/null	
 		;;
 	restart|force-reload)
-		$0 stop && sleep 2 && $0 start
+		$0 stop && sleep 2 && $0 start $timeout
   		;;
 	try-restart)
 		if $0 status >/dev/null; then

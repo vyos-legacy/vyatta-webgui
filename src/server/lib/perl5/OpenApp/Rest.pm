@@ -40,7 +40,8 @@ sub send {
   my $self;
   my ($tmp, $ACTION, $CMD) = @_;
   #send out message
-  my @out = `curl -X $ACTION -q --connect-timeout 3 -i $CMD 2>&1`;
+  #need to double quote cmd otherwise params will get dropped
+  my @out = `curl -X $ACTION -q --connect-timeout 3 -i /"$CMD/" 2>&1`; 
   $self->{_success} = 0;
 
   #let's iterate over the response line by line and grab the dirt

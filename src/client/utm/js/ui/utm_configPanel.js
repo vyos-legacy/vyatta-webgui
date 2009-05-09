@@ -180,7 +180,11 @@ function UTM_configPanel()
 			case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_BY_URL_ID:
 				thisObj.m_selectObj = new UTM_confUrlEzByUrl('UrlEzByUrl', cb, g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				
-				return thisObj.m_selectObj.f_getConfigurationPage();		
+				return thisObj.m_selectObj.f_getConfigurationPage();	
+			case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_BY_WORD_ID:
+				thisObj.m_selectObj = new UTM_confUrlEzByKeyword('UrlEzByKeyword', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
+				return thisObj.m_selectObj.f_getConfigurationPage();					
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EXPERT_WEBF_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_IMP2P_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID:

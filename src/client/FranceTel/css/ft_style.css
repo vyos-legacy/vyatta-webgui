@@ -86,16 +86,14 @@ img
 
 .nav1 {
     height: 40px;
-	/* background-image: url("../images/en/nav_end.gif"); */
     float: left;
 } 
 
-.nav2 {
+.nav1_th {
     font-size: 12px;
     font-family: "Helvetica Neue 75 bold", Helvetica, Arial, sans-serif;
     font-weight: bold;
     width: 120px;
-	/* background-image: url("../images/en/nav_end.gif"); */	
 } 
 
 
@@ -117,6 +115,7 @@ img
     width: 100%;
     font-family: Arial, sans-serif;
     font-size: 11px;
+	font-weight: normal;
     color: #000000;
     margin: 0;
     padding: 0;

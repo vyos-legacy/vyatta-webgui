@@ -94,7 +94,7 @@ VYA.FT_CONST = {
     
     ///////////////////////////////////////////////////
     // Defines the DOM class attribute		
-    DOM_MAIN_FRM_NAV_BAR_CLS: 'nav2',
+    DOM_MAIN_FRM_NAV_BAR_CLS: 'nav1_th',
 	DOM_MAIN_PANEL_SUB_MENU_CLS: 'left_sub_menu',
     DOM_DYN_SUB_MENU_CLS: 'dyn_sub_menu'	
 

@@ -301,8 +301,8 @@ sub backup_archive {
 
     #backup is now complete, let's send an email out to admin
     #echo -e "To: mike@lrlart.com\nSubject: backup is finished" | /usr/sbin/ssmtp mike@lrlart.com
-
-    `echo -e 'To: $admin_email\nSubject: backup is finished: $filename' | /usr/sbin/ssmtp $auth_user->getMail() 2>/dev/null`;
+    my $email = $auth_user->getMail();
+    `echo -e 'To: $email\nSubject: backup is finished: $filename' | /usr/sbin/ssmtp $email 2>/dev/null`;
 }
 
 ##########################################################################

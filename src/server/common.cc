@@ -41,8 +41,10 @@ const string WebGUI::CHUNKER_RESP_INIT="/usr/lib/cgi-bin/etc/init.d/vyatta-webgu
 const string WebGUI::CHUNKER_RESP_PID = "/opt/vyatta/var/run";
 const string WebGUI::CHUNKER_SOCKET = "/tmp/browser_pager";
 const unsigned long WebGUI::CHUNKER_MAX_WAIT_TIME = 2; //seconds
-const string WebGUI::CHUNKER_MSG_FORMAT = "<openappliance><chunker_command><statement>%s</statement></chunker_command></openappliance>\0\0";
-const string WebGUI::CHUNKER_UPDATE_FORMAT = "<openappliance><chunker_command><statement></statement></chunker_command></openappliance>\0\0";
+const string WebGUI::CHUNKER_MSG_FORMAT = "<openappliance><chunker_command><token>%s</token><statement>%s</statement></chunker_command></openappliance>\0\0";
+const string WebGUI::CHUNKER_UPDATE_FORMAT = "<openappliance><chunker_command><token>%s</token><statement></statement></chunker_command></openappliance>\0\0";
+
+ 
 
 const string WebGUI::OPENAPP_GUI_USER = "installer";
 const string WebGUI::OPENAPP_GUI_GROUP = "vyattacfg";

@@ -18,6 +18,8 @@ document.write('<script type="text/javascript" src="js/ui/config/utm_confVpnS2SE
 document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlEz.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlEzByUrl.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlEzByKeyword.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlExpert.js"></script>');
+
 
 
 

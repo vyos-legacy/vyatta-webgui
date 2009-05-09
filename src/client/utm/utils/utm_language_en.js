@@ -137,6 +137,13 @@ var g_lang =
 	m_url_ezOff : "OFF",	
 	m_url_ezWebSiteAddress : "Web sites' addresses",
     m_url_ezBannedKeywordInUrl : "Banned keywords in URL",	
+	m_url_expertSubscribeP1: "This mode is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+	                         "It enables you to:",
+	m_url_expertSubscribeListItem1: "benefit from enriched URLs categories you can also customize.",
+	m_url_expertSubscribeListItem2: "assign a specific filtering policy per user group",
+	m_url_expertSubscribeListItem3: "combine the different filtering functions proposed (category/ authorized URLs/ banned keywords).",
+	m_url_expertSubscribeP2: "To get this service, please press the button \"subscribe\" hereunder.",
+	
 		
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images

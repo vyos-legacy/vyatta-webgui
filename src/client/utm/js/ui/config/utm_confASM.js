@@ -1,12 +1,12 @@
 /*
- Document   : utm_confUrlExpert.js
+ Document   : utm_confASM.js
  Created on : Mar 02, 2009, 6:18:51 PM
  Author     : Loi.Vo
  Description: URL filtering expert
  */
-function UTM_confUrlExpert(name, callback, busLayer)
+function UTM_confASM(name, callback, busLayer)
 {
-	var thisObjName = 'UTM_confUrlExpert';
+	var thisObjName = 'UTM_confASM';
 	var thisObj = this;
 	this.m_div = undefined;
 	this.m_id = undefined;
@@ -40,7 +40,7 @@ function UTM_confUrlExpert(name, callback, busLayer)
 	this.f_getConfigurationPage = function()
 	{
 		var div = document.createElement('div');
-		div.setAttribute('id', 'conf_url_expert');
+		div.setAttribute('id', 'conf_asm');
         div.setAttribute('align', 'left');
 		/////////////////////////////////////////
 		// set inner styling of the div tag
@@ -88,14 +88,8 @@ function UTM_confUrlExpert(name, callback, busLayer)
 
     this.f_doLayout = function()
     {		
-	   var text = '<p>' + g_lang.m_url_expertSubscribeP1 + '<br/>';
-       text += '<ul style="padding-left:30px;list-style-type:square;list-style-image: url(' +  'images/puce_squar.gif)">' +
-                  '<li>' + g_lang.m_url_expertSubscribeListItem1 + '</a></li>' +
-                  '<li>' + g_lang.m_url_expertSubscribeListItem2 + '</a></li>' +
-                  '<li>' + g_lang.m_url_expertSubscribeListItem3 + '</a></li>' +						  
-                '</ul>';	   
-	    text += '<br/>' + g_lang.m_url_expertSubscribeP2 + '<br/><br/>';
-		text += '<img id="conf_url_expert_subscribe" src="' + g_lang.m_imageDir + 'bt_subscribe.gif">';
+        var text = '<p>' + g_lang.m_asm_Subscribe + '<br/><br/>';
+		text += '<img id="conf_asm_subscribe" src="' + g_lang.m_imageDir + 'bt_subscribe.gif">';
 				
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr><td>' +
@@ -107,13 +101,13 @@ function UTM_confUrlExpert(name, callback, busLayer)
 
     this.f_attachEventListener = function()
     {
-        var btSubcribe = document.getElementById('conf_url_expert_subscribe');
+        var btSubcribe = document.getElementById('conf_asm_subscribe');
         g_xbObj.f_xbAttachEventListener(btSubcribe, 'click', thisObj.f_handleClick, true);
     }
 
     this.f_detachEventListener = function()
     {
-        var btSubcribe = document.getElementById('conf_url_expert_subscribe');
+        var btSubcribe = document.getElementById('conf_asm_subscribe');
         g_xbObj.f_xbDetachEventListener(btSubcribe , 'click', thisObj.f_handleClick, true);
     }
 
@@ -140,7 +134,7 @@ function UTM_confUrlExpert(name, callback, busLayer)
         var target = g_xbObj.f_xbGetEventTarget(e);
         if (target != undefined) {
             var id = target.getAttribute('id');
-            if (id == 'conf_url_expert_subscribe') { //subscribe clicked
+            if (id == 'conf_asm_subscribe') { //subscribe clicked
 				thisObj.f_subscribe();
 				return false;
 			}

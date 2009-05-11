@@ -170,8 +170,17 @@ function UTM_configPanel()
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_IDP_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EXPERT_IDP_ID:
+                thisObj.m_selectObj = new UTM_confIDSExpert('IDSExpert', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
+                return thisObj.m_selectObj.f_getConfigurationPage();				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_AVS_ID:
+                thisObj.m_selectObj = new UTM_confAVS('AVS', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
+                return thisObj.m_selectObj.f_getConfigurationPage();				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_APS_ID:
+                thisObj.m_selectObj = new UTM_confASM('ASM', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
+                return thisObj.m_selectObj.f_getConfigurationPage();				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID:
                 thisObj.m_selectObj = new UTM_confUrlEz('UrlEz', cb, g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				
@@ -190,6 +199,9 @@ function UTM_configPanel()
 	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_IMP2P_ID:
+                thisObj.m_selectObj = new UTM_confIMP2P('IMP2P', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
+                return thisObj.m_selectObj.f_getConfigurationPage();				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID:
                 thisObj.m_selectObj = new UTM_confVPNOverview('VPNOverview', cb, g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				

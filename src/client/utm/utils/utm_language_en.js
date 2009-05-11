@@ -144,6 +144,26 @@ var g_lang =
 	m_url_expertSubscribeListItem3: "combine the different filtering functions proposed (category/ authorized URLs/ banned keywords).",
 	m_url_expertSubscribeP2: "To get this service, please press the button \"subscribe\" hereunder.",
 	
+	///////////////////////////////////////////////////////////////////
+    // IDS/IPS
+	m_ids_Subscribe: "This mode is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+	                         "It enables you to benefit from a larger database of IDS/ IPS signatures that you can also customize.<br/><br/>" +
+							 "To get this service, please press the button \"subscribe\" hereunder.",
+
+	///////////////////////////////////////////////////////////////////
+    // Anti-virus
+	m_avs_Subscribe: "Anti-Virus protection (for user devices and servers) is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+					 "To get this service, please press the button \"subscribe\" hereunder.",
+
+	///////////////////////////////////////////////////////////////////
+    // Anti-spam
+	m_asm_Subscribe: "Anti-Spam protection (for user devices and servers) is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+					 "To get this service, please press the button \"subscribe\" hereunder.",
+
+	///////////////////////////////////////////////////////////////////
+    // IM&P2P filtering
+	m_imp2p_Subscribe: "Instant Messaging & Peer to Peer application filtering is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+					 "To get this service, please press the button \"subscribe\" hereunder.",
 		
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images

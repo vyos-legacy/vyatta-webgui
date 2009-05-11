@@ -19,6 +19,14 @@ document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlEz.j
 document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlEzByUrl.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlEzByKeyword.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlExpert.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confIDSExpert.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confAVS.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confASM.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confIMP2P.js"></script>');
+
+
+
+
 
 
 

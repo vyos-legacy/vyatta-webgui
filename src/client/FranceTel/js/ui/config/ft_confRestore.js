@@ -33,15 +33,21 @@ function FT_confRestore(name, callback, busLayer)
     this.f_createColumns = function()
     {
         thisObj = this;
-
         var cols = [];
+        var offset = 0;
 
         cols[0] = this.f_createColumn(g_lang.m_uhHdDate, 120, 'text', '6', true);
-        cols[1] = this.f_createColumn(g_lang.m_uhHdWho, 90, 'text', '6', true);
-        cols[2] = this.f_createColumn(g_lang.m_restoreHdContent, 330, 'text', '6', true);
-        cols[3] = this.f_createColumn(g_lang.m_restoreHdRestore, 80, 'button', '30');
-        cols[4] = this.f_createColumn(g_lang.m_restoreHdDownload, 80, 'button', '30');
-        cols[5] = this.f_createColumn(g_lang.m_delete, 80, 'button', '30');
+        cols[1] = this.f_createColumn(g_lang.m_restoreHdContent, 330, 'text', '6', true);
+        
+        if(this.f_isInstaller())
+        {
+            cols[2] = this.f_createColumn(g_lang.m_uhHdWho, 90, 'text', '6', false);
+            offset = 1;
+        }
+
+        cols[2+offset] = this.f_createColumn(g_lang.m_restoreHdRestore, 80, 'button', '30');
+        cols[3+offset] = this.f_createColumn(g_lang.m_restoreHdDownload, 80, 'button', '30');
+        cols[4+offset] = this.f_createColumn(g_lang.m_delete, 80, 'button', '30');
 
         return cols;
     }
@@ -89,7 +95,7 @@ function FT_confRestore(name, callback, busLayer)
         {
             var r = rRec[i].split('|');
 
-            var content = r[2];
+            var content = r[1];
             var restDesc = "f_handleRestoreDesc('" + r[3] + "')";
             var anchor = thisObj.f_renderAnchor(content, restDesc,
                         g_lang.m_restoreClickRestore + " (" + content + ")");
@@ -106,7 +112,11 @@ function FT_confRestore(name, callback, busLayer)
                     "', '" + r[3] + "')",
                     g_lang.m_restoreDel + ' (' + content + ')');
 
-            vmData = [r[0], r[1], anchor, restore, download, del]
+            if(thisObj.f_isInstaller())
+                vmData = [r[0], anchor, r[2], restore, download, del];
+            else
+                vmData = [r[0], anchor, restore, download, del];
+
             var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData);
             thisObj.m_body.appendChild(bodyDiv);
         }
@@ -119,12 +129,18 @@ function FT_confRestore(name, callback, busLayer)
         var userRec = g_busObj.f_getLoginUserObj();
         var role = userRec.m_loginUser.m_role;
 
-        if(role == userRec.V_ROLE_ADMIN && r[1] == 'admin')
+        if(role == userRec.V_ROLE_ADMIN && r[2] == 'admin')
             return true;
-        else if(role == userRec.V_ROLE_INSTALL && r[1] == 'installer')
+        else if(role == userRec.V_ROLE_INSTALL && r[2] == 'installer')
             return true;
         else
             return false;
+    }
+
+    this.f_isInstaller = function()
+    {
+        var userRec = g_busObj.f_getLoginUserObj();
+        return userRec.m_loginUser.m_role == userRec.V_ROLE_INSTALL ? true:false;
     }
 
     this.f_createSortingArray = function(sortIndex, vm)
@@ -138,8 +154,8 @@ function FT_confRestore(name, callback, busLayer)
             // NOTE: the order of this partition same as the order
             // grid columns.
             // compose a default table row
-            ar[i] = vm[i].m_bkDate + '|' + vm[i].m_bkBy + '|' +
-                    content + '|' + vm[i].m_file;
+            ar[i] = vm[i].m_bkDate + '|' + content + '|' +
+                    vm[i].m_bkBy + '|' + vm[i].m_file;
         }
 
         return thisObj.f_sortArray(sortIndex, ar);

@@ -87,8 +87,6 @@ install-exec-hook:
 	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-backup.pl $(DESTDIR)/$(cgidir)/
 	cp scripts/get-backup.pl $(DESTDIR)/$(cgidir)/
-	cp scripts/notify-restore-conf $(DESTDIR)/$(cgidir)/
-	cp scripts/notify-restore-data $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-user $(DESTDIR)/$(cgidir)/
 	cp scripts/vyatta-proc $(DESTDIR)/$(cgidir)/
 

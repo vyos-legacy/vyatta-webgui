@@ -51,19 +51,19 @@ function UTM_vpnRecord()
 
     this.f_setRemoteNetwork = function(ip, prefix)
     {
-        thisObj.m_RemoteNetwork = ip + '/' + prefix;
+        thisObj.m_remoteNetwork = ip + '/' + prefix;
     }
 
     this.f_getRemoteNetworkIp = function()
     {
-        var n = thisObj.m_RemoteNetwork.split('/');
+        var n = thisObj.m_remoteNetwork.split('/');
 
         return n[0];
     }
 
     this.f_getRemoteNetworkPrefix = function()
     {
-        var n = thisObj.m_RemoteNetwork.split('/');
+        var n = thisObj.m_remoteNetwork.split('/');
 
         return n[1];
     }

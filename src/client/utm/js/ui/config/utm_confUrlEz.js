@@ -362,8 +362,8 @@ function UTM_confUrlEz(name, callback, busLayer)
         thisObj.m_form = document.getElementById('conf_url_ez_form');
         thisObj.f_setFocus();
         thisObj.f_attachListener();
-		thisObj.f_reflow();
-		g_utmMainPanel.f_requestResize(60);		
+		
+		thisObj.f_resize();
     }
     
     this.f_attachListener = function()

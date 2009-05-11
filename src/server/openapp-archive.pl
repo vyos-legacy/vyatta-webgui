@@ -65,7 +65,7 @@ my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
 my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
 
 my $REST_BACKUP = "/notifications/archive/backup";
-my $REST_RESTORE = "/notifications/archive/restore";
+my $REST_RESTORE = "/backup/backupArchive";
 my $MAC_ADDR = "/sys/class/net/eth0/address";
 my $WEB_RESTORE_ROOT="/var/www/restore";
 
@@ -367,6 +367,7 @@ sub restore_archive {
     #
     ##########################################################################
     `rm -fr $WEB_RESTORE_ROOT/`;
+    `rm -fr /var/www/backup/restore`;
     `mkdir -p $WEB_RESTORE_ROOT/`;
     `mkdir -p $RESTORE_WORKSPACE_DIR/`;
 
@@ -385,36 +386,33 @@ sub restore_archive {
     # not supplied build out from archive
     #
     ##########################################################################
-    my @coll;
-    my $coll;
-    my $i = 0;
+    my %hash_coll;
+    my $hash_coll;
+    my $archive;
     if (defined($restore_target) && $restore_target ne '') {
-	my $archive;
 	my @archive = split(',',$restore_target);
+	my $i = 0;
 	for $archive (@archive) {
+	    my $bu;
 	    my @bu = split(':',$archive);
-	    $coll[$i] = [ @bu ];
-	    $i = $i + 1;
+	    if ($bu[1] eq 'data') {
+		$hash_coll{$bu[0]} != 1;
+	    }
+	    elsif ($bu[1] eq 'conf') {
+		$hash_coll{$bu[0]} |= 2;
+	    }
 	}
     }
     else {
-	my $filename;
-	opendir ( DIR, $WEB_RESTORE_ROOT ) || die "Error in opening dir $WEB_RESTORE_ROOT\n";
-	while( ($filename = readdir(DIR))){
-	    if (lstat("$WEB_RESTORE_ROOT/$filename/data")) {
-		$coll[$i] = [ $filename,"data" ];
-		$i = $i + 1;
-	    }
-	    if (lstat("$WEB_RESTORE_ROOT/$filename/conf")) {
-		$coll[$i] = {$filename,"conf"};
-		$i = $i + 1;
-	    }
-	    if (lstat("$WEB_RESTORE_ROOT/$filename/all")) {
-		$coll[$i] = {$filename,"all"};
-		$i = $i + 1;
-	    }
-	}
-	closedir(DIR);
+	#instead use the xml file to fill out hash_coll...
+	my $metafile = $BACKUP_WORKSPACE_DIR."/".$restore_target;
+	open( FH, $metafile ) or die "sudden flaming death\n";
+	my $text = <FH>;
+	my $opt = XMLin($text);
+	#now parse the rest code
+	
+	#now something like for each here!!!!
+	$hash_coll{ $opt->{archive}->{contents}->{vm} } = $opt->{archive}->{contents}->{type};
     }
 
     ##########################################################################
@@ -425,20 +423,31 @@ sub restore_archive {
     # well known location.
     #
     ##########################################################################
-    my @new_coll = @coll;
-    my $coll_ct = $#new_coll;
-    foreach $i (0..$#coll) {
-	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
+    my $key;
+    foreach $key (keys (%hash_coll)) {
+	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
+
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]`;
-	    my $cmd = "http://$ip$REST_RESTORE/$coll[$i][1]";
+	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$key.enc -out /var/www/backup/restore/$key`;
+	    my $cmd = "http://$ip/backup/backupArchive?";
+            my $value = $hash_coll{$key};
+	    if ($value == 1) {
+		$cmd .= "data=true&conf=false";
+	    }
+	    elsif ($value == 2) {
+		$cmd .= "data=false&conf=true";
+	    }
+	    else {
+		$cmd .= "data=true&conf=true";
+	    }
+	    $cmd .= "&file=http://192.168.0.101/backup/restore/$key";
 	    my $obj = new OpenApp::Rest();
-	    my $err = $obj->send("GET",$cmd);
+	    my $err = $obj->send("PUT",$cmd);
 	    if ($err->{_success} != 0) {
-		`logger 'Rest notification error in response from $ip when starting archive'`;
+		`logger 'Rest notification error in response from $ip when starting restore'`;
 	    }
 	}
     }
@@ -450,38 +459,38 @@ sub restore_archive {
     # continue until all are done or chunker kills me.
     #
     ##########################################################################
-    my $progress_ct = 0;
-    `echo '0' > $RESTORE_WORKSPACE_DIR/status`;
+#    my $progress_ct = 0;
+#    `echo '0' > $RESTORE_WORKSPACE_DIR/status`;
     #now that each are started, let's sequentially iterate through and retrieve
-    while ($#new_coll > -1) {
-	foreach $i (0..$#new_coll) {
-	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
-	    next if (!defined($vm));
-	    my $ip = '';
-	    $ip = $vm->getIP();
-	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/archive/restore/$new_coll[$i][1]/status/";
-		#writes to specific location on disk
-		my $rc = `curl -X GET -q -I $cmd 2>&1`;
-		if ($rc =~ /200 OK/) {
+#    while ($#new_coll > -1) {
+#	foreach $i (0..$#new_coll) {
+#	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
+#	    next if (!defined($vm));
+#	    my $ip = '';
+#	    $ip = $vm->getIP();
+#	    if (defined $ip && $ip ne '') {
+#		my $cmd = "http://$ip/archive/restore/$new_coll[$i][1]/status/";
+#		#writes to specific location on disk
+#		my $rc = `curl -X GET -q -I $cmd 2>&1`;
+#		if ($rc =~ /200 OK/) {
 #		    print "SUCCESS\n";
-		    #remove from new_collection
-		    $progress_ct = $progress_ct + 1;
-		    #when done write
-		    my $progress = 100;
-		    if ($coll_ct != 0) {
-			$progress = (100 * $progress_ct) / $coll_ct;
-		    }
-		    `echo '$progress' > $RESTORE_WORKSPACE_DIR/status`;
-		    delete $new_coll[$i];
-		}
-	    }
-	}
-	sleep 1;
+#		    #remove from new_collection
+#		    $progress_ct = $progress_ct + 1;
+#		    #when done write
+#		    my $progress = 100;
+#		    if ($coll_ct != 0) {
+#			$progress = (100 * $progress_ct) / $coll_ct;
+#		    }
+#		    `echo '$progress' > $RESTORE_WORKSPACE_DIR/status`;
+#		    delete $new_coll[$i];
+#		}
+#	    }
+#	}
+#	sleep 1;
 
 	#what is a reasonable time to kick out of this command?
 	#let's kick out of this command after 1/2 hour--which should be done by the chunker
-    }
+#    }
 
     #now we are done and this is a success
 }

@@ -1,10 +1,8 @@
 help: Configure BLB association parameters
 end: if [ "${COMMIT_ACTION}" = 'DELETE' ]; then
-       # TODO actual action
        exit 0
      fi
-     if [ -z "$VAR(username/@)" ] || [ -z "$VAR(password/@)" ]; then
-       echo "BLB association requires username and password"
+     if [ -z "$VAR(username/@)" ]; then
+       echo "BLB association requires username"
        exit 1
      fi
-     # TODO actual action

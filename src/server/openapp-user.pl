@@ -100,13 +100,11 @@ sub add_user {
 	    $ip = $vm->getIP();
 	    if (defined $ip && $ip ne '') {
 		my $cmd = "http://$ip/notifications/users/$add";
-		my $err = OpenApp::Rest::send("POST",$cmd);
-		if ($err != 0) {
+		my $obj = new OpenApp::Rest();
+		my $err = $obj->send("POST",$cmd);
+		if ($err->{_success} != 0) {
 		    `logger 'Rest notification error in response from $ip when adding user $add'`;
 		}
-		#if error returned from curl, remove from list here and notify of error??
-		
-
 	    }
 	}
     }
@@ -218,8 +216,9 @@ sub del_user {
 	}
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "http://$ip/notifications/users/$delete";
-	    my $err = OpenApp::Rest::send("PUT",$cmd);
-	    if ($err != 0) {
+	    my $obj = new OpenApp::Rest();
+	    my $err = $obj->send("PUT",$cmd);
+	    if ($err->{_success} != 0) {
 		`logger 'Rest notification error in response from $ip when removing user $delete'`;
 	    }
 	}
@@ -227,21 +226,21 @@ sub del_user {
     }
     else {
 	system("ldapdeleteuser $delete");
-
 	my @VMs = OpenApp::VMMgmt::getVMList();
-	my $vm = new OpenApp::VMMgmt($rights);
-	my $ip = undef;
-	if (defined($vm)) {
-	    $ip = $vm->getIP();
-	}
-	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notifications/users/$delete";
-	    my $err = OpenApp::Rest::send("DELETE",$cmd);
-	    if ($err != 0) {
-		`logger 'Rest notification error in response from $ip when deleting user $delete'`;
+	for my $vid (@VMs) {
+	    my $vm = new OpenApp::VMMgmt($vid);
+	    if (defined($vm)) {
+		my $ip = $vm->getIP();
+		if (defined $ip && $ip ne '') {
+		    my $cmd = "http://$ip/notifications/users/$delete";
+		    my $obj = new OpenApp::Rest();
+		    my $err = $obj->send("DELETE",$cmd);
+		    if ($err->{_success} != 0) {
+			`logger Rest notification error in response from $ip when deleting user $delete'`;
+		    }
+		}
 	    }
 	}
-
     }
 }
 

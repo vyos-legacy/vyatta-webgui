@@ -1,0 +1,47 @@
+#!/bin/bash
+
+USER=$1
+PASS=$2
+pass=$(echo -n $PASS | md5sum | cut -d ' ' -f 1)
+
+BLB_TOKEN=/opt/vyatta/etc/blb-token
+BLB_IP=10.1.18.17
+
+try_login () {
+  local nonce=$1
+  local encoded=$(echo -n "$USER:$pass:$nonce" | md5sum | cut -d ' ' -f 1)
+  local pstr="encoded=$USER%3A$encoded&nonce=$nonce&goto=Login&URL=%2F"
+
+  local submit="http://$BLB_IP/webconf/WCFContainer.html?encoded=$USER"
+  # order of cookies matters!
+  local cookies="language=fr; auth=$nonce; connected=true"
+  local failed="\* File Name   : logon.htm"
+  if curl -d "$pstr" -b "$cookies" $submit 2>/dev/null \
+      | grep -q "$failed"; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+get_nonce () {
+  local home="http://$BLB_IP/webconf/openappliance_index.html"
+  curl $home 2>/dev/null | grep 'input.*name="nonce"' \
+    | sed 's/.*value="\([^"]\+\)".*/\1/'
+}
+
+# make sure token file exists, is empty, and readable only by root
+sudo sh -c "echo -n >$BLB_TOKEN"
+sudo chmod 600 $BLB_TOKEN
+sudo chown root:root $BLB_TOKEN
+
+nonce=$(get_nonce)
+if try_login "$nonce"; then
+  # login succeeded
+  sudo sh -c "echo -n \"$nonce\" >>$BLB_TOKEN"
+  exit 0
+fi
+
+# login failed
+exit 1
+

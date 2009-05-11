@@ -2,6 +2,8 @@
 
 use strict;
 use Getopt::Long;
+use FileHandle;
+use IPC::Open2;
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::LdapUser;
 use OpenApp::Conf;
@@ -83,15 +85,49 @@ sub do_standalone {
   
 sub do_blb {
   my ($user, $pass) = @_;
+  
+  # do BLB association. check credential.
+  system("/opt/vyatta/sbin/blb-login '$user' '$pass'");
+  if ($? >> 8) {
+    print "BLB login failed\n";
+    exit 1;
+  }
+ 
+  # login succeeded. change installer password.
+  my ($rfd, $wfd) = (undef, undef);
+  my $pid = open2($rfd, $wfd, '/usr/bin/mkpasswd', '-m', 'md5', '-s');
+  print $wfd "$pass";
+  close($wfd);
+  my $epass = <$rfd>;
+  waitpid($pid, 0);
+  chomp($epass);
+  if (!($epass =~ /^\$1\$/)) {
+    print "Failed to encrypt BLB password\n";
+    exit 1;
+  }
+  system("sudo /usr/sbin/usermod -p '$epass' installer");
+  if ($? >> 8) {
+    print "Failed to change installer password to match BLB\n";
+    exit 1;
+  }
+
+  # now reset "admin" account
+  my $adm = new OpenApp::LdapUser('admin');
+  my $err = $adm->deletePassword();
+  if (defined($err)) {
+    print "Failed to reset admin account: $err\n";
+    exit 1;
+  }
+  
+  # finally, save the configuration. 
   my @cmds = (
     "set $BLB_CONF_ROOT username '$user'",
-    "set $BLB_CONF_ROOT password '$pass'",
     'commit',
     'save'
   );
-  my $err = OpenApp::Conf::execute_session(@cmds);
+  $err = OpenApp::Conf::execute_session(@cmds);
   if (defined($err)) {
-    print "BLB configuration failed: $err\n";
+    print "Failed to save BLB configuration: $err\n";
     exit 1;
   }
 }

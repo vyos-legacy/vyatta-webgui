@@ -9,7 +9,7 @@ document.write('<script type="text/javascript" src="js/ui/config/utm_confBaseObj
 document.write('<script type="text/javascript" src="js/ui/config/utm_confFormDefObj.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confFormObj.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confFireLevel.js"></script>');
-document.write('<script type="text/javascript" src="js/ui/config/utm_confFireCutom.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confFireCustom.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confvpnOverview.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confvpnRemoteview.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confVpnRemoteUsrGrp.js"></script>');
@@ -17,6 +17,8 @@ document.write('<script type="text/javascript" src="js/ui/config/utm_confVpnRemo
 document.write('<script type="text/javascript" src="js/ui/config/utm_confVpnS2SE.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlEz.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlEzByUrl.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confUrlEzByKeyword.js"></script>');
+
 
 
 

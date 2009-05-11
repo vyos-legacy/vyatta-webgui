@@ -73,6 +73,8 @@ var g_lang =
     m_url_ezOn : "ON",	
 	m_url_ezOff : "OFF",			
 	m_url_ezWebSiteAddress : "Web sites' addresses",
+    m_url_ezBannedKeywordInUrl : "Banned keywords in URL",	
+	
 					
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images

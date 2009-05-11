@@ -85,8 +85,8 @@ install-exec-hook:
 	cp scripts/mandatory $(DESTDIR)/$(cgidir)/mandatory
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/
-	cp scripts/notify-backup-conf $(DESTDIR)/$(cgidir)/
-	cp scripts/notify-backup-data $(DESTDIR)/$(cgidir)/
+	cp scripts/notify-backup.pl $(DESTDIR)/$(cgidir)/
+	cp scripts/get-backup.pl $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-restore-conf $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-restore-data $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-user $(DESTDIR)/$(cgidir)/
@@ -112,8 +112,7 @@ install-exec-hook:
 	done
 
 	mkdir -p $(DESTDIR)$(wwwdir)/notifications/users
-	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/backup/conf
-	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/backup/data
+	mkdir -p $(DESTDIR)$(wwwdir)/backup/backupArchive
 	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/restore/conf
 	mkdir -p $(DESTDIR)$(wwwdir)/notifications/archive/restore/data
 	

@@ -68,6 +68,7 @@ function UTM_confFireLevel(name, callback, busLayer)
         {
             mainPanel.style.height = 380+'px';
         }
+
         //g_utils.f_cursorWait();
         //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
     };

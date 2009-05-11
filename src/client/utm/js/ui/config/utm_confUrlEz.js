@@ -77,7 +77,7 @@ function UTM_confUrlEz(name, callback, busLayer)
             }, {
                 v_type: 'html',
                 id: 'conf_url_ez_by_url_config',
-                text: '<input type="image" id="conf_url_ez_by_url_config" src="' + g_lang.m_imageDir + 'bt_config.gif">',
+                text: '<input type="image" id="conf_url_ez_by_url_config" src="' + g_lang.m_imageDir + 'bt_config.png">',
                 v_end_row: 'true'
             },  EMPTY_ROW
 			, {
@@ -89,7 +89,7 @@ function UTM_confUrlEz(name, callback, busLayer)
             }, {
                 v_type: 'html',
                 id: 'conf_url_ez_by_word_config',
-                text: '<input type="image" id="conf_url_ez_by_word_config" src="' + g_lang.m_imageDir + 'bt_config.gif">',
+                text: '<input type="image" id="conf_url_ez_by_word_config" src="' + g_lang.m_imageDir + 'bt_config.png">',
                 v_end_row: 'true'
             }, EMPTY_ROW
 			, {
@@ -248,7 +248,7 @@ function UTM_confUrlEz(name, callback, busLayer)
             if (enable) {
                 td.bgColor = '#FFFFFF';
             } else {
-                td.bgColor = '#DEDEDE';
+                td.bgColor = '#A9A9A9';
             }
         }
     }
@@ -423,7 +423,7 @@ function UTM_confUrlEz(name, callback, busLayer)
 			    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_BY_URL_ID);
 				break;
 			case 'conf_url_ez_by_word_config':
-			    alert('configure by word');
+			    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_BY_WORD_ID);
 				break;
             case 'conf_url_ez_apply_button':  //apply clicked
                 if (!thisObj.f_validate()) {

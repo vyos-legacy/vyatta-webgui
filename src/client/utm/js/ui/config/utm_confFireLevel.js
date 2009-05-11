@@ -53,7 +53,7 @@ function UTM_confFireLevel(name, callback, busLayer)
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
-            if(evt != undefined && evt.m_objName == 'FT_eventObj')
+            if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
 
             }
@@ -63,17 +63,22 @@ function UTM_confFireLevel(name, callback, busLayer)
         if(r != null)
             r.checked = true;
 
+        var mainPanel = document.getElementById("utm_confpanel_");
+        if(mainPanel != null)
+        {
+            mainPanel.style.height = 380+'px';
+        }
+
         //g_utils.f_cursorWait();
         //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
     };
 
     this.f_getGridRowData = function(radio, header, msg)
     {
-        var html = "<table cellspacing=0 cellpadding=0 border=0><tbody><tr><td>" + radio +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><b>" + header +
-            "</b></td></tr>" +
-            "<tr border=0><td></td><td>" + msg + "</td></tr>" +
-            "</tbody></table";
+        html = "<table cellspacing=0 cellpadding=0 border=0><tbody><tr>" +
+               "<td rowspan=2 valign=top>" + radio + 
+               "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><b>" + header +
+               "</b></td><tr><td>" + msg + "</td></tr></tbody></table>";
 
         return html;
     };
@@ -91,7 +96,7 @@ function UTM_confFireLevel(name, callback, busLayer)
         var hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand,
                         g_lang.m_fireLevelBdAdvan, custom,
                         g_lang.m_fireLevelBdBlock];
-        var h = [43, 43, 43, 58, 43];
+        var h = [43, 43, 43, 53, 43];
 
         for(var i=0; i<radioIds.length; i++)
         {
@@ -122,7 +127,7 @@ function UTM_confFireLevel(name, callback, busLayer)
         this.m_buttons = this.f_createButtons(btns);
         this.f_adjustDivPosition(this.m_buttons);
 
-        window.setTimeout("f_testing()", 500);
+        window.setTimeout("f_testing()", 100);
         return [this.f_headerText(), this.m_gridHeader,
                 this.m_gridBody, this.m_buttons];
     };

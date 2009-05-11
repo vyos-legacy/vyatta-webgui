@@ -134,7 +134,8 @@ sub backup_archive {
     # Parse passed in backup list and send out REST message to VMs
     #
     ##########################################################################
-    my $hash_coll = {};
+    my %hash_coll;
+    my $hash_coll;
     my $archive;
     my @archive = split(',',$backup);
     my $i = 0;
@@ -142,23 +143,21 @@ sub backup_archive {
 	my $bu;
 	my @bu = split(':',$archive);
 	if ($bu[1] eq 'data') {
-	    $hash_coll->{$bu[0]} != 1;
+	    $hash_coll{$bu[0]} != 1;
 	}
 	elsif ($bu[1] eq 'conf') {
-	    $hash_coll->{$bu[0]} |= 2;
+	    $hash_coll{$bu[0]} |= 2;
 	}
     }
 
-
     my $key;
-    my $value;
-    my %hash_coll;
-    while (($key, $value) = each %hash_coll) {
+    foreach $key (keys (%hash_coll)) {
 	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
+            my $value = $hash_coll{$key};
 	    my $cmd = "http://$ip/backup/backupArchive?";
 	    if ($value == 1) {
 		$cmd .= "data=true&conf=false";
@@ -190,13 +189,14 @@ sub backup_archive {
     #now need overall time for this process
     my $end_time = time() + $backup_timeout;
 
-    while (($key, $value) = each %new_hash_coll) {
+    foreach $key (keys (%hash_coll)) {
 	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
 	    my $cmd = "http://$ip/backup/getArchive?";
+            my $value = $hash_coll{$key};
 	    if ($value == 1) {
 		$cmd .= "data=true&conf=false";
 	    }
@@ -206,19 +206,20 @@ sub backup_archive {
 	    else {
 		$cmd .= "data=true&conf=true";
 	    }
+
 	    my $obj = new OpenApp::Rest();
 	    my $err = $obj->send("GET",$cmd);
 	    if ($err->{_http_code} == 302) { #redirect means server is done with archive
 		#now parse the new location...
 		my $header = $err->{_header};
 		my $archive_location = get_archive_location($header);
-
+		
 		#and retrieve the archive
 		#writes to specific location on disk
 		my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
-		`mkdir -p $BACKUP_WORKSPACE_DIR/$key`;
+		`mkdir -p $BACKUP_WORKSPACE_DIR`;
+		my $rc = `wget $archive_location -O $bufile 2>&1`;
 
-		my $rc = `wget $cmd -O $bufile 2>&1`;
 		if ($rc =~ /200 OK/) {
 		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$key -out $BACKUP_WORKSPACE_DIR/$key.enc`;
 		}		
@@ -272,7 +273,8 @@ sub backup_archive {
     print FILE "<file>$filename</file>";                                                                             
     print FILE "<date>$date $time</date>";
     print FILE "<contents>";
-    while (($key, $value) = each %hash_coll) {
+    foreach $key (keys (%hash_coll)) {
+	my $value = $hash_coll{$key};
 	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
 	print FILE "<entry>";
@@ -314,16 +316,17 @@ sub get_archive_location {
     my ($header) = @_;
     
     #looking for Location: in header
-    my @tmp = split $header, " ";
+    my @tmp = split " ",$header;
     my $flag = 0;
     foreach my $tmp (@tmp) {
 	if ($flag == 1) {
 	    return $tmp;
 	}
-	if ($tmp eq 'Location:') {
+	if ($tmp =~ /Location:/) {
 	    $flag = 1;
 	}
     }
+    return "";
 }
 
 ##########################################################################

@@ -315,7 +315,7 @@ Processor::parse()
   if (!XML_Parse(_xml_parser, _msg._request, strlen(_msg._request), true)) {
     char buf[20];
     sprintf(buf, "%d", WebGUI::MALFORMED_REQUEST);
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><openappliance><token>"+_msg._token+"</token><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</msg></error></openappliance>";
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><openappliance><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[WebGUI::MALFORMED_REQUEST])+"</msg></error></openappliance>";
     return false;
   }
 
@@ -419,13 +419,13 @@ Processor::get_response()
   else if (_msg._custom_error_msg.empty() == false) {
     char buf[20];
     sprintf(buf, "%d", _msg._error_code);
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><openappliance><token>"+_msg._token+"</token><error><code>"+string(buf)+"</code><msg>"+_msg._custom_error_msg+"</msg></error></openappliance>";
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><openappliance><error><code>"+string(buf)+"</code><msg>"+_msg._custom_error_msg+"</msg></error></openappliance>";
     return _msg._response;
   }
   else {
     char buf[20];
     sprintf(buf, "%d", _msg._error_code);
-    _msg._response = "<?xml version='1.0' encoding='utf-8'?><openappliance><token>"+_msg._token+"</token><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[_msg._error_code])+"</msg></error></openappliance>";
+    _msg._response = "<?xml version='1.0' encoding='utf-8'?><openappliance><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[_msg._error_code])+"</msg></error></openappliance>";
   }
   return _msg._response;
 }

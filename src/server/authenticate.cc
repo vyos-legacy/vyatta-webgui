@@ -126,7 +126,7 @@ Authenticate::create_new_session()
       sprintf(buf, "%d", WebGUI::RESTRICTED_ACCESS);
       char buf1[40];
       sprintf(buf1, "%lu", id);
-      string tmpstr = "<?xml version='1.0' encoding='utf-8'?><openappliance><token>"+_proc->_msg._token+"</token><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code><msg>change password required</msg></error></openappliance>";
+      string tmpstr = "<?xml version='1.0' encoding='utf-8'?><openappliance><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code><msg>change password required</msg></error></openappliance>";
       _proc->set_response(tmpstr);
       return false;
     }
@@ -135,7 +135,7 @@ Authenticate::create_new_session()
     sprintf(buf, "%d", WebGUI::SUCCESS);
     char buf1[40];
     sprintf(buf1, "%lu", id);
-    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><openappliance><token>"+_proc->_msg._token+"</token><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code><msg/></error></openappliance>";
+    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><openappliance><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code><msg/></error></openappliance>";
     _proc->set_response(tmpstr);
     
     //need to verify that system is set up correctly here to provide proper return code.

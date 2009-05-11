@@ -12,6 +12,10 @@ function UTM_confFireCustom(name, callback, busLayer)
 {
     var thisObj = this;
     this.thisObjName = 'UTM_confFireCustom';
+    this.m_nextRuleNo = 10;
+    this.m_fieldIds = ["blk_id", "app_id", "pro_id", "sip_id", "smip_id",
+                        "sport_id", "dip_id", "dmip_id", "dport_id",
+                        "act_id", "log_id", "enable_id"];
 
     /**
      * @param name - name of configuration screens.
@@ -38,7 +42,7 @@ function UTM_confFireCustom(name, callback, busLayer)
                       'firewallCustomEnable', 'f_firewallCustomEnableChkboxCb',
                       'tooltip');
         var chkbox2 = g_lang.m_fireCustLog + '<br><br>' + thisObj.f_renderCheckbox('no',
-                      'firewallCustomEnable', 'f_firewallCustomEnableChkboxCb',
+                      'firewallCustomLog', 'f_firewallCustomLogChkboxCb',
                       'tooltip');
 
         cols[0] = this.f_createColumn("   ", 100, 'combo', '3', false, 'center');
@@ -52,7 +56,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         cols[8] = this.f_createColumn(g_lang.m_fireCustDestPort, 90, 'combo', '3', false, 'center');
         cols[9] = this.f_createColumn(g_lang.m_fireCustAction, 90, 'combo', '3', false, 'center');
         cols[10] = this.f_createColumn(chkbox2, 55, 'checkbox', '3', false, 'center');
-        cols[11] = this.f_createColumn(g_lang.m_fireCustOrder, 60, 'combo', '3', false, 'center');
+        cols[11] = this.f_createColumn(g_lang.m_fireCustOrder, 80, 'combo', '3', false, 'center');
         cols[12] = this.f_createColumn(chkbox, 55, 'checkbox', '3', false, 'center');
         cols[13] = this.f_createColumn(g_lang.m_fireCustDelete, 55, 'combo', '3', false, 'center');
 
@@ -66,19 +70,33 @@ function UTM_confFireCustom(name, callback, busLayer)
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
-            if(evt != undefined && evt.m_objName == 'FT_eventObj')
+            if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
 
             }
 
-            thisObj.f_adjustDivPosition(this.m_buttons);
-        }
+            var mainPanel = document.getElementById("utm_confpanel_");
+            if(mainPanel != null)
+                mainPanel.style.height = 460+'px';
+        };
 
-        g_utils.f_cursorWait();
-        //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
+        //g_utils.f_cursorWait();
     };
 
-    this.f_handleAddFirewallCustomRow = function()
+    this.f_performSaveRules = function()
+    {
+        for(var i=0; i<thisObj.m_nextRuleNo; i++)
+        {
+            var fn = thisObj.m_fieldIds[0]+i;
+            var f1 = document.getElementById(fn);
+            if(f1 != null)
+            {
+                alert(f1.value + " : " + i);
+            }
+        }
+    };
+
+    this.f_handleAddFirewallCustomRow = function(ruleNo)
     {
         var services = ["DNS-UDP", "DNS-TCP", "HTTP", "HTTPS", "FTP_DATA",
                         "FTP", "POP3", "SMTP", "SMTP-Auth", "TFTP", "POP3S",
@@ -90,28 +108,46 @@ function UTM_confFireCustom(name, callback, busLayer)
         var options = ["Any", "DMZ to LAN traffic", "DMZ to WAN ..", "LAN to DMZ ..",
                       "LAN to WAN ..", "WAN to DMZ ..", "WAN to LAN .."];
 
-        var blank = thisObj.f_renderCombobox(options, "Any", 90);
-        var app = thisObj.f_renderCombobox(services, "DNS-UDP", 90);
-        var pro = thisObj.f_renderCombobox(proto, "Any", 60);
-        var sip = thisObj.f_renderTextField('sip_id', '255.255.255.255', '', 105);
-        var smip = thisObj.f_renderTextField('smip_id', '100.000.100.100', '', 105);
-        var sport = thisObj.f_renderTextField('sport_id', '255', '', 80);
-        var dip = thisObj.f_renderTextField('dip_id', '255.255.255.255', '', 105);
-        var dmip = thisObj.f_renderTextField('dmip_id', '100.000.100.100', '', 105);
-        var dport = thisObj.f_renderTextField('dport_id', '255', '', 80);
-        var act = thisObj.f_renderCombobox(proto, "Any", 80);
+        var blank = thisObj.f_renderCombobox(options, "Any", 90,
+                            thisObj.m_fieldIds[0]+ruleNo);
+        var app = thisObj.f_renderCombobox(services, "DNS-UDP", 90,
+                            thisObj.m_fieldIds[1]+ruleNo);
+        var pro = thisObj.f_renderCombobox(proto, "Any", 60,
+                            thisObj.m_fieldIds[2]+ruleNo);
+        var sip = thisObj.f_renderTextField(thisObj.m_fieldIds[3]+ruleNo,
+                            '255.255.255.255', '', 105);
+        var smip = thisObj.f_renderTextField(thisObj.m_fieldIds[4]+ruleNo,
+                            '100.000.100.100', '', 105);
+        var sport = thisObj.f_renderTextField(thisObj.m_fieldIds[5]+ruleNo, '255', '', 80);
+        var dip = thisObj.f_renderTextField(thisObj.m_fieldIds[6]+ruleNo, '255.255.255.255', '', 105);
+        var dmip = thisObj.f_renderTextField(thisObj.m_fieldIds[7]+ruleNo,
+                            '100.000.100.100', '', 105);
+        var dport = thisObj.f_renderTextField(thisObj.m_fieldIds[8]+ruleNo, '255', '', 80);
+        var act = thisObj.f_renderCombobox(proto, "Any", 80,
+                            thisObj.m_fieldIds[9]+ruleNo);
         var log = "<div align=center>" + thisObj.f_renderCheckbox(
-                  'no', "log_id", "", "") + "</div>";
+                  'no', thisObj.m_fieldIds[10]+ruleNo, "", "") + "</div>";
         var enable = "<div align=center>" + thisObj.f_renderCheckbox(
-                  'no', "enable_id", "", "") + "</div>";
-        var order = "<div align=center>order</div";
+                  'no', thisObj.m_fieldIds[11]+ruleNo, "", "") + "</div>";
+
+        var up = thisObj.f_renderButton("ArrowUp", 
+                  ruleNo == 10 ? false:true, null, '');
+        var dn = thisObj.f_renderButton("ArrowDown", true, null, '');
+        var order = "<div align=center>" + up + "&nbsp;&nbsp;&nbsp;" + dn + "</div>";
         var del = "<div align=center>" + thisObj.f_renderButton(
-                  "delete", true, "f_delete", "") + "</div";
+                  "delete", true, "f_fireCustomDeleteHandler(" + ruleNo +
+                  ")", "") + "</div";
 
-
-        thisObj.m_gridBody.appendChild(thisObj.f_createGridRow(thisObj.m_colModel,
+        ///////////////////////////////////
+        // add fields into grid view
+        var div = thisObj.f_createGridRow(thisObj.m_colModel,
                     [blank, app, pro, sip, smip, sport, dip, dmip, dport,
-                    act, log, order, enable, del]));
+                    act, log, order, enable, del]);
+        thisObj.m_gridBody.appendChild(div);
+
+        /////////////////////////////////////////////
+        // make the new added row is in viewable
+        div.scrollIntoView(true);
     };
 
     this.f_init = function()
@@ -127,6 +163,9 @@ function UTM_confFireCustom(name, callback, busLayer)
         this.m_buttons = this.f_createButtons(btns);
 
         var grid = this.f_initGridDiv([this.m_gridHeader, this.m_gridBody])
+
+        window.setTimeout("f_fireCustomAddHandler()", 100);
+
         return [this.f_headerText(), this.f_headerCombo(), this.f_subHeaderText(),
                 grid, this.m_buttons];
     };
@@ -172,15 +211,28 @@ UTM_extend(UTM_confFireCustom, UTM_confBaseObj);
 
 function f_fireCustomAddHandler()
 {
-    g_configPanelObj.m_activeObj.f_handleAddFirewallCustomRow();
+    var aObj = g_configPanelObj.m_activeObj;
+
+    aObj.f_handleAddFirewallCustomRow(aObj.m_nextRuleNo++);
+    var mainPanel = document.getElementById("utm_confpanel_");
+    if(mainPanel != null)
+    {
+        mainPanel.style.height = 460+'px';
+        
+    }
 }
 
 function f_fireCustomSaveHandler()
 {
-
+    g_configPanelObj.m_activeObj.f_performSaveRules();
 }
 
 function f_fireCustomCancelHandler()
 {
     g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_ID);
+}
+
+function f_fireCustomDeleteHandler(ruleNo)
+{
+    alert('delete ' + ruleNo);
 }

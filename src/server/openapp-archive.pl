@@ -221,10 +221,16 @@ sub backup_archive {
 		my $rc = `wget $archive_location -O $bufile 2>&1`;
 
 		if ($rc =~ /200 OK/) {
-		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$key -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+		    `rm -f $bufile`;  #now remove source file
 		}		
 
 		#and remove from poll collection
+		delete $new_hash_coll{$key};
+	    }
+	    elsif ($err->{_http_code} == 500) {
+		#log error and delete backup request
+		`logger 'error received from $key, canceling backup of this VM'`;
 		delete $new_hash_coll{$key};
 	    }
 	    else {
@@ -291,7 +297,6 @@ sub backup_archive {
     # Now suck up everything in the directory and tar up. Done.
     #
     ##########################################################################
-#    print "tar -C $BACKUP_WORKSPACE_DIR -cf $ARCHIVE_ROOT_DIR/$filename.tar . 2>/dev/null";
     `tar -C $BACKUP_WORKSPACE_DIR -cf $ARCHIVE_ROOT_DIR/$filename.tar . 2>/dev/null`;
 
     ##########################################################################
@@ -302,7 +307,6 @@ sub backup_archive {
     `echo '100' > $BACKUP_WORKSPACE_DIR/status`;
 
     #backup is now complete, let's send an email out to admin
-    #echo -e "To: mike@lrlart.com\nSubject: backup is finished" | /usr/sbin/ssmtp mike@lrlart.com
     my $email = $auth_user->getMail();
     `echo -e 'To: $email\nSubject: backup is finished: $filename' | /usr/sbin/ssmtp $email 2>/dev/null`;
 }

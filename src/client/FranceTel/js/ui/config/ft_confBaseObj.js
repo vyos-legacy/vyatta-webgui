@@ -463,6 +463,16 @@ function FT_confBaseObj(name, callback, busLayer)
         return '<input id="' + elId + '" type="checkbox" ' + checked +
                 ' title="' + tooltip + '" onclick="' + cb + '"/>';
     }
+	
+	this.f_renderTextfield = function(val, elId, readonly)
+	{		
+		var tf = '<input id="' + elId + '" type="text" class=v_form_input"' + '"';
+		if (readonly) {
+			tf += ' readonly style="background-color: #EFEFEF;"';
+		}
+		tf += ' value="' + val + '">';
+		return tf;
+	}
 
     this.f_renderCombobox = function(options, val)
     {

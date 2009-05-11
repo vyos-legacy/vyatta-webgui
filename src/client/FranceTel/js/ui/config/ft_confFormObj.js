@@ -417,6 +417,8 @@ function FT_confFormObj(name, callback, busLayer) {
 
 FT_extend(FT_confFormObj, FT_confBaseObj);
 
+FT_EMPTY_ROW = { v_type: 'empty', v_new_row: 'true', v_end_row: 'true'};
+
 function FT_confEmptyComponent()
 {
     var thisObj = this;

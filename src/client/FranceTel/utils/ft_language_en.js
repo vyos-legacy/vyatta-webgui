@@ -312,6 +312,7 @@ var g_lang =
 	m_ldapInOA : "In the Open Appliance",
 	m_ldapInLan : "In the company LAN",
 	m_ldapSrvAddr: "Server address",
+	m_ldapSuffix: "Suffix",	
 	m_ldapUsrUpdateRt : "User (update rights)",
 	m_ldapUsrReadRt: "User (read rights)",
 	m_ldapPasswdUpdateRt: "Password (update rights)",

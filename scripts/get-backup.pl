@@ -4,7 +4,7 @@ use CGI;
 my $cgi = new CGI; 
 
 
-my $conf = $cgi->param('conf');
+my $conf = $cgi->param('config');
 my $data = $cgi->param('data');
 
 

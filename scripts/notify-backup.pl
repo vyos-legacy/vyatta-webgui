@@ -3,7 +3,7 @@
 use CGI; 
 my $cgi = new CGI; 
 
-my $conf = $cgi->param('conf');
+my $conf = $cgi->param('config');
 my $data = $cgi->param('data');
 
 #if PUT this is a restore request, GET=backup
@@ -30,21 +30,44 @@ if ($cgi->request_method() eq 'GET') { #backup request
     print '<?xml version="1.0" encoding="utf-8"?><openappliance><error><code>0</code><msg></msg></error></openappliance>';
 }
 elsif ($cgi->request_method() eq 'PUT') { #restore request
-    my $file = $cgi->param('file');
+    my $params = $ENV{QUERY_STRING};
+    #need to parse the params myself
+    my @p = split("&",$params);
+    #looking for 'file', 'config', and 'data'
+    my $file;
+    my $conf;
+    my $data;
+    foreach $p (@p) {
+	my $vals;
+	my @vals = split("=",$p);
+	if ($vals[0] eq 'file') {
+	    $file = $vals[1];
+	}
+	elsif ($vals[0] eq 'config') {
+	    $conf = $vals[1];
+	}
+	elsif ($vals[0] eq 'data') {
+	    $data = $vals[1];
+	}
+    }
+
+#    `logger file: $file`;
+#    `logger conf: $conf`;
+#    `logger data: $data`;
     
     #retrieve file
     if ($conf eq 'true') {
-	`wget $file -O /tmp/restore/`;
+	`sudo wget --no-check-certificate $file -O /tmp/restore/bu`;
 	
-	`tar xf /tmp/restore/*`;
+	`sudo tar xf /tmp/restore/bu`;
 	
-	`cp /tmp/restore/config.boot /opt/vyatta/etc/config/config.boot`;
+	`sudo cp /tmp/build/config.boot /opt/vyatta/etc/config/config.boot`;
 	
 	`sudo chgrp vyattacfg /opt/vyatta/etc/config/config.boot`;
 	
 	`sudo chmod 660 /opt/vyatta/etc/config/config.boot`;
 	
-	`source /etc/bash_completion && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper load && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end`;
+	`source /etc/bash_completion.d/20vyatta-cfg  && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper load && sudo /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end`;
     }
     print '<?xml version="1.0" encoding="utf-8"?><openappliance><error><code>0</code><msg></msg></error></openappliance>';
 }

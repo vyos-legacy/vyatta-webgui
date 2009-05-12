@@ -31,7 +31,42 @@ var g_lang =
 	m_vpn_Expert: "Expert",
     m_vpn_DFS : "DFS Group",		
 	m_vpn_Users : "Users",
-				
+
+    ///////////////////////////////////////////////////////////////////
+    // Firewall Security Level
+    m_fireLevelColName : "Security Level",
+    m_fireLevelHeader : "Lerem ipsum onsectetuer adipiscing elit, sed diam nonummy" +
+                    " nibh euismod tincidunt ut looreet dolore magna aliquam erat " +
+                    "volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation",
+    m_fireLevelHdAuth : "Authorize All",
+    m_fireLevelBdAuth : "Firewall functionality is disabled. All incoming and outgoing traffic is authorized.",
+    m_fireLevelHdStand : "Standard",
+    m_fireLevelBdStand : "All incoming traffic blocked/outgoing traffic alloed except Netbios.",
+    m_fireLevelHdAdvan : "Advanced",
+    m_fireLevelBdAdvan : "All incoming and outgoing traffic blocked except those involving internet browsing and email.",
+    m_fireLevelHdCustom : "Customized",
+    m_fireLevelBdCustom : "Customisation of Advanced Profile.",
+    m_fireLevelHdBlock : "Block All",
+    m_fireLevelBdBlock : "The access to internet is blocked all users.",
+    m_fireLevelCustConfTip : "Configure customize security",
+
+    ///////////////////////////////////////////////////////////////////
+    // Firewall Security Customize Level
+    m_fireCustSubHeader : "Specific Rules",
+    m_fireCustAppService : "Application<br>/Service",
+    m_fireCustProtocol : "Protocol",
+    m_fireCustSrcIpAddr : "Source IP<br> address",
+    m_fireCustSrcMaskIpAddr : "Source mask IP<br>address",
+    m_fireCustSrcPort : "Source port<small><br>Enter single<br>port number or<br>port range<br>(200-300)</small>",
+    m_fireCustDestIpAddr : "Destination IP<br>address",
+    m_fireCustDestMaskIpAddr : "Destination mask<br>IP address",
+    m_fireCustDestPort : "Destination<br>port<small><br>Enter single<br>port number <br>or port range<br>(200-300)</small>",
+    m_fireCustAction : "Action",
+    m_fireCustLog : "Log",
+    m_fireCustOrder : "Order",
+    m_fireCustEnable : "Enable",
+    m_fireCustDelete : "Delete",
+
     ///////////////////////////////////////////////////////////////////
     // VPN Site 2 Site
     m_vpnS2S_VpnConSettings : "VPN Connection setttings",
@@ -55,27 +90,7 @@ var g_lang =
     m_vpnRUadd_UserName : "User Name",	
     m_vpnRUadd_UserPasswd : "User Password",	
     m_vpnRUadd_VPNGroup : "VPN Group",			
-	
-	///////////////////////////////////////////////////////////////////
-    // URL Filtering
-    m_url_ezByCat : "by categories",		
-    m_url_ezLegal : "legal",	
-    m_url_ezProf : "professional",	
-    m_url_ezStrict : "strict",
-    m_url_ezByUrl : "by authorized URLs",		
-    m_url_ezByWord : "by banned words in URLs",	
-    m_url_ezFilterPolicy : "Filtering policy",	
-    m_url_ezFilterPolicyImp : "Filtering policy implementation",	
-    m_url_ezDay : "Day",	
-    m_url_ezDayArray : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-    m_url_ezTime : "Time",	
-    m_url_ezAlways : "Always",			
-    m_url_ezOn : "ON",	
-	m_url_ezOff : "OFF",			
-	m_url_ezWebSiteAddress : "Web sites' addresses",
-    m_url_ezBannedKeywordInUrl : "Banned keywords in URL",	
-	
-					
+		
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images
     m_imageDir : 'images/fr/',

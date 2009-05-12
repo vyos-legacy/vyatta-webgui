@@ -10,7 +10,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.thisObjName = 'UTM_confBaseObj';
     this.m_colorGridRow = false;
     this.m_id = undefined;
-	
+
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
@@ -41,7 +41,7 @@ function UTM_confBaseObj(name, callback, busLayer)
             this.m_threadId = null;
         }
     }
-    
+
     this.f_setId = function(id) {
 		this.m_id = id;
 	}
@@ -233,7 +233,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_adjustDivPositionByPixel = function(div, pixel)
     {
         div.style.top = pixel + 'px';
-    }	
+    }
 
     this.f_createGeneralDiv = function(text)
     {
@@ -283,8 +283,8 @@ function UTM_confBaseObj(name, callback, busLayer)
      * create a div for push buttons.
      * @param buttons - is an array of array contains button name and onclick
      *                  callback.
-     *                  [ [btn1, btn1Callback, tooltipString, element id],
-     *                  [btn2, btn2Callback, tooltipString, element id],
+     *                  [ [btn1, btn1Callback, tooltipString, element id, enable],
+     *                  [btn2, btn2Callback, tooltipString, element id, enable],
      *                  []...]
      */
     this.f_createButtons = function(buttons)
@@ -299,6 +299,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         innerHtml += '<tbody><tr height="22">';
         for (var i = 0; i < buttons.length; i++) {
             var btn = buttons[i];
+            var disabled = btn[4] == null || btn[4] ? "" : "_disabled";
             var elId = btn[3] == undefined ? "" : 'id="' + btn[3] + '" ';
 
             switch(btn[0])
@@ -311,7 +312,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                     'bt_add.PNG" ' + elId + ' name="addFireWall" ' +
                     'value="add" onclick="' + btn[1] +
                     '"></div></td>';
-                break;		
+                break;
 				case 'Back':
                 innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
@@ -353,7 +354,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                     'padding-top:15px;" >' +
                     '<input type="image" src="' +
                     g_lang.m_imageDir +
-                    'bt_cancel.gif" ' +
+                    'bt_cancel' + disabled + '.gif" ' +
                     elId +
                     ' name="cancel" ' +
                     'value="Cancel" onclick="' +
@@ -383,7 +384,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                     'padding-top:15px;" >' +
                     '<input type="image" src="' +
                     g_lang.m_imageDir +
-                    'bt_apply.gif" ' +
+                    'bt_apply' + disabled + '.gif" ' +
                     elId +
                     ' name="apply" ' +
                     'value="apply" onclick="' +
@@ -603,7 +604,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_renderButton = function(text, enable, cb, tooltip)
     {
         var imgSrc = '';
-        switch (text) 
+        switch (text)
         {
             case 'ArrowUp':
                 imgSrc = enable ? 'arrow_up.jpg' : 'arrow_up_disabled.jpg';

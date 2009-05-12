@@ -23,7 +23,9 @@ function UTM_confVPNOverview(name, callback, busLayer)
 
     this.f_getConfigurationPage = function()
     {
-        return this.f_getPanelDiv(this.f_init());
+        var div = this.f_getPanelDiv(this.f_init());
+		thisObj.f_resize();
+		return div;
     }
 
     this.f_createS2SColumns = function()

@@ -289,8 +289,8 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 			}		
 		}
 		var ft = document.getElementById('ft_container');
-		//alert('div height: ' + thisObj.f_getHeight() + ' ft.height: ' + ft.style.height);
-		g_utmMainPanel.f_requestResize();
+		//alert('div height: ' + thisObj.f_getHeight() + ' ft.height: ' + ft.style.height);		
+		thisObj.f_resize();
 	}
     
     this.f_attachListener = function()

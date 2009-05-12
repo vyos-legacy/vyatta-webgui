@@ -82,6 +82,7 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     {
         thisObj.m_form = document.getElementById('conf_vpn_rusr' + "_form");
 		thisObj.f_setFocus();
+		thisObj.f_resize();
     }
 	
 	

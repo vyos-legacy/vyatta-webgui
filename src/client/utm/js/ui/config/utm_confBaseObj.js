@@ -757,6 +757,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         this.m_div.style.height = h + 'px';
         document.getElementById('ft_container').style.height = h + 'px';
         this.f_reflow();
+        g_utmMainPanel.f_requestResize();			
     }
 }
 

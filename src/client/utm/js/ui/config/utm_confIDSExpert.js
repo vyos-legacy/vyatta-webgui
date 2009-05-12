@@ -80,6 +80,7 @@ function UTM_confIDSExpert(name, callback, busLayer)
 		 }
          document.getElementById('ft_container').style.height = h + 'px';
          this.f_reflow();
+		 g_utmMainPanel.f_requestResize();			 
     }
 
     this.f_setId = function(id) {

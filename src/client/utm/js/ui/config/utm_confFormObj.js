@@ -490,6 +490,7 @@ function UTM_confFormObj(name, callback, busLayer)
 		 } 
          ft.style.height = h + 'px';
          this.f_reflow();
+		 g_utmMainPanel.f_requestResize();			 
     }
 		
     this.f_handleClick = function(e)

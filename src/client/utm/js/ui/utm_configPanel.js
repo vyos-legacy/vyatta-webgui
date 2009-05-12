@@ -237,15 +237,29 @@ function UTM_configPanel()
 
     this.f_render = function(component)
     {
-        //thisObj.f_removePrev();
         thisObj.m_selectCmp = component;
         thisObj.m_activeCmp = component;
         thisObj.m_activeObj = thisObj.m_selectObj;
-		//thisObj.f_showFTcontainer();
-        thisObj.f_redrawFTcontainer();
-        g_utmMainPanel.f_requestResize();
+		thisObj.f_showFTcontainer();
+		//Observation:
+		//1.If g_utmMainPanel.f_requestResize() is called here, somehow the children offsetHeight return 0.
+		//2.If setTimeout is used to call the resize in a delay manner, it works, but the screen flicker. 
+		//  setTimeout('f_configPanelAdjustHeight()', 1);
+		//3.So let each individual screen to call f_resize by themselve.
     }
+	
+	this.f_adjustHeight = function()
+	{
+		thisObj.m_activeObj.f_resize();
+		thisObj.m_activeObj.f_reflow();
+		g_utmMainPanel.f_requestResize();
+	}
 
+}
+
+function f_configPanelAdjustHeight()
+{
+	g_configPanelObj.f_adjustHeight();
 }
 
 function UTM_confEmptyComponent()
@@ -257,6 +271,8 @@ function UTM_confEmptyComponent()
 	this.f_stopLoadVMData = function() { }
 	this.f_onUnload = function() { }
 	this.f_detachEventListener = function() {}
+    this.f_resize = function() { }
+	this.f_reflow = function() {}
 
 	this.f_getConfigurationPage =  function()
 	{

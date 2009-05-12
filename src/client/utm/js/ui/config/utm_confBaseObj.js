@@ -10,6 +10,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.thisObjName = 'UTM_confBaseObj';
     this.m_colorGridRow = false;
     this.m_id = undefined;
+	this.m_rowHeight = 31;
 
     /**
      * @param name - name of configuration screens.
@@ -307,7 +308,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                 case 'AddInner':
                 innerHtml += '<td>' +
                     '<div title="' + btn[2] + '" style="height:30px; ' +
-                    'padding-top:5px;padding-left:5px;padding-bottom:10px" >' +
+                    'padding-top:10px;padding-left:10px;padding-bottom:5px" >' +
                     '<input type="image" src="' + g_lang.m_imageDir +
                     'bt_add.PNG" ' + elId + ' name="addFireWall" ' +
                     'value="add" onclick="' + btn[1] +
@@ -740,16 +741,16 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_resize = function(padding)
     {
         if (this.m_id != g_configPanelObj.m_selectedItem ||
-        this.m_div == undefined)
-            //to avoid the race condition between callback from server, and user click event.
-            return;
-
+		this.m_div == undefined) {
+			//to avoid the race condition between callback from server, and user click event.
+			return;
+		}
         var h = 0;
         for (var i = 0; this.m_div.childNodes[i]; i++) {
             h += this.m_div.childNodes[i].offsetHeight;
         }
 
-        h = h + (thisObj.m_tableRowCounter * 31);
+        h = h + (thisObj.m_tableRowCounter * thisObj.m_rowHeight);
         if (padding) {
             h += padding;
         }

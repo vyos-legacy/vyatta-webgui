@@ -46,20 +46,10 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         this.m_body = this.f_createGridView(this.m_hdcolumns, true);
         
         var addBtn = [['AddInner', "f_confUrlEzByKeywordHandleAdd('" + this.m_btnAddId + "')", 'Tools tip for add', this.m_btnAddId]];
-        this.m_addButton = this.f_createButtons(addBtn);
-        this.m_addButton.style.borderLeft = '1px solid #CCCCCC';
-        this.m_addButton.style.borderRight = '1px solid #CCCCCC';
-        this.m_addButton.style.borderBottom = '1px solid #CCCCCC';
-		this.m_addButton.style.width = '555px';
-        //this.m_addButton.style.borderTop = '1px solid #CCCCCC';	
-        this.m_addButton.style.marginTop = '-5px';
-        
-        var btns = [['Back', "f_confUrlEzByKeywordHandleBack('" + this.m_btnBackId + "')", 'Tools tip for back', this.m_btnBackId],
-		            ['Cancel', "f_confUrlEzByKeywordHandleCancel('" + this.m_btnCancelId + "')", 'Tools tip for cancel', this.m_btnCancelId], 
-					['Apply', "f_confUrlEzByKeywordHandleApply('" + this.m_btnApplyId + "')", 'Tools tip for apply', this.m_btnApplyId]];
-        this.m_buttons = this.f_createButtons(btns);
-        
-        //this.f_loadVMData();
+        this.m_addButton = this.f_createInnerButtons(addBtn,'560px');
+
+        var btns = [['Back', "f_confUrlEzByUrlHandleBack('" + this.m_btnBackId + "')", 'Tools tip for back', this.m_btnBackId, g_lang.m_imageDir + 'bt_back.png', 'left'], ['Apply', "f_confUrlEzByUrlHandleApply('" + this.m_btnApplyId + "')", 'Tools tip for apply', this.m_btnApplyId, g_lang.m_imageDir + 'bt_apply.gif', 'right'], ['Cancel', "f_confUrlEzByUrlHandleCancel('" + this.m_btnCancelId + "')", 'Tools tip for cancel', this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif', 'right']]
+        this.m_buttons = this.f_createLRButtons(btns, '560px');
         
         return [this.f_headerText(), this.m_header, this.m_body, this.m_addButton, this.m_buttons];
     }
@@ -76,7 +66,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         var chkbox = g_lang.m_enabled + '<br>' +
         thisObj.f_renderCheckbox('no', 'conf_url_ez_by_keyword_enable_cb', "f_confUrlEzByKeywordHandleEnableCb('conf_url_ez_by_keyword_enable_cb')", 'tooltip');
         
-        cols[0] = this.f_createColumn(g_lang.m_url_ezBannedKeywordInUrl + '<br>', 415, 'textField', '5', false, 'center');
+        cols[0] = this.f_createColumn(g_lang.m_url_ezBannedKeywordInUrl + '<br>', 420, 'textField', '10', false, 'center');
         cols[1] = this.f_createColumn(chkbox, 70, 'checkbox', '28');
         cols[2] = this.f_createColumn(g_lang.m_delete + '<br>', 70, 'image', '28');
         
@@ -93,6 +83,14 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         }
     }
     
+    this.f_adjust = function()
+    {
+        thisObj.m_body.style.height = '';
+        thisObj.f_adjustDivPositionByPixel(thisObj.m_addButton, 0);
+        thisObj.f_adjustDivPositionByPixel(thisObj.m_buttons, 20);
+        thisObj.f_resize(20);
+    }	
+	
     this.f_addRow = function()
     {
         var prefix = 'utm_conf_url_ez_by_keyword_';
@@ -108,9 +106,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         thisObj.m_body.appendChild(bodyDiv);
         thisObj.m_cnt++;
         
-        thisObj.f_adjustDivPositionByPixel(thisObj.m_addButton, thisObj.f_getTableHeight() - 40);
-        thisObj.f_adjustDivPositionByPixel(thisObj.m_buttons, thisObj.f_getTableHeight() - 30);
-        thisObj.f_resize();
+		thisObj.f_adjust();
     }
     
 	this.f_apply = function()
@@ -176,9 +172,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
             thisObj.m_body.appendChild(bodyDiv);
             thisObj.m_cnt++;
         }
-        thisObj.f_adjustDivPositionByPixel(thisObj.m_addButton, thisObj.f_getTableHeight() - 40);
-        thisObj.f_adjustDivPositionByPixel(thisObj.m_buttons, thisObj.f_getTableHeight() - 30);
-        thisObj.f_resize();
+        thisObj.f_adjust();
     }
     
     this.f_handleGridSort = function(col)
@@ -195,7 +189,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
     }
 }
 
-UTM_extend(UTM_confUrlEzByKeyword, UTM_confBaseObj);
+UTM_extend(UTM_confUrlEzByKeyword, UTM_confBaseObjExt);
 
 
 function f_confUrlEzByKeywordHandleCancel(id)

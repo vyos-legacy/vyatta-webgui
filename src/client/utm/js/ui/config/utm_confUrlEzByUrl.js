@@ -46,19 +46,10 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         this.m_body = this.f_createGridView(this.m_hdcolumns, true);
         
         var addBtn = [['AddInner', "f_confUrlEzByUrlHandleAdd('" + this.m_btnAddId + "')", 'Tools tip for add', this.m_btnAddId]];
-        this.m_addButton = this.f_createButtons(addBtn);
-        this.m_addButton.style.borderLeft = '1px solid #CCCCCC';
-        this.m_addButton.style.borderRight = '1px solid #CCCCCC';
-        this.m_addButton.style.borderBottom = '1px solid #CCCCCC';
-        //this.m_addButton.style.borderTop = '1px solid #CCCCCC';	
-        this.m_addButton.style.marginTop = '-5px';
+        this.m_addButton = this.f_createInnerButtons(addBtn, '790px');
         
-        var btns = [['Back', "f_confUrlEzByUrlHandleBack('" + this.m_btnBackId + "')", 'Tools tip for back', this.m_btnBackId],
-		            ['Cancel', "f_confUrlEzByUrlHandleCancel('" + this.m_btnCancelId + "')", 'Tools tip for cancel', this.m_btnCancelId], 
-					['Apply', "f_confUrlEzByUrlHandleApply('" + this.m_btnApplyId + "')", 'Tools tip for apply', this.m_btnApplyId]];
-        this.m_buttons = this.f_createButtons(btns);
-        
-        //this.f_loadVMData();
+        var btns = [['Back', "f_confUrlEzByUrlHandleBack('" + this.m_btnBackId + "')", 'Tools tip for back', this.m_btnBackId, g_lang.m_imageDir + 'bt_back.png', 'left'], ['Apply', "f_confUrlEzByUrlHandleApply('" + this.m_btnApplyId + "')", 'Tools tip for apply', this.m_btnApplyId, g_lang.m_imageDir + 'bt_apply.gif', 'right'], ['Cancel', "f_confUrlEzByUrlHandleCancel('" + this.m_btnCancelId + "')", 'Tools tip for cancel', this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif', 'right']]
+        this.m_buttons = this.f_createLRButtons(btns, '790px');
         
         return [this.f_headerText(), this.m_header, this.m_body, this.m_addButton, this.m_buttons];
     }
@@ -75,7 +66,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         var chkbox = g_lang.m_enabled + '<br>' +
         thisObj.f_renderCheckbox('no', 'conf_url_ez_by_url_enable_cb', "f_confUrlEzByUrlHandleEnableCb('conf_url_ez_by_url_enable_cb')", 'tooltip');
         
-        cols[0] = this.f_createColumn(g_lang.m_url_ezWebSiteAddress + '<br>', 650, 'textField', '5', false, 'center');
+        cols[0] = this.f_createColumn(g_lang.m_url_ezWebSiteAddress + '<br>', 650, 'textField', '10', false, 'center');
         cols[1] = this.f_createColumn(chkbox, 70, 'checkbox', '28');
         cols[2] = this.f_createColumn(g_lang.m_delete + '<br>', 70, 'image', '28');
         
@@ -95,7 +86,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     this.f_addRow = function()
     {
         var prefix = 'utm_conf_url_ez_by_url_';
-        var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, '', '', 635);
+        var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, '', '', 625);
         var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
         var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlHandleDeleteCb('" +
         prefix +
@@ -104,24 +95,22 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         "')", 'delete row');
         var data = [addr, cb, del];
         var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28);
+        
         thisObj.m_body.appendChild(bodyDiv);
         thisObj.m_cnt++;
-        
-        thisObj.f_adjustDivPositionByPixel(thisObj.m_addButton, thisObj.f_getTableHeight() - 40);
-        thisObj.f_adjustDivPositionByPixel(thisObj.m_buttons, thisObj.f_getTableHeight() - 30);
-        thisObj.f_resize();
+        thisObj.f_adjust();
     }
     
-	this.f_apply = function()
-	{
-		
-	}
-	
-	this.f_reset = function()
-	{
-		
-	}
-	
+    this.f_apply = function()
+    {
+    
+    }
+    
+    this.f_reset = function()
+    {
+    
+    }
+    
     this.f_handleClick = function(id)
     {
         if (id == thisObj.m_btnCancelId) {
@@ -131,8 +120,8 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         } else if (id == thisObj.m_btnAddId) {
             thisObj.f_addRow();
         } else if (id == thisObj.m_btnBackId) {
-		    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);
-        
+            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);
+            
         }
     }
     
@@ -158,12 +147,21 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         return h;
     }
     
+    this.f_adjust = function()
+    {
+        thisObj.m_body.style.height = '';
+        thisObj.f_adjustDivPositionByPixel(thisObj.m_addButton, 0);
+        thisObj.f_adjustDivPositionByPixel(thisObj.m_buttons, 20);
+        thisObj.f_resize(20);
+    }
+    
     this.f_populateTable = function()
     {
         var a = ['http://www.facebook.com', 'http://www.vyatta.com', 'http://www.cisco.com', 'http://www.sun.com', 'http://www.juniper.net', ' '];
+        
         for (var i = 0; i < a.length; i++) {
             var prefix = 'utm_conf_url_ez_by_url_';
-            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 635);
+            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 625);
             var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
             var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlHandleDeleteCb('" +
             prefix +
@@ -175,9 +173,8 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
             thisObj.m_body.appendChild(bodyDiv);
             thisObj.m_cnt++;
         }
-        thisObj.f_adjustDivPositionByPixel(thisObj.m_addButton, thisObj.f_getTableHeight() - 40);
-        thisObj.f_adjustDivPositionByPixel(thisObj.m_buttons, thisObj.f_getTableHeight() - 30);
-        thisObj.f_resize();
+        
+        thisObj.f_adjust();
     }
     
     this.f_handleGridSort = function(col)
@@ -194,7 +191,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     }
 }
 
-UTM_extend(UTM_confUrlEzByUrl, UTM_confBaseObj);
+UTM_extend(UTM_confUrlEzByUrl, UTM_confBaseObjExt);
 
 
 function f_confUrlEzByUrlHandleCancel(id)

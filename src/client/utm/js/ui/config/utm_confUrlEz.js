@@ -67,7 +67,7 @@ function UTM_confUrlEz(name, callback, busLayer)
                 text: '<input id="conf_url_ez_strict" type="radio" name="filter_by_cat" value="strict">&nbsp;' + g_lang.m_url_ezStrict,
                 v_new_row: 'true',
                 v_end_row: 'true'
-            },  EMPTY_ROW
+            }//,  EMPTY_ROW
 			, {
                 v_type: 'html',
                 id: 'conf_url_ez_by_url',
@@ -79,7 +79,7 @@ function UTM_confUrlEz(name, callback, busLayer)
                 id: 'conf_url_ez_by_url_config',
                 text: '<input type="image" id="conf_url_ez_by_url_config" src="' + g_lang.m_imageDir + 'bt_config.png">',
                 v_end_row: 'true'
-            },  EMPTY_ROW
+            }//,  EMPTY_ROW
 			, {
                 v_type: 'html',
                 id: 'conf_url_ez_by_word',
@@ -151,7 +151,7 @@ function UTM_confUrlEz(name, callback, busLayer)
         'nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam ' +
         'erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci ' +
         'tation ullamcorper suscipit lobortis nisl ut aliquip ex ea ' +
-        'commodo consequat.<br><br>';
+        'commodo consequat.<br>';
         
         return this.f_createGeneralDiv(txt);
     }
@@ -362,8 +362,8 @@ function UTM_confUrlEz(name, callback, busLayer)
         thisObj.m_form = document.getElementById('conf_url_ez_form');
         thisObj.f_setFocus();
         thisObj.f_attachListener();
-		thisObj.f_reflow();
-		g_utmMainPanel.f_requestResize(60);		
+		
+		thisObj.f_resize();
     }
     
     this.f_attachListener = function()

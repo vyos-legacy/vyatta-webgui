@@ -31,7 +31,42 @@ var g_lang =
 	m_vpn_Expert: "Expert",
     m_vpn_DFS : "DFS Group",		
 	m_vpn_Users : "Users",
-				
+
+    ///////////////////////////////////////////////////////////////////
+    // Firewall Security Level
+    m_fireLevelColName : "Security Level",
+    m_fireLevelHeader : "Lerem ipsum onsectetuer adipiscing elit, sed diam nonummy" +
+                    " nibh euismod tincidunt ut looreet dolore magna aliquam erat " +
+                    "volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation",
+    m_fireLevelHdAuth : "Authorize All",
+    m_fireLevelBdAuth : "Firewall functionality is disabled. All incoming and outgoing traffic is authorized.",
+    m_fireLevelHdStand : "Standard",
+    m_fireLevelBdStand : "All incoming traffic blocked/outgoing traffic alloed except Netbios.",
+    m_fireLevelHdAdvan : "Advanced",
+    m_fireLevelBdAdvan : "All incoming and outgoing traffic blocked except those involving internet browsing and email.",
+    m_fireLevelHdCustom : "Customized",
+    m_fireLevelBdCustom : "Customisation of Advanced Profile.",
+    m_fireLevelHdBlock : "Block All",
+    m_fireLevelBdBlock : "The access to internet is blocked all users.",
+    m_fireLevelCustConfTip : "Configure customize security",
+
+    ///////////////////////////////////////////////////////////////////
+    // Firewall Security Customize Level
+    m_fireCustSubHeader : "Specific Rules",
+    m_fireCustAppService : "Application<br>/Service",
+    m_fireCustProtocol : "Protocol",
+    m_fireCustSrcIpAddr : "Source IP<br> address",
+    m_fireCustSrcMaskIpAddr : "Source mask IP<br>address",
+    m_fireCustSrcPort : "Source port<small><br>Enter single<br>port number or<br>port range<br>(200-300)</small>",
+    m_fireCustDestIpAddr : "Destination IP<br>address",
+    m_fireCustDestMaskIpAddr : "Destination mask<br>IP address",
+    m_fireCustDestPort : "Destination<br>port<small><br>Enter single<br>port number <br>or port range<br>(200-300)</small>",
+    m_fireCustAction : "Action",
+    m_fireCustLog : "Log",
+    m_fireCustOrder : "Order",
+    m_fireCustEnable : "Enable",
+    m_fireCustDelete : "Delete",
+
     ///////////////////////////////////////////////////////////////////
     // VPN Site 2 Site
     m_vpnS2S_VpnConSettings : "VPN Connection setttings",
@@ -56,7 +91,7 @@ var g_lang =
     m_vpnRUadd_UserPasswd : "User Password",	
     m_vpnRUadd_VPNGroup : "VPN Group",			
 	
-	///////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
     // URL Filtering
     m_url_ezByCat : "by categories",		
     m_url_ezLegal : "legal",	
@@ -74,7 +109,33 @@ var g_lang =
 	m_url_ezOff : "OFF",			
 	m_url_ezWebSiteAddress : "Web sites' addresses",
     m_url_ezBannedKeywordInUrl : "Banned keywords in URL",	
-	
+	m_url_expertSubscribeP1: "This mode is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+	                         "It enables you to:",
+	m_url_expertSubscribeListItem1: "benefit from enriched URLs categories you can also customize.",
+	m_url_expertSubscribeListItem2: "assign a specific filtering policy per user group",
+	m_url_expertSubscribeListItem3: "combine the different filtering functions proposed (category/ authorized URLs/ banned keywords).",
+	m_url_expertSubscribeP2: "To get this service, please press the button \"subscribe\" hereunder.",	
+
+	///////////////////////////////////////////////////////////////////
+    // IDS/IPS
+	m_ids_Subscribe: "This mode is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+	                         "It enables you to benefit from a larger database of IDS/ IPS signatures that you can also customize.<br/><br/>" +
+							 "To get this service, please press the button \"subscribe\" hereunder.",
+							 
+	///////////////////////////////////////////////////////////////////
+    // Anti-virus
+	m_avs_Subscribe: "Anti-Virus protection (for user devices and servers) is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+					 "To get this service, please press the button \"subscribe\" hereunder.",
+
+	///////////////////////////////////////////////////////////////////
+    // Anti-spam
+	m_asm_Subscribe: "Anti-Spam protection (for user devices and servers) is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+					 "To get this service, please press the button \"subscribe\" hereunder.",
+
+	///////////////////////////////////////////////////////////////////
+    // IM&P2P filtering
+	m_imp2p_Subscribe: "Instant Messaging & Peer to Peer application filtering is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+					 "To get this service, please press the button \"subscribe\" hereunder.",							 
 					
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images

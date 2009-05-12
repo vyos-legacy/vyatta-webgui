@@ -241,7 +241,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 				thisObj.f_hideTableRow(thisObj.m_ezItems[i], false);
 			}		
 		}
-		g_utmMainPanel.f_requestResize();
+		thisObj.f_resize();
 	}
     
     this.f_attachListener = function()

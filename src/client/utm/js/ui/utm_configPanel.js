@@ -170,8 +170,17 @@ function UTM_configPanel()
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_IDP_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EXPERT_IDP_ID:
+                thisObj.m_selectObj = new UTM_confIDSExpert('IDSExpert', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
+                return thisObj.m_selectObj.f_getConfigurationPage();				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_AVS_ID:
+                thisObj.m_selectObj = new UTM_confAVS('AVS', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
+                return thisObj.m_selectObj.f_getConfigurationPage();				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_APS_ID:
+                thisObj.m_selectObj = new UTM_confASM('ASM', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
+                return thisObj.m_selectObj.f_getConfigurationPage();				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID:
                 thisObj.m_selectObj = new UTM_confUrlEz('UrlEz', cb, g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				
@@ -186,7 +195,13 @@ function UTM_configPanel()
 	            thisObj.m_selectObj.f_setId(id);				
 				return thisObj.m_selectObj.f_getConfigurationPage();					
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EXPERT_WEBF_ID:
+                thisObj.m_selectObj = new UTM_confUrlExpert('UrlExpert', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
+                return thisObj.m_selectObj.f_getConfigurationPage();				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_IMP2P_ID:
+                thisObj.m_selectObj = new UTM_confIMP2P('IMP2P', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
+                return thisObj.m_selectObj.f_getConfigurationPage();				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID:
                 thisObj.m_selectObj = new UTM_confVPNOverview('VPNOverview', cb, g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				
@@ -222,15 +237,29 @@ function UTM_configPanel()
 
     this.f_render = function(component)
     {
-        //thisObj.f_removePrev();
         thisObj.m_selectCmp = component;
         thisObj.m_activeCmp = component;
         thisObj.m_activeObj = thisObj.m_selectObj;
-		//thisObj.f_showFTcontainer();
-        thisObj.f_redrawFTcontainer();
-        g_utmMainPanel.f_requestResize();
+		thisObj.f_showFTcontainer();
+		//Observation:
+		//1.If g_utmMainPanel.f_requestResize() is called here, somehow the children offsetHeight return 0.
+		//2.If setTimeout is used to call the resize in a delay manner, it works, but the screen flicker. 
+		//  setTimeout('f_configPanelAdjustHeight()', 1);
+		//3.So let each individual screen to call f_resize by themselve.
     }
+	
+	this.f_adjustHeight = function()
+	{
+		thisObj.m_activeObj.f_resize();
+		thisObj.m_activeObj.f_reflow();
+		g_utmMainPanel.f_requestResize();
+	}
 
+}
+
+function f_configPanelAdjustHeight()
+{
+	g_configPanelObj.f_adjustHeight();
 }
 
 function UTM_confEmptyComponent()
@@ -242,6 +271,8 @@ function UTM_confEmptyComponent()
 	this.f_stopLoadVMData = function() { }
 	this.f_onUnload = function() { }
 	this.f_detachEventListener = function() {}
+    this.f_resize = function() { }
+	this.f_reflow = function() {}
 
 	this.f_getConfigurationPage =  function()
 	{

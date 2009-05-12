@@ -19,6 +19,7 @@ function UTM_confFireLevel(name, callback, busLayer)
     this.m_rdAdvanId = "id_fireLevelAdvance";
     this.m_rdCustomId = "id_fireLevelCustomized";
     this.m_rdBlockId = "id_fireLevelBlockAll";
+    this.m_selRadioId = this.m_rdAuthAllId;
 
     /**
      * @param name - name of configuration screens.
@@ -55,28 +56,49 @@ function UTM_confFireLevel(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
+                var val = evt.m_value;
+                var rId = null;
+                switch(val)
+                {
+                    case 'auth all':
+                        rId = thisObj.m_rdAuthAllId;
+                    break;
+                    case 'standard':
+                        rId = thisObj.m_rdStandId;
+                    break;
+                    case 'advance':
+                        rId = thisObj.m_rdAdvanId;
+                    break;
+                    case 'custom':
+                        rId = thisObj.m_rdCustomId;
+                    break;
+                    default:
+                    case 'block':
+                        rId = thisObj.m_rdBlockId;
+                    break;
+                }
 
+                var r = document.getElementById(rId);
+                if(r != null)
+                    r.checked = true;
+
+                var mainPanel = document.getElementById("utm_confpanel_");
+                if(mainPanel != null)
+                    mainPanel.style.height = 380+'px';
             }
-        }
+        };
 
-        var r = document.getElementById(thisObj.m_rdAuthAllId);
-        if(r != null)
-            r.checked = true;
+        var e = new UTM_eventObj(0, 'auth all', '');
+        window.setTimeout(function(){cb(e)}, 100);
 
-        var mainPanel = document.getElementById("utm_confpanel_");
-        if(mainPanel != null)
-        {
-            mainPanel.style.height = 380+'px';
-        }
-
-        //g_utils.f_cursorWait();
+        g_utils.f_cursorWait();
         //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
     };
 
     this.f_getGridRowData = function(radio, header, msg)
     {
         html = "<table cellspacing=0 cellpadding=0 border=0><tbody><tr>" +
-               "<td rowspan=2 valign=top>" + radio + 
+               "<td rowspan=2 valign=top>" + radio +
                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><b>" + header +
                "</b></td><tr><td>" + msg + "</td></tr></tbody></table>";
 
@@ -86,8 +108,9 @@ function UTM_confFireLevel(name, callback, busLayer)
     this.f_initGridData = function()
     {
         var custom = g_lang.m_fireLevelBdCustom + "&nbsp;&nbsp;&nbsp;<input type='" +
-                      "image' src='" + g_lang.m_imageDir + "bt_cancel.gif' " +
-                      "onclick='f_fireLevelConfigHandler()'>";
+                      "image' src='" + g_lang.m_imageDir + "bt_config.png' " +
+                      "onclick='f_fireLevelConfigHandler()' title='" +
+                      g_lang.m_fireLevelCustConfTip + "'>";
         var radioIds = [this.m_rdAuthAllId, this.m_rdStandId,
                         this.m_rdAdvanId, this.m_rdCustomId, this.m_rdBlockId];
         var rdHeaders = [g_lang.m_fireLevelHdAuth, g_lang.m_fireLevelHdStand,
@@ -101,7 +124,8 @@ function UTM_confFireLevel(name, callback, busLayer)
         for(var i=0; i<radioIds.length; i++)
         {
             var radio = this.f_getGridRowData(this.f_renderRadio('no',
-                        radioIds[i], null, "secLevel", ""), rdHeaders[i], hdBodies[i]);
+                        radioIds[i], "f_fireLevelRadioHandler('"+radioIds[i]+"')",
+                        "secLevel", ""), rdHeaders[i], hdBodies[i]);
 
             this.m_gridBody.appendChild(thisObj.f_createGridRow(this.m_colModel,
                     [radio], h[i]));
@@ -122,12 +146,11 @@ function UTM_confFireLevel(name, callback, busLayer)
         this.f_initGridData();
         this.f_loadVMData();
 
-        var btns = [['Apply', "f_fireLevelApplyHandler()", "", this.m_btnApplyId],
-                    ['Cancel', "f_fireLevelCancelHandler()", "", this.m_btnCancelId]];
+        var btns = [['Apply', "f_fireLevelApplyHandler()", "", this.m_btnApplyId, false],
+                    ['Cancel', "f_fireLevelCancelHandler()", "", this.m_btnCancelId, false]];
         this.m_buttons = this.f_createButtons(btns);
         this.f_adjustDivPosition(this.m_buttons);
 
-        window.setTimeout("f_testing()", 100);
         return [this.f_headerText(), this.m_gridHeader,
                 this.m_gridBody, this.m_buttons];
     };
@@ -136,6 +159,24 @@ function UTM_confFireLevel(name, callback, busLayer)
     {
         return this.f_createGeneralDiv(g_lang.m_fireLevelHeader+"<br><br><br>");
     };
+
+    this.f_enabledActionButtons = function(rId)
+    {
+        var isDirty = rId == thisObj.m_selRadioId ? false : true;
+
+        thisObj.f_enabledDisableButton(this.m_btnApplyId, isDirty);
+        thisObj.f_enabledDisableButton(this.m_btnCancelId, isDirty);
+    };
+
+    this.f_resetInput = function()
+    {
+        var r = document.getElementById(thisObj.m_selRadioId);
+        if(r != null)
+        {
+            r.checked = true;
+            thisObj.f_enabledActionButtons(thisObj.m_selRadioId);
+        }
+    }
 }
 UTM_extend(UTM_confFireLevel, UTM_confBaseObj);
 
@@ -147,15 +188,15 @@ function f_fireLevelConfigHandler(e)
 
 function f_fireLevelApplyHandler(e)
 {
-    g_configPanelObj.m_activeObj.f_groupsChkboxCb();
+    //g_configPanelObj.m_activeObj.f_groupsChkboxCb();
 }
 
 function f_fireLevelCancelHandler(e)
 {
-    g_configPanelObj.m_activeObj.f_usersChkboxCb();
+    g_configPanelObj.m_activeObj.f_resetInput();
 }
 
-function f_testing()
+function f_fireLevelRadioHandler(rId)
 {
-    g_configPanelObj.m_activeObj.f_loadVMData();
+    g_configPanelObj.m_activeObj.f_enabledActionButtons(rId);
 }

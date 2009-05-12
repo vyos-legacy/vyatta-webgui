@@ -43,7 +43,7 @@ function UTM_firewallBusObj(busObj)
         }
         else
         {
-            var evt = new FT_eventObj(0, thisObj, '');
+            var evt = new UTM_eventObj(0, thisObj, '');
 
             var err = response.getElementsByTagName('error');
             if(err != null && err[0] != null)

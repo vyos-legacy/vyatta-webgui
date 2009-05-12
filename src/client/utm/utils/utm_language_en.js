@@ -121,6 +121,52 @@ var g_lang =
     m_vpnRUadd_UserName : "User Name",	
     m_vpnRUadd_UserPasswd : "User Password",	
     m_vpnRUadd_VPNGroup : "VPN Group",					
+	
+	///////////////////////////////////////////////////////////////////
+    // URL Filtering
+    m_url_ezByCat : "by categories",		
+    m_url_ezLegal : "legal",	
+    m_url_ezProf : "professional",	
+    m_url_ezStrict : "strict",
+    m_url_ezByUrl : "by authorized URLs",		
+    m_url_ezByWord : "by banned words in URLs",	
+    m_url_ezFilterPolicy : "Filtering policy",	
+    m_url_ezFilterPolicyImp : "Filtering policy implementation",	
+    m_url_ezDay : "Day",	
+    m_url_ezDayArray : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    m_url_ezTime : "Time",	
+    m_url_ezAlways : "Always",			
+    m_url_ezOn : "ON",	
+	m_url_ezOff : "OFF",	
+	m_url_ezWebSiteAddress : "Web sites' addresses",
+    m_url_ezBannedKeywordInUrl : "Banned keywords in URL",	
+	m_url_expertSubscribeP1: "This mode is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+	                         "It enables you to:",
+	m_url_expertSubscribeListItem1: "benefit from enriched URLs categories you can also customize.",
+	m_url_expertSubscribeListItem2: "assign a specific filtering policy per user group",
+	m_url_expertSubscribeListItem3: "combine the different filtering functions proposed (category/ authorized URLs/ banned keywords).",
+	m_url_expertSubscribeP2: "To get this service, please press the button \"subscribe\" hereunder.",
+	
+	///////////////////////////////////////////////////////////////////
+    // IDS/IPS
+	m_ids_Subscribe: "This mode is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+	                         "It enables you to benefit from a larger database of IDS/ IPS signatures that you can also customize.<br/><br/>" +
+							 "To get this service, please press the button \"subscribe\" hereunder.",
+
+	///////////////////////////////////////////////////////////////////
+    // Anti-virus
+	m_avs_Subscribe: "Anti-Virus protection (for user devices and servers) is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+					 "To get this service, please press the button \"subscribe\" hereunder.",
+
+	///////////////////////////////////////////////////////////////////
+    // Anti-spam
+	m_asm_Subscribe: "Anti-Spam protection (for user devices and servers) is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+					 "To get this service, please press the button \"subscribe\" hereunder.",
+
+	///////////////////////////////////////////////////////////////////
+    // IM&P2P filtering
+	m_imp2p_Subscribe: "Instant Messaging & Peer to Peer application filtering is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
+					 "To get this service, please press the button \"subscribe\" hereunder.",
 		
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images

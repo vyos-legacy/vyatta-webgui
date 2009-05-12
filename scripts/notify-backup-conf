@@ -1,5 +1,0 @@
-#!/bin/sh
-
-cp /opt/vyatta/etc/config/config.boot /var/www/archive/backup/conf
-
-echo '<?xml version="1.0" encoding="utf-8"?><openappliance><token></token><error><code>0</code><msg></msg></error></openappliance>'

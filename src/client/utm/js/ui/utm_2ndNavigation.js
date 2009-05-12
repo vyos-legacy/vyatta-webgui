@@ -83,7 +83,8 @@ function UTM_2ndNavigation(){
 			}
 			var id = f_elemGetAttribute(target.parentNode, 'id');
 			if (id != thisObj.m_selectedItem) {
-				target.style.color = VYA.DYN_STYLE.SEC_HOVER_ITEM_COLOR;
+				target.style.color = VYA.DYN_STYLE.SEC_NAV_HOVER_ITEM_COLOR;
+				target.style.fontWeight = VYA.DYN_STYLE.SEC_NAV_HOVER_ITEM_FONT_WEIGHT;
 			}	
 		}
     }
@@ -101,6 +102,7 @@ function UTM_2ndNavigation(){
 			var id = f_elemGetAttribute(target.parentNode, 'id');
 			if (id != thisObj.m_selectedItem) {
 				target.style.color = VYA.DYN_STYLE.SEC_NAV_NOT_ACT_ITEM_COLOR;
+				target.style.fontWeight = VYA.DYN_STYLE.SEC_NAV_NOT_ACT_ITEM_FONT_WEIGHT;
 			}			
 		}        
     }	
@@ -115,7 +117,7 @@ function UTM_2ndNavigation(){
                 var nodeHref = f_elemGetFirstChildByNodeName(menu.childNodes[i], 'A');
                 if (sid != thisObj.m_selectedItem) {
                     nodeHref.style.color = VYA.DYN_STYLE.SEC_NAV_NOT_ACT_ITEM_COLOR;
-					nodeHref.style.fontWeight = VYA.DYN_STYLE.SEC_NAV_ACT_ITEM_FONT_WEIGHT;
+					nodeHref.style.fontWeight = VYA.DYN_STYLE.SEC_NAV_NOT_ACT_ITEM_FONT_WEIGHT;
                 } else {
                     nodeHref.style.color = VYA.DYN_STYLE.SEC_NAV_ACT_ITEM_COLOR;
 					nodeHref.style.fontWeight = VYA.DYN_STYLE.SEC_NAV_ACT_ITEM_FONT_WEIGHT;

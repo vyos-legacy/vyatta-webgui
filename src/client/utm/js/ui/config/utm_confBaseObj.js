@@ -148,7 +148,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     };
 
 
-    this.f_createGridRow = function(header, data, height)
+    this.f_createGridRow = function(header, data, height, rowId)
     {
         var div = document.createElement('div');
         div.style.position = 'relative';
@@ -156,6 +156,10 @@ function UTM_confBaseObj(name, callback, busLayer)
         div.style.backgroundColor = 'white';
         div.style.paddingTop = '0px';
         div.style.paddingBottom = '0px';
+
+        if ((rowId != undefined) && (rowId !=null)) {
+			div.setAttribute('id', rowId);
+		}
 
         var rHeight = height == undefined ? 28 : height;
 

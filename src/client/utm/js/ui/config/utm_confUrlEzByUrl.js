@@ -12,6 +12,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     this.m_btnApplyId = 'conf_url_ez_by_url_btn_apply';
     this.m_btnAddId = 'conf_url_ez_by_url_btn_add';
     this.m_btnBackId = 'conf_url_ez_by_url_btn_back';
+    this.m_btnDeleteId = 'conf_url_ez_by_url_btn_delete';	
     this.m_body = undefined;
     this.m_row = 0;
     this.m_cnt = 0;
@@ -45,10 +46,10 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         this.m_header = this.f_createGridHeader(this.m_hdcolumns, '');
         this.m_body = this.f_createGridView(this.m_hdcolumns, true);
         
-        var addBtn = [['AddInner', "f_confUrlEzByUrlHandleAdd('" + this.m_btnAddId + "')", 'Tools tip for add', this.m_btnAddId]];
+        var addBtn = [['AddInner', "f_confUrlEzByUrlEventCallback('" + this.m_btnAddId + "')", 'Tools tip for add', this.m_btnAddId]];
         this.m_addButton = this.f_createInnerButtons(addBtn, '790px');
         
-        var btns = [['Back', "f_confUrlEzByUrlHandleBack('" + this.m_btnBackId + "')", 'Tools tip for back', this.m_btnBackId, g_lang.m_imageDir + 'bt_back.png', 'left'], ['Apply', "f_confUrlEzByUrlHandleApply('" + this.m_btnApplyId + "')", 'Tools tip for apply', this.m_btnApplyId, g_lang.m_imageDir + 'bt_apply.gif', 'right'], ['Cancel', "f_confUrlEzByUrlHandleCancel('" + this.m_btnCancelId + "')", 'Tools tip for cancel', this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif', 'right']]
+        var btns = [['Back', "f_confUrlEzByUrlEventCallback('" + this.m_btnBackId + "')", 'Tools tip for back', this.m_btnBackId, g_lang.m_imageDir + 'bt_back.png', 'left'], ['Apply', "f_confUrlEzByUrlEventCallback('" + this.m_btnApplyId + "')", 'Tools tip for apply', this.m_btnApplyId, g_lang.m_imageDir + 'bt_apply.gif', 'right'], ['Cancel', "f_confUrlEzByUrlEventCallback('" + this.m_btnCancelId + "')", 'Tools tip for cancel', this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif', 'right']]
         this.m_buttons = this.f_createLRButtons(btns, '790px');
         
         return [this.f_headerText(), this.m_header, this.m_body, this.m_addButton, this.m_buttons];
@@ -64,7 +65,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         this.f_colorGridBackgroundRow(true);
         var cols = [];
         var chkbox = g_lang.m_enabled + '<br>' +
-        thisObj.f_renderCheckbox('no', 'conf_url_ez_by_url_enable_cb', "f_confUrlEzByUrlHandleEnableCb('conf_url_ez_by_url_enable_cb')", 'tooltip');
+        thisObj.f_renderCheckbox('no', 'conf_url_ez_by_url_enable_cb', "f_confUrlEzByUrlEventCallback('conf_url_ez_by_url_enable_cb')", 'tooltip');
         
         cols[0] = this.f_createColumn(g_lang.m_url_ezWebSiteAddress + '<br>', 650, 'textField', '10', false, 'center');
         cols[1] = this.f_createColumn(chkbox, 70, 'checkbox', '28');
@@ -76,42 +77,54 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     this.f_enableAll = function()
     {
         var cb = document.getElementById('conf_url_ez_by_url_enable_cb');
-        if (cb.checked) {
-            ;
-        } else {
-            ;
-        }
+		
+        var s = 'utm_conf_url_ez_by_url_cb_';
+		for (var i=0; i < thisObj.m_cnt; i++) {
+	        var el = document.getElementById(s + i);
+			if (el != null) {
+				el.checked = cb.checked;
+			}		
+		}			
     }
     
     this.f_addRow = function()
     {
         var prefix = 'utm_conf_url_ez_by_url_';
+		var rowId = prefix + 'row_' + thisObj.m_cnt;
+		
         var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, '', '', 625);
         var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
-        var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlHandleDeleteCb('" +
-        prefix +
-        'addr_' +
-        thisObj.m_cnt +
+        var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlEventCallback('" +
+            thisObj.m_btnDeleteId + "','" + rowId +
         "')", 'delete row');
         var data = [addr, cb, del];
-        var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28);
+        var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28, rowId);
         
         thisObj.m_body.appendChild(bodyDiv);
         thisObj.m_cnt++;
         thisObj.f_adjust();
     }
     
+	this.f_deleteRow = function(rowId)
+	{
+		var row = document.getElementById(rowId);
+		if (row != null) {
+			row.parentNode.removeChild(row);
+			thisObj.f_adjust();
+		}
+	}
+	
     this.f_apply = function()
     {
-    
+        alert('apply');
     }
     
     this.f_reset = function()
     {
-    
+        alert('reset form');
     }
     
-    this.f_handleClick = function(id)
+    this.f_handleClick = function(id, obj)
     {
         if (id == thisObj.m_btnCancelId) {
             thisObj.f_reset();
@@ -120,9 +133,12 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         } else if (id == thisObj.m_btnAddId) {
             thisObj.f_addRow();
         } else if (id == thisObj.m_btnBackId) {
-            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);
-            
-        }
+            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);            
+        } else if (id == 'conf_url_ez_by_url_enable_cb') {
+		    thisObj.f_enableAll();	
+		} else if (id == thisObj.m_btnDeleteId) {
+			thisObj.f_deleteRow(obj);
+		}
     }
     
     this.f_loadVMData = function()
@@ -150,6 +166,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     this.f_adjust = function()
     {
         thisObj.m_body.style.height = '';
+		thisObj.m_body.style.borderBottom = '';
         thisObj.f_adjustDivPositionByPixel(thisObj.m_addButton, 0);
         thisObj.f_adjustDivPositionByPixel(thisObj.m_buttons, 20);
         thisObj.f_resize(20);
@@ -161,15 +178,14 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         
         for (var i = 0; i < a.length; i++) {
             var prefix = 'utm_conf_url_ez_by_url_';
+			var rowId = prefix + 'row_' + thisObj.m_cnt;
             var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 625);
             var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
-            var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlHandleDeleteCb('" +
-            prefix +
-            'addr_' +
-            thisObj.m_cnt +
+            var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlEventCallback('" +
+            thisObj.m_btnDeleteId + "','" + rowId +
             "')", 'delete row');
             var data = [addr, cb, del];
-            var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28);
+            var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28, rowId);
             thisObj.m_body.appendChild(bodyDiv);
             thisObj.m_cnt++;
         }
@@ -193,33 +209,9 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 
 UTM_extend(UTM_confUrlEzByUrl, UTM_confBaseObjExt);
 
-
-function f_confUrlEzByUrlHandleCancel(id)
+function f_confUrlEzByUrlEventCallback(id, obj)
 {
-    g_configPanelObj.m_activeObj.f_handleClick(id);
+    g_configPanelObj.m_activeObj.f_handleClick(id, obj);
 }
 
-function f_confUrlEzByUrlHandleAdd(id)
-{
-    g_configPanelObj.m_activeObj.f_handleClick(id);
-}
 
-function f_confUrlEzByUrlHandleApply(id)
-{
-    g_configPanelObj.m_activeObj.f_handleClick(id);
-}
-
-function f_confUrlEzByUrlHandleBack(id)
-{
-    g_configPanelObj.m_activeObj.f_handleClick(id);
-}
-
-function f_confUrlEzByUrlHandleEnableCb(e)
-{
-    g_configPanelObj.m_activeObj.f_enableAll();
-}
-
-function f_confUrlEzByUrlHandleDeleteCb(id)
-{
-    alert('delete called: ' + id);
-}

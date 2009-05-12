@@ -189,53 +189,64 @@ sub backup_archive {
     #now need overall time for this process
     my $end_time = time() + $backup_timeout;
 
-    foreach $key (keys (%hash_coll)) {
-	my $vm = new OpenApp::VMMgmt($key);
-	next if (!defined($vm));
-	my $ip = '';
-	$ip = $vm->getIP();
-	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/backup/getArchive?";
-            my $value = $hash_coll{$key};
-	    if ($value == 1) {
-		$cmd .= "data=true&conf=false";
-	    }
-	    elsif ($value == 2) {
-		$cmd .= "data=false&conf=true";
-	    }
-	    else {
-		$cmd .= "data=true&conf=true";
-	    }
-
-	    my $obj = new OpenApp::Rest();
-	    my $err = $obj->send("GET",$cmd);
-	    if ($err->{_http_code} == 302) { #redirect means server is done with archive
-		#now parse the new location...
-		my $header = $err->{_header};
-		my $archive_location = get_archive_location($header);
+    #need to loop forever until either time expired, or vm error received or bu received.
+    while (1) {
+	foreach $key (keys (%new_hash_coll)) {
+	    #now need to iterate over hash here...
+	    
+	    my $vm = new OpenApp::VMMgmt($key);
+	    next if (!defined($vm));
+	    my $ip = '';
+	    $ip = $vm->getIP();
+	    if (defined $ip && $ip ne '') {
+		my $cmd = "http://$ip/backup/getArchive?";
+		my $value = $new_hash_coll{$key};
+		if ($value == 1) {
+		    $cmd .= "data=true&conf=false";
+		}
+		elsif ($value == 2) {
+		    $cmd .= "data=false&conf=true";
+		}
+		else {
+		    $cmd .= "data=true&conf=true";
+		}
 		
-		#and retrieve the archive
-		#writes to specific location on disk
-		my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
-		`mkdir -p $BACKUP_WORKSPACE_DIR`;
-		my $rc = `wget $archive_location -O $bufile 2>&1`;
-
-		if ($rc =~ /200 OK/) {
-		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
-		    `rm -f $bufile`;  #now remove source file
-		}		
-
-		#and remove from poll collection
-		delete $new_hash_coll{$key};
+		my $obj = new OpenApp::Rest();
+		my $err = $obj->send("GET",$cmd);
+		if ($err->{_http_code} == 302) { #redirect means server is done with archive
+		    #now parse the new location...
+		    my $header = $err->{_header};
+		    my $archive_location = get_archive_location($header);
+		    
+		    #and retrieve the archive
+		    #writes to specific location on disk
+		    my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
+		    `mkdir -p $BACKUP_WORKSPACE_DIR`;
+		    my $rc = `wget $archive_location -O $bufile 2>&1`;
+		    
+		    if ($rc =~ /200 OK/) {
+			my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+			`rm -f $bufile`;  #now remove source file
+		    }		
+		    
+		    #and remove from poll collection
+		    delete $new_hash_coll{$key};
+		}
+		elsif ($err->{_http_code} == 500) {
+		    #log error and delete backup request
+		    `logger 'error received from $key, canceling backup of this VM'`;
+		    delete $new_hash_coll{$key};
+		    
+		    #also remove this from the original list so it is not included in the backup
+		    delete $hash_coll{$key};
+		}
+		else {
+		    next;
+		}
 	    }
-	    elsif ($err->{_http_code} == 500) {
-		#log error and delete backup request
-		`logger 'error received from $key, canceling backup of this VM'`;
-		delete $new_hash_coll{$key};
-	    }
-	    else {
-		next;
-	    }
+	}
+	if (keys (%new_hash_coll) == 0) { #finished up my work
+	    last;
 	}
 	sleep 5;
 	if (time() > $end_time) {

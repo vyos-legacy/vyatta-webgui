@@ -1,0 +1,6 @@
+#!/bin/bash
+
+source /etc/bash_completion 
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin 
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper load 
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end 

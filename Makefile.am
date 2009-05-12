@@ -86,6 +86,7 @@ install-exec-hook:
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-backup.pl $(DESTDIR)/$(cgidir)/
+	cp scripts/web-load $(DESTDIR)/$(cgidir)/
 	cp scripts/get-backup.pl $(DESTDIR)/$(cgidir)/
 	cp scripts/notify-user $(DESTDIR)/$(cgidir)/
 	cp scripts/vyatta-proc $(DESTDIR)/$(cgidir)/

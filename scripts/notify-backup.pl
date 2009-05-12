@@ -66,8 +66,19 @@ elsif ($cgi->request_method() eq 'PUT') { #restore request
 	`sudo chgrp vyattacfg /opt/vyatta/etc/config/config.boot`;
 	
 	`sudo chmod 660 /opt/vyatta/etc/config/config.boot`;
-	
-	`source /etc/bash_completion.d/20vyatta-cfg  && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper load && sudo /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end`;
+
+	`/usr/lib/cgi-bin/web-load`;
+
+#	`sh -c "source /etc/bash_completion.d/20vyatta-cfg && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper load"`;
+#	
+#	my $out = `source /etc/bash_completion.d/20vyatta-cfg`;
+#	`logger "A: $out"`;
+#	$out = `/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin`;
+#	`logger "B: $out"`;
+#	$out = `/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper load`;
+#	`logger "C: $out"`;
+#	$out = `/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end`;
+#	`logger "D: $out"`;
     }
     print '<?xml version="1.0" encoding="utf-8"?><openappliance><error><code>0</code><msg></msg></error></openappliance>';
 }

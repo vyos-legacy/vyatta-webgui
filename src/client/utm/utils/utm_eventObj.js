@@ -6,7 +6,7 @@
 */
 
 
-function FT_eventObj(errCode, value, errMsg)
+function UTM_eventObj(errCode, value, errMsg)
 {
     var thisObj = this;
     this.m_objName = 'UTM_eventObj';

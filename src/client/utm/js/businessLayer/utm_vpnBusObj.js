@@ -51,19 +51,19 @@ function UTM_vpnRecord()
 
     this.f_setRemoteNetwork = function(ip, prefix)
     {
-        thisObj.m_remoteNetwork = ip + '/' + prefix;
+        thisObj.m_RemoteNetwork = ip + '/' + prefix;
     }
 
     this.f_getRemoteNetworkIp = function()
     {
-        var n = thisObj.m_remoteNetwork.split('/');
+        var n = thisObj.m_RemoteNetwork.split('/');
 
         return n[0];
     }
 
     this.f_getRemoteNetworkPrefix = function()
     {
-        var n = thisObj.m_remoteNetwork.split('/');
+        var n = thisObj.m_RemoteNetwork.split('/');
 
         return n[1];
     }
@@ -98,7 +98,7 @@ function UTM_vpnBusObj(busObj)
         }
         else
         {
-            var evt = new FT_eventObj(0, thisObj, '');
+            var evt = new UTM_eventObj(0, thisObj, '');
 
             var err = response.getElementsByTagName('error');
             if(err != null && err[0] != null)

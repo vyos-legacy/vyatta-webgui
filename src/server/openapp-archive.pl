@@ -34,6 +34,7 @@ use OpenApp::LdapUser;
 use Vyatta::Config;
 use Vyatta::Misc;
 use Vyatta::TypeChecker;
+use XML::Simple;
 use OpenApp::Rest;
 
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
@@ -65,13 +66,15 @@ my $BACKUP_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/backup";
 my $RESTORE_WORKSPACE_DIR = "$ARCHIVE_ROOT_DIR/tmp/restore";
 
 my $REST_BACKUP = "/notifications/archive/backup";
-my $REST_RESTORE = "/notifications/archive/restore";
+my $REST_RESTORE = "/backup/backupArchive";
 my $MAC_ADDR = "/sys/class/net/eth0/address";
 my $WEB_RESTORE_ROOT="/var/www/restore";
 
-
+my $SLEEP_POLL_INTERVAL = 5;
 my $INSTALLER_BU_LIMIT = 2;
 my $ADMIN_BU_LIMIT = 3;
+my $BACKUP_TIMEOUT = 3600; #one hour
+
 ##########################################################################
 #
 # override these values if found in the configuration tree
@@ -89,21 +92,13 @@ if (defined $option) {
     $ADMIN_BU_LIMIT = $option;
 }
 
-my $backup_timeout = 3600; #one hour
 my $option = $config->returnValue("system open-app archive backup timeout");
 if (defined $option) {
-    $backup_timeout = $option;
+    $BACKUP_TIMEOUT = $option;
 }
 
 my ($backup,$backup_get,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$put_archive,$delete);
 
-##########################################################################
-#
-# Run through the list of VM's and
-# sequentially perform backup
-#
-#
-##########################################################################
 sub backup_archive {
     ##########################################################################
     #
@@ -120,6 +115,22 @@ sub backup_archive {
 	exit 1;
     }
 
+    backup();
+
+    #backup is now complete, let's send an email out to admin
+    my $email = $auth_user->getMail();
+    `echo -e 'To: $email\nSubject: backup is finished: $filename' | /usr/sbin/ssmtp $email 2>/dev/null`;
+}
+
+##########################################################################
+#
+# Run through the list of VM's and
+# sequentially perform backup
+#
+#
+##########################################################################
+sub backup {
+
     ##########################################################################
     #
     # Set the status of the backup to 0%
@@ -134,7 +145,8 @@ sub backup_archive {
     # Parse passed in backup list and send out REST message to VMs
     #
     ##########################################################################
-    my $hash_coll = {};
+    my %hash_coll;
+    my $hash_coll;
     my $archive;
     my @archive = split(',',$backup);
     my $i = 0;
@@ -142,40 +154,43 @@ sub backup_archive {
 	my $bu;
 	my @bu = split(':',$archive);
 	if ($bu[1] eq 'data') {
-	    $hash_coll->{$bu[0]} != 1;
+	    $hash_coll{$bu[0]} != 1;
 	}
-	elsif ($bu[1] eq 'conf') {
-	    $hash_coll->{$bu[0]} |= 2;
+	elsif ($bu[1] eq 'config') {
+	    $hash_coll{$bu[0]} |= 2;
 	}
     }
 
-
     my $key;
-    my $value;
-    my %hash_coll;
-    while (($key, $value) = each %hash_coll) {
+    foreach $key (keys (%hash_coll)) {
 	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
+            my $value = $hash_coll{$key};
 	    my $cmd = "http://$ip/backup/backupArchive?";
 	    if ($value == 1) {
-		$cmd .= "data=true&conf=false";
+		$cmd .= "data=true&config=false";
 	    }
 	    elsif ($value == 2) {
-		$cmd .= "data=false&conf=true";
+		$cmd .= "data=false&config=true";
 	    }
 	    else {
-		$cmd .= "data=true&conf=true";
+		$cmd .= "data=true&config=true";
 	    }
 	    my $obj = new OpenApp::Rest();
 	    my $err = $obj->send("GET",$cmd);
-	    if ($err->{_success} != 0) {
+	    if ($err->{_success} != 0 || $err->{_http_code} == 500) {
+		#delete from hash coll
+		delete $hash_coll{$key};
+		#and log
 		`logger 'Rest notification error in response from $ip when starting backup'`;
 	    }
 	}
     }
+
+    print "KEY COUNT" . (keys (%hash_coll)) . "\n";
     
     ##########################################################################
     #
@@ -188,53 +203,76 @@ sub backup_archive {
     `rm -fr $BACKUP_WORKSPACE_DIR/* 2>/dev/null`;
 
     #now need overall time for this process
-    my $end_time = time() + $backup_timeout;
+    my $end_time = time() + $BACKUP_TIMEOUT;
 
-    while (($key, $value) = each %new_hash_coll) {
-	my $vm = new OpenApp::VMMgmt($key);
-	next if (!defined($vm));
-	my $ip = '';
-	$ip = $vm->getIP();
-	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/backup/getArchive?";
-	    if ($value == 1) {
-		$cmd .= "data=true&conf=false";
-	    }
-	    elsif ($value == 2) {
-		$cmd .= "data=false&conf=true";
-	    }
-	    else {
-		$cmd .= "data=true&conf=true";
-	    }
-	    my $obj = new OpenApp::Rest();
-	    my $err = $obj->send("GET",$cmd);
-	    if ($err->{_http_code} == 302) { #redirect means server is done with archive
-		#now parse the new location...
-		my $header = $err->{_header};
-		my $archive_location = get_archive_location($header);
-
-		#and retrieve the archive
-		#writes to specific location on disk
-		my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
-		`mkdir -p $BACKUP_WORKSPACE_DIR/$key`;
-
-		my $rc = `wget $cmd -O $bufile 2>&1`;
-		if ($rc =~ /200 OK/) {
-		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$key -out $BACKUP_WORKSPACE_DIR/$key.enc`;
-		}		
-
-		#and remove from poll collection
-		delete $new_hash_coll{$key};
-	    }
-	    else {
-		next;
+    #need to loop forever until either time expired, or vm error received or bu received.
+    while (1) {
+	foreach $key (keys (%new_hash_coll)) {
+	    #now need to iterate over hash here...
+	    
+	    my $vm = new OpenApp::VMMgmt($key);
+	    next if (!defined($vm));
+	    my $ip = '';
+	    $ip = $vm->getIP();
+	    if (defined $ip && $ip ne '') {
+		my $cmd = "http://$ip/backup/getArchive?";
+		my $value = $new_hash_coll{$key};
+		if ($value == 1) {
+		    $cmd .= "data=true&config=false";
+		}
+		elsif ($value == 2) {
+		    $cmd .= "data=false&config=true";
+		}
+		else {
+		    $cmd .= "data=true&config=true";
+		}
+		
+		my $obj = new OpenApp::Rest();
+		my $err = $obj->send("GET",$cmd);
+		if ($err->{_http_code} == 302) { #redirect means server is done with archive
+		    #now parse the new location...
+		    my $header = $err->{_header};
+		    my $archive_location = get_archive_location($header);
+		    
+		    #and retrieve the archive
+		    #writes to specific location on disk
+		    my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
+		    `mkdir -p $BACKUP_WORKSPACE_DIR`;
+		    my $rc = `wget $archive_location -O $bufile 2>&1`;
+		    
+		    if ($rc =~ /200 OK/) {
+			my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+			`rm -f $bufile`;  #now remove source file
+			#and remove from poll collection
+			delete $new_hash_coll{$key};
+		    }		
+		}
+		elsif ($err->{_success} != 0 || $err->{_http_code} == 500) {
+		    #log error and delete backup request
+		    `logger 'error received from $key, canceling backup of this VM'`;
+		    delete $new_hash_coll{$key};
+		    
+		    #also remove this from the original list so it is not included in the backup
+		    delete $hash_coll{$key};
+		}
+		else {
+		    next;
+		}
 	    }
 	}
-	sleep 5;
+	if (keys (%new_hash_coll) == 0) { #finished up my work
+	    last;
+	}
+	sleep $SLEEP_POLL_INTERVAL;
 	if (time() > $end_time) {
 	    `logger 'backup was unable to retrieve all requested backups'`;
 	    last;
 	}
+    }
+
+    if (keys (%hash_coll) == 0) {
+	`logger 'backup is empty, exiting'`;
+	exit 0;
     }
 
     ##########################################################################
@@ -272,12 +310,21 @@ sub backup_archive {
     print FILE "<file>$filename</file>";                                                                             
     print FILE "<date>$date $time</date>";
     print FILE "<contents>";
-    while (($key, $value) = each %hash_coll) {
+    foreach $key (keys (%hash_coll)) {
+	my $value = $hash_coll{$key};
 	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
 	print FILE "<entry>";
 	print FILE "<vm>$key</vm>";
-	print FILE "<type>$value</type>";
+	if ($value == 1) {
+	    print FILE "<type>data</type>";
+	}
+	elsif ($value == 2) {
+	    print FILE "<type>config</type>";
+	}
+	else {
+	    print FILE "<type>all</type>";
+	}
 	print FILE "</entry>";
     }    
     print FILE "</contents>";
@@ -289,7 +336,6 @@ sub backup_archive {
     # Now suck up everything in the directory and tar up. Done.
     #
     ##########################################################################
-#    print "tar -C $BACKUP_WORKSPACE_DIR -cf $ARCHIVE_ROOT_DIR/$filename.tar . 2>/dev/null";
     `tar -C $BACKUP_WORKSPACE_DIR -cf $ARCHIVE_ROOT_DIR/$filename.tar . 2>/dev/null`;
 
     ##########################################################################
@@ -298,11 +344,6 @@ sub backup_archive {
     #
     ##########################################################################
     `echo '100' > $BACKUP_WORKSPACE_DIR/status`;
-
-    #backup is now complete, let's send an email out to admin
-    #echo -e "To: mike@lrlart.com\nSubject: backup is finished" | /usr/sbin/ssmtp mike@lrlart.com
-    my $email = $auth_user->getMail();
-    `echo -e 'To: $email\nSubject: backup is finished: $filename' | /usr/sbin/ssmtp $email 2>/dev/null`;
 }
 
 ##########################################################################
@@ -314,16 +355,17 @@ sub get_archive_location {
     my ($header) = @_;
     
     #looking for Location: in header
-    my @tmp = split $header, " ";
+    my @tmp = split " ",$header;
     my $flag = 0;
     foreach my $tmp (@tmp) {
 	if ($flag == 1) {
 	    return $tmp;
 	}
-	if ($tmp eq 'Location:') {
+	if ($tmp =~ /Location:/) {
 	    $flag = 1;
 	}
     }
+    return "";
 }
 
 ##########################################################################
@@ -341,7 +383,7 @@ sub backup_and_get_archive {
 # 6) no provision is enabled to remove file.
 #
    #first perform backup w/o normal limit
-    backup_archive();
+    backup();
 
     #then a get accessor
     get_archive();
@@ -360,6 +402,8 @@ sub restore_archive {
     #
     ##########################################################################
     `rm -fr $WEB_RESTORE_ROOT/`;
+    `rm -fr /var/www/backup/restore`;
+    `mkdir -p /var/www/backup/restore`;
     `mkdir -p $WEB_RESTORE_ROOT/`;
     `mkdir -p $RESTORE_WORKSPACE_DIR/`;
 
@@ -378,36 +422,34 @@ sub restore_archive {
     # not supplied build out from archive
     #
     ##########################################################################
-    my @coll;
-    my $coll;
-    my $i = 0;
+    my %hash_coll;
+    my $hash_coll;
+    my $archive;
     if (defined($restore_target) && $restore_target ne '') {
-	my $archive;
 	my @archive = split(',',$restore_target);
+	my $i = 0;
 	for $archive (@archive) {
+	    my $bu;
 	    my @bu = split(':',$archive);
-	    $coll[$i] = [ @bu ];
-	    $i = $i + 1;
+	    if ($bu[1] eq 'data') {
+		$hash_coll{$bu[0]} != 1;
+	    }
+	    elsif ($bu[1] eq 'config') {
+		$hash_coll{$bu[0]} |= 2;
+	    }
 	}
     }
     else {
-	my $filename;
-	opendir ( DIR, $WEB_RESTORE_ROOT ) || die "Error in opening dir $WEB_RESTORE_ROOT\n";
-	while( ($filename = readdir(DIR))){
-	    if (lstat("$WEB_RESTORE_ROOT/$filename/data")) {
-		$coll[$i] = [ $filename,"data" ];
-		$i = $i + 1;
-	    }
-	    if (lstat("$WEB_RESTORE_ROOT/$filename/conf")) {
-		$coll[$i] = {$filename,"conf"};
-		$i = $i + 1;
-	    }
-	    if (lstat("$WEB_RESTORE_ROOT/$filename/all")) {
-		$coll[$i] = {$filename,"all"};
-		$i = $i + 1;
-	    }
-	}
-	closedir(DIR);
+	#instead use the xml file to fill out hash_coll...
+	my $metafile = $BACKUP_WORKSPACE_DIR."/".$restore;
+
+	my @output = `tar -xf $metafile -O ./$restore_target.txt 2>/dev/null`;
+	my $text = join("",@output);
+	my $opt = XMLin($text);
+	#now parse the rest code
+	
+	#now something like for each instance
+	$hash_coll{ $opt->{archive}->{contents}->{vm} } = $opt->{archive}->{contents}->{type};
     }
 
     ##########################################################################
@@ -418,20 +460,31 @@ sub restore_archive {
     # well known location.
     #
     ##########################################################################
-    my @new_coll = @coll;
-    my $coll_ct = $#new_coll;
-    foreach $i (0..$#coll) {
-	my $vm = new OpenApp::VMMgmt($coll[$i][0]);
+    my $key;
+    foreach $key (keys (%hash_coll)) {
+	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
+
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1].enc -out $BACKUP_WORKSPACE_DIR/$new_coll[$i][0]/$new_coll[$i][1]`;
-	    my $cmd = "http://$ip$REST_RESTORE/$coll[$i][1]";
+	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$key.enc -out /var/www/backup/restore/$key`;
+	    my $cmd = "http://$ip/backup/backupArchive?";
+            my $value = $hash_coll{$key};
+	    if ($value == 1) {
+		$cmd .= "data=true&config=false";
+	    }
+	    elsif ($value == 2) {
+		$cmd .= "data=false&config=true";
+	    }
+	    else {
+		$cmd .= "data=true&config=true";
+	    }
+	    $cmd .= "&file=http://192.168.0.101/backup/restore/$key";
 	    my $obj = new OpenApp::Rest();
-	    my $err = $obj->send("GET",$cmd);
-	    if ($err->{_success} != 0) {
-		`logger 'Rest notification error in response from $ip when starting archive'`;
+	    my $err = $obj->send("PUT",$cmd);
+	    if ($err->{_success} != 0 || $err->{_http_code} == 500) {
+		`logger 'Rest notification error in response from $ip when starting restore'`;
 	    }
 	}
     }
@@ -443,38 +496,38 @@ sub restore_archive {
     # continue until all are done or chunker kills me.
     #
     ##########################################################################
-    my $progress_ct = 0;
-    `echo '0' > $RESTORE_WORKSPACE_DIR/status`;
+#    my $progress_ct = 0;
+#    `echo '0' > $RESTORE_WORKSPACE_DIR/status`;
     #now that each are started, let's sequentially iterate through and retrieve
-    while ($#new_coll > -1) {
-	foreach $i (0..$#new_coll) {
-	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
-	    next if (!defined($vm));
-	    my $ip = '';
-	    $ip = $vm->getIP();
-	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/archive/restore/$new_coll[$i][1]/status/";
-		#writes to specific location on disk
-		my $rc = `curl -X GET -q -I $cmd 2>&1`;
-		if ($rc =~ /200 OK/) {
+#    while ($#new_coll > -1) {
+#	foreach $i (0..$#new_coll) {
+#	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
+#	    next if (!defined($vm));
+#	    my $ip = '';
+#	    $ip = $vm->getIP();
+#	    if (defined $ip && $ip ne '') {
+#		my $cmd = "http://$ip/archive/restore/$new_coll[$i][1]/status/";
+#		#writes to specific location on disk
+#		my $rc = `curl -X GET -q -I $cmd 2>&1`;
+#		if ($rc =~ /200 OK/) {
 #		    print "SUCCESS\n";
-		    #remove from new_collection
-		    $progress_ct = $progress_ct + 1;
-		    #when done write
-		    my $progress = 100;
-		    if ($coll_ct != 0) {
-			$progress = (100 * $progress_ct) / $coll_ct;
-		    }
-		    `echo '$progress' > $RESTORE_WORKSPACE_DIR/status`;
-		    delete $new_coll[$i];
-		}
-	    }
-	}
-	sleep 1;
+#		    #remove from new_collection
+#		    $progress_ct = $progress_ct + 1;
+#		    #when done write
+#		    my $progress = 100;
+#		    if ($coll_ct != 0) {
+#			$progress = (100 * $progress_ct) / $coll_ct;
+#		    }
+#		    `echo '$progress' > $RESTORE_WORKSPACE_DIR/status`;
+#		    delete $new_coll[$i];
+#		}
+#	    }
+#	}
+#	sleep 1;
 
 	#what is a reasonable time to kick out of this command?
 	#let's kick out of this command after 1/2 hour--which should be done by the chunker
-    }
+#    }
 
     #now we are done and this is a success
 }
@@ -513,8 +566,6 @@ sub list_archive {
 	#now chop off the last period
 	my @name2 = split('\.',$name[4]);
 
-	my $metafile;
-	my @metafile = split('\.',$name[3]);
 	my $output;
 	my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
 	print $output[0];
@@ -529,8 +580,6 @@ sub list_archive {
 	    #now chop off the last period
 	    my @name2 = split('\.',$name[4]);
 	    
-	    my $metafile;
-	    my @metafile = split('\.',$name[3]);
 	    my $output;
 	    my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
 	    print $output[0];

@@ -44,6 +44,8 @@ const unsigned long WebGUI::CHUNKER_MAX_WAIT_TIME = 2; //seconds
 const string WebGUI::CHUNKER_MSG_FORMAT = "<openappliance><chunker_command><token>%s</token><statement>%s</statement></chunker_command></openappliance>\0\0";
 const string WebGUI::CHUNKER_UPDATE_FORMAT = "<openappliance><chunker_command><token>%s</token><statement></statement></chunker_command></openappliance>\0\0";
 
+ 
+
 const string WebGUI::OPENAPP_GUI_USER = "installer";
 const string WebGUI::OPENAPP_GUI_GROUP = "vyattacfg";
 
@@ -156,7 +158,7 @@ WebGUI::generate_response(string &token, Error err)
 {
     char buf[40];
     sprintf(buf, "%d", err);
-    return ("<?xml version='1.0' encoding='utf-8'?><openappliance><error><token>"+token+"</token><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[err])+"</msg></error></openappliance>");
+    return ("<?xml version='1.0' encoding='utf-8'?><openappliance><error><code>"+string(buf)+"</code><msg>"+string(WebGUI::ErrorDesc[err])+"</msg></error></openappliance>");
 }
 
 /**

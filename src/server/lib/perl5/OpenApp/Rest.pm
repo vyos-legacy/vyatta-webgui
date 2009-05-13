@@ -41,7 +41,7 @@ sub send {
   my ($tmp, $ACTION, $CMD) = @_;
   #send out message
   #need to double quote cmd otherwise params will get dropped
-  my @out = `curl -X $ACTION -q --connect-timeout 3 -i /"$CMD/" 2>&1`; 
+  my @out = `curl -X $ACTION -q --connect-timeout 3 -i \"$CMD\" 2>&1`; 
   $self->{_success} = 0;
 
   #let's iterate over the response line by line and grab the dirt
@@ -50,7 +50,7 @@ sub send {
 	  $self->{_success} = 1;
 	  return $self;
       }
-      if ($out =~ /HTTP\/1\./) {
+      if ($out =~ /Status:/) {
 	  my @tmp = split(" ", $out);
 	  my $tmp;
 	  $self->{_http_code} = $tmp[1];
@@ -64,6 +64,7 @@ sub send {
   #need to chop off at first tag, which should be <openappliance>
   my $pos = index($out, "<openappliance>");
   if ($pos < 0) {
+      $self->{_header} = substr $out, 0, $pos-1;
       return $self;
   }
   

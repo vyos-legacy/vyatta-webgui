@@ -28,7 +28,7 @@ function FT_ntpServer(ntp)
 	}
 }
 
-function FT_ldapServer(type /* oa | lan */, ldap, update_username, update_userpasswd, read_username, read_userpasswd)
+function FT_ldapServer(type /* oa | lan */, ldap, update_username, update_userpasswd, read_username, read_userpasswd, suffix)
 {
     this.m_type= type;
     this.m_ldap = ldap;
@@ -36,6 +36,7 @@ function FT_ldapServer(type /* oa | lan */, ldap, update_username, update_userpa
 	this.m_update_userpasswd = update_userpasswd;
 	this.m_read_username = read_username;
 	this.m_read_userpasswd = read_userpasswd;
+	this.m_suffix = suffix;
 	
 	this.f_setCmd = function() {
 		return "set ldap ip '" + this.m_ldap + "' r-user '" + this.m_read_username + "' r-password '" +
@@ -231,7 +232,7 @@ function FT_oaConfigObj (busObj)
     this.f_parseLdap = function(response)
     {
 		var val = thisObj.f_getConfigNodeFromResponse(response, 'ldap');	
-        var obj = new FT_ldapServer('oa', '', '', '', '', '');
+        var obj = new FT_ldapServer('oa', '', '', '', '', '','');
 
 		for (var i=0; i < val.childNodes.length; i++) {
 			var cNode = val.childNodes[i];

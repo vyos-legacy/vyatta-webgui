@@ -61,7 +61,7 @@ Configuration::get_full_op_level()
   string rel_tmpl_path;
   DIR *dp;
   struct dirent *dirp;
-  string out = "<?xml version='1.0' encoding='utf-8'?><openappliance><token>"+_proc->get_msg()._token+"</token>";
+  string out = "<?xml version='1.0' encoding='utf-8'?><openappliance>";
 
   //first convert root request into template path
   StrProc str_proc(_proc->get_msg()._root_node, "/");
@@ -165,7 +165,7 @@ Configuration::get_full_level()
   string rel_tmpl_path;
   DIR *dp;
   struct dirent *dirp;
-  string out = "<?xml version='1.0' encoding='utf-8'?><openappliance><token>"+_proc->get_msg()._token+"</token>";
+  string out = "<?xml version='1.0' encoding='utf-8'?><openappliance>";
 
   //first convert root request into template path
   StrProc str_proc(_proc->get_msg()._root_node, "/");

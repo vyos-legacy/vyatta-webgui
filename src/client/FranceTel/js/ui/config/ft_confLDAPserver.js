@@ -31,11 +31,9 @@ function FT_confLDAPserver (name, callback, busLayer) {
 				text: g_lang.m_ldapSrvLoc,			
 				font_weight : 'bold',	
 				v_new_row : 'true'
-			}, {
-				v_type: 'empty',
-				v_new_row: 'true',
-				v_end_row: 'true'
-			}, {
+			}, 
+			    FT_EMPTY_ROW
+			, {
 				v_type: 'html',
 				id: 'conf_ldap_srv_in_oa',
 				padding : '30px',
@@ -43,11 +41,9 @@ function FT_confLDAPserver (name, callback, busLayer) {
 				text: '<input id="conf_ldap_srv_in_oa" type="radio" name="loc_group" value="oa" checked>&nbsp;' + g_lang.m_ldapInOA,
                 v_new_row: 'true',
 				v_end_row: 'true'
-			}, {
-				v_type: 'empty',
-				v_new_row: 'true',
-				v_end_row: 'true'
-			}, {
+			}, 
+			    FT_EMPTY_ROW
+			, {
 				v_type: 'html',
 				id: 'conf_ldap_srv_in_lan',
 				padding : '30px',				
@@ -55,11 +51,9 @@ function FT_confLDAPserver (name, callback, busLayer) {
 				text: '<input id="conf_ldap_srv_in_lan" type="radio" name="loc_group" value="lan">&nbsp;' + g_lang.m_ldapInLan,
 				v_new_row: 'true',
 				v_end_row: 'true'
-			}, {
-				v_type: 'empty',
-				v_new_row: 'true',
-				v_end_row: 'true'
-			}, {
+			}, 
+			    FT_EMPTY_ROW
+			, {
 				v_type: 'label',
 				id: 'conf_ldap_srv_server_addr_label',
 				padding : '60px',				
@@ -68,6 +62,17 @@ function FT_confLDAPserver (name, callback, busLayer) {
 			}, {
 				v_type: 'text',
 				id : 'conf_ldap_srv_server_addr',				
+				size: '64',
+				v_end_row: 'true'
+			}, {
+				v_type: 'label',
+				id: 'conf_ldap_srv_suffix_label',
+				padding : '60px',				
+				text: g_lang.m_ldapSuffix,
+				v_new_row: 'true'				
+			}, {
+				v_type: 'text',
+				id : 'conf_ldap_srv_suffix',				
 				size: '64',
 				v_end_row: 'true'
 			}, {
@@ -145,6 +150,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
 	this.f_enable = function(b)
 	{
 		thisObj.f_enableTextField(b,'conf_ldap_srv_server_addr');		
+		thisObj.f_enableTextField(b,'conf_ldap_srv_suffix');				
         thisObj.f_enableTextField(b, 'conf_ldap_srv_user_update');
         thisObj.f_enableTextField(b, 'conf_ldap_srv_user_update_passwd');
 		thisObj.f_enableTextField(b, 'conf_ldap_srv_user_read');

@@ -1,3 +1,57 @@
+vyatta-webgui (0.2+fxd0+38) unstable; urgency=low
+
+  [ slioch ]
+  * fixed REST message on user deletion, REST messages are now being
+    sent to all domUs
+
+  [ Michael Larson ]
+  * rework of rest handler to provide body, http resp, cmd resp and curl
+    return code to client
+  * rest message change for openapp-user.pl
+  * simplification of email addr since this is already available for the
+    user
+
+  [ An-Cheng Huang ]
+  * switch LDAP query to use perl module
+
+  [ Michael Larson ]
+  * add background configurable kill timeout for CHUNKER
+  * reworking of backup sequence
+  * handle params correctly in rest lib
+  * fix bu errors
+
+  [ Loi Vo ]
+  * 1. Change according to FT feedback on 05/11/09
+  * 1. Remove f_renderTextfield function.  No need to render text field
+    in dom0 for now.
+
+  [ Michael Larson ]
+  * debugged backup sequence. updated rest handler. removed <token> tags
+    from cgi response
+  * added support for http error response from VM and removal of temp
+    files
+  * work on restore.
+
+  [ Kevin Choi ]
+  * * changed restore screen per FT feedback to hide the 'backup by'
+    column from admin user.
+
+  [ Michael Larson ]
+  * reworked backup loop to wait for error, backup or timeout and in
+    case of error remove from list
+  * configuration node needed for configurable bu timeout value.
+  * assorted restore bugfixes.
+
+  [ Kevin Choi ]
+  * * updated backup/restore due to server api changed
+
+  [ Michael Larson ]
+  * add http code 501 support on rest messages
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 12 May 2009 19:04:57 -0700
+
 vyatta-webgui (0.2+fxd0+37) unstable; urgency=low
 
   * BLB integration phase 1

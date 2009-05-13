@@ -1,3 +1,97 @@
+vyatta-webgui (0.2.14+fxdU+12) unstable; urgency=low
+
+  [ slioch ]
+  * support for site-to-site-easy form
+  * more fixes to gui cmd handler and to site-to-site-easy feature
+  * more site-to-site feature tweaks
+
+  [ Kevin Choi ]
+  * * adding support for firewall security level Layout screen
+  * * add new file for firewall security level
+
+  [ slioch ]
+  * properly quote data so handler is identified and add dummy node.defs
+    just like we do with op mode cmd.
+  * form specific error handling
+  * additional work on get accessor to conform with form spec
+  * more parsing for get func
+
+  [ Kevin Choi ]
+  * * partial check in files for firewall customized conf page so Loi
+    can help to setup the
+
+  [ slioch ]
+  * bug fixes, now working version.
+
+  [ Loi Vo ]
+  * 1. Fix capitalization for the title of the pages.
+
+  [ slioch ]
+  * server side fix for bug 4361
+
+  [ An-Cheng Huang ]
+  * add OpenApp::Conf module
+
+  [ slioch ]
+  * added rest response handler for user cmds on domu side. for now
+    always generates success.
+  * rest response added to backup/restore
+
+  [ Loi Vo ]
+  * 1. Add initial screen for url filtering.
+
+  [ slioch ]
+  * changed proc mode form response for example
+
+  [ Loi Vo ]
+  * 1. Add screen to url filtering by URL
+  * 1. Add new images files, and two missing new files.
+
+  [ Kevin Choi ]
+  * * added initial version file for firewall customized screen
+
+  [ Loi Vo ]
+  * 1. More changes to URL filtering by authorized url
+
+  [ slioch ]
+  * rework of utm backup sequence on utm
+
+  [ Loi Vo ]
+  * 1. Add url filtering by keyword
+  * 2. checkin the rest of the changes for url filtering by keyword
+  * Oops, add back mistakenly deleted file.
+  * 1. Fix 2nd navigation menu to comply with feedbacks from FT
+    (05/11/09), Style Guide ver 1.1
+  * 1. Add event listener for subscribe button.
+  * 1. Fix resizing the viewport when the sub page height changes.
+
+  [ Kevin Choi ]
+  * * con't work on firewall security level and customize UI layout
+    screens
+
+  [ slioch ]
+  * rework to reimplement reformulated restore requirement
+
+  [ Kevin Choi ]
+  * * enabled/disabled push buttons base on user's input on firewall
+    level screen.
+
+  [ slioch ]
+  * assorted restore bugfixes.
+
+  [ Kevin Choi ]
+  * * changed event object name
+
+  [ Loi Vo ]
+  * 1. Fix m_RemoteNetwork to m_remoteNetwork.
+
+  [ slioch ]
+  * working config load in restore
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 12 May 2009 18:44:11 -0700
+
 vyatta-webgui (0.2.14+fxdU+11) unstable; urgency=low
 
   * copy config.boot to "save" location on restore notification

@@ -179,7 +179,11 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         for (var i = 0; i < a.length; i++) {
             var prefix = 'utm_conf_url_ez_by_url_';
 			var rowId = prefix + 'row_' + thisObj.m_cnt;
-            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 625);
+			var ro = true;
+			if (a[i].length < 3) {
+				ro =false;
+			}
+            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 625, ro);
             var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
             var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlEventCallback('" +
             thisObj.m_btnDeleteId + "','" + rowId +

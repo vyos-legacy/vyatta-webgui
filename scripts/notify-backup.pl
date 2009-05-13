@@ -10,7 +10,7 @@ my $data = $cgi->param('data');
 
 if ($cgi->request_method() eq 'GET') { #backup request
 
-    `rm -fr /tmp/build/.`;
+    `rm -fr /tmp/build/*`;
     `mkdir /tmp/build/`;
     if ($conf eq 'true') {
 	`cp /opt/vyatta/etc/config/config.boot /tmp/build/.`;
@@ -50,35 +50,24 @@ elsif ($cgi->request_method() eq 'PUT') { #restore request
 	    $data = $vals[1];
 	}
     }
-
-#    `logger file: $file`;
-#    `logger conf: $conf`;
-#    `logger data: $data`;
-    
     #retrieve file
     if ($conf eq 'true') {
-	`sudo wget --no-check-certificate $file -O /tmp/restore/bu`;
-	
-	`sudo tar xf /tmp/restore/bu`;
-	
-	`sudo cp /tmp/build/config.boot /opt/vyatta/etc/config/config.boot`;
-	
-	`sudo chgrp vyattacfg /opt/vyatta/etc/config/config.boot`;
-	
-	`sudo chmod 660 /opt/vyatta/etc/config/config.boot`;
+	my $bufile = '/tmp/restore/bu';
+	`rm -f /tmp/restore/bu`;
 
-	`/usr/lib/cgi-bin/web-load`;
-
-#	`sh -c "source /etc/bash_completion.d/20vyatta-cfg && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper load"`;
-#	
-#	my $out = `source /etc/bash_completion.d/20vyatta-cfg`;
-#	`logger "A: $out"`;
-#	$out = `/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin`;
-#	`logger "B: $out"`;
-#	$out = `/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper load`;
-#	`logger "C: $out"`;
-#	$out = `/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end`;
-#	`logger "D: $out"`;
+	`sudo wget --no-check-certificate $file -O $bufile`;
+	
+	if (-e $bufile) {
+	    `sudo tar xf $bufile`;
+	
+	    `sudo cp /tmp/build/config.boot /opt/vyatta/etc/config/config.boot`;
+	    
+	    `sudo chgrp vyattacfg /opt/vyatta/etc/config/config.boot`;
+	    
+	    `sudo chmod 660 /opt/vyatta/etc/config/config.boot`;
+	    
+	    `/usr/lib/cgi-bin/web-load`;
+	}
     }
     print '<?xml version="1.0" encoding="utf-8"?><openappliance><error><code>0</code><msg></msg></error></openappliance>';
 }

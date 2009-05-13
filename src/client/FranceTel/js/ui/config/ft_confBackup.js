@@ -156,7 +156,7 @@ function FT_confBackup(name, callback, busLayer)
 	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
 			if (el.checked == true) {
 				vms.push(thisObj.m_vmName[i]);
-				mode.push('conf');
+				mode.push('config');
 			}	
 		}
 		s = 'conf_backup_data_cb';

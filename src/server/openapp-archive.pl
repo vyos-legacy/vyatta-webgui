@@ -190,7 +190,7 @@ sub backup {
 	}
     }
 
-    print "KEY COUNT" . (keys (%hash_coll)) . "\n";
+#    print "KEY COUNT" . (keys (%hash_coll)) . "\n";
     
     ##########################################################################
     #
@@ -385,8 +385,14 @@ sub backup_and_get_archive {
    #first perform backup w/o normal limit
     backup();
 
+    $get_archive = $filename;
+
     #then a get accessor
     get_archive();
+
+    #now remove archive
+    `rm -f $filename`;
+
 }
 
 

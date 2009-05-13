@@ -181,7 +181,7 @@ sub backup {
 	    }
 	    my $obj = new OpenApp::Rest();
 	    my $err = $obj->send("GET",$cmd);
-	    if ($err->{_success} != 0 || $err->{_http_code} == 500) {
+	    if ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
 		#delete from hash coll
 		delete $hash_coll{$key};
 		#and log
@@ -247,7 +247,7 @@ sub backup {
 			delete $new_hash_coll{$key};
 		    }		
 		}
-		elsif ($err->{_success} != 0 || $err->{_http_code} == 500) {
+		elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
 		    #log error and delete backup request
 		    `logger 'error received from $key, canceling backup of this VM'`;
 		    delete $new_hash_coll{$key};
@@ -483,7 +483,7 @@ sub restore_archive {
 	    $cmd .= "&file=http://192.168.0.101/backup/restore/$key";
 	    my $obj = new OpenApp::Rest();
 	    my $err = $obj->send("PUT",$cmd);
-	    if ($err->{_success} != 0 || $err->{_http_code} == 500) {
+	    if ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
 		`logger 'Rest notification error in response from $ip when starting restore'`;
 	    }
 	}

@@ -185,7 +185,7 @@ sub backup {
 		#delete from hash coll
 		delete $hash_coll{$key};
 		#and log
-		`logger 'Rest notification error in response from $ip when starting backup'`;
+		`logger 'Rest notification error in response from $ip when starting backup: $err->{_http_code}'`;
 	    }
 	}
     }
@@ -215,18 +215,7 @@ sub backup {
 	    my $ip = '';
 	    $ip = $vm->getIP();
 	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/backup/getArchive?";
-		my $value = $new_hash_coll{$key};
-		if ($value == 1) {
-		    $cmd .= "data=true&config=false";
-		}
-		elsif ($value == 2) {
-		    $cmd .= "data=false&config=true";
-		}
-		else {
-		    $cmd .= "data=true&config=true";
-		}
-		
+		my $cmd = "http://$ip/backup/getArchive";		
 		my $obj = new OpenApp::Rest();
 		my $err = $obj->send("GET",$cmd);
 		if ($err->{_http_code} == 302) { #redirect means server is done with archive
@@ -249,7 +238,7 @@ sub backup {
 		}
 		elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
 		    #log error and delete backup request
-		    `logger 'error received from $key, canceling backup of this VM'`;
+		    `logger 'error received from $key, canceling backup of this VM: $err->{_http_code}'`;
 		    delete $new_hash_coll{$key};
 		    
 		    #also remove this from the original list so it is not included in the backup
@@ -446,6 +435,7 @@ sub restore_archive {
 	}
     }
     else {
+	#not currently used by the restore cmd
 	#instead use the xml file to fill out hash_coll...
 	my $metafile = $BACKUP_WORKSPACE_DIR."/".$restore;
 
@@ -490,7 +480,7 @@ sub restore_archive {
 	    my $obj = new OpenApp::Rest();
 	    my $err = $obj->send("PUT",$cmd);
 	    if ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
-		`logger 'Rest notification error in response from $ip when starting restore'`;
+		`logger 'Rest notification error in response from $ip when starting restore: $err->{_http_code}'`;
 	    }
 	}
     }

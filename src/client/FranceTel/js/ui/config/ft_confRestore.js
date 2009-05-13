@@ -188,8 +188,8 @@ function FT_confRestore(name, callback, busLayer)
     // contents - FT_backupEntryRec object
     // content - string of "vm (type, type), vm (type, type)";
     //
-    // ex: [ [utm, conf], [pbx, conf], [utm, data]...]
-    //      "utm (conf+data), pbx (conf)..."
+    // ex: [ [utm, config], [pbx, config], [utm, data]...]
+    //      "utm (config+data), pbx (config)..."
     this.f_getContents = function(contents)
     {
         var content = '';

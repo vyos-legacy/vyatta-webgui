@@ -372,11 +372,13 @@ sub backup_and_get_archive {
 # 6) no provision is enabled to remove file.
 #
    #first perform backup w/o normal limit
+    $backup = $backup_get;
     backup();
 
     $get_archive = $filename;
 
     #then a get accessor
+    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
     get_archive();
 
     #now remove archive

@@ -103,7 +103,7 @@ sub add_user {
 		my $obj = new OpenApp::Rest();
 		my $err = $obj->send("POST",$cmd);
 		if ($err->{_success} != 0) {
-		    `logger 'Rest notification error in response from $ip when adding user $add'`;
+		    `logger 'Rest notification error in response from $ip when adding user $add, $err->{_http_code}'`;
 		}
 	    }
 	}
@@ -219,7 +219,7 @@ sub del_user {
 	    my $obj = new OpenApp::Rest();
 	    my $err = $obj->send("PUT",$cmd);
 	    if ($err->{_success} != 0) {
-		`logger 'Rest notification error in response from $ip when removing user $delete'`;
+		`logger 'Rest notification error in response from $ip when removing user $delete, $err->{_http_code}'`;
 	    }
 	}
 
@@ -236,7 +236,7 @@ sub del_user {
 		    my $obj = new OpenApp::Rest();
 		    my $err = $obj->send("DELETE",$cmd);
 		    if ($err->{_success} != 0) {
-			`logger Rest notification error in response from $ip when deleting user $delete'`;
+			`logger Rest notification error in response from $ip when deleting user $delete, $err->{_http_code}'`;
 		    }
 		}
 	    }

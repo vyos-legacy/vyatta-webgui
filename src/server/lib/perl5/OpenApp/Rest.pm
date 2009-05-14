@@ -8,7 +8,7 @@ my $_rest_code;
 
 my %fields = (
     _success => undef,
-    _http_code => undef,
+    _http_code => "0",
     _rest_code => undef,
     _body => undef,
     _header => undef

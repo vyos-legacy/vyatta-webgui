@@ -10,7 +10,7 @@
 
 using namespace std;
 
-const unsigned long SessionExchangeStdIO::_request_limit = 8192;
+const unsigned long SessionExchangeStdIO::_request_limit = 262144; //2^18
 
 /**
  *

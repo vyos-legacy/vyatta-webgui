@@ -1,3 +1,27 @@
+vyatta-webgui (0.2.14+fxdU+13) unstable; urgency=low
+
+  [ slioch ]
+  * handle case where restore fails. clean up.
+
+  [ Loi Vo ]
+  * 1. Fix up some layout issues.
+
+  [ slioch ]
+  * remove unused second set of rest parameters on bu
+
+  [ Loi Vo ]
+  * 1. Add delete, enable handler.
+
+  [ slioch ]
+  * bumped up upper limit on request length to 262k
+
+  [ Loi Vo ]
+  * 1. Change images.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 15 May 2009 11:16:01 -0700
+
 vyatta-webgui (0.2.14+fxdU+12) unstable; urgency=low
 
   [ slioch ]

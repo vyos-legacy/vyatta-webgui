@@ -54,6 +54,7 @@ cgi_SCRIPTS = src/server/webgui-wrap
 
 sbin_SCRIPTS = scripts/enterprise-mib.pl
 sbin_SCRIPTS += scripts/site-to-site-easy.pl
+sbin_SCRIPTS += scripts/firewall-security-level.pl
 
 oaperl_DATA = src/server/lib/perl5/OpenApp/Conf.pm
 

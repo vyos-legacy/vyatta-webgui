@@ -1,0 +1,1 @@
+run: /opt/vyatta/sbin/firewall-security-level.pl --get

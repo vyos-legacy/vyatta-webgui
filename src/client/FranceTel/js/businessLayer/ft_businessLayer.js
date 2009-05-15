@@ -76,7 +76,7 @@ function FT_businessLayer()
         var r = this.m_request;
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                       + "<vyatta>" + content + "</vyatta>\n";
+                       + "<openappliance>" + content + "</openappliance>\n";
         var innerCB = callback;
         var requestCB = function(resp)
         {
@@ -189,9 +189,9 @@ function FT_businessLayer()
     this.f_userLoginRequest = function(username, pw, guiCb)
     {
         thisObj.m_userObj.f_setLogin(username, pw, guiCb);
-        var xmlstr = '<vyatta><auth><user>' + username + '</user>\n' +
+        var xmlstr = '<openappliance><auth><user>' + username + '</user>\n' +
                       '<pswd><![CDATA[' + pw +
-                      ']]></pswd></auth></vyatta>\n';
+                      ']]></pswd></auth></openappliance>\n';
         thisObj.m_userObj.m_lastCmdSent = xmlstr;
 
         return this.f_sendRequest(xmlstr, this.m_userObj.f_respondRequestCallback);

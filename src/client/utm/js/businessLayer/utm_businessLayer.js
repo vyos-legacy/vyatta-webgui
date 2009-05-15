@@ -57,6 +57,7 @@ function UTM_businessLayer()
     // properties
     var thisObj = this;
     var m_vpnObj = null;
+    var m_fwObj = null;
 
 
     /**
@@ -69,7 +70,7 @@ function UTM_businessLayer()
         var r = this.m_request;
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                       + "<vyatta>" + content + "</vyatta>\n";
+                       + "<openappliance>" + content + "</openappliance>\n";
         var innerCB = callback;
         var requestCB = function(resp)
         {
@@ -111,6 +112,27 @@ function UTM_businessLayer()
     }
 
     /**
+     * get child nodes of 'node' from 'response'
+     * @param response - a response data from server
+     * @param node - a node name of the child nodes to be returned
+     */
+    this.f_getResponseChildNodes = function(response, node)
+    {
+        if(response != undefined && response.length != undefined)
+        {
+            for(var i=0; i<response.length; i++)
+            {
+                var cn = response[i].childNodes;
+
+                if(cn.nodeName == node)
+                    return cn.childNodes;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * parse and handle the respond error from server.
      */
     this.f_parseResponseError = function(response, promptErrMsg)
@@ -138,6 +160,27 @@ function UTM_businessLayer()
         }
 
         return new UTM_eventObj(errCode, '', errmsg);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    // firewall security level section
+    this.f_getFWObject = function()
+    {
+        if(m_fwObj == null)
+            m_fwObj = new UTM_firewallBusObj(thisObj);
+
+        return m_fwObj;
+    }
+
+    this.f_getFirewallSecurityLevel = function(guicb)
+    {
+        thisObj.f_getFWObject().f_getFirewallSecurityLevel(guicb);
+    }
+
+    this.f_setFirewallSecurityLevel = function(fireRec, guicb)
+    {
+        thisObj.f_getFWObject().f_setFirewallSecurityLevel(fireRec, guicb);
     }
 
     ////////////////////////////////////////////////////////////////////////////

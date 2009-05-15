@@ -105,7 +105,7 @@ function FT_confUserList(name, callback, busLayer)
                     thisObj.f_renderAnchorHref(
                     '<img src="' + g_lang.m_imageDir + 'ico_mail.gif">',
                     "mailto:" + ul[2],
-                    g_lang.m_ulSendEmail + ul[0] + ' at ' +
+                    g_lang.m_ulSendEmail + ' ' + ul[0] + ' at ' +
                     ul[2]) : "";
 
             var del = g_busObj.f_isDeletableUser(ul[3]) ?

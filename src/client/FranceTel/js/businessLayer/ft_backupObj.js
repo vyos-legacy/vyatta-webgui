@@ -136,20 +136,26 @@ function FT_backupObj(busObj)
             var err = response.getElementsByTagName('error');
             if(err != null && err[0] != null)
             {
-                if(thisObj.m_lastCmdSent.indexOf('archive list') > 0)
+                if(cmdSent.indexOf('archive list') > 0)
                 {
                     thisObj.m_archiveRec = thisObj.f_parseRestoreData(err);
                     evt = new FT_eventObj(0, thisObj.m_archiveRec, '');
                 }
-                else if(thisObj.m_lastCmdSent.indexOf('archive get') > 0)
+                else if(cmdSent.indexOf('archive get') > 0)
                 {
                     window.location = thisObj.m_downloadFile;
                 }
-                else if(thisObj.m_lastCmdSent.indexOf('archive restore status') > 0)
+                else if(cmdSent.indexOf('archive backup get') > 0 ||
+                      cmdSent.indexOf('segment_') >= 0)
+                {
+                    if(thisObj.m_parseBackup2PCData(err) != 'segment_end')
+                        return;
+                }
+                else if(cmdSent.indexOf('archive restore status') > 0)
                 {
 
                 }
-                else if(thisObj.m_lastCmdSent.indexOf('archive delete') > 0)
+                else if(cmdSent.indexOf('archive delete') > 0)
                 {
                 }
             }
@@ -252,6 +258,30 @@ function FT_backupObj(busObj)
         return content;
     };
 
+    this.m_parseBackup2PCData = function(response)
+    {
+        if(response == null) return null;
+
+        for(var i=0; i<response.childNodes.length; i++)
+        {
+            var cn = response.childNodes[i];
+            if(cn.nodeName == 'msg')
+            {
+                var attr = cn.getAttribute('segment_id');
+
+                if(attr != 'segment_end')
+                {
+                    thisObj.f_backupToPC(null, null, thisObj.m_guiCb, attr);
+                    return null;
+                }
+                else
+                    return attr;
+            }
+        }
+
+        return null;
+    }
+
     this.f_getRestoreNodesFromResponse = function(response)
     {
         var cn = response[0].childNodes;
@@ -344,6 +374,46 @@ function FT_backupObj(busObj)
         }
 
         xmlstr += "'</statement></command>";
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    };
+
+    /**
+     *  send backup to myPC command to server to perform vm backup.
+     *  @param vms - a list of vm to be backup or restore. vms is array type
+     *  @param modes - list of back modes. ex. ['config', 'data', 'data'....] array type
+     *                this list shoudl sync with vms.
+     *  @param guiCb - gui callback function
+     *  @param segmentId -
+     */
+    this.f_backupToPC = function(vms, modes, guiCb, segmentId)
+    {
+        thisObj.m_guiCb = guiCb;
+        var sid = g_utils.f_getUserLoginedID();
+
+        var xmlstr = "<command><id>" + sid + "</id><statement>";
+
+        if(segmentId == undefined)
+        {
+            var commas = "";
+            xmlstr += "open-app archive backup get ";
+
+            for(var i=0; i<vms.length; i++)
+            {
+                if (i == 0) {
+                        xmlstr += "'";
+                } else {
+                        commas = ",";
+                }
+                xmlstr += commas + vms[i] + ":" + modes[i];
+            }
+
+            xmlstr += "'";
+        }
+        else
+            xmlstr += segmentId;
+
+        xmlstr += "</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     };

@@ -159,10 +159,39 @@ function FT_businessLayer()
         return rvalue;
     }
 
+    /**
+     * get child nodes of 'node' from 'response'
+     * @param response - a response data from server
+     * @param node - a node name of the child nodes to be returned
+     */
+    this.f_getResponseChildNodes = function(response, node)
+    {
+        if(response != undefined && response.length != undefined)
+        {
+            for(var i=0; i<response.length; i++)
+            {
+                var cn = response[i].childNodes;
+
+                if(cn.nodeName == node)
+                    return cn.childNodes;
+            }
+        }
+
+        return null;
+    }
+
     ////////////////////////////////////////////////////
     // functions for public
     // ////////////////////////////////////////////////////
     //
+    /**
+     */
+    this.f_sentChuckerRequest = function(requestStr, guiCb)
+    {
+
+    }
+
+
     ////////////////////////////////////////////////////////////////////////////
     // user management support functions:
     // f_isLogin() - find out if user is login
@@ -571,10 +600,15 @@ function FT_businessLayer()
      * @param modes - list of back modes. ex. ['config', 'data', 'data'....] array type
      *                this list shoudl sync with vms.
      * @param guiCb - gui callback function
+     * @param backupTo - "2pc" backup to PC, "OA" or else to backup to oa
      */
-    this.f_backup = function(vms, modes, guiCb)
+    this.f_backup = function(vms, modes, guiCb, backupTo)
     {
-        thisObj.m_backup.f_backupRestore(vms, modes, "backup", guiCb);
+        if(backupTo == '2pc')
+            thisObj.m_backup.f_backupToPC(vms, modes, guiCb);
+        else
+            thisObj.m_backup.f_backupRestore(vms, modes, "backup", guiCb);
+
     }
 
 	/**

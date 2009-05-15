@@ -1,3 +1,27 @@
+vyatta-webgui (0.2+fxd0+39) unstable; urgency=low
+
+  [ Michael Larson ]
+  * work on bu 2 my pc
+  * remove second set of rest parameters on bu. add http error code when
+    logging errors
+  * add http code to log message for user modification where rest msg is
+    sent
+  * support for backup to my pc
+
+  [ Kevin Choi ]
+  * * changed xml api parent node to 'openappliance'
+
+  [ Michael Larson ]
+  * modification of backup to my pc feature to match documentation.
+
+  [ Kevin Choi ]
+  * * updated business layer to support backup to myPC using Mike's
+    chucker method.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 15 May 2009 11:17:31 -0700
+
 vyatta-webgui (0.2+fxd0+38) unstable; urgency=low
 
   [ slioch ]

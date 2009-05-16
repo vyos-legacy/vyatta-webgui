@@ -129,12 +129,39 @@ function FT_confBackup(name, callback, busLayer)
 	////////////////////////////////////////////////////////////////////////// 	
 	this.f_pcBackup = function()
 	{
-		//need to define a mechanism to receive file from the backup.
-		/*
-		var url = 'test.zip';
+		var vms = new Array();
+		var mode = new Array();
+		
+		var s = 'conf_backup_config_cb';
+		for (var i=0; i < thisObj.m_vmName.length; i++) {
+	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
+			if (el.checked == true) {
+				vms.push(thisObj.m_vmName[i]);
+				mode.push('config');
+			}	
+		}
+		s = 'conf_backup_data_cb';
+		for (var i=0; i < thisObj.m_vmName.length; i++) {
+	        var el = document.getElementById(s + '_' + thisObj.m_vmName[i]);
+			if (el.checked == true) {
+				vms.push(thisObj.m_vmName[i]);
+				mode.push('data');
+			}	
+		}		
+        g_busObj.f_backup(vms, mode, thisObj.f_pcBackupCb, '2pc');	
+		//g_utils.f_popupMessage(g_lang.m_backupInProgress + '.', 'ok', g_lang.m_info, true, 'f_handleConfBackupOkCb()');
+        //g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);  					
+	}
+
+    this.f_pcBackupCb = function(eventObj)
+	{
+        if (eventObj.f_isError()) {
+			g_utils.f_popupMessage(g_lang.m_backupFail + ': ' + eventObj.m_errMsg, 'error', g_lang.m_error, true);
+			return;
+		} 	
+        /* http://[oaip]/archive/[sessionid]/bu.tar */		
+		var url = g_utils.f_getHomePageIP() + '/archive/' + g_utils.f_getUserLoginedID() + '/bu.tar';
 		window.open(url, 'Download');
-		*/
-        g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);  					
 	}
 
     this.f_oaBackupCb = function(eventObj)

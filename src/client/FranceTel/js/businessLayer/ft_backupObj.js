@@ -148,7 +148,7 @@ function FT_backupObj(busObj)
                 else if(cmdSent.indexOf('archive backup get') > 0 ||
                       cmdSent.indexOf('segment_') >= 0)
                 {
-                    if(thisObj.m_parseBackup2PCData(err) != 'segment_end')
+                    if(thisObj.f_parseBackup2PCData(err) != 'segment_end')
                         return;
                 }
                 else if(cmdSent.indexOf('archive restore status') > 0)
@@ -258,16 +258,16 @@ function FT_backupObj(busObj)
         return content;
     };
 
-    this.m_parseBackup2PCData = function(response)
+    this.f_parseBackup2PCData = function(response)
     {
         if(response == null) return null;
+        var cn = response[0].childNodes;
 
-        for(var i=0; i<response.childNodes.length; i++)
+        for(var i=0; i<cn.length; i++)
         {
-            var cn = response.childNodes[i];
-            if(cn.nodeName == 'msg')
+            if(cn[i].nodeName == 'msg')
             {
-                var attr = cn.getAttribute('segment_id');
+                var attr = cn[i].getAttribute('segment');
 
                 if(attr != 'segment_end')
                 {

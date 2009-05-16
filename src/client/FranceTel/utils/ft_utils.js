@@ -124,6 +124,17 @@ var g_utils =
     {
 	    return g_utils.m_homePage;	
     },
+	
+	f_getHomePageIP : function()
+	{
+		var url = this.f_getHomePage();
+		var index = url.indexOf("://");
+		var protocol = url.substring(0,index+3);
+		url = url.substring(index+4,url.length);
+		index = url.indexOf('/');
+		
+		return protocol + url.substring(0,index);
+	},
 
     f_gotoHomePage: function()
     {

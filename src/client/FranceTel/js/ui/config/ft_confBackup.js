@@ -149,7 +149,7 @@ function FT_confBackup(name, callback, busLayer)
 			}	
 		}		
         g_busObj.f_backup(vms, mode, thisObj.f_pcBackupCb, '2pc');	
-		//g_utils.f_popupMessage(g_lang.m_backupInProgress + '.', 'ok', g_lang.m_info, true, 'f_handleConfBackupOkCb()');
+		g_utils.f_popupMessage(g_lang.m_backup2pcInProgress + '.', 'ok', g_lang.m_info, false, 'f_handleConfBackupOkCb()');
         //g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);  					
 	}
 

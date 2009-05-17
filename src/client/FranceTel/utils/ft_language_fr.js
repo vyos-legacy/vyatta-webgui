@@ -254,6 +254,7 @@ var g_lang =
 	m_backupSelectOne: "S'il vous plaît choisir au moins une application de sauvegarde",		
 	m_backupFail: "Pas de sauvegarde",
 	m_backupInProgress: "Sauvegarde est en cours. Vous recevrez une notification par email lors de l'opération est finshed",
+	m_backup2pcInProgress: "Backup is in progress.  It may take a while to finish.  A notification window will popup when the backup file is ready.",		
 	m_backupPlsDelete: "Vous avez atteint le nombre maximum de sauvegardes stockées sur l'Open Appliance. S'il vous plaît supprimer des archives de sauvegarde et essayez à nouveau",
 	m_backupMyPC: "Mon PC",	
     m_backupTooltipCancel : "Réinitialiser la sélection",

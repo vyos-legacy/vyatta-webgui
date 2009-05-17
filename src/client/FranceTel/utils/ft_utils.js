@@ -130,7 +130,7 @@ var g_utils =
 		var url = this.f_getHomePage();
 		var index = url.indexOf("://");
 		var protocol = url.substring(0,index+3);
-		url = url.substring(index+4,url.length);
+		url = url.substring(index+3,url.length);
 		index = url.indexOf('/');
 		
 		return protocol + url.substring(0,index);

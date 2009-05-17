@@ -5,6 +5,7 @@
     Description:
 */
 
+document.write('<script type="text/javascript" src="js/businessLayer/utm_userBusObj.js"></script>');
 document.write('<script type="text/javascript" src="js/businessLayer/utm_businessLayer.js"></script>');
 document.write('<script type="text/javascript" src="js/businessLayer/utm_vpnBusObj.js"></script>');
 document.write('<script type="text/javascript" src="js/businessLayer/utm_fwBusObj.js"></script>');

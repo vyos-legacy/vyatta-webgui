@@ -51,7 +51,7 @@ f_utf8_encode = function(string)
     return utftext;
 }
 
-f_utf8_decode: function(utftext)
+f_utf8_decode = function(utftext)
 {
     var string = "";
     var i = 0;

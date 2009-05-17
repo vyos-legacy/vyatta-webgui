@@ -56,10 +56,11 @@ function UTM_businessLayer()
     //////////////////////////////
     // properties
     var thisObj = this;
-    thisObj.m_request = createXMLHttpRequest();
     var m_vpnObj = null;
     var m_fwObj = null;
-
+    this.m_userObj = new UTM_userBusObj(this);
+	thisObj.m_request = createXMLHttpRequest();
+	
 
     /**
      * send request to server. All server get must call this function.
@@ -78,7 +79,7 @@ function UTM_businessLayer()
             innerCB(resp, cmdSend);
         }
 
-        r.open('POST', '/cgi-bin/webgui-oa', true);
+        r.open('POST', '/utm/cgi-bin/webgui-wrap', true);
         r.onreadystatechange = requestCB;
         r.send(cmdSend);
 
@@ -161,6 +162,56 @@ function UTM_businessLayer()
         }
 
         return new UTM_eventObj(errCode, '', errmsg);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    // user management
+    /**
+     * check to see if user is login
+     */
+    this.f_isLogin = function()
+    {
+        return thisObj.m_userObj.f_isLogin();
+    }
+
+    /**
+     * user requests a login to server.
+     * @param username -
+     * @param pw -
+     * @param guiCb - business layer call this cb upon completion of
+     *                auth from server.
+     */
+    this.f_userLoginRequest = function(username, pw, guiCb)
+    {
+        thisObj.m_userObj.f_setLogin(username, pw, guiCb);
+        var xmlstr = '<openappliance><auth><user>' + username + '</user>\n' +
+                      '<pswd><![CDATA[' + pw +
+                      ']]></pswd></auth></openappliance>\n';
+        thisObj.m_userObj.m_lastCmdSent = xmlstr;
+
+        return this.f_sendRequest(xmlstr, this.m_userObj.f_respondRequestCallback);
+    }
+
+    /**
+     *
+     */
+    this.f_getLoginUserObj = function()
+    {
+        return this.m_userObj;
+    }
+
+    /**
+     *
+     */
+    this.f_getLoginUserRec = function()
+    {
+        return this.m_userObj.m_loginUser;
+    }
+
+    this.f_userLogout = function(guiCb)
+    {
+        thisObj.m_userObj.f_logout(guiCb);
     }
 
     ////////////////////////////////////////////////////////////////////////////

@@ -148,7 +148,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     };
 
 
-    this.f_createGridRow = function(header, data, height)
+    this.f_createGridRow = function(header, data, height, rowId)
     {
         var div = document.createElement('div');
         div.style.position = 'relative';
@@ -156,6 +156,10 @@ function UTM_confBaseObj(name, callback, busLayer)
         div.style.backgroundColor = 'white';
         div.style.paddingTop = '0px';
         div.style.paddingBottom = '0px';
+
+        if ((rowId != undefined) && (rowId !=null)) {
+			div.setAttribute('id', rowId);
+		}
 
         var rHeight = height == undefined ? 28 : height;
 
@@ -589,8 +593,15 @@ function UTM_confBaseObj(name, callback, busLayer)
      * @param events - array of events callback function.
      *                  [0] = onBlur
      */
-    this.f_renderTextField = function(elId, val, tooltip, width, events)
+    this.f_renderTextField = function(elId, val, tooltip, width, events, readonly)
     {
+		var ro = '';
+		var roStyle = '"';
+		if ((readonly != undefined) && (readonly!=null) && (readonly==true)) {
+            ro += 'readonly';
+            roStyle += 'background-color: #EFEFEF;'                    
+        }
+		
         var onblur = '';
 
         if(events!= null && events[0] != null)
@@ -598,7 +609,8 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         return '<input id="' + elId + '" type="text" value="' +
                 val + '" name="' + name + '" title="' + tooltip +
-                '" style="width:' + width + 'px;" ' + onblur + '/>';
+				'" style=' + roStyle + ' width:' + width + 'px;"' + ro + ' '
+                + onblur + '/>';
     }
 
     this.f_renderAnchor = function(text, link, tooltip)

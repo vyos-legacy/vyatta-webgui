@@ -183,7 +183,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 			if (a[i].length < 3) {
 				ro =false;
 			}
-            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 625, ro);
+            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 625, '', ro);
             var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
             var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlEventCallback('" +
             thisObj.m_btnDeleteId + "','" + rowId +

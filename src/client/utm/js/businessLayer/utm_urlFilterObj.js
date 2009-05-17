@@ -1,7 +1,7 @@
 /*
  Document   : utm_urlFilterObj.js
  Created on : Apr 01, 2009, 11:22:11 AM
- Author     : Kevin.Choi
+ Author     : Loi.Vo
  Description:
  */
 function UTM_rangeObj(range)
@@ -31,15 +31,18 @@ function UTM_rangeObj(range)
             higher = '0' + higher;
         }
         return lower + ':00-' + higher + ':59';
-    }
-    
+    }    
 }
 
 function UTM_urlFilterScheduleObj(schedArray)
 {
     var thisObj = this;
-    this.m_schedule = schedArray;
+    this.m_schedule = schedArray; //this schedArray is an array of array.
     
+	/**
+	 * Input: string to identify the day: 'm', 't', ...
+	 * Output: array of [0,1,2,3,...,23] with the corresponding value of 1, or 0.
+	 */
     this.f_getScheduleByDay = function(day)
     {
         var period = thisObj.m_schedule[day];
@@ -59,6 +62,12 @@ function UTM_urlFilterScheduleObj(schedArray)
         return a;
     }
     
+	/**
+	 * Format the schedule to use the format understandable by backend.
+	 * @param {Object} day: which day.
+	 * @param {Object} schedArray: array of [0,1,2,...,23]
+	 * @return (Object) string in the format of: 00:00-12:59,15:00-19:59, ...
+	 */
     this.f_setScheduleForDay = function(day, schedArray)
     {
         var s = '';
@@ -89,28 +98,109 @@ function UTM_urlFilterScheduleObj(schedArray)
                 }
             }
         }
+		thisObj.m_schedule[day] = s;
+		return s;
     }
-    
+	
+	this.f_toXml = function() {
+		var s = '<schedule>';
+		var a = ['m','t','w','h','f','a','s'];
+		
+		for (var i=0; i < a.length; i++) {
+			s += '<' + a[i] + '>' + this.m_schedule(a[i]) + '</' + a[i] + '>';
+		}
+		s += '</schedule>';
+		return s;
+	}
 }
 
-function UTM_urlFilterConfigObj(cat, subcat, url, keyword, schedule)
+function UTM_urlFilterPolicyObj(policyArray)
 {
-    this.m_cat = cat;
-    this.m_subcat = subcat;
-    this.m_url = url;
-    this.m_keyword = keyword;
-    this.m_scheduleObj = new UTM_urlFilterScheduleObj(schedule);
+	var thisObj = this;
+	
+	this.m_policy = policyArray;
+	
+	this.f_getAttribute = function(name) {
+		return thisObj.m_policy[name];
+	}
+	
+	this.f_setAttribute = function(name, value) {
+		thisObj.m_policy[name] = value;
+	}	
+	
+	this.f_toXml = function() {
+		var s = '<policy>';
+		var a = ['blacklist', 'whitelist', 'keyword'];
+		var aa = ['legal', 'professional', 'strict'];
+		
+		for (var i=0; i < a.length; i++) {
+			var attr = this.f_getAttribute(a[i]);
+			if ((attr != undefined) && (attr != null) && (attr == 'true')) {
+				s+= '<' + a[i] + ' status="' + attr + '">';
+				if (a[i]=='blacklist') {
+					for (var j=0; j < aa.length; j++) {
+						var subAttr = this.f_getAttribute(aa[j]);
+						if ((subAttr != undefined) && (subAttr != null) && (subAttr=='true')) {
+							s += '<' + aa[j] + '>' + subAttr + '</' + aa[j] + '>';
+						}
+					}
+				}
+				s+= '</' + a[i] + '>';
+			}
+		}
+		s += '</policy>';
+		return s;
+	}	
 }
 
-function UTM_urlFilterUrlList(urlList)
+
+function UTM_urlFilterConfigObj(policy, schedule)
 {
-
+	var thisObj = this;
+	
+    this.m_policy = policy
+    this.m_schedule = schedule;
+	
+	this.f_setPolicy = function(policyObj) {
+		thisObj.m_policy = policyObj;
+	}
+	
+	this.f_setSchedule = function(schedObj) {
+		thisObj.m_schedule = schedObj;
+	}
+	
+	this.f_toXml= function() {
+		var s = '<url-filtering-easy-config>';
+		s += this.m_policy.f_toXml();
+		s += this.m_schedule.f_toXml();
+		s += '</url-filtering-easy-config>';
+		return s;
+	}
 }
 
-function UTM_urlFilterKeywordList(kwList)
+function UTM_urlFilterListObj(rawText)
 {
-
+    this.m_value = null;
+	this.m_status = null;
+	this.m_action = 'noop';
+	
+	if (rawText.startsWith('!')) {
+		this.m_value = rawText.substring(1,rawText.length);
+		this.m_status = false;
+	} else {
+		this.m_value = value;
+		this.m_status = true;
+	}
+	
+	this.f_toString = function() {
+		if (thisObj.m_status) {
+			return thisObj.m_value;
+		} else {
+			return '!' + thisObj.m_value;
+		}
+	}
 }
+
 
 function UTM_urlFilterBusObj(busObj)
 {
@@ -193,6 +283,18 @@ function UTM_urlFilterBusObj(busObj)
                 thisObj.m_guiCb(response);
         } else {
             var evt = new UTM_eventObj(0, thisObj, '');
+			
+			
+            var err = response.getElementsByTagName('error');
+            if (err != null && err[0] != null) { //The return value is inside the <error> tag.
+				var tmp = thisObj.f_getFormError(err);
+				if (tmp != null) { //form has error
+					if (thisObj.m_guiCb != undefined) {
+						return thisObj.m_guiCb(tmp);
+					}
+				}
+			}
+			
             if(thisObj.m_guiCb != undefined)
                 thisObj.m_guiCb(evt);
         }
@@ -231,6 +333,12 @@ function UTM_urlFilterBusObj(busObj)
 		return thisObj.f_getNodeValue(errmsgNode);		
 	}
 
+    this.f_getFormNode = function(response)
+	{
+		var msgNode = this.f_getChildNode(response[0], 'msg');
+		return this.f_getChildNode(msgNode, 'form');
+	}
+
     this.f_getFormError = function(response)
 	{
 		var cn = response[0].childNodes;
@@ -253,6 +361,10 @@ function UTM_urlFilterBusObj(busObj)
 		return null;
 	} 
 	
+	/**
+	 * Return an array of [blacklist,legal,professional,strict,whitelist,keyword]
+	 * @param {Object} policy
+	 */
     this.f_parseUrlPolicy = function(policy)
 	{
 		if (policy==null) return null;
@@ -291,26 +403,232 @@ function UTM_urlFilterBusObj(busObj)
 		return a;
 	}
 
+    /**
+     * Return an array of:
+     *   m: [00:00-15:00,16:00-19:00]
+     *   t: [00:00-15:00,16:00-19:00]
+     *   ...
+     *   a: [00:00-15:00,16:00-19:00]
+     */
     this.f_parseUrlSchedule = function(schedule)
 	{
+		var days = ['m','t','w','h','f','a','s'];
+		
 		if (schedule==null) return null;
+		var w = new Array(7);
+		for (var i=0; i < w.length; i++) {
+			var cnode = thisObj.f_getChildNode(schedule, days[i]);
+			w[i] = thisObj.f_getNodeValue(cnode);
+		}
+
+		return w;
 	} 
 	
     this.f_parseUrlFilter = function(response)
 	{
-		var obj = new UTM_urlFilterConfigObj(false, false, false, false, '');		
-		
-		var urlNode = thisObj.f_getChildNode(response[0], 'url-filtering-easy-config');
+		var obj = new UTM_urlFilterConfigObj(new Array(), new Array());		
+		var form = thisObj.f_getFormNode(response);		
+		var urlNode = thisObj.f_getChildNode(form, 'url-filtering-easy-config');
 		
 		if (urlNode != null) {
 			var policyNode = thisObj.f_getChildNode(urlNode, 'policy');
 			var schedNode = thisObj.f_getChildNode(urlNode, 'schedule');
 			var p = thisObj.f_parseUrlPolicy(policyNode);
 			var s = thisObj.f_parseUrlSchedule(schedNode);
-			
+			obj.f_setPolicy(new UTM_urlFilterPolicyObj(p));
+			obj.f_setSchedule(new UTM_urlFilterScheduleObj(s));
 		}
 
         return obj;
 	}
+	
+	this.f_parseUrlList = function(response)
+	{
+		var list = new Array();
+		var form = thisObj.f_getFormNode(response);		
+		var wlNode = thisObj.f_getChildNode(form, 'white-list-easy-config');		
+		
+		if (wlNode != null) {
+			var cn = wlNode.childNodes;
+			for (var i = 0; i < cn.length; i++) {
+				if (cn[i].nodeName == 'url') {
+					var value = thisObj.f_getNodeValue(cn[i]);
+					list.push(new UTM_urlFilterListObj(decodeURI(value)));
+				}
+			}
+		}
+		return list;
+	}
+	
+	this.f_parseKeywordList = function(response)
+	{
+		var list = new Array();
+		var form = thisObj.f_getFormNode(response);		
+		var bannedNode = thisObj.f_getChildNode(form, 'banned-list-easy-config');		
+		
+		if (bannedNode != null) {
+			var cn = bannedNode.childNodes;
+			for (var i = 0; i < cn.length; i++) {
+				if (cn[i].nodeName == 'keyword') {
+					var value = thisObj.f_getNodeValue(cn[i]);
+					list.push(new UTM_urlFilterListObj(value));
+				}
+			}
+		}
+		return list;
+	}
+	
+    /**
+     */
+    this.f_getUrlFilterConfigServer = function(guicb)
+    {
+		/*
+        var e = new UTM_eventObj(0, '', '');
+        window.setTimeout(function(){guicb(e)}, 500);
+        return;
+		*/
+		
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>url-filtering-easy-config get" +
+                      "</handler><data></data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    /**
+     * perform a set vpn site2site configurations request to server.
+     * @param ufcObj - url filtering config object.
+     * @param guicb - gui callback function
+     */
+    this.f_setUrlFilterConfigServer = function(ufcObj, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>url-filtering-easy-config" +
+                      " set</handler><data>" + urfObj.f_toXml() +
+                      "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }	
+
+    /**
+     */
+    this.f_getUrlListServer = function(guicb)
+    {
+		/*
+        var e = new UTM_eventObj(0, '', '');
+        window.setTimeout(function(){guicb(e)}, 500);
+        return;
+		*/
+		
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>white-list-easy-config get" +
+                      "</handler><data></data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    /**
+     * Format a list of url list object to xml
+     * @param {Object} urlList: an array of url list obj.
+     * @return: xml representation.
+     */
+    this.f_urlList2xml = function(urlList)
+	{
+		var xml = '<white-list-easy-config>';
+		for (var i=0; i < urlList.length; i++) {
+			if (urlList[i].m_action != 'noop') {
+				xml += '<url action="' + urlList[i].m_action + '">';
+				xml += urlList[i].toString();
+				xml += '</url>';
+			}
+		}
+		xml += '</white-list-easy-config>';
+		return xml;
+		
+	}
+
+    /**
+     * perform a set vpn site2site configurations request to server.
+     * @param ufcObj - url filtering config object.
+     * @param guicb - gui callback function
+     */
+    this.f_setUrlListServer= function(urlList, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>white-list-easy-config" +
+                      " set</handler><data>" + thisObj.f_urlList2xml(urlList) +
+                      "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    /**
+     */
+    this.f_getKeywordListServer = function(guicb)
+    {
+		/*
+        var e = new UTM_eventObj(0, '', '');
+        window.setTimeout(function(){guicb(e)}, 500);
+        return;
+		*/
+		
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>banned-list-easy-config get" +
+                      "</handler><data></data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    /**
+     * Format a list of keyword list object to xml
+     * @param {Object} kwList: an array of keyword list obj.
+     * @return: xml representation.
+     */
+    this.f_kwList2xml = function(kwList)
+	{
+		var xml = '<banned-list-easy-config>';
+		for (var i=0; i < kwList.length; i++) {
+			if (kwList[i].m_action != 'noop') {
+				xml += '<keyword action="' + kwList[i].m_action + '">';
+				xml += kwList[i].toString();
+				xml += '</keyword>';
+			}
+		}
+		xml += '</banned-list-easy-config>';
+		return xml;		
+	}
+
+    /**
+     * perform a set vpn site2site configurations request to server.
+     * @param ufcObj - url filtering config object.
+     * @param guicb - gui callback function
+     */
+    this.f_setKeywordListServer= function(kwList, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>banned-list-easy-config" +
+                      " set</handler><data>" + thisObj.f_kwList2xml(kwList) +
+                      "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
 	    
 }

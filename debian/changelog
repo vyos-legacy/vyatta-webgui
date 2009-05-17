@@ -1,3 +1,27 @@
+vyatta-webgui (0.2.14+fxdU+15) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Fix overwritten issue caused by Kevin's previous checkin.
+
+  [ Kevin Choi ]
+  * * added ip address validation routine to utils file
+  * * added rule num column to security customized table
+
+  [ Mohit Mehta ]
+  * 1st pass support to get ruleset info for a given zone pair
+
+  [ slioch ]
+  * need permissions modifications to allow cgi to copy archive to
+    active directory for bu to my pc
+
+  [ Kevin Choi ]
+  * * initiated ajax request handler
+
+  [ Loi Vo ]
+  * 1. Add auto login for domU
+
+ -- Loi Vo <loi.vo@vyatta.com>  Sun, 17 May 2009 16:34:45 +0000
+
 vyatta-webgui (0.2.14+fxdU+14) unstable; urgency=low
 
   [ Kevin Choi ]

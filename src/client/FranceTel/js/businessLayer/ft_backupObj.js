@@ -146,9 +146,10 @@ function FT_backupObj(busObj)
                     window.location = thisObj.m_downloadFile;
                 }
                 else if(cmdSent.indexOf('archive backup get') > 0 ||
-                      cmdSent.indexOf('segment_') >= 0)
+                      cmdSent.indexOf('multi_') >= 0)
                 {
-                    if(thisObj.f_parseBackup2PCData(err) != 'segment_end')
+                    var segment = thisObj.f_parseBackup2PCData(err);
+                    if(segment == null || segment.indexOf('_end') < 0)
                         return;
                 }
                 else if(cmdSent.indexOf('archive restore status') > 0)
@@ -220,7 +221,7 @@ function FT_backupObj(busObj)
 					} else { //set default to false
 						thisObj.m_limit = false;
 					}
-                } 
+                }
             }
         }
 
@@ -269,7 +270,7 @@ function FT_backupObj(busObj)
             {
                 var attr = cn[i].getAttribute('segment');
 
-                if(attr != 'segment_end')
+                if(attr.indexOf('_end') < 0)
                 {
                     window.setTimeout(function(){
                     thisObj.f_backupToPC(null, null, thisObj.m_guiCb, attr)}, 5000);

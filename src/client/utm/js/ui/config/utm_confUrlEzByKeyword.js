@@ -177,9 +177,15 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
     {
         var a = ['http://www.facebook.com', 'http://www.vyatta.com', 'http://www.cisco.com', 'http://www.sun.com', 'http://www.juniper.net', ' '];
         for (var i = 0; i < a.length; i++) {
+            var ro= true;		
             var prefix = 'utm_conf_url_ez_by_keyword_';
-		    var rowId = prefix + "row_" + thisObj.m_cnt;			
-            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 400);
+		    var rowId = prefix + "row_" + thisObj.m_cnt;
+				
+			if (a[i].length < 3) {
+				ro =false;
+			}				
+					
+            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 400, ro);
             var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
             var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByKeywordEventCallback('" +
             thisObj.m_btnDeleteId +

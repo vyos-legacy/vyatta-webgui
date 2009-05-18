@@ -585,11 +585,17 @@ function UTM_confBaseObj(name, callback, busLayer)
         return cb;
     }
 
-    this.f_renderTextField = function(elId, val, tooltip, width)
+    this.f_renderTextField = function(elId, val, tooltip, width, readonly)
     {
+		var ro = '';
+		var roStyle = '"';
+		if ((readonly != undefined) && (readonly!=null) && (readonly==true)) {
+			ro += 'readonly';
+            roStyle += 'background-color: #EFEFEF;'			
+		}
         return '<input id="' + elId + '" type="text" value="' +
                 val + '" name="' + name + '" title="' + tooltip +
-                '" style="width:' + width + 'px;"/>';
+                '" style=' + roStyle + ' width:' + width + 'px;"' + ro + '/>';
     }
 
     this.f_renderAnchor = function(text, link, tooltip)

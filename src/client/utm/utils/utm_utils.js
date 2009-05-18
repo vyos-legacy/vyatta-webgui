@@ -734,6 +734,15 @@ var g_utils =
         }
 
         return str;
+    },
+
+    f_validateIP : function(ip)
+    {
+        var ipRegex = /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/;
+        if (!ip.match(ipRegex))
+            return false;
+
+        return true;
     }
 };
 

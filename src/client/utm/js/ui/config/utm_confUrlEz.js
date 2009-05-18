@@ -6,10 +6,24 @@
  */
 function UTM_confUrlEz(name, callback, busLayer)
 {
+	/**
+	 ***************************************************************************
+	 * id naming convention
+	 *    -monday, hour=1:
+	 *                  img id= 'img_m.1'
+	 *                  cb id= 'cb_m.1'
+	 *                  always_on img_id = 'on_img_m'
+	 *                  always_on cb_id = 'on_cb_m'
+	 *                  always_off img_id = 'off_img_m'
+	 *                  always_off cb_id = 'off_cb_m'
+	 ****************************************************************************                   
+	 */		
     var thisObjName = 'UTM_confVpnEz';
     var thisObj = this;
     this.m_form = undefined;
-    this.m_url = undefined;
+    this.m_ufcObj = undefined;
+	this.m_dowArray = ['m','t','w','h','f','a','s'];
+	this.m_catArray = ['blacklist','whitelist','keyword','legal','professional','strict'];
     
     /**
      * @param name - name of configuration screens.
@@ -41,8 +55,8 @@ function UTM_confUrlEz(name, callback, busLayer)
             },  EMPTY_ROW
 			, {
                 v_type: 'html',
-                id: 'conf_url_ez_by_cat',
-                text: '<input id="conf_url_ez_by_cat" type="checkbox" name="filter_by" value="cat" checked>&nbsp;' + g_lang.m_url_ezByCat,
+                id: 'conf_url_ez_blacklist',
+                text: '<input id="conf_url_ez_blacklist" type="checkbox" name="filter_by" value="cat" checked>&nbsp;' + g_lang.m_url_ezByCat,
 				padding: '30px',
                 v_new_row: 'true',
                 v_end_row: 'true'
@@ -55,9 +69,9 @@ function UTM_confUrlEz(name, callback, busLayer)
                 v_end_row: 'true'
             }, {
                 v_type: 'html',
-                id: 'conf_url_ez_prof',
+                id: 'conf_url_ez_professional',
                 padding: '60px',
-                text: '<input id="conf_url_ez_prof" type="radio" name="filter_by_cat" value="prof">&nbsp;' + g_lang.m_url_ezProf,
+                text: '<input id="conf_url_ez_professional" type="radio" name="filter_by_cat" value="prof">&nbsp;' + g_lang.m_url_ezProf,
                 v_new_row: 'true',
                 v_end_row: 'true'
             }, {
@@ -70,26 +84,26 @@ function UTM_confUrlEz(name, callback, busLayer)
             }//,  EMPTY_ROW
 			, {
                 v_type: 'html',
-                id: 'conf_url_ez_by_url',
-                text: '<input id="conf_url_ez_by_url" type="checkbox" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByUrl,
+                id: 'conf_url_ez_whitelist',
+                text: '<input id="conf_url_ez_whitelist" type="checkbox" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByUrl,
 				padding: '30px',
                 v_new_row: 'true'
             }, {
                 v_type: 'html',
-                id: 'conf_url_ez_by_url_config',
-                text: '<input type="image" id="conf_url_ez_by_url_config" src="' + g_lang.m_imageDir + 'bt_config.png">',
+                id: 'conf_url_ez_whitelist_config',
+                text: '<input type="image" id="conf_url_ez_whitelist_config" src="' + g_lang.m_imageDir + 'bt_config.png">',
                 v_end_row: 'true'
             }//,  EMPTY_ROW
 			, {
                 v_type: 'html',
-                id: 'conf_url_ez_by_word',
-                text: '<input id="conf_url_ez_by_word" type="checkbox" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByWord,
+                id: 'conf_url_ez_keyword',
+                text: '<input id="conf_url_ez_keyword" type="checkbox" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByWord,
 				padding: '30px',
                 v_new_row: 'true'
             }, {
                 v_type: 'html',
-                id: 'conf_url_ez_by_word_config',
-                text: '<input type="image" id="conf_url_ez_by_word_config" src="' + g_lang.m_imageDir + 'bt_config.png">',
+                id: 'conf_url_ez_keyword_config',
+                text: '<input type="image" id="conf_url_ez_keyword_config" src="' + g_lang.m_imageDir + 'bt_config.png">',
                 v_end_row: 'true'
             }, EMPTY_ROW
 			, {
@@ -160,88 +174,88 @@ function UTM_confUrlEz(name, callback, busLayer)
     {
         var days = g_lang.m_url_ezDayArray;
         for (var i = 0; i < days.length; i++) {
-            thisObj.f_addRow(i, days[i]);
+            thisObj.f_addRow(thisObj.m_dowArray[i], days[i]);
         }
     }
     
-    this.f_addRow = function(row, text)
+    this.f_addRow = function(dayId, text)
     {
         var el = document.getElementById('conf_url_ez_time_table_body');
         var tr = document.createElement('tr');
-        tr.appendChild(thisObj.f_createDayOfWeek(row, text));
-        tr.appendChild(thisObj.f_createTimeTable(row, text));
-        tr.appendChild(thisObj.f_createAlwaysOn(row, text));
-        tr.appendChild(thisObj.f_createAlwaysOff(row, text));
+        tr.appendChild(thisObj.f_createDayOfWeek(dayId, text));
+        tr.appendChild(thisObj.f_createTimeTable(dayId, text));
+        tr.appendChild(thisObj.f_createAlwaysOn(dayId, text));
+        tr.appendChild(thisObj.f_createAlwaysOff(dayId, text));
         el.appendChild(tr);
     }
     
-    this.f_createDayOfWeek = function(row, text)
+    this.f_createDayOfWeek = function(dayId, text)
     {
         var td = document.createElement('td');
-        td.id = 'day' + row;
+        td.id = 'day_' + dayId;
         td.className = 'maintd_bold';
         td.setAttribute('align', 'center');
         td.innerHTML = text;
         return td;
     }
     
-    this.f_createTimeTable = function(row, text)
+    this.f_createTimeTable = function(dayId, text)
     {
         var td = document.createElement('td');
         td.className = 'maintd';
         td.setAttribute('align', 'center');
-        td.appendChild(thisObj.f_createTimeTableDiv(row, text));
+        td.appendChild(thisObj.f_createTimeTableDiv(dayId, text));
         return td;
     }
     
-    this.f_createTimeTableDiv = function(row, text)
+    this.f_createTimeTableDiv = function(dayId, text)
     {
         var div = document.createElement('div');
         div.className = 'date_row';
         var innerHTML = '<table cellpadding="0" cellspacing="1" align="center" border="0"><tr>';
         for (var i = 0; i < 24; i++) {
-            var tdId = 'time_td' + row + '.' + i;
+            var tdId = 'time_td_' + dayId + '.' + i;
             innerHTML += '<td id="' + tdId + '" class="cell" valign="bottom">';
             if (i < 10) {
                 innerHTML += '&nbsp;';
             }
-            var id = 'img' + row + '.' + i;
+            var id = 'img_' + dayId + '.' + i;
             innerHTML += i + '<img id="' + id + '" onclick=f_checkImage(\'' + id + '\')' +
-            ' src="' + g_lang.m_imageDir + 'green10x10.png">';
-            innerHTML += '<input style="display:none" type="checkbox" id="cb' + row + '.' + i + '" checked>' + '</td>';
+            ' src="' + g_lang.m_imageDir + 'red10x10.png">';
+            innerHTML += '<input style="display:none" type="checkbox" id="cb_' + dayId + '.' + i + '" >' + '</td>';
         }
         innerHTML += '</tr></table>';
         div.innerHTML = innerHTML;
         return div;
     }
     
-    this.f_createAlwaysOn = function(row, text)
+    this.f_createAlwaysOn = function(dayId, text)
     {
         var td = document.createElement('td');
         td.className = 'maintd';
         td.setAttribute('align', 'center');
-        var id = 'on_img' + row;
+        var id = 'on_img_' + dayId;
         var innerHTML = '<img id="' + id + '" onclick=f_checkImage(\'' + id + '\') src="' + g_lang.m_imageDir + 'blank14x14.png">';
-        innerHTML += '<input style="display:none" type="checkbox" id="on_img_cb' + row + '">' + '</td>';
+        innerHTML += '<input style="display:none" type="checkbox" id="on_img_cb_' + dayId + '">' + '</td>';
         td.innerHTML = innerHTML;
         return td;
     }
     
-    this.f_createAlwaysOff = function(row, text)
+    this.f_createAlwaysOff = function(dayId, text)
     {
         var td = document.createElement('td');
         td.className = 'maintd';
-        var id = 'off_img' + row;
+        var id = 'off_img_' + dayId;
         td.setAttribute('align', 'center');
         var innerHTML = '<img id="' + id + '" onclick=f_checkImage(\'' + id + '\') src="' + g_lang.m_imageDir + 'blank14x14.png">';
-        innerHTML += '<input style="display:none" type="checkbox" id="off_img_cb' + row + '">' + '</td>';
+        innerHTML += '<input style="display:none" type="checkbox" id="off_img_cb_' + dayId + '">' + '</td>';
         td.innerHTML = innerHTML;
         return td;
     }
     
-    this.f_enableTimeBackground = function(row, enable)
+    this.f_enableTimeBackground = function(dayId, enable)
     {
-        var tdId = 'time_td' + row + '.';
+        var tdId = 'time_td_' + dayId + '.';
         for (var i = 0; i < 24; i++) {
             var id = tdId + i;
             var td = document.getElementById(id);
@@ -253,10 +267,10 @@ function UTM_confUrlEz(name, callback, busLayer)
         }
     }
     
-    this.f_enableTime = function(row, enable)
+    this.f_enableTime = function(dayId, enable)
     {
-        var imgId = 'img' + row + '.';
-        var cbId = 'cb' + row + '.';
+        var imgId = 'img_' + dayId + '.';
+        var cbId = 'cb_' + dayId + '.';
         
         for (var i = 0; i < 24; i++) {
             var id = imgId + i;
@@ -274,33 +288,33 @@ function UTM_confUrlEz(name, callback, busLayer)
         }
     }
     
-    this.f_disableAlwaysOn = function(row)
+    this.f_disableAlwaysOn = function(dayId)
     {
-        var cb = document.getElementById('on_img_cb' + row);
-        var img = document.getElementById('on_img' + row);
+        var cb = document.getElementById('on_img_cb_' + dayId);
+        var img = document.getElementById('on_img_' + dayId);
         if (cb.checked) {
             cb.checked = '';
             img.src = g_lang.m_imageDir + 'blank14x14.png';
         }
     }
     
-    this.f_disableAlwaysOff = function(row)
+    this.f_disableAlwaysOff = function(dayId)
     {
-        var cb = document.getElementById('off_img_cb' + row);
-        var img = document.getElementById('off_img' + row);
+        var cb = document.getElementById('off_img_cb_' + dayId);
+        var img = document.getElementById('off_img_' + dayId);
         if (cb.checked) {
             cb.checked = '';
             img.src = g_lang.m_imageDir + 'blank14x14.png';
         }
     }
     
-    this.f_readOnly = function(row)
+    this.f_readOnly = function(dayId)
     {
-        var cbOn = document.getElementById('on_img_cb' + row);
+        var cbOn = document.getElementById('on_img_cb_' + dayId);
         if (cbOn.checked) {
             return true;
         }
-        var cbOff = document.getElementById('off_img_cb' + row);
+        var cbOff = document.getElementById('off_img_cb_' + dayId);
         if (cbOff.checked) {
             return true;
         }
@@ -309,42 +323,42 @@ function UTM_confUrlEz(name, callback, busLayer)
     
     this.f_toggleImage = function(id)
     {
-        if (id.indexOf('on_img') > -1) {
-            var index = id.substring(6, id.length);
-            var cb = document.getElementById('on_img_cb' + index);
+        if (id.indexOf('on_img_') > -1) {
+            var dayId = id.substring(7, id.length);
+            var cb = document.getElementById('on_img_cb_' + dayId);
             var img = document.getElementById(id);
             if (cb.checked) {
                 cb.checked = '';
                 img.src = g_lang.m_imageDir + 'blank14x14.png';
-                thisObj.f_enableTimeBackground(index, true);
+                thisObj.f_enableTimeBackground(dayId, true);
             } else {
                 cb.checked = 'checked';
                 img.src = g_lang.m_imageDir + 'green14x14.png';
-                thisObj.f_disableAlwaysOff(index);
-                thisObj.f_enableTimeBackground(index, false);
-                thisObj.f_enableTime(index, true);
+                thisObj.f_disableAlwaysOff(dayId);
+                thisObj.f_enableTimeBackground(dayId, false);
+                thisObj.f_enableTime(dayId, true);
             }
-        } else if (id.indexOf('off_img') > -1) {
-            var index = id.substring(7, id.length);
-            var cb = document.getElementById('off_img_cb' + index);
+        } else if (id.indexOf('off_img_') > -1) {
+            var dayId = id.substring(8, id.length);
+            var cb = document.getElementById('off_img_cb_' + dayId);
             var img = document.getElementById(id);
             if (cb.checked) {
                 cb.checked = '';
                 img.src = g_lang.m_imageDir + 'blank14x14.png';
-                thisObj.f_enableTimeBackground(index, true);
+                thisObj.f_enableTimeBackground(dayId, true);
             } else {
                 cb.checked = 'checked';
                 img.src = g_lang.m_imageDir + 'red14x14.png';
-                thisObj.f_disableAlwaysOn(index);
-                thisObj.f_enableTimeBackground(index, false);
-                thisObj.f_enableTime(index, false);
+                thisObj.f_disableAlwaysOn(dayId);
+                thisObj.f_enableTimeBackground(dayId, false);
+                thisObj.f_enableTime(dayId, false);
             }
         } else {
-            var index = id.substring(3, id.length);
-            if (thisObj.f_readOnly(index.substring(0, 1))) {
+            var dayId = id.substring(4, id.length);
+            if (thisObj.f_readOnly(dayId.substring(0, 1))) {
                 return;
             }
-            var cb = document.getElementById('cb' + index);
+            var cb = document.getElementById('cb_' + dayId);
             var img = document.getElementById(id);
             if (cb.checked) {
                 cb.checked = '';
@@ -355,30 +369,91 @@ function UTM_confUrlEz(name, callback, busLayer)
             }
         }
     }
+	
+	this.f_loadPolicy = function()
+	{
+	    var a = thisObj.m_catArray;
+		for (var i=0; i < a.length; i++) {
+			var v = thisObj.m_ufcObj.m_policy.f_getAttribute(a[i]);
+			var elId = 'conf_url_ez_' + a[i];
+			var el = document.getElementById(elId);
+			
+			if ((v != undefined) && (v!=null) && (v=='true')) {
+				el.checked = 'checked';
+			} else {
+				el.checked = '';
+			}
+		}	
+	}
+	
+	this.f_loadSchedule = function()
+	{
+		var dow = thisObj.m_dowArray;
+		for (var i=0; i < dow.length; i++) {
+			var timeArray = thisObj.m_ufcObj.m_schedule.f_getScheduleByDay(dow[i]);
+			
+		}
+		
+		/*
+        div.className = 'date_row';
+        var innerHTML = '<table cellpadding="0" cellspacing="1" align="center" border="0"><tr>';
+        for (var i = 0; i < 24; i++) {
+            var tdId = 'time_td' + row + '.' + i;
+            innerHTML += '<td id="' + tdId + '" class="cell" valign="bottom">';
+            if (i < 10) {
+                innerHTML += '&nbsp;';
+            }
+            var id = 'img' + row + '.' + i;
+            innerHTML += i + '<img id="' + id + '" onclick=f_checkImage(\'' + id + '\')' +
+            ' src="' + g_lang.m_imageDir + 'red10x10.png">';
+            innerHTML += '<input style="display:none" type="checkbox" id="cb' + row + '.' + i + '" >' + '</td>';
+        }
+        innerHTML += '</tr></table>';
+        div.innerHTML = innerHTML;		
+		*/
+		
+		
+	}
 
     this.f_loadVMData = function(element)
     {
         thisObj.f_initFilterPolicyImp();
+        thisObj.f_attachListener();		
         thisObj.m_form = document.getElementById('conf_url_ez_form');
         thisObj.f_setFocus();
-        thisObj.f_attachListener();
-		
 		thisObj.f_resize();
+		
+		/*
+		var cb = function(evt) {			
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
+				if (evt.f_isError()) {
+					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+					return;
+				}
+				thisObj.m_ufcObj = evt.m_value;
+				thisObj.f_loadPolicy();
+				thisObj.f_loadSchedule();
+			}		
+			
+		};
+		
+		g_busObj.f_getUrlFilterConfig(cb);
+		*/
     }
     
     this.f_attachListener = function()
     {
-        var el = document.getElementById('conf_url_ez_by_url_config');
+        var el = document.getElementById('conf_url_ez_whitelist_config');
         g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
-        el = document.getElementById('conf_url_ez_by_word_config');
+        el = document.getElementById('conf_url_ez_keyword_config');
         g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
     }
     
     this.f_detachListener = function()
     {
-        var el = document.getElementById('conf_url_ez_by_url_config');
+        var el = document.getElementById('conf_url_ez_whitelist_config');
         g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
-        el = document.getElementById('conf_url_ez_by_word_config');
+        el = document.getElementById('conf_url_ez_keyword_config');
         g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
     }
     
@@ -419,10 +494,10 @@ function UTM_confUrlEz(name, callback, busLayer)
 	this.f_handleClickById = function(id)
 	{
 		switch(id) {
-			case 'conf_url_ez_by_url_config':
+			case 'conf_url_ez_whitelist_config':
 			    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_BY_URL_ID);
 				break;
-			case 'conf_url_ez_by_word_config':
+			case 'conf_url_ez_keyword_config':
 			    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_BY_WORD_ID);
 				break;
             case 'conf_url_ez_apply_button':  //apply clicked

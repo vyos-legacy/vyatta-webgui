@@ -609,7 +609,7 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         return '<input id="' + elId + '" type="text" value="' +
                 val + '" name="' + name + '" title="' + tooltip +
-                '" style=' + roStyle + ' width:"' + width + 'px;" ' +
+                '" style=' + roStyle + ' width:' + width + 'px;"' + ro + ' ' +				
                 onblur + '/>';
     }
 

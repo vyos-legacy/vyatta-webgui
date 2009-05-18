@@ -58,6 +58,7 @@ function UTM_businessLayer()
     var thisObj = this;
     var m_vpnObj = null;
     var m_fwObj = null;
+	var m_urlObj = null;
     this.m_userObj = new UTM_userBusObj(this);
 	thisObj.m_request = createXMLHttpRequest();
 	
@@ -277,6 +278,49 @@ function UTM_businessLayer()
     {
         thisObj.f_getVPNObject().f_setSite2SiteConfig(vpnRec, 'expert', guicb);
     }
+	
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    // url filtering section
+	this.f_getUrlFilterObj = function()
+    {
+        if(m_urlObj == null)
+            m_urlObj = new UTM_urlFilterBusObj(thisObj);
+
+        return m_urlObj;
+    }
+	
+    this.f_getUrlFilterConfig = function(guiCb)
+    {
+        thisObj.f_getUrlFilterObj().f_getUrlFilterConfigServer(guiCb);
+    }
+	
+    this.f_setUrlFilterConfig = function(ufcObj, guicb)
+    {
+        thisObj.f_getUrlFilterObj().f_setUrlFilterConfigServer(ufcObj, guicb);
+    }	
+
+    this.f_getUrlList = function(guicb)
+    {
+        thisObj.f_getUrlFilterObj().f_getUrlListServer(guiCb);
+    }
+
+    this.f_setUrlList = function(urlList, guicb)
+    {
+        thisObj.f_getUrlFilterObj().f_setUrlListServer(urlList, guicb);
+    }	
+	
+
+    this.f_getKeywordList = function(guicb)
+    {
+        thisObj.f_getUrlFilterObj().f_getKeywordListServer(guiCb);
+    }
+
+    this.f_setKeywordList = function(kwList, guicb)
+    {
+        thisObj.f_getUrlFilterObj().f_setKeywordListServer(kwList, guicb);
+    }		
+	
 }
 
 ///////////////////////////////////////////////

@@ -271,7 +271,8 @@ function FT_backupObj(busObj)
 
                 if(attr != 'segment_end')
                 {
-                    thisObj.f_backupToPC(null, null, thisObj.m_guiCb, attr);
+                    window.setTimeout(function(){
+                    thisObj.f_backupToPC(null, null, thisObj.m_guiCb, attr)}, 5000);
                     return null;
                 }
                 else

@@ -10,7 +10,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.thisObjName = 'UTM_confBaseObj';
     this.m_colorGridRow = false;
     this.m_id = undefined;
-	this.m_rowHeight = 31;
+    this.m_rowHeight = 31;
 
     /**
      * @param name - name of configuration screens.
@@ -230,7 +230,7 @@ function UTM_confBaseObj(name, callback, busLayer)
 
     this.f_adjustDivPosition = function(div)
     {
-        var adVal = (thisObj.m_tableRowCounter * 31) - 10;
+        var adVal = (thisObj.m_tableRowCounter * thisObj.m_rowHeight) - 10;
         div.style.top = adVal + 'px';
     }
 
@@ -401,7 +401,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<input type="image" src="' + g_lang.m_imageDir +
-                    'save.PNG" ' + elId + ' name="saveFireWall" ' +
+                    'bt_save.PNG" ' + elId + ' name="saveFireWall" ' +
                     'value="saveFireWall" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -585,11 +585,32 @@ function UTM_confBaseObj(name, callback, busLayer)
         return cb;
     }
 
-    this.f_renderTextField = function(elId, val, tooltip, width)
+    /**
+     * @param elId - element id
+     * @param val - value to be add to text field
+     * @param tooltip - tooltip when mouse over
+     * @param width - width of textfield
+     * @param events - array of events callback function.
+     *                  [0] = onBlur
+     */
+    this.f_renderTextField = function(elId, val, tooltip, width, events, readonly)
     {
+		var ro = '';
+		var roStyle = '"';
+		if ((readonly != undefined) && (readonly!=null) && (readonly==true)) {
+            ro += 'readonly';
+            roStyle += 'background-color: #EFEFEF;'                    
+        }
+		
+        var onblur = '';
+
+        if(events!= null && events[0] != null)
+            onblur = 'onblur="' + events[0] + '"';
+
         return '<input id="' + elId + '" type="text" value="' +
                 val + '" name="' + name + '" title="' + tooltip +
-                '" style="width:' + width + 'px;"/>';
+				'" style=' + roStyle + ' width:' + width + 'px;"' + ro + ' '
+                + onblur + '/>';
     }
 
     this.f_renderAnchor = function(text, link, tooltip)
@@ -745,10 +766,10 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_resize = function(padding)
     {
         if (this.m_id != g_configPanelObj.m_selectedItem ||
-		this.m_div == undefined) {
-			//to avoid the race condition between callback from server, and user click event.
-			return;
-		}
+        this.m_div == undefined)
+            //to avoid the race condition between callback from server, and user click event.
+            return;
+
         var h = 0;
         for (var i = 0; this.m_div.childNodes[i]; i++) {
             h += this.m_div.childNodes[i].offsetHeight;
@@ -762,7 +783,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         this.m_div.style.height = h + 'px';
         document.getElementById('ft_container').style.height = h + 'px';
         this.f_reflow();
-        g_utmMainPanel.f_requestResize();			
+        g_utmMainPanel.f_requestResize();
     }
 }
 

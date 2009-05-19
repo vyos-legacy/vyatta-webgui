@@ -122,22 +122,6 @@ function UTM_vpnBusObj(busObj)
         }
     }
 
-    this.f_getVPNNodesFromResponse = function(response, node)
-    {
-        if(response != undefined && response.length != undefined)
-        {    
-            for(var i=0; i<response.length; i++)
-            {
-                var cn = response[i].childNodes;
-                
-                if(cn.nodeName == node)
-                    return cn.childNodes;
-            }    
-        }
-
-        return null;
-    }
-
     this.f_constructKeyValueString = function(vpnRec)
     {
         var kvstr = '';
@@ -279,10 +263,10 @@ function UTM_vpnBusObj(busObj)
      */
     this.f_parseEasyModeData = function(response)
     {
-        var nodes = thisObj.f_getVPNNodesFromResponse(response, 'msg');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'vpn');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'site-to-site');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'easy');
+        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'vpn');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'site-to-site');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'easy');
 
         if(nodes != null)
         {
@@ -296,10 +280,10 @@ function UTM_vpnBusObj(busObj)
      */
     this.f_parseExpertModeData = function(response)
     {
-        var nodes = thisObj.f_getVPNNodesFromResponse(response, 'msg');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'vpn');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'site-to-site');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'expert');
+        var nodes = thisObj..m_busObj.f_getResponseChildNodes(response, 'msg');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'vpn');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'site-to-site');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'expert');
 
         if(nodes != null)
         {

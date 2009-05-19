@@ -11,7 +11,21 @@
 function UTM_fireRecord()
 {
     var thisObj = this;
-
+    this.m_level = null;  // 'Authorize All', 'Standard', 'Advanced', 'Customized', 'Block All'
+    this.m_ruleNo = null;
+    this.m_zone = null;
+    this.m_appService = null;
+    this.m_protocol = null;
+    this.m_srcIpAddr = null;
+    this.m_srcMaskIpAddr = null;
+    this.m_srcPort = null;
+    this.m_destIpAddr = null;
+    this.m_destMaskIpAddr = null;
+    this.m_destPort = null;
+    this.m_action = null;
+    this.m_log = null;
+    this.m_order = null;
+    this.m_enabled = null;
 }
 
 /**
@@ -24,7 +38,6 @@ function UTM_firewallBusObj(busObj)
     var thisObj = this;
     this.m_busObj = busObj;
     this.m_lastCmdSent = null;
-    this.m_configMode = null; // easy or expert
     this.m_fireRec = null;
 
     /**
@@ -49,10 +62,10 @@ function UTM_firewallBusObj(busObj)
             if(err != null && err[0] != null)
             {
                 if(thisObj.m_lastCmdSent.indexOf(
-                    'get vpn site-to-site easy</statement>') > 0)
+                    'firewall-security-level get') > 0)
                 {
-                    thisObj.f_parseEasyModeData(err);
-                    evt = new UTM_eventObj(0, thisObj.m_vpnRec, '');
+                    thisObj.f_parseFirewallSecurityLevel(err);
+                    evt = new UTM_eventObj(0, thisObj.m_fireRec, '');
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
                     'get vpn site-to-site expert</statement>') > 0)
@@ -67,204 +80,33 @@ function UTM_firewallBusObj(busObj)
         }
     }
 
-    this.f_getVPNNodesFromResponse = function(response, node)
-    {
-        if(response != undefined && response.length != undefined)
-        {
-            for(var i=0; i<response.length; i++)
-            {
-                var cn = response[i].childNodes;
-
-                if(cn.nodeName == node)
-                    return cn.childNodes;
-            }
-        }
-
-        return null;
-    }
-
-    this.f_constructKeyValueString = function(vpnRec)
-    {
-        var kvstr = '';
-        var statement = "<statement>" +
-                      "utm configuration set vpn site-to-site " +
-                      vpnRec.m_mode + " key name ";
-
-        if(vpnRec.m_tunnel != null)
-            kvstr += statement + "'tunnel' '" + vpnRec.m_tunnel + "'</statement> ";
-
-        if(vpnRec.m_peerIp != null)
-            kvstr += statement + "'peerip' '" + vpnRec.m_peerIp + "'</statement> ";
-
-        if(vpnRec.m_remoteVpnDevice != null)
-            kvstr += statement + "'remotedevice' '" + vpnRec.m_remoteVpnDevice +
-                       "'</statement> ";
-
-        if(vpnRec.m_presharedKey != null)
-            kvstr += statement + "'presharedkey' '" + vpnRec.m_presharedKey +
-                       "'</statement> ";
-
-        if(vpnRec.m_localNetwork != null)
-            kvstr += statement + "'localnetwork' '" + vpnRec.m_localNetwork +
-                         "'</statement> ";
-
-        if(vpnRec.m_remoteNetwork != null)
-            kvstr += statement + "'remotenetwork' '" + vpnRec.m_remoteNetwork +
-                         "'</statement> ";
-
-        if(vpnRec.m_type != null)
-            kvstr += statement + "'type' '" + vpnRec.m_type +
-                         "'</statement> ";
-
-        if(vpnRec.m_exchange != null)
-            kvstr += statement + "'exchange' '" + vpnRec.m_exchange +
-                         "'</statement> ";
-
-        if(vpnRec.m_encryption1 != null)
-            kvstr += statement + "'encryption1' '" + vpnRec.m_encryption1 +
-                         "'</statement> ";
-
-        if(vpnRec.m_auth1 != null)
-            kvstr += statement + "'auth1' '" + vpnRec.m_auth1 +
-                         "'</statement> ";
-
-        if(vpnRec.m_diffieHellmann != null)
-            kvstr += statement + "'diffiehellmann' '" + vpnRec.m_diffieHellmann +
-                         "'</statement> ";
-
-        if(vpnRec.m_lifeTime1 != null)
-            kvstr += statement + "'lifetime1' '" + vpnRec.m_lifeTime1 +
-                         "'</statement> ";
-
-        if(vpnRec.m_pfsGroup != null)
-            kvstr += statement + "'pfsgroup' '" + vpnRec.m_pfsGroup +
-                         "'</statement> ";
-
-        if(vpnRec.m_lifeTime2 != null)
-            kvstr += statement + "'lifetime2' '" + vpnRec.m_lifeTime2 +
-                         "'</statement> ";
-
-        if(vpnRec.m_encryption2 != null)
-            kvstr += statement + "'encryption2' '" + vpnRec.m_encryption2 +
-                         "'</statement> ";
-
-        if(vpnRec.m_auth2 != null)
-            kvstr += statement + "'auth2' '" + vpnRec.m_auth2 +
-                         "'</statement> ";
-
-        return kvstr;
-    }
-
-    this.f_setVpnRecordData = function(nodes)
-    {
-        var vpn = new UTM_vpnRecord();
-
-        for(var i=0; i<nodes.length; i++)
-        {
-            var val = nodes[i];
-
-            switch(val.nodeName)
-            {
-                case 'tunnel':
-                    vpn.m_tunnel = val.firstChild.nodeValue;
-                    break;
-                case 'peerip':
-                    vpn.m_peerIp = val.firstChild.nodeValue;
-                    break;
-                case 'remotedevice':
-                    vpn.m_remoteDevice = val.firstChild.nodeValue;
-                    break;
-                case 'presharedkey':
-                    vpn.m_presharedKey = val.firstChild.nodeValue;
-                    break;
-                case 'localnetwork':
-                    vpn.m_localNetwork = val.firstChild.nodeValue;
-                    break;
-                case 'remotenetwork':
-                    vpn.m_remoteNetwork = val.firstChild.nodeValue;
-                    break;
-                case 'type':
-                    vpn.m_type = val.firstChild.nodeValue;
-                    break;
-                case 'exchange':
-                    vpn.m_exchange = val.firstChild.nodeValue;
-                    break;
-                case 'encryption1':
-                    vpn.m_encryption1 = val.firstChild.nodeValue;
-                    break;
-                case 'auth1':
-                    vpn.m_auth1 = val.firstChild.nodeValue;
-                    break;
-                case 'diffiehellmann':
-                    vpn.m_diffieHellmann = val.firstChild.nodeValue;
-                    break;
-                case 'lifetime1':
-                    vpn.m_lifeTime1 = val.firstChild.nodeValue;
-                    break;
-                case 'pfsgroup':
-                    vpn.m_pfsGroup = val.firstChild.nodeValue;
-                    break;
-                case 'lifeTime2':
-                    vpn.m_lifeTime2 = val.firstChild.nodeValue;
-                    break;
-                case 'encryption2':
-                    vpn.m_encryption2 = val.firstChild.nodeValue;
-                    break;
-                case 'auth2':
-                    vpn.m_auth2 = val.firstChild.nodeValue;
-                    break;
-            }
-        }
-
-        return vpn;
-    }
 
     /**
-     * parse easy mode response data from server into vpnRec form.
+     * parse firewall security level data.
      */
-    this.f_parseEasyModeData = function(response)
+    this.f_parseFirewallSecurityLevel = function(response)
     {
-        var nodes = thisObj.f_getVPNNodesFromResponse(response, 'msg');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'vpn');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'site-to-site');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'easy');
+        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
+        nodes = thisObj.m_busObj.f_getResponseChildNodes(nodes, 'firewall-security-level');
 
         if(nodes != null)
-        {
-            thisObj.m_vpnRec = thisObj.f_setVpnRecordData(nodes);
-            thisObj.m_configMode = 'easy';
-        }
+            alert(nodes.firstChild.nodeValue);
     }
 
-    /**
-     * parse expert mode response data from server into vpnRec form.
-     */
-    this.f_parseExpertModeData = function(response)
-    {
-        var nodes = thisObj.f_getVPNNodesFromResponse(response, 'msg');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'vpn');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'site-to-site');
-        nodes = thisObj.f_getVPNNodesFromResponse(nodes, 'expert');
-
-        if(nodes != null)
-        {
-            thisObj.m_vpnRec = thisObj.f_setVpnRecordData(nodes);
-            thisObj.m_configMode = 'expert';
-        }
-    }
 
     /**
-     * perform a get vpn site2site configurations request from server.
-     * @param mode - configuration mode 'easy' or 'expert'
-     * @param guicb - gui callback function
      */
-    this.f_getSite2SiteConfig = function(mode, guicb)
+    this.f_getFirewallSecurityLevel = function(guicb)
     {
+        var e = new UTM_eventObj(0, 'Advanced', '');
+        window.setTimeout(function(){guicb(e)}, 500);
+
+        return;
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement>" +
-                      "utm configuration get vpn site-to-site " + mode +
-                      "</statement></command>";
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>firewall-security-level get" +
+                      "</handler></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -272,17 +114,17 @@ function UTM_firewallBusObj(busObj)
 
     /**
      * perform a set vpn site2site configurations request to server.
-     * @param vpnRec - vpn record object
+     * @param fireRec - firewall record object
      * @param guicb - gui callback function
      */
-    this.f_setSite2SiteConfig = function(vpnRec, guicb)
+    this.f_setFirewallSecurityLevel = function(fireRec, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
-                      thisObj.f_constructKeyValueString(vpnRec) +
-                      "<statement>utm configuration set vpn site-to-site " +
-                      vpnRec.m_mode + " submit</statement></command>";
+                      "<statement mode='proc'><handler>firewall-security-level" +
+                      " set</handler><data>" + fireRec.m_level +
+                      "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

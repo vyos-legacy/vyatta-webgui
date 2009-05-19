@@ -124,19 +124,23 @@ Command::multi_part_op_cmd(std::string &orig_cmd,std::string &mod_cmd)
 {
   //only eat "openapp archive backup commands" right now
   StrProc str_proc(orig_cmd," ");
-  if (str_proc.get(0) != "open-app") {
-    return false;
-  }
-  if (str_proc.get(1) != "archive") {
-    return false;
-  }
-  if (str_proc.get(2) != "backup" && str_proc.get(2) != "restore") {
-    return false;
+
+  //allow the multiple response to be processed here too
+  if (strncmp(orig_cmd.c_str(),WebGUI::CHUNKER_RESP_TOK_BASE.c_str(),WebGUI::CHUNKER_RESP_TOK_BASE.length()) != 0) {
+    if (str_proc.get(0) != "open-app") {
+      return false;
+    }
+    if (str_proc.get(1) != "archive") {
+      return false;
+    }
+    if (str_proc.get(2) != "backup" && str_proc.get(2) != "restore") {
+      return false;
+    }
   }
 
   //does the cmd either equal an in-process bground op multi-part cmd                                                                                 
   //or is this the start of one?                                                                                                                      
-  MultiResponseCommand multi_resp_cmd(_proc->get_msg().id(),mod_cmd);
+  MultiResponseCommand multi_resp_cmd(_proc->get_msg().id(),orig_cmd,mod_cmd);
   multi_resp_cmd.init();
   //blocks until enough of a response is generated                                                                                                    
   if (!multi_resp_cmd.process()) {
@@ -187,6 +191,11 @@ Command::validate_session(unsigned long id)
 WebGUI::AccessLevel
 Command::validate_op_cmd(const string &username, WebGUI::AccessLevel user_access_level, std::string &cmd)
 {
+  //create hole for multi-resp access
+  if (strncmp(cmd.c_str(),WebGUI::CHUNKER_RESP_TOK_BASE.c_str(),WebGUI::CHUNKER_RESP_TOK_BASE.length()) == 0) {
+    return WebGUI::ACCESS_USER;
+  }
+
   WebGUI::AccessLevel cmd_access_level = WebGUI::ACCESS_NONE;
   //convert to op directory
   //first let's replace all 'asdf asdf' with node.tag string

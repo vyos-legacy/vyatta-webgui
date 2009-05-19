@@ -17,7 +17,10 @@ using namespace std;
 /**
  *
  **/
-MultiResponseCommand::MultiResponseCommand(string session_id, string &cmd) : _session_id(session_id), _cmd(cmd)
+MultiResponseCommand::MultiResponseCommand(string session_id, string &orig_cmd, string &cmd) : 
+  _session_id(session_id), 
+  _orig_cmd(orig_cmd), 
+  _cmd(cmd)
 {
   //read in valid cmd list
   load_valid_multi_cmds();
@@ -62,34 +65,12 @@ MultiResponseCommand::init()
 bool
 MultiResponseCommand::process()
 {
-  //first check if this matches the next token in an ongoing multi-part cmd
-  /*
-  CmdIter iter = _cmd_coll.begin();
-  bool found = false;
-  while (iter != _cmd_coll.end()) {
-    if (strncmp(iter->c_str(),_cmd.c_str(),iter->length()) == 0) {
-      found = true;
-      break;
-    }
-    ++iter;
-  }
-  if (found == false) {
-    //OK, is this a request for an ongoing transaction?
-    if (strncmp(WebGUI::CHUNKER_RESP_TOK_BASE.c_str(),_cmd.c_str(),WebGUI::CHUNKER_RESP_TOK_BASE.length()) == 0) {
-      _next_token = _cmd;
-    }
-    else {
-      return false; //the only way this command can pass on this request
-    }
-  }
-  */
   //we'll take everything now...
-  if (strncmp(WebGUI::CHUNKER_RESP_TOK_BASE.c_str(),_cmd.c_str(),WebGUI::CHUNKER_RESP_TOK_BASE.length()) == 0) {
-    _next_token = _cmd;
+  if (strncmp(WebGUI::CHUNKER_RESP_TOK_BASE.c_str(),_orig_cmd.c_str(),WebGUI::CHUNKER_RESP_TOK_BASE.length()) == 0) {
+    _next_token = _orig_cmd;
   }
-
-
-  if (_next_token.empty() == true) { //want to start a new command
+ 
+ if (_next_token.empty() == true) { //want to start a new command
     string id = start_new_proc();
     _next_token = WebGUI::CHUNKER_RESP_TOK_BASE + id + "_0";
     return true;

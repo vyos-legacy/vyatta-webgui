@@ -10,7 +10,7 @@ class MultiResponseCommand
   typedef std::set<std::string>::iterator CmdIter;
 
 public:
-  MultiResponseCommand(std::string session_id, std::string &cmd);
+  MultiResponseCommand(std::string session_id, std::string &orig_cmd, std::string &cmd);
   ~MultiResponseCommand();
 
   void
@@ -37,6 +37,7 @@ private:
 
 private:
   std::string _session_id;
+  std::string _orig_cmd;
   std::string _cmd;
   CmdColl _cmd_coll;
   std::string _resp;

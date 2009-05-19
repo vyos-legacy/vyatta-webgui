@@ -6,6 +6,7 @@ cgidir = /usr/lib/cgi-bin
 initddir = /etc/init.d
 cfgdir = $(datadir)/vyatta-cfg/templates
 opdir = $(datadir)/vyatta-op/templates
+sbindir = /usr/sbin
 
 AM_CPPFLAGS = -I src/server -I src/lib -Wall -DDEBUG -g \
               -I /usr/include/glib-2.0 -I /usr/lib/glib-2.0/include
@@ -75,6 +76,7 @@ install-exec-hook:
 	cp scripts/chunker_cmd $(DESTDIR)/$(cgidir)/chunker_cmd
 	cp scripts/show $(DESTDIR)/$(cgidir)/show
 	cp scripts/mandatory $(DESTDIR)/$(cgidir)/mandatory
+	cp scripts/vtysh $(DESTDIR)/$(sbindir)/vtysh
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/
 	@mkdir -p $(DESTDIR)/var/www

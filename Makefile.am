@@ -76,6 +76,7 @@ install-exec-hook:
 	cp scripts/chunker_cmd $(DESTDIR)/$(cgidir)/chunker_cmd
 	cp scripts/show $(DESTDIR)/$(cgidir)/show
 	cp scripts/mandatory $(DESTDIR)/$(cgidir)/mandatory
+	mkdir -p $(DESTDIR)/$(sbindir)
 	cp scripts/vtysh $(DESTDIR)/$(sbindir)/vtysh
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/

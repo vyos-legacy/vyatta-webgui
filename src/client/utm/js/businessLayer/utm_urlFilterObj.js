@@ -6,20 +6,21 @@
  */
 function UTM_rangeObj(range)
 {
+	var thisObj = this;
     this.m_range = range;
     
     this.f_getLowerBound = function()
     {
-        var a = this.m_range.split("-");
+        var a = thisObj.m_range.split("-");
         var aa = a[0].split(":");
         return parseInt(aa[0], 10);
     }
     
     this.f_getUpperBound = function()
     {
-        var a = this.m_range.split("-");
+        var a = thisObj.m_range.split("-");
         var aa = a[1].split(":");
-        return parseInt(aa[1], 10);
+        return parseInt(aa[0], 10);
     }
     
     this.f_bound2range = function(lower, higher)
@@ -45,16 +46,20 @@ function UTM_urlFilterScheduleObj(schedArray)
 	 */
     this.f_getScheduleByDay = function(day)
     {
-        var period = thisObj.m_schedule[day];
         var a = new Array(24);
         for (var i = 0; i < 24; i++) {
             a[i] = 0;
-        }
+        }		
+        var period = thisObj.m_schedule[day];
+        if (period==null) {
+			return a;
+		}
+
         var periodArray = period.split(",");
         for (var i = 0; i < periodArray.length; i++) {
             var rangeObj = new UTM_rangeObj(periodArray[i]);
-            var lower = rangeObj.getLowerBound();
-            var upper = rangeObj.getUpperBound();
+            var lower = rangeObj.f_getLowerBound();
+            var upper = rangeObj.f_getUpperBound();
             for (var j = lower; j <= upper; j++) {
                 a[j] = 1;
             }
@@ -107,7 +112,7 @@ function UTM_urlFilterScheduleObj(schedArray)
 		var a = ['m','t','w','h','f','a','s'];
 		
 		for (var i=0; i < a.length; i++) {
-			s += '<' + a[i] + '>' + this.m_schedule(a[i]) + '</' + a[i] + '>';
+			s += '<' + a[i] + '>' + thisObj.m_schedule[a[i]] + '</' + a[i] + '>';
 		}
 		s += '</schedule>';
 		return s;
@@ -131,15 +136,15 @@ function UTM_urlFilterPolicyObj(policyArray)
 	this.f_toXml = function() {
 		var s = '<policy>';
 		var a = ['blacklist', 'whitelist', 'keyword'];
-		var aa = ['legal', 'professional', 'strict'];
+		var aa = ['legal', 'productivity', 'strict'];
 		
 		for (var i=0; i < a.length; i++) {
-			var attr = this.f_getAttribute(a[i]);
-			if ((attr != undefined) && (attr != null) && (attr == 'true')) {
+			var attr = thisObj.f_getAttribute(a[i]);
+			if ((attr != undefined) && (attr != null)) {
 				s+= '<' + a[i] + ' status="' + attr + '">';
 				if (a[i]=='blacklist') {
 					for (var j=0; j < aa.length; j++) {
-						var subAttr = this.f_getAttribute(aa[j]);
+						var subAttr = thisObj.f_getAttribute(aa[j]);
 						if ((subAttr != undefined) && (subAttr != null) && (subAttr=='true')) {
 							s += '<' + aa[j] + '>' + subAttr + '</' + aa[j] + '>';
 						}
@@ -171,8 +176,8 @@ function UTM_urlFilterConfigObj(policy, schedule)
 	
 	this.f_toXml= function() {
 		var s = '<url-filtering-easy-config>';
-		s += this.m_policy.f_toXml();
-		s += this.m_schedule.f_toXml();
+		s += thisObj.m_policy.f_toXml();
+		s += thisObj.m_schedule.f_toXml();
 		s += '</url-filtering-easy-config>';
 		return s;
 	}
@@ -180,6 +185,8 @@ function UTM_urlFilterConfigObj(policy, schedule)
 
 function UTM_urlFilterListObj(rawText)
 {
+	var thisObj = this;
+	
     this.m_value = null;
 	this.m_status = null;
 	this.m_action = 'noop';
@@ -207,6 +214,7 @@ function UTM_urlFilterBusObj(busObj)
     /////////////////////////////////////
     // properties
     var thisObj = this;
+	this.m_isLocalMode =  false;
     this.m_busObj = busObj;
     this.m_lastCmdSent = null;
     this.m_urlFilterObj = null;	
@@ -230,6 +238,10 @@ function UTM_urlFilterBusObj(busObj)
         var response = thisObj.m_busObj.f_getRequestResponse(
                         thisObj.m_busObj.m_request);
 
+        if (thisObj.m_isLocalMode) {
+			response = resp;
+		}
+
         if(response == null) return;
 
         if(response.f_isError != null) { //This is server error case.
@@ -250,6 +262,13 @@ function UTM_urlFilterBusObj(busObj)
 					}
 				} 
                 if(thisObj.m_lastCmdSent.indexOf(thisObj.m_URL_CONFIG_GET) > 0) {
+					if (thisObj.m_isLocalMode) {
+						if (thisObj.m_urlFilterObj != null) {
+							evt = UTM_eventObj(0, thisObj.m_urlFilterObj,'');
+                            if(thisObj.m_guiCb != undefined)
+                                thisObj.m_guiCb(evt);							
+						} 
+					}
                     thisObj.m_urlFilterObj = thisObj.f_parseUrlFilter(err);
                     evt = new UTM_eventObj(0, thisObj.m_urlFilterObj, '');
                 } else if (thisObj.m_lastCmdSent.indexOf(thisObj.m_WL_CONFIG_GET) > 0) {
@@ -361,21 +380,41 @@ function UTM_urlFilterBusObj(busObj)
 		return null;
 	} 
 	
+	this.f_getDefaultUrlPolicy = function() 
+	{
+		var a = new Array(6);
+		var c = ['blacklist', 'whitelist', 'keyword', 'productivity', 'strict'];
+		for (var i =0; i < a.length; i++) {
+			a[c[i]] = 'false';
+		}
+		a['blacklist'] = 'true';
+		a['legal'] = 'true';
+		
+		return a;
+	}
+	
 	/**
-	 * Return an array of [blacklist,legal,professional,strict,whitelist,keyword]
+	 * Return an array of [blacklist,legal,productivity,strict,whitelist,keyword]
 	 * @param {Object} policy
 	 */
     this.f_parseUrlPolicy = function(policy)
 	{
-		if (policy==null) return null;
+		var defaultPolicy = thisObj.f_getDefaultUrlPolicy();
+		
+		if (policy == null) {
+			return defaultPolicy;
+		}
+		
 		var cat = ['blacklist', 'whitelist', 'keyword'];
-		var subCat = ['legal', 'professional', 'strict'];
+		var subCat = ['legal', 'productivity', 'strict'];
 		var a = new Array(6);
+		var found = false;
 		
 		for (var i=0; i < cat.length; i++) {
 			var node = thisObj.f_getChildNode(policy, cat[i]);
 			if (node != null) {
-				var status = thisObj.f_getNodeAttribute(node);
+				found = true;
+				var status = thisObj.f_getNodeAttribute(node,'status');
 				if (status != null) {
 					a[cat[i]] = status;
 				} else {
@@ -400,7 +439,22 @@ function UTM_urlFilterBusObj(busObj)
 				a[cat[i]] = 'false';
 			}
 		}
+		if (!found) {
+			return defaultPolicy;
+		}
 		return a;
+	}
+
+    this.f_getDefaultUrlSched = function()
+	{
+	    var days = ['m','t','w','h','f','a','s'];
+		var w = new Array(7);
+		
+		for (var i=0; i < days.length; i++) {
+			w[days[i]] = '00:00-23:59';
+		}	
+		
+		return w;
 	}
 
     /**
@@ -413,12 +467,24 @@ function UTM_urlFilterBusObj(busObj)
     this.f_parseUrlSchedule = function(schedule)
 	{
 		var days = ['m','t','w','h','f','a','s'];
+		var defaultSched = thisObj.f_getDefaultUrlSched();
+		var found = false;
 		
-		if (schedule==null) return null;
+		if (schedule == null) {
+			return defaultSched;
+		}
+		
 		var w = new Array(7);
 		for (var i=0; i < w.length; i++) {
 			var cnode = thisObj.f_getChildNode(schedule, days[i]);
-			w[i] = thisObj.f_getNodeValue(cnode);
+			if (cnode != null) {
+				found = true;
+			}
+			w[days[i]] = thisObj.f_getNodeValue(cnode);
+		}
+		
+		if (!found) {
+			return defaultSched;
 		}
 
 		return w;
@@ -439,6 +505,7 @@ function UTM_urlFilterBusObj(busObj)
 			obj.f_setSchedule(new UTM_urlFilterScheduleObj(s));
 		}
 
+        //alert('f_parseUrlFilter: obj.toXml: ' + obj.f_toXml());
         return obj;
 	}
 	
@@ -630,5 +697,54 @@ function UTM_urlFilterBusObj(busObj)
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
+	
+	///////////////////////////////////////////////////////////////////////////////////////
+	/////// begining simulation
+	///////////////////////////////////////////////////////////////////////////////////////
+    this.f_getUrlFilterConfigLocal = function(guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>url-filtering-easy-config get" +
+                      "</handler><data></data></statement></command>";
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+					   
+        thisObj.m_lastCmdSent = cmdSend;
+		
+		var resp = (new DOMParser()).parseFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' + 
+                            '<code>0</code>' + 
+                               '<msg>' +
+                                   '<form name=\'url-filtering-easy-config\' code=\'0\'>' +
+                                       '<url-filtering-easy-config>' + 
+                                           '<policy>' + 
+                                               '<blacklist status=\'true\'>' + 
+                                                   '<strict>true</strict>' + 
+                                               '</blacklist>' + 
+                                               '<whitelist status=\'true\'></whitelist>' + 
+                                               '<keyword status=\'false\'></keyword>' + 
+                                           '</policy>' + 
+                                           '<schedule>' + 
+                                               '<m>00:00-12:59,15:00-19:59</m>' + 
+                                               '<t>00:00-23:59</t>' + 
+                                               '<w>00:00-02:59,06:00-08:59,13:00-23:59</w>' +
+                                               '<h>00:00-23:59</h>' + 
+                                               '<f>00:00-23:59</f>' + 
+                                               '<a></a>' + 
+                                               '<s></s>' + 
+                                           '</schedule>' + 
+                                        '</url-filtering-easy-config>' + 
+                                    '</form>' + 
+                                '</msg>' + 
+                          '</error>' + 
+                  '</openappliance>', "text/xml");
+		
+        thisObj.f_respondRequestCallback(resp, guicb);
+    }	
 	    
 }

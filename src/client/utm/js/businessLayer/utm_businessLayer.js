@@ -56,6 +56,7 @@ function UTM_businessLayer()
     //////////////////////////////
     // properties
     var thisObj = this;
+    thisObj.m_request = createXMLHttpRequest();
     var m_vpnObj = null;
     var m_fwObj = null;
 

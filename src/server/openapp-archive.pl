@@ -235,6 +235,9 @@ sub backup {
 			#and remove from poll collection
 			delete $new_hash_coll{$key};
 		    }		
+		    else {
+			`logger 'error when retrieve archiving from $key: $rc'`;
+		    }
 		}
 		elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
 		    #log error and delete backup request

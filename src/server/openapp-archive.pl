@@ -387,8 +387,7 @@ sub backup_and_get_archive {
     `mv /var/www/archive/$OA_SESSION_ID/$get_archive.tar /var/www/archive/$OA_SESSION_ID/bu.tar`;
 
     #now remove archive
-    `rm -f $filename`;
-
+    `rm -f $ARCHIVE_ROOT_DIR/$filename.tar`;
 }
 
 

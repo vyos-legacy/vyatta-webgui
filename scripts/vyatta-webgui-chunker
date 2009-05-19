@@ -8,7 +8,7 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 . /lib/lsb/init-functions
 
 NAME=chunker
-DAEMON=/usr/lib/cgi-bin/chunker
+DAEMON=/usr/sbin/chunker
 PIDFILE=/var/run/chunker.pid
 
 test -x $DAEMON || exit 5

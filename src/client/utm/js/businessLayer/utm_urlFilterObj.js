@@ -84,6 +84,7 @@ function UTM_urlFilterScheduleObj(schedArray)
             } else {
                 lower = i;
                 for (var j = lower; j < schedArray.length; j++) {
+					i = j;
                     if (schedArray[j] == 1) {
                         if ((j == schedArray.length - 1) && (lower != -1)) {
                             var rObj = new UTM_rangeObj('');
@@ -98,8 +99,8 @@ function UTM_urlFilterScheduleObj(schedArray)
                             s += ',';
                         }
                         s += rObj.f_bound2range(lower, j-1);
+						break;
                     }
-                    i = j;
                 }
             }
         }
@@ -380,6 +381,15 @@ function UTM_urlFilterBusObj(busObj)
 		return null;
 	} 
 	
+	this.f_getDefaultUfc = function()
+	{
+		var defaultPolicy = thisObj.f_getDefaultUrlPolicy();
+		var defaultSched = thisObj.f_getDefaultUrlSched();
+		
+		return new UTM_urlFilterConfigObj(new UTM_urlFilterPolicyObj(defaultPolicy),
+		                                  new UTM_urlFilterScheduleObj(defaultSched));
+	}
+	
 	this.f_getDefaultUrlPolicy = function() 
 	{
 		var a = new Array(6);
@@ -576,7 +586,7 @@ function UTM_urlFilterBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>url-filtering-easy-config" +
-                      " set</handler><data>" + urfObj.f_toXml() +
+                      " set</handler><data>" + ufcObj.f_toXml() +
                       "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -744,6 +754,38 @@ function UTM_urlFilterBusObj(busObj)
                           '</error>' + 
                   '</openappliance>', "text/xml");
 		
+        thisObj.f_respondRequestCallback(resp, guicb);
+    }	
+	
+    this.f_setUrlFilterConfigLocal = function(ufcObj, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>url-filtering-easy-config" +
+                      " set</handler><data>" + ufcObj.f_toXml() +
+                      "</data></statement></command>";
+
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+		
+		alert ('cmdSend: ' + cmdSend);
+					   
+        thisObj.m_lastCmdSent = cmdSend;
+
+		var resp = (new DOMParser()).parseFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' + 
+                            '<code>0</code>' + 
+                               '<msg>' +
+                                   '<form name=\'url-filtering-easy-config\' code=\'0\'>' +
+                                    '</form>' + 
+                                '</msg>' + 
+                          '</error>' + 
+                  '</openappliance>', "text/xml");
+
         thisObj.f_respondRequestCallback(resp, guicb);
     }	
 	    

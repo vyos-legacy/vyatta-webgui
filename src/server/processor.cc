@@ -235,7 +235,7 @@ data_hndl(void *data, const XML_Char *s, int len) {
     if (m->_node == WebGUI::CLICMD_ID) {
       m->set_id(strtoul(str.c_str(), NULL, 10));
     }
-    else {
+    else if (m->_node == WebGUI::CLICMD_STATEMENT) {
       m->_command_coll.push_back(str);
     }
     free(buf);

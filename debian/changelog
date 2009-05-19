@@ -1,3 +1,17 @@
+vyatta-webgui (0.2.12+islavista5) unstable; urgency=low
+
+  [ slioch ]
+  * remove vtysh symlink from cgi-path. create vtysh script in /usr/sbin
+    for chunker to find vtysh
+  * need additional directory setup
+  * remove vtysh from cgi dir.
+  * modified remove cmd
+
+  [ An-Cheng Huang ]
+  * more cgi cleanup
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 19 May 2009 16:16:05 -0700
+
 vyatta-webgui (0.2.12+islavista4) unstable; urgency=low
 
 	  3.3.1

@@ -185,7 +185,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 				ro =false;
 			}				
 					
-            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 400, ro);
+            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 400, '', ro);
             var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
             var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByKeywordEventCallback('" +
             thisObj.m_btnDeleteId +

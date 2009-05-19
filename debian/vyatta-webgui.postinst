@@ -23,11 +23,12 @@ touch ${CHUNKER_PID_DIR}/dummy
 # enable CGI for lighttpd
 ln -sf /etc/lighttpd/conf-available/10-cgi.conf /etc/lighttpd/conf-enabled/
 
+#vtysh access
 chmod a+x /usr/sbin/vtysh
+rm -f /usr/lib/cgi-bin/vyatta-vtysh
 
-# add hook for vtysh to be executed by the chunker
-ln -sf  /usr/bin/vyatta-vtysh /usr/lib/cgi-bin/vtysh
-
+# enable https
+ln -sf /etc/lighttpd/conf-available/10-ssl.conf /etc/lighttpd/conf-enabled/
 
 # fix debian cgi config file
 sed -i '/^\$HTTP.*127\.0\.0\.1/,/^}$/{s/^\(.*\)$/# \1/}' \

@@ -40,7 +40,7 @@ ln -sf /etc/lighttpd/conf-available/10-cgi.conf /etc/lighttpd/conf-enabled/
 
 #vtysh access
 chmod a+x /usr/sbin/vtysh
-rm -f /usr/lib/cgi-bin/vyatta-vtysh
+rm -f /usr/lib/cgi-bin/vtysh
 
 # fix debian cgi config file
 sed -i '/^\$HTTP.*127\.0\.0\.1/,/^}$/{s/^\(.*\)$/# \1/}' \

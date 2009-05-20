@@ -41,7 +41,7 @@ function UTM_confFireLevel(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn(g_lang.m_fireLevelColName, 710, 'radTxt',
+        cols[0] = this.f_createColumn(g_lang.m_fireLevelColName, 780, 'radTxt',
                     '10', false, 'left');
 
         return cols;
@@ -60,20 +60,20 @@ function UTM_confFireLevel(name, callback, busLayer)
                 var rId = null;
                 switch(val)
                 {
-                    case 'auth all':
+                    case 'Authorize All':
                         rId = thisObj.m_rdAuthAllId;
                     break;
-                    case 'standard':
+                    case 'Standard':
                         rId = thisObj.m_rdStandId;
                     break;
-                    case 'advance':
+                    case 'Advanced':
                         rId = thisObj.m_rdAdvanId;
                     break;
-                    case 'custom':
+                    case 'Customized':
                         rId = thisObj.m_rdCustomId;
                     break;
                     default:
-                    case 'block':
+                    case 'Block All':
                         rId = thisObj.m_rdBlockId;
                     break;
                 }
@@ -82,17 +82,16 @@ function UTM_confFireLevel(name, callback, busLayer)
                 if(r != null)
                     r.checked = true;
 
+                thisObj.m_selRadioId = rId;
+
                 var mainPanel = document.getElementById("utm_confpanel_");
                 if(mainPanel != null)
                     mainPanel.style.height = 380+'px';
             }
         };
 
-        var e = new UTM_eventObj(0, 'auth all', '');
-        window.setTimeout(function(){cb(e)}, 100);
-
         g_utils.f_cursorWait();
-        //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
+        this.m_busLayer.f_getFirewallSecurityLevel(cb);
     };
 
     this.f_getGridRowData = function(radio, header, msg)
@@ -176,7 +175,12 @@ function UTM_confFireLevel(name, callback, busLayer)
             r.checked = true;
             thisObj.f_enabledActionButtons(thisObj.m_selRadioId);
         }
-    }
+    };
+
+    this.f_applyHandler = function()
+    {
+
+    };
 }
 UTM_extend(UTM_confFireLevel, UTM_confBaseObj);
 
@@ -188,7 +192,7 @@ function f_fireLevelConfigHandler(e)
 
 function f_fireLevelApplyHandler(e)
 {
-    //g_configPanelObj.m_activeObj.f_groupsChkboxCb();
+    g_configPanelObj.m_activeObj.f_applyHandler();
 }
 
 function f_fireLevelCancelHandler(e)

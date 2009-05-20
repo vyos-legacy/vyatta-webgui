@@ -775,7 +775,7 @@ var g_utils =
      *         greate 32 is netmask conversion error,
      *         OR netmask xxx.xxx.xxx.xxx is invalided
      */
-    f_convertNetmaskToCIRD : function(nm)
+    f_convertNetmaskToCIDR : function(nm)
     {
         if(this.f_validateIP(nm))
         {
@@ -794,6 +794,45 @@ var g_utils =
         }
 
         return 34;
+    },
+
+    /**
+     * convert netmask in /mm format into (xxx.xxx.xxx.xxx) format where
+     * mm is between 0 and 32.
+     * @param cidr - 0..32
+     * @return netmask in xxx.xxx.xxx.xxx form
+     */
+    f_convertCIDRToNetmask : function(cidr)
+    {
+        var bin = '';
+        var ncidr = parseInt(cidr);
+
+        // form a binary string as 'bbbbbbbb.bbbbbbbb.bbbbbbbb.bbbbbbbb'
+        for(var i=0; i<32; i++)
+        {
+            if(i == 8 || i == 16 || i == 24)
+                bin += ".";
+
+            if(i < ncidr)
+                bin += "1";
+            else
+                bin += "0";
+        }
+
+        // now convert it into xxx.xxx.xxx.xxx form
+        var bins = bin.split(".");
+        var netmask = '';
+        for(var i=0; i<4; i++)
+        {
+            var pp = parseInt(bins[i], 2);
+
+            if(i < 3)
+                netmask += pp + '.';
+            else
+                netmask += pp;
+        }
+
+        return netmask;
     }
 };
 

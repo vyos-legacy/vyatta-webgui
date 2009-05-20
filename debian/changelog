@@ -1,3 +1,34 @@
+vyatta-webgui (0.2.14+fxdU+17) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * added utils function to convert netmask in /nn format to
+    xxx.xxx.xxx.xxx format
+
+  [ Loi Vo ]
+  * 1. Add url function call in biz logic layer.
+
+  [ Kevin Choi ]
+  * * added util functions to validate netmask and convert netmask to
+    cidr format.
+
+  [ An-Cheng Huang ]
+  * remove vtysh symlink from cgi-path. create vtysh script in /usr/sbin
+    for chunker to find vtysh
+
+  [ slioch ]
+  * need additional directory setup
+
+  [ An-Cheng Huang ]
+  * remove vtysh from cgi dir.
+
+  [ slioch ]
+  * modified remove cmd
+
+  [ An-Cheng Huang ]
+  * more cgi cleanup
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 20 May 2009 14:12:33 -0700
+
 vyatta-webgui (0.2.14+fxdU+16) unstable; urgency=low
 
   * missing install postinst dir for restore.

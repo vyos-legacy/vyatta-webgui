@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
   bool debug = false;
   bool strip_err_msg = false;
   bool daemon = false;
-  string pid_path = "/usr/lib/cgi-bin/var/run/webgui.pid";
+  string pid_path = "/opt/vyatta/var/run/webgui.pid";
   string file; 
   unsigned long port = 0;
 

@@ -158,8 +158,8 @@ function UTM_confBaseObj(name, callback, busLayer)
         div.style.paddingBottom = '0px';
 
         if ((rowId != undefined) && (rowId !=null)) {
-			div.setAttribute('id', rowId);
-		}
+            div.setAttribute('id', rowId);
+        }
 
         var rHeight = height == undefined ? 28 : height;
 
@@ -592,25 +592,25 @@ function UTM_confBaseObj(name, callback, busLayer)
      * @param width - width of textfield
      * @param events - array of events callback function.
      *                  [0] = onBlur
+     * @param readonly - true to make this field readonly, else editable
      */
     this.f_renderTextField = function(elId, val, tooltip, width, events, readonly)
     {
-		var ro = '';
-		var roStyle = '"';
-		if ((readonly != undefined) && (readonly!=null) && (readonly==true)) {
+        var ro = '';
+        var roStyle = '"';
+        if ((readonly != undefined) && (readonly!=null) && (readonly==true)) {
             ro += 'readonly';
-            roStyle += 'background-color: #EFEFEF;'                    
+            roStyle += 'background-color: #EFEFEF;'
         }
-		
-        var onblur = '';
 
+        var onblur = '';
         if(events!= null && events[0] != null)
             onblur = 'onblur="' + events[0] + '"';
 
         return '<input id="' + elId + '" type="text" value="' +
                 val + '" name="' + name + '" title="' + tooltip +
-				'" style=' + roStyle + ' width:' + width + 'px;"' + ro + ' '
-                + onblur + '/>';
+                '" style=' + roStyle + ' width:' + width + 'px;"' + ro + ' ' +				
+                onblur + '/>';
     }
 
     this.f_renderAnchor = function(text, link, tooltip)

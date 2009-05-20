@@ -743,6 +743,96 @@ var g_utils =
             return false;
 
         return true;
+    },
+
+    f_validateNetmask : function(nm)
+    {
+        if(this.f_validateIP(nm))
+        {
+            var ns = nm.split(".");
+            var bin = '';
+            for(var i=0; i<ns.length; i++)
+                bin += parseInt(ns[i]).toString(2);
+
+            var flagZero = false;
+            for(var i=0; i<bin.length; i++)
+            {
+                if(bin[i] == '0')
+                    flagZero = true;
+                else if(bin[i] == '1' && flagZero)
+                    return false;
+            }
+        }
+
+        return true;
+    },
+
+    /**
+     * convert netmask in xxx.xxx.xxx.xxx format into CIRD format (/mm) where
+     * mm is between 0 and 32.
+     * @param nm - netmask in (xxx.xxx.xxx.xxx) format.
+     * @return 0 .. 32 CIRD format
+     *         greate 32 is netmask conversion error,
+     *         OR netmask xxx.xxx.xxx.xxx is invalided
+     */
+    f_convertNetmaskToCIDR : function(nm)
+    {
+        if(this.f_validateIP(nm))
+        {
+            var ns = nm.split(".");
+            var bin = '';
+            for(var i=0; i<ns.length; i++)
+                bin += parseInt(ns[i]).toString(2);
+
+            for(var i=0; i<bin.length; i++)
+            {
+                if(bin[i] == '0')
+                    return i;
+            }
+
+            return 32;
+        }
+
+        return 34;
+    },
+
+    /**
+     * convert netmask in /mm format into (xxx.xxx.xxx.xxx) format where
+     * mm is between 0 and 32.
+     * @param cidr - 0..32
+     * @return netmask in xxx.xxx.xxx.xxx form
+     */
+    f_convertCIDRToNetmask : function(cidr)
+    {
+        var bin = '';
+        var ncidr = parseInt(cidr);
+
+        // form a binary string as 'bbbbbbbb.bbbbbbbb.bbbbbbbb.bbbbbbbb'
+        for(var i=0; i<32; i++)
+        {
+            if(i == 8 || i == 16 || i == 24)
+                bin += ".";
+
+            if(i < ncidr)
+                bin += "1";
+            else
+                bin += "0";
+        }
+
+        // now convert it into xxx.xxx.xxx.xxx form
+        var bins = bin.split(".");
+        var netmask = '';
+        for(var i=0; i<4; i++)
+        {
+            var pp = parseInt(bins[i], 2);
+
+            if(i < 3)
+                netmask += pp + '.';
+            else
+                netmask += pp;
+        }
+
+        return netmask;
     }
 };
 

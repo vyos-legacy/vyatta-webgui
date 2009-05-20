@@ -35,15 +35,21 @@ sub write_smtp {
     if (defined $option) {
 	print FILE_LCK "FromLineOverride=" . $option . "\n";
     }
-    
+
     $option = $config->returnValue("username");
     if (defined $option) {
-	print FILE_LCK "AuthUser=" . $option . "\n";
+	$option =~ s/^\s+//;
+	if (length($option) > 0)  {
+	    print FILE_LCK "AuthUser=" . $option . "\n";
+	}
     }
     
     $option = $config->returnValue("password");
     if (defined $option) {
-	print FILE_LCK "AuthPass=" . $option . "\n";
+	$option =~ s/^\s+//;
+	if (length($option) > 0)  {
+	    print FILE_LCK "AuthPass=" . $option . "\n";
+	}
     }
     
     $option = $config->returnValue("name");

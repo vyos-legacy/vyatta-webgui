@@ -743,6 +743,57 @@ var g_utils =
             return false;
 
         return true;
+    },
+
+    f_validateNetmask : function(nm)
+    {
+        if(this.f_validateIP(nm))
+        {
+            var ns = nm.split(".");
+            var bin = '';
+            for(var i=0; i<ns.length; i++)
+                bin += parseInt(ns[i]).toString(2);
+
+            var flagZero = false;
+            for(var i=0; i<bin.length; i++)
+            {
+                if(bin[i] == '0')
+                    flagZero = true;
+                else if(bin[i] == '1' && flagZero)
+                    return false;
+            }
+        }
+
+        return true;
+    },
+
+    /**
+     * convert netmask in xxx.xxx.xxx.xxx format into CIRD format (/mm) where
+     * mm is between 0 and 32.
+     * @param nm - netmask in (xxx.xxx.xxx.xxx) format.
+     * @return 0 .. 32 CIRD format
+     *         greate 32 is netmask conversion error,
+     *         OR netmask xxx.xxx.xxx.xxx is invalided
+     */
+    f_convertNetmaskToCIRD : function(nm)
+    {
+        if(this.f_validateIP(nm))
+        {
+            var ns = nm.split(".");
+            var bin = '';
+            for(var i=0; i<ns.length; i++)
+                bin += parseInt(ns[i]).toString(2);
+
+            for(var i=0; i<bin.length; i++)
+            {
+                if(bin[i] == '0')
+                    return i;
+            }
+
+            return 32;
+        }
+
+        return 34;
     }
 };
 

@@ -1,3 +1,14 @@
+vyatta-webgui (0.2+fxd0+43) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Fix backup 2 my pc.
+
+  [ Kevin Choi ]
+  * * add additional data member m_segmentGuiCb to handle function
+    callback for backup to MyPC.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 20 May 2009 02:00:49 +0000
+
 vyatta-webgui (0.2+fxd0+42) unstable; urgency=low
 
   [ Loi Vo ]

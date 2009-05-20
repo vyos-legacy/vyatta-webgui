@@ -381,10 +381,12 @@ sub backup_and_get_archive {
     $get_archive = $filename;
 
     #then a get accessor
-    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
+#    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
     get_archive();
-
-    `mv /var/www/archive/$OA_SESSION_ID/$get_archive.tar /var/www/archive/$OA_SESSION_ID/bu.tar`;
+#    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
+    
+    #will move to a common name now to manage bu archives with single image for now.
+    `mv /var/www/archive/$OA_SESSION_ID/$get_archive.tar /var/www/archive/bu.tar`;
 
     #now remove archive
     `rm -f $ARCHIVE_ROOT_DIR/$filename.tar`;
@@ -656,10 +658,8 @@ sub put_archive {
     `mkdir -p /var/www/archive/$OA_SESSION_ID`;
 
     print "VERBATIM_OUTPUT\n";
-    `cp /tmp/$put_archive.tar $ARCHIVE_ROOT_DIR/.`;
-    `rm -f /tmp/$put_archive.tar`;
-#   `cp /var/www/archive/$OA_SESSION_ID/$put_archive.tar $ARCHIVE_ROOT_DIR/.`;
-#    `rm -fr /var/www/archive/$OA_SESSION_ID/*`;
+    `cp /var/www/archive/$OA_SESSION_ID/$put_archive.tar $ARCHIVE_ROOT_DIR/.`;
+    `rm -fr /var/www/archive/$OA_SESSION_ID/*`;
 }
 
 ##########################################################################

@@ -38,6 +38,8 @@ touch ${CHUNKER_PID_DIR}/dummy
 # enable CGI for lighttpd
 ln -sf /etc/lighttpd/conf-available/10-cgi.conf /etc/lighttpd/conf-enabled/
 
+chmod a+x /usr/sbin/vtysh
+
 # add hook for vtysh to be executed by the chunker
 ln -sf  /usr/bin/vyatta-vtysh /usr/lib/cgi-bin/vtysh
 

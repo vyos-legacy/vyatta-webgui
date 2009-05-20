@@ -235,6 +235,9 @@ sub backup {
 			#and remove from poll collection
 			delete $new_hash_coll{$key};
 		    }		
+		    else {
+			`logger 'error when retrieve archiving from $key: $rc'`;
+		    }
 		}
 		elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
 		    #log error and delete backup request
@@ -384,8 +387,7 @@ sub backup_and_get_archive {
     `mv /var/www/archive/$OA_SESSION_ID/$get_archive.tar /var/www/archive/$OA_SESSION_ID/bu.tar`;
 
     #now remove archive
-    `rm -f $filename`;
-
+    `rm -f $ARCHIVE_ROOT_DIR/$filename.tar`;
 }
 
 
@@ -405,11 +407,10 @@ sub restore_archive {
     `mkdir -p /var/www/backup/restore`;
     `mkdir -p $WEB_RESTORE_ROOT/`;
     `mkdir -p $RESTORE_WORKSPACE_DIR/`;
-
     #test for failure here
-    my $err = `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $WEB_RESTORE_ROOT/.`;
+    my $err = `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $RESTORE_WORKSPACE_DIR/.`;
     if ($err =~ /No such file/) {
-	my $err = `tar xf $ARCHIVE_BASE_DIR/admin/$restore.tar -C $WEB_RESTORE_ROOT/.`;
+	my $err = `tar xf $ARCHIVE_BASE_DIR/admin/$restore.tar -C $RESTORE_WORKSPACE_DIR/.`;
 	if ($err =~ /No such file/) {
 	    return;
 	}
@@ -468,7 +469,7 @@ sub restore_archive {
 	my $ip = '';
 	$ip = $vm->getIP();
 	if (defined $ip && $ip ne '') {
-	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $BACKUP_WORKSPACE_DIR/$key.enc -out /var/www/backup/restore/$key`;
+	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$key.enc -out /var/www/backup/restore/$key`;
 	    my $cmd = "http://$ip/backup/backupArchive?";
             my $value = $hash_coll{$key};
 	    if ($value == 1) {

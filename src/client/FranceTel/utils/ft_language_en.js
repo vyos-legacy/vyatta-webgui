@@ -258,6 +258,7 @@ var g_lang =
 	m_backupSelectOne: "Please select at least one application to backup",
 	m_backupFail: "Backup failed",
 	m_backupInProgress: "Backup is in progress.  You will receive an email notification when the operation is finished",
+	m_backup2pcInProgress: "Backup is in progress.  It may take a while to finish.  A notification window will popup when the backup file is ready.",	
 	m_backupPlsDelete: "You have reached the maximum number of backups stored on the Open Appliance.  Please delete some backup archives and try again",
 	m_backupMyPC: "My PC",
     m_backupTooltipCancel : 'Reset selection',

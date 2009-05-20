@@ -20,7 +20,7 @@ using namespace std;
 MultiResponseCommand::MultiResponseCommand(string session_id, string &cmd) : _session_id(session_id), _cmd(cmd)
 {
   //read in valid cmd list
-  load_valid_multi_cmds();
+  //load_valid_multi_cmds();
 }
 
 /**

@@ -1,0 +1,1 @@
+run: /opt/vyatta/sbin/bl_urlfiltering.pl --mode filter --oper get

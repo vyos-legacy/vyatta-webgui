@@ -56,6 +56,7 @@ sbin_SCRIPTS = scripts/enterprise-mib.pl
 sbin_SCRIPTS += scripts/site-to-site-easy.pl
 sbin_SCRIPTS += scripts/firewall-security-level.pl
 sbin_SCRIPTS += scripts/customize-firewall.pl
+sbin_SCRIPTS += scripts/bl_urlfiltering.pl
 
 oaperl_DATA = src/server/lib/perl5/OpenApp/Conf.pm
 

@@ -105,6 +105,7 @@ function FT_backupObj(busObj)
     var thisObj = this;
     this.m_objName = 'FT_vmBackupObj';
     this.m_guiCb = null;
+    this.m_segmentGuiCb = null;
     this.m_busObj = busObj;
     this.m_archiveRec = null;
     this.m_downloadFile = null;
@@ -151,6 +152,11 @@ function FT_backupObj(busObj)
                     var segment = thisObj.f_parseBackup2PCData(err);
                     if(segment == null || segment.indexOf('_end') < 0)
                         return;
+
+                    if(thisObj.m_segmentGuiCb != undefined)
+                        thisObj.m_segmentGuiCb(evt);
+
+                    return;
                 }
                 else if(cmdSent.indexOf('archive restore status') > 0)
                 {
@@ -273,7 +279,7 @@ function FT_backupObj(busObj)
                 if(attr.indexOf('_end') < 0)
                 {
                     window.setTimeout(function(){
-                    thisObj.f_backupToPC(null, null, thisObj.m_guiCb, attr)}, 5000);
+                    thisObj.f_backupToPC(null, null, thisObj.m_segmentGuiCb, attr)}, 5000);
                     return null;
                 }
                 else
@@ -390,7 +396,7 @@ function FT_backupObj(busObj)
      */
     this.f_backupToPC = function(vms, modes, guiCb, segmentId)
     {
-        thisObj.m_guiCb = guiCb;
+        thisObj.m_segmentGuiCb = guiCb;
         var sid = g_utils.f_getUserLoginedID();
 
         var xmlstr = "<command><id>" + sid + "</id><statement>";

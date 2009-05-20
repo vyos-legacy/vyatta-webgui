@@ -13,6 +13,10 @@ chmod a+w /var/www/archive
 chmod a+w /var/www/archive/backup
 chmod a+w /var/www/archive/restore
 
+#for restore process
+mkdir -p /tmp/restore
+chmod a+w /tmp/restore
+
 #create cookie file for dom0 ip address
 echo -n 192.168.0.101 > /tmp/dom0
 

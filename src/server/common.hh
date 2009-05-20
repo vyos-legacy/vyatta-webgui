@@ -27,7 +27,6 @@ public:
   const static std::string VYATTA_MODIFY_FILE;
 
   const static std::string CHUNKER_RESP_CMDS;
-  const static std::string CHUNKER_RESP_INIT;
   const static std::string CHUNKER_RESP_TOK_DIR;
   const static std::string CHUNKER_RESP_TOK_BASE;
   const static std::string CHUNKER_RESP_PID;

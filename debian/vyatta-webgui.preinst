@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rm -f /usr/lib/cgi-bin/etc/init.d/dummy /usr/lib/cgi-bin/var/run/dummy

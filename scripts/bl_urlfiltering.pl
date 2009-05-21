@@ -40,8 +40,75 @@ my %dispatcher = (
     'keyword_set'    => \&keyword_set,
 );
 
+my %days_hash = (
+    'Sun'      => 's',
+    'Mon'      => 'm',
+    'Tue'      => 't',
+    'Wed'      => 'w',
+    'Thu'      => 'h',
+    'Fri'      => 'f',
+    'Sat'      => 'a',
+);
+
 sub filter_get {
-    print "filter_get\n";
+    my $msg = '';
+    $msg = "<form name='url-filtering-easy-config' code=0";
+    $msg .= "<url-filtering-easy-config>";
+    my $config = new Vyatta::Config; 
+    my $path = 'service webproxy url-filtering squidguard';
+    $config->setLevel("$path group-policy OA");
+    $msg .= "<policy>";
+    # check whitelist
+    if ($config->existsOrig('local-ok')) {
+	$msg .= "<whitelist status=\"true\"></whitelist>";
+    } 
+
+    # check keyword
+    if ($config->existsOrig('local-block-keyword')) {
+	$msg .= "<keyword status=\"true\"></keyword>";
+    } 
+
+    # check blacklist
+    my @block_cats = $config->returnOrigValues('block-category');
+    if (scalar(@block_cats) > 0) {
+	my %cat_hash = map { $_ => 1} @block_cats;
+	my $level = undef;
+	if ($cat_hash{'blog'}) {
+	    $level = 'strict';
+	} elsif ($cat_hash{'audio-video'}) {
+	    $level = 'productivity';
+	} elsif ($cat_hash{'adult'}) {
+	    $level = 'legal';
+	}
+	if ($level) {
+	    $msg .= "<blacklist status=\"true\">";
+	    $msg .= "<$level>true</$level>";
+	    $msg .= "</blacklist>";
+	}
+    }
+    $msg .= "</policy>";
+
+    # check schedule
+    $msg .= "<schedule>";
+    $config->setLevel("$path time-period OA days");
+    my @days = $config->listOrigNodes();
+    if (scalar(@days) > 0) {
+	foreach my $day (@days) {
+	    if ($days_hash{$day}) {
+		$config->setLevel("$path time-period OA days $day");
+		my $times = $config->returnOrigValue('time');	
+		if ($times) {
+		    $msg .= "<$days_hash{$day}>$times</$days_hash{$day}>";
+		}
+	    }
+	}
+    }
+    $msg .= "</schedule>";
+    
+    # footer
+    $msg .= "</url-filtering-easy-config>";
+    $msg .= "</form>";
+    print $msg;
 }
 
 sub filter_set {

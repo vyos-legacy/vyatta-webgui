@@ -98,10 +98,10 @@ function UTM_firewallBusObj(busObj)
      */
     this.f_getFirewallSecurityLevel = function(guicb)
     {
-        var e = new UTM_eventObj(0, 'Advanced', '');
-        window.setTimeout(function(){guicb(e)}, 500);
+        //var e = new UTM_eventObj(0, 'Advanced', '');
+        //window.setTimeout(function(){guicb(e)}, 500);
 
-        return;
+        //return;
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +

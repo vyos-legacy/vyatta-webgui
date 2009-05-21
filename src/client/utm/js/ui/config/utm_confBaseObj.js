@@ -569,17 +569,34 @@ function UTM_confBaseObj(name, callback, busLayer)
         '"/>';
     }
 
-    this.f_renderCombobox = function(options, val, width, elId)
+
+    /**
+     * @param options - combobox options data
+     * @param val - value to be add to text field
+     * @param width - width of textfield
+     * @param elId - element id
+     * @param events - array of events callback function.
+     *                  [0] = onmouseup
+     *                  [1] = name of each option. array type.
+     */
+    this.f_renderCombobox = function(options, val, width, elId, events)
     {
         var cb = '<select id="' + elId + '" style="width:' + width + 'px;">';
 
+        var onchange = '';
+        if(events!= null && events[0] != null)
+            onchange = 'onmouseup="' + events[0] + '"';
+
         for(var i=0; i<options.length; i++)
         {
+            var opName = (events != null && events[1] != null) ?
+                'name="' + events[1][i] + '"' : '';
+
             if(options[i] == val)
-                cb += '<option selected value="' + options[i] + '">' + options[i] +
-                '</option>';
-            else cb += '<option value="' + options[i] + '">' + options[i] +
-            '</option>';
+                cb += '<option ' + onchange + ' selected value="' + options[i] +
+                '" ' + opName + '>' + options[i] + '</option>';
+            else cb += '<option ' + onchange + ' value="' + options[i] + 
+                '" ' + opName + '>' + options[i] + '</option>';
         }
 
         return cb;
@@ -600,7 +617,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         var roStyle = '"';
         if ((readonly != undefined) && (readonly!=null) && (readonly==true)) {
             ro += 'readonly';
-            roStyle += 'background-color: #EFEFEF;'
+            roStyle += 'background-color: #EFEFEF;';
         }
 
         var onblur = '';
@@ -609,7 +626,7 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         return '<input id="' + elId + '" type="text" value="' +
                 val + '" name="' + name + '" title="' + tooltip +
-                '" style=' + roStyle + ' width:' + width + 'px;"' + ro + ' ' +				
+                '" style=' + roStyle + ' width:' + width + 'px;"' + ro + ' ' +
                 onblur + '/>';
     }
 

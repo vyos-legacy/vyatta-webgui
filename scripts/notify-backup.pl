@@ -52,9 +52,10 @@ elsif ($cgi->request_method() eq 'PUT') { #restore request
     }
     #retrieve file
     if ($conf eq 'true') {
+	`mkdir -p /tmp/restore/`;
 	my $bufile = '/tmp/restore/bu';
 	`rm -f /tmp/restore/bu`;
-
+	
 	`sudo wget --no-check-certificate $file -O $bufile`;
 	
 	if (-e $bufile) {

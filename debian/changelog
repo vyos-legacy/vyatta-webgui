@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+45) unstable; urgency=low
+
+  [ Michael Larson ]
+  * need to define oa_session_id for bu to my pc
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 21 May 2009 14:28:08 -0700
+
 vyatta-webgui (0.2+fxd0+44) unstable; urgency=low
 
   [ Loi Vo ]

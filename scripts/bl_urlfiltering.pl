@@ -52,7 +52,7 @@ my %days_hash = (
 
 sub filter_get {
     my $msg = '';
-    $msg = "<form name='url-filtering-easy-config' code=0";
+    $msg = "<form name='url-filtering-easy-config' code=\"0\">";
     $msg .= "<url-filtering-easy-config>";
     my $config = new Vyatta::Config; 
     my $path = 'service webproxy url-filtering squidguard';

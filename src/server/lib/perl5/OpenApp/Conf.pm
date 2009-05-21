@@ -40,6 +40,15 @@ sub _run_cmd {
   return undef;
 }
 
+# run a config command in the default session.
+# returns error message or undef if sucessful.
+sub _run_cmd_def_session {
+  my ($cmd) = @_;
+  my $err = `$DSCMD $cmd 2>&1`;
+  return "\"$cmd\" failed: $err" if ($? >> 8);
+  return undef;
+}
+
 # set up a config session and execute an array of config commands.
 # returns error message or undef if sucessful.
 sub execute_session {
@@ -61,11 +70,14 @@ sub execute_session {
 }
 
 sub run_cmd_def_session {
-  my ($cmd) = @_;
+  my @cmds = @_;
   return 'Cannot find default session' if (!defined($DSCMD));
-  my $err = `$DSCMD $cmd 2>&1`;
-  return "\"$cmd\" failed: $err" if ($? >> 8);
-  return undef;
+  my $err = undef;
+  for my $cmd (@cmds) {
+    $err = _run_cmd_def_session($cmd);
+    last if (defined($err));
+  } 
+  return $err;
 }
 
 1;

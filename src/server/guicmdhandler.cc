@@ -6,6 +6,7 @@
  */
 #include <string.h>
 #include <iostream>
+#include <syslog.h>
 #include <string>
 #include <vector>
 #include "rl_str_proc.hh"
@@ -58,14 +59,26 @@ GUICmdHandler::process()
   }
   path += "node.def";
 
-
   //now execute the whole kabob
 
   //execute
   string opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + "; " + cmd;
   
   cmd = WebGUI::mass_replace(cmd,"'","'\\''");
-  opmodecmd = "/bin/bash --rcfile /usr/lib/cgi-bin/vyatta-proc -i -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + ";_vyatta_proc_run " + command + " \"" + data + "\"'";
+  //  opmodecmd = "/bin/bash --rcfile /usr/lib/cgi-bin/vyatta-proc -i -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + ";_vyatta_proc_run " + command + " \"" + data + "\"'";
+
+  //  data = WebGUI::mass_replace(data,"'","'\'\\\'\''");
+  //  data = "'\''" + data + "'\''";
+  data = WebGUI::mass_replace(data,"'","'\\'\\\\\\'\\''");
+  data = "'\\''" + data + "'\\''";
+
+  string environment = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + "; \
+export VYATTA_CONFIG_TMP=/opt/vyatta/config/tmp/tmp_" + _msg.id() + "; \
+export VYATTA_CHANGES_ONLY_DIR="+WebGUI::LOCAL_CHANGES_ONLY + _msg.id() + "; \
+export VYATTA_TEMP_CONFIG_DIR="+WebGUI::LOCAL_CONFIG_DIR+_msg.id();
+
+
+  opmodecmd = "/bin/bash -c '" + environment + ";source /usr/lib/cgi-bin/vyatta-proc;_vyatta_proc_run " + command  + " " + data + "'";
   
   string stdout;
   bool verbatim = false;

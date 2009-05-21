@@ -16,6 +16,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     this.m_body = undefined;
     this.m_row = 0;
     this.m_cnt = 0;
+	this.m_urlList = null;
     
     /**
      * @param name - name of configuration screens.
@@ -93,7 +94,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 		var rowId = prefix + 'row_' + thisObj.m_cnt;
 		
         var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, '', '', 625);
-        var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
+        var cb = thisObj.f_renderCheckbox('yes', prefix + 'cb_' + thisObj.m_cnt, '', '');
         var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlEventCallback('" +
             thisObj.m_btnDeleteId + "','" + rowId +
         "')", 'delete row');
@@ -131,6 +132,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         } else if (id == thisObj.m_btnApplyId) {
             thisObj.f_apply();
         } else if (id == thisObj.m_btnAddId) {
+			alert('button add clicked');
             thisObj.f_addRow();
         } else if (id == thisObj.m_btnBackId) {
             g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);            
@@ -142,19 +144,21 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     }
     
     this.f_loadVMData = function()
-    {
-        thisObj.f_populateTable();
-        //        var cb = function(evt)
-        //        {
-        //            g_utils.f_cursorDefault();
-        //            if(evt != undefined && evt.m_objName == 'FT_eventObj')
-        //            {
-        //                thisObj.f_populateTable();
-        //            }
-        //        }
-    
-        //g_utils.f_cursorWait();
-        //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
+    {		
+        var cb = function(evt)
+        {        
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                if (evt.f_isError()) {                
+                    g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);  
+                    return;                    
+                }                
+                thisObj.m_urlList = evt.m_value;    
+                thisObj.f_populateTable();           
+            }                                 
+        };      
+
+		g_busObj.f_getUrlList(cb);
+
     }
     
     this.f_getTableHeight = function()
@@ -174,25 +178,30 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     
     this.f_populateTable = function()
     {
-        var a = ['http://www.facebook.com', 'http://www.vyatta.com', 'http://www.cisco.com', 'http://www.sun.com', 'http://www.juniper.net', ' '];
-        
-        for (var i = 0; i < a.length; i++) {
-            var prefix = 'utm_conf_url_ez_by_url_';
-			var rowId = prefix + 'row_' + thisObj.m_cnt;
-			var ro = true;
-			if (a[i].length < 3) {
-				ro =false;
+        var a = thisObj.m_urlList;
+        if (a != null) {
+			alert('a.length:' + a.length);
+			for (var i = 0; i < a.length; i++) {
+				var prefix = 'utm_conf_url_ez_by_url_';
+				var rowId = prefix + 'row_' + thisObj.m_cnt;
+				var enable = 'yes';
+				if (!a[i].m_status) {
+					enable = 'no';
+				}
+				var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i].m_value, '', 625, '', true);
+				var cb = thisObj.f_renderCheckbox(enable, prefix + 'cb_' + thisObj.m_cnt, '', '');
+				var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlEventCallback('" +
+				thisObj.m_btnDeleteId +
+				"','" +
+				rowId +
+				"')", 'delete row');
+				var data = [addr, cb, del];
+				var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28, rowId);
+				thisObj.m_body.appendChild(bodyDiv);
+				thisObj.m_cnt++;
 			}
-            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 625, '', ro);
-            var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
-            var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlEventCallback('" +
-            thisObj.m_btnDeleteId + "','" + rowId +
-            "')", 'delete row');
-            var data = [addr, cb, del];
-            var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28, rowId);
-            thisObj.m_body.appendChild(bodyDiv);
-            thisObj.m_cnt++;
-        }
+		}
+		thisObj.f_addRow();
         
         thisObj.f_adjust();
     }

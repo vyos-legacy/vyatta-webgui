@@ -66,7 +66,13 @@ GUICmdHandler::process()
   
   cmd = WebGUI::mass_replace(cmd,"'","'\\''");
   //  opmodecmd = "/bin/bash --rcfile /usr/lib/cgi-bin/vyatta-proc -i -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + ";_vyatta_proc_run " + command + " \"" + data + "\"'";
-  opmodecmd = "/bin/bash -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + ";source /usr/lib/cgi-bin/vyatta-proc;_vyatta_proc_run " + command + " \"" + data + "\"'";
+
+  //  data = WebGUI::mass_replace(data,"'","'\'\\\'\''");
+  //  data = "'\''" + data + "'\''";
+  data = WebGUI::mass_replace(data,"'","'\\'\\\\\\'\\''");
+  data = "'\\''" + data + "'\\''";
+
+  opmodecmd = "/bin/bash -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + _msg._user + ";source /usr/lib/cgi-bin/vyatta-proc;_vyatta_proc_run " + command  + " " + data + "'";
   
   string stdout;
   bool verbatim = false;

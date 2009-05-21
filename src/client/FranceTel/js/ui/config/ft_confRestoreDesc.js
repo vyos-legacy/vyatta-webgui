@@ -63,10 +63,10 @@ function FT_confRestoreDesc(name, callback, busLayer)
             {
                 if(types[j].indexOf('config') >= 0)
                 {
-                    chkConf = thisObj.f_renderCheckbox('yes', 'conf_' + entry.m_vmId,
+                    chkConf = thisObj.f_renderCheckbox('yes', 'config_' + entry.m_vmId,
                         'f_restoreCheckboxClick(this)', "");
                     thisObj.m_chkboxFields[thisObj.m_chkboxFields.length] =
-                        'conf_' + entry.m_vmId;
+                        'config_' + entry.m_vmId;
                 }
                 else if(types[j].indexOf('data') >= 0)
                 {

@@ -1,3 +1,18 @@
+vyatta-webgui (0.2+fxd0+44) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add devConfig object to configure the utm path during development
+    phase.
+
+  [ Michael Larson ]
+  * modify archive put command local directories
+  * test for empty (or unconfigured user/passwd string for smtp
+
+  [ Kevin Choi ]
+  * * fixed restore archive problem due to the backend command changed.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 21 May 2009 17:41:43 +0000
+
 vyatta-webgui (0.2+fxd0+43) unstable; urgency=low
 
   [ Loi Vo ]

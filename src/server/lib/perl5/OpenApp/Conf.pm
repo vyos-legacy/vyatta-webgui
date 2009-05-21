@@ -6,6 +6,13 @@ my $CMD_ENV = "export CMD_WRAPPER_SESSION_ID=$$";
 my $CMD_WRAPPER = '/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper';
 my $CMD = "$CMD_ENV ; $CMD_WRAPPER";
 
+# default session (GUI backend authenticated session)
+my ($DSID, $DSCMD) = (undef, undef);
+if (defined($ENV{'OA_SESSION_ID'})) {
+  $DSID = "$ENV{'OA_SESSION_ID'}";
+  $DSCMD = "export CMD_WRAPPER_SESSION_ID=$DSID ; $CMD_WRAPPER";
+}
+
 ### "static" functions
 
 # set up a config session.
@@ -51,6 +58,14 @@ sub execute_session {
  
   _end_session();
   return $err;
+}
+
+sub run_cmd_def_session {
+  my ($cmd) = @_;
+  return 'Cannot find default session' if (!defined($DSCMD));
+  my $err = `$DSCMD $cmd 2>&1`;
+  return "\"$cmd\" failed: $err" if ($? >> 8);
+  return undef;
 }
 
 1;

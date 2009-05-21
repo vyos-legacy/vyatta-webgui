@@ -1,3 +1,26 @@
+vyatta-webgui (0.2.14+fxdU+18) unstable; urgency=low
+
+  [ Stig Thormodsrud ]
+  * Add initial empty dispatch hooks for url filtering business logic.
+
+  [ Kevin Choi ]
+  * * added auto set source/destination port values base on application
+    service value.
+  * * initial make call to backend api
+  * * changed level text
+
+  [ Mohit Mehta ]
+  * set rulesets for user controllable zones i.e.
+
+  [ Stig Thormodsrud ]
+  * Add url-filtering-easy-config "get" operation.
+  * Need double quotes around code value.
+
+  [ An-Cheng Huang ]
+  * add support for default config session
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 20 May 2009 19:34:49 -0700
+
 vyatta-webgui (0.2.14+fxdU+17) unstable; urgency=low
 
   [ Kevin Choi ]

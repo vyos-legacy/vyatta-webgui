@@ -6,24 +6,24 @@
  */
 function UTM_confUrlEz(name, callback, busLayer)
 {
-	/**
-	 ***************************************************************************
-	 * id naming convention
-	 *    -monday, hour=1:
-	 *                  img id= 'img_m.1'
-	 *                  cb id= 'cb_m.1'
-	 *                  always_on img_id = 'on_img_m'
-	 *                  always_on cb_id = 'on_cb_m'
-	 *                  always_off img_id = 'off_img_m'
-	 *                  always_off cb_id = 'off_cb_m'
-	 ****************************************************************************                   
-	 */		
+    /**
+     ***************************************************************************
+     * id naming convention
+     *    -monday, hour=1:
+     *                  img id= 'img_m.1'
+     *                  cb id= 'cb_m.1'
+     *                  always_on img_id = 'on_img_m'
+     *                  always_on cb_id = 'on_cb_m'
+     *                  always_off img_id = 'off_img_m'
+     *                  always_off cb_id = 'off_cb_m'
+     ****************************************************************************
+     */
     var thisObjName = 'UTM_confVpnEz';
     var thisObj = this;
     this.m_form = undefined;
     this.m_ufcObj = undefined;
-	this.m_dowArray = ['m','t','w','h','f','a','s'];
-	this.m_catArray = ['blacklist','whitelist','keyword','legal','professional','strict'];
+    this.m_dowArray = ['m', 't', 'w', 'h', 'f', 'a', 's'];
+    this.m_catArray = ['blacklist', 'whitelist', 'keyword', 'legal', 'productivity', 'strict'];
     
     /**
      * @param name - name of configuration screens.
@@ -39,25 +39,24 @@ function UTM_confUrlEz(name, callback, busLayer)
     {
         UTM_confUrlEz.superclass.constructor(name, callback, busLayer);
     }
-		
-    this.privateConstructor(name, callback, busLayer);	
-	
+    
+    this.privateConstructor(name, callback, busLayer);
+    
     this.f_init = function()
     {
         this.f_setConfig({
-            id: 'conf_url_ez', 
-			width: '500',
+            id: 'conf_url_ez',
+            width: '500',
             items: [{
                 v_type: 'label',
                 text: g_lang.m_url_ezFilterPolicy,
                 v_new_row: 'true',
                 v_end_row: 'true'
-            },  EMPTY_ROW
-			, {
+            }, EMPTY_ROW, {
                 v_type: 'html',
                 id: 'conf_url_ez_blacklist',
                 text: '<input id="conf_url_ez_blacklist" type="checkbox" name="filter_by" value="cat" checked>&nbsp;' + g_lang.m_url_ezByCat,
-				padding: '30px',
+                padding: '30px',
                 v_new_row: 'true',
                 v_end_row: 'true'
             }, {
@@ -69,24 +68,24 @@ function UTM_confUrlEz(name, callback, busLayer)
                 v_end_row: 'true'
             }, {
                 v_type: 'html',
-                id: 'conf_url_ez_professional',
+                id: 'conf_url_ez_productivity',
                 padding: '60px',
-                text: '<input id="conf_url_ez_professional" type="radio" name="filter_by_cat" value="prof">&nbsp;' + g_lang.m_url_ezProf,
+                text: '<input id="conf_url_ez_productivity" type="radio" name="filter_by_cat" value="prof">&nbsp;' + g_lang.m_url_ezProf,
                 v_new_row: 'true',
                 v_end_row: 'true'
             }, {
                 v_type: 'html',
                 id: 'conf_url_ez_strict',
-                padding: '60px',				
+                padding: '60px',
                 text: '<input id="conf_url_ez_strict" type="radio" name="filter_by_cat" value="strict">&nbsp;' + g_lang.m_url_ezStrict,
                 v_new_row: 'true',
                 v_end_row: 'true'
             }//,  EMPTY_ROW
-			, {
+, {
                 v_type: 'html',
                 id: 'conf_url_ez_whitelist',
                 text: '<input id="conf_url_ez_whitelist" type="checkbox" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByUrl,
-				padding: '30px',
+                padding: '30px',
                 v_new_row: 'true'
             }, {
                 v_type: 'html',
@@ -94,25 +93,23 @@ function UTM_confUrlEz(name, callback, busLayer)
                 text: '<input type="image" id="conf_url_ez_whitelist_config" src="' + g_lang.m_imageDir + 'bt_config.png">',
                 v_end_row: 'true'
             }//,  EMPTY_ROW
-			, {
+, {
                 v_type: 'html',
                 id: 'conf_url_ez_keyword',
                 text: '<input id="conf_url_ez_keyword" type="checkbox" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByWord,
-				padding: '30px',
+                padding: '30px',
                 v_new_row: 'true'
             }, {
                 v_type: 'html',
                 id: 'conf_url_ez_keyword_config',
                 text: '<input type="image" id="conf_url_ez_keyword_config" src="' + g_lang.m_imageDir + 'bt_config.png">',
                 v_end_row: 'true'
-            }, EMPTY_ROW
-			, {
+            }, EMPTY_ROW, {
                 v_type: 'label',
                 text: g_lang.m_url_ezFilterPolicyImp,
                 v_new_row: 'true',
                 v_end_row: 'true'
-            }, EMPTY_ROW
-			, {
+            }, EMPTY_ROW, {
                 v_type: 'html',
                 text: '<div><table id="conf_url_ez_time_table" cellpadding= "0" cellspacing="0"><tbody id="conf_url_ez_time_table_body"><tr>' +
                 '<td align="center" class="maintd_bold">' +
@@ -137,12 +134,12 @@ function UTM_confUrlEz(name, callback, busLayer)
                 colspan: 3
             }],
             buttons: [{
-                id: 'conf_ldap_server_apply_button',
+                id: 'conf_url_ez_apply_button',
                 align: 'right',
                 text: 'Apply',
                 onclick: this.f_handleClick
             }, {
-                id: 'conf_ldap_server_cancel_button',
+                id: 'conf_url_ez_cancel_button',
                 align: 'right',
                 text: 'Cancel',
                 onclick: this.f_handleClick
@@ -221,7 +218,9 @@ function UTM_confUrlEz(name, callback, busLayer)
             }
             var id = 'img_' + dayId + '.' + i;
             innerHTML += i + '<img id="' + id + '" onclick=f_checkImage(\'' + id + '\')' +
-            ' src="' + g_lang.m_imageDir + 'red10x10.png">';
+            ' src="' +
+            g_lang.m_imageDir +
+            'red10x10.png">';
             innerHTML += '<input style="display:none" type="checkbox" id="cb_' + dayId + '.' + i + '" >' + '</td>';
         }
         innerHTML += '</tr></table>';
@@ -267,24 +266,32 @@ function UTM_confUrlEz(name, callback, busLayer)
         }
     }
     
+    this.f_enableTimeHour = function(dayId, hour, enable)
+    {
+        var imgId = 'img_' + dayId + '.';
+        var cbId = 'cb_' + dayId + '.';
+        
+        var id = imgId + hour;
+        var img = document.getElementById(id);
+        id = cbId + hour;
+        var cb = document.getElementById(id);
+        
+        if (enable) {
+            img.src = g_lang.m_imageDir + 'green10x10.png';
+            cb.checked = 'checked';
+        } else {
+            img.src = g_lang.m_imageDir + 'red10x10.png';
+            cb.checked = '';
+        }
+    }
+    
     this.f_enableTime = function(dayId, enable)
     {
         var imgId = 'img_' + dayId + '.';
         var cbId = 'cb_' + dayId + '.';
         
         for (var i = 0; i < 24; i++) {
-            var id = imgId + i;
-            var img = document.getElementById(id);
-            id = cbId + i;
-            var cb = document.getElementById(id);
-            
-            if (enable) {
-                img.src = g_lang.m_imageDir + 'green10x10.png';
-                cb.checked = 'checked';
-            } else {
-                img.src = g_lang.m_imageDir + 'red10x10.png';
-                cb.checked = '';
-            }
+            thisObj.f_enableTimeHour(dayId, i, enable);
         }
     }
     
@@ -369,76 +376,83 @@ function UTM_confUrlEz(name, callback, busLayer)
             }
         }
     }
-	
-	this.f_loadPolicy = function()
-	{
-	    var a = thisObj.m_catArray;
-		for (var i=0; i < a.length; i++) {
-			var v = thisObj.m_ufcObj.m_policy.f_getAttribute(a[i]);
-			var elId = 'conf_url_ez_' + a[i];
-			var el = document.getElementById(elId);
-			
-			if ((v != undefined) && (v!=null) && (v=='true')) {
-				el.checked = 'checked';
-			} else {
-				el.checked = '';
-			}
-		}	
-	}
-	
-	this.f_loadSchedule = function()
-	{
-		var dow = thisObj.m_dowArray;
-		for (var i=0; i < dow.length; i++) {
-			var timeArray = thisObj.m_ufcObj.m_schedule.f_getScheduleByDay(dow[i]);
-			
-		}
-		
-		/*
-        div.className = 'date_row';
-        var innerHTML = '<table cellpadding="0" cellspacing="1" align="center" border="0"><tr>';
-        for (var i = 0; i < 24; i++) {
-            var tdId = 'time_td' + row + '.' + i;
-            innerHTML += '<td id="' + tdId + '" class="cell" valign="bottom">';
-            if (i < 10) {
-                innerHTML += '&nbsp;';
-            }
-            var id = 'img' + row + '.' + i;
-            innerHTML += i + '<img id="' + id + '" onclick=f_checkImage(\'' + id + '\')' +
-            ' src="' + g_lang.m_imageDir + 'red10x10.png">';
-            innerHTML += '<input style="display:none" type="checkbox" id="cb' + row + '.' + i + '" >' + '</td>';
-        }
-        innerHTML += '</tr></table>';
-        div.innerHTML = innerHTML;		
-		*/
-		
-		
-	}
-
-    this.f_loadVMData = function(element)
+    
+    this.f_loadPolicy = function()
     {
+		//alert('f_loadPolicy: ufcObj.m_policy: ' + thisObj.m_ufcObj.m_policy.f_toXml());
+        var a = thisObj.m_catArray;
+        for (var i = 0; i < a.length; i++) {
+            var v = thisObj.m_ufcObj.m_policy.f_getAttribute(a[i]);
+            var elId = 'conf_url_ez_' + a[i];
+            var el = document.getElementById(elId);
+            
+            if ((v != undefined) && (v != null) && (v == 'true')) {
+                el.checked = 'checked';
+            } else {
+                el.checked = '';
+            }
+        }
+    }
+    
+	this.f_printSchedule = function(d, t)
+	{
+		if (t==null) {
+			//alert('timeArray is null for day: ' + d);
+			return;
+		}
+		var ts = '-';
+		for (var i=0; i < t.length; i++) {
+			ts += 'h' + i + ':' + t[i] + '-';
+		}
+		//alert('day: ' + d + ' time: ' + ts);
+	}
+	
+    this.f_loadSchedule = function()
+    {
+		//alert('f_loadSchedule: ufcObj.m_schedule: ' + thisObj.m_ufcObj.m_schedule.f_toXml());
+        var dow = thisObj.m_dowArray;
+        for (var i = 0; i < dow.length; i++) {
+            var timeArray = thisObj.m_ufcObj.m_schedule.f_getScheduleByDay(dow[i]);
+			thisObj.f_printSchedule(dow[i], timeArray);
+            for (var j = 0; j < timeArray.length; j++) {
+                if (timeArray[j] == 1) {
+                    thisObj.f_enableTimeHour(dow[i], j, true);
+                } else {
+                    thisObj.f_enableTimeHour(dow[i], j, false);
+                }
+            }
+        }
+    }
+    
+    this.f_loadVMData = function(element)
+    {		
+	    //alert ('f_loadVMData called');
+		
         thisObj.f_initFilterPolicyImp();
-        thisObj.f_attachListener();		
+        thisObj.f_attachListener();
         thisObj.m_form = document.getElementById('conf_url_ez_form');
         thisObj.f_setFocus();
-		thisObj.f_resize();
-		
-		/*
-		var cb = function(evt) {			
-            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
-				if (evt.f_isError()) {
-					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
-					return;
-				}
-				thisObj.m_ufcObj = evt.m_value;
-				thisObj.f_loadPolicy();
-				thisObj.f_loadSchedule();
-			}		
-			
-		};
-		
-		g_busObj.f_getUrlFilterConfig(cb);
-		*/
+        thisObj.f_resize();
+                
+        var cb = function(evt)
+        {        
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                if (evt.f_isError()) {                
+                    g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);  
+					thisObj.m_ufcObj = g_busObj.f_getUrlFilterObj().f_getDefaultUfc();                  
+                    return;                    
+                }                
+                thisObj.m_ufcObj = evt.m_value;    
+				//alert('f_loadVMData: m_ufcObj.toXml: ' + thisObj.m_ufcObj.f_toXml());            
+                thisObj.f_loadPolicy();                
+                thisObj.f_loadSchedule();                
+            }                                 
+        };      
+		if (!g_busObj.f_getUrlFilterObj().m_isLocalMode) {
+			g_busObj.f_getUrlFilterConfig(cb);
+		} else {
+			g_busObj.f_getUrlFilterObj().f_getUrlFilterConfigLocal(cb);
+		}
     }
     
     this.f_attachListener = function()
@@ -472,14 +486,73 @@ function UTM_confUrlEz(name, callback, busLayer)
         return true;
     }
     
+	this.f_applyPolicy = function()
+	{
+        var a = thisObj.m_catArray;
+        for (var i = 0; i < a.length; i++) {
+            var elId = 'conf_url_ez_' + a[i];
+            var el = document.getElementById(elId);
+            
+			if (el.checked) {
+				thisObj.m_ufcObj.m_policy.f_setAttribute(a[i],'true');
+			} else {
+				thisObj.m_ufcObj.m_policy.f_setAttribute(a[i], 'false');
+			}
+        }	
+		//alert('apply policy: ' + thisObj.m_ufcObj.m_policy.f_toXml());	
+	}
+	
+	this.f_applySchedule = function()
+	{
+        var dow = thisObj.m_dowArray;
+        for (var i = 0; i < dow.length; i++) {
+			var schedArray = new Array(24);
+			var idPrefix = 'cb_' + dow[i] + '.';
+			for (var j = 0; j < schedArray.length; j++) {
+				var el = document.getElementById(idPrefix + j);
+				if (el.checked) {
+					schedArray[j] = 1;
+				} else {
+					schedArray[j] = 0;
+				}
+			}
+			thisObj.m_ufcObj.m_schedule.f_setScheduleForDay(dow[i], schedArray);
+		}
+		//alert('apply schedule: ' + thisObj.m_ufcObj.m_schedule.f_toXml());		
+	}
+	
     this.f_apply = function()
-    {
-        alert('apply');
+    {	
+		thisObj.f_applyPolicy();
+		thisObj.f_applySchedule();
+		
+        var cb = function(evt)
+        {        
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                if (evt.f_isError()) {                
+                    g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);                    
+                    return;                    
+                }                              
+            }                                 
+        };   
+		   
+		if (!g_busObj.f_getUrlFilterObj().m_isLocalMode) {
+			g_busObj.f_setUrlFilterConfig(thisObj.m_ufcObj, cb);
+		} else {
+			g_busObj.f_getUrlFilterObj().f_setUrlFilterConfigLocal(thisObj.m_ufcObj, cb);
+		}		
     }
     
     this.f_reset = function()
     {
-        alert('reset');
+        var dow = thisObj.m_dowArray;
+        for (var i = 0; i < dow.length; i++) {
+			thisObj.f_enableTimeBackground(dow[i],true);
+			thisObj.f_disableAlwaysOff(dow[i]);
+			thisObj.f_disableAlwaysOn(dow[i]);
+		}		
+        thisObj.f_loadPolicy();                
+        thisObj.f_loadSchedule();  
     }
     
     this.f_handleClick = function(e)
@@ -490,35 +563,35 @@ function UTM_confUrlEz(name, callback, busLayer)
             return thisObj.f_handleClickById(id);
         }
     }
-	
-	this.f_handleClickById = function(id)
-	{
-		switch(id) {
-			case 'conf_url_ez_whitelist_config':
-			    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_BY_URL_ID);
-				break;
-			case 'conf_url_ez_keyword_config':
-			    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_BY_WORD_ID);
-				break;
-            case 'conf_url_ez_apply_button':  //apply clicked
+    
+    this.f_handleClickById = function(id)
+    {
+        switch (id) {
+            case 'conf_url_ez_whitelist_config':
+                g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_BY_URL_ID);
+                break;
+            case 'conf_url_ez_keyword_config':
+                g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_BY_WORD_ID);
+                break;
+            case 'conf_url_ez_apply_button': //apply clicked
                 if (!thisObj.f_validate()) {
                     return false;
                 }
                 thisObj.f_apply();
-				break;
+                break;
             case 'conf_url_ez_cancel_button': //cancel clicked
                 thisObj.f_reset();
-				break;			
-		}
-		return false;
-	}
+                break;
+        }
+        return false;
+    }
     
 }
 
 UTM_extend(UTM_confUrlEz, UTM_confFormObj);
 
 function f_checkImage(id)
-{		
+{
     g_configPanelObj.m_activeObj.f_toggleImage(id);
 }
 

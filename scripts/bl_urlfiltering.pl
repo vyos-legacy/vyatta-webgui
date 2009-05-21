@@ -52,13 +52,27 @@ my %days_hash = (
     'Sat'      => 'a',
 );
 
+my @cat_levels = ('strict', 'productivity', 'legal');
+
+my @level_legal = qw(adult agressif dangerous_material drogue gambling hacking
+phishing warez mixed_adult sexual_education sect malware);
+
+my @level_productivity = qw(audio-video financial publicite radio tricheur 
+games filehosting shopping dating marketingware astrology celebrity manga);
+push @level_productivity, @level_legal;
+
+my @level_strict = qw(blog cleaning forums redirector strict_redirector 
+strong_redirector webmail reaffected child);
+push @level_strict, @level_productivity;
+
+
 sub filter_get {
     my $msg = '';
-    $msg  = "<form name='url-filtering-easy-config' code=\"0\">";
+    $msg  = "<form name='url-filtering-easy-config' code='0'>";
     $msg .= "<url-filtering-easy-config>";
     my $config = new Vyatta::Config; 
     my $path = 'service webproxy url-filtering squidguard';
-    $config->setLevel("$path group-policy OA");
+    $config->setLevel("$path group-policy NONE");
     $msg .= "<policy>";
     # check whitelist
     if ($config->existsOrig('local-ok')) {
@@ -71,16 +85,15 @@ sub filter_get {
     } 
 
     # check blacklist
-    my @block_cats = $config->returnOrigValues('block-category');
+    my @block_cats = $config->returnOrigValues('local-block-ok');
     if (scalar(@block_cats) > 0) {
-	my %cat_hash = map { $_ => 1} @block_cats;
+	my %level_hash = map { $_ => 1} @cat_levels;
 	my $level = undef;
-	if ($cat_hash{'blog'}) {
-	    $level = 'strict';
-	} elsif ($cat_hash{'audio-video'}) {
-	    $level = 'productivity';
-	} elsif ($cat_hash{'adult'}) {
-	    $level = 'legal';
+	foreach my $cat (@block_cats) {
+	    if ($level_hash{$cat}) {
+		$level = $cat;
+		last;
+	    }
 	}
 	if ($level) {
 	    $msg .= "<blacklist status=\"true\">";
@@ -106,20 +119,122 @@ sub filter_get {
 	}
     }
     $msg .= "</schedule>";
-    
     # footer
     $msg .= "</url-filtering-easy-config>";
     $msg .= "</form>";
     print $msg;
 }
 
+sub is_webproxy_configured {
+    my $config = new Vyatta::Config; 
+    my $path   = 'service webproxy url-filtering';
+    if ($config->existsOrig('squidguard')) {   
+	return 1;
+    } 
+    return;
+}
+
+sub configure_webproxy {
+    my (@cmds, $path);
+
+    $path = 'service webproxy url-filtering squidguard';
+
+    push @cmds, "set service webproxy listen-address 127.0.0.1";
+    push @cmds, "set service webproxy cache-size 0";
+    push @cmds, "set $path source-group ALL address 0.0.0.0/0";
+    push @cmds, "set $path source-group NONE address 255.255.255.255";
+    push @cmds, "set $path group-policy OA source-group ALL";
+    push @cmds, "set $path group-policy NONE source-group NONE";
+    return @cmds;
+}
+
+sub get_blacklist_categories {
+    my ($level) = @_;
+    
+    my @blocks = ();
+    switch ($level) {
+	case 'strict'       { @blocks = @level_strict; }
+	case 'productivity' { @blocks = @level_productivity; }
+	case 'legal'        { @blocks = @level_legal; }
+    }
+    my @cmds = ();
+    my $path = 'service webproxy url-filtering squidguard group-policy OA';
+    foreach my $block (@blocks) {
+	push @cmds, "set $path block-category $block";
+    }
+    return @cmds;
+}
+
 sub filter_set {
     my ($data) = @_;
-    print "filter_set [$data]";
     
-    my $xml = new XML::Simple;
-    #my $data_xml = $xml->XMLin($data);
-    #print Dumper($data_xml);
+    my $xs  = new XML::Simple;
+    my $xml = $xs->XMLin($data);
+    my $x = Dumper($xml);
+    system "echo \"$x\" >> /tmp/wb";
+    my $whitelist = $xml->{policy}->{whitelist}->{status};
+    my $blacklist = $xml->{policy}->{blacklist}->{status};
+    my $keyword   = $xml->{policy}->{keyword}->{status};
+    my $category;
+    if ($blacklist and $blacklist eq 'true') {
+	foreach my $cat (@cat_levels) {
+	    my $x = $xml->{policy}->{blacklist}->{$cat};
+	    if ($x and $x eq 'true') {
+		$category = $cat;
+		last;
+	    }
+	}
+	if (! defined $category) {
+	    my $msg = "<form name='url-filtering-easy-config' code='1'>";
+	    $msg   .= "<key>blacklist<key>";
+	    $msg   .= "<errmsg>Invalid block category</errmsg>";
+	    $msg   .= "</form>";
+	    print $msg;
+	    return 1;
+	}
+    }
+    
+    my @cmds = ();
+    if (!is_webproxy_configured) {
+	@cmds = configure_webproxy();
+    }
+
+    my $path = 'service webproxy url-filtering squidguard';
+
+    if ($whitelist and $whitelist eq 'true') {
+	push @cmds, "set $path group-policy NONE local-ok OA";
+    }
+    if ($keyword and $keyword eq 'true') {
+	push @cmds, "set $path group-policy NONE local-block-keyword OA";
+    }
+    if ($blacklist and $blacklist eq 'true') {
+	push @cmds, "set $path group-policy NONE local-block $category";
+	push @cmds, get_blacklist_categories($category);
+    }
+
+    # get time schedule
+    my $time_period = undef;
+    while (my ($k, $v) = each(%days_hash)) {
+	my $day_time = $xml->{schedule}->{$v};
+	if ($day_time) {
+	    $time_period = "OA";
+	    push @cmds, "set $path time-period OA days $k time \"$day_time\"";
+	}
+    }
+    if ($time_period) {
+	push @cmds, "set $path group-policy OA time-period OA";
+    }
+    
+    push @cmds, ('commit', 'save');
+    my $err = OpenApp::Conf::execute_session(@cmds);
+    if (defined $err) {
+	my $msg = "<form name='url-filtering-easy-config' code='1'>";
+	$msg   .= "<key>execute</key><errmsg>$err</errmsg></form>";
+	print $msg;
+	exit 1;
+    }
+    my $msg  = "<form name='url-filtering-easy-config' code='0'>";
+    print $msg;
 }
 
 sub whitelist_get {
@@ -127,7 +242,7 @@ sub whitelist_get {
     $msg  = "<form name='white-list-easy-config' code=\"0\">";
     $msg .= "<white-list-easy-config>";
     my $config = new Vyatta::Config; 
-    my $path = 'service webproxy url-filtering squidguard';
+    my $path   = 'service webproxy url-filtering squidguard';
     $config->setLevel("$path group-policy OA local-ok");
     $msg .= "<white-list-easy-config>";
     # get whitelist
@@ -169,13 +284,10 @@ sub keyword_set {
     print "keyword_set [$data]";
 }
 
-
 #
 # main
 #
-
 my ($mode, $oper, $data);
-
 GetOptions("mode=s"    => \$mode,
 	   "oper=s"    => \$oper,
 	   "data=s"    => \$data,
@@ -183,7 +295,7 @@ GetOptions("mode=s"    => \$mode,
 
 die "Error: undefined mode"       if ! defined $mode;
 die "Error: undefined operation"  if ! defined $oper;
-die "Error: no data"              if $oper eq 'set' and ! $data;
+die "Error: undefined data"       if $oper eq 'set' and ! $data;
 
 my $do = $dispatcher{"$mode\_$oper"};
 

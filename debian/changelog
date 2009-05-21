@@ -1,3 +1,34 @@
+vyatta-webgui (0.2.14+fxdU+20) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add url-filtering-config-easy set command to backend
+  * 1. Set the default config for url-filtering
+
+  [ slioch ]
+  * fixes parsing of sub xml tags in the statement fields. was causing
+    multiple commands to be invoked per proc mode cmds
+  * handle shell function correctly for www-data so browser issued
+    commands are recognized.
+
+  [ Loi Vo ]
+  * add devlopment
+
+  [ slioch ]
+  * single quote escape nightmare.
+  * added local session root directories to environment.
+
+  [ An-Cheng Huang ]
+  * allow running array of commands in default session
+  * correct typo
+
+  [ slioch ]
+  * created directory when invoked.
+  * move cmds
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 21 May 2009 15:02:00 -0700
+
 vyatta-webgui (0.2.14+fxdU+19) unstable; urgency=low
 
   [ Stig Thormodsrud ]

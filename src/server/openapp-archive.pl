@@ -381,7 +381,7 @@ sub backup_and_get_archive {
     $get_archive = $filename;
 
     #then a get accessor
-#    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
+    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
     get_archive();
 #    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
     

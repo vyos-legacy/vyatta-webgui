@@ -70,7 +70,7 @@ sub execute_session {
 }
 
 sub run_cmd_def_session {
-  my ($cmd) = @_;
+  my @cmds = @_;
   return 'Cannot find default session' if (!defined($DSCMD));
   my $err = undef;
   for my $cmd (@cmds) {

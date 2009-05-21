@@ -16,6 +16,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     this.m_body = undefined;
     this.m_row = 0;
     this.m_cnt = 0;
+	this.m_urlList = null;
     
     /**
      * @param name - name of configuration screens.
@@ -144,17 +145,23 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     this.f_loadVMData = function()
     {
         thisObj.f_populateTable();
-        //        var cb = function(evt)
-        //        {
-        //            g_utils.f_cursorDefault();
-        //            if(evt != undefined && evt.m_objName == 'FT_eventObj')
-        //            {
-        //                thisObj.f_populateTable();
-        //            }
-        //        }
-    
-        //g_utils.f_cursorWait();
-        //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
+		
+        var cb = function(evt)
+        {        
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                if (evt.f_isError()) {                
+                    g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);  
+                    return;                    
+                }                
+                thisObj.m_urlList = evt.m_value;    
+                thisObj.f_populateTable();           
+            }                                 
+        };      
+		if (!g_devConfig.m_isLocalMode) {
+			g_busObj.f_getUrlList(cb);
+		} else {
+			g_busObj.f_getUrlFilterObj().f_getUrlListLocal(cb);
+		}
     }
     
     this.f_getTableHeight = function()
@@ -174,7 +181,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     
     this.f_populateTable = function()
     {
-        var a = ['http://www.facebook.com', 'http://www.vyatta.com', 'http://www.cisco.com', 'http://www.sun.com', 'http://www.juniper.net', ' '];
+        var a = thisObj.m_urlList;
         
         for (var i = 0; i < a.length; i++) {
             var prefix = 'utm_conf_url_ez_by_url_';
@@ -193,6 +200,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
             thisObj.m_body.appendChild(bodyDiv);
             thisObj.m_cnt++;
         }
+		thisObj.f_addRow();
         
         thisObj.f_adjust();
     }

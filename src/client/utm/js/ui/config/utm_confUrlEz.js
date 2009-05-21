@@ -450,7 +450,7 @@ function UTM_confUrlEz(name, callback, busLayer)
                 thisObj.f_loadSchedule();                
             }                                 
         };      
-		if (!g_busObj.f_getUrlFilterObj().m_isLocalMode) {
+		if (!g_devConfig.m_isLocalMode) {
 			g_busObj.f_getUrlFilterConfig(cb);
 		} else {
 			g_busObj.f_getUrlFilterObj().f_getUrlFilterConfigLocal(cb);
@@ -538,7 +538,7 @@ function UTM_confUrlEz(name, callback, busLayer)
             }                                 
         };   
 		   
-		if (!g_busObj.f_getUrlFilterObj().m_isLocalMode) {
+		if (!g_devConfig.m_isLocalMode) {
 			g_busObj.f_setUrlFilterConfig(thisObj.m_ufcObj, cb);
 		} else {
 			g_busObj.f_getUrlFilterObj().f_setUrlFilterConfigLocal(thisObj.m_ufcObj, cb);

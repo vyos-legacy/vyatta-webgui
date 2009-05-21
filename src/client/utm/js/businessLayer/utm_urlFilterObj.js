@@ -215,7 +215,6 @@ function UTM_urlFilterBusObj(busObj)
     /////////////////////////////////////
     // properties
     var thisObj = this;
-	this.m_isLocalMode =  false;
     this.m_busObj = busObj;
     this.m_lastCmdSent = null;
     this.m_urlFilterObj = null;	
@@ -239,7 +238,7 @@ function UTM_urlFilterBusObj(busObj)
         var response = thisObj.m_busObj.f_getRequestResponse(
                         thisObj.m_busObj.m_request);
 
-        if (thisObj.m_isLocalMode) {
+        if (g_devConfig.m_isLocalMode) {
 			response = resp;
 		}
 
@@ -263,7 +262,7 @@ function UTM_urlFilterBusObj(busObj)
 					}
 				} 
                 if(thisObj.m_lastCmdSent.indexOf(thisObj.m_URL_CONFIG_GET) > 0) {
-					if (thisObj.m_isLocalMode) {
+					if (g_devConfig.m_isLocalMode) {
 						if (thisObj.m_urlFilterObj != null) {
 							evt = UTM_eventObj(0, thisObj.m_urlFilterObj,'');
                             if(thisObj.m_guiCb != undefined)
@@ -788,5 +787,20 @@ function UTM_urlFilterBusObj(busObj)
 
         thisObj.f_respondRequestCallback(resp, guicb);
     }	
-	    
+
+    /**
+     */
+    this.f_getUrlListLocal = function(guicb)
+    {
+		/*
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>white-list-easy-config get" +
+                      "</handler><data></data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+        */
+    }
 }

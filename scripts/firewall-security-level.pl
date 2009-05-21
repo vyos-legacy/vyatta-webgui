@@ -32,6 +32,34 @@ use Vyatta::Config;
 use Vyatta::Zone;
 use OpenApp::Conf;
 
+sub set_rulesets_other_zones {
+  my $customize = shift;
+  my $zone_level="zone-policy zone";
+  my $DMZ_from_Wan="DMZ from WAN firewall name";
+  my $DMZ_from_Lan="DMZ from LAN firewall name";
+  my $Lan_from_DMZ="LAN from DMZ firewall name";
+  my $Wan_from_DMZ="WAN from DMZ firewall name";
+  my @cmds = ();
+  my $ruleset_prefix = '';
+
+  if ($customize eq 'true') {
+    $ruleset_prefix = 'Customized_';
+  }
+
+  my $Wan_to_DMZ_ruleset = $ruleset_prefix . 'WAN_to_DMZ';
+  my $Lan_to_DMZ_ruleset = $ruleset_prefix . 'LAN_to_DMZ';
+  my $DMZ_to_Lan_ruleset = $ruleset_prefix . 'DMZ_to_LAN';
+  my $DMZ_to_Wan_ruleset = $ruleset_prefix . 'DMZ_to_WAN';
+
+  @cmds = (
+    "set $zone_level $DMZ_from_Wan $Wan_to_DMZ_ruleset",
+    "set $zone_level $DMZ_from_Lan $Lan_to_DMZ_ruleset",
+    "set $zone_level $Lan_from_DMZ $DMZ_to_Lan_ruleset",
+    "set $zone_level $Wan_from_DMZ $DMZ_to_Wan_ruleset",
+  );
+  return @cmds;
+}
+
 sub execute_set {
 
     my $firewall_type = shift;
@@ -40,6 +68,7 @@ sub execute_set {
     my $Lan_from_Wan="LAN from WAN firewall name";
     my $Wan_from_Lan="WAN from LAN firewall name";
     my $invalid_arg='false';
+    my $customized = 'false';    
 
     # depending on what you get from the frontend, map that to rulesets
     # in the backend and apply in both directions for Lan and Wan zones
@@ -66,6 +95,14 @@ sub execute_set {
           "set $zone_level $Wan_from_Lan High_LAN_to_WAN",
           );
         }
+      case "Customized"
+        {
+          @cmds = (
+          "set $zone_level $Lan_from_Wan Customized_WAN_to_LAN",
+          "set $zone_level $Wan_from_Lan Customized_LAN_to_WAN",
+          );
+          $customized = 'true';
+        }
       case "Block All"
         {
           @cmds = (
@@ -77,6 +114,15 @@ sub execute_set {
         {
           $invalid_arg = 'true';
         }
+    }
+
+    # set default/customized filter policies for other zones
+    if ($customized eq 'true') {
+      # set customized rulesets for other user-controllable zones
+      push (@cmds, set_rulesets_other_zones('true'));
+    } else {
+      # set default policies for other user-controllable zones
+      push (@cmds, set_rulesets_other_zones('false'));
     }
 
     if ($invalid_arg eq 'false') {
@@ -114,7 +160,7 @@ sub execute_get {
         $firewall_type='Standard';
      } elsif ($Wan_to_Lan_fw =~ /^High_/ && $Lan_to_Wan_fw =~ /^High_/ ) {
         $firewall_type='Advanced';
-     } else {
+     } elsif ($Wan_to_Lan_fw =~ /^Customized_/ && $Lan_to_Wan_fw =~ /^Customized_/) {
         $firewall_type='Customized';
      }
    }

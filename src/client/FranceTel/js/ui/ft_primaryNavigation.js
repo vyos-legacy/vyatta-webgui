@@ -45,6 +45,11 @@ function FT_primaryNavigation()
 			return 'UTM/utm_main_en.html';
 		}
 		*/
+		if (g_devConfig.m_debug) {
+			if (vm.m_name == 'utm') {
+				return vm.m_guiUri + g_devConfig.m_utmPathSuffix;
+			}
+		}
 		return vm.m_guiUri;
     }
     

@@ -238,7 +238,6 @@ sub filter_set {
 sub whitelist_get {
     my $msg = '';
     $msg  = "<form name='white-list-easy-config' code='0'>";
-    $msg .= "<white-list-easy-config>";
     my $config = new Vyatta::Config; 
     my $path   = 'service webproxy url-filtering squidguard';
     $config->setLevel("$path group-policy OA local-ok");
@@ -284,7 +283,7 @@ sub whitelist_set {
 	print $msg;
 	exit 1;
     }
-    my $msg  = "<form name='white-list-easy-config' code='0'>";
+    my $msg  = "<form name='white-list-easy-config' code='0'></form>";
     print $msg;
 }
 

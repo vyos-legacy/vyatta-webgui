@@ -1,5 +1,8 @@
 
 export VYATTA_ACTIVE_CONFIGURATION_DIR=/opt/vyatta/config/active
+export VYATTA_CONFIG_TEMPLATE=/opt/vyatta/share/vyatta-cfg/templates
+
+
 
 declare vyatta_proc_templates='/opt/vyatta/share/vyatta-proc/templates/'
 

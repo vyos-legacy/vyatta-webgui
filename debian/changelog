@@ -1,3 +1,14 @@
+vyatta-webgui (0.2.14+fxdU+24) unstable; urgency=low
+
+  [ Stig Thormodsrud ]
+  * Add more webproxy configuration.
+  * Wrap url & keywords with CDATA.
+
+  [ Loi Vo ]
+  * 1. Fix image path in ft_popupMessage
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 22 May 2009 17:00:01 +0000
+
 vyatta-webgui (0.2.14+fxdU+23) unstable; urgency=low
 
   * Add 'add' functionality to filter by whitelist

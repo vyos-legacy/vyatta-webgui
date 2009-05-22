@@ -170,8 +170,6 @@ sub filter_set {
     
     my $xs  = new XML::Simple;
     my $xml = $xs->XMLin($data);
-    my $x = Dumper($xml);
-    system "echo \"$x\" >> /tmp/wb";
     my $whitelist = $xml->{policy}->{whitelist}->{status};
     my $blacklist = $xml->{policy}->{blacklist}->{status};
     my $keyword   = $xml->{policy}->{keyword}->{status};
@@ -239,7 +237,7 @@ sub filter_set {
 
 sub whitelist_get {
     my $msg = '';
-    $msg  = "<form name='white-list-easy-config' code=\"0\">";
+    $msg  = "<form name='white-list-easy-config' code='0'>";
     $msg .= "<white-list-easy-config>";
     my $config = new Vyatta::Config; 
     my $path   = 'service webproxy url-filtering squidguard';
@@ -257,12 +255,42 @@ sub whitelist_get {
 
 sub whitelist_set {
     my ($data) = @_;
-    print "whitelist_set [$data]";
+
+    my $xs  = new XML::Simple;
+    my $xml = $xs->XMLin($data);
+    my @cmds = ();
+    my $i = 0;
+    my $path   = 'service webproxy url-filtering squidguard group-policy OA';
+    while ($i < 100) {
+	my $whitelist = $xml->{url}[$i]->{content};
+	my $action    = $xml->{url}[$i]->{action};
+	if ($whitelist and $action) {
+	    if ($action eq 'add') {
+		push @cmds, "set $path local-ok \"$whitelist\" ";
+	    } else {
+		push @cmds, "delete $path local-ok \"$whitelist\" ";
+	    }
+	} else {
+	    last;
+	}
+	$i++;
+    }
+
+    push @cmds, ('commit', 'save');
+    my $err = OpenApp::Conf::execute_session(@cmds);
+    if (defined $err) {
+	my $msg = "<form name='white-list-easy-config' code='1'>";
+	$msg   .= "<key>execute</key><errmsg>$err</errmsg></form>";
+	print $msg;
+	exit 1;
+    }
+    my $msg  = "<form name='white-list-easy-config' code='0'>";
+    print $msg;
 }
 
 sub keyword_get {
     my $msg = '';
-    $msg  = "<form name='banned-list-easy-config' code=\"0\">";
+    $msg  = "<form name='banned-list-easy-config' code='0'>";
     $msg .= "<banned-list-easy-config>";
     my $config = new Vyatta::Config; 
     my $path = 'service webproxy url-filtering squidguard';
@@ -276,7 +304,6 @@ sub keyword_get {
     $msg .= "</bannned-list-easy-config>";
     $msg .= "</form>";
     print $msg;
-
 }
 
 sub keyword_set {

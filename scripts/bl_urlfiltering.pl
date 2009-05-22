@@ -292,7 +292,7 @@ sub filter_set {
     }
     
     push @cmds, ('commit', 'save');
-    my $tmp = join("\n", @cmds) . "\n";
+    my $tmp = join("\n", @cmds);
     wb_log("filter_set: $tmp");
     $err = OpenApp::Conf::execute_session(@cmds);
     if (defined $err) {
@@ -338,16 +338,17 @@ sub whitelist_set {
 	wb_log("whitelist_set: adding webproxy config");
 	@cmds = configure_webproxy();
     }
-    my $path = 'service webproxy url-filtering squidguard group-policy OA';
+    my $path = 'service webproxy url-filtering squidguard';
     my $i = 0;
     while ($i < 100) {
 	my $whitelist = $xml->{url}[$i]->{content};
 	my $action    = $xml->{url}[$i]->{action};
 	if ($whitelist and $action) {
 	    if ($action eq 'add') {
-		push @cmds, "set $path local-ok \"$whitelist\" ";
+		push @cmds, "set $path group-policy NONE local-ok OA";
+		push @cmds, "set $path group-policy OA local-ok \"$whitelist\" ";
 	    } else {
-		push @cmds, "delete $path local-ok \"$whitelist\" ";
+		push @cmds, "delete $path group-policy local-ok \"$whitelist\" ";
 	    }
 	} else {
 	    last;
@@ -409,16 +410,20 @@ sub keyword_set {
     if (!is_webproxy_configured()) {
 	@cmds = configure_webproxy();
     }
-    my $path   = 'service webproxy url-filtering squidguard group-policy OA';
+    my $path   = 'service webproxy url-filtering squidguard';
     my $i = 0;
     while ($i < 100) {
 	my $keyword = $xml->{keyword}[$i]->{content};
 	my $action  = $xml->{keyword}[$i]->{action};
 	if ($keyword and $action) {
 	    if ($action eq 'add') {
-		push @cmds, "set $path local-block-keyword \"$keyword\" ";
+		push @cmds, 
+		"set $path group-policy NONE local-block-keyword OA";
+		push @cmds, 
+		"set $path group-policy OA local-block-keyword \"$keyword\" ";
 	    } else {
-		push @cmds, "delete $path local-block-keyword \"$keyword\" ";
+		push @cmds, 
+		"delete $path group-policy OA local-block-keyword \"$keyword\" ";
 	    }
 	} else {
 	    last;
@@ -466,8 +471,8 @@ my $do = $dispatcher{"$mode\_$oper"};
 die "Error: undefined dispatcher" if ! defined $do;
 
 # make it so ...
-my $rc = $do->($data);
+$do->($data);
 
-exit $rc;
+exit 0;
 
 # end of file

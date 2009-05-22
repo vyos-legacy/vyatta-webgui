@@ -277,7 +277,7 @@ function UTM_urlFilterBusObj(busObj)
                 } else if (thisObj.m_lastCmdSent.indexOf(thisObj.m_WL_CONFIG_GET) > 0) {
                     thisObj.m_urlList = thisObj.f_parseUrlList(err);
                     evt = new UTM_eventObj(0, thisObj.m_urlList, '');					
-				}  else if (thisObj.m_lastCmdSent.indexOf(thisObj.m_WL_KEYWORD_GET) > 0) {
+				}  else if (thisObj.m_lastCmdSent.indexOf(thisObj.m_KEYWORD_CONFIG_GET) > 0) {
                     thisObj.m_kwList = thisObj.f_parseKeywordList(err);
                     evt = new UTM_eventObj(0, thisObj.m_kwList, '');					
 				} 
@@ -919,5 +919,72 @@ function UTM_urlFilterBusObj(busObj)
 
         thisObj.f_respondRequestCallback(resp, guicb);
     }	
+
+    /**
+     */
+    this.f_getKeywordListLocal = function(guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>banned-list-easy-config get" +
+                      "</handler><data></data></statement></command>";
+
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+
+        thisObj.m_lastCmdSent = cmdSend;
+		var resp = (new DOMParser()).parseFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' + 
+                            '<code>0</code>' + 
+                               '<msg>' +
+                                   '<form name=\'banned-list-easy-config\' code=\'0\'>' +
+								       '<banned-list-easy-config>' +
+									       '<keyword>damn</keyword>' +
+										   '<keyword>!what-da-hell</keyword>' +
+										   '<keyword>swted</keyword>' +
+									   '</banned-list-easy-config>' +
+                                    '</form>' + 
+                                '</msg>' + 
+                          '</error>' + 
+                  '</openappliance>', "text/xml");
+
+        //alert ('cmdSend: ' + cmdSend);
+        thisObj.f_respondRequestCallback(resp, guicb);
+    }
 	
+    this.f_setKeywordListLocal = function(kwList, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>banned-list-easy-config" +
+                      " set</handler><data>" + thisObj.f_kwList2xml(kwList) +
+                      "</data></statement></command>";
+
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+		
+		alert ('cmdSend: ' + cmdSend);
+					   
+        thisObj.m_lastCmdSent = cmdSend;
+
+		var resp = (new DOMParser()).parseFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' + 
+                            '<code>0</code>' + 
+                               '<msg>' +
+                                   '<form name=\'banned-list-easy-config\' code=\'0\'>' +
+                                    '</form>' + 
+                                '</msg>' + 
+                          '</error>' + 
+                  '</openappliance>', "text/xml");
+
+        thisObj.f_respondRequestCallback(resp, guicb);
+    }		
 }

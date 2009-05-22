@@ -8,12 +8,12 @@
 /**
  * Firewall data record
  */
-function UTM_fireRecord()
+function UTM_fireRecord(ruleNo, zone)
 {
     var thisObj = this;
     this.m_level = null;  // 'Authorize All', 'Standard', 'Advanced', 'Customized', 'Block All'
-    this.m_ruleNo = null;
-    this.m_zone = null;
+    this.m_ruleNo = ruleNo;
+    this.m_zone = zone;
     this.m_appService = null;
     this.m_protocol = null;
     this.m_srcIpAddr = null;
@@ -62,16 +62,28 @@ function UTM_firewallBusObj(busObj)
             if(err != null && err[0] != null)
             {
                 if(thisObj.m_lastCmdSent.indexOf(
-                    'firewall-security-level get') > 0)
+                    '<handler>firewall-security-level get') > 0)
                 {
-                    thisObj.f_parseFirewallSecurityLevel(err);
+                    var fr = thisObj.f_parseFirewallSecurityLevel(err);
+                    evt = new UTM_eventObj(0, fr, '');
+                }
+                else if(thisObj.m_lastCmdSent.indexOf(
+                    '<handler>customize-firewall get') > 0)
+                {
+                    thisObj.f_parseFirewallSecurityCustomize(err);
                     evt = new UTM_eventObj(0, thisObj.m_fireRec, '');
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
-                    'get vpn site-to-site expert</statement>') > 0)
+                    '<handler>customize-firewall delete-rule') > 0)
                 {
-                    thisObj.f_parseExpertModeData(err);
-                    evt = new UTM_eventObj(0, thisObj.m_vpnRec, '');
+
+                }
+                else if(thisObj.m_lastCmdSent.indexOf(
+                    '<handler>customize-firewall cancel ') > 0 ||
+                    thisObj.m_lastCmdSent.indexOf(
+                    '<handler>customize-firewall save') > 0)
+                {
+
                 }
             }
 
@@ -87,12 +99,35 @@ function UTM_firewallBusObj(busObj)
     this.f_parseFirewallSecurityLevel = function(response)
     {
         var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
-        nodes = thisObj.m_busObj.f_getResponseChildNodes(nodes, 'firewall-security-level');
+
+        if(nodes != null)
+        {
+            for(var i=0; i<nodes.length; i++)
+            {
+                var n = nodes[i];
+                if(n.nodeName == 'firewall-security-level')
+                {
+                    alert(n.firstChild.nodeValue);
+                    var fr = new UTM_fireRecord();
+                    fr.m_level = n.firstChild.nodeValue;
+                    return fr;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     */
+    this.f_parseFirewallSecurityCustomize = function(response)
+    {
+        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
+        nodes = thisObj.m_busObj.f_getResponseChildNodes(nodes, 'customize-firewall');
 
         if(nodes != null)
             alert(nodes.firstChild.nodeValue);
     }
-
 
     /**
      */
@@ -125,6 +160,64 @@ function UTM_firewallBusObj(busObj)
                       "<statement mode='proc'><handler>firewall-security-level" +
                       " set</handler><data>" + fireRec.m_level +
                       "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_getFirewallSecurityCustomize = function(fireRec, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>customize-firewall get" +
+                      "</handler><data>zonepair=[" + fireRec.m_zone +
+                      "], rulename=[all]</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_setFirewallCustomize = function(fireRec, name, value, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>customize-firewall" +
+                      " set</handler><data>zonepair=[" + fireRec.m_zone +
+                      "], rulenum=[" + fireRec.m_ruleNo + "]," + name +
+                      "=[" + value + "]</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_deleteFirewallCustomizeRule = function(fireRec, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>customize-firewall" +
+                      " delete-rule</handler><data>zonepair=[" + fireRec.m_zone +
+                      "], rulenum=[" + fireRec.m_ruleNo +
+                      "]</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    /**
+     * @param type - 'cancel' to cancel already setted customize rules
+     *               'save' to save all the setted customize rules
+     * @param guicb - gui callbackk function
+     */
+    this.f_sendFirewallCustomizeRuleCmd = function(type, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>customize-firewall " +
+                      type + "</handler><data></data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

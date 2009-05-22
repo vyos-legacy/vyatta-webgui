@@ -20,6 +20,7 @@ function UTM_confFireLevel(name, callback, busLayer)
     this.m_rdCustomId = "id_fireLevelCustomized";
     this.m_rdBlockId = "id_fireLevelBlockAll";
     this.m_selRadioId = this.m_rdAuthAllId;
+    this.m_curSelRadioId = null;
 
     /**
      * @param name - name of configuration screens.
@@ -163,6 +164,7 @@ function UTM_confFireLevel(name, callback, busLayer)
     {
         var isDirty = rId == thisObj.m_selRadioId ? false : true;
 
+        thisObj.m_curSelRadioId = rId;
         thisObj.f_enabledDisableButton(this.m_btnApplyId, isDirty);
         thisObj.f_enabledDisableButton(this.m_btnCancelId, isDirty);
     };
@@ -179,7 +181,34 @@ function UTM_confFireLevel(name, callback, busLayer)
 
     this.f_applyHandler = function()
     {
+        var fr = new UTM_fireRecord();
 
+        switch(thisObj.m_curSelRadioId)
+        {
+            case thisObj.m_rdAuthAllId:
+                fr.m_level = 'Authorize All';
+            break;
+            case thisObj.m_rdStandId:
+                fr.m_level = 'Standard';
+            break;
+            case thisObj.m_rdAdvanId:
+                fr.m_level = 'Advanced';
+            break;
+            case thisObj.m_rdCustomId:
+                fr.m_level = 'Customized';
+            break;
+            default:
+            case thisObj.m_rdBlockId:
+                fr.m_level = 'Block All';
+            break;
+        }
+
+        var cb = function(evt)
+        {
+
+        };
+
+        thisObj.m_busLayer.f_setFirewallSecurityLevel(fr, cb);
     };
 }
 UTM_extend(UTM_confFireLevel, UTM_confBaseObj);

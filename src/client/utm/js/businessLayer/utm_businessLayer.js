@@ -323,36 +323,36 @@ function UTM_businessLayer()
 
         return m_urlObj;
     }
-
-    this.f_getUrlFilterConfig = function(guiCb)
+	
+    this.f_getUrlFilterConfig = function(guicb)
     {
-        thisObj.f_getUrlFilterObj().f_getUrlFilterConfigServer(guiCb);
+        thisObj.f_getUrlFilterObj().f_getUrlFilterConfig(guicb);
     }
 
     this.f_setUrlFilterConfig = function(ufcObj, guicb)
     {
-        thisObj.f_getUrlFilterObj().f_setUrlFilterConfigServer(ufcObj, guicb);
-    }
+        thisObj.f_getUrlFilterObj().f_setUrlFilterConfig(ufcObj, guicb);
+    }	
 
     this.f_getUrlList = function(guicb)
     {
-        thisObj.f_getUrlFilterObj().f_getUrlListServer(guiCb);
+        thisObj.f_getUrlFilterObj().f_getUrlList(guicb);
     }
 
     this.f_setUrlList = function(urlList, guicb)
     {
-        thisObj.f_getUrlFilterObj().f_setUrlListServer(urlList, guicb);
-    }
-
+        thisObj.f_getUrlFilterObj().f_setUrlList(urlList, guicb);
+    }	
+	
 
     this.f_getKeywordList = function(guicb)
     {
-        thisObj.f_getUrlFilterObj().f_getKeywordListServer(guiCb);
+        thisObj.f_getUrlFilterObj().f_getKeywordList(guicb);
     }
 
     this.f_setKeywordList = function(kwList, guicb)
     {
-        thisObj.f_getUrlFilterObj().f_setKeywordListServer(kwList, guicb);
+        thisObj.f_getUrlFilterObj().f_setKeywordList(kwList, guicb);
     }
 
 }

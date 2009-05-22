@@ -138,13 +138,20 @@ sub configure_webproxy {
     my (@cmds, $path);
 
     $path = 'service webproxy url-filtering squidguard';
+    my $redirect = "http://172.16.117.2/cgi-bin/squidGuard-simple.cgi?";
+    $redirect   .= "targetclass=%t&url=%u&srcclass=%s";
 
     push @cmds, "set service webproxy listen-address 127.0.0.1";
+    push @cmds, "set service webproxy listen-address 192.168.1.1";
     push @cmds, "set service webproxy cache-size 0";
     push @cmds, "set $path source-group ALL address 0.0.0.0/0";
     push @cmds, "set $path source-group NONE address 255.255.255.255";
-    push @cmds, "set $path group-policy OA source-group ALL";
     push @cmds, "set $path group-policy NONE source-group NONE";
+    push @cmds, "set $path group-policy OA source-group ALL";
+    push @cmds, "set $path group-policy OA local-ok 192.168.1.1";
+    push @cmds, "set $path group-policy OA log all";
+    push @cmds, "set $path redirect-url \"$redirect\" ";
+
     return @cmds;
 }
 
@@ -193,7 +200,7 @@ sub filter_set {
     }
     
     my @cmds = ();
-    if (!is_webproxy_configured) {
+    if (!is_webproxy_configured()) {
 	@cmds = configure_webproxy();
     }
 
@@ -258,6 +265,9 @@ sub whitelist_set {
     my $xs  = new XML::Simple;
     my $xml = $xs->XMLin($data);
     my @cmds = ();
+    if (!is_webproxy_configured()) {
+	@cmds = configure_webproxy();
+    }
     my $i = 0;
     my $path   = 'service webproxy url-filtering squidguard group-policy OA';
     while ($i < 100) {
@@ -311,6 +321,9 @@ sub keyword_set {
     my $xs  = new XML::Simple;
     my $xml = $xs->XMLin($data);
     my @cmds = ();
+    if (!is_webproxy_configured()) {
+	@cmds = configure_webproxy();
+    }
     my $i = 0;
     my $path   = 'service webproxy url-filtering squidguard group-policy OA';
     while ($i < 100) {

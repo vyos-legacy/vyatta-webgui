@@ -108,7 +108,7 @@ sub get_configured_block_level {
     my $path = 'service webproxy url-filtering squidguard';
     my $config = new Vyatta::Config; 
     $config->setLevel("$path group-policy NONE");
-    my @block_cats = $config->returnOrigValues('local-block-ok');
+    my @block_cats = $config->returnOrigValues('local-block');
     if (scalar(@block_cats) > 0) {
 	my %level_hash = map { $_ => 1} @cat_levels;
 	my $level = undef;
@@ -270,6 +270,7 @@ sub filter_set {
     if ($blacklist and $blacklist eq 'true') {
 	my $level = get_configured_block_level();
 	if ($level and $level ne $category) {
+	    wb_log("filter_set: delete $category");
 	    push @cmds, "delete $path group-policy NONE local-block $level";
 	    push @cmds, "delete $path group-policy OA block-category";
 	}
@@ -291,6 +292,8 @@ sub filter_set {
     }
     
     push @cmds, ('commit', 'save');
+    my $tmp = join("\n", @cmds) . "\n";
+    wb_log("filter_set: $tmp");
     $err = OpenApp::Conf::execute_session(@cmds);
     if (defined $err) {
 	$msg  = "<form name='url-filtering-easy-config' code='1'>";

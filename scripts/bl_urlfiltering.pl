@@ -307,7 +307,37 @@ sub keyword_get {
 
 sub keyword_set {
     my ($data) = @_;
-    print "keyword_set [$data]";
+
+    my $xs  = new XML::Simple;
+    my $xml = $xs->XMLin($data);
+    my @cmds = ();
+    my $i = 0;
+    my $path   = 'service webproxy url-filtering squidguard group-policy OA';
+    while ($i < 100) {
+	my $keyword = $xml->{keyword}[$i]->{content};
+	my $action  = $xml->{keyword}[$i]->{action};
+	if ($keyword and $action) {
+	    if ($action eq 'add') {
+		push @cmds, "set $path local-block-keyword \"$keyword\" ";
+	    } else {
+		push @cmds, "delete $path local-block-keyword \"$keyword\" ";
+	    }
+	} else {
+	    last;
+	}
+	$i++;
+    }
+
+    push @cmds, ('commit', 'save');
+    my $err = OpenApp::Conf::execute_session(@cmds);
+    if (defined $err) {
+	my $msg = "<form name='banned-list-easy-config' code='1'>";
+	$msg   .= "<key>execute</key><errmsg>$err</errmsg></form>";
+	print $msg;
+	exit 1;
+    }
+    my $msg  = "<form name='bannned-list-easy-config' code='0'></form>";
+    print $msg;
 }
 
 #

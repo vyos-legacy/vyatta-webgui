@@ -8,14 +8,23 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 {
     var thisObj = this;
     this.thisObjName = 'utm_confUrlEzByKeyword';
+	this.m_prefix = 'conf_url_ez_by_keyword_';		
+    this.m_body = undefined;
+    this.m_row = 0;
+    this.m_cnt = 0;
+	this.m_kwList = null;
+	this.m_deletedRow = null;
+	this.m_addedRow = null;
+	this.m_updatedRow = null;
+	this.m_goBack = false;	
+		
     this.m_btnCancelId = 'conf_url_ez_by_keyword_btn_cancel';
     this.m_btnApplyId = 'conf_url_ez_by_keyword_btn_apply';
     this.m_btnAddId = 'conf_url_ez_by_keyword_btn_add';
     this.m_btnBackId = 'conf_url_ez_by_keyword_btn_back';
     this.m_btnDeleteId = 'conf_url_ez_by_keyword_btn_delete';
-    this.m_body = undefined;
-    this.m_row = 0;
-    this.m_cnt = 0;
+	this.m_btnSaveChangeAppyCbId = 	'conf_url_ez_by_keyword_btn_apply_cb';
+	this.m_btnSaveChangeCancelCbId = 'conf_url_ez_by_keyword_btn_cancel_cb';
     
     /**
      * @param name - name of configuration screens.
@@ -98,10 +107,13 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
     
     this.f_addRow = function()
     {
-        var prefix = 'utm_conf_url_ez_by_keyword_';
-		var rowId = prefix + "row_" + thisObj.m_cnt;
+        var prefix = thisObj.m_prefix;
+		var rowId = prefix + 'row_' + thisObj.m_cnt;
+		
         var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, '', '', 400);
-        var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
+        var cb = thisObj.f_renderSmartCheckbox('yes', prefix + 'cb_' + thisObj.m_cnt, '', '',
+		                                   prefix + 'cb_hidden_' + thisObj.m_cnt);	
+		
         var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByKeywordEventCallback('" +
         thisObj.m_btnDeleteId +
         "','" +
@@ -117,16 +129,120 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
     
 	this.f_deleteRow = function(rowId)
 	{
-		var row = document.getElementById(rowId);
+		var prefix = thisObj.m_prefix + 'row_';
+        var row = document.getElementById(rowId);
+		
 		if (row != null) {
-			row.parentNode.removeChild(row);
+			var id = rowId.substring(prefix.length, rowId.length);
+			var text = document.getElementById(thisObj.m_prefix + 'addr_' + id);
+			
+			if (text.readOnly) {
+			//need to send delete command to the server.
+			    var kwList = new Array();
+				var listObj = new UTM_urlFilterListObj(text.value);
+				listObj.m_action = 'delete';
+                listObj.m_status = true;				
+				urlList.push(listObj);
+				thisObj.m_deletedRow = row;
+				
+			    var cb = function(evt)
+                {        
+                    if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                        if (evt.f_isError()) {                
+                            g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);  
+                            return;                    
+                        }                
+						thisObj.m_deletedRow.parentNode.removeChild(thisObj.m_deletedRow);    
+                        thisObj.f_adjust();         
+                    }                                 
+                };      
+		        g_busObj.f_setKeywordList(kwList, cb); 	
+				return;
+			} else {
+				row.parentNode.removeChild(row);
+			}
 			thisObj.f_adjust();
-		}
+		}		
 	}
     
     this.f_apply = function()
     {
-        alert('apply');
+		//doing dumb iteration for now.
+		var kwList = new Array();
+		thisObj.m_addedRow = new Array();
+		thisObj.m_updatedRow = new Array();
+		
+		for (var i = 0; i < thisObj.m_cnt; i++) {
+			var text = document.getElementById(thisObj.m_prefix + 'addr_' + i);
+			var cb = document.getElementById(thisObj.m_prefix + 'cb_' + i);
+			var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + i);
+			
+			if ((text != undefined) && (text != null)) {
+				if (!text.readOnly) {
+					if (text.value.trim().length <= 0) {
+						continue;
+					}
+					thisObj.m_addedRow.push(i);
+					
+					var listObj = new UTM_urlFilterListObj(text.value);
+					listObj.m_action = 'add';
+					if (cb.checked) {
+						listObj.m_status = true;
+					} else {
+						listObj.m_status = false;
+					}
+					kwList.push(listObj);
+				} else {
+					if (cb.checked != cbHidden.checked) {
+					    var listObj = new UTM_urlFilterListObj(text.value);
+						listObj.m_action = 'delete';
+						listObj.m_status = true;
+						kwList.push(listObj);
+						listObj = new UTM_urlFilterListObj(text.value);
+						listObj.m_action = 'add';
+						if (cb.checked) {
+							listObj.m_status = true;
+						} else {
+							listObj.m_status = false;
+						}
+						kwList.push(listObj);
+						thisObj.m_updatedRow.push(i);	
+					}
+				}
+			}
+		}
+		
+		if (kwList.length > 0) {
+			var cb = function(evt)
+			{
+				if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
+					if (evt.f_isError()) {
+						g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+						thisObj.m_goBack = false;
+						return;
+					} else {
+						for (var i=0; i < thisObj.m_addedRow.length; i++) {
+							var j = thisObj.m_addedRow[i];
+			                var cb = document.getElementById(thisObj.m_prefix + 'cb_' + j);
+			                var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + j);
+							var text = document.getElementById(thisObj.m_prefix + 'addr_' + j);
+							cbHidden.checked = cb.checked;								
+							text.readOnly = true;
+						}
+						for (var i=0; i < thisObj.m_updatedRow.length; i++) {
+                            var j = thisObj.m_updatedRow[i];							
+			                var cb = document.getElementById(thisObj.m_prefix + 'cb_' + j);
+			                var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + j);
+							cbHidden.checked = cb.checked;							
+						}
+					}
+				}
+				if (thisObj.m_goBack) {
+			        g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);					
+				}
+			};
+			g_busObj.f_setKeywordList(kwList, cb);
+		}
     }
     
     this.f_reset = function()
@@ -134,6 +250,44 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         alert('reset form');
     }
     
+	
+	this.f_changed = function()
+	{
+		var changed = false;
+		
+		for (var i = 0; i < thisObj.m_cnt; i++) {
+			var text = document.getElementById(thisObj.m_prefix + 'addr_' + i);
+			var cb = document.getElementById(thisObj.m_prefix + 'cb_' + i);
+			var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + i);
+			
+			if ((text != undefined) && (text != null)) {
+				if (!text.readOnly) {
+					if (text.value.trim().length > 0) {
+						changed = true;
+						return changed;
+					}
+				} else {
+					if (cb.checked != cbHidden.checked) {
+						changed = true;
+						return changed;
+					}
+				}
+			}
+		}
+        return false;		
+	}
+	
+	this.f_back = function()
+	{
+		if (thisObj.f_changed()) {
+			g_utils.f_popupMessage(g_lang.m_remindSaveChange, 'confirm', g_lang.m_info, true, 
+			    "f_confUrlEzByKeywordEventCallback('" + thisObj.m_btnSaveChangeAppyCbId + "')", 
+				"f_confUrlEzByKeywordEventCallback('" + thisObj.m_btnSaveChangeCancelCbId + "')"); 
+		} else {
+			g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);
+		}  		
+	}	
+	
     this.f_handleClick = function(id, obj)
     {
         if (id == thisObj.m_btnCancelId) {
@@ -143,28 +297,34 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         } else if (id == thisObj.m_btnAddId) {
             thisObj.f_addRow();
         } else if (id == thisObj.m_btnBackId) {
-            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);
+            thisObj.f_back(); 
         } else if (id == 'conf_url_ez_by_keyword_enable_cb') {
             thisObj.f_enableAll();
         } else if (id == thisObj.m_btnDeleteId) {
             thisObj.f_deleteRow(obj);
-        }
+        } else if (id == thisObj.m_btnSaveChangeAppyCbId) {
+		    thisObj.m_goBack = true;			
+		    thisObj.f_apply();				
+		} else if (id == thisObj.m_btnSaveChangeCancelCbId) {
+		    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);								
+		}
     }
     
     this.f_loadVMData = function()
     {
-        thisObj.f_populateTable();
-        //        var cb = function(evt)
-        //        {
-        //            g_utils.f_cursorDefault();
-        //            if(evt != undefined && evt.m_objName == 'FT_eventObj')
-        //            {
-        //                thisObj.f_populateTable();
-        //            }
-        //        }
-    
-        //g_utils.f_cursorWait();
-        //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
+        var cb = function(evt)
+        {        
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                if (evt.f_isError()) {                
+                    g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);  
+                    return;                    
+                }                
+                thisObj.m_kwList = evt.m_value;    
+                thisObj.f_populateTable();           
+            }                                 
+        };      
+
+		g_busObj.f_getKeywordList(cb);
     }
     
     this.f_getTableHeight = function()
@@ -172,21 +332,31 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         var h = thisObj.m_tableRowCounter * 28;
         return h;
     }
-    
+        
+    this.f_adjust = function()
+    {
+        thisObj.m_body.style.height = '';
+		thisObj.m_body.style.borderBottom = '';
+        thisObj.f_adjustDivPositionByPixel(thisObj.m_addButton, 0);
+        thisObj.f_adjustDivPositionByPixel(thisObj.m_buttons, 20);
+        thisObj.f_resize(20);
+    }	
+	
     this.f_populateTable = function()
     {
-        var a = ['http://www.facebook.com', 'http://www.vyatta.com', 'http://www.cisco.com', 'http://www.sun.com', 'http://www.juniper.net', ' '];
+        var a = thisObj.m_kwList;		
+
         for (var i = 0; i < a.length; i++) {
-            var ro= true;		
-            var prefix = 'utm_conf_url_ez_by_keyword_';
+            var prefix = thisObj.m_prefix;
 		    var rowId = prefix + "row_" + thisObj.m_cnt;
-				
-			if (a[i].length < 3) {
-				ro =false;
+			var enable = 'yes';
+			if (!a[i].m_status) {
+				enable = 'no';
 			}				
-					
-            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 400, '', ro);
-            var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
+				
+            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i].m_value, '', 400, '', true);
+			var cb = thisObj.f_renderSmartCheckbox(enable, prefix + 'cb_' + thisObj.m_cnt, '', '',
+				                                       prefix + 'cb_hidden_' + thisObj.m_cnt);			
             var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByKeywordEventCallback('" +
             thisObj.m_btnDeleteId +
             "','" +
@@ -197,6 +367,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
             thisObj.m_body.appendChild(bodyDiv);
             thisObj.m_cnt++;
         }
+		thisObj.f_addRow();		
         thisObj.f_adjust();
     }
     

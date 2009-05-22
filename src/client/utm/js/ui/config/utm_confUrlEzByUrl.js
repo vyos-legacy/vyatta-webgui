@@ -6,8 +6,19 @@
  */
 function UTM_confUrlEzByUrl(name, callback, busLayer)
 {
+    /**
+     ***************************************************************************
+     * id naming convention
+     *    enable_all:     this.m_prefix + 'cb'
+     *    rowId:          this.m_prefix + 'row_' + thisObj.m_cnt
+     *    enable@row:     this.m_prefix + 'cb' + thisObj.m_cnt
+     *    delete@row:     when clicked, get passed the rowId
+     *    textfield@row:  this.m_prefix + 'addr_' + thisObj.m_cnt
+     ****************************************************************************
+     */	
     var thisObj = this;
     this.thisObjName = 'UTM_confurlEzByUrl';
+	this.m_prefix = 'utm_conf_url_ez_by_url_';
     this.m_btnCancelId = 'conf_url_ez_by_url_btn_cancel';
     this.m_btnApplyId = 'conf_url_ez_by_url_btn_apply';
     this.m_btnAddId = 'conf_url_ez_by_url_btn_add';
@@ -17,6 +28,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     this.m_row = 0;
     this.m_cnt = 0;
 	this.m_urlList = null;
+	this.m_deletedRow = null;
     
     /**
      * @param name - name of configuration screens.
@@ -79,7 +91,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     {
         var cb = document.getElementById('conf_url_ez_by_url_enable_cb');
 		
-        var s = 'utm_conf_url_ez_by_url_cb_';
+        var s = thisObj.m_prefix + 'cb_';
 		for (var i=0; i < thisObj.m_cnt; i++) {
 	        var el = document.getElementById(s + i);
 			if (el != null) {
@@ -90,7 +102,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     
     this.f_addRow = function()
     {
-        var prefix = 'utm_conf_url_ez_by_url_';
+        var prefix = thisObj.m_prefix;
 		var rowId = prefix + 'row_' + thisObj.m_cnt;
 		
         var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, '', '', 625);
@@ -108,9 +120,38 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     
 	this.f_deleteRow = function(rowId)
 	{
-		var row = document.getElementById(rowId);
+		var prefix = thisObj.m_prefix + 'row_';
+        var row = document.getElementById(rowId);
+		
 		if (row != null) {
-			row.parentNode.removeChild(row);
+			var id = rowId.substring(prefix.length, rowId.length);
+			var url = document.getElementById(thisObj.m_prefix + 'addr_' + id);
+			
+			if (url.readOnly) {
+			//need to send delete command to the server.
+			    var urlList = new Array();
+				var listObj = new UTM_urlFilterListObj(url.value);
+				listObj.m_action = 'delete';
+                listObj.m_status = true;				
+				urlList.push(listObj);
+				thisObj.m_deletedRow = row;
+				
+			    var cb = function(evt)
+                {        
+                    if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                        if (evt.f_isError()) {                
+                            g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);  
+                            return;                    
+                        }                
+						thisObj.m_deletedRow.parentNode.removeChild(thisObj.m_deletedRow);    
+                        thisObj.f_adjust();         
+                    }                                 
+                };      
+		        g_busObj.f_setUrlList(urlList, cb); 	
+				return;
+			} else {
+				row.parentNode.removeChild(row);
+			}
 			thisObj.f_adjust();
 		}
 	}
@@ -180,9 +221,8 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     {
         var a = thisObj.m_urlList;
         if (a != null) {
-			alert('a.length:' + a.length);
 			for (var i = 0; i < a.length; i++) {
-				var prefix = 'utm_conf_url_ez_by_url_';
+				var prefix = thisObj.m_prefix;
 				var rowId = prefix + 'row_' + thisObj.m_cnt;
 				var enable = 'yes';
 				if (!a[i].m_status) {

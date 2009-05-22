@@ -1,3 +1,24 @@
+vyatta-webgui (0.2.14+fxdU+22) unstable; urgency=low
+
+  [ Stig Thormodsrud ]
+  * Add white-list-easy-config "set" operation.
+  * Add missing xml tag.
+
+  [ Loi Vo ]
+  * Remove debug messages.
+
+  [ Mohit Mehta ]
+  * add set value, delete-rule, save, cancel commands for customized
+    firewall rulesets
+
+  [ Stig Thormodsrud ]
+  * Add banned-list-easy-config "set" action.
+
+  [ Kevin Choi ]
+  * * added business logic and backend api call to security level.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 22 May 2009 02:14:12 +0000
+
 vyatta-webgui (0.2.14+fxdU+21) unstable; urgency=low
 
   [ slioch ]

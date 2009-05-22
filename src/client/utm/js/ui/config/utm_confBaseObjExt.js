@@ -132,6 +132,25 @@ function UTM_confBaseObjExt(name, callback, busLayer)
         g_utmMainPanel.f_requestResize();			
     }	
 	
+    /**
+     * @param val - check or un-check the checkbox
+     * @param elId - this element id
+     * @param cb = callback
+     * @param tooltip - tooltip for this checkbox
+     */
+    this.f_renderSmartCheckbox = function(val, elId, cb, tooltip, hiddenElId)
+    {
+        var checked = val == 'yes' ? 'checked' : '';
+        tooltip = tooltip == undefined ? "" : tooltip;
+
+        return '<input id="' + elId + '" type="checkbox" ' + checked +
+        ' title="' +
+        tooltip +
+        '" onclick="' +
+        cb +
+        '"/><input style="display:none" id="' + hiddenElId + '" type="checkbox" ' + checked + '/>';
+    }	
+	
 }
 
 UTM_extend(UTM_confBaseObjExt, UTM_confBaseObj);

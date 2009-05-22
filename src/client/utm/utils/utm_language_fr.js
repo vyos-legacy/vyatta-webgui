@@ -140,7 +140,10 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images
     m_imageDir : 'images/fr/',
-			
+	m_ok: 'ok',
+	m_error: 'Erreur',
+	m_info: 'Information',
+    m_remindSaveChange : 'You changes have not been saved.  Would you like to save it?',			
     /////////////////////////////////////////
     // plesae do not edit beyound dummy
     dummy : ''

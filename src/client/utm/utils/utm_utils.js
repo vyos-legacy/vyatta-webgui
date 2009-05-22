@@ -643,10 +643,10 @@ var g_utils =
                 }
                 var cancelCb = ccb == undefined ? cancelHandler : cancelHandler + ";" + ccb;
                 cb = cb == undefined ? applyHandler : applyHandler + ";" + cb;
-                buttonsDiv = '<div align="center"><input id="ft_popup_message_apply" src="images/bt_apply.gif" ' +
+                buttonsDiv = '<div align="center"><input id="ft_popup_message_apply" src="' + g_lang.m_imageDir + 'bt_apply.gif" ' +
                           'type="image" onclick="' + cb + '">&nbsp;&nbsp;' +
                           '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-                          '<input id="ft_popup_message_cancel" src="images/bt_cancel.gif" ' +
+                          '<input id="ft_popup_message_cancel" src="' + g_lang.m_imageDir + 'bt_cancel.gif" ' +
                           'type="image" onclick="' + cancelCb + '"></div>';
                 innerHtml += '<tbody><tr height="65">' +
                       '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
@@ -661,10 +661,10 @@ var g_utils =
                       g_lang.m_puSessionTimeoutMsg;
 
                 buttonsDiv = '<div align="center" style="padding-top:8px;">' +
-                              '<input type="image" src="images/bt_ok.gif" ' +
+                              '<input type="image" src="' + g_lang.m_imageDir + 'bt_ok.gif" ' +
                               'onclick="' + timeoutHandler + '"></div>';
                 innerHtml += '<tbody><tr height="73">' +
-                        '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
+                        '<td width="48"><img src="' + g_lang.m_imageDir + 'ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="350"><p ' +
                         'style="padding-left:5px; font:normal 10pt arial;">' +
                         message + '</p></td>';
@@ -679,10 +679,10 @@ var g_utils =
                 }
 
                 buttonsDiv = '<div align="center" style="padding-top:8px;">' +
-                              '<input type="image" src="images/bt_ok.gif" ' +
+                              '<input type="image" src="' + g_lang.m_imageDir +  'bt_ok.gif" ' +
                               'onclick="' + cb + '"></div>';
                 innerHtml += '<tbody><tr height="73">' +
-                        '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
+                        '<td width="48"><img src="' + g_lang.m_imageDir + 'ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="300"><p ' +
                         'style="padding-left:5px; font:normal 10pt arial;">' +
                         message + '</p></td>';
@@ -697,10 +697,10 @@ var g_utils =
                 }
 
                 buttonsDiv = '<div align="center" style="padding-top:8px;">' +
-                              '<img src="images/bt_ok.gif" ' +
+                              '<img src="' + g_lang.m_imageDir + 'bt_ok.gif" ' +
                               'onclick="' + cb + '"></div>';
                 innerHtml += '<tbody><tr height="73">' +
-                        '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
+                        '<td width="48"><img src="' + g_lang.m_imageDir + 'ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="300"><p ' +
                         'style="padding-left:5px; font:normal 10pt arial;">' +
                         message + '</p></td>';

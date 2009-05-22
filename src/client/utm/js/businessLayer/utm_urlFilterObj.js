@@ -113,7 +113,10 @@ function UTM_urlFilterScheduleObj(schedArray)
 		var a = ['m','t','w','h','f','a','s'];
 		
 		for (var i=0; i < a.length; i++) {
-			s += '<' + a[i] + '>' + thisObj.m_schedule[a[i]] + '</' + a[i] + '>';
+			var timeRange = thisObj.m_schedule[a[i]];
+			if ((timeRange != null) && (timeRange.length > 0)) {
+				s += '<' + a[i] + '>' + timeRange + '</' + a[i] + '>';
+			}
 		}
 		s += '</schedule>';
 		return s;
@@ -142,19 +145,19 @@ function UTM_urlFilterPolicyObj(policyArray)
 		for (var i=0; i < a.length; i++) {
 			var attr = thisObj.f_getAttribute(a[i]);
 			if ((attr != undefined) && (attr != null)) {
-				s+= '<' + a[i] + ' status="' + attr + '">';
+				s+= "<" + a[i] + " status='" + attr + "'>";
 				if (a[i]=='blacklist') {
 					for (var j=0; j < aa.length; j++) {
 						var subAttr = thisObj.f_getAttribute(aa[j]);
 						if ((subAttr != undefined) && (subAttr != null) && (subAttr=='true')) {
-							s += '<' + aa[j] + '>' + subAttr + '</' + aa[j] + '>';
+							s += "<" + aa[j] + ">" + subAttr + "</" + aa[j] + ">";
 						}
 					}
 				}
-				s+= '</' + a[i] + '>';
+				s+= "</" + a[i] + ">";
 			}
 		}
-		s += '</policy>';
+		s += "</policy>";
 		return s;
 	}	
 }
@@ -176,10 +179,10 @@ function UTM_urlFilterConfigObj(policy, schedule)
 	}
 	
 	this.f_toXml= function() {
-		var s = '<url-filtering-easy-config>';
+		var s = "<url-filtering-easy-config>";
 		s += thisObj.m_policy.f_toXml();
 		s += thisObj.m_schedule.f_toXml();
-		s += '</url-filtering-easy-config>';
+		s += "</url-filtering-easy-config>";
 		return s;
 	}
 }
@@ -196,7 +199,7 @@ function UTM_urlFilterListObj(rawText)
 		this.m_value = rawText.substring(1,rawText.length);
 		this.m_status = false;
 	} else {
-		this.m_value = value;
+		this.m_value = rawText;
 		this.m_status = true;
 	}
 	
@@ -206,7 +209,7 @@ function UTM_urlFilterListObj(rawText)
 		} else {
 			return '!' + thisObj.m_value;
 		}
-	}
+	}	
 }
 
 
@@ -529,7 +532,8 @@ function UTM_urlFilterBusObj(busObj)
 			for (var i = 0; i < cn.length; i++) {
 				if (cn[i].nodeName == 'url') {
 					var value = thisObj.f_getNodeValue(cn[i]);
-					list.push(new UTM_urlFilterListObj(decodeURI(value)));
+					//list.push(new UTM_urlFilterListObj(decodeURI(value)));
+					list.push(new UTM_urlFilterListObj(value));					
 				}
 			}
 		}
@@ -554,6 +558,15 @@ function UTM_urlFilterBusObj(busObj)
 		return list;
 	}
 	
+	this.f_getUrlFilterConfig = function(guicb)
+	{
+		if (g_devConfig.m_isLocalMode) {
+			thisObj.f_getUrlFilterConfigLocal(guicb);
+		} else {
+			thisObj.f_getUrlFilterConfigServer(guicb);
+		}
+	}
+	
     /**
      */
     this.f_getUrlFilterConfigServer = function(guicb)
@@ -574,6 +587,15 @@ function UTM_urlFilterBusObj(busObj)
                               thisObj.f_respondRequestCallback);
     }
 
+    this.f_setUrlFilterConfig = function(ufcObj, guicb)
+	{
+		if (g_devConfig.m_isLocalMode) {
+			thisObj.f_setUrlFilterConfigLocal(ufcObj,guicb);
+		} else {
+			thisObj.f_setUrlFilterConfigServer(ufcObj,guicb);
+		}		
+	}
+
     /**
      * perform a set vpn site2site configurations request to server.
      * @param ufcObj - url filtering config object.
@@ -589,8 +611,17 @@ function UTM_urlFilterBusObj(busObj)
                       "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
+                              thisObj.f_respondRequestCallbackSetCmd);
     }	
+
+	this.f_getUrlList = function(guicb)
+	{
+		if (g_devConfig.m_isLocalMode) {
+			thisObj.f_getUrlListLocal(guicb);
+		} else {
+			thisObj.f_getUrlListServer(guicb);
+		}
+	}
 
     /**
      */
@@ -611,6 +642,11 @@ function UTM_urlFilterBusObj(busObj)
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
+	
+	this.f_cdataWrap = function(s)
+	{
+		return "<![CDATA[" + s + "]]>";
+	}
 
     /**
      * Format a list of url list object to xml
@@ -619,17 +655,27 @@ function UTM_urlFilterBusObj(busObj)
      */
     this.f_urlList2xml = function(urlList)
 	{
-		var xml = '<white-list-easy-config>';
+		var xml = "<white-list-easy-config>";
 		for (var i=0; i < urlList.length; i++) {
 			if (urlList[i].m_action != 'noop') {
-				xml += '<url action="' + urlList[i].m_action + '">';
-				xml += urlList[i].toString();
-				xml += '</url>';
+				xml += "<url action='" + urlList[i].m_action + "'>";
+//				xml += encodeURI(urlList[i].toString());
+				xml += thisObj.f_cdataWrap(urlList[i].f_toString());
+				xml += "</url>";
 			}
 		}
-		xml += '</white-list-easy-config>';
+		xml += "</white-list-easy-config>";
 		return xml;
 		
+	}
+
+    this.f_setUrlList = function(urlList, guicb)
+	{
+		if (g_devConfig.m_isLocalMode) {
+			thisObj.f_setUrlListLocal(urlList,guicb);
+		} else {
+			thisObj.f_setUrlListServer(urlList,guicb);
+		}		
 	}
 
     /**
@@ -647,8 +693,17 @@ function UTM_urlFilterBusObj(busObj)
                       "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
+                              thisObj.f_respondRequestCallbackSetCmd);
     }
+
+	this.f_getKeywordList = function(guicb)
+	{
+		if (g_devConfig.m_isLocalMode) {
+			thisObj.f_getKeywordListLocal(guicb);
+		} else {
+			thisObj.f_getKeywordListServer(guicb);
+		}
+	}
 
     /**
      */
@@ -680,13 +735,22 @@ function UTM_urlFilterBusObj(busObj)
 		var xml = '<banned-list-easy-config>';
 		for (var i=0; i < kwList.length; i++) {
 			if (kwList[i].m_action != 'noop') {
-				xml += '<keyword action="' + kwList[i].m_action + '">';
-				xml += kwList[i].toString();
-				xml += '</keyword>';
+				xml += "<keyword action='" + kwList[i].m_action + "'>";
+				xml += thisObj.f_cdataWrap(kwList[i].f_toString());
+				xml += "</keyword>";
 			}
 		}
-		xml += '</banned-list-easy-config>';
+		xml += "</banned-list-easy-config>";
 		return xml;		
+	}
+
+    this.f_setKeywordList = function(kwList, guicb)
+	{
+		if (g_devConfig.m_isLocalMode) {
+			thisObj.f_setKeywordListLocal(kwList,guicb);
+		} else {
+			thisObj.f_setKeywordListServer(kwList,guicb);
+		}		
 	}
 
     /**
@@ -704,7 +768,7 @@ function UTM_urlFilterBusObj(busObj)
                       "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
+                              thisObj.f_respondRequestCallbackSetCmd);
     }
 	
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -792,15 +856,68 @@ function UTM_urlFilterBusObj(busObj)
      */
     this.f_getUrlListLocal = function(guicb)
     {
-		/*
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
                       "<handler>white-list-easy-config get" +
                       "</handler><data></data></statement></command>";
 
-        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-        */
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+
+        thisObj.m_lastCmdSent = cmdSend;
+		var resp = (new DOMParser()).parseFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' + 
+                            '<code>0</code>' + 
+                               '<msg>' +
+                                   '<form name=\'white-list-easy-config\' code=\'0\'>' +
+								       '<white-list-easy-config>' +
+									       '<url>www.vyatta.com</url>' +
+										   '<url>!www.sun.com</url>' +
+										   '<url>www.facebook.com</url>' +
+									   '</white-list-easy-config>' +
+                                    '</form>' + 
+                                '</msg>' + 
+                          '</error>' + 
+                  '</openappliance>', "text/xml");
+
+        //alert ('cmdSend: ' + cmdSend);
+        thisObj.f_respondRequestCallback(resp, guicb);
     }
+	
+    this.f_setUrlListLocal = function(urlList, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>white-list-easy-config" +
+                      " set</handler><data>" + thisObj.f_urlList2xml(urlList) +
+                      "</data></statement></command>";
+
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+		
+		alert ('cmdSend: ' + cmdSend);
+					   
+        thisObj.m_lastCmdSent = cmdSend;
+
+		var resp = (new DOMParser()).parseFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' + 
+                            '<code>0</code>' + 
+                               '<msg>' +
+                                   '<form name=\'white-list-easy-config\' code=\'0\'>' +
+                                    '</form>' + 
+                                '</msg>' + 
+                          '</error>' + 
+                  '</openappliance>', "text/xml");
+
+        thisObj.f_respondRequestCallback(resp, guicb);
+    }	
+	
 }

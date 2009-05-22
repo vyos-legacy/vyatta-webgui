@@ -450,11 +450,9 @@ function UTM_confUrlEz(name, callback, busLayer)
                 thisObj.f_loadSchedule();                
             }                                 
         };      
-		if (!g_devConfig.m_isLocalMode) {
-			g_busObj.f_getUrlFilterConfig(cb);
-		} else {
-			g_busObj.f_getUrlFilterObj().f_getUrlFilterConfigLocal(cb);
-		}
+		
+	    g_busObj.f_getUrlFilterConfig(cb);
+
     }
     
     this.f_attachListener = function()
@@ -538,11 +536,8 @@ function UTM_confUrlEz(name, callback, busLayer)
             }                                 
         };   
 		   
-		if (!g_devConfig.m_isLocalMode) {
-			g_busObj.f_setUrlFilterConfig(thisObj.m_ufcObj, cb);
-		} else {
-			g_busObj.f_getUrlFilterObj().f_setUrlFilterConfigLocal(thisObj.m_ufcObj, cb);
-		}		
+		
+		g_busObj.f_setUrlFilterConfig(thisObj.m_ufcObj, cb);		
     }
     
     this.f_reset = function()

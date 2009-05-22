@@ -6,8 +6,19 @@
  */
 function UTM_confUrlEzByUrl(name, callback, busLayer)
 {
+    /**
+     ***************************************************************************
+     * id naming convention
+     *    enable_all:     this.m_prefix + 'cb'
+     *    rowId:          this.m_prefix + 'row_' + thisObj.m_cnt
+     *    enable@row:     this.m_prefix + 'cb' + thisObj.m_cnt
+     *    delete@row:     when clicked, get passed the rowId
+     *    textfield@row:  this.m_prefix + 'addr_' + thisObj.m_cnt
+     ****************************************************************************
+     */	
     var thisObj = this;
     this.thisObjName = 'UTM_confurlEzByUrl';
+	this.m_prefix = 'utm_conf_url_ez_by_url_';
     this.m_btnCancelId = 'conf_url_ez_by_url_btn_cancel';
     this.m_btnApplyId = 'conf_url_ez_by_url_btn_apply';
     this.m_btnAddId = 'conf_url_ez_by_url_btn_add';
@@ -17,6 +28,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     this.m_row = 0;
     this.m_cnt = 0;
 	this.m_urlList = null;
+	this.m_deletedRow = null;
     
     /**
      * @param name - name of configuration screens.
@@ -79,7 +91,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     {
         var cb = document.getElementById('conf_url_ez_by_url_enable_cb');
 		
-        var s = 'utm_conf_url_ez_by_url_cb_';
+        var s = thisObj.m_prefix + 'cb_';
 		for (var i=0; i < thisObj.m_cnt; i++) {
 	        var el = document.getElementById(s + i);
 			if (el != null) {
@@ -90,11 +102,11 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     
     this.f_addRow = function()
     {
-        var prefix = 'utm_conf_url_ez_by_url_';
+        var prefix = thisObj.m_prefix;
 		var rowId = prefix + 'row_' + thisObj.m_cnt;
 		
         var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, '', '', 625);
-        var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
+        var cb = thisObj.f_renderCheckbox('yes', prefix + 'cb_' + thisObj.m_cnt, '', '');
         var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlEventCallback('" +
             thisObj.m_btnDeleteId + "','" + rowId +
         "')", 'delete row');
@@ -108,9 +120,38 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     
 	this.f_deleteRow = function(rowId)
 	{
-		var row = document.getElementById(rowId);
+		var prefix = thisObj.m_prefix + 'row_';
+        var row = document.getElementById(rowId);
+		
 		if (row != null) {
-			row.parentNode.removeChild(row);
+			var id = rowId.substring(prefix.length, rowId.length);
+			var url = document.getElementById(thisObj.m_prefix + 'addr_' + id);
+			
+			if (url.readOnly) {
+			//need to send delete command to the server.
+			    var urlList = new Array();
+				var listObj = new UTM_urlFilterListObj(url.value);
+				listObj.m_action = 'delete';
+                listObj.m_status = true;				
+				urlList.push(listObj);
+				thisObj.m_deletedRow = row;
+				
+			    var cb = function(evt)
+                {        
+                    if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                        if (evt.f_isError()) {                
+                            g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);  
+                            return;                    
+                        }                
+						thisObj.m_deletedRow.parentNode.removeChild(thisObj.m_deletedRow);    
+                        thisObj.f_adjust();         
+                    }                                 
+                };      
+		        g_busObj.f_setUrlList(urlList, cb); 	
+				return;
+			} else {
+				row.parentNode.removeChild(row);
+			}
 			thisObj.f_adjust();
 		}
 	}
@@ -132,6 +173,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         } else if (id == thisObj.m_btnApplyId) {
             thisObj.f_apply();
         } else if (id == thisObj.m_btnAddId) {
+			alert('button add clicked');
             thisObj.f_addRow();
         } else if (id == thisObj.m_btnBackId) {
             g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);            
@@ -143,9 +185,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     }
     
     this.f_loadVMData = function()
-    {
-        thisObj.f_populateTable();
-		
+    {		
         var cb = function(evt)
         {        
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
@@ -157,11 +197,9 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
                 thisObj.f_populateTable();           
             }                                 
         };      
-		if (!g_devConfig.m_isLocalMode) {
-			g_busObj.f_getUrlList(cb);
-		} else {
-			g_busObj.f_getUrlFilterObj().f_getUrlListLocal(cb);
-		}
+
+		g_busObj.f_getUrlList(cb);
+
     }
     
     this.f_getTableHeight = function()
@@ -182,24 +220,27 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     this.f_populateTable = function()
     {
         var a = thisObj.m_urlList;
-        
-        for (var i = 0; i < a.length; i++) {
-            var prefix = 'utm_conf_url_ez_by_url_';
-			var rowId = prefix + 'row_' + thisObj.m_cnt;
-			var ro = true;
-			if (a[i].length < 3) {
-				ro =false;
+        if (a != null) {
+			for (var i = 0; i < a.length; i++) {
+				var prefix = thisObj.m_prefix;
+				var rowId = prefix + 'row_' + thisObj.m_cnt;
+				var enable = 'yes';
+				if (!a[i].m_status) {
+					enable = 'no';
+				}
+				var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i].m_value, '', 625, '', true);
+				var cb = thisObj.f_renderCheckbox(enable, prefix + 'cb_' + thisObj.m_cnt, '', '');
+				var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlEventCallback('" +
+				thisObj.m_btnDeleteId +
+				"','" +
+				rowId +
+				"')", 'delete row');
+				var data = [addr, cb, del];
+				var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28, rowId);
+				thisObj.m_body.appendChild(bodyDiv);
+				thisObj.m_cnt++;
 			}
-            var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, a[i], '', 625, '', ro);
-            var cb = thisObj.f_renderCheckbox('no', prefix + 'cb_' + thisObj.m_cnt, '', '');
-            var del = thisObj.f_renderButton('delete', true, "f_confUrlEzByUrlEventCallback('" +
-            thisObj.m_btnDeleteId + "','" + rowId +
-            "')", 'delete row');
-            var data = [addr, cb, del];
-            var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28, rowId);
-            thisObj.m_body.appendChild(bodyDiv);
-            thisObj.m_cnt++;
-        }
+		}
 		thisObj.f_addRow();
         
         thisObj.f_adjust();

@@ -113,7 +113,10 @@ function UTM_urlFilterScheduleObj(schedArray)
 		var a = ['m','t','w','h','f','a','s'];
 		
 		for (var i=0; i < a.length; i++) {
-			s += '<' + a[i] + '>' + thisObj.m_schedule[a[i]] + '</' + a[i] + '>';
+			var timeRange = thisObj.m_schedule[a[i]];
+			if ((timeRange != null) && (timeRange.length > 0)) {
+				s += '<' + a[i] + '>' + timeRange + '</' + a[i] + '>';
+			}
 		}
 		s += '</schedule>';
 		return s;
@@ -142,19 +145,19 @@ function UTM_urlFilterPolicyObj(policyArray)
 		for (var i=0; i < a.length; i++) {
 			var attr = thisObj.f_getAttribute(a[i]);
 			if ((attr != undefined) && (attr != null)) {
-				s+= '<' + a[i] + ' status="' + attr + '">';
+				s+= "<" + a[i] + " status='" + attr + "'>";
 				if (a[i]=='blacklist') {
 					for (var j=0; j < aa.length; j++) {
 						var subAttr = thisObj.f_getAttribute(aa[j]);
 						if ((subAttr != undefined) && (subAttr != null) && (subAttr=='true')) {
-							s += '<' + aa[j] + '>' + subAttr + '</' + aa[j] + '>';
+							s += "<" + aa[j] + ">" + subAttr + "</" + aa[j] + ">";
 						}
 					}
 				}
-				s+= '</' + a[i] + '>';
+				s+= "</" + a[i] + ">";
 			}
 		}
-		s += '</policy>';
+		s += "</policy>";
 		return s;
 	}	
 }
@@ -176,10 +179,10 @@ function UTM_urlFilterConfigObj(policy, schedule)
 	}
 	
 	this.f_toXml= function() {
-		var s = '<url-filtering-easy-config>';
+		var s = "<url-filtering-easy-config>";
 		s += thisObj.m_policy.f_toXml();
 		s += thisObj.m_schedule.f_toXml();
-		s += '</url-filtering-easy-config>';
+		s += "</url-filtering-easy-config>";
 		return s;
 	}
 }
@@ -608,7 +611,7 @@ function UTM_urlFilterBusObj(busObj)
                       "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
+                              thisObj.f_respondRequestCallbackSetCmd);
     }	
 
 	this.f_getUrlList = function(guicb)
@@ -642,7 +645,7 @@ function UTM_urlFilterBusObj(busObj)
 	
 	this.f_cdataWrap = function(s)
 	{
-		return '<![CDATA[' + s + ']]>';
+		return "<![CDATA[" + s + "]]>";
 	}
 
     /**
@@ -652,16 +655,16 @@ function UTM_urlFilterBusObj(busObj)
      */
     this.f_urlList2xml = function(urlList)
 	{
-		var xml = '<white-list-easy-config>';
+		var xml = "<white-list-easy-config>";
 		for (var i=0; i < urlList.length; i++) {
 			if (urlList[i].m_action != 'noop') {
-				xml += '<url action="' + urlList[i].m_action + '">';
+				xml += "<url action='" + urlList[i].m_action + "'>";
 //				xml += encodeURI(urlList[i].toString());
-				xml += thisObj.f_cdataWrap(urlList[i].toString());
-				xml += '</url>';
+				xml += thisObj.f_cdataWrap(urlList[i].f_toString());
+				xml += "</url>";
 			}
 		}
-		xml += '</white-list-easy-config>';
+		xml += "</white-list-easy-config>";
 		return xml;
 		
 	}
@@ -690,7 +693,7 @@ function UTM_urlFilterBusObj(busObj)
                       "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
+                              thisObj.f_respondRequestCallbackSetCmd);
     }
 
 	this.f_getKeywordList = function(guicb)
@@ -732,12 +735,12 @@ function UTM_urlFilterBusObj(busObj)
 		var xml = '<banned-list-easy-config>';
 		for (var i=0; i < kwList.length; i++) {
 			if (kwList[i].m_action != 'noop') {
-				xml += '<keyword action="' + kwList[i].m_action + '">';
-				xml += thisObj.f_cdataWrap(kwList[i].toString());
-				xml += '</keyword>';
+				xml += "<keyword action='" + kwList[i].m_action + "'>";
+				xml += thisObj.f_cdataWrap(kwList[i].f_toString());
+				xml += "</keyword>";
 			}
 		}
-		xml += '</banned-list-easy-config>';
+		xml += "</banned-list-easy-config>";
 		return xml;		
 	}
 
@@ -765,7 +768,7 @@ function UTM_urlFilterBusObj(busObj)
                       "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
+                              thisObj.f_respondRequestCallbackSetCmd);
     }
 	
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -884,4 +887,37 @@ function UTM_urlFilterBusObj(busObj)
         //alert ('cmdSend: ' + cmdSend);
         thisObj.f_respondRequestCallback(resp, guicb);
     }
+	
+    this.f_setUrlListLocal = function(urlList, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>white-list-easy-config" +
+                      " set</handler><data>" + thisObj.f_urlList2xml(urlList) +
+                      "</data></statement></command>";
+
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+		
+		alert ('cmdSend: ' + cmdSend);
+					   
+        thisObj.m_lastCmdSent = cmdSend;
+
+		var resp = (new DOMParser()).parseFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' + 
+                            '<code>0</code>' + 
+                               '<msg>' +
+                                   '<form name=\'white-list-easy-config\' code=\'0\'>' +
+                                    '</form>' + 
+                                '</msg>' + 
+                          '</error>' + 
+                  '</openappliance>', "text/xml");
+
+        thisObj.f_respondRequestCallback(resp, guicb);
+    }	
+	
 }

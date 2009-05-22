@@ -13,7 +13,11 @@ function UTM_confFireCustom(name, callback, busLayer)
     var thisObj = this;
     this.thisObjName = 'UTM_confFireCustom';
     this.m_nextRuleNo = 10;
-    this.m_fieldIds = ["rulenoId_", "blkId_", "appId_", "proId_", "sipId_", "smipId_",
+    this.m_ruleZoneOptions = ["Any", "DMZ to LAN traffic", "DMZ to WAN ..", "LAN to DMZ ..",
+                      "LAN to WAN ..", "WAN to DMZ ..", "WAN to LAN .."];
+    this.m_ruleZoneOptName = ["Any", "DMZ_to_LAN", "DMZ_to_WAN", "LAN_to_DMZ",
+                      "LAN_to_WAN", "WAN_to_DMZ", "WAN_to_LAN"];
+    this.m_fieldIds = ["rulenoId_", "dirId_", "appId_", "proId_", "sipId_", "smipId_",
                         "sportId_", "dipId_", "dmipId_", "dportId_",
                         "actId_", "logId_", "enableId_"];
 
@@ -41,12 +45,12 @@ function UTM_confFireCustom(name, callback, busLayer)
         var chkbox = 'Enabled<br><br>' + thisObj.f_renderCheckbox('no',
                       'firewallCustomEnable', 'f_firewallCustomEnableChkboxCb',
                       'tooltip');
-        var chkbox2 = g_lang.m_fireCustLog + '<br><br>' + thisObj.f_renderCheckbox('no',
+        var chkbox2 = g_lang.m_fireCustLog + '<br>Yes/No<br><br>' + thisObj.f_renderCheckbox('no',
                       'firewallCustomLog', 'f_firewallCustomLogChkboxCb',
                       'tooltip');
 
         //cols[0] = this.f_createColumn("Rule<br>Number", 65, 'combo', '3', false, 'center');
-        cols[0] = this.f_createColumn("   ", 80, 'text', '6', false, 'left');
+        cols[0] = this.f_createColumn(g_lang.m_fireCustDirection, 80, 'text', '6', false, 'center');
         cols[1] = this.f_createColumn(g_lang.m_fireCustAppService, 100, 'combo', '3', false, 'center');
         cols[2] = this.f_createColumn(g_lang.m_fireCustProtocol, 70, 'combo', '3', false, 'center');
         cols[3] = this.f_createColumn(g_lang.m_fireCustSrcIpAddr, 115, 'textField', '3', false, 'center');
@@ -62,6 +66,24 @@ function UTM_confFireCustom(name, callback, busLayer)
         cols[13] = this.f_createColumn(g_lang.m_fireCustDelete, 55, 'combo', '3', false, 'center');
 
         return cols;
+    }
+
+    this.f_createFireRecord = function(ruleNo)
+    {
+        var ruleOp = document.getElementById('fwCustomHeaderCombo_id');
+        var zone = this.f_getComboBoxOptionName(ruleOp);
+
+        return new UTM_fireRecord(ruleNo, zone);
+    }
+
+    this.f_sendSetCommand = function(fireRec, name, value)
+    {
+        var cb = function(evt)
+        {
+            alert(evt.m_value);
+        }
+
+        thisObj.m_busLayer.f_setFirewallCustomize(fireRec, name, value, cb);
     }
 
     this.f_loadVMData = function()
@@ -97,19 +119,20 @@ function UTM_confFireCustom(name, callback, busLayer)
         }
     };
 
-    this.f_handleAddFirewallCustomRow = function(ruleNo)
+    this.f_handleAddFirewallCustomRow = function(ruleNo, ruleOp)
     {
         var services = ["DNS-UDP", "DNS-TCP", "HTTP", "HTTPS", "FTP_DATA",
                         "FTP", "POP3", "SMTP", "SMTP-Auth", "TFTP", "POP3S",
                         "IMAP", "NTP", "NNTP", "SNMP", "Telnet", "SSH",
                         "L2TP", "Traceroute", "IPSec", "UNIK", "H323 host call - TCP",
                         "H323 host call - UDP", "SIP-TCP", "SIP-UDP",
-                        "ICA-TCP", "ICA-UDP"];
+                        "ICA-TCP", "ICA-UDP", "Others"];
         var servName = ["53", "53", "80", "443", "20", "21", "110", "25", "587",
                         "69", "995", "143", "119", "199", "161-162", "23", "22",
                         "1701", "32769-65535", "22", "500, 4500", "500, 4500",
-                        "1720", "1718, 1719", "5060", "5060", "1494", "1494"];
-        var proto = ["TCP", "UDP", "ICMP", "IPSec (ESP)", "VRRP"];
+                        "1720", "1718, 1719", "5060", "5060", "1494", "1494", ""];
+        var proto = ["TCP", "UDP", "TCP/UDP", "ICMP", "IPSec (ESP)", "VRRP"];
+        var action = ["Accept", "Reject"]
         var options = ["Any", "DMZ to LAN traffic", "DMZ to WAN ..", "LAN to DMZ ..",
                       "LAN to WAN ..", "WAN to DMZ ..", "WAN to LAN .."];
 
@@ -124,27 +147,29 @@ function UTM_confFireCustom(name, callback, busLayer)
                             ["f_fwCustomOnCbbBlur('" + thisObj.m_fieldIds[3]+
                             ruleNo + "')"]);
         var sip = thisObj.f_renderTextField(thisObj.m_fieldIds[4]+ruleNo,
-                            '255.255.255.255', '', 105,
+                            '255.255.255.254', '', 105,
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[4]+
                             ruleNo + "')"], false);
         var smip = thisObj.f_renderTextField(thisObj.m_fieldIds[5]+ruleNo,
-                            '100.000.100.100', '', 105,
+                            '255.255.128.0', '', 105,
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[5]+
                             ruleNo + "')"], false);
         var sport = thisObj.f_renderTextField(thisObj.m_fieldIds[6]+ruleNo, '255', '', 80,
                             null, false);
         var dip = thisObj.f_renderTextField(thisObj.m_fieldIds[7]+ruleNo,
-                            '255.255.255.255', '', 105,
+                            '255.255.255.253', '', 105,
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[7]+
                             ruleNo + "')"], false);
         var dmip = thisObj.f_renderTextField(thisObj.m_fieldIds[8]+ruleNo,
-                            '100.000.100.100', '', 105,
+                            '255.255.255.128', '', 105,
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[8]+
                             ruleNo + "')"], false);
         var dport = thisObj.f_renderTextField(thisObj.m_fieldIds[9]+ruleNo, '255',
                             '', 80, null, false);
-        var act = thisObj.f_renderCombobox(proto, "Any", 80,
-                            thisObj.m_fieldIds[10]+ruleNo);
+        var act = thisObj.f_renderCombobox(action, "Any", 80,
+                            thisObj.m_fieldIds[10]+ruleNo,
+                            ["f_fwCustomizeOnCbbBlur('" + thisObj.m_fieldIds[10]+
+                            ruleNo + "')"]);
         var log = "<div align=center>" + thisObj.f_renderCheckbox(
                   'no', thisObj.m_fieldIds[11]+ruleNo, "", "") + "</div>";
         var enable = "<div align=center>" + thisObj.f_renderCheckbox(
@@ -163,7 +188,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    ['LAN-WAN', app, pro, sip, smip, sport, dip, dmip, dport,
+                    [ruleOp.value, app, pro, sip, smip, sport, dip, dmip, dport,
                     act, log, order, enable, del]);
         thisObj.m_gridBody.appendChild(div);
 
@@ -181,7 +206,9 @@ function UTM_confFireCustom(name, callback, busLayer)
 
         var btns = [['Add', "f_fireCustomAddHandler()", "", this.m_btnAddId],
                     ['Save', "f_fireCustomSaveHandler()", "", this.m_btnSaveId],
-                    ['Cancel', "f_fireCustomCancelHandler()", "", this.m_btnCancelId]];
+                    ['Reset', "f_fireCustomCancelHandler()", "", this.m_btnRestId],
+                    ['Cancel', "f_fireCustomCancelHandler()", "", this.m_btnCancelId],
+                    ['Back', "f_fireCustomCancelHandler()", "", this.m_btnBackId]];
         this.m_buttons = this.f_createButtons(btns);
 
         var grid = this.f_initGridDiv([this.m_gridHeader, this.m_gridBody])
@@ -221,47 +248,96 @@ function UTM_confFireCustom(name, callback, busLayer)
 
     this.f_headerCombo = function()
     {
-        var options = ["Any", "DMZ to LAN traffic", "DMZ to WAN ..", "LAN to DMZ ..",
-                      "LAN to WAN ..", "WAN to DMZ ..", "WAN to LAN .."];
-        var combo = this.f_renderCombobox(options, "Any", 180,
-                    'fwCustomHeaderCombo_id', ['f_onwfCustomHeaderCombo()']);
+        var combo = this.f_renderCombobox(thisObj.m_ruleZoneOptions, "Any", 180,
+                    'fwCustomHeaderCombo_id', ['f_onwfCustomHeaderCombo()',
+                    this.m_ruleZoneOptName]);
 
-        return this.f_createGeneralDiv("<b>Can't read what it is:&nbsp;&nbsp;</b>" +
-                    combo);
+        return this.f_createGeneralDiv("<b>" + g_lang.m_fireCustRuleOption +
+                ":&nbsp;&nbsp;&nbsp;</b>" + combo);
     };
 
-    this.f_validateIPAddress = function(ip)
+
+    this.f_handleIPAddressOnBlur = function(tfeid, cidr)
     {
+        var tf = document.getElementById(tfeid);
+        var ip = tf.value;
+
+        ///////////////////////////////
+        // validate ip address
         if(!g_utils.f_validateIP(ip))
         {
             alert("invalid ip address : " + ip);
+            tf.focus();
+            return;
         }
-    };
 
-    this.f_validateNetmask = function(nm)
-    {
-        if(g_utils.f_validateNetmask(nm))
+        ////////////////////////////////////////////
+        // check netmask textfield
+        var fIds = tfeid.split("_");
+        var newCidr = cidr;
+        if(cidr == null)
         {
-            var cidr = g_utils.f_convertNetmaskToCIDR(nm);
+            var fId = "";
+            var fName = "";
+            if(fIds[0]+"_" == thisObj.m_fieldIds[4])
+            {
+                fId = 5;
+                fName = "saddr";
+            }
+            else
+            {
+                fId = 8;
+                fName = "daddr";
+            }
 
-            alert("cidr " + cidr);
+            var snm = document.getElementById(thisObj.m_fieldIds[fId]+fIds[1]);
+            if(g_utils.f_validateNetmask(snm.value))
+            {
+                newCidr = g_utils.f_convertNetmaskToCIDR(snm.value);
+                var fireRec = thisObj.f_createFireRecord(fIds[1]);
+                thisObj.f_sendSetCommand(fireRec, fName, ip+"/"+newCidr);
+            }
         }
         else
-            alert('netmask invalidate');
-    };
+        {
+            var fireRec = thisObj.f_createFireRecord(fIds[1]);
+            thisObj.f_sendSetCommand(fireRec, fName, ip+"/"+newCidr);
+        }
+    }
 
-    this.f_tfOnBlur = function(tfeid)
+    this.f_handleNetMaskOnBlur = function(tfeid)
     {
         var tf = document.getElementById(tfeid);
+        var cidr = null;
 
-        // ip address text fields
-        if(tfeid.indexOf(thisObj.m_fieldIds[4]) >= 0 ||
-            tfeid.indexOf(thisObj.m_fieldIds[7]) >= 0)
-            thisObj.f_validateIPAddress(tf.value);
-        // net mask text fields
-        else if(tfeid.indexOf(thisObj.m_fieldIds[5]) >= 0 ||
-            tfeid.indexOf(thisObj.m_fieldIds[8]) >= 0)
-            thisObj.f_validateNetmask(tf.value);
+        if(g_utils.f_validateNetmask(tf.value))
+            cidr = g_utils.f_convertNetmaskToCIDR(tf.value);
+        else
+        {
+            alert('netmask invalidate');
+            return;
+        }
+
+        ////////////////////////////////////////////
+        // check ip address textfield
+        var fIds = tfeid.split("_");
+        var fId = (fIds[0]+"_" == thisObj.m_fieldIds[5]) ? fId = 4: fId = 7;
+        this.f_handleIPAddressOnBlur(this.m_fieldIds[fId]+fIds[1], cidr);
+
+        return;
+    };
+
+    this.f_cbOnRuleOptionSelected = function(cbeid)
+    {
+        var cbb = document.getElementById(cbeid);
+        var opName = thisObj.f_getComboBoxOptionName(cbb);
+
+        if(opName == 'Any')
+        {
+
+        }
+
+        //this.m_busLayer
     };
 
     this.f_cbOnSelected = function(cbeid)
@@ -271,40 +347,43 @@ function UTM_confFireCustom(name, callback, busLayer)
         if(cbeid.indexOf(thisObj.m_fieldIds[2]) >= 0)
         {
             var rNo = cbeid.split("_");
-            var val = "";
+            var val = thisObj.f_getComboBoxOptionName(cbb);
 
             var src = document.getElementById(thisObj.m_fieldIds[6]+rNo[1]);
             var dest = document.getElementById(thisObj.m_fieldIds[9]+rNo[1]);
 
-            for(var i=0; i<cbb.options.length; i++)
-            {
-                if(cbb.options[i].selected)
-                {
-                    var attr = cbb.options[i].attributes;
-
-                    for(var j=0; j<attr.length; j++)
-                    {
-                        if(attr[j].nodeName == 'name')
-                        {
-                            val = attr[j].nodeValue;
-                            break;
-                        }
-                    }
-                }
-            }
-            
             src.value = val;
             dest.value = val;
         }
     };
+
+    this.f_getComboBoxOptionName = function(cbb)
+    {
+        for(var i=0; i<cbb.options.length; i++)
+        {
+            if(cbb.options[i].selected)
+            {
+                var attr = cbb.options[i].attributes;
+
+                for(var j=0; j<attr.length; j++)
+                {
+                    if(attr[j].nodeName == 'name')
+                        return attr[j].nodeValue;
+                }
+            }
+        }
+
+        return '';
+    }
 }
 UTM_extend(UTM_confFireCustom, UTM_confBaseObj);
 
 function f_fireCustomAddHandler()
 {
     var aObj = g_configPanelObj.m_activeObj;
+    var ruleOp = document.getElementById('fwCustomHeaderCombo_id');
 
-    aObj.f_handleAddFirewallCustomRow(aObj.m_nextRuleNo++);
+    aObj.f_handleAddFirewallCustomRow(aObj.m_nextRuleNo++, ruleOp);
     var mainPanel = document.getElementById("utm_confpanel_");
     if(mainPanel != null)
     {
@@ -338,9 +417,18 @@ function f_fireCustomArrowDownHandler(ruleNo)
     alert('arrow down ' + ruleNo);
 }
 
-function f_fwCustomOnTFBlur(tfeId)
+function f_fwCustomOnTFBlur(tfeid)
 {
-    g_configPanelObj.m_activeObj.f_tfOnBlur(tfeId);
+    var aObj = g_configPanelObj.m_activeObj;
+
+    // ip address text fields
+    if(tfeid.indexOf(aObj.m_fieldIds[4]) >= 0 ||
+        tfeid.indexOf(aObj.m_fieldIds[7]) >= 0)
+        aObj.f_handleIPAddressOnBlur(tfeid, null);
+    // net mask text fields
+    else if(tfeid.indexOf(aObj.m_fieldIds[5]) >= 0 ||
+        tfeid.indexOf(aObj.m_fieldIds[8]) >= 0)
+        aObj.f_handleNetMaskOnBlur(tfeid);
 }
 
 function f_fwCustomOnCbbBlur(cbeId)
@@ -350,5 +438,5 @@ function f_fwCustomOnCbbBlur(cbeId)
 
 function f_onwfCustomHeaderCombo()
 {
-
+    g_configPanelObj.m_activeObj.f_cbOnSelected('fwCustomHeaderCombo_id');
 }

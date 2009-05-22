@@ -61,7 +61,7 @@ function UTM_businessLayer()
 	var m_urlObj = null;
     this.m_userObj = new UTM_userBusObj(this);
 	thisObj.m_request = createXMLHttpRequest();
-	
+
 
     /**
      * send request to server. All server get must call this function.
@@ -125,10 +125,14 @@ function UTM_businessLayer()
         {
             for(var i=0; i<response.length; i++)
             {
-                var cn = response[i].childNodes;
+                var cns = response[i].childNodes;
 
-                if(cn.nodeName == node)
-                    return cn.childNodes;
+                for(var j=0; j<cns.length; j++)
+                {
+                    var cn = cns[j];
+                    if(cn.nodeName == node)
+                        return cn.childNodes;
+                }
             }
         }
 
@@ -231,9 +235,39 @@ function UTM_businessLayer()
         thisObj.f_getFWObject().f_getFirewallSecurityLevel(guicb);
     }
 
+    /**
+     * perform a set vpn site2site configurations request to server.
+     * @param fireRec - firewall record object
+     * @param guicb - gui callback function
+     */
     this.f_setFirewallSecurityLevel = function(fireRec, guicb)
     {
         thisObj.f_getFWObject().f_setFirewallSecurityLevel(fireRec, guicb);
+    }
+
+    this.f_getFirewallSecurityCustomize = function(guicb)
+    {
+        thisObj.f_getFWObject().f_getFirewallSecurityCustomize(guicb);
+    }
+
+    this.f_setFirewallCustomize = function(fireRec, name, value, guicb)
+    {
+        thisObj.f_getFWObject().f_setFirewallCustomize(fireRec, name, value, guicb);
+    }
+
+    this.f_deleteFirewallCustomizeRule = function(fireRec, guicb)
+    {
+        thisObj.f_getFWObject().f_deleteFirewallCustomizeRule(fireRec, guicb);
+    }
+
+    /**
+     * @param type - 'cancel' to cancel already setted customize rules
+     *               'save' to save all the setted customize rules
+     * @param guicb - gui callbackk function
+     */
+    this.f_sendFirewallCustomizeRuleCmd = function(type, guicb)
+    {
+        thisObj.f_getFWObject().f_sendFirewallCustomizeRuleCmd(type, guicb);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -278,7 +312,7 @@ function UTM_businessLayer()
     {
         thisObj.f_getVPNObject().f_setSite2SiteConfig(vpnRec, 'expert', guicb);
     }
-	
+
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // url filtering section
@@ -294,7 +328,7 @@ function UTM_businessLayer()
     {
         thisObj.f_getUrlFilterObj().f_getUrlFilterConfig(guicb);
     }
-	
+
     this.f_setUrlFilterConfig = function(ufcObj, guicb)
     {
         thisObj.f_getUrlFilterObj().f_setUrlFilterConfig(ufcObj, guicb);

@@ -35,10 +35,10 @@ use Vyatta::IpTables::Rule;
 use Vyatta::IpTables::AddressFilter;
 
 sub get_srcdst_address {
- my ($level) = @_;
+ my ($level, $orig_or_active) = @_;
  my $address = "";
  my $addr = new Vyatta::IpTables::AddressFilter;
- $addr->setupOrig("$level");
+ $addr->$orig_or_active("$level");
  if (defined $addr->{_address}) {
   $address = $addr->{_address};
  } elsif (defined $addr->{_network}) {
@@ -50,10 +50,10 @@ sub get_srcdst_address {
 }
 
 sub get_srcdst_port {
- my ($level) = @_;
+ my ($level, $orig_or_active) = @_;
  my $portstr = "";
  my $port = new Vyatta::IpTables::AddressFilter;
- $port->setupOrig("$level");
+ $port->$orig_or_active("$level");
  $portstr = $port->{_port} if defined $port->{_port};
  return $portstr;
 }
@@ -61,12 +61,8 @@ sub get_srcdst_port {
 sub get_zonepair_fwruleset {
   my $zonepair = shift;
 
-  # assuming zone pair to be in this form 'fromzone_to_tozone'
-  my @zones = split('_', $zonepair);
-
-  # first get firewall ruleset name applied to that zone_pair
-  my $fw_ruleset=Vyatta::Zone::get_firewall_ruleset("returnOrigValue",
-                        "$zones[2]", "$zones[0]", 'name');
+  # add 'Customized_' in front of zonepair
+  my $fw_ruleset = 'Customized_' . $zonepair; 
 
   return $fw_ruleset;
 }
@@ -78,7 +74,7 @@ sub get_rule {
  my $rule_string="rulenum=[$rulenum]";
 
  my $cli_rule = new Vyatta::IpTables::Rule;
- $cli_rule->setupOrig("firewall name $ruleset rule $rulenum");
+ $cli_rule->setup("firewall name $ruleset rule $rulenum");
 
  if (defined $cli_rule->{_protocol}) {
    $rule_string .= ",protocol=[$cli_rule->{_protocol}]";
@@ -86,10 +82,10 @@ sub get_rule {
    $rule_string .= ",protocol=[Any]";
  }
 
- my $source_addr = get_srcdst_address("firewall name $ruleset rule $rulenum source");
- my $destination_addr = get_srcdst_address("firewall name $ruleset rule $rulenum destination");
- my $source_port = get_srcdst_port("firewall name $ruleset rule $rulenum source");
- my $destination_port = get_srcdst_port("firewall name $ruleset rule $rulenum destination");
+ my $source_addr = get_srcdst_address("firewall name $ruleset rule $rulenum source", 'setup');
+ my $destination_addr = get_srcdst_address("firewall name $ruleset rule $rulenum destination", 'setup');
+ my $source_port = get_srcdst_port("firewall name $ruleset rule $rulenum source", 'setup');
+ my $destination_port = get_srcdst_port("firewall name $ruleset rule $rulenum destination", 'setup');
 
  $rule_string .= ",saddr=[$source_addr]";
  $rule_string .= ",sport=[$source_port]";
@@ -141,11 +137,11 @@ sub execute_get {
  # get a list of all rulenums in that ruleset
  # ask for all rules one by one and keep appending to $rules_string
  $config->setLevel("firewall name $fw_ruleset rule");
- my @rules = $config->listOrigNodes();
+ my @rules = $config->listNodes();
 
  if ($rulenum eq 'all') {
    # ask for all rules one by one and keep appending to $rules_string
-   foreach (@rules) {
+   foreach (sort @rules) {
      $rules_string .= get_rule ($fw_ruleset, $_);
    }
  } else {
@@ -161,6 +157,138 @@ sub execute_get {
 
  $return_string = "<customize-firewall>zonepair=[$zonepair]:$rules_string</customize-firewall>";
  print "$return_string";
+
+}
+
+sub execute_delete_rule {
+ my ($zonepair, $rulenum) = @_;
+
+ # get firewall ruleset name applied to that zone_pair
+ my $fw_ruleset=get_zonepair_fwruleset($zonepair);
+
+ my @cmds = ("delete firewall name $fw_ruleset rule $rulenum");
+ my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+ if (defined $err) {
+   # print error and return
+   print("<form name='customize-firewall' code=3></form>");
+   exit 1;
+ }
+}
+
+sub get_addr_port_cmds {
+  my ($value, $clilevel, $addr_or_port) = @_;
+  my @cmds = ();
+  my ($func, $clival);
+
+  if ($addr_or_port eq 'address') {
+    $func="get_srcdst_address(\"$clilevel\", 'setup')";
+  } else {
+    $func="get_srcdst_port(\"$clilevel\", 'setup')";
+  }
+
+  if ($value eq '') {
+    # check if there exists a value in CLI
+    # if yes then delete it
+    $clival = $func;
+    if (!($clival eq '')) {
+      @cmds = (
+        "delete $clilevel",
+      );
+    }
+  } else {
+    @cmds = (
+      "set $clilevel $addr_or_port $value",
+    );
+  }
+
+  return @cmds;
+}
+
+sub execute_set_value {
+  my ($zonepair, $rulenum, $key, $value) = @_;
+  my $invalid_key='false';
+  my @cmds=();
+
+  my $fw_ruleset=get_zonepair_fwruleset($zonepair);
+  my $fw_rule_level = "firewall name $fw_ruleset rule $rulenum";
+
+  # convert any capital letters to small caps to avoid any confusion
+  $key =~ tr/A-Z/a-z/;
+  $value =~ tr/A-Z/a-z/;
+
+  switch ($key) {
+    case 'protocol' {
+      if ($value eq 'any') {
+        $value = 'all';
+      }
+      @cmds = (
+         "set $fw_rule_level protocol $value",
+      );
+    }
+    case 'saddr' {
+      @cmds = get_addr_port_cmds(
+                $value, "$fw_rule_level source", 'address');
+    }
+    case 'sport' {
+      @cmds = get_addr_port_cmds(
+                $value, "$fw_rule_level source", 'port');
+    }
+    case 'daddr' {
+      @cmds = get_addr_port_cmds(
+                $value, "$fw_rule_level destination", 'address');
+    }
+    case 'dport' {
+      @cmds = get_addr_port_cmds(
+                $value, "$fw_rule_level destination", 'port');
+    }
+    case 'action' {
+      @cmds = (
+         "set $fw_rule_level action $value",
+      );
+    }
+    case 'log' {
+      if ($value eq 'yes') {
+        @cmds = (
+          "set $fw_rule_level log enable",
+        );
+      } else {
+        @cmds = (
+          "set $fw_rule_level log disable",
+        );
+      }
+    }
+    case 'enable' {
+      if ($value eq 'yes') {
+        my $rule = new Vyatta::IpTables::Rule;
+        $rule->setup("$fw_rule_level");
+        if ($rule->is_disabled()) {
+          @cmds = (
+            "delete $fw_rule_level disable",
+          );
+        }
+      } else {
+        @cmds = (
+          "set $fw_rule_level disable",
+        );
+      }
+    }
+    else {
+      $invalid_key = 'true';
+    }
+  }
+
+  if ($invalid_key eq 'false') {
+    my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+    if (defined $err) {
+      # print error and return
+      print("<form name='customize-firewall' code=4></form>");
+      exit 1;
+    }
+  } else {
+    # print error and return
+    print("<form name='customize-firewall' code=5></form>");
+    exit 1;
+  }
 
 }
 
@@ -183,14 +311,35 @@ GetOptions(
 usage() if ! defined $action;
 
 # list of possible actions :
-# set, delete, get, order-rulenum, change-rulenum, save
+# set, delete, get, order-rulenum, change-rulenum, save, cancel
 
 # convert any capital letters to small caps to avoid any confusion
 $action =~ tr/A-Z/a-z/;
 
-# we need args for every action except for save-changes
+# do not need any args for save
 if ($action eq 'save') {
   # simply commit and save changes
+  my @cmds = ('commit', 'save');
+  my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+  if (defined $err) {
+    # print error and return
+    print("<form name='customize-firewall' code=1></form>");
+    exit 1;
+  }
+  exit;
+}
+
+# do not need any args for cancel
+if ($action eq 'cancel') {
+  # discard changes
+  my @cmds = ('discard');
+  my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+  if (defined $err) {
+    # print error and return
+    print("<form name='customize-firewall' code=2></form>");
+    exit 1;
+  }
+  exit;
 }
 
 usage() if ! defined $args;
@@ -206,7 +355,7 @@ my (@zonepair, @rulenum, @key, @value);
 @key = split (/\=/, $value[0]) if defined $arguments[2];
 
 # zonepair - $zonepair[1], rulenum - $rulenum[1], 
-# key - $key [0], value - $value [1]
+# key - substr($key[0], 1), value - $value[1]
 
 switch ($action) {
   case 'get'
@@ -214,6 +363,16 @@ switch ($action) {
     # do get action here
     # get could be for 'all' rules or a specific rulenum
     execute_get ($zonepair[1], $rulenum[1]);
+  }
+  case 'delete-rule'
+  {
+    # do delete action here
+    execute_delete_rule ($zonepair[1], $rulenum[1]);
+  }
+  case 'set'
+  {
+    # do set action here
+    execute_set_value ($zonepair[1], $rulenum[1], substr($key[0], 1), $value[1]);
   }
   else
   {

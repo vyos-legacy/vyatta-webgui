@@ -143,9 +143,9 @@ sub execute_set {
 
 sub execute_get {
 
-   my $Wan_to_Lan_fw=Vyatta::Zone::get_firewall_ruleset("returnOrigValue",
+   my $Wan_to_Lan_fw=Vyatta::Zone::get_firewall_ruleset("returnValue",
                         'LAN', 'WAN', 'name');
-   my $Lan_to_Wan_fw=Vyatta::Zone::get_firewall_ruleset("returnOrigValue",
+   my $Lan_to_Wan_fw=Vyatta::Zone::get_firewall_ruleset("returnValue",
                         'WAN', 'LAN', 'name');
 
    my $firewall_type;

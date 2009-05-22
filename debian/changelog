@@ -1,3 +1,16 @@
+vyatta-webgui (0.2.14+fxdU+26) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * checked in to sync with Loi's latest code for testing purposed
+
+  [ slioch ]
+  * fix for template environment variable
+
+  [ Loi Vo ]
+  * Fix the merge issue from Kevin's checkin
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 22 May 2009 21:06:10 +0000
+
 vyatta-webgui (0.2.14+fxdU+25) unstable; urgency=low
 
   * 1. Add keyword support

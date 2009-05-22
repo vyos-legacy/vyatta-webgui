@@ -29,6 +29,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     this.m_cnt = 0;
 	this.m_urlList = null;
 	this.m_deletedRow = null;
+	this.m_addedRow = null;
     
     /**
      * @param name - name of configuration screens.
@@ -157,9 +158,50 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 	}
 	
     this.f_apply = function()
-    {
-        alert('apply');
-    }
+	{
+		//doing dumb iteration for now.
+		var urlList = new Array();
+		thisObj.m_addedRow = new Array();
+		
+		for (var i = 0; i < thisObj.m_cnt; i++) {
+			var url = document.getElementById(thisObj.m_prefix + 'addr_' + i);
+			if ((url != undefined) && (url != null)) {
+				if (!url.readOnly) {
+					if (url.value.trim().length <= 0) {
+						continue;
+					}
+					thisObj.m_addedRow.push(url);
+					var cb = document.getElementById(thisObj.m_prefix + 'cb_' + i);
+					
+					var listObj = new UTM_urlFilterListObj(url.value);
+					listObj.m_action = 'add';
+					if (cb.checked) {
+						listObj.m_status = true;
+					} else {
+						listObj.m_status = false;
+					}
+					urlList.push(listObj);
+				}
+			}
+		}
+		
+		if (urlList.length > 0) {
+			var cb = function(evt)
+			{
+				if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
+					if (evt.f_isError()) {
+						g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+						return;
+					} else {
+						for (var i=0; i < thisObj.m_addedRow.length; i++) {
+							thisObj.m_addedRow[i].readOnly = true;
+						}
+					}
+				}
+			};
+			g_busObj.f_setUrlList(urlList, cb);
+		}
+	}
     
     this.f_reset = function()
     {
@@ -173,7 +215,6 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         } else if (id == thisObj.m_btnApplyId) {
             thisObj.f_apply();
         } else if (id == thisObj.m_btnAddId) {
-			alert('button add clicked');
             thisObj.f_addRow();
         } else if (id == thisObj.m_btnBackId) {
             g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);            

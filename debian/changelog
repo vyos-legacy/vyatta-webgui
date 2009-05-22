@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+23) unstable; urgency=low
+
+  * Add 'add' functionality to filter by whitelist
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 22 May 2009 02:20:33 +0000
+
 vyatta-webgui (0.2.14+fxdU+22) unstable; urgency=low
 
   [ Stig Thormodsrud ]

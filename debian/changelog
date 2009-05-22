@@ -1,3 +1,19 @@
+vyatta-webgui (0.2.14+fxdU+21) unstable; urgency=low
+
+  [ slioch ]
+  * added vyatta_active_configuration_dir to vyatta-proc
+
+  [ Loi Vo ]
+  * Move local mode check to utm_urlFilterObj level.
+
+  [ Stig Thormodsrud ]
+  * Add url-filtering-easy-config "set" operation.
+
+  [ Loi Vo ]
+  * Remove double quote
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 22 May 2009 00:50:02 +0000
+
 vyatta-webgui (0.2.14+fxdU+20) unstable; urgency=low
 
   [ Loi Vo ]

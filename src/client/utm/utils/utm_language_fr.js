@@ -53,6 +53,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Customize Level
     m_fireCustSubHeader : "Specific Rules",
+    m_fireCustDirection : "Direction",
     m_fireCustAppService : "Application<br>/Service",
     m_fireCustProtocol : "Protocol",
     m_fireCustSrcIpAddr : "Source IP<br> address",
@@ -66,6 +67,7 @@ var g_lang =
     m_fireCustOrder : "Order",
     m_fireCustEnable : "Enable",
     m_fireCustDelete : "Delete",
+    m_fireCustRuleOption : "Show rules only from",
 
     ///////////////////////////////////////////////////////////////////
     // VPN Site 2 Site

@@ -107,7 +107,6 @@ function UTM_firewallBusObj(busObj)
                 var n = nodes[i];
                 if(n.nodeName == 'firewall-security-level')
                 {
-                    alert(n.firstChild.nodeValue);
                     var fr = new UTM_fireRecord();
                     fr.m_level = n.firstChild.nodeValue;
                     return fr;

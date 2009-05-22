@@ -59,22 +59,23 @@ function UTM_confFireLevel(name, callback, busLayer)
             {
                 var val = evt.m_value;
                 var rId = null;
-                switch(val)
+
+                switch(val.m_level)
                 {
-                    case 'Authorize All':
+                    case "Authorize All":
                         rId = thisObj.m_rdAuthAllId;
                     break;
-                    case 'Standard':
+                    case "Standard":
                         rId = thisObj.m_rdStandId;
                     break;
-                    case 'Advanced':
+                    case "Advanced":
                         rId = thisObj.m_rdAdvanId;
                     break;
-                    case 'Customized':
+                    case "Customized":
                         rId = thisObj.m_rdCustomId;
                     break;
                     default:
-                    case 'Block All':
+                    case "Block All":
                         rId = thisObj.m_rdBlockId;
                     break;
                 }

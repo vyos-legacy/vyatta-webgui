@@ -245,9 +245,9 @@ function UTM_businessLayer()
         thisObj.f_getFWObject().f_setFirewallSecurityLevel(fireRec, guicb);
     }
 
-    this.f_getFirewallSecurityCustomize = function(guicb)
+    this.f_getFirewallSecurityCustomize = function(zone, guicb)
     {
-        thisObj.f_getFWObject().f_getFirewallSecurityCustomize(guicb);
+        thisObj.f_getFWObject().f_getFirewallSecurityCustomize(zone, guicb);
     }
 
     this.f_setFirewallCustomize = function(fireRec, name, value, guicb)
@@ -323,38 +323,38 @@ function UTM_businessLayer()
 
         return m_urlObj;
     }
-	
-    this.f_getUrlFilterConfig = function(guicb)
+
+    this.f_getUrlFilterConfig = function(guiCb)
     {
-        thisObj.f_getUrlFilterObj().f_getUrlFilterConfig(guicb);
+        thisObj.f_getUrlFilterObj().f_getUrlFilterConfigServer(guiCb);
     }
 
     this.f_setUrlFilterConfig = function(ufcObj, guicb)
     {
-        thisObj.f_getUrlFilterObj().f_setUrlFilterConfig(ufcObj, guicb);
-    }	
+        thisObj.f_getUrlFilterObj().f_setUrlFilterConfigServer(ufcObj, guicb);
+    }
 
     this.f_getUrlList = function(guicb)
     {
-        thisObj.f_getUrlFilterObj().f_getUrlList(guicb);
+        thisObj.f_getUrlFilterObj().f_getUrlListServer(guiCb);
     }
 
     this.f_setUrlList = function(urlList, guicb)
     {
-        thisObj.f_getUrlFilterObj().f_setUrlList(urlList, guicb);
-    }	
-	
+        thisObj.f_getUrlFilterObj().f_setUrlListServer(urlList, guicb);
+    }
+
 
     this.f_getKeywordList = function(guicb)
     {
-        thisObj.f_getUrlFilterObj().f_getKeywordList(guicb);
+        thisObj.f_getUrlFilterObj().f_getKeywordListServer(guiCb);
     }
 
     this.f_setKeywordList = function(kwList, guicb)
     {
-        thisObj.f_getUrlFilterObj().f_setKeywordList(kwList, guicb);
-    }		
-	
+        thisObj.f_getUrlFilterObj().f_setKeywordListServer(kwList, guicb);
+    }
+
 }
 
 ///////////////////////////////////////////////

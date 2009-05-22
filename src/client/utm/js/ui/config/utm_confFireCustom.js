@@ -103,7 +103,8 @@ function UTM_confFireCustom(name, callback, busLayer)
                 mainPanel.style.height = 460+'px';
         };
 
-        //g_utils.f_cursorWait();
+        g_utils.f_cursorWait();
+        thisObj.m_busLayer.f_getFirewallSecurityCustomize(cb);
     };
 
     this.f_performSaveRules = function()
@@ -206,9 +207,9 @@ function UTM_confFireCustom(name, callback, busLayer)
 
         var btns = [['Add', "f_fireCustomAddHandler()", "", this.m_btnAddId],
                     ['Save', "f_fireCustomSaveHandler()", "", this.m_btnSaveId],
-                    ['Reset', "f_fireCustomCancelHandler()", "", this.m_btnRestId],
+                    ['Reset', "f_fireCustomResetHandler()", "", this.m_btnRestId],
                     ['Cancel', "f_fireCustomCancelHandler()", "", this.m_btnCancelId],
-                    ['Back', "f_fireCustomCancelHandler()", "", this.m_btnBackId]];
+                    ['Back', "f_fireCustomBackHandler()", "", this.m_btnBackId]];
         this.m_buttons = this.f_createButtons(btns);
 
         var grid = this.f_initGridDiv([this.m_gridHeader, this.m_gridBody])
@@ -248,7 +249,8 @@ function UTM_confFireCustom(name, callback, busLayer)
 
     this.f_headerCombo = function()
     {
-        var combo = this.f_renderCombobox(thisObj.m_ruleZoneOptions, "Any", 180,
+        var combo = this.f_renderCombobox(thisObj.m_ruleZoneOptions,
+                    this.m_ruleZoneOptions[4], 180,
                     'fwCustomHeaderCombo_id', ['f_onwfCustomHeaderCombo()',
                     this.m_ruleZoneOptName]);
 
@@ -374,7 +376,17 @@ function UTM_confFireCustom(name, callback, busLayer)
         }
 
         return '';
-    }
+    };
+
+    this.f_handleResetAction = function()
+    {
+        alert('testing')
+    };
+
+    this.f_handleCancelAction = function()
+    {
+
+    };
 }
 UTM_extend(UTM_confFireCustom, UTM_confBaseObj);
 
@@ -399,9 +411,18 @@ function f_fireCustomSaveHandler()
 
 function f_fireCustomCancelHandler()
 {
-    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_ID);
+    g_configPanelObj.m_activeObj.f_handleCancelAction();
 }
 
+function f_fireCustomResetHandler()
+{
+    g_configPanelObj.m_activeObj.f_handleResetAction();
+}
+
+function f_fireCustomBackHandler()
+{
+    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_ID);
+}
 function f_fireCustomDeleteHandler(ruleNo)
 {
     alert('delete ' + ruleNo + ruleNo.toString(2));

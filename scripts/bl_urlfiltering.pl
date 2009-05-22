@@ -141,7 +141,8 @@ sub configure_webproxy {
     my $redirect = "http://172.16.117.2/cgi-bin/squidGuard-simple.cgi?";
     $redirect   .= "targetclass=%t&url=%u&srcclass=%s";
 
-    push @cmds, "set service webproxy listen-address 127.0.0.1";
+    push @cmds, 
+         "set service webproxy listen-address 127.0.0.1 disable-transparent";
     push @cmds, "set service webproxy listen-address 192.168.1.1";
     push @cmds, "set service webproxy cache-size 0";
     push @cmds, "set $path source-group ALL address 0.0.0.0/0";
@@ -252,7 +253,7 @@ sub whitelist_get {
     # get whitelist
     my @local_ok_sites = $config->returnOrigValues();
     foreach my $site (@local_ok_sites) {
-	$msg .= "<url>$site</url>";
+	$msg .= "<url><![CDATA[$site]]></url>";
     }
     $msg .= "</white-list-easy-config>";
     $msg .= "</form>";
@@ -308,7 +309,7 @@ sub keyword_get {
     # get blocked keyword/regex
     my @block_keywords = $config->returnOrigValues();
     foreach my $keyword (@block_keywords) {
-	$msg .= "<keyword>$keyword</keyword>";
+	$msg .= "<keyword><![CDATA[$keyword]]></keyword>";
     }
     $msg .= "</bannned-list-easy-config>";
     $msg .= "</form>";

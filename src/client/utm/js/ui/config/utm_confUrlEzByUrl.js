@@ -125,7 +125,6 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 		
 		if (row != null) {
 			var id = rowId.substring(prefix.length, rowId.length);
-			alert (id);
 			var url = document.getElementById(thisObj.m_prefix + 'addr_' + id);
 			
 			if (url.readOnly) {
@@ -222,7 +221,6 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     {
         var a = thisObj.m_urlList;
         if (a != null) {
-			alert('a.length:' + a.length);
 			for (var i = 0; i < a.length; i++) {
 				var prefix = thisObj.m_prefix;
 				var rowId = prefix + 'row_' + thisObj.m_cnt;

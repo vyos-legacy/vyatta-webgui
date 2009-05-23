@@ -1,3 +1,18 @@
+vyatta-webgui (0.2.14+fxdU+27) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * more environment changes
+
+  [ Stig Thormodsrud ]
+  * Add fixes for "set" operations.
+  * Fix filter_get operation.
+  * Enable front-page whitelist/banned if configured.
+
+  [ Kevin Choi ]
+  * * completed security level get and set to backend.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sat, 23 May 2009 00:33:39 +0000
+
 vyatta-webgui (0.2.14+fxdU+26) unstable; urgency=low
 
   [ Kevin Choi ]

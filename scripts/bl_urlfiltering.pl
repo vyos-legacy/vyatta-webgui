@@ -280,6 +280,15 @@ sub filter_set {
 
     # get time schedule
     my $time_period = undef;
+    # check if old time-period needs delete
+    my $config = new Vyatta::Config; 
+    $config->setLevel("$path time-period");
+    if ($config->existsOrig('OA')) {  
+	push @cmds, "delete $path time-period OA";
+	push @cmds, "delete $path group-policy OA time-period";
+	# kludge until cli can support delete/set combo
+	push @cmds, "commit";
+    }
     while (my ($k, $v) = each(%days_hash)) {
 	my $day_time = $xml->{schedule}->{$v};
 	if ($day_time) {

@@ -21,6 +21,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 	this.m_prefix = 'utm_conf_url_ez_by_url_';		
     this.m_body = undefined;
     this.m_row = 0;
+	this.m_rowIdArray = null;	
     this.m_cnt = 0;
 	this.m_urlList = null;
 	this.m_deletedRow = null;
@@ -92,25 +93,34 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         
         return cols;
     }
-    
+		
     this.f_enableAll = function()
     {
-        var cb = document.getElementById('conf_url_ez_by_url_enable_cb');
-		
+        var cb = document.getElementById('conf_url_ez_by_url_enable_cb');		
         var s = thisObj.m_prefix + 'cb_';
-		for (var i=0; i < thisObj.m_cnt; i++) {
-	        var el = document.getElementById(s + i);
+		
+		for (var i=0; i < thisObj.m_rowIdArray.length; i++) {
+			var seedId = thisObj.f_getSeedIdByRowId(thisObj.m_rowIdArray[i]);
+	        var el = document.getElementById(s + seedId);
+			
 			if (el != null) {
 				el.checked = cb.checked;
 			}		
 		}			
     }
-    
+		    
+	this.f_getSeedIdByRowId = function(rowId)
+	{
+		var prefix = thisObj.m_prefix + 'row_';
+        return rowId.substring(prefix.length, rowId.length);		
+	}
+			
     this.f_addRow = function()
     {
         var prefix = thisObj.m_prefix;
 		var rowId = prefix + 'row_' + thisObj.m_cnt;
-		
+        thisObj.m_rowIdArray.push(rowId);
+				
         var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, '', '', 625);
         var cb = thisObj.f_renderSmartCheckbox('yes', prefix + 'cb_' + thisObj.m_cnt, '', '',
 		                                   prefix + 'cb_hidden_' + thisObj.m_cnt);
@@ -124,15 +134,23 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         thisObj.m_cnt++;
         thisObj.f_adjust();
     }
-    
+        
+	this.f_rowIdArrayRemoveRow = function(rowId)
+	{
+		var i = thisObj.m_rowIdArray.indexOf(rowId);
+		if (i >= 0) {
+			thisObj.m_rowIdArray.splice(i,1);
+		}
+	}	
+	
 	this.f_deleteRow = function(rowId)
 	{
 		var prefix = thisObj.m_prefix + 'row_';
         var row = document.getElementById(rowId);
 		
 		if (row != null) {
-			var id = rowId.substring(prefix.length, rowId.length);
-			var url = document.getElementById(thisObj.m_prefix + 'addr_' + id);
+			var seedId = thisObj.f_getSeedIdByRowId(rowId);
+			var url = document.getElementById(thisObj.m_prefix + 'addr_' + seedId);
 			
 			if (url.readOnly) {
 			//need to send delete command to the server.
@@ -141,7 +159,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 				listObj.m_action = 'delete';
                 listObj.m_status = true;				
 				urlList.push(listObj);
-				thisObj.m_deletedRow = row;
+				thisObj.m_deletedRow = seedId;
 				
 			    var cb = function(evt)
                 {        
@@ -150,14 +168,18 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
                             g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);  
                             return;                    
                         }                
-						thisObj.m_deletedRow.parentNode.removeChild(thisObj.m_deletedRow);    
-                        thisObj.f_adjust();         
+ 						
+						var row = document.getElementById(thisObj.m_prefix + 'row_' + thisObj.m_deletedRow);
+						row.parentNode.removeChild(row);    
+						thisObj.f_rowIdArrayRemoveRow(thisObj.m_prefix + 'row_' + thisObj.m_deletedRow);
+                        thisObj.f_adjust();
                     }                                 
                 };      
 		        g_busObj.f_setUrlList(urlList, cb); 	
 				return;
 			} else {
 				row.parentNode.removeChild(row);
+				thisObj.f_rowIdArrayRemoveRow(prefix + seedId);				
 			}
 			thisObj.f_adjust();
 		}
@@ -170,17 +192,18 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 		thisObj.m_addedRow = new Array();
 		thisObj.m_updatedRow = new Array();
 		
-		for (var i = 0; i < thisObj.m_cnt; i++) {
-			var url = document.getElementById(thisObj.m_prefix + 'addr_' + i);
-			var cb = document.getElementById(thisObj.m_prefix + 'cb_' + i);
-			var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + i);
+		for (var i = 0; i < thisObj.m_rowIdArray.length; i++) {
+			var seedId = thisObj.f_getSeedIdByRowId(thisObj.m_rowIdArray[i]);
+			var url = document.getElementById(thisObj.m_prefix + 'addr_' + seedId);
+			var cb = document.getElementById(thisObj.m_prefix + 'cb_' + seedId);
+			var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
 			
 			if ((url != undefined) && (url != null)) {
 				if (!url.readOnly) {
 					if (url.value.trim().length <= 0) {
 						continue;
 					}
-					thisObj.m_addedRow.push(i);
+					thisObj.m_addedRow.push(seedId);
 					
 					var listObj = new UTM_urlFilterListObj(url.value);
 					listObj.m_action = 'add';
@@ -204,12 +227,12 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 							listObj.m_status = false;
 						}
 						urlList.push(listObj);
-						thisObj.m_updatedRow.push(i);	
+						thisObj.m_updatedRow.push(seedId);	
 					}
 				}
 			}
 		}
-		
+				
 		if (urlList.length > 0) {
 			var cb = function(evt)
 			{
@@ -220,17 +243,17 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 						return;
 					} else {
 						for (var i=0; i < thisObj.m_addedRow.length; i++) {
-							var j = thisObj.m_addedRow[i];
-			                var cb = document.getElementById(thisObj.m_prefix + 'cb_' + j);
-			                var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + j);
-							var url = document.getElementById(thisObj.m_prefix + 'addr_' + j);
+							var seedId = thisObj.m_addedRow[i];
+			                var cb = document.getElementById(thisObj.m_prefix + 'cb_' + seedId);
+			                var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
+							var url = document.getElementById(thisObj.m_prefix + 'addr_' + seedId);
 							cbHidden.checked = cb.checked;								
 							url.readOnly = true;
 						}
 						for (var i=0; i < thisObj.m_updatedRow.length; i++) {
-                            var j = thisObj.m_updatedRow[i];							
-			                var cb = document.getElementById(thisObj.m_prefix + 'cb_' + j);
-			                var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + j);
+                            var seedId = thisObj.m_updatedRow[i];							
+			                var cb = document.getElementById(thisObj.m_prefix + 'cb_' + seedId);
+			                var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
 							cbHidden.checked = cb.checked;							
 						}
 					}
@@ -245,17 +268,18 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     
     this.f_reset = function()
     {
-        alert('reset form');
+        thisObj.f_loadVMData();
     }
 	
 	this.f_changed = function()
 	{
 		var changed = false;
 		
-		for (var i = 0; i < thisObj.m_cnt; i++) {
-			var url = document.getElementById(thisObj.m_prefix + 'addr_' + i);
-			var cb = document.getElementById(thisObj.m_prefix + 'cb_' + i);
-			var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + i);
+		for (var i = 0; i < thisObj.m_rowIdArray.length; i++) {
+			var seedId = thisObj.f_getSeedIdByRowId(thisObj.m_rowIdArray[i]);
+			var url = document.getElementById(thisObj.m_prefix + 'addr_' + seedId);
+			var cb = document.getElementById(thisObj.m_prefix + 'cb_' + seedId);
+			var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
 			
 			if ((url != undefined) && (url != null)) {
 				if (!url.readOnly) {
@@ -306,9 +330,24 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 		    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);								
 		}
     }
+	
+	this.f_cleanup = function()
+	{
+        thisObj.m_row = 0;
+		thisObj.m_rowIdArray = new Array();		
+        thisObj.m_cnt = 0;
+	    thisObj.m_urlList = null;
+	    thisObj.m_deletedRow = null;
+	    thisObj.m_addedRow = null;
+	    thisObj.m_updatedRow = null;
+	    thisObj.m_goBack = false;
+		thisObj.f_removeDivChildren(thisObj.m_body);
+	}
     
     this.f_loadVMData = function()
     {		
+	    thisObj.f_cleanup();
+		
         var cb = function(evt)
         {        
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
@@ -339,7 +378,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         thisObj.f_adjustDivPositionByPixel(thisObj.m_buttons, 20);
         thisObj.f_resize(20);
     }
-    
+	
     this.f_populateTable = function()
     {
         var a = thisObj.m_urlList;
@@ -347,6 +386,8 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 			for (var i = 0; i < a.length; i++) {
 				var prefix = thisObj.m_prefix;
 				var rowId = prefix + 'row_' + thisObj.m_cnt;
+  		        thisObj.m_rowIdArray.push(rowId);
+				
 				var enable = 'yes';
 				if (!a[i].m_status) {
 					enable = 'no';

@@ -78,7 +78,11 @@ function UTM_mainPanel()
         }
         //		var doc = window.parent.document;
         //		alert("ifrm: " + doc.getElementById('main_ifrm').src);
-        window.parent.f_resizeChildIframe(h + padding);
+		if ((window.parent != undefined) && (window.parent != null)) {
+			if (window.parent.f_resizeChildIframe != undefined) {
+				window.parent.f_resizeChildIframe(h + padding);
+			}
+		}
     }
     
     this.f_show = function()

@@ -3,6 +3,9 @@
 #include <security/pam_misc.h>
 #include <pwd.h>
 #include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
@@ -59,6 +62,7 @@ Authenticate::create_new_session()
     }
   }
   else {
+    usleep(WebGUI::SLEEP_ON_AUTH_FAILURE);
     _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
     return false;
   }
@@ -230,6 +234,13 @@ Authenticate::create_new_id()
 
   //let's grab the src ip of the request first
   unsigned long src_ip = 0;
+
+  //  string hack = "echo \"" + string(getenv("REMOTE_ADDR")) + "\" >> /tmp/BAR";system(hack.c_str());
+  string ip = string(getenv("REMOTE_ADDR"));
+  if (!ip.empty()) {
+    in_addr_t addr = inet_addr(ip.c_str());
+    src_ip = (unsigned long)addr;
+  }
 
   FILE *fp = fopen("/dev/urandom", "r");
   if (fp) {

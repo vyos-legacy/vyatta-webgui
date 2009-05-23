@@ -9,6 +9,8 @@
 
 using namespace std;
 
+const unsigned long WebGUI::SLEEP_ON_AUTH_FAILURE = 2 * 1000 * 1000; //microseconds
+
 const unsigned long WebGUI::ID_MAX =   4294967295UL;
 const unsigned long WebGUI::ID_START = 2147483648UL;
 const unsigned long WebGUI::ID_RANGE = 2147483647UL;

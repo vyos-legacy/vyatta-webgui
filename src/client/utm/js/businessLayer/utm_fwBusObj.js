@@ -8,12 +8,13 @@
 /**
  * Firewall data record
  */
-function UTM_fireRecord(ruleNo, zone)
+function UTM_fireRecord(ruleNo, zonePair)
 {
     var thisObj = this;
     this.m_level = null;  // 'Authorize All', 'Standard', 'Advanced', 'Customized', 'Block All'
-    this.m_ruleNo = ruleNo;
-    this.m_zone = zone;
+    this.m_ruleNo = ruleNo;   // data type int
+    this.m_zonePair = zonePair;
+    this.m_direction = null;
     this.m_appService = null;
     this.m_protocol = null;
     this.m_srcIpAddr = null;
@@ -70,7 +71,7 @@ function UTM_firewallBusObj(busObj)
                 else if(thisObj.m_lastCmdSent.indexOf(
                     '<handler>customize-firewall get') > 0)
                 {
-                    thisObj.f_parseFirewallSecurityCustomize(err);
+                    thisObj.m_fireRec = thisObj.f_parseFirewallSecurityCustomize(err);
                     evt = new UTM_eventObj(0, thisObj.m_fireRec, '');
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
@@ -122,10 +123,64 @@ function UTM_firewallBusObj(busObj)
     this.f_parseFirewallSecurityCustomize = function(response)
     {
         var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
-        nodes = thisObj.m_busObj.f_getResponseChildNodes(nodes, 'customize-firewall');
+        var fws = new Array();
 
         if(nodes != null)
-            alert(nodes.firstChild.nodeValue);
+        {
+            for(var i=0; i<nodes.length; i++)
+            {
+                var n = nodes[i];
+                if(n.nodeName == "customize-firewall")
+                {
+                    var vals = n.firstChild.nodeValue.split(":");
+                    var zp = this.f_getValueFromNameValuePair("zonepair", vals[0]);
+                    for(var j=1; j<vals.length; j++)
+                    {
+                        var rNo = this.f_getValueFromNameValuePair("rulenum", vals[j]);
+
+                        if(rNo.length == 0) break;
+
+                        var x = j-1;
+                        fws[x] = new UTM_fireRecord();
+                        
+                        fws[x].m_zonePair = zp;
+                        fws[x].m_direction = zp;
+                        fws[x].m_ruleNo = rNo;
+                        fws[x].m_protocol = this.f_getValueFromNameValuePair("protocol", vals[j]);
+                        fws[x].m_srcIpAddr = this.f_getValueFromNameValuePair("saddr", vals[j]);
+                        fws[x].m_srcPort = this.f_getValueFromNameValuePair("sport", vals[j]);
+                        fws[x].m_destIpAddr = this.f_getValueFromNameValuePair("daddr", vals[j]);
+                        fws[x].m_destPort = this.f_getValueFromNameValuePair("dport", vals[j]);
+                        fws[x].m_action = this.f_getValueFromNameValuePair("action", vals[j]);
+                        fws[x].m_log = this.f_getValueFromNameValuePair("log", vals[j]);
+                        fws[x].m_enabled = this.f_getValueFromNameValuePair("enable", vals[j]);
+                    }
+                }
+            }
+        }
+
+        return fws;
+    }
+
+    this.f_getValueFromNameValuePair = function(name, nv)
+    {
+        var nvs = nv.split(",");
+
+        for(var i=0; i<nvs.length; i++)
+        {
+            if(nvs[i].indexOf(name+"=") >= 0)
+            {
+                var v = nvs[i].split("=");
+                if(v[1].length > 2)
+                {
+                    v = v[1].replace("[", "");
+                    v = v.replace("]", "");
+                    return v;
+                }
+            }
+        }
+
+        return "";
     }
 
     /**
@@ -170,7 +225,7 @@ function UTM_firewallBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
                       "<handler>customize-firewall get" +
-                      "</handler><data>zonepair=[" + fireRec.m_zone +
+                      "</handler><data>zonepair=[" + fireRec.m_zonePair +
                       "], rulename=[all]</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -183,7 +238,7 @@ function UTM_firewallBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>customize-firewall" +
-                      " set</handler><data>zonepair=[" + fireRec.m_zone +
+                      " set</handler><data>zonepair=[" + fireRec.m_zonePair +
                       "], rulenum=[" + fireRec.m_ruleNo + "]," + name +
                       "=[" + value + "]</data></statement></command>";
 
@@ -197,7 +252,7 @@ function UTM_firewallBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>customize-firewall" +
-                      " delete-rule</handler><data>zonepair=[" + fireRec.m_zone +
+                      " delete-rule</handler><data>zonepair=[" + fireRec.m_zonePair +
                       "], rulenum=[" + fireRec.m_ruleNo +
                       "]</data></statement></command>";
 

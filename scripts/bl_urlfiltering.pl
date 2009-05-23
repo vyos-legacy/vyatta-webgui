@@ -230,6 +230,7 @@ sub filter_set {
     wb_log("filter_set:");
     my $xs  = new XML::Simple;
     my $xml = $xs->XMLin($data);
+    my $config = new Vyatta::Config;
     my $path = 'service webproxy url-filtering squidguard';
     my ($msg, $err);
     my $whitelist = $xml->{policy}->{whitelist}->{status};
@@ -237,6 +238,7 @@ sub filter_set {
     my $keyword   = $xml->{policy}->{keyword}->{status};
     my $category;
     if ($blacklist and $blacklist eq 'true') {
+	wb_log("filter_set: blacklist true");
 	foreach my $cat (@cat_levels) {
 	    my $x = $xml->{policy}->{blacklist}->{$cat};
 	    if ($x and $x eq 'true') {
@@ -262,9 +264,11 @@ sub filter_set {
     }
 
     if ($whitelist and $whitelist eq 'true') {
+	wb_log("filter_set: whitelist true");
 	push @cmds, "set $path group-policy NONE local-ok OA";
     }
     if ($keyword and $keyword eq 'true') {
+	wb_log("filter_set: keyword true");
 	push @cmds, "set $path group-policy NONE local-block-keyword OA";
     }
     if ($blacklist and $blacklist eq 'true') {
@@ -276,12 +280,18 @@ sub filter_set {
 	}
 	push @cmds, "set $path group-policy NONE local-block $category";
 	push @cmds, get_blacklist_categories($category);
+    } else {
+	$config->setLevel("$path group-policy NONE");
+	if ($config->existsOrig('local-block')) {  
+	    wb_log("filter_set: delete block level");
+	    push @cmds, "delete $path group-policy NONE local-block";
+	    push @cmds, "delete $path group-policy OA block-category";	    
+	}
     }
 
     # get time schedule
     my $time_period = undef;
     # check if old time-period needs delete
-    my $config = new Vyatta::Config; 
     $config->setLevel("$path time-period");
     if ($config->existsOrig('OA')) {  
 	push @cmds, "delete $path time-period OA";

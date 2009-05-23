@@ -140,12 +140,9 @@ WebGUI::trim_whitespace(const std::string &src)
  *
  **/
 void
-WebGUI::remove_session(unsigned long id)
+WebGUI::remove_session(string id)
 {
-  char buf[40];
-  sprintf(buf, "%lu", id);
-  string val(buf);
-  discard_session(val);
+  discard_session(id);
 }
 
 /**

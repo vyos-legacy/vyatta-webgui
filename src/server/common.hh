@@ -120,7 +120,7 @@ public:
    *
    **/
   static void
-  remove_session(unsigned long id);
+  remove_session(std::string id);
   static void
   discard_session(std::string &id);
   

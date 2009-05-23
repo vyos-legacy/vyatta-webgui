@@ -144,7 +144,7 @@ ChunkerManager::process(char *buf)
     
     
     //finally convert the token to a key
-    int key = strtoul(token.c_str(),NULL,10);
+    string key = token;
     
     //ALSO NEED TO MATCH THE COMMAND TO SEE IF THIS IS A NEW OR ONGOING COMMAND
     ProcIter iter = _proc_coll.find(key);
@@ -171,7 +171,7 @@ ChunkerManager::process(char *buf)
       
       pd._proc.start_new(token,statement);
       
-      _proc_coll.insert(pair<unsigned long, ProcessData>(key,pd));
+      _proc_coll.insert(pair<string, ProcessData>(key,pd));
     }
   }
   
@@ -225,14 +225,13 @@ ChunkerManager::shutdown()
  *
  **/
 void
-ChunkerManager::kill_process(unsigned long key)
+ChunkerManager::kill_process(string key)
 {
   char buf[80];
   string cmd = "kill -9 -"; //now is expecting to kill group
 
   //need to get pid from pid directory...
-  sprintf(buf,"%u",key);
-  string file = WebGUI::CHUNKER_RESP_PID + "/" + string(buf);
+  string file = WebGUI::CHUNKER_RESP_PID + "/" + key;
   FILE *fp = fopen(file.c_str(), "r");
   char pid[81];
   if (fp) {

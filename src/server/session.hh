@@ -46,8 +46,8 @@ public:
   int
   get_sock() const {return _sock;}
 
-  unsigned long
-  get_id() const {return 0;}
+  std::string
+  get_id() const {return std::string("");}
 
   void
   close_session() {}
@@ -78,7 +78,7 @@ public://private:
   Configuration _configuration;
   Authenticate _authenticate;
   Command _command;
-  unsigned long _id;
+  std::string _id;
   bool _valid;
   bool _debug;
   WebGUI::AccessLevel _access_level;

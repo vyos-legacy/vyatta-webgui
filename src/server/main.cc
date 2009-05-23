@@ -111,7 +111,6 @@ int main(int argc, char* argv[])
   signal(SIGINT, sig_end);
   signal(SIGTERM, sig_end);
   signal(SIGUSR1, sig_user);
-
   SessionExchange *se;
   if (port > 0) {
     se = new SessionExchangeSocket(port, debug);
@@ -137,6 +136,7 @@ int main(int argc, char* argv[])
   }
   */
   //set up for single shot right now--will fix later
+
   g_manager->process();
 
   if (debug) {

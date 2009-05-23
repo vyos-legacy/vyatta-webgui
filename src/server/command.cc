@@ -44,7 +44,7 @@ Command::execute_command(WebGUI::AccessLevel access_level)
   }
 
   //validate session id
-  if (!validate_session(_proc->get_msg().id_by_val())) {
+  if (!validate_session(_proc->get_msg().id())) {
     _proc->set_response(WebGUI::SESSION_FAILURE);
     return;
   }
@@ -252,11 +252,8 @@ export vyatta_localedir=/opt/vyatta/share/locale";
  *
  **/
 bool
-Command::validate_session(unsigned long id)
+Command::validate_session(string id)
 {
-  if (id <= WebGUI::ID_START) {
-    return false;
-  }
   //then add a directory check here for valid configuration
   string directory = WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id();
   DIR *dp = opendir(directory.c_str());

@@ -32,7 +32,7 @@ private:
   validate_commit_nodes();
 
   bool
-  validate_session(unsigned long id);
+  validate_session(std::string id);
 
   bool
   multi_part_op_cmd(std::string &cmd);

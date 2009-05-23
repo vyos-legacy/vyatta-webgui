@@ -22,10 +22,10 @@ private:
   bool
   test_auth(const std::string &username, const std::string &password);
 
-  unsigned long
+  std::string
   reuse_session();
 
-  unsigned long
+  std::string
   create_new_id();
  
   // is the user a member of the "group struct"?

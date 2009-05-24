@@ -434,6 +434,8 @@ function UTM_confFireCustom(name, callback, busLayer)
     {
         var cbb = document.getElementById(cbeid);
 
+        ///////////////////////////////
+        // application/service cbb
         if(cbeid.indexOf(thisObj.m_fieldIds[2]) >= 0)
         {
             var rNo = cbeid.split("_");
@@ -444,6 +446,13 @@ function UTM_confFireCustom(name, callback, busLayer)
 
             src.value = val;
             dest.value = val;
+        }
+        ////////////////////////////////////////
+        // action cbb
+        else if(cbeid.indexOf(thisObj.m_fieldsIds[10]) >= 0)
+        {
+            var act = document.getElementById(thisObj.m_fieldIds[10]+rNo[1]);
+            alert(act.value);
         }
     };
 
@@ -466,7 +475,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         return '';
     };
 
-    this.f_handleSaveRules = function()
+    this.f_handleSaveAction = function()
     {
         var cb = function(evt)
         {
@@ -485,7 +494,7 @@ function UTM_confFireCustom(name, callback, busLayer)
     {
         var cb = function(evt)
         {
-
+            alert("cancel completed")
         };
 
         thisObj.m_busLayer.f_cancelFirewallCustomizeRule(cb);
@@ -495,7 +504,7 @@ function UTM_confFireCustom(name, callback, busLayer)
     {
         var cb = function(evt)
         {
-            alert('delete complete ');
+            alert('delete completed ');
         };
 
         var fireRec = thisObj.f_createFireRecord(ruleNo);
@@ -519,7 +528,7 @@ function f_fireCustomAddHandler()
 
 function f_fireCustomSaveHandler()
 {
-    g_configPanelObj.m_activeObj.f_handleSaveRules();
+    g_configPanelObj.m_activeObj.f_handleSaveAction();
 }
 
 function f_fireCustomCancelHandler()
@@ -538,12 +547,12 @@ function f_fireCustomBackHandler()
 }
 function f_fireCustomDeleteHandler(ruleNo)
 {
-    alert('delete ' + ruleNo + ruleNo.toString(2));
+    g_configPanelObj.m_activeObj.f_handleDeleteRule(ruleNo);
 }
 
 function f_fireCustomArrowUpHandler(ruleNo)
 {
-    g_configPanelObj.m_activeObj.f_handleDeleteRule(ruleNo);
+    alert('arrow up ' + ruleNo);
 }
 
 function f_fireCustomArrowDownHandler(ruleNo)
@@ -565,7 +574,7 @@ function f_fwCustomOnTFBlur(tfeid)
         aObj.f_handleNetMaskOnBlur(tfeid);
 }
 
-function f_fwCustomOnCbbBlur(cbeId)
+function f_fwCustomizeOnCbbBlur(cbeId)
 {
     g_configPanelObj.m_activeObj.f_cbOnSelected(cbeId);
 }

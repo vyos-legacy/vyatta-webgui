@@ -155,7 +155,7 @@ function UTM_confFireCustom(name, callback, busLayer)
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[5]+
                             ruleNo + "')"], false);
         var sport = thisObj.f_renderTextField(thisObj.m_fieldIds[6]+ruleNo,
-                            fireRec.m_srcPort, '', 80,
+                            fireRec.m_srcPort, fireRec.m_srcPort, 80,
                             null, false);
         var dip = thisObj.f_renderTextField(thisObj.m_fieldIds[7]+ruleNo,
                             fireRec.m_destIpAddr, '', 105,
@@ -166,7 +166,7 @@ function UTM_confFireCustom(name, callback, busLayer)
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[8]+
                             ruleNo + "')"], false);
         var dport = thisObj.f_renderTextField(thisObj.m_fieldIds[9]+ruleNo,
-                            fireRec.m_destPort, '', 80, null, false);
+                            fireRec.m_destPort, fireRec.m_destPort, 80, null, false);
         var act = thisObj.f_renderCombobox(action, fireRec.m_action, 80,
                             thisObj.m_fieldIds[10]+ruleNo,
                             ["f_fwCustomizeOnCbbBlur('" + thisObj.m_fieldIds[10]+
@@ -207,20 +207,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         return thisObj.m_nextRuleNo;
     }
 
-    this.f_performSaveRules = function()
-    {
-        for(var i=0; i<thisObj.m_nextRuleNo; i++)
-        {
-            var fn = thisObj.m_fieldIds[0]+i;
-            var f1 = document.getElementById(fn);
-            if(f1 != null)
-            {
-                alert(f1.value + " : " + i);
-            }
-        }
-    };
-
-    this.f_handleAddFirewallCustomRow = function(ruleNo, ruleOp)
+    this.f_handleAddFirewallCustomRow = function(ruleNo)
     {
         var services = ["DNS-UDP", "DNS-TCP", "HTTP", "HTTPS", "FTP_DATA",
                         "FTP", "POP3", "SMTP", "SMTP-Auth", "TFTP", "POP3S",
@@ -288,8 +275,9 @@ function UTM_confFireCustom(name, callback, busLayer)
 
         ///////////////////////////////////
         // add fields into grid view
+        var fireRec = thisObj.f_createFireRecord(null);
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [ruleOp.value, app, pro, sip, smip, sport, dip, dmip, dport,
+                    [fireRec.m_zonePair, app, pro, sip, smip, sport, dip, dmip, dport,
                     act, log, order, enable, del]);
         thisObj.m_gridBody.appendChild(div);
 
@@ -478,6 +466,16 @@ function UTM_confFireCustom(name, callback, busLayer)
         return '';
     };
 
+    this.f_handleSaveRules = function()
+    {
+        var cb = function(evt)
+        {
+
+        };
+
+        thisObj.m_busLayer.f_saveFirewallCustomizeRule(cb);
+    };
+
     this.f_handleResetAction = function()
     {
         alert('testing')
@@ -485,17 +483,32 @@ function UTM_confFireCustom(name, callback, busLayer)
 
     this.f_handleCancelAction = function()
     {
+        var cb = function(evt)
+        {
 
+        };
+
+        thisObj.m_busLayer.f_cancelFirewallCustomizeRule(cb);
     };
+
+    this.f_handleDeleteRule = function(ruleNo)
+    {
+        var cb = function(evt)
+        {
+            alert('delete complete ');
+        };
+
+        var fireRec = thisObj.f_createFireRecord(ruleNo);
+        thisObj.m_busLayer.f_deleteFirewallCustomizeRule(fireRec, cb);
+    }
 }
 UTM_extend(UTM_confFireCustom, UTM_confBaseObj);
 
 function f_fireCustomAddHandler()
 {
     var aObj = g_configPanelObj.m_activeObj;
-    var ruleOp = document.getElementById('fwCustomHeaderCombo_id');
 
-    aObj.f_handleAddFirewallCustomRow(aObj.f_getTheNextRuleNo(), ruleOp);
+    aObj.f_handleAddFirewallCustomRow(aObj.f_getTheNextRuleNo());
     var mainPanel = document.getElementById("utm_confpanel_");
     if(mainPanel != null)
     {
@@ -506,7 +519,7 @@ function f_fireCustomAddHandler()
 
 function f_fireCustomSaveHandler()
 {
-    g_configPanelObj.m_activeObj.f_performSaveRules();
+    g_configPanelObj.m_activeObj.f_handleSaveRules();
 }
 
 function f_fireCustomCancelHandler()
@@ -530,7 +543,7 @@ function f_fireCustomDeleteHandler(ruleNo)
 
 function f_fireCustomArrowUpHandler(ruleNo)
 {
-    alert('arrow up ' + ruleNo);
+    g_configPanelObj.m_activeObj.f_handleDeleteRule(ruleNo);
 }
 
 function f_fireCustomArrowDownHandler(ruleNo)

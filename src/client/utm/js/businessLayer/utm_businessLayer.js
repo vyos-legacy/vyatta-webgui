@@ -255,9 +255,24 @@ function UTM_businessLayer()
         thisObj.f_getFWObject().f_setFirewallCustomize(fireRec, name, value, guicb);
     }
 
+    this.f_saveFirewallCustomizeRule = function(guicb)
+    {
+        thisObj.f_getFWObject().f_saveFirewallCustomizeRule(guicb);
+    }
+
+    this.f_resetFirewallCustomizeRule = function(guicb)
+    {
+        thisObj.f_getFWObject().f_resetFirewallCustomizeRule(guicb);
+    }
+
     this.f_deleteFirewallCustomizeRule = function(fireRec, guicb)
     {
         thisObj.f_getFWObject().f_deleteFirewallCustomizeRule(fireRec, guicb);
+    }
+
+    this.f_cancelFirewallCustomizeRule = function(guicb)
+    {
+        thisObj.f_getFWObject().f_cancelFirewallCustomizeRule(guicb);
     }
 
     /**
@@ -323,7 +338,7 @@ function UTM_businessLayer()
 
         return m_urlObj;
     }
-	
+
     this.f_getUrlFilterConfig = function(guicb)
     {
         thisObj.f_getUrlFilterObj().f_getUrlFilterConfig(guicb);
@@ -332,7 +347,7 @@ function UTM_businessLayer()
     this.f_setUrlFilterConfig = function(ufcObj, guicb)
     {
         thisObj.f_getUrlFilterObj().f_setUrlFilterConfig(ufcObj, guicb);
-    }	
+    }
 
     this.f_getUrlList = function(guicb)
     {
@@ -342,8 +357,8 @@ function UTM_businessLayer()
     this.f_setUrlList = function(urlList, guicb)
     {
         thisObj.f_getUrlFilterObj().f_setUrlList(urlList, guicb);
-    }	
-	
+    }
+
 
     this.f_getKeywordList = function(guicb)
     {

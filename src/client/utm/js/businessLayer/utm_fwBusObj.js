@@ -17,11 +17,11 @@ function UTM_fireRecord(ruleNo, zonePair)
     this.m_direction = null;
     this.m_appService = null;
     this.m_protocol = null;
-    this.m_srcIpAddr = null;
-    this.m_srcMaskIpAddr = null;
+    this.m_srcIpAddr = "0.0.0.0";
+    this.m_srcMaskIpAddr = "0.0.0.0";
     this.m_srcPort = null;
-    this.m_destIpAddr = null;
-    this.m_destMaskIpAddr = null;
+    this.m_destIpAddr = "0.0.0.0";
+    this.m_destMaskIpAddr = "0.0.0.0";
     this.m_destPort = null;
     this.m_action = null;
     this.m_log = null;
@@ -147,9 +147,11 @@ function UTM_firewallBusObj(busObj)
                         fws[x].m_direction = zp;
                         fws[x].m_ruleNo = rNo;
                         fws[x].m_protocol = this.f_getValueFromNameValuePair("protocol", vals[j]);
-                        fws[x].m_srcIpAddr = this.f_getValueFromNameValuePair("saddr", vals[j]);
+                        this.f_setSrouceAddress(fws[x], 
+                            this.f_getValueFromNameValuePair("saddr", vals[j]));
                         fws[x].m_srcPort = this.f_getValueFromNameValuePair("sport", vals[j]);
-                        fws[x].m_destIpAddr = this.f_getValueFromNameValuePair("daddr", vals[j]);
+                        this.f_setDestinationAddress(fws[x],
+                            this.f_getValueFromNameValuePair("daddr", vals[j]));
                         fws[x].m_destPort = this.f_getValueFromNameValuePair("dport", vals[j]);
                         fws[x].m_action = this.f_getValueFromNameValuePair("action", vals[j]);
                         fws[x].m_log = this.f_getValueFromNameValuePair("log", vals[j]);
@@ -161,6 +163,32 @@ function UTM_firewallBusObj(busObj)
 
         return fws;
     }
+
+    this.f_setSrouceAddress = function(fireRec, addr)
+    {
+        if(addr.length > 0)
+        {
+            if(addr.indexOf("/") > 0)
+            {
+                var ips = addr.split("/");
+                fireRec.m_srcIpAddr = ips[0];
+                fireRec.m_srcMaskIpAddr = ips[1];
+            }
+        }
+    };
+
+    this.f_setDestinationAddress = function(fireRec, addr)
+    {
+        if(addr.length > 0)
+        {
+            if(addr.indexOf("/") > 0)
+            {
+                var ips = addr.split("/");
+                fireRec.m_destIpAddr = ips[0];
+                fireRec.m_destMaskIpAddr = ips[1];
+            }
+        }
+    };
 
     this.f_getValueFromNameValuePair = function(name, nv)
     {
@@ -175,6 +203,7 @@ function UTM_firewallBusObj(busObj)
                 {
                     v = v[1].replace("[", "");
                     v = v.replace("]", "");
+                    v = v.replace(/;/g, ",");
                     return v;
                 }
             }
@@ -241,6 +270,44 @@ function UTM_firewallBusObj(busObj)
                       " set</handler><data>zonepair=[" + fireRec.m_zonePair +
                       "], rulenum=[" + fireRec.m_ruleNo + "]," + name +
                       "=[" + value + "]</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_deleteFirewallCustomizeRule = function(fireRec, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>customize-firewall" +
+                      " delete-rule</handler><data>zonepair=[" + fireRec.m_zonePair +
+                      "], rulenum=[" + fireRec.m_ruleNo +
+                      "]</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_saveFirewallCustomizeRule = function(guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>customize-firewall" +
+                      " save</handler><data></data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_cancelFirewallCustomizeRule = function(guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>customize-firewall" +
+                      " cancel</handler><data></data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

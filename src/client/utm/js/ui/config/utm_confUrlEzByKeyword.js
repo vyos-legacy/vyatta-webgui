@@ -8,9 +8,10 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 {
     var thisObj = this;
     this.thisObjName = 'utm_confUrlEzByKeyword';
-	this.m_prefix = 'conf_url_ez_by_keyword_';		
+	this.m_prefix = 'utm_conf_url_ez_by_keyword_';		
     this.m_body = undefined;
     this.m_row = 0;
+	this.m_rowIdArray = null;
     this.m_cnt = 0;
 	this.m_kwList = null;
 	this.m_deletedRow = null;
@@ -86,14 +87,16 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
     this.f_enableAll = function()
     {
         var cb = document.getElementById('conf_url_ez_by_keyword_enable_cb');
+        var s = thisObj.m_prefix + 'cb_';
 		
-        var s = 'utm_conf_url_ez_by_keyword_cb_';
-		for (var i=0; i < thisObj.m_cnt; i++) {
-	        var el = document.getElementById(s + i);
+		for (var i=0; i < thisObj.m_rowIdArray.length; i++) {
+			var seedId = thisObj.f_getSeedIdByRowId(thisObj.m_rowIdArray[i]);
+	        var el = document.getElementById(s + seedId);
+			
 			if (el != null) {
 				el.checked = cb.checked;
 			}		
-		}			
+		}	
     }
     
     this.f_adjust = function()
@@ -105,10 +108,17 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         thisObj.f_resize(20);
     }
     
+	this.f_getSeedIdByRowId = function(rowId)
+	{
+		var prefix = thisObj.m_prefix + 'row_';
+        return rowId.substring(prefix.length, rowId.length);		
+	}
+	
     this.f_addRow = function()
     {
-        var prefix = thisObj.m_prefix;
+        var prefix = thisObj.m_prefix;		
 		var rowId = prefix + 'row_' + thisObj.m_cnt;
+		thisObj.m_rowIdArray.push(rowId);
 		
         var addr = thisObj.f_renderTextField(prefix + 'addr_' + thisObj.m_cnt, '', '', 400);
         var cb = thisObj.f_renderSmartCheckbox('yes', prefix + 'cb_' + thisObj.m_cnt, '', '',
@@ -127,14 +137,22 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         thisObj.f_adjust();
     }
     
+	this.f_rowIdArrayRemoveRow = function(rowId)
+	{
+		var i = thisObj.m_rowIdArray.indexOf(rowId);
+		if (i >= 0) {
+			thisObj.m_rowIdArray.splice(i,1);
+		}
+	}
+	
 	this.f_deleteRow = function(rowId)
 	{
 		var prefix = thisObj.m_prefix + 'row_';
         var row = document.getElementById(rowId);
 		
 		if (row != null) {
-			var id = rowId.substring(prefix.length, rowId.length);
-			var text = document.getElementById(thisObj.m_prefix + 'addr_' + id);
+			var seedId = thisObj.f_getSeedIdByRowId(rowId);
+			var text = document.getElementById(thisObj.m_prefix + 'addr_' + seedId);
 			
 			if (text.readOnly) {
 			//need to send delete command to the server.
@@ -142,8 +160,8 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 				var listObj = new UTM_urlFilterListObj(text.value);
 				listObj.m_action = 'delete';
                 listObj.m_status = true;				
-				urlList.push(listObj);
-				thisObj.m_deletedRow = row;
+				kwList.push(listObj);
+				thisObj.m_deletedRow = seedId;
 				
 			    var cb = function(evt)
                 {        
@@ -152,7 +170,9 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
                             g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);  
                             return;                    
                         }                
-						thisObj.m_deletedRow.parentNode.removeChild(thisObj.m_deletedRow);    
+						var row = document.getElementById(thisObj.m_prefix + 'row_' + thisObj.m_deletedRow);
+						row.parentNode.removeChild(row);    
+						thisObj.f_rowIdArrayRemoveRow(thisObj.m_prefix + 'row_' + thisObj.m_deletedRow);
                         thisObj.f_adjust();         
                     }                                 
                 };      
@@ -160,6 +180,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 				return;
 			} else {
 				row.parentNode.removeChild(row);
+				thisObj.f_rowIdArrayRemoveRow(prefix + seedId);
 			}
 			thisObj.f_adjust();
 		}		
@@ -172,17 +193,18 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 		thisObj.m_addedRow = new Array();
 		thisObj.m_updatedRow = new Array();
 		
-		for (var i = 0; i < thisObj.m_cnt; i++) {
-			var text = document.getElementById(thisObj.m_prefix + 'addr_' + i);
-			var cb = document.getElementById(thisObj.m_prefix + 'cb_' + i);
-			var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + i);
+		for (var i = 0; i < thisObj.m_rowIdArray.length; i++) {
+			var seedId = thisObj.f_getSeedIdByRowId(thisObj.m_rowIdArray[i]);
+			var text = document.getElementById(thisObj.m_prefix + 'addr_' + seedId);
+			var cb = document.getElementById(thisObj.m_prefix + 'cb_' + seedId);
+			var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
 			
 			if ((text != undefined) && (text != null)) {
 				if (!text.readOnly) {
 					if (text.value.trim().length <= 0) {
 						continue;
 					}
-					thisObj.m_addedRow.push(i);
+					thisObj.m_addedRow.push(seedId);
 					
 					var listObj = new UTM_urlFilterListObj(text.value);
 					listObj.m_action = 'add';
@@ -206,7 +228,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 							listObj.m_status = false;
 						}
 						kwList.push(listObj);
-						thisObj.m_updatedRow.push(i);	
+						thisObj.m_updatedRow.push(seedId);	
 					}
 				}
 			}
@@ -222,17 +244,17 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 						return;
 					} else {
 						for (var i=0; i < thisObj.m_addedRow.length; i++) {
-							var j = thisObj.m_addedRow[i];
-			                var cb = document.getElementById(thisObj.m_prefix + 'cb_' + j);
-			                var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + j);
-							var text = document.getElementById(thisObj.m_prefix + 'addr_' + j);
+							var seedId = thisObj.m_addedRow[i];
+			                var cb = document.getElementById(thisObj.m_prefix + 'cb_' + seedId);
+			                var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
+							var text = document.getElementById(thisObj.m_prefix + 'addr_' + seedId);
 							cbHidden.checked = cb.checked;								
 							text.readOnly = true;
 						}
 						for (var i=0; i < thisObj.m_updatedRow.length; i++) {
-                            var j = thisObj.m_updatedRow[i];							
-			                var cb = document.getElementById(thisObj.m_prefix + 'cb_' + j);
-			                var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + j);
+                            var seedId = thisObj.m_updatedRow[i];							
+			                var cb = document.getElementById(thisObj.m_prefix + 'cb_' + seedId);
+			                var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
 							cbHidden.checked = cb.checked;							
 						}
 					}
@@ -247,7 +269,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
     
     this.f_reset = function()
     {
-        alert('reset form');
+        thisObj.f_loadVMData();
     }
     
 	
@@ -255,10 +277,11 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 	{
 		var changed = false;
 		
-		for (var i = 0; i < thisObj.m_cnt; i++) {
-			var text = document.getElementById(thisObj.m_prefix + 'addr_' + i);
-			var cb = document.getElementById(thisObj.m_prefix + 'cb_' + i);
-			var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + i);
+		for (var i = 0; i < thisObj.m_rowIdArray.length; i++) {
+			var seedId = thisObj.f_getSeedIdByRowId(thisObj.m_rowIdArray[i]);
+			var text = document.getElementById(thisObj.m_prefix + 'addr_' + seedId);
+			var cb = document.getElementById(thisObj.m_prefix + 'cb_' + seedId);
+			var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
 			
 			if ((text != undefined) && (text != null)) {
 				if (!text.readOnly) {
@@ -309,9 +332,24 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 		    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);								
 		}
     }
+	
+	this.f_cleanup = function()
+	{
+        thisObj.m_row = 0;
+		thisObj.m_rowIdArray = new Array();
+        thisObj.m_cnt = 0;
+	    thisObj.m_urlList = null;
+	    thisObj.m_deletedRow = null;
+	    thisObj.m_addedRow = null;
+	    thisObj.m_updatedRow = null;
+	    thisObj.m_goBack = false;
+		thisObj.f_removeDivChildren(thisObj.m_body);
+	}
     
     this.f_loadVMData = function()
     {
+		thisObj.f_cleanup();
+		
         var cb = function(evt)
         {        
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
@@ -349,6 +387,8 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         for (var i = 0; i < a.length; i++) {
             var prefix = thisObj.m_prefix;
 		    var rowId = prefix + "row_" + thisObj.m_cnt;
+		    thisObj.m_rowIdArray.push(rowId);
+
 			var enable = 'yes';
 			if (!a[i].m_status) {
 				enable = 'no';

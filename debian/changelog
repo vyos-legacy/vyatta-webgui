@@ -1,3 +1,14 @@
+vyatta-webgui (0.2.14+fxdU+28) unstable; urgency=low
+
+  [ Stig Thormodsrud ]
+  * Fix time schedule modification.
+  * Handle delete of block level.
+
+  [ Loi Vo ]
+  * 1. Add checking on iframe resize function (per AnCheng's request)
+
+ -- Loi Vo <loi.vo@vyatta.com>  Sat, 23 May 2009 02:08:03 +0000
+
 vyatta-webgui (0.2.14+fxdU+27) unstable; urgency=low
 
   [ An-Cheng Huang ]

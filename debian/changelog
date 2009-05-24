@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+30) unstable; urgency=low
+
+  * * modified commit, discard and delete in UI layout
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sun, 24 May 2009 08:43:06 +0000
+
 vyatta-webgui (0.2.14+fxdU+29) unstable; urgency=low
 
   * * supported commit, discard, delete customized firewall.

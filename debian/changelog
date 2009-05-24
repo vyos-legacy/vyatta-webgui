@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+29) unstable; urgency=low
+
+  * * supported commit, discard, delete customized firewall.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sun, 24 May 2009 06:26:52 +0000
+
 vyatta-webgui (0.2.14+fxdU+28) unstable; urgency=low
 
   [ Stig Thormodsrud ]

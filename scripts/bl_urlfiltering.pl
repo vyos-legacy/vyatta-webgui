@@ -415,7 +415,7 @@ sub keyword_get {
 	$i++;
     }
     wb_log("keyword_get: $i sent");
-    $msg .= "</bannned-list-easy-config>";
+    $msg .= "</banned-list-easy-config>";
     $msg .= "</form>";
     print $msg;
 }
@@ -470,7 +470,7 @@ sub keyword_set {
 	exit 1;
     }
     wb_log("keyword_set: execute OK");
-    $msg  = "<form name='bannned-list-easy-config' code='0'></form>";
+    $msg  = "<form name='banned-list-easy-config' code='0'></form>";
     print $msg;
 }
 

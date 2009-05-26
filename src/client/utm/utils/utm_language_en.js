@@ -1,5 +1,5 @@
 /*
-    Document   : ft_language_en.js
+    Document   : utm_language_en.js
     Created on : Mar 23, 2009, 2:18:11 PM
     Author     : Kevin.Choi
     Description:
@@ -61,6 +61,12 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Customize Level
+    m_fireDeleteConfirm : "Are you sure you want to delete this rule?",
+    m_fireCustDeleteConfirmHeader : "Delete Customize Rule",
+    m_discardConfirm : "This action will discard all your changes. Are you sure you still want to cancel?",
+    m_fireCustDiscardConfirmHeader : "Cancel All Changes",
+    m_fireResetConfirm : "This action will reload rules from default profile. Are you sure you still want to reset?",
+    m_fireCustResetConfirmHeader : "Reset Customize Rules",
     m_fireCustSubHeader : "Specific Rules",
     m_fireCustDirection : "Direction",
     m_fireCustAppService : "Application<br>/Service",

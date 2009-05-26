@@ -172,7 +172,7 @@ function UTM_firewallBusObj(busObj)
             {
                 var ips = addr.split("/");
                 fireRec.m_srcIpAddr = ips[0];
-                fireRec.m_srcMaskIpAddr = ips[1];
+                fireRec.m_srcMaskIpAddr = g_utils.f_convertCIDRToNetmask(ips[1]);
             }
         }
     };
@@ -185,14 +185,14 @@ function UTM_firewallBusObj(busObj)
             {
                 var ips = addr.split("/");
                 fireRec.m_destIpAddr = ips[0];
-                fireRec.m_destMaskIpAddr = ips[1];
+                fireRec.m_destMaskIpAddr = g_utils.f_convertCIDRToNetmask(ips[1]);
             }
         }
     };
 
     this.f_getValueFromNameValuePair = function(name, nv)
     {
-        var nvs = nv.split(",");
+        var nvs = nv.split("]");
 
         for(var i=0; i<nvs.length; i++)
         {
@@ -202,8 +202,7 @@ function UTM_firewallBusObj(busObj)
                 if(v[1].length > 2)
                 {
                     v = v[1].replace("[", "");
-                    v = v.replace("]", "");
-                    v = v.replace(/;/g, ",");
+                    //v = v.replace(/;/g, ",");
                     return v;
                 }
             }
@@ -216,10 +215,6 @@ function UTM_firewallBusObj(busObj)
      */
     this.f_getFirewallSecurityLevel = function(guicb)
     {
-        //var e = new UTM_eventObj(0, 'Advanced', '');
-        //window.setTimeout(function(){guicb(e)}, 500);
-
-        //return;
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +

@@ -330,10 +330,10 @@ sub whitelist_get {
     wb_log("whitelist_get:");
     my $msg = '';
     $msg  = "<form name='white-list-easy-config' code='0'>";
+    $msg .= "<white-list-easy-config>";
     my $config = new Vyatta::Config; 
     my $path   = 'service webproxy url-filtering squidguard';
     $config->setLevel("$path policy-rule 10 local-ok");
-    $msg .= "<white-list-easy-config>";
     # get whitelist
     my @local_ok_sites = $config->returnOrigValues();
     my $i = 0;
@@ -407,7 +407,6 @@ sub keyword_get {
     my $config = new Vyatta::Config; 
     my $path = 'service webproxy url-filtering squidguard';
     $config->setLevel("$path policy-rule 10 local-block-keyword");
-    $msg .= "<banned-list-easy-config>";
     # get blocked keyword/regex
     my @block_keywords = $config->returnOrigValues();
     my $i = 0;

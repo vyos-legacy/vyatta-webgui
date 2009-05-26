@@ -239,7 +239,7 @@ sub backup {
 			`logger 'error when retrieve archiving from $key: $rc'`;
 		    }
 		}
-		elsif ($err->{_http_code} == 200) {
+		elsif ($err->{_http_code} == 200 && defined($err->{_body})) {
 		    #we'll now interpret this as including the archive in the response
 		    my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
 		    open (MYFILE, '>$bufile');

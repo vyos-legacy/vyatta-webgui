@@ -1,3 +1,17 @@
+vyatta-webgui (0.2.14+fxdU+31) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * misc. changed to firewall customized to both UI and Business
+    levels
+
+  [ Stig Thormodsrud ]
+  * Change 'group-policy' to 'policy-rule'.
+
+  [ Kevin Choi ]
+  * * re-populate table for every command changed
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Tue, 26 May 2009 20:34:02 +0000
+
 vyatta-webgui (0.2.14+fxdU+30) unstable; urgency=low
 
   * * modified commit, discard and delete in UI layout

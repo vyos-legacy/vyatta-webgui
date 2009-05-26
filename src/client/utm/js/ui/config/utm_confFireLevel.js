@@ -58,33 +58,7 @@ function UTM_confFireLevel(name, callback, busLayer)
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
                 var val = evt.m_value;
-                var rId = null;
-
-                switch(val.m_level)
-                {
-                    case "Authorize All":
-                        rId = thisObj.m_rdAuthAllId;
-                    break;
-                    case "Standard":
-                        rId = thisObj.m_rdStandId;
-                    break;
-                    case "Advanced":
-                        rId = thisObj.m_rdAdvanId;
-                    break;
-                    case "Customized":
-                        rId = thisObj.m_rdCustomId;
-                    break;
-                    default:
-                    case "Block All":
-                        rId = thisObj.m_rdBlockId;
-                    break;
-                }
-
-                var r = document.getElementById(rId);
-                if(r != null)
-                    r.checked = true;
-
-                thisObj.m_selRadioId = rId;
+                thisObj.f_updateGridRowRadioValue(val);
 
                 var mainPanel = document.getElementById("utm_confpanel_");
                 if(mainPanel != null)
@@ -94,6 +68,38 @@ function UTM_confFireLevel(name, callback, busLayer)
 
         g_utils.f_cursorWait();
         this.m_busLayer.f_getFirewallSecurityLevel(cb);
+    };
+
+    this.f_updateGridRowRadioValue = function(val)
+    {
+        var rId = null;
+
+        switch(val.m_level)
+        {
+            case "Authorize All":
+                rId = thisObj.m_rdAuthAllId;
+            break;
+            case "Standard":
+                rId = thisObj.m_rdStandId;
+            break;
+            case "Advanced":
+                rId = thisObj.m_rdAdvanId;
+            break;
+            case "Customized":
+                rId = thisObj.m_rdCustomId;
+            break;
+            default:
+            case "Block All":
+                rId = thisObj.m_rdBlockId;
+            break;
+        }
+
+        var r = document.getElementById(rId);
+        if(r != null)
+            r.checked = true;
+
+        thisObj.m_selRadioId = rId;
+        thisObj.f_enabledActionButtons(rId);
     };
 
     this.f_getGridRowData = function(radio, header, msg)
@@ -206,9 +212,11 @@ function UTM_confFireLevel(name, callback, busLayer)
 
         var cb = function(evt)
         {
-
+            g_utils.f_cursorDefault();
+            thisObj.f_loadVMData();
         };
 
+        g_utils.f_cursorWait();
         thisObj.m_busLayer.f_setFirewallSecurityLevel(fr, cb);
     };
 }

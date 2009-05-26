@@ -239,6 +239,18 @@ sub backup {
 			`logger 'error when retrieve archiving from $key: $rc'`;
 		    }
 		}
+		elsif ($err->{_http_code} == 200) {
+		    #we'll now interpret this as including the archive in the response
+		    my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
+		    open (MYFILE, '>$bufile');
+		    print (MYFILE $err->{_body});
+		    close (MYFILE);
+
+		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+		    `rm -f $bufile`;  #now remove source file
+		    #and remove from poll collection
+		    delete $new_hash_coll{$key};
+		}
 		elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
 		    #log error and delete backup request
 		    `logger 'error received from $key, canceling backup of this VM: $err->{_http_code}'`;

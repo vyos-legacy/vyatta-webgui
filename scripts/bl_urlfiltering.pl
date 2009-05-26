@@ -198,8 +198,10 @@ sub configure_webproxy {
     push @cmds, "set service webproxy cache-size 0";
     push @cmds, "set $path source-group ALL address 0.0.0.0/0";
     push @cmds, "set $path source-group NONE address 255.255.255.255";
+    push @cmds, "set $path policy-rule 1024 description 'OA OOB storage'";
     push @cmds, "set $path policy-rule 1024 source-group NONE";
     push @cmds, "set $path policy-rule 10 source-group ALL";
+    push @cmds, "set $path policy-rule 10 description 'OA'";
     push @cmds, "set $path policy-rule 10 local-ok 192.168.1.1";
     push @cmds, "set $path policy-rule 10 log all";
     push @cmds, "set $path redirect-url \"$redirect\" ";

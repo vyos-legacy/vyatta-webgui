@@ -134,18 +134,18 @@ sub filter_get {
     $msg .= "<policy>";
     # check whitelist
     if ($config->existsOrig('local-ok')) {
-	$msg .= "<whitelist status=\"true\"></whitelist>";
+	$msg .= "<whitelist status='true'></whitelist>";
     } 
 
     # check keyword
     if ($config->existsOrig('local-block-keyword')) {
-	$msg .= "<keyword status=\"true\"></keyword>";
+	$msg .= "<keyword status='true'></keyword>";
     } 
 
     # check blacklist
     my $level = get_configured_block_level();
     if ($level) {
-	$msg .= "<blacklist status=\"true\">";
+	$msg .= "<blacklist status='true'>";
 	$msg .= "<$level>true</$level>";
 	$msg .= "</blacklist>";
     }

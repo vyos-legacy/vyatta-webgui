@@ -107,7 +107,7 @@ sub wb_log {
 sub get_configured_block_level {
     my $path = 'service webproxy url-filtering squidguard';
     my $config = new Vyatta::Config; 
-    $config->setLevel("$path group-policy NONE");
+    $config->setLevel("$path policy-rule 1024");
     my @block_cats = $config->returnOrigValues('local-block');
     if (scalar(@block_cats) > 0) {
 	my %level_hash = map { $_ => 1} @cat_levels;
@@ -129,7 +129,7 @@ sub filter_get {
 
     my $config = new Vyatta::Config; 
     my $path = 'service webproxy url-filtering squidguard';
-    $config->setLevel("$path group-policy NONE");
+    $config->setLevel("$path policy-rule 1024");
 
     $msg .= "<policy>";
     # check whitelist
@@ -175,7 +175,7 @@ sub filter_get {
 
 sub is_webproxy_configured {
     my $config = new Vyatta::Config; 
-    my $path   = 'service webproxy url-filtering squidguard group-policy OA';
+    my $path   = 'service webproxy url-filtering squidguard policy-rule 10';
     $config->setLevel($path);
     if ($config->existsOrig('source-group')) {   
 	wb_log("webproxy is configured");
@@ -198,10 +198,10 @@ sub configure_webproxy {
     push @cmds, "set service webproxy cache-size 0";
     push @cmds, "set $path source-group ALL address 0.0.0.0/0";
     push @cmds, "set $path source-group NONE address 255.255.255.255";
-    push @cmds, "set $path group-policy NONE source-group NONE";
-    push @cmds, "set $path group-policy OA source-group ALL";
-    push @cmds, "set $path group-policy OA local-ok 192.168.1.1";
-    push @cmds, "set $path group-policy OA log all";
+    push @cmds, "set $path policy-rule 1024 source-group NONE";
+    push @cmds, "set $path policy-rule 10 source-group ALL";
+    push @cmds, "set $path policy-rule 10 local-ok 192.168.1.1";
+    push @cmds, "set $path policy-rule 10 log all";
     push @cmds, "set $path redirect-url \"$redirect\" ";
 
     return @cmds;
@@ -217,7 +217,7 @@ sub get_blacklist_categories {
 	case 'legal'        { @blocks = @level_legal; }
     }
     my @cmds = ();
-    my $path = 'service webproxy url-filtering squidguard group-policy OA';
+    my $path = 'service webproxy url-filtering squidguard policy-rule 10';
     foreach my $block (@blocks) {
 	push @cmds, "set $path block-category $block";
     }
@@ -265,27 +265,27 @@ sub filter_set {
 
     if ($whitelist and $whitelist eq 'true') {
 	wb_log("filter_set: whitelist true");
-	push @cmds, "set $path group-policy NONE local-ok OA";
+	push @cmds, "set $path policy-rule 1024 local-ok OA";
     }
     if ($keyword and $keyword eq 'true') {
 	wb_log("filter_set: keyword true");
-	push @cmds, "set $path group-policy NONE local-block-keyword OA";
+	push @cmds, "set $path policy-rule 1024 local-block-keyword OA";
     }
     if ($blacklist and $blacklist eq 'true') {
 	my $level = get_configured_block_level();
 	if ($level and $level ne $category) {
 	    wb_log("filter_set: delete $category");
-	    push @cmds, "delete $path group-policy NONE local-block $level";
-	    push @cmds, "delete $path group-policy OA block-category";
+	    push @cmds, "delete $path policy-rule 1024 local-block $level";
+	    push @cmds, "delete $path policy-rule 10 block-category";
 	}
-	push @cmds, "set $path group-policy NONE local-block $category";
+	push @cmds, "set $path policy-rule 1024 local-block $category";
 	push @cmds, get_blacklist_categories($category);
     } else {
-	$config->setLevel("$path group-policy NONE");
+	$config->setLevel("$path policy-rule 1024");
 	if ($config->existsOrig('local-block')) {  
 	    wb_log("filter_set: delete block level");
-	    push @cmds, "delete $path group-policy NONE local-block";
-	    push @cmds, "delete $path group-policy OA block-category";	    
+	    push @cmds, "delete $path policy-rule 1024 local-block";
+	    push @cmds, "delete $path policy-rule 10 block-category";	    
 	}
     }
 
@@ -295,7 +295,7 @@ sub filter_set {
     $config->setLevel("$path time-period");
     if ($config->existsOrig('OA')) {  
 	push @cmds, "delete $path time-period OA";
-	push @cmds, "delete $path group-policy OA time-period";
+	push @cmds, "delete $path policy-rule 10 time-period";
 	# kludge until cli can support delete/set combo
 	push @cmds, "commit";
     }
@@ -307,7 +307,7 @@ sub filter_set {
 	}
     }
     if ($time_period) {
-	push @cmds, "set $path group-policy OA time-period OA";
+	push @cmds, "set $path policy-rule 10 time-period OA";
     }
     
     push @cmds, ('commit', 'save');
@@ -330,7 +330,7 @@ sub whitelist_get {
     $msg  = "<form name='white-list-easy-config' code='0'>";
     my $config = new Vyatta::Config; 
     my $path   = 'service webproxy url-filtering squidguard';
-    $config->setLevel("$path group-policy OA local-ok");
+    $config->setLevel("$path policy-rule 10 local-ok");
     $msg .= "<white-list-easy-config>";
     # get whitelist
     my @local_ok_sites = $config->returnOrigValues();
@@ -364,10 +364,11 @@ sub whitelist_set {
 	my $action    = $xml->{url}[$i]->{action};
 	if ($whitelist and $action) {
 	    if ($action eq 'add') {
-		push @cmds, "set $path group-policy NONE local-ok OA";
-		push @cmds, "set $path group-policy OA local-ok \"$whitelist\" ";
+		push @cmds, "set $path policy-rule 1024 local-ok OA";
+		push @cmds, "set $path policy-rule 10 local-ok \"$whitelist\" ";
 	    } else {
-		push @cmds, "delete $path group-policy local-ok \"$whitelist\" ";
+		push @cmds, 
+		"delete $path policy-rule 10 local-ok \"$whitelist\" ";
 	    }
 	} else {
 	    last;
@@ -403,7 +404,7 @@ sub keyword_get {
     $msg .= "<banned-list-easy-config>";
     my $config = new Vyatta::Config; 
     my $path = 'service webproxy url-filtering squidguard';
-    $config->setLevel("$path group-policy OA local-block-keyword");
+    $config->setLevel("$path policy-rule 10 local-block-keyword");
     $msg .= "<banned-list-easy-config>";
     # get blocked keyword/regex
     my @block_keywords = $config->returnOrigValues();
@@ -437,12 +438,12 @@ sub keyword_set {
 	if ($keyword and $action) {
 	    if ($action eq 'add') {
 		push @cmds, 
-		"set $path group-policy NONE local-block-keyword OA";
+		"set $path policy-rule 1024 local-block-keyword OA";
 		push @cmds, 
-		"set $path group-policy OA local-block-keyword \"$keyword\" ";
+		"set $path policy-rule 10 local-block-keyword \"$keyword\" ";
 	    } else {
 		push @cmds, 
-		"delete $path group-policy OA local-block-keyword \"$keyword\" ";
+		"delete $path policy-rule 10 local-block-keyword \"$keyword\" ";
 	    }
 	} else {
 	    last;

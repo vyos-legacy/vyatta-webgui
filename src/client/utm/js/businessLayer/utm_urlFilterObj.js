@@ -399,8 +399,8 @@ function UTM_urlFilterBusObj(busObj)
 		for (var i =0; i < a.length; i++) {
 			a[c[i]] = 'false';
 		}
-		a['blacklist'] = 'true';
-		a['legal'] = 'true';
+		//a['blacklist'] = 'true';
+		//a['legal'] = 'true';
 		
 		return a;
 	}

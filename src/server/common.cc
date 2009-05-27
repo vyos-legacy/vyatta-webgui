@@ -132,8 +132,6 @@ WebGUI::get_user(unsigned long id)
 bool
 WebGUI::set_user(unsigned long id, const std::string &user, bool restricted)
 {
-  bool restrict = is_restricted(id);
-  
   string flag = string((restricted == true) ? "1" : "0");
 
   string tmp = user + "," + flag;

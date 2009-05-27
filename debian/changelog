@@ -1,3 +1,19 @@
+vyatta-webgui (0.2+fxd0+46) unstable; urgency=low
+
+  [ slioch ]
+  * provide additional path for archive response to be returned via cgi
+    request on error code 200
+  * added additional check to require inclusion of body in response
+    before considing a valid 200 response code
+
+  [ Michael Larson ]
+  * fix for bug 4447. port is now applied to user and archive
+    notifications
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 27 May 2009 13:46:53 -0700
+
 vyatta-webgui (0.2+fxd0+45) unstable; urgency=low
 
   [ Michael Larson ]

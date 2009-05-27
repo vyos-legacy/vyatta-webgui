@@ -165,11 +165,17 @@ sub backup {
     foreach $key (keys (%hash_coll)) {
 	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
-	my $ip = '';
-	$ip = $vm->getIP();
+	my $ip = $vm->getIP();
+	my $port = $vm->getWuiPort();
 	if (defined $ip && $ip ne '') {
             my $value = $hash_coll{$key};
-	    my $cmd = "http://$ip/backup/backupArchive?";
+	    my $cmd;
+	    if (defined $port && $port ne '') {
+		$cmd = "http://$ip:$port/backup/backupArchive?";
+	    }
+	    else {
+		$cmd = "http://$ip/backup/backupArchive?";
+	    }
 	    if ($value == 1) {
 		$cmd .= "data=true&config=false";
 	    }
@@ -213,9 +219,16 @@ sub backup {
 	    my $vm = new OpenApp::VMMgmt($key);
 	    next if (!defined($vm));
 	    my $ip = '';
-	    $ip = $vm->getIP();
+	    my $ip = $vm->getIP();
+	    my $port = $vm->getWuiPort();
 	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/backup/getArchive";		
+		my $cmd;
+		if (defined $port && $port ne '') {
+		    $cmd = "http://$ip:$port/backup/getArchive";		
+		}
+		else {
+		    $cmd = "http://$ip/backup/getArchive";		
+		}
 		my $obj = new OpenApp::Rest();
 		my $err = $obj->send("GET",$cmd);
 		if ($err->{_http_code} == 302) { #redirect means server is done with archive
@@ -481,10 +494,17 @@ sub restore_archive {
 	next if (!defined($vm));
 
 	my $ip = '';
-	$ip = $vm->getIP();
+	my $ip = $vm->getIP();
+	my $port = $vm->getWuiPort();
 	if (defined $ip && $ip ne '') {
 	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$key.enc -out /var/www/backup/restore/$key`;
-	    my $cmd = "http://$ip/backup/backupArchive?";
+	    my $cmd;
+	    if (defined $port && $port ne '') {
+		$cmd = "http://$ip:$port/backup/backupArchive?";
+	    }
+	    else {
+		$cmd = "http://$ip/backup/backupArchive?";
+	    }
             my $value = $hash_coll{$key};
 	    if ($value == 1) {
 		$cmd .= "data=true&config=false";

@@ -1,3 +1,17 @@
+vyatta-webgui (0.2.14+fxdU+33) unstable; urgency=low
+
+  [ Mohit Mehta ]
+  * add backend support for resetting customized firewall rulesets to
+    default settings
+
+  [ Stig Thormodsrud ]
+  * Move disabled whitelist/keyword entries to temp storage.
+
+  [ Loi Vo ]
+  * 1. Add sorting for text column header.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 27 May 2009 20:42:43 +0000
+
 vyatta-webgui (0.2.14+fxdU+32) unstable; urgency=low
 
   [ Stig Thormodsrud ]

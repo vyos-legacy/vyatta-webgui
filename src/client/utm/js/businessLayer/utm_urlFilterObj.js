@@ -194,6 +194,8 @@ function UTM_urlFilterListObj(rawText)
     this.m_value = null;
 	this.m_status = null;
 	this.m_action = 'noop';
+	this.m_cbHidden = true;
+	this.m_readonly = true;
 	
 	if (rawText.startsWith('!')) {
 		this.m_value = rawText.substring(1,rawText.length);
@@ -202,6 +204,7 @@ function UTM_urlFilterListObj(rawText)
 		this.m_value = rawText;
 		this.m_status = true;
 	}
+	this.m_cbHidden = this.m_status;
 	
 	this.f_toString = function() {
 		if (thisObj.m_status) {
@@ -400,7 +403,7 @@ function UTM_urlFilterBusObj(busObj)
 			a[c[i]] = 'false';
 		}
 		//a['blacklist'] = 'true';
-		//a['legal'] = 'true';
+		a['legal'] = 'true';
 		
 		return a;
 	}

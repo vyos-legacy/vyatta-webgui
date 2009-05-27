@@ -11,6 +11,10 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.m_colorGridRow = false;
     this.m_id = undefined;
     this.m_rowHeight = 31;
+    this.m_allowSort = false;
+    this.m_sortColPrev = -1;
+    this.m_sortCol = 0;
+    this.m_sortOrder = 'asc';   // asc or des	
 
     /**
      * @param name - name of configuration screens.
@@ -802,6 +806,40 @@ function UTM_confBaseObj(name, callback, busLayer)
         this.f_reflow();
         g_utmMainPanel.f_requestResize();
     }
+	
+    this.f_resetSorting = function()
+    {
+        thisObj.m_sortOrder = 'asc';
+        thisObj.m_sortCol = 0;
+    }
+
+    this.f_isSortEnabled = function(colHeader, col)
+    {
+        // check for header sorting is allow or not
+        var chd = colHeader[col];
+        if(chd[4] == undefined || chd[4] == false)
+            return false;
+
+        var order = thisObj.m_sortOrder;
+
+        if(col != thisObj.m_sortColPrev)
+            order = 'asc';
+        else if(order == 'asc')
+            order = 'desc';
+        else
+            order = 'asc';
+
+        thisObj.m_sortCol = col;
+        thisObj.m_sortOrder = order;
+
+        return true;
+    }	
+	
+	this.f_setSortOnColPerformed = function(col, prevCol)
+	{
+		thisObj.m_sortCol = col;
+		thisObj.m_sortColPrev = prevCol;
+	}
 }
 
 function f_confHandleSessionTimeoutConfirm()

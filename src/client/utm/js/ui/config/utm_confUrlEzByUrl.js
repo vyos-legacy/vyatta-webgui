@@ -52,7 +52,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     {
         this.f_initProperties();
         this.m_hdcolumns = this.f_createHdColumns();
-        this.m_header = this.f_createGridHeader(this.m_hdcolumns, '');
+        this.m_header = this.f_createGridHeader(this.m_hdcolumns, 'f_confUrlEzByListGridHeaderOnclick');
         this.m_body = this.f_createGridView(this.m_hdcolumns, true);
         
         var addBtn = [['AddInner', this.m_eventCbFunction + "('" + this.m_btnAddId + "')", 'Tools tip for add', this.m_btnAddId]];
@@ -71,7 +71,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         var chkbox = g_lang.m_enabled + '<br>' +
         thisObj.f_renderCheckbox('no', thisObj.m_prefix + 'enable_cb', this.m_eventCbFunction + "('" + thisObj.m_prefix + "enable_cb')", 'tooltip');
         
-        cols[0] = this.f_createColumn(g_lang.m_url_ezWebSiteAddress + '<br>', 650, 'textField', '10', false, 'center');
+        cols[0] = this.f_createColumn(g_lang.m_url_ezWebSiteAddress, 650, 'textField', '10', true, 'center');
         cols[1] = this.f_createColumn(chkbox, 70, 'checkbox', '28');
         cols[2] = this.f_createColumn(g_lang.m_delete + '<br>', 70, 'image', '28');
         
@@ -95,8 +95,11 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
                 g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
                 return;
             }
-            thisObj.m_entryList = evt.m_value;
-            thisObj.f_populateTable();
+			thisObj.m_entryList = evt.m_value;
+            thisObj.f_populateTable(thisObj.m_entryList);
+			thisObj.f_setSortOnColPerformed(0,0);			
+		    thisObj.f_addRow();
+            thisObj.f_adjust();			
         }
     }
     
@@ -107,10 +110,10 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
                 g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
                 return;
             }
-            
-            var row = document.getElementById(thisObj.m_prefix + 'row_' + thisObj.m_deletedRow);
+            var id = thisObj.m_prefix + 'row_' + thisObj.m_deletedRow;
+            var row = document.getElementById(id);
             row.parentNode.removeChild(row);
-            thisObj.f_rowIdArrayRemoveRow(thisObj.m_prefix + 'row_' + thisObj.m_deletedRow);
+            thisObj.f_rowIdArrayRemoveRow(id);
             thisObj.f_adjust();
         }
     }
@@ -125,14 +128,16 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
             } else {
                 for (var i = 0; i < thisObj.m_addedRow.length; i++) {
                     var seedId = thisObj.m_addedRow[i];
+					var rowId = thisObj.m_prefix + 'row_' + seedId; 
                     var cb = document.getElementById(thisObj.m_prefix + 'cb_' + seedId);
                     var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
                     var url = document.getElementById(thisObj.m_prefix + 'addr_' + seedId);
-                    cbHidden.checked = cb.checked;
+                    cbHidden.checked = cb.checked;					
                     url.readOnly = true;
                 }
                 for (var i = 0; i < thisObj.m_updatedRow.length; i++) {
                     var seedId = thisObj.m_updatedRow[i];
+					var rowId = thisObj.m_prefix + 'row_' + seedId; 
                     var cb = document.getElementById(thisObj.m_prefix + 'cb_' + seedId);
                     var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
                     cbHidden.checked = cb.checked;

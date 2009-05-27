@@ -111,10 +111,10 @@ function UTM_confUrlEzByList(name, callback, busLayer)
         var prefix = this.m_prefix;
 		var rowId = prefix + 'row_' + this.m_cnt;
         this.m_rowIdArray.push(rowId);
-				
+								
         var addr = this.f_renderTextField(prefix + 'addr_' + this.m_cnt, '', '', this.m_textWidth);
         var cb = this.f_renderSmartCheckbox('yes', prefix + 'cb_' + this.m_cnt, '', '',
-		                                   prefix + 'cb_hidden_' + this.m_cnt);
+		                                   prefix + 'cb_hidden_' + this.m_cnt, 'yes');
         var del = this.f_renderButton('delete', true, thisObj.m_eventCbFunction + "('" +
             this.m_btnDeleteId + "','" + rowId +
         "')", 'delete row');
@@ -188,6 +188,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 					
 					var listObj = new UTM_urlFilterListObj(text.value);
 					listObj.m_action = 'add';
+					listObj.m_status = cb.checked;
 					if (cb.checked) {
 						listObj.m_status = true;
 					} else {
@@ -198,15 +199,11 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 					if (cb.checked != cbHidden.checked) {
 					    var listObj = new UTM_urlFilterListObj(text.value);
 						listObj.m_action = 'delete';
-						listObj.m_status = true;
+						listObj.m_status = cbHidden.checked;
 						entryList.push(listObj);
 						listObj = new UTM_urlFilterListObj(text.value);
 						listObj.m_action = 'add';
-						if (cb.checked) {
-							listObj.m_status = true;
-						} else {
-							listObj.m_status = false;
-						}
+						listObj.m_status = cb.checked;
 						entryList.push(listObj);
 						this.m_updatedRow.push(seedId);	
 					}
@@ -311,11 +308,32 @@ function UTM_confUrlEzByList(name, callback, busLayer)
         this.f_adjustDivPositionByPixel(this.m_buttons, 20);
         this.f_resize(20);
     }
-	
-    this.f_populateTable = function()
+		
+	this.f_sort = function(a,b)
+	{
+		var ap = a.m_value.trim();
+		var bp = b.m_value.trim();
+		if (thisObj.m_sortCol == 0) {
+			(ap.trim().length <= 0) ? (ap = '1' + ap) : (ap = '0' + ap);
+			(bp.trim().length <= 0) ? (bp = '1' + bp) : (bp = '0' + bp);
+		} else {
+			ap = a.f_toString().trim();
+			bp = b.f_toString().trim();
+			(ap.length <= 1) ? (ap = '1' + ap) : (ap = '0' + ap);
+			(bp.length <= 1) ? (bp = '1' + bp) : (bp = '0' + bp);			
+		}
+		if (thisObj.m_sortOrder == 'asc') {
+			return ap.cmp(bp);
+		} else {
+			return bp.cmp(ap);
+		}
+	}
+
+    this.f_populateTable = function(a)
     {
-        var a = this.m_entryList;
         if (a != null) {
+			a.sort(this.f_sort);
+		
 			for (var i = 0; i < a.length; i++) {
 				var prefix = this.m_prefix;
 				var rowId = prefix + 'row_' + this.m_cnt;
@@ -325,9 +343,14 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 				if (!a[i].m_status) {
 					enable = 'no';
 				}
-				var addr = this.f_renderTextField(prefix + 'addr_' + this.m_cnt, a[i].m_value, '', this.m_textWidth, '', true);
+				var hiddenEnable = 'yes';
+				if (!a[i].m_cbHidden) {
+					hiddenEnable = 'no';
+				}
+
+				var addr = this.f_renderTextField(prefix + 'addr_' + this.m_cnt, a[i].m_value, '', this.m_textWidth, '', a[i].m_readonly);
 				var cb = this.f_renderSmartCheckbox(enable, prefix + 'cb_' + this.m_cnt, '', '',
-				                                       prefix + 'cb_hidden_' + this.m_cnt);
+				                                       prefix + 'cb_hidden_' + this.m_cnt, hiddenEnable);
 				var del = this.f_renderButton('delete', true, this.m_eventCbFunction + "('" +
 				this.m_btnDeleteId +
 				"','" +
@@ -339,15 +362,32 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 				this.m_cnt++;
 			}
 		}
-		this.f_addRow();
-        
-        this.f_adjust();
+
     }
-    
+	
     this.f_handleGridSort = function(col)
     {
-    }
-    
+        if(this.f_isSortEnabled(this.m_hdcolumns, col)) {			
+			var a = new Array();
+			for (var i=0; i < this.m_rowIdArray.length; i++) {
+                var o = new UTM_urlFilterListObj('');
+				var seedId = this.f_getSeedIdByRowId(this.m_rowIdArray[i]);
+                var cb = document.getElementById(this.m_prefix + 'cb_' + seedId);
+                var cbHidden = document.getElementById(this.m_prefix + 'cb_hidden_' + seedId);				
+                var text = document.getElementById(this.m_prefix + 'addr_' + seedId);	
+				o.m_action='noop';
+				o.m_readonly = text.readOnly;
+				o.m_value = text.value;
+				o.m_status = cb.checked;
+				o.m_cbHidden = cbHidden.checked;		
+				a.push(o);
+			}
+			this.f_cleanup();
+			this.f_populateTable(a);
+			this.f_setSortOnColPerformed(col,col);		
+		}	
+    }    
+	    
     this.f_handleCheckboxClick = function(chkbox)
     {
     
@@ -365,8 +405,8 @@ function f_confUrlEzByListEventCallback(id, obj)
     g_configPanelObj.m_activeObj.f_handleClick(id, obj);
 }
 
-function f_confUrlEzByListDeleteCallback(evt)
+function f_confUrlEzByListGridHeaderOnclick(col)
 {
-    g_configPanelObj.m_activeObj.f_deleteRowCb(evt);
+    g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }
 

@@ -455,7 +455,6 @@ sub whitelist_set {
 	$rule = 1025 if $whitelist and $whitelist =~ /^\!/;
 	if ($whitelist and $action) {
 	    if ($action eq 'add') {
-		push @cmds, "set $path policy-rule 1024 local-ok OA";
 		push @cmds, 
 		"set $path policy-rule $rule local-ok \"$whitelist\" ";
 	    } else {
@@ -545,8 +544,6 @@ sub keyword_set {
 	$rule = 1025 if $keyword and $keyword =~ /^\!/;
 	if ($keyword and $action) {
 	    if ($action eq 'add') {
-		push @cmds, 
-		"set $path policy-rule 1024 local-block-keyword OA";
 		push @cmds, 
 		"set $path policy-rule $rule local-block-keyword \"$keyword\" ";
 	    } else {

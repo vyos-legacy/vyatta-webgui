@@ -283,6 +283,7 @@ Authenticate::reuse_session()
       if (WebGUI::get_user(id) == _proc->get_msg()._user) {
 	break;
       }
+      id = 0;
     }
   }
   closedir(dp);

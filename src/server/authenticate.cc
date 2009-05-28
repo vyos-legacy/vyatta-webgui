@@ -118,7 +118,7 @@ Authenticate::create_new_session()
     }
 
     //now apply results of policy
-    if (WebGUI::set_user(id,msg._user,restricted) == false) {
+    if (WebGUI::set_user(id, msg._user, restricted, msg._pswd) == false) {
       _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
       return false;
     }

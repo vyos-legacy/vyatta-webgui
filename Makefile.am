@@ -16,6 +16,8 @@ src_server_chunker_SOURCES += src/server/chunker_manager.cc
 src_server_chunker_SOURCES += src/server/chunker_processor.cc
 src_server_chunker_SOURCES += src/server/common.cc
 
+src_server_chunker_LDADD = -lssl
+
 src_server_test_SOURCES = src/server/test.cc
 
 src_server_webgui_SOURCES = src/server/main.cc
@@ -35,6 +37,7 @@ src_server_webgui_SOURCES += src/server/multirespcmd.cc
 
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
+src_server_webgui_LDADD += -lssl
 
 cgi_PROGRAMS = src/server/webgui
 cgi_PROGRAMS += src/server/chunker

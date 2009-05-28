@@ -11,30 +11,24 @@
 function UTM_confFireCustom(name, callback, busLayer)
 {
     var thisObj = this;
+    this.m_fwObj = busLayer.f_getFWObject();
+    this.m_btnAddId = "wfCustomizeAddId";
+    this.m_btnSaveId = "wfCustomizeSaveId";
+    this.m_btnRestId = "wfCustomizeResetId";
+    this.m_btnCancelId = "wfCustomeizeCancelId";
+    this.m_btnBackId = "wfCustomizeBackId";
     this.m_isDirty = false;
     this.m_fireRecs = null;
     this.thisObjName = 'UTM_confFireCustom';
     this.m_nextRuleNo = null;
     this.m_zpRuleNoAdded = [];    // contain zone pair name and rule no (zp-ruleNo) which areadly add to server
     this.m_zpRuleNoAdd = [] // contains zone pair (any) and rule ("Any"-ruleNo) which has not assign a zone pair name yet
-    //this.m_ruleZoneOptions = ["Any", "DMZ to LAN", "DMZ to WAN", "LAN to DMZ",
-      //                "LAN to WAN", "WAN to DMZ", "WAN to LAN"];
-    this.m_ruleZoneOptName = ["Any", "DMZ_to_LAN", "DMZ_to_WAN", "LAN_to_DMZ",
+    this.m_ruleZoneOptName = [/*"Any",*/ "DMZ_to_LAN", "DMZ_to_WAN", "LAN_to_DMZ",
                       "LAN_to_WAN", "WAN_to_DMZ", "WAN_to_LAN"];
     this.m_fieldIds = ["rulenoId-", "dirId-", "appId-", "proId-", "sipId-", "smipId-",
                         "sportId-", "dipId-", "dmipId-", "dportId-",
                         "actId-", "logId-", "enableId-"];
-    this.m_protocol = ["tcp", "udp", "icmp", "ipsec", "vrrp"];
-    this.m_serviceOpts = ["DNS-UDP", "DNS-TCP", "HTTP", "HTTPS", "FTP_DATA",
-                        "FTP", "POP3", "SMTP", "SMTP-Auth", "TFTP", "POP3S",
-                        "IMAP", "NTP", "NNTP", "SNMP", "Telnet", "SSH",
-                        "L2TP", "Traceroute", "IPSec", "UNIK", "H323 host call - TCP",
-                        "H323 host call - UDP", "SIP-TCP", "SIP-UDP",
-                        "ICA-TCP", "ICA-UDP", "Others"];
-    this.m_serviceOptNames = ["53", "53", "80", "443", "20", "21", "110", "25", "587",
-                        "69", "995", "143", "119", "199", "161-162", "23", "22",
-                        "1701", "32769-65535", "22", "500, 4500", "500, 4500",
-                        "1720", "1718, 1719", "5060", "5060", "1494", "1494", ""];
+    this.m_protocol = ["tcp", "udp", "icmp", "ipsec", "vrrp", " "];
 
     /**
      * @param name - name of configuration screens.
@@ -62,7 +56,7 @@ function UTM_confFireCustom(name, callback, busLayer)
                       'tooltip');
 
         //cols[0] = this.f_createColumn("Rule<br>Number", 65, 'combo', '3', false, 'center');
-        cols[0] = this.f_createColumn(g_lang.m_fireCustDirection, 130, 'text', '6', false, 'center');
+        cols[0] = this.f_createColumn(g_lang.m_fireCustDirection, 100, 'text', '6', false, 'center');
         cols[1] = this.f_createColumn(g_lang.m_fireCustAppService, 100, 'combo', '3', false, 'center');
         cols[2] = this.f_createColumn(g_lang.m_fireCustProtocol, 70, 'combo', '3', false, 'center');
         cols[3] = this.f_createColumn(g_lang.m_fireCustSrcIpAddr, 115, 'textField', '3', false, 'center');
@@ -94,6 +88,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         {
             g_utils.f_cursorDefault();
             thisObj.m_isDirty = true;
+            thisObj.f_enabledActionButtons(true);
         }
 
         g_utils.f_cursorWait();
@@ -184,10 +179,10 @@ function UTM_confFireCustom(name, callback, busLayer)
 
         //var rNo = thisObj.f_renderTextField(thisObj.m_fieldIds[0]+zpRule, '', '', 55,
         //          ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[0]+zpRule + "')"]);
-        var app = thisObj.f_renderCombobox(thisObj.m_serviceOpts, fireRec.m_appService, 90,
+        var app = thisObj.f_renderCombobox(thisObj.m_fwObj.m_services, fireRec.m_appService, 90,
                             thisObj.m_fieldIds[2]+zpRule,
                             ["f_fwCustomizeOnCbbBlur('" + thisObj.m_fieldIds[2]+
-                            zpRule + "')", thisObj.m_serviceOptNames]);
+                            zpRule + "')", thisObj.m_fwObj.m_ports]);
         var pro = thisObj.f_renderCombobox(thisObj.m_protocol, fireRec.m_protocol, 60,
                             thisObj.m_fieldIds[3]+zpRule,
                             ["f_fwCustomizeOnCbbBlur('" + thisObj.m_fieldIds[3]+
@@ -253,12 +248,13 @@ function UTM_confFireCustom(name, callback, busLayer)
         var ruleOp = document.getElementById('fwCustomHeaderCombo_id');
         var zpRule = ruleOp.value + "-" + ruleNo;
         thisObj.m_zpRuleNoAdd.push(zpRule);
+        var fireRec = thisObj.f_createFireRecord(ruleNo);
 
-        var app = thisObj.f_renderCombobox(thisObj.m_serviceOpts, "DNS-UDP", 90,
+        var app = thisObj.f_renderCombobox(thisObj.m_fwObj.m_services, " ", 90,
                             thisObj.m_fieldIds[2]+zpRule,
                             ["f_fwCustomizeOnCbbBlur('" + thisObj.m_fieldIds[2]+
-                            zpRule + "')", thisObj.m_serviceOptNames]);
-        var pro = thisObj.f_renderCombobox(thisObj.m_protocol, "Any", 60,
+                            zpRule + "')", thisObj.m_fwObj.m_ports]);
+        var pro = thisObj.f_renderCombobox(thisObj.m_protocol, " ", 60,
                             thisObj.m_fieldIds[3]+zpRule,
                             ["f_fwCustomizeOnCbbBlur('" + thisObj.m_fieldIds[3]+
                             zpRule + "')"]);
@@ -307,13 +303,12 @@ function UTM_confFireCustom(name, callback, busLayer)
                   "delete", true, "f_fireCustomDeleteHandler(" + zpRule +
                   ")", "") + "</div";
 
-        var fireRec = thisObj.f_createFireRecord(ruleNo);
         var zonePair = fireRec.m_zonePair;
         if(fireRec.m_zonePair == "Any")
         {
             var rzon = thisObj.m_ruleZoneOptName.concat([" "]);
             rzon.splice(0, 1);
-            zonePair = this.f_renderCombobox(rzon, " ", 120,
+            zonePair = this.f_renderCombobox(rzon, " ", 90,
                     thisObj.m_fieldIds[1]+zpRule, ["f_fwCustomizeOnCbbBlur('" +
                     thisObj.m_fieldIds[1]+zpRule + "')", rzon]);
         }
@@ -349,7 +344,11 @@ function UTM_confFireCustom(name, callback, busLayer)
 
         this.m_grid = this.f_initGridDiv([this.m_gridHeader, this.m_gridBody])
 
-        window.setTimeout(function(){thisObj.f_adjustGridHeight();}, 100);
+        window.setTimeout(function()
+            {
+                thisObj.f_adjustGridHeight();
+                thisObj.f_enabledActionButtons(false);
+            }, 100);
 
         return [this.f_headerText(), this.f_headerCombo(), this.f_subHeaderText(),
                 this.m_grid, this.m_buttons];
@@ -442,7 +441,7 @@ function UTM_confFireCustom(name, callback, busLayer)
     this.f_headerCombo = function()
     {
         var combo = this.f_renderCombobox(thisObj.m_ruleZoneOptName,
-                    this.m_ruleZoneOptName[4], 180,
+                    this.m_ruleZoneOptName[3], 180,
                     'fwCustomHeaderCombo_id', ["f_onwfCustomizeHeaderCombo()",
                     this.m_ruleZoneOptName]);
 
@@ -450,6 +449,11 @@ function UTM_confFireCustom(name, callback, busLayer)
                 ":&nbsp;&nbsp;&nbsp;</b>" + combo);
     };
 
+    this.f_enabledActionButtons = function(enabled)
+    {
+        thisObj.f_enabledDisableButton(thisObj.m_btnSaveId, enabled);
+        thisObj.f_enabledDisableButton(thisObj.m_btnCancelId, enabled);
+    };
 
     this.f_handleIPAddressOnBlur = function(tfeid, cidr)
     {
@@ -569,25 +573,43 @@ function UTM_confFireCustom(name, callback, busLayer)
             thisObj.f_setRuleDefaultValues(fireRec);
         }
         ///////////////////////////////
-        // application/service cbb
+        // application/service cbb changed
         else if(cbeid.indexOf(thisObj.m_fieldIds[2]) >= 0)
         {
-            var val = thisObj.f_getComboBoxOptionName(cbb);
-            var dest = document.getElementById(thisObj.m_fieldIds[9]+rNo[1]+"-"+rNo[2]);
-            dest.value = val;
+            //var val = thisObj.f_getComboBoxOptionName(cbb);
+            var dport = document.getElementById(thisObj.m_fieldIds[9]+rNo[1]+"-"+rNo[2]);
+            var proto = document.getElementById(thisObj.m_fieldIds[3]+rNo[1]+"-"+rNo[2]);
 
-            thisObj.f_sendSetCommand(fireRec, "dport", dest.value);
+            fireRec.m_appService = cbb.value;
+            fireRec.m_protocol = proto.value;
+            dport.value = thisObj.m_fwObj.f_getPortNumber(fireRec);
             
+            if(dport.value != null)
+                thisObj.f_sendSetCommand(fireRec, "dport", dport.value);
         }
-        ////////////////////////
-        // protocol cbb
+        /////////////////////////////
+        // protocol cbb changed
         else if(cbeid.indexOf(thisObj.m_fieldIds[3]) >= 0)
         {
-            var proto = document.getElementById(thisObj.m_fieldIds[3]+rNo[1]+"-"+rNo[2]);
-            thisObj.f_sendSetCommand(fireRec, "protocol", proto.value);
+            var dport = document.getElementById(thisObj.m_fieldIds[9]+rNo[1]+"-"+rNo[2]);
+            var service = document.getElementById(thisObj.m_fieldIds[2]+rNo[1]+"-"+rNo[2]);
+
+            var senddport = function(fr, val)
+            {
+                if(val != null)
+                    thisObj.f_sendSetCommand(fr, "dport", val);
+            }
+
+            fireRec.m_protocol = cbb.value;
+            fireRec.m_appService = service.value;
+            thisObj.f_sendSetCommand(fireRec, "protocol", cbb.value);
+
+            dport.value = thisObj.m_fwObj.f_getPortNumber(fireRec);
+            window.setTimeout(function(){senddport(fireRec, dport.value)}, 100);
+
         }
         ////////////////////////////////////////
-        // action cbb
+        // action cbb changed
         else if(cbeid.indexOf(thisObj.m_fieldIds[10]) >= 0)
         {
             var act = document.getElementById(thisObj.m_fieldIds[10]+rNo[1]+"-"+rNo[2]);
@@ -617,26 +639,6 @@ function UTM_confFireCustom(name, callback, busLayer)
     this.f_handleAddAction = function()
     {
         thisObj.f_handleAddFirewallCustomRow(thisObj.f_getTheNextRuleNo(null));
-        /*
-        var ruleOp = document.getElementById('fwCustomHeaderCombo_id');
-
-        if(ruleOp.value != "Any")
-        {
-            var ruleNo = thisObj.f_getTheNextRuleNo();
-            var fireRec = thisObj.f_createFireRecord(ruleNo);
-
-            thisObj.f_handleAddFirewallCustomRow(ruleNo);
-            thisObj.f_sendSetCommand(fireRec, "log", "Yes");
-
-            var sendEnabled = function()
-            {
-                thisObj.f_sendSetCommand(fireRec, "enable", "Yes");
-            };
-            window.setTimeout(sendEnabled, 500);
-        }
-        else
-            alert("Please select a Zone Direction from the Combobox 'Show rules only from:' to be added ");
-            */
     }
 
     this.f_handleSaveAction = function()
@@ -647,6 +649,7 @@ function UTM_confFireCustom(name, callback, busLayer)
             thisObj.m_isDirty = false;
         };
 
+        thisObj.f_enabledActionButtons(false);
         g_utils.f_cursorWait();
         thisObj.m_busLayer.f_saveFirewallCustomizeRule(cb);
     };
@@ -672,6 +675,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         };
 
         g_utils.f_cursorWait();
+        thisObj.f_enabledActionButtons(true);
         thisObj.m_busLayer.f_cancelFirewallCustomizeRule(cb);
     };
 

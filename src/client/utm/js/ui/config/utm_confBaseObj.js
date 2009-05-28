@@ -14,7 +14,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.m_allowSort = false;
     this.m_sortColPrev = -1;
     this.m_sortCol = 0;
-    this.m_sortOrder = 'asc';   // asc or des	
+    this.m_sortOrder = 'asc';   // asc or des
 
     /**
      * @param name - name of configuration screens.
@@ -585,11 +585,12 @@ function UTM_confBaseObj(name, callback, busLayer)
      */
     this.f_renderCombobox = function(options, val, width, elId, events)
     {
-        var cb = '<select id="' + elId + '" style="width:' + width + 'px;">';
-
         var onchange = '';
         if(events!= null && events[0] != null)
-            onchange = 'onmouseup="' + events[0] + '"';
+            onchange = 'onchange="' + events[0] + '"';
+
+        var cb = '<select id="' + elId + '" style="width:' + width + 'px;" ' +
+                  onchange + '>';
 
         for(var i=0; i<options.length; i++)
         {
@@ -597,9 +598,9 @@ function UTM_confBaseObj(name, callback, busLayer)
                 'name="' + events[1][i] + '"' : '';
 
             if(options[i] == val)
-                cb += '<option ' + onchange + ' selected value="' + options[i] +
+                cb += '<option  selected value="' + options[i] +
                 '" ' + opName + '>' + options[i] + '</option>';
-            else cb += '<option ' + onchange + ' value="' + options[i] +
+            else cb += '<option  value="' + options[i] +
                 '" ' + opName + '>' + options[i] + '</option>';
         }
 
@@ -753,17 +754,21 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_enabledDisableButton = function(elementId, enabled)
     {
         var button = document.getElementById(elementId);
-        if (button != undefined) {
+        if (button != undefined) 
+        {
             var src = button.src;
+
+            // extract image name
+            var ext = src.substr(src.length-4, 4);
             var in1 = src.lastIndexOf('/');
-            var in2 = src.lastIndexOf('_disabled.gif');
+            var in2 = src.lastIndexOf('_disabled');
             if (in2 < 0)
-                in2 = src.lastIndexOf('.gif');
+                in2 = src.lastIndexOf('.');
             var name = src.substring(in1, in2);
 
             var newSrc = src.substr(0, in1);
             button.disabled = !enabled;
-            button.src = enabled ? newSrc + name + '.gif' : /*newSrc + name + '.gif';*/ newSrc + name + '_disabled.gif';
+            button.src = enabled ? newSrc + name + ext : newSrc + name + '_disabled' + ext;
         }
     }
 
@@ -811,7 +816,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         this.f_reflow();
         g_utmMainPanel.f_requestResize();
     }
-	
+
     this.f_resetSorting = function()
     {
         thisObj.m_sortOrder = 'asc';
@@ -838,8 +843,8 @@ function UTM_confBaseObj(name, callback, busLayer)
         thisObj.m_sortOrder = order;
 
         return true;
-    }	
-	
+    }
+
 	this.f_setSortOnColPerformed = function(col, prevCol)
 	{
 		thisObj.m_sortCol = col;

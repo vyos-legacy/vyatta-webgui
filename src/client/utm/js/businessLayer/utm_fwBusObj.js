@@ -41,6 +41,17 @@ function UTM_firewallBusObj(busObj)
     this.m_lastCmdSent = null;
     this.m_fireRec = null;
 
+    this.m_services = ["DNS-UDP", "DNS-TCP", "HTTP", "HTTPS", "FTP_DATA",
+                        "FTP", "POP3", "SMTP", "SMTP-Auth", "TFTP", "POP3S",
+                        "IMAP", "NTP", "NNTP", "SNMP", "Telnet", "SSH",
+                        "L2TP", "Traceroute", "IPSec", "UNIK", "H323 host call - TCP",
+                        "H323 host call - UDP", "SIP-TCP", "SIP-UDP",
+                        "ICA-TCP", "ICA-UDP", "Others", " "];
+    this.m_ports = ["53", "53", "80", "443", "20", "21", "110", "25", "587",
+                        "69", "995", "143", "119", "199", "161-162", "23", "22",
+                        "1701", "32769-65535", "22", "500, 4500", "500, 4500",
+                        "1720", "1718, 1719", "5060", "5060", "1494", "1494", " ", " "];
+
     /**
      * A callback function for request.
      */
@@ -169,111 +180,88 @@ function UTM_firewallBusObj(busObj)
     this.f_mapAppServiceFromPort = function(fireRec)
     {
         fireRec.m_appService = "Others";
-        var p = fireRec.m_destPort.split(",");
+        var port = fireRec.m_destPort.split(",");
         var proto = fireRec.m_protocol;
+        var s = thisObj.m_services;
+        var p = thisObj.m_ports;
 
         if(proto == "udp")
         {
-            switch(p[0])
+            switch(port[0])
             {
-                case "69":
-                    fireRec.m_appService = "TFTP";
+                case p[0]:
+                    fireRec.m_appService = s[0];
+                case p[24]:
+                    fireRec.m_appService = s[24];
                     break;
-                case "119":
-                    fireRec.m_appService = "NTP";
+                case [26]:
+                    fireRec.m_appService = s[26];
+                    break;
+                case [12]:
+                    fireRec.m_appService = s[12];
                     break;
                 case "161":
                 case "162":
-                case "161-162":
-                    fireRec.m_appService = "SNMP";
+                case p[14]:
+                    fireRec.m_appService = s[14];
                     break;
                 case "500":
                 case "4500":
-                    fireRec.m_appService = "UNIK";
+                    fireRec.m_appService = s[20];
                     break;
-                case "1701":
-                    fireRec.m_appService = "L2TP";
+                case p[17]:
+                    fireRec.m_appService = s[17];
                     break;
                 case "1718":
                 case "1719":
-                    fireRec.m_appService = "H323 host call - UDP";
+                    fireRec.m_appService = s[22];
                     break;
-                case "5060":
-                    fireRec.m_appService = "SIP-UDP";
-                    break;
-                case "1494":
-                    fireRec.m_appService = "ICA-UDP";
-                    break;
+                
                 default:
                     if(parseInt(p[0]) != NaN)
                     {
                         var udp = Number(p[0]);
                         if(udp >= 32769 && udp <= 65535)
-                            fireRec.m_appService = "Traceroute";
+                            fireRec.m_appService = s[18];
                     }
             }
         }
         else if(proto == "tcp")
         {
-            switch(p[0])
+            switch(port[0])
             {
                 case "53":
-                    fireRec.m_appService = "NDS-TCP";
-                    break;
-                case "80":
-                    fireRec.m_appService = "HTTP";
-                    break;
-                case "443":
-                    fireRec.m_appService = "HTTPS";
-                    break;
-                case "20":
-                    fireRec.m_appService = "FTP-DATA";
-                    break;
-                case "21":
-                    fireRec.m_appService = "FTP";
-                    break;
-                case "110":
-                    fireRec.m_appService = "POP3";
-                    break;
-                case "25":
-                    fireRec.m_appService = "SMTP";
-                    break;
-                case "587":
-                    fireRec.m_appService = "SMTP-Auth";
-                    break;
-                case "995":
-                    fireRec.m_appService = "POP3S";
-                    break;
-                case "143":
-                    fireRec.m_appService = "IMAP";
+                    fireRec.m_appService = s[1];
                     break;
                 case "119":
-                    fireRec.m_appService = "NNTP";
-                    break;
-                case "23":
-                    fireRec.m_appService = "Telnet";
-                    break;
-                case "22":
-                    fireRec.m_appService = "SSH";
+                    fireRec.m_appService = s[13];
                     break;
                 case "500":
                 case "4500":
-                    fireRec.m_appService = "IPSec";
-                    break;
-                case "1720":
-                    fireRec.m_appService = "H323 host call - TCP";
+                    fireRec.m_appService = s[19];
                     break;
                 case "5060":
-                    fireRec.m_appService = "SHIP-TCP";
+                    fireRec.m_appService = s[23];
                     break;
                 case "1949":
-                    fireRec.m_appService = "ICA-TCP";
+                    fireRec.m_appService = s[25];
                     break;
+                default:
+                {
+                    for(var i=0; i<p.length; i++)
+                    {
+                        if(port[0] == p[i])
+                        {
+                            fireRec.m_appService = s[i];
+                            break;
+                        }
+                    }
+                }
             }
         }
         else if(proto.indexOf("ip") >= 0)
         {
-            fireRec.m_appService = "IPSec";
+            fireRec.m_appService = s[19];
         }
     };
 
@@ -450,5 +438,33 @@ function UTM_firewallBusObj(busObj)
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
+    }
+
+    this.f_getPortNumber = function(fireRec)
+    {
+        if(fireRec.m_protocol != null && fireRec.m_appService != null)
+        {
+            var s = thisObj.m_services;
+            var p = thisObj.m_ports;
+            if(fireRec.m_protocol == "tcp" || fireRec.m_protocol == "udp")
+            {
+                for(var i=0; i<s.length; i++)
+                {
+                    if(fireRec.m_appService == s[i])
+                        return p[i];
+                }
+            }
+            else if(fireRec.m_protocol.indexOf("ip") >= 0)
+            {
+                if(fireRec.m_appService == s[20])
+                    return p[20];
+            }
+            else if(fireRec.m_protocol.indexOf("icmp") >= 0)
+            {
+
+            }
+        }
+
+        return null;
     }
 }

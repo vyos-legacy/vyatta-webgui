@@ -1,3 +1,13 @@
+vyatta-webgui (0.2.14+fxdU+36) unstable; urgency=low
+
+  [ slioch ]
+  * fix for lighttpd 500 error msg on restoring config
+  * removed unused instruction on installation
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 28 May 2009 13:33:43 -0700
+
 vyatta-webgui (0.2.14+fxdU+35) unstable; urgency=low
 
   * * added code to support zone-pair "any"

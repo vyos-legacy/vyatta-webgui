@@ -68,10 +68,12 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 			buttons: [ {
 				id: 'conf_restore_update_update_button',
 				text: 'Restore',
+				tooltip: g_lang.m_tooltip_restore,
 				onclick: this.f_handleClick
 			}, {
 				id: 'conf_restore_update_cancel_button',
 				text: 'Cancel',
+				tooltip: g_lang.m_tooltip_back,
 				onclick: this.f_handleClick
 			}]
 		})  

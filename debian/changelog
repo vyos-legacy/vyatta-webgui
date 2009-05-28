@@ -1,3 +1,13 @@
+vyatta-webgui (0.2+fxd0+47) unstable; urgency=low
+
+  [ Michael Larson ]
+  * fix for bug 4456 | instead of !
+
+  [ Loi Vo ]
+  * 1. Fix bug 4449
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 28 May 2009 18:20:37 +0000
+
 vyatta-webgui (0.2+fxd0+46) unstable; urgency=low
 
   [ slioch ]

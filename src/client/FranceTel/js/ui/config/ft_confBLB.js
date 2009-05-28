@@ -52,10 +52,12 @@ function FT_confBLB(name, callback, busLayer)
             buttons: [{
                 id: 'conf_blb_apply_button',
                 text: 'Apply',
+				tooltip: g_lang.m_tooltip_apply,
                 onclick: this.f_handleClick
             }, {
                 id: 'conf_blb_cancel_button',
                 text: 'Cancel',
+				tooltip: g_lang.m_tooltip_cancel,
                 onclick: this.f_handleClick
             }]
         })
@@ -95,7 +97,7 @@ function FT_confBLB(name, callback, busLayer)
     
     this.f_reset = function()
     {
-       
+        thisObj.f_loadVMData();   
     }
     
     this.f_apply = function()

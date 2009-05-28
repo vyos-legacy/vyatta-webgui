@@ -77,10 +77,12 @@ function FT_changePassword(name, callback, busLayer)
             buttons: [{
                 id: 'conf_changepasswd_apply_button',
                 text: 'Apply',
+				tooltip: g_lang.m_tooltip_apply,
                 onclick: this.f_handleClick
             }, {
                 id: 'conf_changepasswd_cancel_button',
                 text: 'Cancel',
+				tooltip: g_lang.m_tooltip_cancel,
                 onclick: this.f_handleClick
             }]
         })

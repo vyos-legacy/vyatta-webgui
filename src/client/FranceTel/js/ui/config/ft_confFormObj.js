@@ -118,9 +118,16 @@ function FT_confFormObj(name, callback, busLayer) {
     {
         var html = '';
         if (this.m_config.buttons != undefined) {
-            html = html + '<div class="v_button_container"><br/><br/>';
+            html = html + '<div class="v_button_container"><br/>';
+			html += html + '<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>';
             for (var i = 0; i < this.m_config.buttons.length; i++) {
-                html = html + '<input type="image" id="' + this.m_config.buttons[i].id + '" class="v_button"';
+				var tooltip = '';
+				if ((this.m_config.buttons[i].tooltip != undefined) && 
+				    (this.m_config.buttons[i].tooltip != null)) {
+						tooltip = this.m_config.buttons[i].tooltip;
+				}
+				
+                html = html + '<td><div title="' + tooltip + '"><input type="image" id="' + this.m_config.buttons[i].id + '" class="v_button"';
                 var imgSrc = g_lang.m_imageDir + '/bt_apply.gif';
                 switch (this.m_config.buttons[i].text.trim().toLowerCase()) {
                     case 'apply':
@@ -143,8 +150,9 @@ function FT_confFormObj(name, callback, busLayer) {
                     default:
                         break;
                 }
-                html = html + ' src="' + imgSrc + '">';
+                html = html + ' src="' + imgSrc + '"></div></td>';
             }
+			html += '</tr></tbody></table>';
             html = html + '</div>';
         }
         return html;
@@ -408,6 +416,15 @@ function FT_confFormObj(name, callback, busLayer) {
 	{
 		hnRegex = /^[a-zA-Z0-9.-]+$/;
 		if (!hostname.match(hnRegex)) {			
+			return false;
+		}
+		return true;			
+	}	
+	
+	this.f_checkUsername= function(username)
+	{
+		hnRegex = /^[a-zA-Z0-9]+$/;
+		if (!username.match(hnRegex)) {			
 			return false;
 		}
 		return true;			

@@ -73,10 +73,12 @@ function FT_confUserAdd (name, callback, busLayer)
 			buttons: [{
 				id: 'conf_user_add_apply_button',
 				text: 'Apply',
+				tooltip: g_lang.m_tooltip_apply,
 				onclick: this.f_handleClick
 			}, {
 				id: 'conf_user_add_cancel_button',
 				text: 'Cancel',
+				tooltip: g_lang.m_tooltip_cancel,
 				onclick: this.f_handleClick
 			}]
 		})
@@ -136,6 +138,10 @@ function FT_confUserAdd (name, callback, busLayer)
 		if (thisObj.form.conf_user_add_username.value.trim().length <=0 ) {
 			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">'+ g_lang.m_userUsername + ' ' + g_lang.m_formNoEmpty + '</li>';
 			valid = false;
+		}
+		if (!thisObj.f_checkUsername(thisObj.form.conf_user_add_username.value.trim())) {
+			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">'+ g_lang.m_userUsernameInvalidCharacter + '</li>';
+			valid = false;			
 		}
 		if (!thisObj.f_checkEmail(thisObj.form.conf_user_add_email.value.trim())) {
 			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">' + 

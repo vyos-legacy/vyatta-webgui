@@ -154,7 +154,7 @@ sub backup {
 	my $bu;
 	my @bu = split(':',$archive);
 	if ($bu[1] eq 'data') {
-	    $hash_coll{$bu[0]} != 1;
+	    $hash_coll{$bu[0]} |= 1;
 	}
 	elsif ($bu[1] eq 'config') {
 	    $hash_coll{$bu[0]} |= 2;
@@ -459,7 +459,7 @@ sub restore_archive {
 	    my $bu;
 	    my @bu = split(':',$archive);
 	    if ($bu[1] eq 'data') {
-		$hash_coll{$bu[0]} != 1;
+		$hash_coll{$bu[0]} |= 1;
 	    }
 	    elsif ($bu[1] eq 'config') {
 		$hash_coll{$bu[0]} |= 2;

@@ -1,3 +1,15 @@
+vyatta-webgui (0.2.14+fxdU+34) unstable; urgency=low
+
+  [ Stig Thormodsrud ]
+  * Add support to enable/disable from front page.
+  * Remove auto-toggling of enable from whitelist/keyword set operation.
+  * Set operations need to check enabled status.
+
+  [ Loi Vo ]
+  * 1. Add checking for no categories selected.  Remind the user.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 28 May 2009 02:14:53 +0000
+
 vyatta-webgui (0.2.14+fxdU+33) unstable; urgency=low
 
   [ Mohit Mehta ]

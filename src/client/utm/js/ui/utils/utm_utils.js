@@ -16,6 +16,24 @@ String.prototype.endsWith = function(str)
     return (this.match(str + "$") == str)
 }
 
+String.prototype.cmp = function(b) 
+{
+    var a = this+'';
+    return (a===b) ? 0 : (a>b) ? 1 : -1;
+}
+
+Array.prototype.size = function()
+{
+	if (this.length) {
+		return this.length;
+	}
+	var i=-1;
+	for (var j in this) {
+	    i++;
+	}
+	return i;
+}
+
 f_encodeUrl = function(string)
 {
     return escape(f_utf8_encode(string));

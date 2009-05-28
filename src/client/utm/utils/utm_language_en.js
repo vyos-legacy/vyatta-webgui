@@ -150,6 +150,12 @@ var g_lang =
     m_url_ezBannedKeywordInUrl : "Banned keywords in URL",
 	m_url_expertSubscribeP1: "This mode is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
 	                         "It enables you to:",
+    m_url_ezDeleteConfirm : "Are you sure you want to delete this row?",
+    m_url_ezPolicyDisableConfirm : "You have not selected any filtering policy options.  Are you sure you want to leave it unconfigured?",
+	m_url_ezBLsubUnSelected : "Please select at least one category: legal, professional, or strict",	
+	m_url_ezConfigureWL : "Configure authorized URLs",
+	m_url_ezConfigureKeyword: "Configure banned words in URLs",	
+						 
 	m_url_expertSubscribeListItem1: "benefit from enriched URLs categories you can also customize.",
 	m_url_expertSubscribeListItem2: "assign a specific filtering policy per user group",
 	m_url_expertSubscribeListItem3: "combine the different filtering functions proposed (category/ authorized URLs/ banned keywords).",
@@ -182,6 +188,12 @@ var g_lang =
 	m_ok: 'ok',
 	m_error: 'Error',
 	m_info: 'Information',
+	m_subscribe: 'Subscribe',
+	m_tooltip_cancel : "Reset current form",
+	m_tooltip_apply: "Apply changes",
+	m_tooltip_add: "Add a new row",
+	m_tooltip_delete: "Delete a row",
+	m_tooltip_back: "Go back to previous screen",	
     m_remindSaveChange : 'You changes have not been saved.  Would you like to save it?',
 
     /////////////////////////////////////////

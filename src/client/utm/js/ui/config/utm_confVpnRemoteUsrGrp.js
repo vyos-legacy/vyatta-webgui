@@ -61,18 +61,21 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		var defObj = new UTM_confFormDefObj('conf_vpn_rug', '500', new Array(), 
 		    [{
                 id: 'conf_vpn_rug_update_button',
-                text: 'Update',
+                text: 'back',
+				tooltip: g_lang.m_tooltip_back,
 				align: 'left',
                 onclick: this.f_handleClick
             }, {
                 id: 'conf_vpn_rug_cancel_button',
 				align: 'right',
                 text: 'Cancel',
+				tooltip: g_lang.m_tooltip_cancel,
                 onclick: this.f_handleClick
             }, {
                 id: 'conf_vpn_rug_apply_button',
 				align: 'right',
                 text: 'Apply',
+				tooltip: g_lang.m_tooltip_apply,
                 onclick: this.f_handleClick
             }]		
 		);

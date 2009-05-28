@@ -1,3 +1,42 @@
+vyatta-webgui (0.2.14+fxdU+34) unstable; urgency=low
+
+  [ Stig Thormodsrud ]
+  * Add support to enable/disable from front page.
+  * Remove auto-toggling of enable from whitelist/keyword set operation.
+  * Set operations need to check enabled status.
+
+  [ Loi Vo ]
+  * 1. Add checking for no categories selected.  Remind the user.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 28 May 2009 02:14:53 +0000
+
+vyatta-webgui (0.2.14+fxdU+33) unstable; urgency=low
+
+  [ Mohit Mehta ]
+  * add backend support for resetting customized firewall rulesets to
+    default settings
+
+  [ Stig Thormodsrud ]
+  * Move disabled whitelist/keyword entries to temp storage.
+
+  [ Loi Vo ]
+  * 1. Add sorting for text column header.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 27 May 2009 20:42:43 +0000
+
+vyatta-webgui (0.2.14+fxdU+32) unstable; urgency=low
+
+  [ Stig Thormodsrud ]
+  * Add OA policy-rule descriptions.
+  * Fix duplicate banned get tag.
+  * Fix spelling of 'banned' tag.
+  * Change status=\true\ to use single quotes without escapes.
+
+  [ Loi Vo ]
+  * 1. Remove default setting to 'blacklist'
+
+ -- Loi Vo <loi.vo@vyatta.com>  Tue, 26 May 2009 23:13:17 +0000
+
 vyatta-webgui (0.2.14+fxdU+31) unstable; urgency=low
 
   [ Kevin Choi ]

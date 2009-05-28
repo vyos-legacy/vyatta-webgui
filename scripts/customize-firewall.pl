@@ -128,7 +128,7 @@ sub execute_get {
 
  my ($zonepair, $rulenum) = @_;
  my $return_string;
- my $rules_string;
+ my $rules_string='';
  my $config = new Vyatta::Config;
 
  # first get firewall ruleset name applied to that zone_pair
@@ -292,6 +292,99 @@ sub execute_set_value {
 
 }
 
+sub execute_reset_fw_ruleset {
+  my ($zonepair, $rule) = @_;
+  my $config = new Vyatta::Config;
+
+  # get customized firewall ruleset applied to that zone_pair
+  my $fw_ruleset=get_zonepair_fwruleset($zonepair);
+
+  # delete all rules in this firewall ruleset
+  my $err = OpenApp::Conf::run_cmd_def_session("delete firewall name $fw_ruleset rule", 'commit');
+  ##### remove the commit from here once mike has fixed bug 4434 #####
+  if (defined $err) {
+    # print error and return
+    print("<form name='customize-firewall' code=6>$err</form>");
+    exit 1;
+  }
+
+  my $default_fwruleset = $zonepair;
+  # if LAN_to_WAN|WAN_to_LAN default ruleset - High_LAN_to_WAN|High_WAN_to_LAN
+  if ($zonepair eq 'LAN_to_WAN' || $zonepair eq 'WAN_to_LAN'){
+    $default_fwruleset = "High_" . $default_fwruleset;
+  }
+
+  # for all rules in default ruleset copy those rules over
+  $config->setLevel("firewall name $default_fwruleset rule");
+  my @rules = $config->listNodes();
+  foreach my $rulenum (sort @rules) {
+    my $cli_rule = new Vyatta::IpTables::Rule;
+    $cli_rule->setup("firewall name $default_fwruleset rule $rulenum");
+
+    execute_set_value ($zonepair, $rulenum, 'action', $cli_rule->{_action});
+
+    execute_set_value ($zonepair, $rulenum, 'protocol', $cli_rule->{_protocol})
+                        if defined $cli_rule->{_protocol};
+
+    my $source_addr =
+        get_srcdst_address("firewall name $default_fwruleset rule $rulenum source", 'setup');
+    my $destination_addr =
+        get_srcdst_address("firewall name $default_fwruleset rule $rulenum destination", 'setup');
+    my $source_port =
+        get_srcdst_port("firewall name $default_fwruleset rule $rulenum source", 'setup');
+    my $destination_port =
+        get_srcdst_port("firewall name $default_fwruleset rule $rulenum destination", 'setup');
+
+    if (!($source_addr eq '')) {
+      execute_set_value ($zonepair, $rulenum, 'saddr', $source_addr);
+    }
+
+    if (!($source_port eq '')) {
+      execute_set_value ($zonepair, $rulenum, 'sport', $source_port);
+    }
+
+    if (!($destination_addr eq '')) {
+      execute_set_value ($zonepair, $rulenum, 'daddr', $destination_addr);
+    }
+
+    if (!($destination_port eq '')) {
+      execute_set_value ($zonepair, $rulenum, 'dport', $destination_port);
+    }
+
+    if (defined $cli_rule->{_log} && "$cli_rule->{_log}" eq "enable") {
+      execute_set_value ($zonepair, $rulenum, 'log', 'Yes');
+    }
+
+    if (defined $cli_rule->{_disable}) {
+      execute_set_value ($zonepair, $rulenum, 'enable', 'No');
+    }
+
+    # rules in default ruleset might be stateful. add state nodes
+    my @states = qw(established new related invalid);
+    foreach (@states) {
+      if (defined($cli_rule->{_state}->{"_$_"})
+         && $cli_rule->{_state}->{"_$_"} eq "enable") {
+         $err = OpenApp::Conf::run_cmd_def_session(
+                "set firewall name $fw_ruleset rule $rulenum state $_ enable",);
+         if (defined $err) {
+           # print error and return
+           print("<form name='customize-firewall' code=99></form>");
+           exit 1;
+         }
+      }
+    }
+
+  } # end of foreach loop
+
+  ##### remove the commit from here once mike has fixed bug 4434 #####
+  $err = OpenApp::Conf::run_cmd_def_session('commit',);
+  if (defined $err) {
+    # print error and return
+    print("<form name='customize-firewall' code=99></form>");
+    exit 1;
+  }
+}
+
 sub usage() {
     print "	$0 --action='<action>' --args='<arguments>'\n";
     exit 1;
@@ -373,6 +466,11 @@ switch ($action) {
   {
     # do set action here
     execute_set_value ($zonepair[1], $rulenum[1], substr($key[0], 1), $value[1]);
+  }
+  case 'reset'
+  {
+    # do reset action here
+    execute_reset_fw_ruleset ($zonepair[1], $rulenum[1]);
   }
   else
   {

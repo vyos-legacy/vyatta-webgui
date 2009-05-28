@@ -194,6 +194,8 @@ function UTM_urlFilterListObj(rawText)
     this.m_value = null;
 	this.m_status = null;
 	this.m_action = 'noop';
+	this.m_cbHidden = true;
+	this.m_readonly = true;
 	
 	if (rawText.startsWith('!')) {
 		this.m_value = rawText.substring(1,rawText.length);
@@ -202,6 +204,7 @@ function UTM_urlFilterListObj(rawText)
 		this.m_value = rawText;
 		this.m_status = true;
 	}
+	this.m_cbHidden = this.m_status;
 	
 	this.f_toString = function() {
 		if (thisObj.m_status) {
@@ -399,8 +402,8 @@ function UTM_urlFilterBusObj(busObj)
 		for (var i =0; i < a.length; i++) {
 			a[c[i]] = 'false';
 		}
-		a['blacklist'] = 'true';
-		a['legal'] = 'true';
+		//a['blacklist'] = 'true';
+		//a['legal'] = 'true';
 		
 		return a;
 	}
@@ -796,8 +799,7 @@ function UTM_urlFilterBusObj(busObj)
                                    '<form name=\'url-filtering-easy-config\' code=\'0\'>' +
                                        '<url-filtering-easy-config>' + 
                                            '<policy>' + 
-                                               '<blacklist status=\'true\'>' + 
-                                                   '<strict>true</strict>' + 
+                                               '<blacklist status=\'false\'>' + 
                                                '</blacklist>' + 
                                                '<whitelist status=\'true\'></whitelist>' + 
                                                '<keyword status=\'false\'></keyword>' + 

@@ -31,18 +31,21 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
 		var defObj = new UTM_confFormDefObj('conf_vpn_rusr', '400', new Array(), 
 		    [{
                 id: 'conf_vpn_rusr_update_button',
-                text: 'Update',
+                text: 'Back',
 				align: 'left',
+				tooltip: g_lang.m_tooltip_back,
                 onclick: this.f_handleClick
             }, {
                 id: 'conf_vpn_rusr_cancel_button',
 				align: 'right',
                 text: 'Cancel',
+				tooltip: g_lang.m_tooltip_cancel,
                 onclick: this.f_handleClick
             }, {
                 id: 'conf_vpn_rusr_apply_button',
 				align: 'right',
                 text: 'Apply',
+				tooltip: g_lang.m_tooltip_apply,
                 onclick: this.f_handleClick
             }]		
 		);

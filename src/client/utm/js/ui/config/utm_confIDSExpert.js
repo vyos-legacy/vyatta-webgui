@@ -90,7 +90,8 @@ function UTM_confIDSExpert(name, callback, busLayer)
     this.f_doLayout = function()
     {		
         var text = '<p>' + g_lang.m_ids_Subscribe + '<br/><br/>';
-		text += '<img id="conf_ids_expert_subscribe" src="' + g_lang.m_imageDir + 'bt_subscribe.gif">';
+		text += '<div title="' + g_lang.m_subscribe + '"><img id="conf_ids_expert_subscribe" src="' + g_lang.m_imageDir 
+		        + 'bt_subscribe.gif"></div>';		
 				
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr><td>' +

@@ -67,7 +67,7 @@ elsif ($cgi->request_method() eq 'PUT') { #restore request
 	    
 	    `sudo chmod 660 /opt/vyatta/etc/config/config.boot`;
 	    
-	    `/usr/lib/cgi-bin/web-load`;
+	    `sudo sg vyattacfg "/usr/lib/cgi-bin/web-load >&/dev/null"`;
 	}
     }
     print '<?xml version="1.0" encoding="utf-8"?><openappliance><error><code>0</code><msg></msg></error></openappliance>';

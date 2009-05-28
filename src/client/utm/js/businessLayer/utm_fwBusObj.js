@@ -156,13 +156,126 @@ function UTM_firewallBusObj(busObj)
                         fws[x].m_action = this.f_getValueFromNameValuePair("action", vals[j]);
                         fws[x].m_log = this.f_getValueFromNameValuePair("log", vals[j]);
                         fws[x].m_enabled = this.f_getValueFromNameValuePair("enable", vals[j]);
+
+                        this.f_mapAppServiceFromPort(fws[x]);
                     }
                 }
             }
         }
 
         return fws;
-    }
+    };
+
+    this.f_mapAppServiceFromPort = function(fireRec)
+    {
+        fireRec.m_appService = "Others";
+        var p = fireRec.m_destPort.split(",");
+        var proto = fireRec.m_protocol;
+
+        if(proto == "udp")
+        {
+            switch(p[0])
+            {
+                case "69":
+                    fireRec.m_appService = "TFTP";
+                    break;
+                case "119":
+                    fireRec.m_appService = "NTP";
+                    break;
+                case "161":
+                case "162":
+                case "161-162":
+                    fireRec.m_appService = "SNMP";
+                    break;
+                case "500":
+                case "4500":
+                    fireRec.m_appService = "UNIK";
+                    break;
+                case "1701":
+                    fireRec.m_appService = "L2TP";
+                    break;
+                case "1718":
+                case "1719":
+                    fireRec.m_appService = "H323 host call - UDP";
+                    break;
+                case "5060":
+                    fireRec.m_appService = "SIP-UDP";
+                    break;
+                case "1494":
+                    fireRec.m_appService = "ICA-UDP";
+                    break;
+                default:
+                    if(parseInt(p[0]) != NaN)
+                    {
+                        var udp = Number(p[0]);
+                        if(udp >= 32769 && udp <= 65535)
+                            fireRec.m_appService = "Traceroute";
+                    }
+            }
+        }
+        else if(proto == "tcp")
+        {
+            switch(p[0])
+            {
+                case "53":
+                    fireRec.m_appService = "NDS-TCP";
+                    break;
+                case "80":
+                    fireRec.m_appService = "HTTP";
+                    break;
+                case "443":
+                    fireRec.m_appService = "HTTPS";
+                    break;
+                case "20":
+                    fireRec.m_appService = "FTP-DATA";
+                    break;
+                case "21":
+                    fireRec.m_appService = "FTP";
+                    break;
+                case "110":
+                    fireRec.m_appService = "POP3";
+                    break;
+                case "25":
+                    fireRec.m_appService = "SMTP";
+                    break;
+                case "587":
+                    fireRec.m_appService = "SMTP-Auth";
+                    break;
+                case "995":
+                    fireRec.m_appService = "POP3S";
+                    break;
+                case "143":
+                    fireRec.m_appService = "IMAP";
+                    break;
+                case "119":
+                    fireRec.m_appService = "NNTP";
+                    break;
+                case "23":
+                    fireRec.m_appService = "Telnet";
+                    break;
+                case "22":
+                    fireRec.m_appService = "SSH";
+                    break;
+                case "500":
+                case "4500":
+                    fireRec.m_appService = "IPSec";
+                    break;
+                case "1720":
+                    fireRec.m_appService = "H323 host call - TCP";
+                    break;
+                case "5060":
+                    fireRec.m_appService = "SHIP-TCP";
+                    break;
+                case "1949":
+                    fireRec.m_appService = "ICA-TCP";
+                    break;
+            }
+        }
+        else if(proto.indexOf("ip") >= 0)
+        {
+            fireRec.m_appService = "IPSec";
+        }
+    };
 
     this.f_setSrouceAddress = function(fireRec, addr)
     {
@@ -199,7 +312,7 @@ function UTM_firewallBusObj(busObj)
             if(nvs[i].indexOf(name+"=") >= 0)
             {
                 var v = nvs[i].split("=");
-                if(v[1].length > 2)
+                if(v[1].length > 1)
                 {
                     v = v[1].replace("[", "");
                     //v = v.replace(/;/g, ",");

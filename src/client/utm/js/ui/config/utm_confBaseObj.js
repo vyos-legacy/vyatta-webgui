@@ -543,7 +543,7 @@ function UTM_confBaseObj(name, callback, busLayer)
      */
     this.f_renderCheckbox = function(val, elId, cb, tooltip)
     {
-        var checked = val == 'yes' ? 'checked' : '';
+        var checked = val == 'yes' || val == 'Yes' ? 'checked' : '';
         tooltip = tooltip == undefined ? "" : tooltip;
 
         return '<input id="' + elId + '" type="checkbox" ' + checked +
@@ -595,7 +595,7 @@ function UTM_confBaseObj(name, callback, busLayer)
             if(options[i] == val)
                 cb += '<option ' + onchange + ' selected value="' + options[i] +
                 '" ' + opName + '>' + options[i] + '</option>';
-            else cb += '<option ' + onchange + ' value="' + options[i] + 
+            else cb += '<option ' + onchange + ' value="' + options[i] +
                 '" ' + opName + '>' + options[i] + '</option>';
         }
 
@@ -778,6 +778,11 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         body.className = "reflow";
         body.className = bodyClass;
+    }
+
+    this.f_resetTableRowCounter = function(toRow)
+    {
+        thisObj.m_tableRowCounter = toRow;
     }
 
     this.f_resize = function(padding)

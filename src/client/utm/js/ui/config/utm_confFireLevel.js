@@ -64,6 +64,8 @@ function UTM_confFireLevel(name, callback, busLayer)
                 if(mainPanel != null)
                     mainPanel.style.height = 380+'px';
             }
+
+            thisObj.f_resize();
         };
 
         g_utils.f_cursorWait();

@@ -270,14 +270,81 @@ sub filter_set {
 	@cmds = configure_webproxy();
     }
 
+    # set whitelist entrys
     if ($whitelist and $whitelist eq 'true') {
 	wb_log("filter_set: whitelist true");
-	push @cmds, "set $path policy-rule 1024 local-ok OA";
+	$config->setLevel("$path policy-rule 1024");
+	if (! $config->existsOrig('local-ok')) {
+	    # move from 1025 to 10 any enabled
+	    $config->setLevel("$path policy-rule 1025 local-ok");
+	    my @values = $config->returnOrigValues();
+	    if (scalar(@values) > 0) {
+		foreach my $value (@values) {
+		    next if $value =~ /^\!/;
+		    push @cmds, 
+		    "delete $path policy-rule 1025 local-ok \"$value\" ";
+		    push @cmds, 
+		    "set $path policy-rule 10 local-ok \"$value\" ";
+		}
+	    }
+	    push @cmds, "set $path policy-rule 1024 local-ok OA";
+	} 
+
+    } else {
+	$config->setLevel("$path policy-rule 1024");	
+	if ($config->existsOrig('local-ok')) {  
+	    push @cmds, "delete $path policy-rule 1024 local-ok";
+	}
+	# move all enbled to disabled (i.e. 10 --> 1025)
+	$config->setLevel("$path policy-rule 10 local-ok");
+	my @values = $config->returnOrigValues();
+	if (scalar(@values) > 0) {
+	    push @cmds, "delete $path policy-rule 10 local-ok";
+	    foreach my $value (@values) {
+		push @cmds, 
+		"set $path policy-rule 1025 local-ok \"$value\" ";   
+	    }
+	}
     }
+
+    # set banned keywords
     if ($keyword and $keyword eq 'true') {
 	wb_log("filter_set: keyword true");
-	push @cmds, "set $path policy-rule 1024 local-block-keyword OA";
+	$config->setLevel("$path policy-rule 1024");	
+	if (! $config->existsOrig('local-block-keyword')) {
+	    # move from 1025 to 10 any enabled
+	    $config->setLevel("$path policy-rule 1025 local-block-keyword");
+	    my @values = $config->returnOrigValues();
+	    if (scalar(@values) > 0) {
+		foreach my $value (@values) {
+		    next if $value =~ /^\!/;
+		    push @cmds, 
+		    "delete $path policy-rule 1025 local-block-keyword \"$value\" ";
+		    push @cmds, 
+		    "set $path policy-rule 10 local-block-keyword \"$value\" ";
+		}
+	    }
+	    push @cmds, "set $path policy-rule 1024 local-block-keyword OA";
+	} 
+    } else {
+	wb_log("filter_set: keyword false");
+	$config->setLevel("$path policy-rule 1024");	
+	if ($config->existsOrig('local-block-keyword')) {  
+	    push @cmds, "delete $path policy-rule 1024 local-block-keyword";
+	}
+	# move all enbled to disabled (i.e. 10 --> 1025)
+	$config->setLevel("$path policy-rule 10 local-block-keyword");
+	my @values = $config->returnOrigValues();
+	if (scalar(@values) > 0) {
+	    push @cmds, "delete $path policy-rule 10 local-block-keyword";
+	    foreach my $value (@values) {
+		push @cmds, 
+		"set $path policy-rule 1025 local-block-keyword \"$value\" ";   
+	    }
+	}
     }
+
+    # set blacklist category
     if ($blacklist and $blacklist eq 'true') {
 	my $level = get_configured_block_level();
 	if ($level and $level ne $category) {
@@ -296,7 +363,7 @@ sub filter_set {
 	}
     }
 
-    # get time schedule
+    # set time schedule
     my $time_period = undef;
     # check if old time-period needs delete
     $config->setLevel("$path time-period");

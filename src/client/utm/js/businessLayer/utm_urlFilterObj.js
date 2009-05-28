@@ -403,7 +403,7 @@ function UTM_urlFilterBusObj(busObj)
 			a[c[i]] = 'false';
 		}
 		//a['blacklist'] = 'true';
-		a['legal'] = 'true';
+		//a['legal'] = 'true';
 		
 		return a;
 	}
@@ -799,8 +799,7 @@ function UTM_urlFilterBusObj(busObj)
                                    '<form name=\'url-filtering-easy-config\' code=\'0\'>' +
                                        '<url-filtering-easy-config>' + 
                                            '<policy>' + 
-                                               '<blacklist status=\'true\'>' + 
-                                                   '<strict>true</strict>' + 
+                                               '<blacklist status=\'false\'>' + 
                                                '</blacklist>' + 
                                                '<whitelist status=\'true\'></whitelist>' + 
                                                '<keyword status=\'false\'></keyword>' + 

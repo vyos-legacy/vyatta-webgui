@@ -24,7 +24,10 @@ function UTM_confUrlEz(name, callback, busLayer)
     this.m_ufcObj = undefined;
     this.m_dowArray = ['m', 't', 'w', 'h', 'f', 'a', 's'];
     this.m_catArray = ['blacklist', 'whitelist', 'keyword', 'legal', 'productivity', 'strict'];
-    
+	this.m_catL1array = ['blacklist','whitelist','keyword'];
+	this.m_catL2array = ['legal','productivity','strict'];
+    this.m_btnPolicyDisableConfirmId = 'conf_url_ez_policy_disable_confirm';	
+	
     /**
      * @param name - name of configuration screens.
      * @param callback - a container callback
@@ -90,7 +93,9 @@ function UTM_confUrlEz(name, callback, busLayer)
             }, {
                 v_type: 'html',
                 id: 'conf_url_ez_whitelist_config',
-                text: '<input type="image" id="conf_url_ez_whitelist_config" src="' + g_lang.m_imageDir + 'bt_config.png">',
+                text: '<div title="' + g_lang.m_url_ezConfigureWL + '">' +
+				      '<input type="image" id="conf_url_ez_whitelist_config" src="' + g_lang.m_imageDir + 'bt_config.png">'
+					  + '</div>',
                 v_end_row: 'true'
             }//,  EMPTY_ROW
 , {
@@ -102,7 +107,9 @@ function UTM_confUrlEz(name, callback, busLayer)
             }, {
                 v_type: 'html',
                 id: 'conf_url_ez_keyword_config',
-                text: '<input type="image" id="conf_url_ez_keyword_config" src="' + g_lang.m_imageDir + 'bt_config.png">',
+                text: '<div title="' + g_lang.m_url_ezConfigureKeyword + '">' + 
+				      '<input type="image" id="conf_url_ez_keyword_config" src="' + g_lang.m_imageDir + 'bt_config.png">'
+					  + '</div>',
                 v_end_row: 'true'
             }, EMPTY_ROW, {
                 v_type: 'label',
@@ -137,11 +144,13 @@ function UTM_confUrlEz(name, callback, busLayer)
                 id: 'conf_url_ez_apply_button',
                 align: 'right',
                 text: 'Apply',
+				tooltip: g_lang.m_tooltip_apply,
                 onclick: this.f_handleClick
             }, {
                 id: 'conf_url_ez_cancel_button',
                 align: 'right',
                 text: 'Cancel',
+				tooltip: g_lang.m_tooltip_cancel,				
                 onclick: this.f_handleClick
             }]
         })
@@ -480,9 +489,52 @@ function UTM_confUrlEz(name, callback, busLayer)
     this.f_stopLoadVMData = function()
     {
     }
+	
+	this.f_cbHandler = function(id)
+	{
+		if (id==thisObj.m_btnPolicyDisableConfirmId) {
+            thisObj.f_apply();			
+		}
+	}
     
     this.f_validate = function()
-    {
+    {		
+		var c1 = 0;
+		var c2 = 0;
+		var blacklist = false;
+		
+        var a1 = thisObj.m_catL1array;
+		var a2 = thisObj.m_catL2array;
+		
+        for (var i = 0; i < a1.length; i++) {
+            var elId = 'conf_url_ez_' + a1[i];
+            var el = document.getElementById(elId);            
+			if (el.checked) {
+				if (a1[i]=='blacklist') {
+					blacklist = true;
+				}
+			    c1++;	
+			} 
+        }	
+		for (var i=0; i < a2.length; i++) {
+            var elId = 'conf_url_ez_' + a2[i];
+            var el = document.getElementById(elId);            
+			if (el.checked) {
+			    c2++;	
+			}			
+		}
+	
+		var error = g_lang.m_url_ezBLsubUnSelected;
+			
+		if ((c2 <= 0) && (blacklist)) {
+			g_utils.f_popupMessage(error, 'error', g_lang.m_error,true);
+			return false;
+		} else if (c1 <= 0) {
+			g_utils.f_popupMessage(g_lang.m_url_ezPolicyDisableConfirm, 'confirm', g_lang.m_info, true,
+			    "f_confUrlEzCbHandler('" + this.m_btnPolicyDisableConfirmId + "')"); 
+			return false;
+		}
+		
         return true;
     }
     
@@ -592,3 +644,7 @@ function f_checkImage(id)
     g_configPanelObj.m_activeObj.f_toggleImage(id);
 }
 
+function f_confUrlEzCbHandler(id)
+{
+	g_configPanelObj.m_activeObj.f_cbHandler(id);
+}

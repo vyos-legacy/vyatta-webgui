@@ -137,7 +137,11 @@ function UTM_confFormObj(name, callback, busLayer)
 	
     this.f_addButtonLeft = function(configButton)
     {
-        var html = '<div style="float:left">';
+		var tooltip = '';
+		if ((configButton.tooltip != undefined) && (configButton.tooltip != null)) {
+			tooltip = configButton.tooltip;
+		}
+        var html = '<div style="float:left" title="' + tooltip + '">';
 		if (this.f_checkValue(configButton.align, 'left')) {
 			html += this.f_addButton(configButton, 'left');
 		}
@@ -147,7 +151,11 @@ function UTM_confFormObj(name, callback, busLayer)
     
     this.f_addButtonRight = function(configButton)
     {
-        var html = '<div style="float:right">';
+		var tooltip = '';
+		if ((configButton.tooltip != undefined) && (configButton.tooltip != null)) {
+			tooltip = configButton.tooltip;
+		}		
+        var html = '<div style="float:right" title="' + tooltip + '">';
 		if (this.f_checkValue(configButton.align, 'right')) {
 			html += this.f_addButton(configButton, 'right');
 		}
@@ -179,6 +187,8 @@ function UTM_confFormObj(name, callback, busLayer)
                 break;
             case 'restore':
                 imgSrc = g_lang.m_imageDir + 'bt_restore.gif';
+            case 'back':
+                imgSrc = g_lang.m_imageDir + 'bt_back.png';				
             default:
                 break;
         }

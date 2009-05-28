@@ -39,6 +39,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
     this.m_btnAddId = null;
     this.m_btnBackId = null;
     this.m_btnDeleteId = null;
+    this.m_btnDeleteConfirmId = null;			
 	this.m_btnSaveChangeAppyCbId = 	null;
 	this.m_btnSaveChangeCancelCbId = null;
 	this.m_textWidth = null;
@@ -271,8 +272,12 @@ function UTM_confUrlEzByList(name, callback, busLayer)
             this.f_back();          
         } else if (id == this.m_prefix + 'enable_cb') {
 		    this.f_enableAll();	
-		} else if (id == this.m_btnDeleteId) {
-			this.f_deleteRow(obj);
+		} else if (id == this.m_btnDeleteId) {			
+            g_utils.f_popupMessage(g_lang.m_url_ezDeleteConfirm, 'confirm', g_lang.m_info, true, 
+			    this.m_eventCbFunction + "('" + this.m_btnDeleteConfirmId + ","  + obj + "')"); 
+		} else if (id.indexOf(this.m_btnDeleteConfirmId) != -1) {
+			var args = id.split(",");
+			this.f_deleteRow(args[1]);
 		} else if (id == this.m_btnSaveChangeAppyCbId) {
 		    this.m_goBack = true;			
 		    this.f_apply();				

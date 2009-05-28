@@ -96,7 +96,8 @@ function UTM_confUrlExpert(name, callback, busLayer)
                   '<li>' + g_lang.m_url_expertSubscribeListItem3 + '</a></li>' +						  
                 '</ul>';	   
 	    text += '<br/>' + g_lang.m_url_expertSubscribeP2 + '<br/><br/>';
-		text += '<img id="conf_url_expert_subscribe" src="' + g_lang.m_imageDir + 'bt_subscribe.gif">';
+		text += '<div title="' + g_lang.m_subscribe + '"><img id="conf_url_expert_subscribe" src="' + g_lang.m_imageDir 
+		        + 'bt_subscribe.gif"></div>';			
 				
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr><td>' +

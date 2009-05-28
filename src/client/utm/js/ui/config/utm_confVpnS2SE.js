@@ -72,19 +72,22 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		
 		var defObj = new UTM_confFormDefObj('conf_vpn_s2se', '500', new Array(), 
 		    [{
-                id: 'conf_vpn_s2se_update_button',
-                text: 'Update',
+                id: 'conf_vpn_s2se_back_button',
+                text: 'back',
+				tooltip: g_lang.m_tooltip_back,
 				align: 'left',
                 onclick: this.f_handleClick
             }, {
                 id: 'conf_vpn_s2se_cancel_button',
 				align: 'right',
                 text: 'Cancel',
+				tooltip: g_lang.m_tooltip_cancel,
                 onclick: this.f_handleClick
             }, {
                 id: 'conf_vpn_s2se_apply_button',
 				align: 'right',
                 text: 'Apply',
+				tooltip: g_lang.m_tooltip_apply,
                 onclick: this.f_handleClick
             }]		
 		);
@@ -341,6 +344,11 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     {
         alert('reset');
     }
+	
+	this.f_back = function()
+	{
+		alert('back');
+	}
     
     this.f_handleClick = function(e)
     {
@@ -358,6 +366,8 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 				thisObj.f_showExpert(false);
 			} else if (id == 'conf_vpn_s2se_tunnel_config_mode_exp') {
 				thisObj.f_showExpert(true);
+			} else if ( id=='conf_vpn_s2se_back_button') {
+				thisObj.f_back();
 			}
         }
     }

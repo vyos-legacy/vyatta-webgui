@@ -833,7 +833,50 @@ var g_utils =
         }
 
         return netmask;
-    }
+    },
+	
+    ////////////////////////////////////////////////////////////////////////////
+    // XML utilities section
+	////////////////////////////////////////////////////////////////////////////
+	f_parseXmlFromString : function(s)
+	{
+		var myDoc;
+	    if (document.implementation.createDocument) {
+			var parser = new DOMParser();
+			return parser.parseFromString(s, "text/xml");
+		} else if (window.ActiveXObject) {
+			myDoc = new ActiveXObject("Microsoft.XMLDOM");
+			myDoc.async = "false";
+			myDoc.loadXML(s);
+			return myDoc;
+		}
+	},	
+	
+	f_xmlGetChildNode : function(parent, child)
+	{
+	    var cn = parent.childNodes;
+		for (var i=0; i < cn.length; i++) {
+			if (cn[i].nodeName == child) {
+				return cn[i];
+			}
+		}	
+		return null;
+	},
+	
+	f_xmlGetNodeValue : function(node)
+	{	
+		if (node != null && node.childNodes[0]) {
+		    return node.childNodes[0].nodeValue;
+		}	
+		return null;	
+	},
+	
+	f_xmlGetNodeAttribute : function(node, attr)
+	{
+		if (node==null) return null;
+		return node.getAttribute(attr);
+	}	
+	
 };
 
 function f_utilsPopupTimeout(id)

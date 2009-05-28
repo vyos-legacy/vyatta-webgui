@@ -433,17 +433,16 @@ function UTM_confUrlEz(name, callback, busLayer)
         }
     }
     
-    this.f_loadVMData = function(element)
-    {		
-	    //alert ('f_loadVMData called');
-		
-        thisObj.f_initFilterPolicyImp();
-        thisObj.f_attachListener();
-        thisObj.m_form = document.getElementById('conf_url_ez_form');
-        thisObj.f_setFocus();
-        thisObj.f_resize();
-                
-        var cb = function(evt)
+	this.f_reload = function()
+	{
+        var dow = thisObj.m_dowArray;
+        for (var i = 0; i < dow.length; i++) {
+			thisObj.f_enableTimeBackground(dow[i],true);
+			thisObj.f_disableAlwaysOff(dow[i]);
+			thisObj.f_disableAlwaysOn(dow[i]);
+		}	
+				
+		var cb = function(evt)
         {        
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
                 if (evt.f_isError()) {                
@@ -461,7 +460,19 @@ function UTM_confUrlEz(name, callback, busLayer)
         };      
 		
 	    g_busObj.f_getUrlFilterConfig(cb);
-
+	}
+	
+    this.f_loadVMData = function(element)
+    {		
+	    //alert ('f_loadVMData called');
+		
+        thisObj.f_initFilterPolicyImp();
+        thisObj.f_attachListener();
+        thisObj.m_form = document.getElementById('conf_url_ez_form');
+        thisObj.f_setFocus();
+        thisObj.f_resize();
+                
+        thisObj.f_reload();
     }
     
     this.f_attachListener = function()
@@ -578,8 +589,11 @@ function UTM_confUrlEz(name, callback, busLayer)
 		thisObj.f_applyPolicy();
 		thisObj.f_applySchedule();
 		
+		g_utils.f_cursorWait();
+		
         var cb = function(evt)
         {        
+		    g_utils.f_cursorDefault();
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
                 if (evt.f_isError()) {                
                     g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);                    
@@ -629,7 +643,7 @@ function UTM_confUrlEz(name, callback, busLayer)
                 thisObj.f_apply();
                 break;
             case 'conf_url_ez_cancel_button': //cancel clicked
-                thisObj.f_reset();
+                thisObj.f_reload();
                 break;
         }
         return false;

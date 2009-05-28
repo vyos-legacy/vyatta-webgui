@@ -121,6 +121,8 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     
     this.f_applyCb = function(evt)
     {
+		g_utils.f_cursorDefault();
+		
         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
             if (evt.f_isError()) {
                 g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);

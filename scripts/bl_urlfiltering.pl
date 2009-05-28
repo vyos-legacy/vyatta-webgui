@@ -231,6 +231,22 @@ sub get_blacklist_categories {
     return @cmds;
 }
 
+sub is_whitelist_enabled {
+    my $config = new Vyatta::Config;
+    my $path = 'service webproxy url-filtering squidguard';
+    $config->setLevel("$path policy-rule 1024");	
+    return 1 if $config->existsOrig('local-ok');
+    return 0;
+}
+
+sub is_block_keyword_enabled {
+    my $config = new Vyatta::Config;
+    my $path = 'service webproxy url-filtering squidguard';
+    $config->setLevel("$path policy-rule 1024");	
+    return 1 if $config->existsOrig('local-block-keyword');
+    return 0;
+}
+
 sub filter_set {
     my ($data) = @_;
 
@@ -270,14 +286,77 @@ sub filter_set {
 	@cmds = configure_webproxy();
     }
 
+    # set whitelist entrys
     if ($whitelist and $whitelist eq 'true') {
 	wb_log("filter_set: whitelist true");
-	push @cmds, "set $path policy-rule 1024 local-ok OA";
+	if (! is_whitelist_enabled()) {
+	    # move from 1025 to 10 any enabled
+	    $config->setLevel("$path policy-rule 1025 local-ok");
+	    my @values = $config->returnOrigValues();
+	    if (scalar(@values) > 0) {
+		foreach my $value (@values) {
+		    next if $value =~ /^\!/;
+		    push @cmds, 
+		    "delete $path policy-rule 1025 local-ok \"$value\" ";
+		    push @cmds, 
+		    "set $path policy-rule 10 local-ok \"$value\" ";
+		}
+	    }
+	    push @cmds, "set $path policy-rule 1024 local-ok OA";
+	} 
+
+    } else {
+	if (is_whitelist_enabled()) {
+	    push @cmds, "delete $path policy-rule 1024 local-ok";
+	}
+	# move all enbled to disabled (i.e. 10 --> 1025)
+	$config->setLevel("$path policy-rule 10 local-ok");
+	my @values = $config->returnOrigValues();
+	if (scalar(@values) > 0) {
+	    push @cmds, "delete $path policy-rule 10 local-ok";
+	    foreach my $value (@values) {
+		push @cmds, 
+		"set $path policy-rule 1025 local-ok \"$value\" ";   
+	    }
+	}
     }
+
+    # set banned keywords
     if ($keyword and $keyword eq 'true') {
 	wb_log("filter_set: keyword true");
-	push @cmds, "set $path policy-rule 1024 local-block-keyword OA";
+	if (! is_block_keyword_enabled()) {
+	    # move from 1025 to 10 any enabled
+	    $config->setLevel("$path policy-rule 1025 local-block-keyword");
+	    my @values = $config->returnOrigValues();
+	    if (scalar(@values) > 0) {
+		foreach my $value (@values) {
+		    next if $value =~ /^\!/;
+		    push @cmds, 
+		    "delete $path policy-rule 1025 local-block-keyword \"$value\" ";
+		    push @cmds, 
+		    "set $path policy-rule 10 local-block-keyword \"$value\" ";
+		}
+	    }
+	    push @cmds, "set $path policy-rule 1024 local-block-keyword OA";
+	} 
+    } else {
+	wb_log("filter_set: keyword false");
+	if (is_block_keyword_enabled()) {
+	    push @cmds, "delete $path policy-rule 1024 local-block-keyword";
+	}
+	# move all enbled to disabled (i.e. 10 --> 1025)
+	$config->setLevel("$path policy-rule 10 local-block-keyword");
+	my @values = $config->returnOrigValues();
+	if (scalar(@values) > 0) {
+	    push @cmds, "delete $path policy-rule 10 local-block-keyword";
+	    foreach my $value (@values) {
+		push @cmds, 
+		"set $path policy-rule 1025 local-block-keyword \"$value\" ";   
+	    }
+	}
     }
+
+    # set blacklist category
     if ($blacklist and $blacklist eq 'true') {
 	my $level = get_configured_block_level();
 	if ($level and $level ne $category) {
@@ -296,7 +375,7 @@ sub filter_set {
 	}
     }
 
-    # get time schedule
+    # set time schedule
     my $time_period = undef;
     # check if old time-period needs delete
     $config->setLevel("$path time-period");
@@ -376,6 +455,7 @@ sub whitelist_set {
     }
     my $path = 'service webproxy url-filtering squidguard';
     my $i = 0;
+    my $wl_enabled = is_whitelist_enabled();
     while ($i < 100) {
 	my $whitelist = $xml->{url}[$i]->{content};
 	my $action    = $xml->{url}[$i]->{action};
@@ -386,9 +466,9 @@ sub whitelist_set {
 	# in the OA policy-rule (i.e. 10).
 	#
 	$rule = 1025 if $whitelist and $whitelist =~ /^\!/;
+	$rule = 1025 if $wl_enabled == 0;
 	if ($whitelist and $action) {
 	    if ($action eq 'add') {
-		push @cmds, "set $path policy-rule 1024 local-ok OA";
 		push @cmds, 
 		"set $path policy-rule $rule local-ok \"$whitelist\" ";
 	    } else {
@@ -466,6 +546,7 @@ sub keyword_set {
     }
     my $path   = 'service webproxy url-filtering squidguard';
     my $i = 0;
+    my $bk_enabled = is_block_keyword_enabled();
     while ($i < 100) {
 	my $keyword = $xml->{keyword}[$i]->{content};
 	my $action  = $xml->{keyword}[$i]->{action};
@@ -476,10 +557,9 @@ sub keyword_set {
 	# in the OA policy-rule (i.e. 10).
 	#
 	$rule = 1025 if $keyword and $keyword =~ /^\!/;
+	$rule = 1025 if $bk_enabled == 0;
 	if ($keyword and $action) {
 	    if ($action eq 'add') {
-		push @cmds, 
-		"set $path policy-rule 1024 local-block-keyword OA";
 		push @cmds, 
 		"set $path policy-rule $rule local-block-keyword \"$keyword\" ";
 	    } else {

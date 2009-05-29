@@ -54,7 +54,8 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     {
         this.f_initProperties();
         this.m_hdcolumns = this.f_createHdColumns();
-        this.m_header = this.f_createGridHeader(this.m_hdcolumns, 'f_confUrlEzByListGridHeaderOnclick');
+		this.m_headerText = this.f_headerText();
+		this.f_createTableHeader();
         this.m_body = this.f_createGridView(this.m_hdcolumns, true);
         
         var addBtn = [['AddInner', this.m_eventCbFunction + "('" + this.m_btnAddId + "')", g_lang.m_tooltip_add, this.m_btnAddId]];
@@ -66,6 +67,11 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         return [this.f_headerText(), this.m_header, this.m_body, this.m_addButton, this.m_buttons];
     }
     
+	this.f_createTableHeader = function()
+	{
+        this.m_header = this.f_createGridHeader(this.m_hdcolumns, 'f_confUrlEzByListGridHeaderOnclick');		
+	}
+	
     this.f_createHdColumns = function()
     {
         this.f_colorGridBackgroundRow(true);

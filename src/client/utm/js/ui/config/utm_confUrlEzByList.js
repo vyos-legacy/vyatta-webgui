@@ -19,6 +19,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
     var thisObj = this;
     this.thisObjName = 'UTM_confurlEzByList';
     this.m_hdcolumns = undefined;	
+	this.m_headerText = undefined;
 	this.m_header = undefined;
     this.m_addButton = undefined;
     this.m_buttons = undefined;	
@@ -314,7 +315,16 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 	    this.m_addedRow = null;
 	    this.m_updatedRow = null;
 	    this.m_goBack = false;
+		
+        this.f_removeDivChildren(this.m_div);
 		this.f_removeDivChildren(this.m_body);
+        this.f_removeDivChildren(this.m_header);
+		this.f_createTableHeader();
+		this.m_div.appendChild(this.m_headerText);
+        this.m_div.appendChild(this.m_header);
+        this.m_div.appendChild(this.m_body);
+		this.m_div.appendChild(this.m_addButton);
+        this.m_div.appendChild(this.m_buttons);			
 	}
     
     this.f_getTableHeight = function()

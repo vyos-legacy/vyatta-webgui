@@ -44,7 +44,8 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
     {
 		this.f_initProperties();
         this.m_hdcolumns = this.f_createHdColumns();
-        this.m_header = this.f_createGridHeader(this.m_hdcolumns, 'f_confUrlEzByListGridHeaderOnclick');
+		this.m_headerText = this.f_headerText();
+		this.f_createTableHeader();
         this.m_body = this.f_createGridView(this.m_hdcolumns, true);
         
         var addBtn = [['AddInner', this.m_eventCbFunction + "('" + this.m_btnAddId + "')", g_lang.m_tooltip_add, this.m_btnAddId]];
@@ -53,8 +54,13 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         var btns = [['Back', this.m_eventCbFunction + "('" + this.m_btnBackId + "')", g_lang.m_tooltip_back, this.m_btnBackId, g_lang.m_imageDir + 'bt_back.png', 'left'], ['Apply', this.m_eventCbFunction + "('" + this.m_btnApplyId + "')", g_lang.m_tooltip_apply, this.m_btnApplyId, g_lang.m_imageDir + 'bt_apply.gif', 'right'], ['Cancel', this.m_eventCbFunction + "('" + this.m_btnCancelId + "')", g_lang.m_tooltip_cancel, this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif', 'right']]
         this.m_buttons = this.f_createLRButtons(btns, '560px');
         
-        return [this.f_headerText(), this.m_header, this.m_body, this.m_addButton, this.m_buttons];
+        return [this.m_headerText, this.m_header, this.m_body, this.m_addButton, this.m_buttons];
     }
+	
+	this.f_createTableHeader = function()
+	{
+        this.m_header = this.f_createGridHeader(this.m_hdcolumns, 'f_confUrlEzByListGridHeaderOnclick');		
+	}
 
     this.f_createHdColumns = function()
     {

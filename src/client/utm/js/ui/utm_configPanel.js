@@ -160,13 +160,16 @@ function UTM_configPanel()
 			    thisObj.m_selectObj = new UTM_confEmptyComponent();
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_ZONE_ID:
+                thisObj.m_selectObj = new UTM_confFireZoneMgmt('FirewallZoneMgmt', cb, g_busObj);
+	        thisObj.m_selectObj.f_setId(id);
+                return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_FW_ID:
                 thisObj.m_selectObj = new UTM_confFireLevel('FirewallLevel', cb, g_busObj);
-	            thisObj.m_selectObj.f_setId(id);				
+	        thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_FW_CUSTOM_ID:
                 thisObj.m_selectObj = new UTM_confFireCustom('FirewallCustomized', cb, g_busObj);
-	            thisObj.m_selectObj.f_setId(id);				
+	        thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_IDP_ID:
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EXPERT_IDP_ID:

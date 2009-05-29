@@ -14,19 +14,19 @@ function UTM_fireRecord(ruleNo, zonePair)
     this.m_level = null;  // 'Authorize All', 'Standard', 'Advanced', 'Customized', 'Block All'
     this.m_ruleNo = ruleNo;   // data type int
     this.m_zonePair = zonePair;
-    this.m_direction = null;
-    this.m_appService = null;
-    this.m_protocol = null;
+    this.m_direction = zonePair;
+    this.m_appService = " ";
+    this.m_protocol = " ";
     this.m_srcIpAddr = "0.0.0.0";
     this.m_srcMaskIpAddr = "0.0.0.0";
-    this.m_srcPort = null;
+    this.m_srcPort = "";
     this.m_destIpAddr = "0.0.0.0";
     this.m_destMaskIpAddr = "0.0.0.0";
-    this.m_destPort = null;
-    this.m_action = null;
-    this.m_log = null;
+    this.m_destPort = "";
+    this.m_action = "accept";
+    this.m_log = "No";
     this.m_order = null;
-    this.m_enabled = null;
+    this.m_enabled = 'Yes';
 }
 
 /**
@@ -41,6 +41,9 @@ function UTM_firewallBusObj(busObj)
     this.m_lastCmdSent = null;
     this.m_fireRec = null;
 
+    this.m_udpServices = ["DNS-UDP", "TFTP", "NTP", "SNMP", "L2TP", "Traceroute",
+                        "IPSec", "UNIK", "H323 host call - UDP", "SIP-UDP",
+                        "ICA-UDP"];
     this.m_services = ["DNS-UDP", "DNS-TCP", "HTTP", "HTTPS", "FTP_DATA",
                         "FTP", "POP3", "SMTP", "SMTP-Auth", "TFTP", "POP3S",
                         "IMAP", "NTP", "NNTP", "SNMP", "Telnet", "SSH",
@@ -49,7 +52,7 @@ function UTM_firewallBusObj(busObj)
                         "ICA-TCP", "ICA-UDP", "Others", " "];
     this.m_ports = ["53", "53", "80", "443", "20", "21", "110", "25", "587",
                         "69", "995", "143", "119", "199", "161-162", "23", "22",
-                        "1701", "32769-65535", "22", "500, 4500", "500, 4500",
+                        "1701", "32769-65535", "500, 4500", "500, 4500",
                         "1720", "1718, 1719", "5060", "5060", "1494", "1494", " ", " "];
 
     /**
@@ -194,10 +197,10 @@ function UTM_firewallBusObj(busObj)
                 case p[24]:
                     fireRec.m_appService = s[24];
                     break;
-                case [26]:
+                case p[26]:
                     fireRec.m_appService = s[26];
                     break;
-                case [12]:
+                case p[12]:
                     fireRec.m_appService = s[12];
                     break;
                 case "161":
@@ -216,7 +219,9 @@ function UTM_firewallBusObj(busObj)
                 case "1719":
                     fireRec.m_appService = s[22];
                     break;
-                
+                case "32769-65535":
+                    fireRec.m_appService = s[18];
+                    break;
                 default:
                     if(parseInt(p[0]) != NaN)
                     {
@@ -230,10 +235,10 @@ function UTM_firewallBusObj(busObj)
         {
             switch(port[0])
             {
-                case "53":
+                case p[1]:
                     fireRec.m_appService = s[1];
                     break;
-                case "119":
+                case p[13]:
                     fireRec.m_appService = s[13];
                     break;
                 case "500":
@@ -409,6 +414,19 @@ function UTM_firewallBusObj(busObj)
                               thisObj.f_respondRequestCallback);
     }
 
+    this.f_resetFirewallCustomizeRule = function(fireRec, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>customize-firewall" +
+                      " reset</handler><data>zonepair=[" + fireRec.m_zonePair +
+                      "],rulenum=[all]</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
     this.f_deleteFirewallCustomizeRule = function(fireRec, guicb)
     {
         thisObj.m_guiCb = guicb;
@@ -465,6 +483,21 @@ function UTM_firewallBusObj(busObj)
             }
         }
 
-        return null;
+        return "";
+    }
+
+    this.f_getProtocol = function(fireRec)
+    {
+        var s = thisObj.m_services;
+        var a = fireRec.m_appService;
+
+        if(a == s[19] || a == s[20] || a == s[27] || a == s[28])
+            return " ";
+
+        var udp = thisObj.m_udpServices.indexOf(a);
+        if(udp > -1)
+            return "udp";
+        else
+            return "tcp";
     }
 }

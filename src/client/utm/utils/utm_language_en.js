@@ -50,7 +50,7 @@ var g_lang =
     m_fireLevelHdAuth : "Authorize All",
     m_fireLevelBdAuth : "Firewall functionality is disabled. All incoming and outgoing traffic is authorized.",
     m_fireLevelHdStand : "Standard",
-    m_fireLevelBdStand : "All incoming traffic blocked/outgoing traffic alloed except Netbios.",
+    m_fireLevelBdStand : "All incoming traffic blocked/outgoing traffic allowed except Netbios.",
     m_fireLevelHdAdvan : "Advanced",
     m_fireLevelBdAdvan : "All incoming and outgoing traffic blocked except those involving internet browsing and email.",
     m_fireLevelHdCustom : "Customized",
@@ -58,6 +58,8 @@ var g_lang =
     m_fireLevelHdBlock : "Block All",
     m_fireLevelBdBlock : "The access to internet is blocked all users.",
     m_fireLevelCustConfTip : "Configure customize security",
+    m_fireLevelApplyTip : "Save changed",
+    m_fireLevelCancelTip : "Cancel changed",
 
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Customize Level
@@ -83,6 +85,11 @@ var g_lang =
     m_fireCustEnable : "Enable",
     m_fireCustDelete : "Delete",
     m_fireCustRuleOption : "Show rules only from",
+    m_fireCustApplyTip : "Save all changed",
+    m_fireCustCancelTip : "Cancel all changed",
+    m_fireCustResetTip : "Reset to default",
+    m_fireCustBackTip : "Back to Firewall Level screen",
+    m_fireCustAddTip : "Add a new rule",
 
     ///////////////////////////////////////////////////////////////////
     // VPN General
@@ -152,10 +159,10 @@ var g_lang =
 	                         "It enables you to:",
     m_url_ezDeleteConfirm : "Are you sure you want to delete this row?",
     m_url_ezPolicyDisableConfirm : "You have not selected any filtering policy options.  Are you sure you want to leave it unconfigured?",
-	m_url_ezBLsubUnSelected : "Please select at least one category: legal, professional, or strict",	
+	m_url_ezBLsubUnSelected : "Please select at least one category: legal, professional, or strict",
 	m_url_ezConfigureWL : "Configure authorized URLs",
-	m_url_ezConfigureKeyword: "Configure banned words in URLs",	
-						 
+	m_url_ezConfigureKeyword: "Configure banned words in URLs",
+
 	m_url_expertSubscribeListItem1: "benefit from enriched URLs categories you can also customize.",
 	m_url_expertSubscribeListItem2: "assign a specific filtering policy per user group",
 	m_url_expertSubscribeListItem3: "combine the different filtering functions proposed (category/ authorized URLs/ banned keywords).",
@@ -193,7 +200,7 @@ var g_lang =
 	m_tooltip_apply: "Apply changes",
 	m_tooltip_add: "Add a new row",
 	m_tooltip_delete: "Delete a row",
-	m_tooltip_back: "Go back to previous screen",	
+	m_tooltip_back: "Go back to previous screen",
     m_remindSaveChange : 'You changes have not been saved.  Would you like to save it?',
 
     /////////////////////////////////////////

@@ -62,6 +62,14 @@ var g_lang =
     m_fireLevelCancelTip : "Cancel changed",
 
     ///////////////////////////////////////////////////////////////////
+    // Firewall Zone Management
+    m_fireZMAddTip : "Create new zone",
+    m_fireZMZoneName : "Zone Name",
+    m_fireZMMember : "Members",
+    m_fireZMDesc : "Description",
+    m_fireZMDelete : "Delete",
+
+    ///////////////////////////////////////////////////////////////////
     // Firewall Security Customize Level
     m_fireDeleteConfirm : "Are you sure you want to delete this rule?",
     m_fireCustDeleteConfirmHeader : "Delete Customize Rule",

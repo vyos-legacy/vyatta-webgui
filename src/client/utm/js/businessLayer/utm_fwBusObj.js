@@ -6,6 +6,18 @@
 */
 
 /**
+ * firewall zone record
+ */
+function UTM_fwZoneRecord()
+{
+    var thisObj = this;
+    this.m_name = null;
+    this.m_members = [];
+    this.m_description = null;
+}
+
+
+/**
  * Firewall data record
  */
 function UTM_fireRecord(ruleNo, zonePair)

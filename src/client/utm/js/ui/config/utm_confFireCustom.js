@@ -197,8 +197,6 @@ function UTM_confFireCustom(name, callback, busLayer)
         var zpRule = fireRec.m_zonePair + "-" + fireRec.m_ruleNo;
         var action = ["accept", "reject"]
 
-        //var rNo = thisObj.f_renderTextField(thisObj.m_fieldIds[0]+zpRule, '', '', 55,
-        //          ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[0]+zpRule + "')"]);
         var app = thisObj.f_renderCombobox(thisObj.m_fwObj.m_services, fireRec.m_appService, 90,
                             thisObj.m_fieldIds[2]+zpRule,
                             ["f_fwCustomizeOnCbbBlur('" + thisObj.m_fieldIds[2]+
@@ -511,6 +509,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         if(cbeid.indexOf(thisObj.m_headercbbId) >= 0)
         {
             thisObj.m_busLayer.f_cancelFirewallCustomizeRule(null);
+            thisObj.f_enabledActionButtons(false);
             thisObj.f_loadVMData();
         }
         /*

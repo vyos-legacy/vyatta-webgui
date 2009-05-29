@@ -43,6 +43,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 	this.m_btnSaveChangeAppyCbId = 	null;
 	this.m_btnSaveChangeCancelCbId = null;
 	this.m_textWidth = null;
+	this.m_cbGroupId = null;
     
     /**
      * @param name - name of configuration screens.
@@ -101,6 +102,11 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 		}			
     }
 		    
+	this.f_handleKeydown = function()
+	{
+		thisObj.f_enableAllButton();
+	}		
+			
 	this.f_getSeedIdByRowId = function(rowId)
 	{
 		var prefix = this.m_prefix + 'row_';
@@ -111,11 +117,14 @@ function UTM_confUrlEzByList(name, callback, busLayer)
     {
         var prefix = this.m_prefix;
 		var rowId = prefix + 'row_' + this.m_cnt;
+		var events = ['','f_confUrlEzByListKeydown()'];
+		
         this.m_rowIdArray.push(rowId);
 								
-        var addr = this.f_renderTextField(prefix + 'addr_' + this.m_cnt, '', '', this.m_textWidth);
-        var cb = this.f_renderSmartCheckbox('yes', prefix + 'cb_' + this.m_cnt, '', '',
-		                                   prefix + 'cb_hidden_' + this.m_cnt, 'yes');
+        var addr = this.f_renderTextField(prefix + 'addr_' + this.m_cnt, '', '', this.m_textWidth, events);
+        var cb = this.f_renderSmartCheckbox('yes', prefix + 'cb_' + this.m_cnt, 
+		                                    thisObj.m_eventCbFunction + "('" + this.m_cbGroupId +"')" , '',
+		                                    prefix + 'cb_hidden_' + this.m_cnt, 'yes');
         var del = this.f_renderButton('delete', true, thisObj.m_eventCbFunction + "('" +
             this.m_btnDeleteId + "','" + rowId +
         "')", 'delete row');
@@ -137,6 +146,8 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 	
 	this.f_deleteRow = function(rowId)
 	{
+		g_utils.f_startWait();
+				
 		var prefix = this.m_prefix + 'row_';
         var row = document.getElementById(rowId);
 		
@@ -173,6 +184,8 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 		var entryList = new Array();
 		this.m_addedRow = new Array();
 		this.m_updatedRow = new Array();
+		
+		g_utils.f_startWait();
 		
 		for (var i = 0; i < this.m_rowIdArray.length; i++) {
 			var seedId = this.f_getSeedIdByRowId(this.m_rowIdArray[i]);
@@ -260,6 +273,12 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 		}  		
 	}
 
+    this.f_enableAllButton = function(state) 
+	{
+		this.f_enabledDisableButton(this.m_btnApplyId, state);
+		this.f_enabledDisableButton(this.m_btnCancelId, state);
+	}
+
     this.f_handleClick = function(id, obj)
     {
         if (id == this.m_btnCancelId) {
@@ -267,11 +286,13 @@ function UTM_confUrlEzByList(name, callback, busLayer)
         } else if (id == this.m_btnApplyId) {
             this.f_apply();
         } else if (id == this.m_btnAddId) {
+			this.f_enableAllButton(true);
             this.f_addRow();
         } else if (id == this.m_btnBackId) {
             this.f_back();          
         } else if (id == this.m_prefix + 'enable_cb') {
 		    this.f_enableAll();	
+			this.f_enableAllButton(true);
 		} else if (id == this.m_btnDeleteId) {			
             g_utils.f_popupMessage(g_lang.m_url_ezDeleteConfirm, 'confirm', g_lang.m_info, true, 
 			    this.m_eventCbFunction + "('" + this.m_btnDeleteConfirmId + ","  + obj + "')"); 
@@ -283,6 +304,8 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 		    this.f_apply();				
 		} else if (id == this.m_btnSaveChangeCancelCbId) {
 		    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);								
+		} else if (id ==  this.m_cbGroupId) {
+			this.f_enableAllButton(true);
 		}
     }
 	
@@ -353,9 +376,11 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 					hiddenEnable = 'no';
 				}
 
-				var addr = this.f_renderTextField(prefix + 'addr_' + this.m_cnt, a[i].m_value, '', this.m_textWidth, '', a[i].m_readonly);
-				var cb = this.f_renderSmartCheckbox(enable, prefix + 'cb_' + this.m_cnt, '', '',
-				                                       prefix + 'cb_hidden_' + this.m_cnt, hiddenEnable);
+                var events = ['','f_confUrlEzByListKeydown()'];
+				var addr = this.f_renderTextField(prefix + 'addr_' + this.m_cnt, a[i].m_value, '', this.m_textWidth, events, a[i].m_readonly);
+				var cb = this.f_renderSmartCheckbox(enable, prefix + 'cb_' + this.m_cnt,  
+				                                    thisObj.m_eventCbFunction + "('" + this.m_cbGroupId +"')", '',
+				                                    prefix + 'cb_hidden_' + this.m_cnt, hiddenEnable);
 				var del = this.f_renderButton('delete', true, this.m_eventCbFunction + "('" +
 				this.m_btnDeleteId +
 				"','" +
@@ -413,5 +438,10 @@ function f_confUrlEzByListEventCallback(id, obj)
 function f_confUrlEzByListGridHeaderOnclick(col)
 {
     g_configPanelObj.m_activeObj.f_handleGridSort(col);
+}
+
+function f_confUrlEzByListKeydown()
+{
+	g_configPanelObj.m_activeObj.f_handleKeydown();
 }
 

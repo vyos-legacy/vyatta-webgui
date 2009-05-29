@@ -46,6 +46,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         this.m_btnDeleteConfirmId = this.m_prefix + 'btn_delete_confirm';		
         this.m_btnSaveChangeAppyCbId = this.m_prefix + 'btn_apply_cb';
         this.m_btnSaveChangeCancelCbId = this.m_prefix + 'btn_cancel_cb';
+        this.m_cbGroupId = this.m_prefix + 'cb_group';		
         this.m_textWidth = 625;
     }
     
@@ -106,6 +107,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     
     this.f_deleteRowCb = function(evt)
     {
+		g_utils.f_stopWait();		
         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
             if (evt.f_isError()) {
                 g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
@@ -121,6 +123,8 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     
     this.f_applyCb = function(evt)
     {
+		g_utils.f_stopWait();
+		
         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
             if (evt.f_isError()) {
                 g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
@@ -143,6 +147,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
                     var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
                     cbHidden.checked = cb.checked;
                 }
+				thisObj.f_enableAllButton(false);
             }
         }
         if (thisObj.m_goBack) {
@@ -154,6 +159,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     {
         thisObj.f_cleanup();
         thisObj.f_getEntryList(thisObj.f_getEntryListCb);
+		thisObj.f_enableAllButton(false);
     }
 }
 

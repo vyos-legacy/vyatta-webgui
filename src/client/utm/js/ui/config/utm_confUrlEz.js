@@ -156,6 +156,28 @@ function UTM_confUrlEz(name, callback, busLayer)
         })
     }
     
+	this.f_enableAllButton = function(state)
+	{
+		thisObj.f_enableButton('apply',state);
+		thisObj.f_enableButton('cancel',state);
+	}
+	
+	this.f_enableButton = function(btName, state)
+	{
+		var id ='';
+		switch (btName.toLowerCase()) {
+			case 'apply' :
+			    id = 'conf_url_ez_apply_button';
+				break;
+			case 'cancel' :
+			    id = 'conf_url_ez_cancel_button';
+				break;
+			default:
+			    break;
+		}
+        thisObj.f_enabledDisableButton(id, state);		
+	}
+	
     this.f_getConfigurationPage = function()
     {
         var children = new Array();
@@ -339,6 +361,7 @@ function UTM_confUrlEz(name, callback, busLayer)
     
     this.f_toggleImage = function(id)
     {
+		thisObj.f_enableAllButton(true);
         if (id.indexOf('on_img_') > -1) {
             var dayId = id.substring(7, id.length);
             var cb = document.getElementById('on_img_cb_' + dayId);
@@ -433,17 +456,18 @@ function UTM_confUrlEz(name, callback, busLayer)
         }
     }
     
-    this.f_loadVMData = function(element)
-    {		
-	    //alert ('f_loadVMData called');
+	this.f_reload = function()
+	{
+		thisObj.f_enableAllButton(false);
 		
-        thisObj.f_initFilterPolicyImp();
-        thisObj.f_attachListener();
-        thisObj.m_form = document.getElementById('conf_url_ez_form');
-        thisObj.f_setFocus();
-        thisObj.f_resize();
-                
-        var cb = function(evt)
+        var dow = thisObj.m_dowArray;
+        for (var i = 0; i < dow.length; i++) {
+			thisObj.f_enableTimeBackground(dow[i],true);
+			thisObj.f_disableAlwaysOff(dow[i]);
+			thisObj.f_disableAlwaysOn(dow[i]);
+		}	
+				
+		var cb = function(evt)
         {        
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
                 if (evt.f_isError()) {                
@@ -456,28 +480,49 @@ function UTM_confUrlEz(name, callback, busLayer)
                 thisObj.m_ufcObj = evt.m_value;    
 				//alert('f_loadVMData: m_ufcObj.toXml: ' + thisObj.m_ufcObj.f_toXml());            
                 thisObj.f_loadPolicy();                
-                thisObj.f_loadSchedule();                
+                thisObj.f_loadSchedule();            
+				thisObj.f_blackListCb();    
             }                                 
         };      
 		
 	    g_busObj.f_getUrlFilterConfig(cb);
-
+	}
+	
+    this.f_loadVMData = function(element)
+    {		
+	    //alert ('f_loadVMData called');
+		
+        thisObj.f_initFilterPolicyImp();
+        thisObj.f_attachListener();
+        thisObj.m_form = document.getElementById('conf_url_ez_form');
+        thisObj.f_setFocus();
+        thisObj.f_resize();
+                
+        thisObj.f_reload();
     }
     
     this.f_attachListener = function()
     {
-        var el = document.getElementById('conf_url_ez_whitelist_config');
-        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
-        el = document.getElementById('conf_url_ez_keyword_config');
-        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
+		var a = ['conf_url_ez_whitelist_config', 'conf_url_ez_keyword_config',
+		         'conf_url_ez_blacklist', 'conf_url_ez_whitelist', 'conf_url_ez_keyword',
+				 'conf_url_ez_legal', 'conf_url_ez_productivity', 'conf_url_ez_strict'];
+		
+		for (var i=0; i < a.length; i++) {
+		    var el = document.getElementById(a[i]);
+            g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);	
+		}		 
     }
     
     this.f_detachListener = function()
     {
-        var el = document.getElementById('conf_url_ez_whitelist_config');
-        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
-        el = document.getElementById('conf_url_ez_keyword_config');
-        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
+		var a = ['conf_url_ez_whitelist_config', 'conf_url_ez_keyword_config',
+		         'conf_url_ez_blacklist', 'conf_url_ez_whitelist', 'conf_url_ez_keyword',
+				 'conf_url_ez_legal', 'conf_url_ez_productivity', 'conf_url_ez_strict'];
+				 
+		for (var i=0; i < a.length; i++) {
+            var el = document.getElementById(a[i]);
+            g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);			
+		}					
     }
     
     
@@ -578,14 +623,19 @@ function UTM_confUrlEz(name, callback, busLayer)
 		thisObj.f_applyPolicy();
 		thisObj.f_applySchedule();
 		
+		g_utils.f_startWait();
+		
         var cb = function(evt)
         {        
+		    g_utils.f_stopWait();
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
                 if (evt.f_isError()) {                
                     g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);                    
                     return;                    
-                }                              
-            }                                 
+                } else {
+					thisObj.f_enableAllButton(false);
+				}                            
+            }                              
         };   
 		   
 		
@@ -612,6 +662,38 @@ function UTM_confUrlEz(name, callback, busLayer)
             return thisObj.f_handleClickById(id);
         }
     }
+	
+	this.f_subCatCb = function()
+	{
+		var el = document.getElementById('conf_url_ez_blacklist');
+		if (!el.checked) {
+			el.checked = 'checked';
+		}
+	}
+	
+	this.f_blackListCb = function()
+	{
+		var el;
+		var a = ['conf_url_ez_legal','conf_url_ez_productivity','conf_url_ez_strict'];
+		var cnt = 0;
+		var cel = null;
+		
+		for (var i=0; i < a.length; i++) {
+			el = document.getElementById(a[i]);
+			if (el.checked) {
+				cnt++;
+				cel = el;
+			} 
+		}
+		el = document.getElementById('conf_url_ez_blacklist');
+		if (!el.checked) {
+			if (cel != null) {
+				cel.checked = '';
+			}
+		} else if (cnt == 0) {
+			document.getElementById(a[0]).checked = 'checked';
+		}
+	}
     
     this.f_handleClickById = function(id)
     {
@@ -629,8 +711,22 @@ function UTM_confUrlEz(name, callback, busLayer)
                 thisObj.f_apply();
                 break;
             case 'conf_url_ez_cancel_button': //cancel clicked
-                thisObj.f_reset();
+                thisObj.f_reload();
                 break;
+			case 'conf_url_ez_blacklist':
+			    thisObj.f_blackListCb();
+				thisObj.f_enableAllButton(true);
+				break;
+			case 'conf_url_ez_legal':
+			case 'conf_url_ez_productivity':
+			case 'conf_url_ez_strict':	
+				thisObj.f_subCatCb();
+				thisObj.f_enableAllButton(true);
+				break;	
+			case 'conf_url_ez_whitelist':
+			case 'conf_url_ez_keyword':
+				thisObj.f_enableAllButton(true);
+				break;				
         }
         return false;
     }

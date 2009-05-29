@@ -610,6 +610,45 @@ var g_utils =
 		return div;
 	},
 
+    f_startWait: function()
+	{
+		var innerHTML = '<img aligh="center" src="images/wait.gif">';
+		var div = document.createElement('div');
+        div.setAttribute('id', 'ft_wait_div');
+		div.style.width = '32px';
+		div.style.height = '32px';
+		div.innerHTML = innerHTML;
+		//div.style.border = '2px solid red';
+		
+		var width = 32;
+        var html = document.body.parentNode;		
+        var scrollx = html.scrollLeft;
+        var scrolly = html.scrollTop;
+        var x = html.clientWidth;
+        var y = html.clientHeight;
+        var hDiv = div.clientHeight;
+        var wOffset = scrollx + (x - width)/2;
+        var hOffset = scrolly + (y - hDiv)/2;		
+		
+		div.style.position = 'absolute';
+		div.style.top = hOffset + 'px';
+		div.style.left = wOffset + 'px';
+
+	    var divContainer = document.getElementById('ft_modal_wait_message');	
+		divContainer.appendChild(div);
+		divContainer.style.height = html.scrollHeight + 'px';
+		divContainer.style.width = html.scrollWidth + 'px';
+		divContainer.style.visibility = "visible";
+	},
+	
+	f_stopWait: function()
+	{		
+	    var div = document.getElementById('ft_modal_wait_message');
+		div.style.visibility = "hidden";	
+        var cDiv = document.getElementById('ft_wait_div');
+        div.removeChild(cDiv);				
+	},
+
     f_popupMessage: function(message, type, title, isModal, cb, ccb)
     {
         var popDivId = 'ft_popup_message';
@@ -833,7 +872,50 @@ var g_utils =
         }
 
         return netmask;
-    }
+    },
+	
+    ////////////////////////////////////////////////////////////////////////////
+    // XML utilities section
+	////////////////////////////////////////////////////////////////////////////
+	f_parseXmlFromString : function(s)
+	{
+		var myDoc;
+	    if (document.implementation.createDocument) {
+			var parser = new DOMParser();
+			return parser.parseFromString(s, "text/xml");
+		} else if (window.ActiveXObject) {
+			myDoc = new ActiveXObject("Microsoft.XMLDOM");
+			myDoc.async = "false";
+			myDoc.loadXML(s);
+			return myDoc;
+		}
+	},	
+	
+	f_xmlGetChildNode : function(parent, child)
+	{
+	    var cn = parent.childNodes;
+		for (var i=0; i < cn.length; i++) {
+			if (cn[i].nodeName == child) {
+				return cn[i];
+			}
+		}	
+		return null;
+	},
+	
+	f_xmlGetNodeValue : function(node)
+	{	
+		if (node != null && node.childNodes[0]) {
+		    return node.childNodes[0].nodeValue;
+		}	
+		return null;	
+	},
+	
+	f_xmlGetNodeAttribute : function(node, attr)
+	{
+		if (node==null) return null;
+		return node.getAttribute(attr);
+	}	
+	
 };
 
 function f_utilsPopupTimeout(id)

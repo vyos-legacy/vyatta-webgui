@@ -94,7 +94,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
     {
         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
             if (evt.f_isError()) {
-                g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+                g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
                 return;
             }
 			thisObj.m_entryList = evt.m_value;
@@ -110,7 +110,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
 		g_utils.f_stopWait();		
         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
             if (evt.f_isError()) {
-                g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+                g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
                 return;
             }
             var id = thisObj.m_prefix + 'row_' + thisObj.m_deletedRow;
@@ -161,6 +161,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         thisObj.f_getEntryList(thisObj.f_getEntryListCb);
 		thisObj.f_enableAllButton(false);
     }
+		
 }
 
 UTM_extend(UTM_confUrlEzByUrl, UTM_confUrlEzByList);

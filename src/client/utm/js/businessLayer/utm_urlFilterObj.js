@@ -825,7 +825,22 @@ function UTM_urlFilterBusObj(busObj)
                                 '</msg>' + 
                           '</error>' + 
                   '</openappliance>');
-
+		/*
+		var resp = g_utils.f_parseXmlFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' + 
+                            '<code>0</code>' + 
+                               '<msg>' +
+                                   '<form name=\'url-filtering-easy-config\' code=\'1\'>' +
+								   '<key>blacklist</key>' + 
+								   '<errmsg>No blacklist installed</errmsg>' +
+                                    '</form>' + 
+                                '</msg>' + 
+                          '</error>' + 
+                  '</openappliance>');
+        */
         thisObj.f_respondRequestCallback(resp, guicb);
     }	
 

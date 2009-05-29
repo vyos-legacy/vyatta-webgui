@@ -89,7 +89,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
         {        
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
                 if (evt.f_isError()) {                
-                    g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);  
+                    g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);  
                     return;                    
                 }                
                 thisObj.m_entryList = evt.m_value;    
@@ -110,7 +110,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 				
         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
             if (evt.f_isError()) {
-                g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+                g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
                 return;
             }
             var id = thisObj.m_prefix + 'row_' + thisObj.m_deletedRow;
@@ -127,7 +127,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
 				
         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
             if (evt.f_isError()) {
-                g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+                g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
                 thisObj.m_goBack = false;
                 return;
             } else {
@@ -154,6 +154,7 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
             g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);
         }
     }	
+			
 }
 
 UTM_extend(UTM_confUrlEzByKeyword, UTM_confUrlEzByList);

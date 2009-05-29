@@ -300,8 +300,7 @@ sub execute_reset_fw_ruleset {
   my $fw_ruleset=get_zonepair_fwruleset($zonepair);
 
   # delete all rules in this firewall ruleset
-  my $err = OpenApp::Conf::run_cmd_def_session("delete firewall name $fw_ruleset rule", 'commit');
-  ##### remove the commit from here once mike has fixed bug 4434 #####
+  my $err = OpenApp::Conf::run_cmd_def_session("delete firewall name $fw_ruleset rule",);
   if (defined $err) {
     # print error and return
     print("<form name='customize-firewall' code=6>$err</form>");
@@ -376,13 +375,24 @@ sub execute_reset_fw_ruleset {
 
   } # end of foreach loop
 
-  ##### remove the commit from here once mike has fixed bug 4434 #####
-  $err = OpenApp::Conf::run_cmd_def_session('commit',);
-  if (defined $err) {
-    # print error and return
-    print("<form name='customize-firewall' code=99></form>");
-    exit 1;
-  }
+}
+
+sub get_next_rulenum {
+  my $zonepair = shift;
+  my $config = new Vyatta::Config;
+
+  # get customized firewall ruleset applied to that zone_pair
+  my $fw_ruleset=get_zonepair_fwruleset($zonepair);
+
+  # get a list of all rulenums in that ruleset
+  $config->setLevel("firewall name $fw_ruleset rule");
+  my @rules = $config->listOrigNodes();
+  my @reverse_sort_rules = reverse sort @rules;
+
+  my $rulenum = $reverse_sort_rules[0] + 1;
+
+  my $return_string = "<customize-firewall>zonepair=[$zonepair]:rulenum=[$rulenum]:</customize-firewall>";
+  print "$return_string";
 }
 
 sub usage() {
@@ -471,6 +481,11 @@ switch ($action) {
   {
     # do reset action here
     execute_reset_fw_ruleset ($zonepair[1], $rulenum[1]);
+  }
+  case 'next-rulenum'
+  {
+    # get next-rulenum for new rule
+    get_next_rulenum ($zonepair[1]);
   }
   else
   {

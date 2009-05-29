@@ -260,9 +260,9 @@ function UTM_businessLayer()
         thisObj.f_getFWObject().f_saveFirewallCustomizeRule(guicb);
     }
 
-    this.f_resetFirewallCustomizeRule = function(guicb)
+    this.f_resetFirewallCustomizeRule = function(fireRec, guicb)
     {
-        thisObj.f_getFWObject().f_resetFirewallCustomizeRule(guicb);
+        thisObj.f_getFWObject().f_resetFirewallCustomizeRule(fireRec, guicb);
     }
 
     this.f_deleteFirewallCustomizeRule = function(fireRec, guicb)

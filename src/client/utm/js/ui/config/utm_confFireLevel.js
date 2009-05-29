@@ -155,8 +155,10 @@ function UTM_confFireLevel(name, callback, busLayer)
         this.f_initGridData();
         this.f_loadVMData();
 
-        var btns = [['Apply', "f_fireLevelApplyHandler()", "", this.m_btnApplyId, false],
-                    ['Cancel', "f_fireLevelCancelHandler()", "", this.m_btnCancelId, false]];
+        var btns = [['Apply', "f_fireLevelApplyHandler()",
+                    g_lang.m_fireLevelApplyTip, this.m_btnApplyId, false],
+                    ['Cancel', "f_fireLevelCancelHandler()",
+                    g_lang.m_fireLevelCancelTip, this.m_btnCancelId, false]];
         this.m_buttons = this.f_createButtons(btns);
         this.f_adjustDivPosition(this.m_buttons);
 

@@ -9,6 +9,7 @@ document.write('<script type="text/javascript" src="js/ui/config/utm_confBaseObj
 document.write('<script type="text/javascript" src="js/ui/config/utm_confBaseObjExt.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confFormDefObj.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confFormObj.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confFireZoneMgmt.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confFireLevel.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confFireCustom.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confvpnOverview.js"></script>');

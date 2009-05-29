@@ -385,8 +385,6 @@ sub filter_set {
     if ($config->existsOrig('OA')) {  
 	push @cmds, "delete $path time-period OA";
 	push @cmds, "delete $path policy-rule 10 time-period";
-	# kludge until cli can support delete/set combo
-	push @cmds, "commit";
     }
     while (my ($k, $v) = each(%days_hash)) {
 	my $day_time = $xml->{schedule}->{$v};

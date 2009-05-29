@@ -137,6 +137,8 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 	
 	this.f_deleteRow = function(rowId)
 	{
+		g_utils.f_startWait();
+				
 		var prefix = this.m_prefix + 'row_';
         var row = document.getElementById(rowId);
 		
@@ -173,6 +175,8 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 		var entryList = new Array();
 		this.m_addedRow = new Array();
 		this.m_updatedRow = new Array();
+		
+		g_utils.f_startWait();
 		
 		for (var i = 0; i < this.m_rowIdArray.length; i++) {
 			var seedId = this.f_getSeedIdByRowId(this.m_rowIdArray[i]);

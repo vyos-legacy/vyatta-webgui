@@ -455,7 +455,8 @@ function UTM_confUrlEz(name, callback, busLayer)
                 thisObj.m_ufcObj = evt.m_value;    
 				//alert('f_loadVMData: m_ufcObj.toXml: ' + thisObj.m_ufcObj.f_toXml());            
                 thisObj.f_loadPolicy();                
-                thisObj.f_loadSchedule();                
+                thisObj.f_loadSchedule();            
+				thisObj.f_blackListCb();    
             }                                 
         };      
 		
@@ -480,6 +481,14 @@ function UTM_confUrlEz(name, callback, busLayer)
         var el = document.getElementById('conf_url_ez_whitelist_config');
         g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
         el = document.getElementById('conf_url_ez_keyword_config');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);		
+        el = document.getElementById('conf_url_ez_blacklist');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
+		el = document.getElementById('conf_url_ez_legal');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
+        el = document.getElementById('conf_url_ez_productivity');
+        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
+		el = document.getElementById('conf_url_ez_strict');
         g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
     }
     
@@ -488,7 +497,15 @@ function UTM_confUrlEz(name, callback, busLayer)
         var el = document.getElementById('conf_url_ez_whitelist_config');
         g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
         el = document.getElementById('conf_url_ez_keyword_config');
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);		
+        el = document.getElementById('conf_url_ez_blacklist');
         g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
+		el = document.getElementById('conf_url_ez_legal');
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
+        el = document.getElementById('conf_url_ez_productivity');
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
+        el = document.getElementById('conf_url_ez_strict');
+        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);				
     }
     
     
@@ -589,11 +606,11 @@ function UTM_confUrlEz(name, callback, busLayer)
 		thisObj.f_applyPolicy();
 		thisObj.f_applySchedule();
 		
-		g_utils.f_cursorWait();
+		g_utils.f_startWait();
 		
         var cb = function(evt)
         {        
-		    g_utils.f_cursorDefault();
+		    g_utils.f_stopWait();
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
                 if (evt.f_isError()) {                
                     g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);                    
@@ -626,6 +643,38 @@ function UTM_confUrlEz(name, callback, busLayer)
             return thisObj.f_handleClickById(id);
         }
     }
+	
+	this.f_subCatCb = function()
+	{
+		var el = document.getElementById('conf_url_ez_blacklist');
+		if (!el.checked) {
+			el.checked = 'checked';
+		}
+	}
+	
+	this.f_blackListCb = function()
+	{
+		var el;
+		var a = ['conf_url_ez_legal','conf_url_ez_productivity','conf_url_ez_strict'];
+		var cnt = 0;
+		var cel = null;
+		
+		for (var i=0; i < a.length; i++) {
+			el = document.getElementById(a[i]);
+			if (el.checked) {
+				cnt++;
+				cel = el;
+			} 
+		}
+		el = document.getElementById('conf_url_ez_blacklist');
+		if (!el.checked) {
+			if (cel != null) {
+				cel.checked = '';
+			}
+		} else if (cnt == 0) {
+			document.getElementById(a[0]).checked = 'checked';
+		}
+	}
     
     this.f_handleClickById = function(id)
     {
@@ -645,6 +694,14 @@ function UTM_confUrlEz(name, callback, busLayer)
             case 'conf_url_ez_cancel_button': //cancel clicked
                 thisObj.f_reload();
                 break;
+			case 'conf_url_ez_blacklist':
+			    thisObj.f_blackListCb();
+				break;
+			case 'conf_url_ez_legal':
+			case 'conf_url_ez_productivity':
+			case 'conf_url_ez_strict':	
+				thisObj.f_subCatCb();
+				break;	
         }
         return false;
     }

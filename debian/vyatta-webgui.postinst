@@ -8,7 +8,6 @@ chmod a+x /usr/lib/cgi-bin/get*
 chmod a+x /usr/lib/cgi-bin/web-load
 chmod a+w /var/www/archive
 chmod a+w /var/www/archive/backup
-chmod a+w /var/www/archive/restore
 
 #for restore process
 mkdir -p /tmp/restore

@@ -325,43 +325,18 @@ function UTM_urlFilterBusObj(busObj)
         }
     }
 
-	this.f_getChildNode = function(parent, child)
-	{
-	    var cn = parent.childNodes;
-		for (var i=0; i < cn.length; i++) {
-			if (cn[i].nodeName == child) {
-				return cn[i];
-			}
-		}	
-		return null;
-	}
-	
-	this.f_getNodeValue = function(node)
-	{	
-		if (node != null && node.childNodes[0]) {
-		    return node.childNodes[0].nodeValue;
-		}	
-		return null;	
-	}
-	
-	this.f_getNodeAttribute = function(node, attr)
-	{
-		if (node==null) return null;
-		return node.getAttribute(attr);
-	}
-
     this.f_getFormErrMsg = function(form)
 	{
-		var errmsgNode = thisObj.f_getChildNode(form, 'errmsg');
+		var errmsgNode = g_utils.f_xmlGetChildNode(form, 'errmsg');
 		if (errmsgNode == null) return null;
 		
-		return thisObj.f_getNodeValue(errmsgNode);		
+		return g_utils.f_xmlGetNodeValue(errmsgNode);		
 	}
 
     this.f_getFormNode = function(response)
 	{
-		var msgNode = this.f_getChildNode(response[0], 'msg');
-		return this.f_getChildNode(msgNode, 'form');
+		var msgNode = g_utils.f_xmlGetChildNode(response[0], 'msg');
+		return g_utils.f_xmlGetChildNode(msgNode, 'form');
 	}
 
     this.f_getFormError = function(response)
@@ -426,10 +401,10 @@ function UTM_urlFilterBusObj(busObj)
 		var found = false;
 		
 		for (var i=0; i < cat.length; i++) {
-			var node = thisObj.f_getChildNode(policy, cat[i]);
+			var node = g_utils.f_xmlGetChildNode(policy, cat[i]);
 			if (node != null) {
 				found = true;
-				var status = thisObj.f_getNodeAttribute(node,'status');
+				var status = g_utils.f_xmlGetNodeAttribute(node,'status');
 				if (status != null) {
 					a[cat[i]] = status;
 				} else {
@@ -437,9 +412,9 @@ function UTM_urlFilterBusObj(busObj)
 				}
 				if (i==0) { //blacklist node, parse sub cat
 				    for (var j=0; j < subCat.length; j++) {
-						var cnode = thisObj.f_getChildNode(node, subCat[j]);
+						var cnode = g_utils.f_xmlGetChildNode(node, subCat[j]);
 						if (cnode != null) {
-							var cvalue = thisObj.f_getNodeValue(cnode);
+							var cvalue = g_utils.f_xmlGetNodeValue(cnode);
 							if (cvalue != null) {
 								a[subCat[j]] = cvalue;
 							} else {
@@ -491,11 +466,11 @@ function UTM_urlFilterBusObj(busObj)
 		
 		var w = new Array(7);
 		for (var i=0; i < w.length; i++) {
-			var cnode = thisObj.f_getChildNode(schedule, days[i]);
+			var cnode = g_utils.f_xmlGetChildNode(schedule, days[i]);
 			if (cnode != null) {
 				found = true;
 			}
-			w[days[i]] = thisObj.f_getNodeValue(cnode);
+			w[days[i]] = g_utils.f_xmlGetNodeValue(cnode);
 		}
 		
 		if (!found) {
@@ -509,11 +484,11 @@ function UTM_urlFilterBusObj(busObj)
 	{
 		var obj = new UTM_urlFilterConfigObj(new Array(), new Array());		
 		var form = thisObj.f_getFormNode(response);		
-		var urlNode = thisObj.f_getChildNode(form, 'url-filtering-easy-config');
+		var urlNode = g_utils.f_xmlGetChildNode(form, 'url-filtering-easy-config');
 		
 		if (urlNode != null) {
-			var policyNode = thisObj.f_getChildNode(urlNode, 'policy');
-			var schedNode = thisObj.f_getChildNode(urlNode, 'schedule');
+			var policyNode = g_utils.f_xmlGetChildNode(urlNode, 'policy');
+			var schedNode = g_utils.f_xmlGetChildNode(urlNode, 'schedule');
 			var p = thisObj.f_parseUrlPolicy(policyNode);
 			var s = thisObj.f_parseUrlSchedule(schedNode);
 			obj.f_setPolicy(new UTM_urlFilterPolicyObj(p));
@@ -528,13 +503,13 @@ function UTM_urlFilterBusObj(busObj)
 	{
 		var list = new Array();
 		var form = thisObj.f_getFormNode(response);		
-		var wlNode = thisObj.f_getChildNode(form, 'white-list-easy-config');		
+		var wlNode = g_utils.f_xmlGetChildNode(form, 'white-list-easy-config');		
 		
 		if (wlNode != null) {
 			var cn = wlNode.childNodes;
 			for (var i = 0; i < cn.length; i++) {
 				if (cn[i].nodeName == 'url') {
-					var value = thisObj.f_getNodeValue(cn[i]);
+					var value = g_utils.f_xmlGetNodeValue(cn[i]);
 					//list.push(new UTM_urlFilterListObj(decodeURI(value)));
 					list.push(new UTM_urlFilterListObj(value));					
 				}
@@ -547,13 +522,13 @@ function UTM_urlFilterBusObj(busObj)
 	{
 		var list = new Array();
 		var form = thisObj.f_getFormNode(response);		
-		var bannedNode = thisObj.f_getChildNode(form, 'banned-list-easy-config');		
+		var bannedNode = g_utils.f_xmlGetChildNode(form, 'banned-list-easy-config');		
 		
 		if (bannedNode != null) {
 			var cn = bannedNode.childNodes;
 			for (var i = 0; i < cn.length; i++) {
 				if (cn[i].nodeName == 'keyword') {
-					var value = thisObj.f_getNodeValue(cn[i]);
+					var value = g_utils.f_xmlGetNodeValue(cn[i]);
 					list.push(new UTM_urlFilterListObj(value));
 				}
 			}
@@ -776,7 +751,7 @@ function UTM_urlFilterBusObj(busObj)
 	
 	///////////////////////////////////////////////////////////////////////////////////////
 	/////// begining simulation
-	///////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////	
     this.f_getUrlFilterConfigLocal = function(guicb)
     {
         thisObj.m_guiCb = guicb;
@@ -789,7 +764,7 @@ function UTM_urlFilterBusObj(busObj)
 					   
         thisObj.m_lastCmdSent = cmdSend;
 		
-		var resp = (new DOMParser()).parseFromString(
+		var resp = g_utils.f_parseXmlFromString(
 		    '<?xml version="1.0" encoding="utf-8"?>' +
                 '<openappliance>' +
                     '<token></token>' +
@@ -817,7 +792,7 @@ function UTM_urlFilterBusObj(busObj)
                                     '</form>' + 
                                 '</msg>' + 
                           '</error>' + 
-                  '</openappliance>', "text/xml");
+                  '</openappliance>');
 		
         thisObj.f_respondRequestCallback(resp, guicb);
     }	
@@ -838,7 +813,7 @@ function UTM_urlFilterBusObj(busObj)
 					   
         thisObj.m_lastCmdSent = cmdSend;
 
-		var resp = (new DOMParser()).parseFromString(
+		var resp = g_utils.f_parseXmlFromString(
 		    '<?xml version="1.0" encoding="utf-8"?>' +
                 '<openappliance>' +
                     '<token></token>' +
@@ -849,7 +824,7 @@ function UTM_urlFilterBusObj(busObj)
                                     '</form>' + 
                                 '</msg>' + 
                           '</error>' + 
-                  '</openappliance>', "text/xml");
+                  '</openappliance>');
 
         thisObj.f_respondRequestCallback(resp, guicb);
     }	
@@ -868,7 +843,7 @@ function UTM_urlFilterBusObj(busObj)
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
         thisObj.m_lastCmdSent = cmdSend;
-		var resp = (new DOMParser()).parseFromString(
+		var resp = g_utils.f_parseXmlFromString(
 		    '<?xml version="1.0" encoding="utf-8"?>' +
                 '<openappliance>' +
                     '<token></token>' +
@@ -884,7 +859,7 @@ function UTM_urlFilterBusObj(busObj)
                                     '</form>' + 
                                 '</msg>' + 
                           '</error>' + 
-                  '</openappliance>', "text/xml");
+                  '</openappliance>');
 
         //alert ('cmdSend: ' + cmdSend);
         thisObj.f_respondRequestCallback(resp, guicb);
@@ -906,7 +881,7 @@ function UTM_urlFilterBusObj(busObj)
 					   
         thisObj.m_lastCmdSent = cmdSend;
 
-		var resp = (new DOMParser()).parseFromString(
+		var resp = g_utils.f_parseXmlFromString(
 		    '<?xml version="1.0" encoding="utf-8"?>' +
                 '<openappliance>' +
                     '<token></token>' +
@@ -917,7 +892,7 @@ function UTM_urlFilterBusObj(busObj)
                                     '</form>' + 
                                 '</msg>' + 
                           '</error>' + 
-                  '</openappliance>', "text/xml");
+                  '</openappliance>');
 
         thisObj.f_respondRequestCallback(resp, guicb);
     }	
@@ -936,7 +911,7 @@ function UTM_urlFilterBusObj(busObj)
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
         thisObj.m_lastCmdSent = cmdSend;
-		var resp = (new DOMParser()).parseFromString(
+		var resp = g_utils.f_parseXmlFromString(
 		    '<?xml version="1.0" encoding="utf-8"?>' +
                 '<openappliance>' +
                     '<token></token>' +
@@ -952,7 +927,7 @@ function UTM_urlFilterBusObj(busObj)
                                     '</form>' + 
                                 '</msg>' + 
                           '</error>' + 
-                  '</openappliance>', "text/xml");
+                  '</openappliance>');
 
         //alert ('cmdSend: ' + cmdSend);
         thisObj.f_respondRequestCallback(resp, guicb);
@@ -974,7 +949,7 @@ function UTM_urlFilterBusObj(busObj)
 					   
         thisObj.m_lastCmdSent = cmdSend;
 
-		var resp = (new DOMParser()).parseFromString(
+		var resp = g_utils.f_parseXmlFromString(
 		    '<?xml version="1.0" encoding="utf-8"?>' +
                 '<openappliance>' +
                     '<token></token>' +
@@ -985,7 +960,7 @@ function UTM_urlFilterBusObj(busObj)
                                     '</form>' + 
                                 '</msg>' + 
                           '</error>' + 
-                  '</openappliance>', "text/xml");
+                  '</openappliance>');
 
         thisObj.f_respondRequestCallback(resp, guicb);
     }		

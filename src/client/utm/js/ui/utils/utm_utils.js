@@ -34,6 +34,19 @@ Array.prototype.size = function()
 	return i;
 }
 
+/*
+ * This is for IE 7.  IE 7 doesn't support Array.indexOf
+ */
+if (!Array.indexOf) {
+	Array.prototype.indexOf = function(obj, start) {
+		for (var i= (start || 0); i < this.length; i++) {
+			if (this[i] == obj) {
+				return i;
+			}
+		}
+	}
+}
+
 f_encodeUrl = function(string)
 {
     return escape(f_utf8_encode(string));

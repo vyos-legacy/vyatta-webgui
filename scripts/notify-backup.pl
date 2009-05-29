@@ -56,7 +56,7 @@ elsif ($cgi->request_method() eq 'PUT') { #restore request
 	`rm -f /tmp/restore/bu`;
 	`mkdir -p /tmp/restore/`;
 	
-	`sudo wget --no-check-certificate $file -O $bufile`;
+	`sudo wget --no-check-certificate $file -O $bufile >&/dev/null`;
 	
 	if (-e $bufile) {
 	    `sudo tar xf $bufile`;
@@ -67,9 +67,10 @@ elsif ($cgi->request_method() eq 'PUT') { #restore request
 	    
 	    `sudo chmod 660 /opt/vyatta/etc/config/config.boot`;
 	    
-	    `/usr/lib/cgi-bin/web-load`;
+	    `sudo sg vyattacfg  "/usr/lib/cgi-bin/web-load >&/dev/null"`;
 	}
     }
+    print $cgi->header(-status=>200);
     print '<?xml version="1.0" encoding="utf-8"?><openappliance><error><code>0</code><msg></msg></error></openappliance>';
 }
 exit 0;

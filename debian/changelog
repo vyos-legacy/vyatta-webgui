@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+38) unstable; urgency=low
+
+  * 1. Add c2.gif: transparent image.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 29 May 2009 01:04:17 +0000
+
 vyatta-webgui (0.2.14+fxdU+37) unstable; urgency=low
 
   [ Kevin Choi ]

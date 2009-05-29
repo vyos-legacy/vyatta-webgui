@@ -278,7 +278,7 @@ sub filter_set {
 	if (! defined $category) {
 	    uf_log("filter_set: Invalid block category");
 	    $msg  = "<form name='url-filtering-easy-config' code='1'>";
-	    $msg .= "<key>blacklist<key>";
+	    $msg .= "<key>blacklist</key>";
 	    $msg .= "<errmsg>Invalid block category</errmsg>";
 	    $msg .= "</form>";
 	    print $msg;
@@ -287,7 +287,7 @@ sub filter_set {
 	if (! squidguard_is_blacklist_installed()) {
 	    uf_log("filter_set: Missing blacklist");
 	    $msg  = "<form name='url-filtering-easy-config' code='1'>";
-	    $msg .= "<key>blacklist<key>";
+	    $msg .= "<key>blacklist</key>";
 	    $msg .= "<errmsg>No blacklist installed</errmsg>";
 	    $msg .= "</form>";
 	    print $msg;

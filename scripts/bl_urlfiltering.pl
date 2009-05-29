@@ -94,12 +94,12 @@ my @level_strict       = qw(blog
                             webmail);
 push @level_strict, @level_productivity;
 
-my $wb_log = '/tmp/wb';
+my $uf_log = '/tmp/uf';
 
-sub wb_log {
+sub uf_log {
     my $timestamp = strftime("%Y%m%d-%H:%M.%S", localtime);
-    open my $fh, '>>', $wb_log
-	or die "Can't open $wb_log: $!";
+    open my $fh, '>>', $uf_log
+	or die "Can't open $uf_log: $!";
     print $fh "$timestamp: ", @_ , "\n";
     close $fh;
 }
@@ -178,10 +178,10 @@ sub is_webproxy_configured {
     my $path   = 'service webproxy url-filtering squidguard policy-rule 10';
     $config->setLevel($path);
     if ($config->existsOrig('source-group')) {   
-	wb_log("webproxy is configured");
+	uf_log("webproxy is configured");
 	return 1;
     } 
-    wb_log("webproxy is NOT configured");
+    uf_log("webproxy is NOT configured");
     return;
 }
 
@@ -253,7 +253,7 @@ sub is_block_keyword_enabled {
 sub filter_set {
     my ($data) = @_;
 
-    wb_log("filter_set:");
+    uf_log("filter_set:");
     my $xs  = new XML::Simple;
     my $xml = $xs->XMLin($data);
     my $config = new Vyatta::Config;
@@ -264,7 +264,7 @@ sub filter_set {
     my $keyword   = $xml->{policy}->{keyword}->{status};
     my $category;
     if ($blacklist and $blacklist eq 'true') {
-	wb_log("filter_set: blacklist true");
+	uf_log("filter_set: blacklist true");
 	foreach my $cat (@cat_levels) {
 	    my $x = $xml->{policy}->{blacklist}->{$cat};
 	    if ($x and $x eq 'true') {
@@ -273,7 +273,7 @@ sub filter_set {
 	    }
 	}
 	if (! defined $category) {
-	    wb_log("filter_set: Invalid block category");
+	    uf_log("filter_set: Invalid block category");
 	    $msg  = "<form name='url-filtering-easy-config' code='1'>";
 	    $msg .= "<key>blacklist<key>";
 	    $msg .= "<errmsg>Invalid block category</errmsg>";
@@ -281,7 +281,7 @@ sub filter_set {
 	    print $msg;
 	    return 1;
 	}
-	wb_log("filter_set: block [$category]");
+	uf_log("filter_set: block [$category]");
     }
     
     my @cmds = ();
@@ -291,7 +291,7 @@ sub filter_set {
 
     # set whitelist entrys
     if ($whitelist and $whitelist eq 'true') {
-	wb_log("filter_set: whitelist true");
+	uf_log("filter_set: whitelist true");
 	if (! is_whitelist_enabled()) {
 	    # move from 1025 to 10 any enabled
 	    $config->setLevel("$path policy-rule 1025 local-ok");
@@ -326,7 +326,7 @@ sub filter_set {
 
     # set banned keywords
     if ($keyword and $keyword eq 'true') {
-	wb_log("filter_set: keyword true");
+	uf_log("filter_set: keyword true");
 	if (! is_block_keyword_enabled()) {
 	    # move from 1025 to 10 any enabled
 	    $config->setLevel("$path policy-rule 1025 local-block-keyword");
@@ -343,7 +343,7 @@ sub filter_set {
 	    push @cmds, "set $path policy-rule 1024 local-block-keyword OA";
 	} 
     } else {
-	wb_log("filter_set: keyword false");
+	uf_log("filter_set: keyword false");
 	if (is_block_keyword_enabled()) {
 	    push @cmds, "delete $path policy-rule 1024 local-block-keyword";
 	}
@@ -363,7 +363,7 @@ sub filter_set {
     if ($blacklist and $blacklist eq 'true') {
 	my $level = get_configured_block_level();
 	if ($level and $level ne $category) {
-	    wb_log("filter_set: delete $category");
+	    uf_log("filter_set: delete $category");
 	    push @cmds, "delete $path policy-rule 1024 local-block $level";
 	    push @cmds, "delete $path policy-rule 10 block-category";
 	}
@@ -372,7 +372,7 @@ sub filter_set {
     } else {
 	$config->setLevel("$path policy-rule 1024");
 	if ($config->existsOrig('local-block')) {  
-	    wb_log("filter_set: delete block level");
+	    uf_log("filter_set: delete block level");
 	    push @cmds, "delete $path policy-rule 1024 local-block";
 	    push @cmds, "delete $path policy-rule 10 block-category";	    
 	}
@@ -401,7 +401,7 @@ sub filter_set {
     
     push @cmds, ('commit', 'save');
     my $tmp = join("\n", @cmds);
-    wb_log("filter_set: $tmp");
+    uf_log("filter_set: $tmp");
     $err = OpenApp::Conf::execute_session(@cmds);
     if (defined $err) {
 	$msg  = "<form name='url-filtering-easy-config' code='1'>";
@@ -414,7 +414,7 @@ sub filter_set {
 }
 
 sub whitelist_get {
-    wb_log("whitelist_get:");
+    uf_log("whitelist_get:");
     my $msg;
     $msg  = "<form name='white-list-easy-config' code='0'>";
     $msg .= "<white-list-easy-config>";
@@ -437,7 +437,7 @@ sub whitelist_get {
 	$msg .= "<url><![CDATA[$site]]></url>";
 	$i++;
     }
-    wb_log("whitelist_get: $i sent");
+    uf_log("whitelist_get: $i sent");
     $msg .= "</white-list-easy-config>";
     $msg .= "</form>";
     print $msg;
@@ -446,13 +446,13 @@ sub whitelist_get {
 sub whitelist_set {
     my ($data) = @_;
 
-    wb_log("whitelist_set:");
+    uf_log("whitelist_set:");
     my $xs  = XML::Simple->new(ForceArray => 1, KeepRoot => 0);
     my $xml = $xs->XMLin($data);
     my ($msg, $err);
     my @cmds = ();
     if (!is_webproxy_configured()) {
-	wb_log("whitelist_set: adding webproxy config");
+	uf_log("whitelist_set: adding webproxy config");
 	@cmds = configure_webproxy();
     }
     my $path = 'service webproxy url-filtering squidguard';
@@ -482,7 +482,7 @@ sub whitelist_set {
 	}
 	$i++;
     }
-    wb_log("whitelist_set: i = $i, $#cmds cmds");
+    uf_log("whitelist_set: i = $i, $#cmds cmds");
     if ($i < 1) {
 	$msg  = "<form name='white-list-easy-config' code='1'>";
 	$msg .= "<key>whitelist</key><errmsg>No urls</errmsg></form>";
@@ -490,22 +490,22 @@ sub whitelist_set {
 	exit 1;
     }
     push @cmds, ('commit', 'save');
-    wb_log("whitelist_set: pre-execute $#cmds cmds");
+    uf_log("whitelist_set: pre-execute $#cmds cmds");
     $err = OpenApp::Conf::execute_session(@cmds);
     if (defined $err) {
-	wb_log("whitelist_set: execute err $err");
+	uf_log("whitelist_set: execute err $err");
 	$msg  = "<form name='white-list-easy-config' code='1'>";
 	$msg .= "<key>execute</key><errmsg>$err</errmsg></form>";
 	print $msg;
 	exit 1;
     }
-    wb_log("whitelist_set: execute OK");
+    uf_log("whitelist_set: execute OK");
     $msg = "<form name='white-list-easy-config' code='0'></form>";
     print $msg;
 }
 
 sub keyword_get {
-    wb_log("keyword_get:");
+    uf_log("keyword_get:");
     my $msg;
     $msg  = "<form name='banned-list-easy-config' code='0'>";
     $msg .= "<banned-list-easy-config>";
@@ -529,7 +529,7 @@ sub keyword_get {
 	$msg .= "<keyword><![CDATA[$keyword]]></keyword>";
 	$i++;
     }
-    wb_log("keyword_get: $i sent");
+    uf_log("keyword_get: $i sent");
     $msg .= "</banned-list-easy-config>";
     $msg .= "</form>";
     print $msg;
@@ -538,7 +538,7 @@ sub keyword_get {
 sub keyword_set {
     my ($data) = @_;
 
-    wb_log("keyword_set:");
+    uf_log("keyword_set:");
     my $xs  = XML::Simple->new(ForceArray => 1, KeepRoot => 0);
     my $xml = $xs->XMLin($data);
     my ($msg, $err);
@@ -573,7 +573,7 @@ sub keyword_set {
 	}
 	$i++;
     }
-    wb_log("keyword_set: i = $i, $#cmds cmds");
+    uf_log("keyword_set: i = $i, $#cmds cmds");
     if ($i < 1) {
 	$msg  = "<form name='banned-list-easy-config' code='1'>";
 	$msg .= "<key>banned</key><errmsg>No keywords</errmsg></form>";
@@ -582,16 +582,16 @@ sub keyword_set {
     }
 
     push @cmds, ('commit', 'save');
-    wb_log("keyword_set: pre-execute $#cmds cmds");
+    uf_log("keyword_set: pre-execute $#cmds cmds");
     $err = OpenApp::Conf::execute_session(@cmds);
     if (defined $err) {
-	wb_log("keyword_set: execute err $err");
+	uf_log("keyword_set: execute err $err");
 	$msg  = "<form name='banned-list-easy-config' code='1'>";
 	$msg .= "<key>execute</key><errmsg>$err</errmsg></form>";
 	print $msg;
 	exit 1;
     }
-    wb_log("keyword_set: execute OK");
+    uf_log("keyword_set: execute OK");
     $msg  = "<form name='banned-list-easy-config' code='0'></form>";
     print $msg;
 }

@@ -1,3 +1,14 @@
+vyatta-webgui (0.2.14+fxdU+41) unstable; urgency=low
+
+  [ Stig Thormodsrud ]
+  * Fix missing </key> xml tag.
+
+  [ Loi Vo ]
+  * 1. Add listeners to the key events so that when the user type,
+    cancel, and apply button is enabled.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 29 May 2009 22:19:07 +0000
+
 vyatta-webgui (0.2.14+fxdU+40) unstable; urgency=low
 
   [ Stig Thormodsrud ]

@@ -186,16 +186,19 @@ sub is_webproxy_configured {
 }
 
 sub configure_webproxy {
-    my (@cmds, $path);
 
-    $path = 'service webproxy url-filtering squidguard';
-    my $redirect = "http://172.16.117.2/cgi-bin/squidGuard-simple.cgi?";
-    $redirect   .= "targetclass=%t&url=%u&srcclass=%s";
+    my (@cmds, $path, $redirect);
 
-    push @cmds, 
-         "set service webproxy listen-address 127.0.0.1 disable-transparent";
-    push @cmds, "set service webproxy listen-address 192.168.1.1";
-    push @cmds, "set service webproxy cache-size 0";
+    # squid config
+    $path = 'service webproxy';
+    push @cmds, "set $path listen-address 127.0.0.1 disable-transparent";
+    push @cmds, "set $path listen-address 192.168.1.1";
+    push @cmds, "set $path cache-size 0";
+
+    # squidguard config
+    $path      = 'service webproxy url-filtering squidguard';
+    $redirect  = "http://172.16.117.2/cgi-bin/squidGuard-simple.cgi?";
+    $redirect .= "targetclass=%t&url=%u&srcclass=%s";
     push @cmds, "set $path source-group ALL address 0.0.0.0/0";
     push @cmds, "set $path source-group NONE address 255.255.255.255";
 
@@ -207,8 +210,8 @@ sub configure_webproxy {
 
     push @cmds, "set $path policy-rule 10 source-group ALL";
     push @cmds, "set $path policy-rule 10 description 'OA'";
-    push @cmds, "set $path policy-rule 10 local-ok 192.168.1.1";
     push @cmds, "set $path policy-rule 10 log all";
+    
     push @cmds, "set $path redirect-url \"$redirect\" ";
 
     return @cmds;
@@ -431,7 +434,6 @@ sub whitelist_get {
 
     my $i = 0;
     foreach my $site (@local_ok_sites) {
-	next if $site eq '192.168.1.1';  # listen-address
 	$msg .= "<url><![CDATA[$site]]></url>";
 	$i++;
     }

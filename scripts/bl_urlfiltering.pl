@@ -34,6 +34,9 @@ use XML::Simple;
 use Data::Dumper;
 use POSIX;
 
+use Vyatta::Webproxy;
+
+
 my %dispatcher = (
     'filter_get'     => \&filter_get,
     'filter_set'     => \&filter_set,
@@ -281,6 +284,15 @@ sub filter_set {
 	    print $msg;
 	    return 1;
 	}
+	if (! squidguard_is_blacklist_installed()) {
+	    uf_log("filter_set: Missing blacklist");
+	    $msg  = "<form name='url-filtering-easy-config' code='1'>";
+	    $msg .= "<key>blacklist<key>";
+	    $msg .= "<errmsg>No blacklist installed</errmsg>";
+	    $msg .= "</form>";
+	    print $msg;
+	    return 1;
+	}
 	uf_log("filter_set: block [$category]");
     }
     
@@ -515,7 +527,7 @@ sub keyword_get {
     my @block_keywords = $config->returnOrigValues();
 
     # get disabled blocked keyword/regex
-    my $path = 'service webproxy url-filtering squidguard';
+    $path = 'service webproxy url-filtering squidguard';
     $config->setLevel("$path policy-rule 1025 local-block-keyword");
     my @block_keywords_not = $config->returnOrigValues();
     if (scalar(@block_keywords_not) > 0) {

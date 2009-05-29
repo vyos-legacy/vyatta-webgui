@@ -1,1 +1,1 @@
-run: /opt/vyatta/sbin/bl_urlfiltering.pl --mode filter --oper set --data "$3"
+run: sudo /opt/vyatta/sbin/bl_urlfiltering.pl --mode filter --oper set --data "$3"

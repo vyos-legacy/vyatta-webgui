@@ -631,15 +631,17 @@ function UTM_confBaseObj(name, callback, busLayer)
         if(events!= null) {
 			if (events[0] != null) {
                 onblur = 'onblur="' + events[0] + '"';				
-			} else if (events[1] != null) {
+			} 
+			if (events[1] != null) {
 				onkeydown = 'onkeydown="' + events[1] + '"';
 			}
 		} 
             
-        return '<input id="' + elId + '" type="text" value="' +
+        var html = '<input id="' + elId + '" type="text" value="' +
                 val + '" name="' + name + '" title="' + tooltip +
                 '" style=' + roStyle + ' width:' + width + 'px;"' + ro + ' ' +
                 onblur + ' ' + onkeydown + '/>';
+		return html;
     }
 
     this.f_renderAnchor = function(text, link, tooltip)

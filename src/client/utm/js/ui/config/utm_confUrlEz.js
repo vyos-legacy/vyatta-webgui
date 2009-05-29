@@ -630,7 +630,7 @@ function UTM_confUrlEz(name, callback, busLayer)
 		    g_utils.f_stopWait();
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
                 if (evt.f_isError()) {                
-                    g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);                    
+                    g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);                    
                     return;                    
                 } else {
 					thisObj.f_enableAllButton(false);

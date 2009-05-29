@@ -1,3 +1,25 @@
+vyatta-webgui (0.2.14+fxdU+40) unstable; urgency=low
+
+  [ Stig Thormodsrud ]
+  * Remove listen-address from local-ok since webproxy now does it by
+  * Rename wb_log to uf_log.
+  * Removed double commit now that 4434 is fixed.
+
+  [ Loi Vo ]
+  * 1. Add listeners and grayed out cancel, apply buttons..
+
+  [ Stig Thormodsrud ]
+  * Add error response if no blacklist is installed.
+
+  [ Mohit Mehta ]
+  * next rule number should be the largest in both active and saved
+    configs
+
+  [ Kevin Choi ]
+  * * removed zonepair option any from customize
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 29 May 2009 20:48:52 +0000
+
 vyatta-webgui (0.2.14+fxdU+39) unstable; urgency=low
 
   * 1. fix a mistake from previous checkin

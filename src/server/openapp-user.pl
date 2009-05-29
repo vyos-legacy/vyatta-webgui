@@ -96,10 +96,16 @@ sub add_user {
 	    print FILE "add: memberUid\n";
 	    print FILE "memberUid: ".$rights."\n";
 
-	    my $ip = '';
-	    $ip = $vm->getIP();
+	    my $ip = $vm->getIP();
+	    my $port = $vm->getWuiPort();
 	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/notifications/users/$add";
+		my $cmd;
+		if (defined $port && $port ne '') {
+		    $cmd = "http://$ip:$port/notifications/users/$add";
+		}
+		else {
+		    $cmd = "http://$ip/notifications/users/$add";
+		}
 		my $obj = new OpenApp::Rest();
 		my $err = $obj->send("POST",$cmd);
 		if ($err->{_success} != 0) {
@@ -211,11 +217,19 @@ sub del_user {
 	my @VMs = OpenApp::VMMgmt::getVMList();
 	my $vm = new OpenApp::VMMgmt($rights);
 	my $ip = undef;
+	my $port;
 	if (defined($vm)) {
 	    $ip = $vm->getIP();
+	    $port = $vm->getWuiPort();
 	}
 	if (defined $ip && $ip ne '') {
-	    my $cmd = "http://$ip/notifications/users/$delete";
+	    my $cmd;
+	    if (defined $port && $port ne '') {
+		$cmd = "http://$ip:$port/notifications/users/$delete";
+	    }
+	    else {
+		$cmd = "http://$ip/notifications/users/$delete";
+	    }
 	    my $obj = new OpenApp::Rest();
 	    my $err = $obj->send("PUT",$cmd);
 	    if ($err->{_success} != 0) {
@@ -231,8 +245,15 @@ sub del_user {
 	    my $vm = new OpenApp::VMMgmt($vid);
 	    if (defined($vm)) {
 		my $ip = $vm->getIP();
+		my $port = $vm->getWuiPort();
 		if (defined $ip && $ip ne '') {
-		    my $cmd = "http://$ip/notifications/users/$delete";
+		    my $cmd;
+		    if (defined $port && $port ne '') {
+			$cmd = "http://$ip:$port/notifications/users/$delete";
+		    }
+		    else {
+			$cmd = "http://$ip/notifications/users/$delete";
+		    }
 		    my $obj = new OpenApp::Rest();
 		    my $err = $obj->send("DELETE",$cmd);
 		    if ($err->{_success} != 0) {

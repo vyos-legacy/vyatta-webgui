@@ -87,12 +87,15 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
     }
 
     cmd = WebGUI::mass_replace(cmd,"'","'\\''");
-    opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c 'export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + "; " + cmd + " 2>&1'";
+    opmodecmd = "/bin/bash --rcfile /etc/bash_completion -i -c '"
+                + cmd + " 2>&1'";
 
     string stdout;
     bool verbatim = false;
 
-    setenv(WebGUI::OA_GUI_ENV_SESSION_ID.c_str(),_proc->get_msg().id().c_str(),1);
+    setenv(WebGUI::OA_GUI_ENV_AUTH_USER.c_str(), username.c_str(), 1);
+    setenv(WebGUI::OA_GUI_ENV_SESSION_ID.c_str(),
+           _proc->get_msg().id().c_str(), 1);
 
     if (WebGUI::execute(opmodecmd,stdout,verbatim,true) == 0) {
       err = WebGUI::SUCCESS;

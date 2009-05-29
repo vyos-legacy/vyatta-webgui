@@ -165,6 +165,7 @@ var g_lang =
 	m_userSurname: "nom",
 	m_userGivenName: "prénom",
 	m_userEmail: "e-mail",
+    m_userUsernameInvalidCharacter: "User name can only alpha numeric characters",
 
     ///////////////////////////////////////////////////////////////////
     // User Editor screen
@@ -323,6 +324,16 @@ var g_lang =
 	m_ntpTimeSrvAddr : "Adresse du serveur de temps",
 	m_ntpTimeSrvConfig: "Le temps de configuration du serveur",
 
+    ///////////////////////////////////////////////////////////////////
+    // Tooltip
+	m_tooltip_cancel : "Reset current form",
+	m_tooltip_apply: "Apply changes",
+	m_tooltip_add: "Add a new row",
+	m_tooltip_delete: "Delete a row",
+	m_tooltip_back: "Go back to previous screen",	
+	m_tooltip_restore: "Restore",
+	m_tooltip_update: "Update",	
+	
     /////////////////////////////////////////
     // plesae do not edit beyound dummy
     dummy : ''

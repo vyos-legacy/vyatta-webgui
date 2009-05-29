@@ -115,7 +115,8 @@ public:
   get_user(unsigned long id);
 
   static bool
-  set_user(unsigned long id, const std::string &user, bool restricted);
+  set_user(unsigned long id, const std::string &user, bool restricted,
+           const std::string &pass);
 
   /**
    *

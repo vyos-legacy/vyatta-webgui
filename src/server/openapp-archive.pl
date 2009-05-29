@@ -154,7 +154,7 @@ sub backup {
 	my $bu;
 	my @bu = split(':',$archive);
 	if ($bu[1] eq 'data') {
-	    $hash_coll{$bu[0]} != 1;
+	    $hash_coll{$bu[0]} |= 1;
 	}
 	elsif ($bu[1] eq 'config') {
 	    $hash_coll{$bu[0]} |= 2;
@@ -165,11 +165,17 @@ sub backup {
     foreach $key (keys (%hash_coll)) {
 	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
-	my $ip = '';
-	$ip = $vm->getIP();
+	my $ip = $vm->getIP();
+	my $port = $vm->getWuiPort();
 	if (defined $ip && $ip ne '') {
             my $value = $hash_coll{$key};
-	    my $cmd = "http://$ip/backup/backupArchive?";
+	    my $cmd;
+	    if (defined $port && $port ne '') {
+		$cmd = "http://$ip:$port/backup/backupArchive?";
+	    }
+	    else {
+		$cmd = "http://$ip/backup/backupArchive?";
+	    }
 	    if ($value == 1) {
 		$cmd .= "data=true&config=false";
 	    }
@@ -213,9 +219,16 @@ sub backup {
 	    my $vm = new OpenApp::VMMgmt($key);
 	    next if (!defined($vm));
 	    my $ip = '';
-	    $ip = $vm->getIP();
+	    my $ip = $vm->getIP();
+	    my $port = $vm->getWuiPort();
 	    if (defined $ip && $ip ne '') {
-		my $cmd = "http://$ip/backup/getArchive";		
+		my $cmd;
+		if (defined $port && $port ne '') {
+		    $cmd = "http://$ip:$port/backup/getArchive";		
+		}
+		else {
+		    $cmd = "http://$ip/backup/getArchive";		
+		}
 		my $obj = new OpenApp::Rest();
 		my $err = $obj->send("GET",$cmd);
 		if ($err->{_http_code} == 302) { #redirect means server is done with archive
@@ -238,6 +251,18 @@ sub backup {
 		    else {
 			`logger 'error when retrieve archiving from $key: $rc'`;
 		    }
+		}
+		elsif ($err->{_http_code} == 200 && defined($err->{_body})) {
+		    #we'll now interpret this as including the archive in the response
+		    my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
+		    open (MYFILE, '>$bufile');
+		    print (MYFILE $err->{_body});
+		    close (MYFILE);
+
+		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+		    `rm -f $bufile`;  #now remove source file
+		    #and remove from poll collection
+		    delete $new_hash_coll{$key};
 		}
 		elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
 		    #log error and delete backup request
@@ -381,7 +406,7 @@ sub backup_and_get_archive {
     $get_archive = $filename;
 
     #then a get accessor
-#    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
+    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
     get_archive();
 #    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
     
@@ -434,7 +459,7 @@ sub restore_archive {
 	    my $bu;
 	    my @bu = split(':',$archive);
 	    if ($bu[1] eq 'data') {
-		$hash_coll{$bu[0]} != 1;
+		$hash_coll{$bu[0]} |= 1;
 	    }
 	    elsif ($bu[1] eq 'config') {
 		$hash_coll{$bu[0]} |= 2;
@@ -469,10 +494,17 @@ sub restore_archive {
 	next if (!defined($vm));
 
 	my $ip = '';
-	$ip = $vm->getIP();
+	my $ip = $vm->getIP();
+	my $port = $vm->getWuiPort();
 	if (defined $ip && $ip ne '') {
 	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$key.enc -out /var/www/backup/restore/$key`;
-	    my $cmd = "http://$ip/backup/backupArchive?";
+	    my $cmd;
+	    if (defined $port && $port ne '') {
+		$cmd = "http://$ip:$port/backup/backupArchive?";
+	    }
+	    else {
+		$cmd = "http://$ip/backup/backupArchive?";
+	    }
             my $value = $hash_coll{$key};
 	    if ($value == 1) {
 		$cmd .= "data=true&config=false";

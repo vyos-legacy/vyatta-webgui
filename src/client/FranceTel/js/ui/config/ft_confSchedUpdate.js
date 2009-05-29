@@ -89,10 +89,12 @@ function FT_confSchedUpdate (name, callback, busLayer) {
 			buttons: [ {
 				id: 'conf_sched_update_update_button',
 				text: 'Update',
+				tooltip: g_lang.m_tooltip_update,
 				onclick: this.f_handleClick
 			}, {
 				id: 'conf_sched_update_cancel_button',
 				text: 'Cancel',
+				tooltip: g_lang.m_tooltip_back,
 				onclick: this.f_handleClick
 			}]
 		})  

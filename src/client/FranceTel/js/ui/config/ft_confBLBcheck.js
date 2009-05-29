@@ -55,10 +55,12 @@ function FT_confBLBcheck(name, callback, busLayer)
             buttons: [{
                 id: 'conf_blb_check_apply_button',
                 text: 'Apply',
+				tooltip: g_lang.m_tooltip_apply,
                 onclick: this.f_handleClick
             }, {
                 id: 'conf_blb_check_cancel_button',
                 text: 'Cancel',
+				tooltip: g_lang.m_tooltip_cancel,
                 onclick: this.f_handleClick
             }]
         })

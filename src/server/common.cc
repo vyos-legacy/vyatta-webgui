@@ -10,6 +10,9 @@
 #include <grp.h>
 #include "common.hh"
 
+// for md5
+#include <openssl/md5.h>
+
 using namespace std;
 
 const unsigned long WebGUI::ID_START = 2147483648UL;
@@ -130,13 +133,20 @@ WebGUI::get_user(unsigned long id)
  *
  **/
 bool
-WebGUI::set_user(unsigned long id, const std::string &user, bool restricted)
+WebGUI::set_user(unsigned long id, const std::string &user, bool restricted,
+                 const std::string &pass)
 {
-  bool restrict = is_restricted(id);
-  
   string flag = string((restricted == true) ? "1" : "0");
 
-  string tmp = user + "," + flag;
+  // md5 the password
+  unsigned char ep[MD5_DIGEST_LENGTH];
+  MD5((const unsigned char *) pass.c_str(), pass.length(), ep);
+  char epass[MD5_DIGEST_LENGTH * 2 + 1];
+  for (int i = 0; i < MD5_DIGEST_LENGTH; i++) {
+    snprintf(&(epass[i * 2]), 3, "%02x", ep[i]);
+  }
+
+  string tmp = user + "," + flag + "," + string(epass);
 
   char buf[80];
   sprintf(buf, "%lu", id);

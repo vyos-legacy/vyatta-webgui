@@ -386,10 +386,18 @@ sub get_next_rulenum {
 
   # get a list of all rulenums in that ruleset
   $config->setLevel("firewall name $fw_ruleset rule");
-  my @rules = $config->listOrigNodes();
+  my @rules = $config->listNodes();
+  my @origrules = $config->listOrigNodes();
   my @reverse_sort_rules = reverse sort @rules;
+  my @reverse_sort_origrules = reverse sort @origrules;
 
-  my $rulenum = $reverse_sort_rules[0] + 1;
+  my $rulenum;
+
+  if ($reverse_sort_rules[0] >= $reverse_sort_origrules[0]) {
+    $rulenum = $reverse_sort_rules[0] + 1;
+  } else {
+    $rulenum = $reverse_sort_origrules[0] + 1;
+  }
 
   my $return_string = "<customize-firewall>zonepair=[$zonepair]:rulenum=[$rulenum]:</customize-firewall>";
   print "$return_string";

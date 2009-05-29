@@ -1,3 +1,23 @@
+vyatta-webgui (0.2.14+fxdU+37) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * removed support zone-pair any
+  * * forgot to add image
+
+  [ Loi Vo ]
+  * 1. Move xml util functions to utm_utils.
+
+  [ slioch ]
+  * squash server code 500 error on utm in response to restore request
+
+  [ Mohit Mehta ]
+  * * remove unnecessary commits that were added as a workaround for bug
+    4434
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 28 May 2009 17:59:44 -0700
+
 vyatta-webgui (0.2.14+fxdU+36) unstable; urgency=low
 
   [ slioch ]

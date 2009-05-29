@@ -23,7 +23,13 @@ function FT_backupEntryRec(vmId)
         if(thisObj.m_type == undefined)
             thisObj.m_type = [];
 
-        thisObj.m_type[thisObj.m_type.length] = type;
+        if(type == "all")
+        {
+            thisObj.m_type.push("config");
+            thisObj.m_type.push("data");
+        }
+        else
+          thisObj.m_type.push(type);
     }
 }
 

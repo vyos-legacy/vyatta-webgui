@@ -626,13 +626,20 @@ function UTM_confBaseObj(name, callback, busLayer)
         }
 
         var onblur = '';
-        if(events!= null && events[0] != null)
-            onblur = 'onblur="' + events[0] + '"';
-
+		var onkeydown = '';
+		
+        if(events!= null) {
+			if (events[0] != null) {
+                onblur = 'onblur="' + events[0] + '"';				
+			} else if (events[1] != null) {
+				onkeydown = 'onkeydown="' + events[1] + '"';
+			}
+		} 
+            
         return '<input id="' + elId + '" type="text" value="' +
                 val + '" name="' + name + '" title="' + tooltip +
                 '" style=' + roStyle + ' width:' + width + 'px;"' + ro + ' ' +
-                onblur + '/>';
+                onblur + ' ' + onkeydown + '/>';
     }
 
     this.f_renderAnchor = function(text, link, tooltip)

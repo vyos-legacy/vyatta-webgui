@@ -156,6 +156,28 @@ function UTM_confUrlEz(name, callback, busLayer)
         })
     }
     
+	this.f_enableAllButton = function(state)
+	{
+		thisObj.f_enableButton('apply',state);
+		thisObj.f_enableButton('cancel',state);
+	}
+	
+	this.f_enableButton = function(btName, state)
+	{
+		var id ='';
+		switch (btName.toLowerCase()) {
+			case 'apply' :
+			    id = 'conf_url_ez_apply_button';
+				break;
+			case 'cancel' :
+			    id = 'conf_url_ez_cancel_button';
+				break;
+			default:
+			    break;
+		}
+        thisObj.f_enabledDisableButton(id, state);		
+	}
+	
     this.f_getConfigurationPage = function()
     {
         var children = new Array();
@@ -339,6 +361,7 @@ function UTM_confUrlEz(name, callback, busLayer)
     
     this.f_toggleImage = function(id)
     {
+		thisObj.f_enableAllButton(true);
         if (id.indexOf('on_img_') > -1) {
             var dayId = id.substring(7, id.length);
             var cb = document.getElementById('on_img_cb_' + dayId);
@@ -435,6 +458,8 @@ function UTM_confUrlEz(name, callback, busLayer)
     
 	this.f_reload = function()
 	{
+		thisObj.f_enableAllButton(false);
+		
         var dow = thisObj.m_dowArray;
         for (var i = 0; i < dow.length; i++) {
 			thisObj.f_enableTimeBackground(dow[i],true);
@@ -478,34 +503,26 @@ function UTM_confUrlEz(name, callback, busLayer)
     
     this.f_attachListener = function()
     {
-        var el = document.getElementById('conf_url_ez_whitelist_config');
-        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
-        el = document.getElementById('conf_url_ez_keyword_config');
-        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);		
-        el = document.getElementById('conf_url_ez_blacklist');
-        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
-		el = document.getElementById('conf_url_ez_legal');
-        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
-        el = document.getElementById('conf_url_ez_productivity');
-        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
-		el = document.getElementById('conf_url_ez_strict');
-        g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
+		var a = ['conf_url_ez_whitelist_config', 'conf_url_ez_keyword_config',
+		         'conf_url_ez_blacklist', 'conf_url_ez_whitelist', 'conf_url_ez_keyword',
+				 'conf_url_ez_legal', 'conf_url_ez_productivity', 'conf_url_ez_strict'];
+		
+		for (var i=0; i < a.length; i++) {
+		    var el = document.getElementById(a[i]);
+            g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);	
+		}		 
     }
     
     this.f_detachListener = function()
     {
-        var el = document.getElementById('conf_url_ez_whitelist_config');
-        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
-        el = document.getElementById('conf_url_ez_keyword_config');
-        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);		
-        el = document.getElementById('conf_url_ez_blacklist');
-        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
-		el = document.getElementById('conf_url_ez_legal');
-        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
-        el = document.getElementById('conf_url_ez_productivity');
-        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
-        el = document.getElementById('conf_url_ez_strict');
-        g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);				
+		var a = ['conf_url_ez_whitelist_config', 'conf_url_ez_keyword_config',
+		         'conf_url_ez_blacklist', 'conf_url_ez_whitelist', 'conf_url_ez_keyword',
+				 'conf_url_ez_legal', 'conf_url_ez_productivity', 'conf_url_ez_strict'];
+				 
+		for (var i=0; i < a.length; i++) {
+            var el = document.getElementById(a[i]);
+            g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);			
+		}					
     }
     
     
@@ -615,8 +632,10 @@ function UTM_confUrlEz(name, callback, busLayer)
                 if (evt.f_isError()) {                
                     g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);                    
                     return;                    
-                }                              
-            }                                 
+                } else {
+					thisObj.f_enableAllButton(false);
+				}                            
+            }                              
         };   
 		   
 		
@@ -696,12 +715,18 @@ function UTM_confUrlEz(name, callback, busLayer)
                 break;
 			case 'conf_url_ez_blacklist':
 			    thisObj.f_blackListCb();
+				thisObj.f_enableAllButton(true);
 				break;
 			case 'conf_url_ez_legal':
 			case 'conf_url_ez_productivity':
 			case 'conf_url_ez_strict':	
 				thisObj.f_subCatCb();
+				thisObj.f_enableAllButton(true);
 				break;	
+			case 'conf_url_ez_whitelist':
+			case 'conf_url_ez_keyword':
+				thisObj.f_enableAllButton(true);
+				break;				
         }
         return false;
     }

@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.14+fxdU+42) unstable; urgency=low
+
+  * * added zone management screen and zone add/update screen. No bus
+    logic and UI layer are
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 29 May 2009 23:24:56 +0000
+
 vyatta-webgui (0.2.14+fxdU+41) unstable; urgency=low
 
   [ Stig Thormodsrud ]

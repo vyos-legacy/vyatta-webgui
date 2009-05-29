@@ -1,3 +1,19 @@
+vyatta-webgui (0.2+fxd0+48) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * minor cleanup
+  * add encrypted password to session state
+
+  [ Michael Larson ]
+  * fix for bug 4455
+
+  [ Loi Vo ]
+  * 1. Change the wait image to a better looking image.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 28 May 2009 19:28:02 -0700
+
 vyatta-webgui (0.2+fxd0+47) unstable; urgency=low
 
   [ Michael Larson ]

@@ -1,3 +1,13 @@
+vyatta-webgui (0.2.13-10) unstable; urgency=low
+
+  [ slioch ]
+  * converted session id to 8 byte field.
+  * delay on failure and source ip support
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 29 May 2009 18:37:42 -0700
+
 vyatta-webgui (0.2.13-9) unstable; urgency=low
 
   [ slioch ]

@@ -1,3 +1,11 @@
+vyatta-webgui (0.2.13-9+jenner2) unstable; urgency=low
+
+  * fix for bug 4440 and 4193. copy of cli subsystem out of sync with
+    webgui. future sync problems will be resolved when cli subsystem is
+    set up as a library project.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Mon, 01 Jun 2009 14:43:51 -0700
+
 vyatta-webgui (0.2.13-9+jenner1) unstable; urgency=low
 
   [ slioch ]

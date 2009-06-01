@@ -19,7 +19,7 @@ String.prototype.endsWith = function(str)
 String.prototype.cmp = function(b) 
 {
     var a = this+'';
-    return (a===b) ? 0 : (a>b) ? 1 : -1;
+    return (a==b) ? 0 : (a>b) ? 1 : -1;
 }
 
 Array.prototype.size = function()

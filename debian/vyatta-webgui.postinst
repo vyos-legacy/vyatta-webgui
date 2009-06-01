@@ -24,11 +24,17 @@ if grep -q '^#.*mod_redirect' /etc/lighttpd/lighttpd.conf; then
   sed -i 's/^#\(.*mod_redirect.*\)$/ \1/' /etc/lighttpd/lighttpd.conf
 fi
 
+
 # enable syslog for lighttpd
 if ! grep -q '^server.errorlog-use-syslog' /etc/lighttpd/lighttpd.conf; then
   echo '#/usr/pkg/etc/lighttpd/lighttpd.conf' >> /etc/lighttpd/lighttpd.conf
   echo 'server.errorlog-use-syslog      = "enable"' >> /etc/lighttpd/lighttpd.conf
   echo 'accesslog.use-syslog = "enable"'  >> /etc/lighttpd/lighttpd.conf
+fi
+
+# enable syslog for lighttpd
+if ! grep -q '^server.event-handler =' /etc/lighttpd/lighttpd.conf; then
+  echo 'server.event-handler = "linux-sysepoll"' >> /etc/lighttpd/lighttpd.conf
 fi
 
 # redirect http to https

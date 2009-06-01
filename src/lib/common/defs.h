@@ -11,6 +11,11 @@
 
 #define MAX_DEPTH 128
 
+#define ENV_ACTION_NAME "COMMIT_ACTION"
+#define ENV_ACTION_DELETE "DELETE"
+#define ENV_ACTION_SET "SET"
+#define ENV_ACTION_ACTIVE "ACTIVE"
+
 struct Result
 {
   int _err_code;

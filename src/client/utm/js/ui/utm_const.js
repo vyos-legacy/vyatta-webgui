@@ -79,6 +79,7 @@ VYA.UTM_CONST = {
     DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID : 'vpn_remote_usr_add_l2',	
 	//-----Firewall
     DOM_3_NAV_SUB_FW_ZONE_MGMT_EDITOR_ID : 'firewall_zone_mgmt_editor_l2',
+    DOM_3_NAV_SUB_FW_ZONE_MGMT_EDITOR_UPDATE_ID : 'firewall_zone_mgmt_editor_updatel2',
     DOM_3_NAV_SUB_FW_CUSTOM_ID : 'firewall_custom_l2',
     //-----WEB FILTERING		 
     DOM_3_NAV_SUB_EASY_WEBF_BY_URL_ID : 'easy_webf_by_url_l2',	

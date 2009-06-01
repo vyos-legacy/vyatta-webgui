@@ -113,5 +113,5 @@ function f_fwZMGridHeaderClick()
 
 function f_fireZoneMgmtAddHandler()
 {
-    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_ZONE_MGMT_EDITOR_ID);
+    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_ZONE_MGMT_EDITOR_UPDATE_ID);
 }

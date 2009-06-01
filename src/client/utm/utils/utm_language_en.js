@@ -65,7 +65,9 @@ var g_lang =
     // Firewall Zone Management
     m_fireZMAddTip : "Create new zone",
     m_fireZMZoneName : "Zone Name",
-    m_fireZMMember : "Members",
+    m_fireZMMember : "Zone Members",
+    m_fireZMMemIncluded : "Included",
+    m_fireZMMemAvail : "Available",
     m_fireZMDesc : "Description",
     m_fireZMDelete : "Delete",
 

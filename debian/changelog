@@ -1,3 +1,12 @@
+vyatta-webgui (0.2.13-9+jenner3) unstable; urgency=low
+
+  * alter lighttpd configuration for event notification recommended for
+    2.6+ kernel
+  * fix for bug 4422. found condition that caused webgui to get stuck in
+    loop. fixed.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Mon, 01 Jun 2009 17:53:39 -0700
+
 vyatta-webgui (0.2.13-9+jenner2) unstable; urgency=low
 
   * fix for bug 4440 and 4193. copy of cli subsystem out of sync with

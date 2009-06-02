@@ -611,6 +611,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
+            thisObj.f_loadVMData();
         };
 
         thisObj.f_enabledActionButtons(false);
@@ -622,7 +623,8 @@ function UTM_confFireCustom(name, callback, busLayer)
     {
         var cb = function(evt)
         {
-            thisObj.f_loadVMData();
+            //thisObj.f_loadVMData();
+            thisObj.f_handleSaveAction();
         };
 
         g_utils.f_cursorWait();

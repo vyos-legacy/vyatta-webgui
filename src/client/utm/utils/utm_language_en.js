@@ -70,6 +70,8 @@ var g_lang =
     m_fireZMMemAvail : "Available",
     m_fireZMDesc : "Description",
     m_fireZMDelete : "Delete",
+    m_fireZMMemIncTip : "Double click on the selected item to move to Available list box.",
+    m_fireZMMemAvailTip : "Double click on the selected item to move to Included list box.",
 
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Customize Level

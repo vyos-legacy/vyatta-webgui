@@ -230,13 +230,22 @@ function UTM_businessLayer()
         return m_fwObj;
     }
 
+    this.f_getFirewallZoneMgmtList = function(guicb)
+    {
+        thisObj.f_getFWObject().f_getFirewallZoneMgmtList(guicb);
+    }
+
+    this.f_getFirewallZoneMemberAvailable = function(zoneRec, guicb)
+    {
+        thisObj.f_getFWObject().f_getFirewallZoneMemberAvailable(zoneRec,guicb);
+    }
+
     this.f_getFirewallSecurityLevel = function(guicb)
     {
         thisObj.f_getFWObject().f_getFirewallSecurityLevel(guicb);
     }
 
     /**
-     * perform a set vpn site2site configurations request to server.
      * @param fireRec - firewall record object
      * @param guicb - gui callback function
      */

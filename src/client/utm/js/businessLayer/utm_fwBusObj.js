@@ -8,11 +8,12 @@
 /**
  * firewall zone record
  */
-function UTM_fwZoneRecord()
+function UTM_fwZoneRecord(name)
 {
     var thisObj = this;
-    this.m_name = null;
-    this.m_members = [];
+    this.m_name = name;
+    this.m_members = [];        // members included
+    this.m_memAvailable = [];   // members available
     this.m_description = null;
 }
 
@@ -327,6 +328,68 @@ function UTM_firewallBusObj(busObj)
         }
 
         return "";
+    }
+
+    this.f_getFirewallZoneMgmtList = function(guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+
+        //thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+          //                    thisObj.f_respondRequestCallback);
+
+        var zm = function(name)
+        {
+            var z = new UTM_fwZoneRecord(name);
+            z.m_members = ['1', '2', '3'];
+            z.m_description = "zone description " + name;
+
+            return z;
+        }
+
+        var cb = function()
+        {
+            var z = [];
+            z.push(zm('zone1'));
+            z.push(zm('zone2'));
+            z.push(zm('zone3'));
+            z.push(zm('zone4'));
+            z.push(zm('zone5'));
+            z.push(zm('zone6'));
+
+            guicb(z);
+        }
+
+        window.setTimeout(cb, 500);
+    }
+
+    this.f_getFirewallZoneMemberAvailable = function(zoneRec, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+
+        var zm = function(name)
+        {
+            var z = new UTM_fwZoneRecord(name);
+            z.m_memAvailable = ['v1', 'v2', 'v3'];
+
+            return z;
+        }
+
+        var cb = function()
+        {
+            var z = [];
+            z.push(zm('zone1'));
+            z.push(zm('zone2'));
+            z.push(zm('zone3'));
+            z.push(zm('zone4'));
+            z.push(zm('zone5'));
+            z.push(zm('zone6'));
+
+            guicb(z);
+        }
+
+        window.setTimeout(cb, 500);
     }
 
     /**

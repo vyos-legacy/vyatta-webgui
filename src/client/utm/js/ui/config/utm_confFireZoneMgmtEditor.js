@@ -148,9 +148,9 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
 
                     "<td rowspan= 1 width=40 align=center>" +
                     thisObj.f_createZoneMemberButton("fwZoneMgmtIncButtonId",
-                    "images/prev.gif", "f_onFwzmAdd()", "Add zone member") +
+                    "images/prev_disabled.gif", "f_onFwzmAdd()", "Add zone member") +
                     "<br><br>" + thisObj.f_createZoneMemberButton("fwZoneMgmtAvailButtonId",
-                    "images/next.gif", "f_onFwzmRemove()", "Remove zone member") +
+                    "images/next_disabled.gif", "f_onFwzmRemove()", "Remove zone member") +
                     "</td>" +
 
                     "<td rowspan=4 width=163>" + thisObj.f_createZoneMemberListBox(
@@ -202,6 +202,46 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
         }
     }
 
+    this.f_enableDisableListButtons = function()
+    {
+        var inc = document.getElementById("fwZoneMgmtEditorIncludeId");
+        var enable = inc.selectedIndex == -1 ? false : true;
+        thisObj.f_enabledDisableButton("fwZoneMgmtAvailButtonId", enable);
+
+        var avl = document.getElementById("fwZoneMgmtEditorAvailId");
+        enable = avl.selectedIndex == -1 ? false : true;
+        thisObj.f_enabledDisableButton("fwZoneMgmtIncButtonId", enable);
+    }
+
+    this.f_handleApply = function()
+    {
+        var name = document.getElementById("fwZoneMgmtEditorZoneNameId");
+        var desc = document.getElementById("fwZoneMgmtEditorDescId");
+        var mem = document.getElementById("fwZoneMgmtEditorIncludeId");
+
+        if(name.value.length == 0)
+        {
+            g_utils.f_popupMessage(g_lang.m_fireZMNameError, 'error',
+                    'Zone Management', true, null, null);
+            return;
+        }
+
+        if(mem.length == 0)
+        {
+            g_utils.f_popupMessage(g_lang.m_fireZMMemError, 'error',
+                    'Zone Management', true, null, null);
+            return;
+        }
+
+        var rec = new UTM_fwZoneRecord(name.value);
+        rec.m_description = desc.value;
+
+        for(var i=0; i<mem.value.length; i++)
+            rec.m_members.push(mem.options[i].value);
+
+        //thisObj.m_busLayer.f_setZone(rec, cb);
+    }
+
     this.f_handleClick = function(e)
     {
         var target = g_xbObj.f_xbGetEventTarget(e);
@@ -211,11 +251,7 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
 
             if (id == 'fwZoneMgmtEditorApplyButtonId')
             {
-                if (!thisObj.f_validate())
-                {
-                    return false;
-		}
-		thisObj.f_apply();
+		thisObj.f_handleApply();
             }
             else if (id == 'fwZoneMgmtEditorCancelButtonId')
             { //cancel clicked
@@ -234,31 +270,36 @@ function f_onFwzmAdd()
 {
     g_configPanelObj.m_activeObj.f_exchangeListBoxData("fwZoneMgmtEditorAvailId",
           "fwZoneMgmtEditorIncludeId");
+    g_configPanelObj.m_activeObj.f_enableDisableListButtons();
 }
 
 function f_onFwzmRemove()
 {
     g_configPanelObj.m_activeObj.f_exchangeListBoxData("fwZoneMgmtEditorIncludeId",
           "fwZoneMgmtEditorAvailId");
+    g_configPanelObj.m_activeObj.f_enableDisableListButtons();
 }
 
 function f_fwZoneMgmtEditorIncludeOnChanged()
 {
+    g_configPanelObj.m_activeObj.f_enableDisableListButtons();
 }
 
 function f_fwZoneMgmtEditorIncludeOnDblClick()
 {
     g_configPanelObj.m_activeObj.f_exchangeListBoxData("fwZoneMgmtEditorIncludeId",
           "fwZoneMgmtEditorAvailId");
+    g_configPanelObj.m_activeObj.f_enableDisableListButtons();
 }
 
 function f_fwZoneMgmtEditorAvailOnChanged()
 {
-
+    g_configPanelObj.m_activeObj.f_enableDisableListButtons();
 }
 
 function f_fwZoneMgmtEditorAvailOnDblClick()
 {
     g_configPanelObj.m_activeObj.f_exchangeListBoxData("fwZoneMgmtEditorAvailId",
           "fwZoneMgmtEditorIncludeId");
+    g_configPanelObj.m_activeObj.f_enableDisableListButtons();
 }

@@ -72,6 +72,8 @@ var g_lang =
     m_fireZMDelete : "Delete",
     m_fireZMMemIncTip : "Double click on the selected item to move to Available list box.",
     m_fireZMMemAvailTip : "Double click on the selected item to move to Included list box.",
+    m_fireZMMemError : "Member cannot be empty. Please select at least one memeber",
+    m_fireZMNameError : "Zone name cannot be empty.",
 
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Customize Level

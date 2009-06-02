@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+44) unstable; urgency=low
+
+  * * added add/remove images button to list boxes
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Tue, 02 Jun 2009 21:46:51 +0000
+
 vyatta-webgui (0.2.14+fxdU+43) unstable; urgency=low
 
   [ Loi Vo ]

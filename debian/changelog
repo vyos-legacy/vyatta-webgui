@@ -1,3 +1,14 @@
+vyatta-webgui (0.2.14+fxdU+43) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Fix a string compare function.
+
+  [ Kevin Choi ]
+  * * added zone management update screen UI layout
+  * * added zone mgmt update UI screen.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Tue, 02 Jun 2009 20:45:55 +0000
+
 vyatta-webgui (0.2.14+fxdU+42) unstable; urgency=low
 
   * * added zone management screen and zone add/update screen. No bus

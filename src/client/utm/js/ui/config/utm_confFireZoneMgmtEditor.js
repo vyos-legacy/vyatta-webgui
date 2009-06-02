@@ -146,10 +146,12 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
                     "f_fwZoneMgmtEditorIncludeOnDblClick()",
                     g_lang.m_fireZMMemIncTip) + "</td>" +
 
-                    "<td rowspan= 1 width=40 align=center><a href=# "+
-                    "onclick=f_onFwzmAdd() title='Add zone memeber'>" +
-                    "<<</a><br><br><a href=# onclick=f_onFwzmRemove() " +
-                    "title='Remove zone member'>>></a></td>" +
+                    "<td rowspan= 1 width=40 align=center>" +
+                    thisObj.f_createZoneMemberButton("fwZoneMgmtIncButtonId",
+                    "images/prev.gif", "f_onFwzmAdd()", "Add zone member") +
+                    "<br><br>" + thisObj.f_createZoneMemberButton("fwZoneMgmtAvailButtonId",
+                    "images/next.gif", "f_onFwzmRemove()", "Remove zone member") +
+                    "</td>" +
 
                     "<td rowspan=4 width=163>" + thisObj.f_createZoneMemberListBox(
                     "fwZoneMgmtEditorAvailId", "f_fwZoneMgmtEditorAvailOnChanged()",
@@ -159,6 +161,12 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
                     "</tr></table></div>";
 
         return table;
+    }
+
+    this.f_createZoneMemberButton = function(elid, image, onclick, tip)
+    {
+        return "<input type=image title='" + tip + "' id=" + elid +
+                " onclick='" + onclick + "' src=" + image + ">";
     }
 
     this.f_createZoneMemberListBox = function(elid, onchange, ondbclick, tip)

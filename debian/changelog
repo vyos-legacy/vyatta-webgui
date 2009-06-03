@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-9+jenner4) unstable; urgency=low
+
+  * fix for bug 4487
+  * fix for bug 4193.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Wed, 03 Jun 2009 16:57:50 -0700
+
 vyatta-webgui (0.2.13-9+jenner3) unstable; urgency=low
 
   * alter lighttpd configuration for event notification recommended for

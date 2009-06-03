@@ -29,7 +29,7 @@ function UTM_mainPanel()
             } else {
 		        g_utmMainPanel.f_init();
 		        g_utmMainPanel.f_show();
-		        g_utmMainPanel.f_selectMenuItem(VYA.UTM_CONST.DOM_2_NAV_DASHBOARD_ID);				
+                g_utmMainPanel.f_selectMenuItem(g_defaultMenuItem);			
 				/*
                 g_utils.f_saveUserLoginId(event.m_value.m_sid);
                 g_utils.f_saveUserName(un);

@@ -36,6 +36,12 @@ VYA.UTM_CONST = {
 	DOM_2_NAV_IMP2P_ID : 'imp2p_l1',
 	DOM_2_NAV_VPN_ID : 'vpn_l1',
 	DOM_2_NAV_LOG_ID : 'log_l1',		
+
+	//-----Secondary Menu For Network Configuration
+	DOM_2_NAV_DHCP_ID : 'dhcp_l1',
+	DOM_2_NAV_NAT_ID : 'nat_l1',
+	DOM_2_NAV_IP_ROUTE_ID : 'ip_route_l1',
+	DOM_2_NAV_DNS_ID : 'dns_l1',
 	
 	//-----Third Menu 	
 	DOM_3_NAV_DASHBOARD_ID : 'sm_dashboard',
@@ -47,6 +53,12 @@ VYA.UTM_CONST = {
 	DOM_3_NAV_IMP2P_ID : 'sm_imp2p',
 	DOM_3_NAV_VPN_ID : 'sm_vpn',
 	DOM_3_NAV_LOG_ID : 'sm_log',	
+
+	//-----Third Menu For Network Configuration	
+	DOM_3_NAV_DHCP_ID : 'sm_dhcp',
+	DOM_3_NAV_NAT_ID : 'sm_nat',
+	DOM_3_NAV_IP_ROUTE_ID : 'sm_ip_route',
+	DOM_3_NAV_DNS_ID : 'sm_dns',
 	
 	//-----Configuration menu item id.
 	//-----Dashboard
@@ -72,6 +84,16 @@ VYA.UTM_CONST = {
     DOM_3_NAV_SUB_VPN_REMOTE_ID : 'vpn_remote_l2',
     //-----Logs		
     DOM_3_NAV_SUB_LOG_ID : 'log_l2',
+	
+	//-----Configuration menu item id for network configuration.
+	//-----DHCP
+	DOM_3_NAV_SUB_DHCP_ID : 'dhcp_l2',
+    //-----NAT		
+	DOM_3_NAV_SUB_NAT_ID : 'nat_l2',
+    //-----IP ROUTE	
+	DOM_3_NAV_SUB_IP_ROUTE_ID : 'ip_route_l2',
+    //-----DNS	
+	DOM_3_NAV_SUB_DNS_ID : 'dns_l2',	
 		
 	//-----Dynamic menu item id.
 	//-----VPN		

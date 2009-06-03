@@ -1,3 +1,13 @@
+vyatta-webgui (0.2.14+fxdU+45) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Zone Management Add/Update Screen
+
+  [ Mohit Mehta ]
+  * * add backend support for getting zone information
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 02 Jun 2009 19:03:40 -0700
+
 vyatta-webgui (0.2.14+fxdU+44) unstable; urgency=low
 
   * * added add/remove images button to list boxes

@@ -574,6 +574,7 @@ var g_utils =
         var body = document.body;
         //body.style.cursor = "url('images/wait.gif'), wait;";
         body.className = 'ft_wait_cursor';
+        this.f_startWait();
     },
 
     f_cursorDefault: function()
@@ -581,6 +582,7 @@ var g_utils =
         var body = document.body;
         //body.style.cursor = 'default';
         body.className = 'ft_default_cursor';
+        this.f_stopWait();
     },
 
     f_createPopupDiv : function(isModal)
@@ -610,7 +612,7 @@ var g_utils =
 		return div;
 	},
 
-    f_startWait: function()
+    f_startWait: function(timeout)
 	{
 		var innerHTML = '<img aligh="center" src="images/wait.gif">';
 		var div = document.createElement('div');
@@ -619,34 +621,48 @@ var g_utils =
 		div.style.height = '32px';
 		div.innerHTML = innerHTML;
 		//div.style.border = '2px solid red';
-		
+
 		var width = 32;
-        var html = document.body.parentNode;		
+        var html = document.body.parentNode;
         var scrollx = html.scrollLeft;
         var scrolly = html.scrollTop;
         var x = html.clientWidth;
         var y = html.clientHeight;
         var hDiv = div.clientHeight;
         var wOffset = scrollx + (x - width)/2;
-        var hOffset = scrolly + (y - hDiv)/2;		
-		
+        var hOffset = scrolly + (y - hDiv)/2;
+
 		div.style.position = 'absolute';
 		div.style.top = hOffset + 'px';
 		div.style.left = wOffset + 'px';
 
-	    var divContainer = document.getElementById('ft_modal_wait_message');	
+	    var divContainer = document.getElementById('ft_modal_wait_message');
 		divContainer.appendChild(div);
 		divContainer.style.height = html.scrollHeight + 'px';
 		divContainer.style.width = html.scrollWidth + 'px';
 		divContainer.style.visibility = "visible";
+
+            if(timeout != null)
+            {
+                var thisObj = this;
+                var cb = function()
+                {
+                    thisObj.f_stopWait();
+                }
+
+                window.setTimeout(cb, timeout);
+            }
 	},
-	
+
 	f_stopWait: function()
-	{		
+	{
 	    var div = document.getElementById('ft_modal_wait_message');
-		div.style.visibility = "hidden";	
-        var cDiv = document.getElementById('ft_wait_div');
-        div.removeChild(cDiv);				
+            if(div != null)
+            {
+		div.style.visibility = "hidden";
+                var cDiv = document.getElementById('ft_wait_div');
+                div.removeChild(cDiv);
+            }
 	},
 
     f_popupMessage: function(message, type, title, isModal, cb, ccb)
@@ -873,7 +889,7 @@ var g_utils =
 
         return netmask;
     },
-	
+
     ////////////////////////////////////////////////////////////////////////////
     // XML utilities section
 	////////////////////////////////////////////////////////////////////////////
@@ -889,8 +905,8 @@ var g_utils =
 			myDoc.loadXML(s);
 			return myDoc;
 		}
-	},	
-	
+	},
+
 	f_xmlGetChildNode : function(parent, child)
 	{
 	    var cn = parent.childNodes;
@@ -898,24 +914,24 @@ var g_utils =
 			if (cn[i].nodeName == child) {
 				return cn[i];
 			}
-		}	
+		}
 		return null;
 	},
-	
+
 	f_xmlGetNodeValue : function(node)
-	{	
+	{
 		if (node != null && node.childNodes[0]) {
 		    return node.childNodes[0].nodeValue;
-		}	
-		return null;	
+		}
+		return null;
 	},
-	
+
 	f_xmlGetNodeAttribute : function(node, attr)
 	{
 		if (node==null) return null;
 		return node.getAttribute(attr);
-	}	
-	
+	}
+
 };
 
 function f_utilsPopupTimeout(id)

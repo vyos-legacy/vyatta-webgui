@@ -44,6 +44,7 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
     {
         var cb = function(avt)
         {
+            g_utils.f_cursorDefault();
             while(avt != null && avt.length > 0)
             {
                 var rc = avt.pop();
@@ -68,6 +69,7 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
             thisObj.f_populateList("fwZoneMgmtEditorIncludeId", thisObj.m_zoneRec.m_members);
         }
 
+        g_utils.f_cursorWait();
         thisObj.m_busLayer.f_getFirewallZoneMemberAvailable(thisObj.m_zoneRec, cb);
         thisObj.f_resize();
     }

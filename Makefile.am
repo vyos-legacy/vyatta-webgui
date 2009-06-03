@@ -60,6 +60,7 @@ sbin_SCRIPTS += scripts/site-to-site-easy.pl
 sbin_SCRIPTS += scripts/firewall-security-level.pl
 sbin_SCRIPTS += scripts/customize-firewall.pl
 sbin_SCRIPTS += scripts/bl_urlfiltering.pl
+sbin_SCRIPTS += scripts/zone-mgmt.pl
 
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 

@@ -186,6 +186,15 @@ function UTM_3rdNavigation()
                 return VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID;
             case VYA.UTM_CONST.DOM_2_NAV_LOG_ID:
                 return VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID;				
+			//starting section for network configuration
+            case VYA.UTM_CONST.DOM_2_NAV_DHCP_ID:
+                return VYA.UTM_CONST.DOM_3_NAV_SUB_DHCP_ID;			
+            case VYA.UTM_CONST.DOM_2_NAV_NAT_ID:
+                return VYA.UTM_CONST.DOM_3_NAV_SUB_NAT_ID;			
+            case VYA.UTM_CONST.DOM_2_NAV_IP_ROUTE_ID:
+                return VYA.UTM_CONST.DOM_3_NAV_SUB_IP_ROUTE_ID;			
+            case VYA.UTM_CONST.DOM_2_NAV_DNS_ID:
+                return VYA.UTM_CONST.DOM_3_NAV_SUB_DNS_ID;
 				
             default:
                 return undefined;
@@ -212,7 +221,17 @@ function UTM_3rdNavigation()
             case VYA.UTM_CONST.DOM_2_NAV_VPN_ID:
                 return 7;
             case VYA.UTM_CONST.DOM_2_NAV_LOG_ID:
-                return 8;								
+                return 8;		
+			//Start network configuration portion	
+            case VYA.UTM_CONST.DOM_2_NAV_DHCP_ID:
+                return 0;					
+            case VYA.UTM_CONST.DOM_2_NAV_NAT_ID:
+                return 1;				
+            case VYA.UTM_CONST.DOM_2_NAV_IP_ROUTE_ID:
+                return 2;
+            case VYA.UTM_CONST.DOM_2_NAV_DNS_ID:
+                return 3;				
+													
             default:
                 return undefined;			
         }
@@ -240,7 +259,16 @@ function UTM_3rdNavigation()
                 return 7;
             case VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID:
                 return 8;				
-				
+			//start network configuration portion	
+            case VYA.UTM_CONST.DOM_3_NAV_SUB_DHCP_ID:
+                return 0;				
+            case VYA.UTM_CONST.DOM_3_NAV_SUB_NAT_ID:
+                return 1;				
+            case VYA.UTM_CONST.DOM_3_NAV_SUB_IP_ROUTE_ID:
+                return 2;				
+            case VYA.UTM_CONST.DOM_3_NAV_SUB_DNS_ID:
+                return 3;
+								
             default:
                 return undefined;
         }  	

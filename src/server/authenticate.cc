@@ -80,7 +80,6 @@ Authenticate::create_new_session()
       string unionfs = WebGUI::unionfs();
       
       cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+id+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ id;
-      cout << "cmd: " << cmd << endl;
       if (WebGUI::execute(cmd, stdout) != 0) {
 	//syslog here
 	_proc->set_response(WebGUI::AUTHENTICATION_FAILURE);

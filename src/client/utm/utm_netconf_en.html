@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>UTM</title>
+        <link href="css/utm_style.css" rel="stylesheet" type="text/css" />
+        <link href="css/utm_confPanels.css" rel="stylesheet" type="text/css" />
+		<link href="css/utm_sitemap.css" rel="stylesheet" type="text/css" />	
+		<!--[if IE]>
+		<link href="css/utm_style_ie.css" rel="stylesheet" type="text/css" />
+		<![endif]-->
+        <script type="text/javascript">
+        	g_defaultMenuItem = 'dhcp_l1';        
+        </script>
+        <script type="text/javascript" src="utm_devConfig.js">
+        </script>
+        <script type="text/javascript" src="utils/utm_language_en.js">
+        </script>
+        <script type="text/javascript" src="utils/utm_allUtils.js">
+        </script>
+        <script type="text/javascript" src="js/businessLayer/utm_allBusLayers.js">
+        </script>
+        <script type="text/javascript" src="js/ui/utm_allUI.js">
+        </script>
+        <script type="text/javascript" src="js/ui/config/utm_allConfigPanels.js">
+        </script>
+    </head>
+    <body>
+        <center>
+            <div id="main">
+                <div id="oa_container">
+                </div>
+                <!-- **** 2nd nav start **** -->
+                <div id="oa_2_nav">
+                    <ul id="oa_2_nav_ul">
+                        <li id="dhcp_l1">
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;DHCP</a>
+                        </li>
+                        <li id="nat_l1">
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;NAT/PAT</a>
+                        </li>
+                        <li id="ip_route_l1">
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;IP routing</a>
+                        </li>
+                        <li id="dns_l1">
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;DNS</a>
+                        </li>						
+                    </ul>
+                    <div class="liner">
+                    </div>
+                </div>
+                <!-- **** 2nd nav end **** -->
+				<!-- **** 3nd nav start **** -->
+                <div id="sub_menu_container">
+                    <div id="sm_dhcp" class="left_sub_menu">
+                        <ul id="sm_dhcp_ul">
+                            <li class="left_sub_menu_header">
+                                <h3>&nbsp;DHCP</h3>
+                            </li>
+                            <li class="left_sub_menu_liner">
+                            </li>
+                            <li id="dhcp_l2">
+                                <a href="#" desc="DHCP"><img border="0" src="images/fleche_off.gif">&nbsp;DHCP</a>
+                            </li>
+                            <li class="left_sub_menu_liner">
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="sm_nat" class="left_sub_menu">
+                        <ul id="sm_nat_ul">
+                            <li class="left_sub_menu_header">
+                                <h3>&nbsp;NAT/PAT</h3>
+                            </li>
+                            <li class="left_sub_menu_liner">
+                            </li>
+                            <li id="nat_l2">
+                                <a href="#" desc="NAT/PAT"><img border="0" src="images/fleche_off.gif">&nbsp;NAT/PAT</a>
+                            </li>
+                            <li class="left_sub_menu_liner">
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="sm_ip_route" class="left_sub_menu">
+                        <ul id="sm_ip_route_ul">
+                            <li class="left_sub_menu_header">
+                                <h3>&nbsp;IP routing</h3>
+                            </li>
+                            <li class="left_sub_menu_liner">
+                            </li>
+                            <li id="ip_route_l2">
+                                <a href="#" desc="IP routing"><img border="0" src="images/fleche_off.gif">&nbsp;IP routing</a>
+                            </li>
+                            <li class="left_sub_menu_liner">
+                            </li>
+                        </ul>
+                    </div>
+					<div id="sm_dns" class="left_sub_menu">
+                        <ul id="sm_dns_ul">
+                            <li class="left_sub_menu_header">
+                                <h3>&nbsp;DNS</h3>
+                            </li>
+                            <li class="left_sub_menu_liner">
+                            </li>
+                            <li id="dns_l2">
+                                <a href="#" desc="DNS"><img border="0" src="images/fleche_off.gif">&nbsp;DNS</a>
+                            </li>
+                            <li class="left_sub_menu_liner">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- **** 3nd nav end **** -->
+                <div id="dyn_sub_menu" class="dyn_sub_menu">			
+                </div>
+                <div id="config_panel" valign="center">
+                    <div id="config_panel_img_title">                       
+                       <img align="left" src="images/en/32_disquette.gif" class="config_panel_img"><h1 valign="bottom" id="config_panel_title">Place Holder</h1>
+                    </div>
+                </div>   				
+                <div id="ft_container" valign="top">
+                </div>				
+            </div>
+        </center>
+
+        <!-- a div uses for popup message -->
+        <div align="center" valign="center" id="ft_popup_message"></div>
+        <div align="center" valign="center" id="ft_modal_popup_message"></div>
+		<div align="center" valign="center" id="ft_modal_wait_message"></div>
+		<!-- sitemap -->
+        <div id="sitemap_div">
+            <h3 style="font-size:16px">map</h3>
+			<div><img border="0" src="images/bt_cancel.gif" onclick="f_siteMapClickHandler('closeButton')"></div>			
+        </div>		
+    </body>
+</html>

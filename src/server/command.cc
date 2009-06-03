@@ -227,7 +227,12 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   }
   */
   //NOTE error codes are not currently being returned via the popen call--temp fix until later investigation
-  WebGUI::execute(command,stdout,true);
+  if (WebGUI::execute(command,stdout,true) == 0) {
+    err = WebGUI::SUCCESS;
+  } else {
+    err = WebGUI::COMMAND_ERROR;
+  }
+
   if (stdout.empty() == true) {
     err = WebGUI::SUCCESS;
   }
@@ -244,7 +249,6 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       }
     }
   }
-
   resp = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
 }
 

@@ -83,7 +83,5 @@ function FT_mainPanel(){
     this.f_getDefaultSelection = function(id){
 		//alert('f_getDefaultSelection return: ' + thisObj.m_3navMenu.f_getDefaultSelection(id));
         return thisObj.m_3navMenu.f_getDefaultSelection(id);
-    }
-    
-    
+    }      
 }

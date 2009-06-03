@@ -117,9 +117,16 @@ function FT_mainFrame(){
         oa_2nav.style.display = 'none';
         thisObj.m_tabPanel.f_init();
         
-        thisObj.m_vmList = vmList;
-        thisObj.m_priNavigation.f_init(thisObj, vmList);
-		thisObj.m_siteMap.f_init(vmList);        
+		//Make a copy of the vmList
+		thisObj.m_vmList = new Array();
+		for (var i=0; i < vmList.length; i++) {
+			var vmRec = new FT_vmRecObj(vmList[i].m_name, vmList[i].m_displayName);
+			vmRec.m_guiUri = vmList[i].m_guiUri;
+			thisObj.m_vmList.push(vmRec);
+		}
+        //thisObj.m_vmList = vmList;
+        thisObj.m_priNavigation.f_init(thisObj, thisObj.m_vmList);
+		thisObj.m_siteMap.f_init(thisObj.m_vmList);        
     }
     
     

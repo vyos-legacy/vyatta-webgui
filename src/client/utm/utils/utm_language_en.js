@@ -187,6 +187,7 @@ var g_lang =
 	m_ids_Subscribe: "This mode is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
 	                         "It enables you to benefit from a larger database of IDS/ IPS signatures that you can also customize.<br/><br/>" +
 							 "To get this service, please press the button \"subscribe\" hereunder.",
+    m_ids_ezEnable: "Enable Instrusion Prevention",							 
 
 	///////////////////////////////////////////////////////////////////
     // Anti-virus

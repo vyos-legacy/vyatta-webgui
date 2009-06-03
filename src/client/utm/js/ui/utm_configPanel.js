@@ -182,6 +182,10 @@ function UTM_configPanel()
 	        thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_IDP_ID:
+                thisObj.m_selectObj = new UTM_confIDSEz('IDSEz', cb, g_busObj);
+	            thisObj.m_selectObj.f_setId(id);	
+				thisObj.m_selectObj.f_init();
+                return thisObj.m_selectObj.f_getConfigurationPage();				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EXPERT_IDP_ID:
                 thisObj.m_selectObj = new UTM_confIDSExpert('IDSExpert', cb, g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				

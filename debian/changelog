@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-9+jenner5) unstable; urgency=low
+
+  * fix for bug 4193. Remove support for error location in configuration
+    tree.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Thu, 04 Jun 2009 15:29:59 -0700
+
 vyatta-webgui (0.2.13-9+jenner4) unstable; urgency=low
 
   * fix for bug 4487

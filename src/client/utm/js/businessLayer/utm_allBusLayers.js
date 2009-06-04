@@ -11,3 +11,4 @@ document.write('<script type="text/javascript" src="js/businessLayer/utm_vpnBusO
 document.write('<script type="text/javascript" src="js/businessLayer/utm_fwBusObj.js"></script>');
 document.write('<script type="text/javascript" src="js/businessLayer/utm_dbBusObj.js"></script>');
 document.write('<script type="text/javascript" src="js/businessLayer/utm_urlFilterObj.js"></script>');
+document.write('<script type="text/javascript" src="js/businessLayer/utm_nwConfBusObj.js"></script>');

@@ -131,7 +131,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       tmp = "/opt/vyatta/sbin/my_" + cmd;
     }
     else if (strncmp(tmp.c_str(),"commit",6) == 0) {
-      tmp = "/opt/vyatta/sbin/my_" + cmd + " -e"; //add error location flag
+      tmp = "/opt/vyatta/sbin/my_" + cmd;// + " -e"; //add error location flag
     }
     else if (strncmp(tmp.c_str(),"load",4) == 0) {
       tmp = "/opt/vyatta/sbin/vyatta-load-config.pl";

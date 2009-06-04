@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+47) unstable; urgency=low
+
+  * * oop! missing a file from previous checked.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 04 Jun 2009 17:19:27 +0000
+
 vyatta-webgui (0.2.14+fxdU+46) unstable; urgency=low
 
   [ Loi Vo ]

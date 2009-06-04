@@ -20,7 +20,8 @@ var g_lang =
     m_username : 'User Name',
     m_status : 'Status',
     m_ipAddr : 'IP Address',
-
+    m_underConstruction : 'Under Construction',
+	
     ///////////////////////////////////////////////////////////////////
     // VPN Overview
     m_vpnOverviewHeader : "Lorem ipsum onsectetuer adipiscing elit, sed diam " +

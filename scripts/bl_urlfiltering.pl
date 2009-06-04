@@ -110,7 +110,7 @@ sub uf_log {
 sub get_configured_block_level {
     my $path = 'service webproxy url-filtering squidguard';
     my $config = new Vyatta::Config; 
-    $config->setLevel("$path policy-rule 1024");
+    $config->setLevel("$path rule 1024");
     my @block_cats = $config->returnOrigValues('local-block');
     if (scalar(@block_cats) > 0) {
 	my %level_hash = map { $_ => 1} @cat_levels;
@@ -132,7 +132,7 @@ sub filter_get {
 
     my $config = new Vyatta::Config; 
     my $path = 'service webproxy url-filtering squidguard';
-    $config->setLevel("$path policy-rule 1024");
+    $config->setLevel("$path rule 1024");
 
     $msg .= "<policy>";
     # check whitelist
@@ -178,7 +178,7 @@ sub filter_get {
 
 sub is_webproxy_configured {
     my $config = new Vyatta::Config; 
-    my $path   = 'service webproxy url-filtering squidguard policy-rule 10';
+    my $path   = 'service webproxy url-filtering squidguard rule 10';
     $config->setLevel($path);
     if ($config->existsOrig('source-group')) {   
 	uf_log("webproxy is configured");
@@ -205,15 +205,15 @@ sub configure_webproxy {
     push @cmds, "set $path source-group ALL address 0.0.0.0/0";
     push @cmds, "set $path source-group NONE address 255.255.255.255";
 
-    push @cmds, "set $path policy-rule 1024 description 'OA state storage'";
-    push @cmds, "set $path policy-rule 1024 source-group NONE";
+    push @cmds, "set $path rule 1024 description 'OA state storage'";
+    push @cmds, "set $path rule 1024 source-group NONE";
 
-    push @cmds, "set $path policy-rule 1025 description 'OA disabled storage'";
-    push @cmds, "set $path policy-rule 1025 source-group NONE";
+    push @cmds, "set $path rule 1025 description 'OA disabled storage'";
+    push @cmds, "set $path rule 1025 source-group NONE";
 
-    push @cmds, "set $path policy-rule 10 source-group ALL";
-    push @cmds, "set $path policy-rule 10 description 'OA'";
-    push @cmds, "set $path policy-rule 10 log all";
+    push @cmds, "set $path rule 10 source-group ALL";
+    push @cmds, "set $path rule 10 description 'OA'";
+    push @cmds, "set $path rule 10 log all";
     
     push @cmds, "set $path redirect-url \"$redirect\" ";
 
@@ -230,7 +230,7 @@ sub get_blacklist_categories {
 	case 'legal'        { @blocks = @level_legal; }
     }
     my @cmds = ();
-    my $path = 'service webproxy url-filtering squidguard policy-rule 10';
+    my $path = 'service webproxy url-filtering squidguard rule 10';
     foreach my $block (@blocks) {
 	push @cmds, "set $path block-category $block";
     }
@@ -240,7 +240,7 @@ sub get_blacklist_categories {
 sub is_whitelist_enabled {
     my $config = new Vyatta::Config;
     my $path = 'service webproxy url-filtering squidguard';
-    $config->setLevel("$path policy-rule 1024");	
+    $config->setLevel("$path rule 1024");	
     return 1 if $config->existsOrig('local-ok');
     return 0;
 }
@@ -248,7 +248,7 @@ sub is_whitelist_enabled {
 sub is_block_keyword_enabled {
     my $config = new Vyatta::Config;
     my $path = 'service webproxy url-filtering squidguard';
-    $config->setLevel("$path policy-rule 1024");	
+    $config->setLevel("$path rule 1024");	
     return 1 if $config->existsOrig('local-block-keyword');
     return 0;
 }
@@ -306,32 +306,29 @@ sub filter_set {
 	uf_log("filter_set: whitelist true");
 	if (! is_whitelist_enabled()) {
 	    # move from 1025 to 10 any enabled
-	    $config->setLevel("$path policy-rule 1025 local-ok");
+	    $config->setLevel("$path rule 1025 local-ok");
 	    my @values = $config->returnOrigValues();
 	    if (scalar(@values) > 0) {
 		foreach my $value (@values) {
 		    next if $value =~ /^\!/;
-		    push @cmds, 
-		    "delete $path policy-rule 1025 local-ok \"$value\" ";
-		    push @cmds, 
-		    "set $path policy-rule 10 local-ok \"$value\" ";
+		    push @cmds, "delete $path rule 1025 local-ok \"$value\" ";
+		    push @cmds, "set $path rule 10 local-ok \"$value\" ";
 		}
 	    }
-	    push @cmds, "set $path policy-rule 1024 local-ok OA";
+	    push @cmds, "set $path rule 1024 local-ok OA";
 	} 
 
     } else {
 	if (is_whitelist_enabled()) {
-	    push @cmds, "delete $path policy-rule 1024 local-ok";
+	    push @cmds, "delete $path rule 1024 local-ok";
 	}
 	# move all enbled to disabled (i.e. 10 --> 1025)
-	$config->setLevel("$path policy-rule 10 local-ok");
+	$config->setLevel("$path rule 10 local-ok");
 	my @values = $config->returnOrigValues();
 	if (scalar(@values) > 0) {
-	    push @cmds, "delete $path policy-rule 10 local-ok";
+	    push @cmds, "delete $path rule 10 local-ok";
 	    foreach my $value (@values) {
-		push @cmds, 
-		"set $path policy-rule 1025 local-ok \"$value\" ";   
+		push @cmds, "set $path rule 1025 local-ok \"$value\" ";   
 	    }
 	}
     }
@@ -341,32 +338,32 @@ sub filter_set {
 	uf_log("filter_set: keyword true");
 	if (! is_block_keyword_enabled()) {
 	    # move from 1025 to 10 any enabled
-	    $config->setLevel("$path policy-rule 1025 local-block-keyword");
+	    $config->setLevel("$path rule 1025 local-block-keyword");
 	    my @values = $config->returnOrigValues();
 	    if (scalar(@values) > 0) {
 		foreach my $value (@values) {
 		    next if $value =~ /^\!/;
 		    push @cmds, 
-		    "delete $path policy-rule 1025 local-block-keyword \"$value\" ";
+		    "delete $path rule 1025 local-block-keyword \"$value\" ";
 		    push @cmds, 
-		    "set $path policy-rule 10 local-block-keyword \"$value\" ";
+		    "set $path rule 10 local-block-keyword \"$value\" ";
 		}
 	    }
-	    push @cmds, "set $path policy-rule 1024 local-block-keyword OA";
+	    push @cmds, "set $path rule 1024 local-block-keyword OA";
 	} 
     } else {
 	uf_log("filter_set: keyword false");
 	if (is_block_keyword_enabled()) {
-	    push @cmds, "delete $path policy-rule 1024 local-block-keyword";
+	    push @cmds, "delete $path rule 1024 local-block-keyword";
 	}
 	# move all enbled to disabled (i.e. 10 --> 1025)
-	$config->setLevel("$path policy-rule 10 local-block-keyword");
+	$config->setLevel("$path rule 10 local-block-keyword");
 	my @values = $config->returnOrigValues();
 	if (scalar(@values) > 0) {
-	    push @cmds, "delete $path policy-rule 10 local-block-keyword";
+	    push @cmds, "delete $path rule 10 local-block-keyword";
 	    foreach my $value (@values) {
 		push @cmds, 
-		"set $path policy-rule 1025 local-block-keyword \"$value\" ";   
+		"set $path rule 1025 local-block-keyword \"$value\" ";   
 	    }
 	}
     }
@@ -376,17 +373,17 @@ sub filter_set {
 	my $level = get_configured_block_level();
 	if ($level and $level ne $category) {
 	    uf_log("filter_set: delete $category");
-	    push @cmds, "delete $path policy-rule 1024 local-block $level";
-	    push @cmds, "delete $path policy-rule 10 block-category";
+	    push @cmds, "delete $path rule 1024 local-block $level";
+	    push @cmds, "delete $path rule 10 block-category";
 	}
-	push @cmds, "set $path policy-rule 1024 local-block $category";
+	push @cmds, "set $path rule 1024 local-block $category";
 	push @cmds, get_blacklist_categories($category);
     } else {
-	$config->setLevel("$path policy-rule 1024");
+	$config->setLevel("$path rule 1024");
 	if ($config->existsOrig('local-block')) {  
 	    uf_log("filter_set: delete block level");
-	    push @cmds, "delete $path policy-rule 1024 local-block";
-	    push @cmds, "delete $path policy-rule 10 block-category";	    
+	    push @cmds, "delete $path rule 1024 local-block";
+	    push @cmds, "delete $path rule 10 block-category";	    
 	}
     }
 
@@ -396,7 +393,7 @@ sub filter_set {
     $config->setLevel("$path time-period");
     if ($config->existsOrig('OA')) {  
 	push @cmds, "delete $path time-period OA";
-	push @cmds, "delete $path policy-rule 10 time-period";
+	push @cmds, "delete $path rule 10 time-period";
     }
     while (my ($k, $v) = each(%days_hash)) {
 	my $day_time = $xml->{schedule}->{$v};
@@ -406,7 +403,7 @@ sub filter_set {
 	}
     }
     if ($time_period) {
-	push @cmds, "set $path policy-rule 10 time-period OA";
+	push @cmds, "set $path rule 10 time-period OA";
     }
     
     push @cmds, ('commit', 'save');
@@ -432,11 +429,11 @@ sub whitelist_get {
     my $path   = 'service webproxy url-filtering squidguard';
 
     # get enabled whitelist entries
-    $config->setLevel("$path policy-rule 10 local-ok");
+    $config->setLevel("$path rule 10 local-ok");
     my @local_ok_sites = $config->returnOrigValues();
 
     # get disabled whitelist entries
-    $config->setLevel("$path policy-rule 1025 local-ok");
+    $config->setLevel("$path rule 1025 local-ok");
     my @local_ok_sites_not = $config->returnOrigValues();
     if (scalar(@local_ok_sites_not) > 0) {
 	push @local_ok_sites, @local_ok_sites_not;
@@ -475,17 +472,15 @@ sub whitelist_set {
 	#
 	# Entries that are disabled have a "!" as the 1st character.
 	# Store disabled entries in rule 1025 and enabled ones
-	# in the OA policy-rule (i.e. 10).
+	# in the OA rule (i.e. 10).
 	#
 	$rule = 1025 if $whitelist and $whitelist =~ /^\!/;
 	$rule = 1025 if $wl_enabled == 0;
 	if ($whitelist and $action) {
 	    if ($action eq 'add') {
-		push @cmds, 
-		"set $path policy-rule $rule local-ok \"$whitelist\" ";
+		push @cmds, "set $path rule $rule local-ok \"$whitelist\" ";
 	    } else {
-		push @cmds, 
-		"delete $path policy-rule $rule local-ok \"$whitelist\" ";
+		push @cmds, "delete $path rule $rule local-ok \"$whitelist\" ";
 	    }
 	} else {
 	    last;
@@ -523,12 +518,12 @@ sub keyword_get {
 
     # get blocked keyword/regex
     my $path = 'service webproxy url-filtering squidguard';
-    $config->setLevel("$path policy-rule 10 local-block-keyword");
+    $config->setLevel("$path rule 10 local-block-keyword");
     my @block_keywords = $config->returnOrigValues();
 
     # get disabled blocked keyword/regex
     $path = 'service webproxy url-filtering squidguard';
-    $config->setLevel("$path policy-rule 1025 local-block-keyword");
+    $config->setLevel("$path rule 1025 local-block-keyword");
     my @block_keywords_not = $config->returnOrigValues();
     if (scalar(@block_keywords_not) > 0) {
 	push @block_keywords, @block_keywords_not;
@@ -566,17 +561,17 @@ sub keyword_set {
 	#
 	# Entries that are disabled have a "!" as the 1st character.
 	# Store disabled entries in rule 1025 and enabled ones
-	# in the OA policy-rule (i.e. 10).
+	# in the OA rule (i.e. 10).
 	#
 	$rule = 1025 if $keyword and $keyword =~ /^\!/;
 	$rule = 1025 if $bk_enabled == 0;
 	if ($keyword and $action) {
 	    if ($action eq 'add') {
 		push @cmds, 
-		"set $path policy-rule $rule local-block-keyword \"$keyword\" ";
+		"set $path rule $rule local-block-keyword \"$keyword\" ";
 	    } else {
 		push @cmds, 
-		"delete $path policy-rule $rule local-block-keyword \"$keyword\" ";
+		"delete $path rule $rule local-block-keyword \"$keyword\" ";
 	    }
 	} else {
 	    last;

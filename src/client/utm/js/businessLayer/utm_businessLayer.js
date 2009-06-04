@@ -59,6 +59,7 @@ function UTM_businessLayer()
     var m_vpnObj = null;
     var m_fwObj = null;
 	var m_urlObj = null;
+	var m_nwDNSObj = null;
     this.m_userObj = new UTM_userBusObj(this);
 	thisObj.m_request = createXMLHttpRequest();
 
@@ -383,6 +384,26 @@ function UTM_businessLayer()
         thisObj.f_getUrlFilterObj().f_setKeywordList(kwList, guicb);
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    // DNS section
+	this.f_getDNSObj = function()
+    {
+        if(m_nwDNSObj == null)
+            m_nwDNSObj = new UTM_nwDNSBusObj(thisObj);
+
+        return m_nwDNSObj;
+    }
+
+    this.f_getDNSConfig = function(guicb)
+    {
+        thisObj.f_getDNSObj().f_getDNSConfig(guicb);
+    }
+
+    this.f_setDNSConfig = function(dnsRecObj, guicb)
+    {
+        thisObj.f_getDNSObj().f_setDNSConfig(dnsRecObj, guicb);
+    }
 }
 
 ///////////////////////////////////////////////

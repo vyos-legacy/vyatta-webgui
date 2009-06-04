@@ -1,30 +1,17 @@
 /*
-    Document   : utm_fwBusObj.js
+    Document   : utm_nwConfBusObj.js
     Created on : Apr 01, 2009, 11:21:31 AM
     Author     : Kevin.Choi
     Description:
 */
 
-/**
- * firewall zone record
- */
-function UTM_fwZoneRecord(name)
-{
-    var thisObj = this;
-    this.m_name = name;
-    this.m_members = [];        // members included
-    this.m_memAvailable = [];   // members available
-    this.m_description = null;
-}
-
 
 /**
- * Firewall data record
+ * data record
  */
-function UTM_fireRecord(ruleNo, zonePair)
+function UTM_nwNatPatRecord(ruleNo, zonePair)
 {
     var thisObj = this;
-    this.m_level = null;  // 'Authorize All', 'Standard', 'Advanced', 'Customized', 'Block All'
     this.m_ruleNo = ruleNo;   // data type int
     this.m_zonePair = zonePair;
     this.m_direction = zonePair;
@@ -36,23 +23,19 @@ function UTM_fireRecord(ruleNo, zonePair)
     this.m_destIpAddr = "0.0.0.0";
     this.m_destMaskIpAddr = "0.0.0.0";
     this.m_destPort = "";
-    this.m_action = "accept";
-    this.m_log = "No";
-    this.m_order = null;
-    this.m_enabled = 'Yes';
 }
 
 /**
- * VPN business object
+ * network configuration business object
  */
-function UTM_firewallBusObj(busObj)
+function UTM_nwConfigBusObj(busObj)
 {
     /////////////////////////////////////
     // properteis
     var thisObj = this;
     this.m_busObj = busObj;
     this.m_lastCmdSent = null;
-    this.m_fireRec = null;
+    this.m_nwRec = null;
 
     this.m_udpServices = ["DNS-UDP", "TFTP", "NTP", "SNMP", "L2TP", "Traceroute",
                         "IPSec", "UNIK", "H323 host call - UDP", "SIP-UDP",
@@ -96,6 +79,12 @@ function UTM_firewallBusObj(busObj)
                     evt = new UTM_eventObj(0, fr, '');
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
+                    "customize-firewall next-rulenum") > 0)
+                {
+                    var fr = thisObj.f_parseFirewallNextRuleNo(err);
+                    evt = new UTM_eventObj(0, fr, '');
+                }
+                else if(thisObj.m_lastCmdSent.indexOf(
                     '<handler>customize-firewall get') > 0)
                 {
                     thisObj.m_fireRec = thisObj.f_parseFirewallSecurityCustomize(err);
@@ -103,6 +92,11 @@ function UTM_firewallBusObj(busObj)
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
                     '<handler>customize-firewall delete-rule') > 0)
+                {
+
+                }
+                else if(thisObj.m_lastCmdSent.indexOf(
+                      "zone-mgmt get-zone-info") > 0)
                 {
 
                 }
@@ -145,6 +139,34 @@ function UTM_firewallBusObj(busObj)
         return null;
     }
 
+    this.f_parseFirewallNextRuleNo = function(response)
+    {
+        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
+
+        if(nodes != null)
+        {
+            for(var i=0; i<nodes.length; i++)
+            {
+                var n = nodes[i];
+                if(n.nodeName == "customize-firewall")
+                {
+                    var vals = n.firstChild.nodeValue.split(":");
+                    var zp = this.f_getValueFromNameValuePair("zonepair", vals[0]);
+                    for(var j=1; j<vals.length; j++)
+                    {
+                        var rec = new UTM_fireRecord();
+
+                        rec.m_zonePair = zp;
+                        rec.m_ruleNo = this.f_getValueFromNameValuePair("rulenum", vals[j]);
+                        return rec;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      */
     this.f_parseFirewallSecurityCustomize = function(response)
@@ -169,12 +191,12 @@ function UTM_firewallBusObj(busObj)
 
                         var x = j-1;
                         fws[x] = new UTM_fireRecord();
-                        
+
                         fws[x].m_zonePair = zp;
                         fws[x].m_direction = zp;
                         fws[x].m_ruleNo = rNo;
                         fws[x].m_protocol = this.f_getValueFromNameValuePair("protocol", vals[j]);
-                        this.f_setSrouceAddress(fws[x], 
+                        this.f_setSrouceAddress(fws[x],
                             this.f_getValueFromNameValuePair("saddr", vals[j]));
                         fws[x].m_srcPort = this.f_getValueFromNameValuePair("sport", vals[j]);
                         this.f_setDestinationAddress(fws[x],
@@ -334,9 +356,13 @@ function UTM_firewallBusObj(busObj)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>zone-mgmt get-zone-info" +
+                      "</handler><data>ALL</data></statement></command>";
 
-        //thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-          //                    thisObj.f_respondRequestCallback);
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+        return;
 
         var zm = function(name)
         {
@@ -419,6 +445,19 @@ function UTM_firewallBusObj(busObj)
                       "<statement mode='proc'><handler>firewall-security-level" +
                       " set</handler><data>" + fireRec.m_level +
                       "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_getFirewallZoneMgmtNextRuleNo = function(zonepair, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>customize-firewall next-rulenum" +
+                      "</handler><data>zonepair=[" + zonepair +
+                      "], rulename=[next]</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

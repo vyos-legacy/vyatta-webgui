@@ -10,6 +10,8 @@ document.write('<script type="text/javascript" src="js/ui/config/utm_confBaseObj
 document.write('<script type="text/javascript" src="js/ui/config/utm_confFormDefObj.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confFormObj.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confDNS.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confNwNatPat.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confNwRouting.js"></script>');
 
 
 

@@ -230,6 +230,10 @@ function UTM_businessLayer()
         return m_fwObj;
     }
 
+    this.f_getFirewallZoneMgmtNextRuleNo = function(zonepair, guicb)
+    {
+        thisObj.f_getFWObject().f_getFirewallZoneMgmtNextRuleNo(zonepair, guicb);
+    }
     this.f_getFirewallZoneMgmtList = function(guicb)
     {
         thisObj.f_getFWObject().f_getFirewallZoneMgmtList(guicb);

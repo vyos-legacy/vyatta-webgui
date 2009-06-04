@@ -26,7 +26,7 @@ function UTM_confFireCustom(name, callback, busLayer)
     this.m_fieldIds = ["rulenoId-", "dirId-", "appId-", "proId-", "sipId-", "smipId-",
                         "sportId-", "dipId-", "dmipId-", "dportId-",
                         "actId-", "logId-", "enableId-"];
-    this.m_protocol = ["tcp", "udp", "icmp", "ipsec", "vrrp", " "];
+    this.m_protocol = ["Any", "tcp", "udp", "icmp", "ipsec", "vrrp", " "];
 
     /**
      * @param name - name of configuration screens.
@@ -603,7 +603,22 @@ function UTM_confFireCustom(name, callback, busLayer)
 
     this.f_handleAddAction = function()
     {
-        thisObj.f_handleAddFirewallCustomRow(thisObj.f_getTheNextRuleNo(null));
+        var cb = function(evt)
+        {
+            if(evt != undefined && evt.m_objName == 'UTM_eventObj')
+            {
+                if(evt.m_value != null)
+                {
+                    //thisObj.f_handleAddFirewallCustomRow(thisObj.f_getTheNextRuleNo(null));
+                    thisObj.f_handleAddFirewallCustomRow(evt.m_value.m_ruleNo);
+                }
+            }
+        }
+
+        ////////////////////////////////////////////
+        // get the next rule num from server.
+        var rc = thisObj.f_createFireRecord(null);
+        thisObj.m_busLayer.f_getFirewallZoneMgmtNextRuleNo(rc.m_zonePair, cb);
     }
 
     this.f_handleSaveAction = function()
@@ -623,8 +638,8 @@ function UTM_confFireCustom(name, callback, busLayer)
     {
         var cb = function(evt)
         {
-            //thisObj.f_loadVMData();
-            thisObj.f_handleSaveAction();
+            thisObj.f_loadVMData();
+            //thisObj.f_handleSaveAction();
         };
 
         g_utils.f_cursorWait();
@@ -671,9 +686,6 @@ function f_fireCustomSaveHandler()
 function f_fireCustomCancelHandler()
 {
     g_configPanelObj.m_activeObj.f_handleCancelAction();
-    //g_utils.f_popupMessage(g_lang.m_discardConfirm,
-      //          'confirm', g_lang.m_fireCustDiscardConfirmHeader, true,
-        //        "f_fireCustomCancelConfirm()");
 }
 
 function f_fireCustomResetConfirm()

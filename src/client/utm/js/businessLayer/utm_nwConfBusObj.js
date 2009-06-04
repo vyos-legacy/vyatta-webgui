@@ -7,7 +7,7 @@
 
 
 /**
- * data record
+ * nat/pat data record
  */
 function UTM_nwNatPatRecord(ruleNo, zonePair)
 {
@@ -17,12 +17,23 @@ function UTM_nwNatPatRecord(ruleNo, zonePair)
     this.m_direction = zonePair;
     this.m_appService = " ";
     this.m_protocol = " ";
-    this.m_srcIpAddr = "0.0.0.0";
-    this.m_srcMaskIpAddr = "0.0.0.0";
-    this.m_srcPort = "";
-    this.m_destIpAddr = "0.0.0.0";
-    this.m_destMaskIpAddr = "0.0.0.0";
+    this.m_internIpAddr = "0.0.0.0";
+    this.m_InternPort = "";
     this.m_destPort = "";
+}
+
+/**
+ * routin data record
+ */
+function UTM_nwRoutingRecord(ruleNo, zonePair)
+{
+    var thisObj = this;
+    this.m_ruleNo = ruleNo;   // data type int
+    this.m_zonePair = zonePair;
+    this.m_destIpAddr = "";
+    this.m_destIpMask = "";
+    this.m_gwOrInterface = null;
+    this.m_metric = null;
 }
 
 /**
@@ -90,81 +101,11 @@ function UTM_nwConfigBusObj(busObj)
                     thisObj.m_fireRec = thisObj.f_parseFirewallSecurityCustomize(err);
                     evt = new UTM_eventObj(0, thisObj.m_fireRec, '');
                 }
-                else if(thisObj.m_lastCmdSent.indexOf(
-                    '<handler>customize-firewall delete-rule') > 0)
-                {
-
-                }
-                else if(thisObj.m_lastCmdSent.indexOf(
-                      "zone-mgmt get-zone-info") > 0)
-                {
-
-                }
-                else if(thisObj.m_lastCmdSent.indexOf(
-                    '<handler>customize-firewall cancel ') > 0 ||
-                    thisObj.m_lastCmdSent.indexOf(
-                    '<handler>customize-firewall save') > 0)
-                {
-
-                }
             }
 
             if(thisObj.m_guiCb != undefined)
                 thisObj.m_guiCb(evt);
         }
-    }
-
-
-    /**
-     * parse firewall security level data.
-     */
-    this.f_parseFirewallSecurityLevel = function(response)
-    {
-        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
-
-        if(nodes != null)
-        {
-            for(var i=0; i<nodes.length; i++)
-            {
-                var n = nodes[i];
-                if(n.nodeName == 'firewall-security-level')
-                {
-                    var fr = new UTM_fireRecord();
-                    fr.m_level = n.firstChild.nodeValue;
-                    return fr;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    this.f_parseFirewallNextRuleNo = function(response)
-    {
-        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
-
-        if(nodes != null)
-        {
-            for(var i=0; i<nodes.length; i++)
-            {
-                var n = nodes[i];
-                if(n.nodeName == "customize-firewall")
-                {
-                    var vals = n.firstChild.nodeValue.split(":");
-                    var zp = this.f_getValueFromNameValuePair("zonepair", vals[0]);
-                    for(var j=1; j<vals.length; j++)
-                    {
-                        var rec = new UTM_fireRecord();
-
-                        rec.m_zonePair = zp;
-                        rec.m_ruleNo = this.f_getValueFromNameValuePair("rulenum", vals[j]);
-                        return rec;
-                    }
-                }
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -196,7 +137,7 @@ function UTM_nwConfigBusObj(busObj)
                         fws[x].m_direction = zp;
                         fws[x].m_ruleNo = rNo;
                         fws[x].m_protocol = this.f_getValueFromNameValuePair("protocol", vals[j]);
-                        this.f_setSrouceAddress(fws[x],
+                        this.f_setInternAddress(fws[x],
                             this.f_getValueFromNameValuePair("saddr", vals[j]));
                         fws[x].m_srcPort = this.f_getValueFromNameValuePair("sport", vals[j]);
                         this.f_setDestinationAddress(fws[x],
@@ -305,7 +246,7 @@ function UTM_nwConfigBusObj(busObj)
         }
     };
 
-    this.f_setSrouceAddress = function(fireRec, addr)
+    this.f_setInternAddress = function(fireRec, addr)
     {
         if(addr.length > 0)
         {
@@ -389,49 +330,7 @@ function UTM_nwConfigBusObj(busObj)
         window.setTimeout(cb, 500);
     }
 
-    this.f_getFirewallZoneMemberAvailable = function(zoneRec, guicb)
-    {
-        thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-
-        var zm = function(name)
-        {
-            var z = new UTM_fwZoneRecord(name);
-            z.m_memAvailable = ['eth0', 'eth1', 'eth2', 'eth3'];
-
-            return z;
-        }
-
-        var cb = function()
-        {
-            var z = [];
-            z.push(zm('zone1'));
-            z.push(zm('zone2'));
-            z.push(zm('zone3'));
-            z.push(zm('zone4'));
-            z.push(zm('zone5'));
-            z.push(zm('zone6'));
-
-            guicb(z);
-        }
-
-        window.setTimeout(cb, 500);
-    }
-
-    /**
-     */
-    this.f_getFirewallSecurityLevel = function(guicb)
-    {
-        thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
-                      "<handler>firewall-security-level get" +
-                      "</handler></statement></command>";
-
-        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-    }
-
+    
     /**
      * perform a set vpn site2site configurations request to server.
      * @param fireRec - firewall record object

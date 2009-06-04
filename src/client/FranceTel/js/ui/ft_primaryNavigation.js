@@ -63,7 +63,12 @@ function FT_primaryNavigation()
 			} else if (vm.m_name == 'netconf') {
 				return vm.m_guiUri + g_devConfig.m_utmPathSuffix + 'utm_netconf_en.html';
 			}
+		} else {
+			if (vm.m_name == 'netconf') {
+				return vm.m_guiUri + 'utm_netconf_en.html';
+			}
 		}
+		
 		return vm.m_guiUri;
     }
     

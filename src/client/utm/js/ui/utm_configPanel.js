@@ -318,7 +318,7 @@ function UTM_confEmptyComponent()
         div.style.width = "100%";
         div.style.height = "400";
         var text = document.createElement('h1');
-        text.innerHTML = 'Under Construction';
+        text.innerHTML = g_lang.m_underConstruction;
         div.appendChild(text);
 
 		document.getElementById(VYA.UTM_CONST.DOM_3_FT_CONTAINER_ID).appendChild(div);

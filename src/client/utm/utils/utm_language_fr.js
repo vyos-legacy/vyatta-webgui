@@ -9,6 +9,18 @@ var g_lang =
 {
     ///////////////////////////////////////////////////////////////////
     // Dash board screen
+	
+    ////////////////////////////////////////////////////////////////////
+    // common
+    m_tableTooltip1 : 'Click here to perform sorting.',
+    m_name : 'Name',
+    m_enabled : 'Enabled',
+    m_delete : 'Delete',
+    m_group : 'Group',
+    m_username : 'User Name',
+    m_status : 'Status',
+    m_ipAddr : 'IP Address',
+    m_underConstruction : 'Travaux en cours',
 
     ///////////////////////////////////////////////////////////////////
     // VPN General

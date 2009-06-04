@@ -1,3 +1,26 @@
+vyatta-webgui (0.2.14+fxdU+46) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add network configuration menu item to UTM code base
+  * 1. Add html page for utm network configuration
+
+  [ Kevin Choi ]
+  * * added user waited indicator for apply and cancel
+
+  [ Loi Vo ]
+  * 1. Add IDS EZ screen.
+  * 1. Add new file
+  * 1. Add multi language support for utm_netconf_en.html,
+    utm_netconf_fr.html
+
+  [ Kevin Choi ]
+  * * adding a new file for network configuration bussiness logic and
+    data structure
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 04 Jun 2009 10:16:32 -0700
+
 vyatta-webgui (0.2.14+fxdU+45) unstable; urgency=low
 
   [ Kevin Choi ]

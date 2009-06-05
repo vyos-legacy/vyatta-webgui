@@ -1,3 +1,22 @@
+vyatta-webgui (0.2.14+fxdU+48) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add utm_allNetConfConfigPanels.js to hold all the network
+    configuration screens
+  * 1. Language for DNS.
+  * 1. Add code in biz logic layer to handle request/response for DNS
+    configuration.
+
+  [ Kevin Choi ]
+  * * firewall customize page
+
+  [ Stig Thormodsrud ]
+  * Change webproxy policy-rule to rule.
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 05 Jun 2009 02:10:41 +0000
+
 vyatta-webgui (0.2.14+fxdU+47) unstable; urgency=low
 
   * * oop! missing a file from previous checked.

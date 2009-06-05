@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-9+jenner6) unstable; urgency=low
+
+  * merge is now supported on backend. Frontend support needs to be
+    added.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Fri, 05 Jun 2009 16:56:05 -0700
+
 vyatta-webgui (0.2.13-9+jenner5) unstable; urgency=low
 
   * fix for bug 4193. Remove support for error location in configuration

@@ -474,7 +474,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         thisObj.m_tableRowCounter = 0;
 
         while (div.hasChildNodes())
-            div.removeChild(div.childNodes[0])
+            div.removeChild(div.childNodes[0]);
     }
 
     /**
@@ -604,6 +604,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                 '" ' + opName + '>' + options[i] + '</option>';
         }
 
+        cb += "</select>";
         return cb;
     }
 

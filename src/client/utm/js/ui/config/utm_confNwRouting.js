@@ -1,27 +1,31 @@
 /*
-    Document   : utm_confNwNatPat.js
+    Document   : UTM_confNwRouting.js
     Created on : June 05, 2009, 9:21:31 AM
     Author     : Kevin.Choi
-    Description: network configuration for NAT/PAT screen
+    Description: network configuration for Routing screen
 */
 
 /**
- * Network configuration NAT/PAT panel screen
+ * Network configuration Routing panel screen
  */
-function UTM_confNwNatPat(name, callback, busLayer)
+function UTM_confNwRouting(name, callback, busLayer)
 {
     var thisObj = this;
     this.m_fwObj = busLayer.f_getFWObject();
-    this.m_btnAddId = "nwNatPatAddId";
-    this.m_btnSaveId = "nwNatPatSaveId";
-    this.m_btnCancelId = "nwNatPatCancelId";
-    this.m_btnBackId = "nwNatPatBackId";
-    this.m_npRecs = [];
+    this.m_btnAddId = "nwRoutingddId";
+    this.m_btnSaveId = "nwRoutingSaveId";
+    this.m_btnCancelId = "nwRoutingCancelId";
+    this.m_btnBackId = "nwRoutingBackId";
+    this.m_gwId = "nwRouting_gw_Id-";
+    this.m_intId = "nwRouting_int_Id-";
+    this.m_gwIntDivId = "nw_gwInt_id-";
+    this.m_rRecs = [];
+    this.tempRuleNo = 0;
     this.m_ruleZoneOptName = [/*"Any",*/ "DMZ_to_LAN", "DMZ_to_WAN", "LAN_to_DMZ",
                       "LAN_to_WAN", "WAN_to_DMZ", "WAN_to_LAN"];
-    this.m_fieldIds = ["rulenoId-", "appId-", "dportId-", "iportId-", "proId-",
-                        "iipId-"];
-    this.m_protocol = ["any", "tcp", "udp", "icmp", "ipsec", "vrrp", " "];
+    this.m_fieldIds = ["rulenoId-", "dipaddr-", "dipaddrMaskId-", "optionId-",
+                        "gwId-", "interfaceId-", "metricId-"];
+    this.m_protocol = ["Any", "tcp", "udp", "icmp", "ipsec", "vrrp", " "];
 
     /**
      * @param name - name of configuration screens.
@@ -30,7 +34,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
      */
     this.constructor = function(name, callback, busLayer)
     {
-        UTM_confNwNatPat.superclass.constructor(name, callback, busLayer);
+        UTM_confNwRouting.superclass.constructor(name, callback, busLayer);
     }
     this.constructor(name, callback, busLayer);
 
@@ -44,19 +48,19 @@ function UTM_confNwNatPat(name, callback, busLayer)
         var cols = [];
         this.f_colorGridBackgroundRow(true);
 
-        cols[0] = this.f_createColumn(g_lang.m_fireCustAppService, 150, 'combo', '3', false, 'center');
-        cols[1] = this.f_createColumn(g_lang.m_fireCustDestPort, 100, 'textField', '3', false, 'center');
-        cols[2] = this.f_createColumn(g_lang.m_fireCustInternPort, 100, 'textField', '3', false, 'center');
-        cols[3] = this.f_createColumn(g_lang.m_fireCustProtocol, 90, 'combo', '3', false, 'center');
-        cols[4] = this.f_createColumn(g_lang.m_fireCustInternIpAddr, 180, 'textField', '3', false, 'center');
+        cols[0] = this.f_createColumn(g_lang.m_nwRoutDestNetwork, 110, 'textField', '3', true, 'center');
+        cols[1] = this.f_createColumn(g_lang.m_nwRoutDestNwMask, 110, 'textField', '3', true, 'center');
+        cols[2] = this.f_createColumn(g_lang.m_nwRoutConf, 200, 'div', '3', false, 'center');
+        cols[3] = this.f_createColumn(g_lang.m_nwRoutGwInterface, 120, 'textField', '3', true, 'center');
+        cols[4] = this.f_createColumn(g_lang.m_nwRoutMetric, 90, 'textField', '3', false, 'center');
         cols[5] = this.f_createColumn(g_lang.m_fireCustDelete, 70, 'combo', '3', false, 'center');
 
         return cols;
     }
 
-    this.f_createFireRecord = function(ruleNo)
+    this.f_createRoutingRecord = function(ruleNo)
     {
-        return new UTM_nwNatPatRecord(ruleNo, zonePair);
+        return new UTM_nwRoutingRecord(ruleNo);
     }
 
     this.f_sendSetCommand = function(fireRec, name, value, wantCB)
@@ -99,7 +103,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
             {
                 if(evt.m_value != null)
                 {
-                    thisObj.m_npRecs = evt.m_value;
+                    thisObj.m_rRecs = evt.m_value;
                     thisObj.f_removeDivChildren(thisObj.m_gridBody);
 
                     for(var i=0; i<evt.m_value.length; i++)
@@ -120,7 +124,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
 
     this.f_adjustGridHeight = function()
     {
-        var counter = thisObj.m_npRecs != null ? thisObj.m_npRecs.length : 0;
+        var counter = thisObj.m_rRecs != null ? thisObj.m_rRecs.length : 0;
         var h = counter * 30 + 105;
 
         // the minimum height of grid is 160
@@ -132,70 +136,91 @@ function UTM_confNwNatPat(name, callback, busLayer)
 
         window.setTimeout(function(){thisObj.f_resize();}, 10);
     }
-    this.f_addDataIntoRow = function(fireRec)
+    this.f_addRoutingIntoRow = function(rRec)
     {
-        var zpRule = fireRec.m_zonePair + "-" + fireRec.m_ruleNo;
-        var action = ["accept", "reject"]
+        var zpRule = rRec.m_ruleNo;
+        var gwRdId = thisObj.m_gwId + zpRule;
+        var intRdId = thisObj.m_intId + zpRule;
 
-        var app = thisObj.f_renderCombobox(thisObj.m_fwObj.m_services, fireRec.m_appService, 90,
-                            thisObj.m_fieldIds[2]+zpRule,
-                            ["f_fwCustomizeOnCbbBlur('" + thisObj.m_fieldIds[2]+
-                            zpRule + "')", thisObj.m_fwObj.m_ports]);
-        var pro = thisObj.f_renderCombobox(thisObj.m_protocol, fireRec.m_protocol, 60,
-                            thisObj.m_fieldIds[3]+zpRule,
-                            ["f_fwCustomizeOnCbbBlur('" + thisObj.m_fieldIds[3]+
-                            zpRule + "')"]);
-        var sip = thisObj.f_renderTextField(thisObj.m_fieldIds[4]+zpRule,
-                            fireRec.m_srcIpAddr, '', 105,
-                            ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[4]+
+        var gw = this.f_renderRadio(rRec.m_isGateway?"yes":"no", gwRdId,
+                        "f_nwRoutingRadioHandler('" + gwRdId + "')", "option"+zpRule, "");
+        var inter = this.f_renderRadio(rRec.m_isGateway?"no":"yes", intRdId,
+                        "f_nwRoutingRadioHandler('" + intRdId + "')", "option"+zpRule, "");
+
+        var dip = thisObj.f_renderTextField(thisObj.m_fieldIds[1]+zpRule,
+                            rRec.m_destIpAddr, '', 100,
+                            ["f_nwRoutingOnTFBlur('" + thisObj.m_fieldIds[1]+
                             zpRule + "')"], false);
-        var sport = thisObj.f_renderTextField(thisObj.m_fieldIds[6]+zpRule,
-                            fireRec.m_srcPort, fireRec.m_srcPort, 80,
-                            ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[6]+
+        var dmip = thisObj.f_renderTextField(thisObj.m_fieldIds[2]+zpRule,
+                            rRec.m_destIpMask, '', 100,
+                            ["f_nwRoutingOnTFBlur('" + thisObj.m_fieldIds[2]+
                             zpRule + "')"], false);
-        var dip = thisObj.f_renderTextField(thisObj.m_fieldIds[7]+zpRule,
-                            fireRec.m_destIpAddr, '', 105,
-                            ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[7]+
-                            zpRule + "')"], false);
-        var dmip = thisObj.f_renderTextField(thisObj.m_fieldIds[8]+zpRule,
-                            fireRec.m_destMaskIpAddr, '', 105,
-                            ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[8]+
-                            zpRule + "')"], false);
-        var dport = thisObj.f_renderTextField(thisObj.m_fieldIds[9]+zpRule,
-                            fireRec.m_destPort, fireRec.m_destPort, 80,
-                            ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[9]+
+        var opt = "<div align=center>Gateway: "+gw+
+                  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Interface: "+inter+"</div>";
+        var gwInterface = thisObj.f_createGWInterfaceDiv(rRec);
+        var metric = thisObj.f_renderTextField(thisObj.m_fieldIds[6]+zpRule,
+                            rRec.m_metric, '', 80,
+                            ["f_nwRoutingOnTFBlur('" + thisObj.m_fieldIds[6]+
                             zpRule + "')"], false);
         var del = "<div align=center>" + thisObj.f_renderButton(
-                  "delete", true, "f_fireCustomDeleteHandler(" + fireRec.m_ruleNo +
+                  "delete", true, "f_nwRoutingDeleteHandler(" + rRec.m_ruleNo +
                   ")", "") + "</div>";
 
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [app, pro, sip, sport, dip, dmip, dport, del]);
+                    [dip, dmip, opt, gwInterface, metric, del]);
         thisObj.m_gridBody.appendChild(div);
     };
 
-    this.f_handleAddFirewallCustomRow = function(ruleNo)
+    this.f_createGWInterfaceDiv = function(rRec)
     {
-        var fireRec = thisObj.f_createFireRecord(ruleNo);
-        thisObj.m_npRecs.push(fireRec);
-        thisObj.f_addFirewallIntoRow(fireRec);
+        var div = "<div id=" + thisObj.m_gwIntDivId + rRec.m_ruleNo + ">";
+
+        if(rRec.m_isGateway)
+            div += thisObj.f_createGatewayTextField(rRec);
+        else
+            div += thisObj.f_createInterfaceCombo(rRec);
+              
+        div += "</div>";
+        return div;
+    }
+
+    this.f_createGatewayTextField = function(rRec)
+    {
+        return thisObj.f_renderTextField(thisObj.m_fieldIds[4]+rRec.m_ruleNo,
+                      rRec.m_gwOrInterface, '', 110,
+                      ["f_nwRoutingOnTFBlur('" + thisObj.m_fieldIds[4]+
+                      rRec.m_ruleNo + "')"], false);
+    }
+
+    this.f_createInterfaceCombo = function(rRec)
+    {
+        return thisObj.f_renderCombobox(thisObj.m_protocol, rRec.m_protocol, 110,
+                            thisObj.m_fieldIds[5]+rRec.m_ruleNo,
+                            ["f_nwRoutingOnCbbBlur('" + thisObj.m_fieldIds[5]+
+                            rRec.m_ruleNo + "')"]);
+    }
+    this.f_handleAddRoutingRow = function(ruleNo)
+    {
+        var rr = thisObj.f_createRoutingRecord(ruleNo);
+        thisObj.m_rRecs.push(rr);
+        thisObj.f_addRoutingIntoRow(rr);
         thisObj.f_adjustGridHeight();
     };
 
     this.f_init = function()
     {
         this.m_colModel = this.f_createColumns();
-        this.m_gridHeader = this.f_createGridHeader(this.m_colModel, "f_nwNatPatNotUse");
+        this.m_gridHeader = this.f_createGridHeader(this.m_colModel, "f_nwRoutingNotUse");
         this.m_gridBody = this.f_createGridView(this.m_colModel, false);
         this.f_loadVMData();
 
-        var btns = [['Add', "f_nwNatPatAddHandler()",
+        var btns = [['Add', "f_nwRoutingAddHandler()",
                     g_lang.m_fireCustAddTip, this.m_btnAddId],
-                    ['Apply', "f_nwNatPatSaveHandler()",
+                    ['Apply', "f_nwRoutingSaveHandler()",
                     g_lang.m_fireCustSaveTip, this.m_btnSaveId],
-                    ['Cancel', "f_nwNatPatCancelHandler()",
+                    ['Cancel', "f_nwRoutingCancelHandler()",
                     g_lang.m_fireCustCancelTip, this.m_btnCancelId]];
         this.m_buttons = this.f_createButtons(btns);
 
@@ -219,7 +244,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
         div.style.backgroundColor = 'white';
         div.style.overflow = 'auto';
         div.style.height = "300";
-        div.style.width = "692px";
+        div.style.width = "702px";
 
         for(var i=0; i<children.length; i++)
             div.appendChild(children[i]);
@@ -229,7 +254,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
 
     this.f_headerText = function()
     {
-        return this.f_createGeneralDiv(g_lang.m_nwNatPatHeader+"<br><br>");
+        return this.f_createGeneralDiv(g_lang.m_nwRoutHeader+"<br><br>");
     };
 
     this.f_enabledActionButtons = function(enabled)
@@ -256,34 +281,29 @@ function UTM_confNwNatPat(name, callback, busLayer)
         // check netmask textfield
         var fIds = tfeid.split("-");
         var newCidr = cidr;
-        var fId = "";
-        var fName = "";
-        if(fIds[0]+"-" == thisObj.m_fieldIds[4])
-        {
-            fId = 5;
-            fName = "saddr";
-        }
-        else
-        {
-            fId = 8;
-            fName = "daddr";
-        }
+        var fName = "daddr";
+        var rRec = thisObj.f_createRoutingRecord(fIds[1]);
 
-        var profixId = fIds[1] + "-" + fIds[2];
-        if(cidr == null)
+        ///////////////////////////////
+        // gateway textfield
+        if(tfeid.indexOf(thisObj.m_fieldIds[4]) >= 0)
         {
-            var snm = document.getElementById(thisObj.m_fieldIds[fId]+profixId);
+            fName = "gateway";
+            //thisObj.f_sendSetCommand(rRec, fName, ip);
+        }
+        else if(cidr == null)
+        {
+            var snm = document.getElementById(thisObj.m_fieldIds[2]+fIds[1]);
             if(g_utils.f_validateNetmask(snm.value))
             {
                 newCidr = g_utils.f_convertNetmaskToCIDR(snm.value);
-                var fireRec = thisObj.f_createFireRecord(profixId);
-                thisObj.f_sendSetCommand(fireRec, fName, ip+"/"+newCidr);
+                
+                //thisObj.f_sendSetCommand(rRec, fName, ip+"/"+newCidr);
             }
         }
         else
         {
-            var fireRec = thisObj.f_createFireRecord(profixId);
-            thisObj.f_sendSetCommand(fireRec, fName, ip+"/"+newCidr);
+            //thisObj.f_sendSetCommand(rRec, fName, ip+"/"+newCidr);
         }
     }
 
@@ -303,8 +323,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
         ////////////////////////////////////////////
         // check ip address textfield
         var fIds = tfeid.split("-");
-        var fId = (fIds[0]+"-" == thisObj.m_fieldIds[5]) ? fId = 4: fId = 7;
-        this.f_handleIPAddressOnBlur(this.m_fieldIds[fId]+fIds[1]+"-"+fIds[2], cidr);
+        this.f_handleIPAddressOnBlur(this.m_fieldIds[1]+fIds[1], cidr);
 
         return;
     };
@@ -313,7 +332,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
     {
         var chk = document.getElementById(chkid);
         var rNo = chkid.split("-");
-        var fireRec = thisObj.f_createFireRecord(rNo[2]);
+        var fireRec = thisObj.f_createRoutingRecord(rNo[2]);
 
         /////////////////////////
         // log column
@@ -335,7 +354,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
     {
         var cbb = document.getElementById(cbeid);
         var rNo = cbeid.split("-");
-        var fireRec = thisObj.f_createFireRecord(rNo[2]);
+        var fireRec = thisObj.f_createRoutingRecord(rNo[2]);
 
         ///////////////////////////////
         // application/service cbb changed
@@ -393,8 +412,28 @@ function UTM_confNwNatPat(name, callback, busLayer)
         }
     };
 
+    this.m_handleRadioChanged = function(rid)
+    {
+        var inputFd = "";
+        var id = rid.split("-");
+        var rRec = thisObj.f_createRoutingRecord(id[1]);
+
+        if(rid.indexOf(thisObj.m_gwId) >= 0)
+        {
+            inputFd = thisObj.f_createGatewayTextField(rRec);
+        }
+        else
+        {
+            inputFd = thisObj.f_createInterfaceCombo(rRec);
+        }
+
+        var div = document.getElementById(thisObj.m_gwIntDivId+rRec.m_ruleNo);
+        div.innerHTML = inputFd;
+    }
+
     this.f_handleAddAction = function()
     {
+        thisObj.f_handleAddRoutingRow(thisObj.tempRuleNo++);
         //thisObj.f_handleAddFirewallCustomRow(thisObj.f_getTheNextRuleNo(null));
     }
 
@@ -432,58 +471,62 @@ function UTM_confNwNatPat(name, callback, busLayer)
         };
 
         g_utils.f_cursorWait();
-        var fireRec = thisObj.f_createFireRecord(ruleNo);
+        var fireRec = thisObj.f_createRoutingRecord(ruleNo);
         thisObj.m_busLayer.f_deleteFirewallCustomizeRule(fireRec, cb);
     }
 }
-UTM_extend(UTM_confNwNatPat, UTM_confBaseObj);
+UTM_extend(UTM_confNwRouting, UTM_confBaseObj);
 
-function f_nwNatPatAddHandler()
+function f_nwRoutingAddHandler()
 {
     g_configPanelObj.m_activeObj.f_handleAddAction();
 }
 
-function f_nwNatPatSaveHandler()
+function f_nwRoutingSaveHandler()
 {
     g_configPanelObj.m_activeObj.f_handleSaveAction();
 }
 
-function f_nwNatPatCancelHandler()
+function f_nwRoutingCancelHandler()
 {
     g_configPanelObj.m_activeObj.f_handleCancelAction();
 }
 
-function f_nwNatPatDeleteConfirm(ruleNo)
+function f_nwRoutingDeleteConfirm(ruleNo)
 {
     g_configPanelObj.m_activeObj.f_handleDeleteRule(ruleNo);
 }
-function f_nwNatPatDeleteHandler(ruleNo)
+function f_nwRoutingDeleteHandler(ruleNo)
 {
     g_utils.f_popupMessage(g_lang.m_fireDeleteConfirm,
                 'confirm', g_lang.m_fireCustDeleteConfirmHeader, true,
-                "f_f_nwNatPatDeleteConfirm('" + ruleNo + "')");
+                "f_f_nwRoutingDeleteConfirm('" + ruleNo + "')");
 }
 
-function f_nwNatPatOnTFBlur(tfeid)
+function f_nwRoutingRadioHandler(rid)
+{
+    g_configPanelObj.m_activeObj.m_handleRadioChanged(rid);
+}
+
+function f_nwRoutingOnTFBlur(tfeid)
 {
     var aObj = g_configPanelObj.m_activeObj;
 
     // ip address text fields
-    if(tfeid.indexOf(aObj.m_fieldIds[4]) >= 0 ||
-        tfeid.indexOf(aObj.m_fieldIds[7]) >= 0)
+    if(tfeid.indexOf(aObj.m_fieldIds[1]) >= 0 ||
+        tfeid.indexOf(aObj.m_fieldIds[4] >= 0))
         aObj.f_handleIPAddressOnBlur(tfeid, null);
     // net mask text fields
-    else if(tfeid.indexOf(aObj.m_fieldIds[5]) >= 0 ||
-        tfeid.indexOf(aObj.m_fieldIds[8]) >= 0)
+    else if(tfeid.indexOf(aObj.m_fieldIds[2]) >= 0)
         aObj.f_handleNetMaskOnBlur(tfeid);
 }
 
-function f_nwNatPatOnCbbBlur(cbeId)
+function f_nwRoutingOnCbbBlur(cbeId)
 {
     g_configPanelObj.m_activeObj.f_cbOnSelected(cbeId);
 }
 
-function f_nwNatPatNotUse()
+function f_nwRoutingNotUse()
 {
 
 }

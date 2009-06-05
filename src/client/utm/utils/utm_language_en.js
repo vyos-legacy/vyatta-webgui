@@ -115,6 +115,15 @@ var g_lang =
                 "single port or port ranges.<br><font color=#ff6600>Warning:</font> " +
                 "Ensure that you have not filtered these ports in the firewall.",
 
+    ////////////////////////////////////////////////////////////////////
+    // network configuration Routing
+    m_nwRoutHeader : "This page enables you to configure a static routing table.",
+    m_nwRoutDestNetwork : "Destination<br>Network",
+    m_nwRoutDestNwMask : "Destination<br>Network Mask",
+    m_nwRoutConf : "Configure option",
+    m_nwRoutGwInterface : "Gateway or<br>Interface",
+    m_nwRoutMetric : "Metric",
+
 
     ///////////////////////////////////////////////////////////////////
     // VPN General

@@ -28,14 +28,14 @@ function UTM_nwDNSRecord(mode, primary, secondary)
 	this.m_mode = mode;
 	this.m_pri = primary;
 	this.m_sec = secondary;
-	
+
 	this.f_toXml = function() {
 		var xml = '<name-server><mode>' + thisObj.m_mode + '</mode>';
 		if (thisObj.m_mode == 'auto') {
 			return xml + '</name-server>';
-		} 
-		xml += '<primary>' + thisObj.m_pri + '</primary><secondary>' + thisObj.m_sec + '</secondary></name-server>'; 
-		return xml;       		
+		}
+		xml += '<primary>' + thisObj.m_pri + '</primary><secondary>' + thisObj.m_sec + '</secondary></name-server>';
+		return xml;
 	}
 }
 
@@ -49,8 +49,9 @@ function UTM_nwRoutingRecord(ruleNo, zonePair)
     this.m_zonePair = zonePair;
     this.m_destIpAddr = "";
     this.m_destIpMask = "";
-    this.m_gwOrInterface = null;
-    this.m_metric = null;
+    this.m_gwOrInterface = "";
+    this.m_metric = "";
+    this.m_isGateway = true;
 }
 
 /**
@@ -347,7 +348,7 @@ function UTM_nwConfigBusObj(busObj)
         window.setTimeout(cb, 500);
     }
 
-    
+
     /**
      * perform a set vpn site2site configurations request to server.
      * @param fireRec - firewall record object
@@ -539,10 +540,10 @@ function UTM_nwDNSBusObj(busObj)
     var thisObj = this;
     this.m_busObj = busObj;
     this.m_lastCmdSent = null;
-    this.m_dnsRec = null;	
+    this.m_dnsRec = null;
 	this.m_GET_CMD = 'dns-config get';
 	this.m_SET_CMD = 'dns-config set';
-	
+
     /**
      * A callback function for all url filtering requests.
      */
@@ -561,7 +562,7 @@ function UTM_nwDNSBusObj(busObj)
             //alert('response.f_isError is not null');
             if (noUICallback == undefined || !noUICallback) {
 				thisObj.m_guiCb(response);
-			} 
+			}
         } else {
             var evt = new UTM_eventObj(0, thisObj, '');
 
@@ -573,11 +574,11 @@ function UTM_nwDNSBusObj(busObj)
 					if (thisObj.m_guiCb != undefined) {
 						return thisObj.m_guiCb(tmp);
 					}
-				} 
+				}
                 if (thisObj.m_lastCmdSent.indexOf(thisObj.m_GET_CMD) > 0) {
                     thisObj.m_dnsRec = thisObj.f_parseDNS(err);
-                    evt = new UTM_eventObj(0, thisObj.m_dnsRec, '');					
-				}  
+                    evt = new UTM_eventObj(0, thisObj.m_dnsRec, '');
+				}
             }
 
             if(thisObj.m_guiCb != undefined)
@@ -595,15 +596,15 @@ function UTM_nwDNSBusObj(busObj)
                         thisObj.m_busObj.m_request);
 
         if(response == null) return;
- 
+
         if(response.f_isError != null) { //This is server error case.
             //alert('response.f_isError is not null');
             if(noUICallback == undefined || !noUICallback)
                 thisObj.m_guiCb(response);
         } else {
             var evt = new UTM_eventObj(0, thisObj, '');
-			
-			
+
+
             var err = response.getElementsByTagName('error');
             if (err != null && err[0] != null) { //The return value is inside the <error> tag.
 				var tmp = thisObj.f_getFormError(err);
@@ -613,7 +614,7 @@ function UTM_nwDNSBusObj(busObj)
 					}
 				}
 			}
-			
+
             if(thisObj.m_guiCb != undefined)
                 thisObj.m_guiCb(evt);
         }
@@ -623,8 +624,8 @@ function UTM_nwDNSBusObj(busObj)
 	{
 		var errmsgNode = g_utils.f_xmlGetChildNode(form, 'errmsg');
 		if (errmsgNode == null) return null;
-		
-		return g_utils.f_xmlGetNodeValue(errmsgNode);		
+
+		return g_utils.f_xmlGetNodeValue(errmsgNode);
 	}
 
     this.f_getFormNode = function(response)
@@ -643,27 +644,27 @@ function UTM_nwDNSBusObj(busObj)
 					if (node != undefined && node[j] != undefined && node[j].nodeName == 'form') {
 						var errCode = node[j].getAttribute('code');
 						if (errCode==0) { //success case
-						    return null;	
+						    return null;
 						} else {
                             var errMsg = thisObj.f_getFormErrMsg(node[j]);
                             return (new UTM_eventObj(errCode, null, errMsg));
 						}
 					}
-				} 
+				}
 			}
 		}
 		return null;
-	} 	
-	
+	}
+
     this.f_parseDNS = function(response)
 	{
 		var mode = 'auto';
 		var pri = '';
 		var sec = '';
 
-		var form = thisObj.f_getFormNode(response);		
+		var form = thisObj.f_getFormNode(response);
 		var dnsNode = g_utils.f_xmlGetChildNode(form, 'name-server');
-		
+
 		if (dnsNode != null) {
 			var cnode = g_utils.f_xmlGetChildNode(dnsNode, 'mode');
 			if (cnode != null) {
@@ -682,15 +683,15 @@ function UTM_nwDNSBusObj(busObj)
 			}
 		}
 
-        return new UTM_nwDNSRecord(mode,pri,sec);	
-	}	
-	
-	
+        return new UTM_nwDNSRecord(mode,pri,sec);
+	}
+
+
 	this.f_getDNSConfig = function(guicb)
 	{
 		(g_devConfig.m_isLocalMode) ? thisObj.f_getDNSConfigLocal(guicb) : thisObj.f_getDNSConfigServer(guicb);
 	}
-	
+
     /**
      */
     this.f_getDNSConfigServer = function(guicb)
@@ -711,9 +712,9 @@ function UTM_nwDNSBusObj(busObj)
 			thisObj.f_setDNSConfigLocal(dnsRecObj,guicb);
 		} else {
 			thisObj.f_setDNSConfigServer(dnsRecObj,guicb);
-		}		
+		}
 	}
-	
+
 	/**
      * perform a set dns configuration request to server.
      * @param dnsRecObj - dns config object.
@@ -733,7 +734,7 @@ function UTM_nwDNSBusObj(busObj)
     }
 	///////////////////////////////////////////////////////////////////////////////////////
 	/////// begining simulation
-	///////////////////////////////////////////////////////////////////////////////////////	
+	///////////////////////////////////////////////////////////////////////////////////////
     this.f_getDNSConfigLocal = function(guicb)
     {
         thisObj.m_guiCb = guicb;
@@ -743,28 +744,28 @@ function UTM_nwDNSBusObj(busObj)
                       "</handler><data></data></statement></command>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
-					   
+
         thisObj.m_lastCmdSent = cmdSend;
-		
+
 		var resp = g_utils.f_parseXmlFromString(
 		    '<?xml version="1.0" encoding="utf-8"?>' +
                 '<openappliance>' +
                     '<token></token>' +
-                        '<error>' + 
-                            '<code>0</code>' + 
+                        '<error>' +
+                            '<code>0</code>' +
                                '<msg>' +
                                    '<form name=\'dns-config\' code=\'0\'>' +
-                                       '<name-server>' + 
-                                           '<mode>manual</mode><primary>1.1.1.1</primary><secondary>1.1.1.2</secondary>' + 
-                                        '</name-server>' + 
-                                    '</form>' + 
-                                '</msg>' + 
-                          '</error>' + 
+                                       '<name-server>' +
+                                           '<mode>manual</mode><primary>1.1.1.1</primary><secondary>1.1.1.2</secondary>' +
+                                        '</name-server>' +
+                                    '</form>' +
+                                '</msg>' +
+                          '</error>' +
                   '</openappliance>');
-		
+
         thisObj.f_respondRequestCallback(resp, guicb);
-    }	
-	
+    }
+
     this.f_setDNSConfigLocal = function(dnsRecObj, guicb)
     {
         thisObj.m_guiCb = guicb;
@@ -776,23 +777,23 @@ function UTM_nwDNSBusObj(busObj)
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
-		
+
 		alert ('cmdSend: ' + cmdSend);
-					   
+
         thisObj.m_lastCmdSent = cmdSend;
 
 		var resp = g_utils.f_parseXmlFromString(
 		    '<?xml version="1.0" encoding="utf-8"?>' +
                 '<openappliance>' +
                     '<token></token>' +
-                        '<error>' + 
-                            '<code>0</code>' + 
+                        '<error>' +
+                            '<code>0</code>' +
                                '<msg>' +
                                    '<form name=\'dns-config\' code=\'0\'>' +
-                                    '</form>' + 
-                                '</msg>' + 
-                          '</error>' + 
+                                    '</form>' +
+                                '</msg>' +
+                          '</error>' +
                   '</openappliance>');
         thisObj.f_respondRequestCallback(resp, guicb);
-    }		
+    }
 }

@@ -21,7 +21,7 @@ var g_lang =
     m_status : 'Status',
     m_ipAddr : 'IP Address',
     m_underConstruction : 'Under Construction',
-	
+
     ///////////////////////////////////////////////////////////////////
     // VPN Overview
     m_vpnOverviewHeader : "Lorem ipsum onsectetuer adipiscing elit, sed diam " +
@@ -94,6 +94,8 @@ var g_lang =
     m_fireCustDestIpAddr : "Destination IP<br>address",
     m_fireCustDestMaskIpAddr : "Destination mask<br>IP address",
     m_fireCustDestPort : "Destination<br>port<small><br>Enter single<br>port number <br>or port range<br>(200-300)</small>",
+    m_fireCustInternIpAddr : "Internal IP<br>Address<small><br>Single IP or an IP<br>range</small>",
+    m_fireCustInternPort : "Internal<br>port<small><br>Enter single<br>port number <br>or port range<br>(200-300)</small>",
     m_fireCustAction : "Action",
     m_fireCustLog : "Log",
     m_fireCustOrder : "Order",
@@ -105,6 +107,14 @@ var g_lang =
     m_fireCustResetTip : "Reset to default",
     m_fireCustBackTip : "Back to Firewall Level screen",
     m_fireCustAddTip : "Add a new rule",
+
+    ////////////////////////////////////////////////////////////////////
+    // network configuration NAT/PAT
+    m_nwNatPatHeader : "This page enables you to configure NAT/PAT. You can " +
+                "create NAT/PAT rules or select existing rules to translate " +
+                "single port or port ranges.<br><font color=#ff6600>Warning:</font> " +
+                "Ensure that you have not filtered these ports in the firewall.",
+
 
     ///////////////////////////////////////////////////////////////////
     // VPN General
@@ -188,7 +198,7 @@ var g_lang =
 	m_ids_Subscribe: "This mode is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
 	                         "It enables you to benefit from a larger database of IDS/ IPS signatures that you can also customize.<br/><br/>" +
 							 "To get this service, please press the button \"subscribe\" hereunder.",
-    m_ids_ezEnable: "Enable Instrusion Prevention",							 
+    m_ids_ezEnable: "Enable Instrusion Prevention",
 
 	///////////////////////////////////////////////////////////////////
     // Anti-virus
@@ -205,16 +215,16 @@ var g_lang =
 	m_imp2p_Subscribe: "Instant Messaging & Peer to Peer application filtering is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
 					 "To get this service, please press the button \"subscribe\" hereunder.",
 
-	///////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
     // DNS
-	m_dns_setServer : "Set DNS server",
-    m_dns_autoDhcp : "Automatically via DHCP",
-	m_dns_manual: "Manually",
-	m_dns: "DNS",
-	m_dns_Primary: "Primary",
-	m_dns_Secondary: "Secondary",
-	m_dns_header: "This page enables you to configure DNS servers",
-	
+       m_dns_setServer : "Set DNS server",
+       m_dns_autoDhcp : "Automatically via DHCP",
+       m_dns_manual: "Manually",
+       m_dns: "DNS",
+       m_dns_Primary: "Primary",
+       m_dns_Secondary: "Secondary",
+       m_dns_header: "This page enables you to configure DNS servers",
+
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images
     m_imageDir : 'images/en/',

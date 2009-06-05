@@ -139,6 +139,12 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       StrProc str_proc(cmd, " ");
       tmp += " " + str_proc.get(1);
     }
+    else if (strncmp(tmp.c_str(),"merge",5) == 0) {
+      tmp = "/opt/vyatta/sbin/vyatta-load-config.pl";
+      //grab filename is present
+      StrProc str_proc(cmd, " ");
+      tmp += " " + str_proc.get(1) + " --merge";
+    }
     else if (strncmp(tmp.c_str(),"save",4) == 0) {
       tmp = "umask 0002 ; sudo /opt/vyatta/sbin/vyatta-save-config.pl";
       //grab filename is present

@@ -57,15 +57,19 @@ function FT_primaryNavigation()
 			return 'UTM/utm_main_en.html';
 		}
 		*/
+		var lang = g_utils.f_getLanguage();
+		if (lang == g_consObj.V_NOT_FOUND) {
+			lang = g_consObj.V_LANG_EN;
+		}
 		if (g_devConfig.m_debug) {
 			if (vm.m_name == 'utm') {
 				return vm.m_guiUri + g_devConfig.m_utmPathSuffix;
 			} else if (vm.m_name == 'netconf') {
-				return vm.m_guiUri + g_devConfig.m_utmPathSuffix + 'utm_netconf_en.html';
+				return vm.m_guiUri + g_devConfig.m_utmPathSuffix + 'utm_netconf_' + lang + '.html';
 			}
 		} else {
 			if (vm.m_name == 'netconf') {
-				return vm.m_guiUri + 'utm_netconf_en.html';
+				return vm.m_guiUri + 'utm_netconf_' + lang + '.html';
 			}
 		}
 		

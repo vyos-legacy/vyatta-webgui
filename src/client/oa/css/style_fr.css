@@ -1,0 +1,10 @@
+/** Forms Buttons **/
+
+.buttonapply{
+	background: url(../images/fr/bt_apply.png) no-repeat left top;
+}
+
+
+.buttoncancel{
+	background: url(../images/fr/bt_cancel.png) no-repeat left top;
+}

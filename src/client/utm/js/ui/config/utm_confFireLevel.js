@@ -41,6 +41,7 @@ function UTM_confFireLevel(name, callback, busLayer)
     this.f_createColumns = function()
     {
         var cols = [];
+        UTM_confFireLevel.superclass.m_allowSort = false;
 
         cols[0] = this.f_createColumn(g_lang.m_fireLevelColName, 780, 'radTxt',
                     '10', false, 'left');

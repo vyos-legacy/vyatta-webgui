@@ -1,0 +1,151 @@
+/*########## Help ##########*/
+
+#helpcontent{
+	margin:20px;
+	font-size:11px;
+}
+
+#helpcontent table{
+	font-size:11px;
+}
+
+#helpcontent table td{
+	border-bottom:1px solid #ddd;
+	border-top:1px solid #ddd;
+}
+
+#helpcontent table.legende{
+	width:200px;
+}
+#helpcontent span.print_close {
+	display:block;
+	float:right;
+	margin-bottom:3px;
+}
+#helpcontent h2 {
+	clear:both;
+	border-bottom:3px solid #CCC;
+	font-size:14px;
+	margin-bottom:10px;
+}
+
+#helpcontent h3,#helpcontent h3 a{
+	clear:both;
+	font: bold 11px arial;
+}
+
+#helpcontent h3 a:hover{
+	text-decoration:none;
+}
+#helpcontent h4{
+	font: bold 11px arial;
+		margin-top:5px;
+}
+
+#helpcontent h4 a.orange{
+	text-decoration : underline;
+	color: #FF6600;
+
+}
+#helpcontent h4.orange a{
+	color: #FF6600;
+	font: bold 11px arial;
+}
+
+#helpcontent h5, #helpcontent h5 a{
+	font: bold 11px arial;
+ text-decoration : underline;
+}
+
+#helpcontent a{
+	font: normal 11px arial;
+	color:#000;
+}
+
+#helpcontent a:hover{
+	text-decoration:underline;
+}
+
+#helpcontent a.close{
+	margin-left:5px;
+	padding-left: 20px;
+	background: transparent url(../images/ico_close.png) no-repeat left center;
+}
+#helpcontent a.print{
+	margin-right:5px;
+	padding-left: 27px;
+	background: transparent url(../images/ico_print.png) no-repeat left center;
+}
+
+#helpcontent ul{
+	margin:10px 0px 10px 30px;
+}
+
+#helpcontent li{
+	list-style-image:url(../images/bullet.png);
+	line-height:15px;
+}
+
+#helpcontent ul.liSansImage,#helpcontent ul.liSansImage li{
+	list-style:none;
+	line-height:15px;
+}
+#helpcontent ul ul{
+	margin:10px 0px 10px 20px;
+}
+
+#helpcontent ul ul li {
+	list-style-type:square;
+	list-style-image:none;
+	line-height:15px;
+}
+
+#helpcontent ul ul ul li {
+	list-style-type:circle;
+	list-style-image:none;
+	line-height:15px;
+}
+
+#helpcontent li a{
+	font-weight: bold;
+	text-decoration:underline;
+}
+
+#helpcontent p{
+	margin-top:7px;
+	margin-bottom:7px;
+}
+
+#helpcontent p.nb{
+	font-style:italic;
+}
+#helpcontent a.backtop{
+	float:right;
+	height:30px;
+	padding-left: 15px;
+	background: transparent url(../images/ico_backtop.png) no-repeat;
+	background-position: 0px 3px;
+}
+#helpcontent .orange{
+	color:#FF6600;
+}
+
+#helpcontent fieldset{
+ margin:10px 0px;
+ padding:10px;
+ border:1px solid #000;
+
+}
+#helpcontent .help_renvoi{
+    width:350px;
+    float:left;
+}
+ #helpcontent fieldset img.buttons{
+ margin:5px 10px;
+ float:right;
+
+ }
+ #helpcontent ul li img{
+	vertical-align:middle;
+	margin-right:5px;
+}

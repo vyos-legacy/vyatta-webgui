@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <syslog.h>
 #include <unistd.h>
 #include <glib-2.0/glib.h>
 #include "common/defs.h"
@@ -37,8 +38,18 @@ match_priority_node(GNode *node, gchar** tok_str, int pri);
 GNode*
 insert_sibling_in_order(GNode *parent, GNode *child);
 
-void
-piecewise_remove(char* cbuf_root, char* abuf_root, char* path, boolean test_mode);
+static gboolean
+copy_func(GNode *node, gpointer data);
+
+static gboolean
+delete_func(GNode *node, gpointer data);
+
+static gboolean
+delete_wh_func(GNode *node, gpointer data);
+
+static void
+piecewise_copy(GNode *root_node, boolean test_mode);
+
 /**
  *
  *
@@ -80,6 +91,7 @@ get_config_path(GNode *node)
     if (d == NULL) {
       if (g_debug) {
 	printf("unionfs::get_config_path(): data ptr is null\n");
+	syslog(LOG_DEBUG,"unionfs::get_config_path(): data ptr is null");
       }
       return NULL;
     }
@@ -136,6 +148,7 @@ retrieve_data(char* rel_data_path, GNode *node, char* root, NODE_OPERATION op)
 
   if (g_debug) {
     printf("unionfs::retrieve_data(): %s\n", full_data_path);
+    syslog(LOG_DEBUG,"unionfs::retrieve_data(): %s\n", full_data_path);
   }
 
 
@@ -178,6 +191,7 @@ retrieve_data(char* rel_data_path, GNode *node, char* root, NODE_OPERATION op)
     struct stat s;
     if (g_debug) {
       printf("unionfs::retrieve_data(): config path: %s\n",buf);
+      syslog(LOG_DEBUG,"unionfs::retrieve_data(): config path: %s\n",buf);
     }
 
     struct VyattaNode* vn = (struct VyattaNode*)node->data;
@@ -187,6 +201,7 @@ retrieve_data(char* rel_data_path, GNode *node, char* root, NODE_OPERATION op)
       if (parse_def(&def, buf, FALSE) == 0) {
 	if (g_debug) {
 	  printf("[FOUND node.def]");
+	  syslog(LOG_DEBUG,"[FOUND node.def]");
 	}
 	//either multi or tag--shouldn't have made a difference, but arkady was confused.
 	vn->_config._multi = (def.tag | def.multi); 
@@ -238,7 +253,7 @@ retrieve_data(char* rel_data_path, GNode *node, char* root, NODE_OPERATION op)
     char buf[MAX_LENGTH_HELP_STR];
     sprintf(buf,"%s/%s",get_adirp(),rel_data_path);
     struct stat s;
-    if ((lstat(buf,&s) != 0) && S_ISREG(s.st_mode)) {
+    if (lstat(buf,&s) != 0) {
       struct VyattaNode* vn = (struct VyattaNode*)node->data;
       vn->_data._operation = K_CREATE_OP;
     }
@@ -251,14 +266,19 @@ retrieve_data(char* rel_data_path, GNode *node, char* root, NODE_OPERATION op)
     if (g_debug) {
       //could also be a terminating value now
       printf("unionfs::retrieve_data(), failed to open directory: %s\n", full_data_path);
+      syslog(LOG_DEBUG,"unionfs::retrieve_data(), failed to open directory: %s\n", full_data_path);
     }
     return;
   }
   //finally iterate over valid child directory entries
 
   boolean processed = FALSE;
+  boolean whiteout_file_found = FALSE;
   struct dirent *dirp = NULL;
   while ((dirp = readdir(dp)) != NULL) {
+    if (strcmp(dirp->d_name,WHITEOUT_FILE) == 0) {
+      whiteout_file_found = TRUE;
+    }
     if (strcmp(dirp->d_name, ".") != 0 && 
 	strcmp(dirp->d_name, "..") != 0 &&
 	strcmp(dirp->d_name, MODIFIED_FILE) != 0 &&
@@ -267,7 +287,7 @@ retrieve_data(char* rel_data_path, GNode *node, char* root, NODE_OPERATION op)
 	strcmp(dirp->d_name, VALUE_FILE) != 0) {
       processed = TRUE;
       char *data_buf = malloc(MAX_LENGTH_DIR_PATH*sizeof(char));
-      if (strncmp(dirp->d_name,DELETED_NODE,4) == 0) {
+      if (strncmp(dirp->d_name,DELETED_NODE,4) == 0) { 
 	strcpy(data_buf,dirp->d_name+4); //SKIP THE .WH.
 	
 	//create new node and insert...
@@ -329,8 +349,48 @@ retrieve_data(char* rel_data_path, GNode *node, char* root, NODE_OPERATION op)
       ((struct VyattaNode*)node->data)->_data._operation = K_CREATE_OP;
     }
   }
-
   closedir(dp);
+
+  //if there is a ".wh.__dir_opaque" and were not already 
+  //iterating the active dir then test for a hidden deletion
+  if (whiteout_file_found == TRUE && op != K_DEL_OP) {
+    //scan active dir for entry not found in tmp
+    DIR *dp_wo;
+    //build active directory for this...
+    char active_data_path[MAX_LENGTH_DIR_PATH];
+    sprintf(active_data_path,"%s%s",get_adirp(),rel_data_path);
+    if ((dp_wo = opendir(active_data_path)) != NULL) {
+      if (g_debug) {
+	//could also be a terminating value now
+	syslog(LOG_DEBUG,"unionfs::retrieve_data(), failed to open directory: %s\n", active_data_path);
+	printf("unionfs::retrieve_data(), failed to open directory: %s\n", active_data_path);
+      } 
+      struct dirent *dirp_wo = NULL;
+      while ((dirp_wo = readdir(dp_wo)) != NULL) {
+	char tmp_new_data_path[MAX_LENGTH_DIR_PATH];
+	sprintf(tmp_new_data_path,"%s/%s/%s",get_cdirp(),rel_data_path,dirp_wo->d_name);
+	struct stat s;
+	if (lstat(tmp_new_data_path,&s) != 0) {
+	  //create new node and insert...
+	  struct VyattaNode *vn = calloc(1,sizeof(struct VyattaNode));
+	  char *data_buf = malloc(MAX_LENGTH_DIR_PATH*sizeof(char));
+	  strcpy(data_buf,dirp_wo->d_name); 
+	  vn->_data._name = data_buf;
+	  vn->_data._value = FALSE;
+	  vn->_data._operation = K_DEL_OP;
+	  vn->_priority = LOWEST_PRIORITY;
+	  
+	  GNode *new_node = g_node_new(vn);
+	  new_node = insert_sibling_in_order(node,new_node);
+	  char new_data_path[MAX_LENGTH_DIR_PATH];
+	  sprintf(new_data_path,"%s/%s",rel_data_path,dirp_wo->d_name);
+	  retrieve_data(new_data_path,new_node,root,K_DEL_OP);
+	}
+      }
+      closedir(dp_wo);
+    }
+  }
+  
   return;
 }
 
@@ -381,7 +441,10 @@ value_exists(char *path)
 void
 common_set_parent_context(char *cpath, char *dpath)
 {
-  printf("common_set_parent_context(incoming): %s, %s\n",cpath,dpath);
+  if (g_debug) {
+    printf("common_set_parent_context(incoming): %s, %s\n",cpath,dpath);
+    syslog(LOG_DEBUG,"common_set_parent_context(incoming): %s, %s\n",cpath,dpath);
+  }
   //strip off last path and set
   int index = strlen(cpath)-1;
   if (cpath[index] == '/') {
@@ -412,7 +475,10 @@ common_set_parent_context(char *cpath, char *dpath)
     *ptr = '\0';
   }
   set_path(dpath,FALSE);
-  printf("common_set_parent_context: %s, %s\n",cpath,dpath);
+  if (g_debug) {
+    printf("common_set_parent_context: %s, %s\n",cpath,dpath);
+    syslog(LOG_DEBUG,"common_set_parent_context: %s, %s\n",cpath,dpath);
+  }
 }
 
 /**
@@ -421,7 +487,10 @@ common_set_parent_context(char *cpath, char *dpath)
 void
 common_set_context(char *cpath, char *dpath)
 {
-  printf("common_set_context: %s, %s\n",cpath,dpath);
+  if (g_debug) {
+    printf("common_set_context: %s, %s\n",cpath,dpath);
+    syslog(LOG_DEBUG,"common_set_context: %s, %s\n",cpath,dpath);
+  }
   set_path(cpath,TRUE);
   set_path(dpath,FALSE);
 }
@@ -447,6 +516,7 @@ set_path(char *path, boolean config)
   if (path == NULL) {
     if (g_debug) {
       printf("unionfs::set_path() null value on entry\n");
+      syslog(LOG_DEBUG,"unionfs::set_path() null value on entry\n");
     }
     return;
   }
@@ -502,38 +572,23 @@ set_path(char *path, boolean config)
  * IN CURRENT HIERARCHICAL STRUCTURE WITHOUT CHANGING HOW UNDERLYING
  * SYSTEM MAINTAINS DATA.
  *
-original commands:
-  static const char format1[]="cp -r -f %s/* %s"; //mdirp, tmpp
-  static const char format2[]="sudo umount %s"; //mdirp
-  static const char format3[]="rm -f %s/" MOD_NAME " >&/dev/null ; /bin/true";
-                        //tmpp
-  static const char format4[]="rm -rf %s/{.*,*} >&/dev/null ; /bin/true"; //cdirp
-  static const char format5[]="rm -rf %s/{.*,*} >&/dev/null ; /bin/true"; //adirp
-  static const char format6[]="mv -f %s/* -t %s";//tmpp, adirp
-  static const char format7[]="sudo mount -t $UNIONFS -o dirs=%s=rw:%s=ro $UNIONFS %s"; //cdirp, adirp, mdirp
-  *
  **/
 void
-common_commit_copy_to_live_config(char *path, boolean test_mode)
+common_commit_copy_to_live_config(GNode *node, boolean test_mode)
 {
   //first check for existence of path before committing
+  char *path = ((struct VyattaNode*)(node->data))->_data._path;
 
   if (g_debug) {
     printf("common_commit_copy_to_live_config(): %s\n",path);
+    syslog(LOG_DEBUG,"common_commit_copy_to_live_config(): %s\n",path);
   }
   char *command = malloc(MAX_LENGTH_DIR_PATH);
   static const char format0[]="mkdir -p %s ; /bin/true";
+  static const char formatpoint5[]="rm -fr %s"; /*tmpp*/
   static const char format1[]="cp -r -f %s/* %s"; /*mdirp, tmpp*/
 
   static const char format2[]="sudo umount %s"; //mdirp
-  
-  static const char format4[]="rm -rf %s/{.*,*} >&/dev/null ; /bin/true"; /*cdirp*/
-
-  //walk up tree until diverge or skip
-  static const char format6[]="cp -rf %s/* -t %s";/*tmpp, adirp*/ 
-
-  static const char format7[]="rm -fr %s >&/dev/null ; /bin/true"; /*tmpp*/
-  
   static const char format8[]="sudo mount -t unionfs -o dirs=%s=rw:%s=ro unionfs %s"; //cdirp, adirp, mdirp
 
   set_echo(TRUE);
@@ -557,93 +612,58 @@ common_commit_copy_to_live_config(char *path, boolean test_mode)
   sprintf(abuf_root,"%s",get_adirp());
 
   //only operate on path if it exists
-  struct stat s;
-  if ((lstat(mbuf,&s) != 0) && S_ISREG(s.st_mode)) {
-    printf("common_commit_copy_to_live_config(): failed to find: %s, aborting copy\n",mbuf);
-    return;
+  //have to clean out tbuf before copying
+  sprintf(command, formatpoint5, tbuf);
+  if (g_debug) {
+    printf("%s\n",command);
+    syslog(LOG_DEBUG,"%s\n",command);
+    fflush(NULL);
+  }
+  if (test_mode == FALSE) {
+    system(command);
   }
 
+  //mkdir temp merge
   sprintf(command,format0,tbuf);
   if (g_debug) {
     printf("%s\n",command);
+    syslog(LOG_DEBUG,"%s\n",command);
     fflush(NULL);
   }
   if (test_mode == FALSE) {
     system(command);
   }
 
+
+
+  //cp merge to temp merge
   sprintf(command, format1, mbuf, tbuf);
   if (g_debug) {
     printf("%s\n",command);
+    syslog(LOG_DEBUG,"%s\n",command);
     fflush(NULL);
   }
   if (test_mode == FALSE) {
     system(command);
   }
 
+  //unmount temp (i.e. rm merge)
   sprintf(command, format2, mbuf_root);
   if (g_debug) {
     printf("%s\n",command);
+    syslog(LOG_DEBUG,"%s\n",command);
     fflush(NULL);
   }
   if (test_mode == FALSE) {
     system(command);
   }
 
-  sprintf(command,format0,abuf);
-  if (g_debug) {
-    printf("%s\n",command);
-    fflush(NULL);
-  }
-  if (test_mode == FALSE) {
-    system(command);
-  }
-
-  piecewise_remove(cbuf_root,abuf_root,path,test_mode);
-
-  sprintf(command,  format4, cbuf);
-  if (g_debug) {
-    printf("%s\n",command);
-    fflush(NULL);
-  }
-  if (test_mode == FALSE) {
-    system(command);
-  }
-  /*
-  sprintf(command,  format5, abuf);
-  if (g_debug) {
-    printf("%s\n",command);
-    fflush(NULL);
-  }
-  if (test_mode == FALSE) {
-    system(command);
-  }
-  */
-  //special piecewise operation
-  //walk down tree and perform command where siblings diverge btwn tbuf and abuf
-
-  sprintf(command,  format6, tbuf, abuf);
-  if (g_debug) {
-    printf("%s\n",command);
-    fflush(NULL);
-  }
-  if (test_mode == FALSE) {
-    system(command);
-  }
-
-
-  sprintf(command,  format7, tbuf);
-  if (g_debug) {
-    printf("%s\n",command);
-    fflush(NULL);
-  }
-  if (test_mode == FALSE) {
-    system(command);
-  }
+  piecewise_copy(node, test_mode);
 
   sprintf(command, format8, cbuf_root,abuf_root,mbuf_root);
   if (g_debug) {
     printf("%s\n",command);
+    syslog(LOG_DEBUG,"%s\n",command);
     fflush(NULL);
   }
   if (test_mode == FALSE) {
@@ -656,18 +676,27 @@ common_commit_copy_to_live_config(char *path, boolean test_mode)
   return;
 }  
 
+
+//needed for iteration below
+struct SrcDst {
+  char *_src;
+  char *_dst;
+  boolean _test_mode;
+};
+
 /**
  *
  **/
 void
-common_commit_clean_temp_config(boolean test_mode)
+common_commit_clean_temp_config(GNode *root_node, boolean test_mode)
 {
   if (g_debug) {
     printf("common_commit_clean_temp_config()\n");
+    syslog(LOG_DEBUG,"common_commit_clean_temp_config()\n");
   }
   //first clean up the root
   //  common_commit_copy_to_live_config("/");
-
+  
   char *command;
   command = malloc(MAX_LENGTH_DIR_PATH);
   static const char format2[]="sudo umount %s"; //mdirp
@@ -690,6 +719,7 @@ common_commit_clean_temp_config(boolean test_mode)
   sprintf(command, format2, mbuf);
   if (g_debug) {
     printf("%s\n",command);
+    syslog(LOG_DEBUG,"%s\n",command);
     fflush(NULL);
   }
 
@@ -697,9 +727,31 @@ common_commit_clean_temp_config(boolean test_mode)
     system(command);
   }
 
+  /*
+   * Need to add to the following func below to clean up dangling .wh. files.
+   * This pass needs to be prior to the commands below (but after the umount).
+   * This fixes a bug when higher priority root nodes are deleted and not removed.
+   */
+  
+  //Iterate through node hierarchy and remove deleted nodes from active config--insurance
+  //to protect against priority whiteouts in parent/child order
+  //TOP DOWN
+  if (root_node != NULL) {
+    struct SrcDst sd;
+    sd._test_mode = test_mode;
+    
+    g_node_traverse(root_node,
+		    G_PRE_ORDER,
+		    G_TRAVERSE_ALL,
+		    -1,
+		    (GNodeTraverseFunc)delete_wh_func,
+		    (gpointer)&sd);
+  }
+  
   sprintf(command, format3, tbuf);
   if (g_debug) {
     printf("%s\n",command);
+    syslog(LOG_DEBUG,"%s\n",command);
     fflush(NULL);
   }
   if (test_mode == FALSE) {
@@ -709,6 +761,7 @@ common_commit_clean_temp_config(boolean test_mode)
   sprintf(command, format3, cbuf);
   if (g_debug) {
     printf("%s\n",command);
+    syslog(LOG_DEBUG,"%s\n",command);
     fflush(NULL);
   }
   if (test_mode == FALSE) {
@@ -718,6 +771,7 @@ common_commit_clean_temp_config(boolean test_mode)
   sprintf(command, format5, cbuf);
   if (g_debug) {
     printf("%s\n",command);
+    syslog(LOG_DEBUG,"%s\n",command);
     fflush(NULL);
   }
   if (test_mode == FALSE) {
@@ -727,6 +781,7 @@ common_commit_clean_temp_config(boolean test_mode)
   sprintf(command, format7, cbuf,abuf,mbuf);
   if (g_debug) {
     printf("%s\n",command);
+    syslog(LOG_DEBUG,"%s\n",command);
     fflush(NULL);
   }
   if (test_mode == FALSE) {
@@ -758,6 +813,9 @@ match_priority_node(GNode *node, gchar** tok_str, int pri)
       match_priority_node(child,tok_str,pri);
     }
     else if (strncmp(NODE_TAG_FILE,tok_str[index],strlen(NODE_TAG_FILE)) == 0) {
+      match_priority_node(child,tok_str,pri);
+    }
+    else if (strncmp("*",tok_str[index],1) == 0) {     //wildcard
       match_priority_node(child,tok_str,pri);
     }
     child = g_node_next_sibling(child);
@@ -800,14 +858,19 @@ apply_priority(GNode *root_node)
   if (fp != NULL) {
     if (g_debug) {
       printf("unionfs::apply_priority(), found priority file\n");
+      syslog(LOG_DEBUG,"unionfs::apply_priority(), found priority file\n");
     }
 
     char str[1025];
     while (fgets(str, 1024, fp) != 0) {
       gchar** tok_str = g_strsplit(str," ",3);
+      if (tok_str[0] == NULL || tok_str[1] == NULL || strncmp(tok_str[0],"#",1) == 0) {
+	continue;
+      }
       char *path = tok_str[1];
       if (g_debug) {
 	printf("unionfs::apply_priority(), working on this %s\n",path);
+	syslog(LOG_DEBUG,"unionfs::apply_priority(), working on this %s\n",path);
       }
 
       //now apply to node
@@ -917,8 +980,10 @@ get_term_data_values(GNode *node)
     data = (struct ValueData*)calloc(1, sizeof(struct ValueData));
     if ((tok_str_active == NULL || tok_str_active[0] == NULL) &&
 	(tok_str_new == NULL || tok_str_new[0] == NULL)) {
-  //      data->_state = K_NO_OP;
-  //      g_datalist_set_data(&datalist, tok_str_active[0], data);
+      cp = malloc(MAX_LENGTH_DIR_PATH*sizeof(char));
+      cp[0] = '\0';
+      data->_state = ((struct VyattaNode*)node->parent->data)->_data._operation;
+      g_datalist_set_data(&datalist, cp, data);
     }
     else if (tok_str_active == NULL || tok_str_active[0] == NULL) {
       data->_state = K_CREATE_OP;
@@ -990,82 +1055,6 @@ dlist_test_func(GQuark key_id,gpointer data,gpointer user_data)
   new_vn->_config._def = vn_parent->_config._def;
 }
 
-/**
- *
- **/
-void
-piecewise_remove(char* cbuf_root, char* abuf_root, char* path, boolean test_mode)
-{
-  char cbuf[MAX_LENGTH_DIR_PATH];
-  char abuf[MAX_LENGTH_DIR_PATH];
-
-  sprintf(cbuf,"%s/%s",cbuf_root,path);
-  sprintf(abuf,"%s/%s",abuf_root,path);
-
-  //iterate over directory here
-  DIR *dp;
-  if ((dp = opendir(cbuf)) == NULL){
-    if (g_debug) {
-      //could also be a terminating value now
-      printf("piecewise_remove(), failed to open directory: %s\n", cbuf);
-    }
-
-    //if failed, then check if this is a whiteout directory itself, if so remove and return
-    //only can really happen on initial call
-    char tmp[MAX_LENGTH_DIR_PATH];
-    sprintf(tmp,"%s/%s%s",cbuf_root,DELETED_NODE,path+1); //need to skip first slash
-    tmp[strlen(tmp)-1] = '\0'; //drop last slash too
-    struct stat s;
-    if ((lstat(tmp,&s) == 0) && S_ISREG(s.st_mode)) {
-      //whiteout root, remove and return
-      static const char format5[]="rm -fr %s >&/dev/null ; /bin/true"; /*adirp*/
-      //remove these guys
-      char command[MAX_LENGTH_DIR_PATH];
-      sprintf(command,  format5, abuf);
-      if (g_debug) {
-	printf("%s\n",command);
-	fflush(NULL);
-      }
-      if (test_mode == FALSE) {
-	system(command);
-      }
-    }
-    return;
-  }
-
-  //finally iterate over valid child directory entries
-  struct dirent *dirp = NULL;
-  char local_path[MAX_LENGTH_DIR_PATH];
-  while ((dirp = readdir(dp)) != NULL) {
-
-    //    printf("F: comparing: %s to %s up to %d\n",DELETED_NODE, dirp->d_name, strlen(DELETED_NODE));
-    if (strncmp(DELETED_NODE,dirp->d_name,strlen(DELETED_NODE)) == 0) {
-      static const char format5[]="rm -fr %s >&/dev/null ; /bin/true"; /*adirp*/
-      //remove these guys
-      char command[MAX_LENGTH_DIR_PATH];
-      char tmp[MAX_LENGTH_DIR_PATH];
-      sprintf(tmp,"%s/%s",abuf,dirp->d_name+strlen(DELETED_NODE));
-
-      sprintf(command,  format5, tmp);
-      if (g_debug) {
-	printf("%s\n",command);
-	fflush(NULL);
-      }
-      if (test_mode == FALSE) {
-	system(command);
-      }
-    }
-    else if (strcmp(dirp->d_name, ".") != 0 && 
-	     strcmp(dirp->d_name, "..") != 0 &&
-	     strcmp(dirp->d_name, MODIFIED_FILE) != 0 &&
-	     strcmp(dirp->d_name, DEF_FILE) != 0 &&
-	     strcmp(dirp->d_name, VALUE_FILE) != 0) {
-      sprintf(local_path,"%s/%s",path,dirp->d_name);
-      piecewise_remove(cbuf_root,abuf_root,local_path,test_mode);
-    }
-  }
-  closedir(dp);
-}
 
 /**
  *
@@ -1084,3 +1073,244 @@ insert_sibling_in_order(GNode *parent, GNode *child)
   GNode *new_node = g_node_insert_after(parent, sibling, child);
   return new_node;
 }
+
+/**
+ *
+ **/
+static void
+piecewise_copy(GNode *root_node, boolean test_mode)
+{
+  struct SrcDst sd;
+  sd._src = get_tmpp(); //copy of merged config
+  sd._dst = get_adirp(); //active config
+  sd._test_mode = test_mode;
+  
+  //COPY FROM TOP DOWN
+  g_node_traverse(root_node,
+		  G_PRE_ORDER,
+		  G_TRAVERSE_ALL,
+		  -1,
+		  (GNodeTraverseFunc)copy_func,
+		  (gpointer)&sd);
+  
+  //delete needs to apply to changes only as src
+  sd._src = get_cdirp(); //changes only config
+  //DELETE FROM BOTTOM UP, stop on finding children
+  g_node_traverse(root_node,
+		  G_POST_ORDER,
+		  G_TRAVERSE_ALL,
+		  -1,
+		  (GNodeTraverseFunc)delete_func,
+		  (gpointer)&sd);
+}
+
+/**
+ *
+ *
+ **/
+static gboolean
+copy_func(GNode *node, gpointer data)
+{
+  if (node == NULL) {
+    return FALSE;
+  }
+
+  char *command = malloc(MAX_LENGTH_DIR_PATH);
+
+  struct SrcDst *sd = (struct SrcDst*)data;
+  static const char format[]="mkdir -p %s%s";/*tmpp, adirp*/ 
+  static const char format_value[]="cp %s%s{node.val,def} %s%s. 2>/dev/null";/*tmpp, adirp*/ 
+  static const char clear_def[]="rm %s%sdef 2>/dev/null";/*adirp*/ 
+  char *path = ((struct VyattaNode*)(node->data))->_data._path;
+
+  //might not work for terminating multinodes as the node.val won't be copied
+  if (((struct VyattaNode*)(node->data))->_data._value == TRUE &&
+      ((struct VyattaNode*)(node->data))->_config._def.tag == FALSE) {
+    //THIS IS ONLY FOR NODE.VAL (or leafs, term multis)
+
+    //before copy also need to clear out def file in active directory (will copy over current if found)
+    //this is for the case where it is set by default, then unset at the node--i.e. no longer a default value.
+    if (((struct VyattaNode*)(node->data))->_config._multi == FALSE) { //only for leaf
+      char *parent_path = ((struct VyattaNode*)(node->parent->data))->_data._path;
+      sprintf(command,clear_def,sd->_dst,parent_path);
+      if (g_debug) {
+	printf("%s\n",command);
+	syslog(LOG_DEBUG,"%s\n",command);
+	fflush(NULL);
+      }
+      if (sd->_test_mode == FALSE) {
+	system(command);
+      }
+    }
+
+    char *parent_path = ((struct VyattaNode*)(node->parent->data))->_data._path;
+    sprintf(command,format_value,sd->_src,parent_path,sd->_dst,parent_path);
+    if (g_debug) {
+      printf("%s\n",command);
+      syslog(LOG_DEBUG,"%s\n",command);
+      fflush(NULL);
+    }
+    if (sd->_test_mode == FALSE) {
+      system(command);
+    }
+  }
+  else {
+    if (!IS_DELETE(((struct VyattaNode*)(node->data))->_data._operation)) {
+      sprintf(command,format,sd->_dst,path);
+      if (g_debug) {
+	printf("%s\n",command);
+	syslog(LOG_DEBUG,"%s\n",command);
+	fflush(NULL);
+      }
+      if (sd->_test_mode == FALSE) {
+	system(command);
+      }
+    }
+  }
+  free(command);
+  return FALSE;
+}
+
+/**
+ *
+ *
+ **/
+static gboolean
+delete_func(GNode *node, gpointer data)
+{
+  if (node == NULL) {
+    return FALSE;
+  }
+
+  struct SrcDst *sd = (struct SrcDst*)data;
+
+  char *command = malloc(MAX_LENGTH_DIR_PATH);
+
+  //DONT HAVE THE COMMAND BELOW BLOW AWAY WHITEOUT FILES!!!!!
+  static const char format[]="rm -f %s%s{*,.*} >&/dev/null;rmdir %s%s >&/dev/null ; /bin/true";  //need to remove opaque file.
+  static const char format_force_delete[]="rm -f %s%s{*,.*} >&/dev/null;rmdir %s%s >&/dev/null ; /bin/true";  //force delete as this is a delete operation with dependency 
+
+  static const char delete_format[]="rm %s%s../.wh.%s >&/dev/null"; 
+  
+  char *path = ((struct VyattaNode*)(node->data))->_data._path;
+
+  //does this node have any children that have not been copied????
+
+  //NEED RM -FV on changes only directory!!!! for normal removal!!!
+
+
+  //WILL ONLY REMOVE DIRS WITHOUT CHILD DIRS--just what we want..
+  //NEED TO PREVENT THE COMMAND BELOW FROM DELETING WHITEOUT FILES....
+
+  if (IS_NOOP(((struct VyattaNode*)(node->data))->_data._operation)) {
+    return FALSE; //see if we can skip this node here
+  }
+
+
+  //DOESN'T QUITE FIX THE PROBLEM, THE PARENT IS CALLED (AND PROBABLY SHOULDN'T BE)
+  if (!IS_DELETE(((struct VyattaNode*)(node->data))->_data._operation)) {
+    sprintf(command,format,sd->_src,path,sd->_src,path);
+    if (g_debug) {
+      printf("%s\n",command);
+      syslog(LOG_DEBUG,"%s\n",command);
+      fflush(NULL);
+    }
+    if (sd->_test_mode == FALSE) {
+      system(command);
+    }
+  }
+
+  //if this is a deletion operation, need to remove
+  if (IS_DELETE(((struct VyattaNode*)(node->data))->_data._operation) && 
+      !IS_ACTIVE(((struct VyattaNode*)(node->data))->_data._operation)) {
+
+    //DO NOT PERFORM THIS STEP IF THERE ARE SUBDIRECTORIES (only the whiteout file)
+
+    //remove .whiteout file in c directory if encountered in walk.
+    sprintf(command,delete_format,sd->_src,path,((struct VyattaNode*)(node->data))->_data._name);
+    if (g_debug) {
+      printf("%s\n",command);
+      syslog(LOG_DEBUG,"%s\n",command);
+      fflush(NULL);
+    }
+    if (sd->_test_mode == FALSE) {
+      system(command);
+    }
+    //if delete then remove entry in active configuration!
+    sprintf(command,format_force_delete,sd->_dst,path,sd->_dst,path);
+    if (g_debug) {
+      printf("%s\n",command);
+      syslog(LOG_DEBUG,"%s\n",command);
+      fflush(NULL);
+    }
+    if (sd->_test_mode == FALSE) {
+      system(command);
+    }
+  }
+  free(command);
+
+  return FALSE;
+}
+
+
+/**
+ *
+ *
+ **/
+static gboolean
+delete_wh_func(GNode *node, gpointer data)
+{
+  if (node == NULL) {
+    return FALSE;
+  }
+
+  char abuf[MAX_LENGTH_DIR_PATH];
+  static const char format0[]="rm -fr %s >&/dev/null ; /bin/true";
+  struct SrcDst *sd = (struct SrcDst*)data;
+
+  GNode *parent_node = node->parent;
+  
+  //on node where operation is delete and parent is noop or active then remove directory from active config
+  //if this is a deletion operation, need to remove
+  if (parent_node != NULL) {
+    if (IS_DELETE(((struct VyattaNode*)(node->data))->_data._operation) && 
+	!IS_ACTIVE(((struct VyattaNode*)(node->data))->_data._operation) && 
+	!IS_DELETE(((struct VyattaNode*)(parent_node->data))->_data._operation)) {
+
+      char *path = ((struct VyattaNode*)(node->data))->_data._path;
+      sprintf(abuf,"%s%s",get_adirp(),path);
+      //mkdir temp merge
+      char command[MAX_LENGTH_DIR_PATH];
+      sprintf(command,format0,abuf);
+      if (g_debug) {
+	printf("%s\n",command);
+	syslog(LOG_DEBUG,"%s\n",command);
+	fflush(NULL);
+      }
+      if (sd->_test_mode == FALSE) {
+	system(command);
+      }
+
+    }
+  }
+  else {
+    if (IS_DELETE(((struct VyattaNode*)(node->data))->_data._operation) &&
+	!IS_ACTIVE(((struct VyattaNode*)(node->data))->_data._operation)) {
+      char *path = ((struct VyattaNode*)(node->data))->_data._path;
+      sprintf(abuf,"%s%s",get_adirp(),path);
+      //mkdir temp merge
+      char command[MAX_LENGTH_DIR_PATH];
+      sprintf(command,format0,abuf);
+      if (g_debug) {
+	printf("%s\n",command);
+	syslog(LOG_DEBUG,"%s\n",command);
+	fflush(NULL);
+      }
+      if (sd->_test_mode == FALSE) {
+	system(command);
+      }
+    }
+  }
+  return FALSE;
+}
+

@@ -1,3 +1,16 @@
+vyatta-webgui (0.2.14+fxdU+49) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * added new file for network configuration Nat/Pat UI screen.
+  * * add new file for network config routing screen
+
+  [ slioch ]
+  * need to sync cli library files in ft with latest changes from jenner
+
+  [ Mohit Mehta ]
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Mon, 08 Jun 2009 11:12:35 -0700
+
 vyatta-webgui (0.2.14+fxdU+48) unstable; urgency=low
 
   [ Loi Vo ]

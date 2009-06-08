@@ -58,6 +58,7 @@ function UTM_businessLayer()
     var thisObj = this;
     var m_vpnObj = null;
     var m_fwObj = null;
+    var m_nwObj = null;   // network config business obj for NAT/PAT and Routing
 	var m_urlObj = null;
 	var m_nwDNSObj = null;
     this.m_userObj = new UTM_userBusObj(this);
@@ -403,6 +404,24 @@ function UTM_businessLayer()
     this.f_setDNSConfig = function(dnsRecObj, guicb)
     {
         thisObj.f_getDNSObj().f_setDNSConfig(dnsRecObj, guicb);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Network NAT/PAT and Routing
+    this.f_getNwObject = function()
+    {
+        if(m_nwObj == null)
+            m_nwObj = new UTM_nwConfigBusObj(thisObj);
+
+        return m_nwObj;
+    }
+
+    /**
+     *
+     */
+    this.f_getNwRoutingList = function(guicb)
+    {
+        thisObj.f_getNwObject().f_getNwRoutingList(guicb);
     }
 }
 

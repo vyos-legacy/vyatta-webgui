@@ -52,7 +52,7 @@ function UTM_confNwRouting(name, callback, busLayer)
         cols[1] = this.f_createColumn(g_lang.m_nwRoutDestNwMask, 110, 'textField', '3', true, 'center');
         cols[2] = this.f_createColumn(g_lang.m_nwRoutConf, 200, 'div', '3', false, 'center');
         cols[3] = this.f_createColumn(g_lang.m_nwRoutGwInterface, 120, 'textField', '3', true, 'center');
-        cols[4] = this.f_createColumn(g_lang.m_nwRoutMetric, 90, 'textField', '3', false, 'center');
+        cols[4] = this.f_createColumn(g_lang.m_nwRoutMetric, 90, 'textField', '3', true, 'center');
         cols[5] = this.f_createColumn(g_lang.m_fireCustDelete, 70, 'combo', '3', false, 'center');
 
         return cols;
@@ -97,29 +97,72 @@ function UTM_confNwRouting(name, callback, busLayer)
         thisObj.m_cb = function(evt)
         {
             g_utils.f_cursorDefault();
-            var enabled = true;
 
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
                 if(evt.m_value != null)
                 {
                     thisObj.m_rRecs = evt.m_value;
-                    thisObj.f_removeDivChildren(thisObj.m_gridBody);
-
-                    for(var i=0; i<evt.m_value.length; i++)
-                        thisObj.f_addDataIntoRow(evt.m_value[i]);
+                    thisObj.f_populateTable();
                 }
             }
-
-            thisObj.f_adjustGridHeight();
         };
 
-        //g_utils.f_cursorWait();
+        g_utils.f_cursorWait();
+        thisObj.m_busLayer.f_getNwRoutingList(thisObj.m_cb);
     };
 
     this.f_stopLoadVMData = function()
     {
         //thisObj.m_busLayer.f_cancelFirewallCustomizeRule(null);
+    }
+
+    this.f_populateTable = function()
+    {
+        thisObj.f_removeDivChildren(thisObj.m_gridBody);
+        thisObj.f_removeDivChildren(thisObj.m_grid);
+        this.m_gridHeader = this.f_createGridHeader(this.m_colModel, "f_nwRoutingGridHeaderClick");
+        thisObj.m_grid.appendChild(thisObj.m_gridHeader);
+        thisObj.m_grid.appendChild(thisObj.m_gridBody);
+
+        var sortCol = UTM_confNwRouting.superclass.m_sortCol;
+        var ar = thisObj.f_createSortingArray(sortCol, thisObj.m_rRecs);
+
+        for(var i=0; i<ar.length; i++)
+            thisObj.f_addRoutingIntoRow(ar[i]);
+
+        thisObj.f_adjustGridHeight();
+    }
+
+    this.f_createSortingArray = function(sortIndex, rRecs)
+    {
+        var ar = new Array();
+        var recs = new Array();
+
+        for(var i=0; i<rRecs.length; i++)
+        {
+            // NOTE: the order of this partition same as the order
+            // grid columns.
+            // compose a default table row
+            ar[i] = rRecs[i].m_destIpAddr + '|' + rRecs[i].m_destIpMask + '|' +
+                    rRecs[i].m_isGateway + "|" + rRecs[i].m_gwOrInterface +
+                    '|' + rRecs[i].m_metric + "|" + rRecs[i].m_ruleNo;
+        }
+
+        var sar = thisObj.f_sortArray(sortIndex, ar);
+        for(var i=0; i<sar.length; i++)
+        {
+            var r = sar[i].split("|");
+            var rec = thisObj.f_createRoutingRecord(r[5]);
+            rec.m_destIpAddr = r[0];
+            rec.m_destIpMask = r[1];
+            rec.m_isGateway = r[2];
+            rec.m_gwOrInterface = r[3];
+            rec.m_metric = r[4];
+            recs.push(rec);
+        }
+
+        return recs;
     }
 
     this.f_adjustGridHeight = function()
@@ -196,7 +239,7 @@ function UTM_confNwRouting(name, callback, busLayer)
 
     this.f_createInterfaceCombo = function(rRec)
     {
-        return thisObj.f_renderCombobox(thisObj.m_protocol, rRec.m_protocol, 110,
+        return thisObj.f_renderCombobox(thisObj.m_protocol, rRec.m_gwOrInterface, 110,
                             thisObj.m_fieldIds[5]+rRec.m_ruleNo,
                             ["f_nwRoutingOnCbbBlur('" + thisObj.m_fieldIds[5]+
                             rRec.m_ruleNo + "')"]);
@@ -209,10 +252,16 @@ function UTM_confNwRouting(name, callback, busLayer)
         thisObj.f_adjustGridHeight();
     };
 
+    this.f_handleGridSort = function(col)
+    {
+        if(thisObj.f_isSortEnabled(thisObj.m_colModel, col))
+            thisObj.f_populateTable();
+    };
+
     this.f_init = function()
     {
         this.m_colModel = this.f_createColumns();
-        this.m_gridHeader = this.f_createGridHeader(this.m_colModel, "f_nwRoutingNotUse");
+        this.m_gridHeader = this.f_createGridHeader(this.m_colModel, "f_nwRoutingGridHeaderClick");
         this.m_gridBody = this.f_createGridView(this.m_colModel, false);
         this.f_loadVMData();
 
@@ -526,7 +575,7 @@ function f_nwRoutingOnCbbBlur(cbeId)
     g_configPanelObj.m_activeObj.f_cbOnSelected(cbeId);
 }
 
-function f_nwRoutingNotUse()
+function f_nwRoutingGridHeaderClick(col)
 {
-
+    g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }

@@ -501,7 +501,9 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         if (colName != null && colName.length > 2) {
             if (thisObj.m_sortCol == col) {
-                var sortIcon = thisObj.m_sortOrder == 'asc' ? '<img src="' + g_lang.m_imageDir + 'sortAsc.gif"/>' : '<img src="' + g_lang.m_imageDir + 'sortDesc.gif"/>';
+                var sortIcon = thisObj.m_sortOrder == 'asc' ? 
+                    '<img src="' + g_lang.m_imageDir + 'sortAsc.gif"/>' :
+                    '<img src="' + g_lang.m_imageDir + 'sortDesc.gif"/>';
 
                 if (!thisObj.m_allowSort)
                     sortIcon = '';
@@ -853,6 +855,59 @@ function UTM_confBaseObj(name, callback, busLayer)
         thisObj.m_sortOrder = order;
 
         return true;
+    }
+
+    this.f_sortArray = function(col, ar)
+    {
+        var si = col;
+        var sar = new Array();
+
+        //////////////////////////////////////////////////////////////////
+        // loop through the ar and place the sorting index value at begin
+        // of the string
+        for(var i=0; i<ar.length; i++)
+        {
+            var fu = ar[i];
+            var a = fu.split('|');
+            sar[i] = a[si];
+
+            for(var j=0; j<a.length; j++)
+            {
+                if(j == si) continue;
+
+                sar[i] += '|' + a[j];
+            }
+        }
+
+        // perform sorting
+        sar.sort();
+        if(si > 0)
+        {
+            ///////////////////////////////////////////
+            //
+            ar = sar;
+            for(var i=0; i<ar.length; i++)
+            {
+                var fu = ar[i];
+                var a = fu.split('|');
+                sar[i] = '';
+
+                for(var j=1; j<a.length; j++)
+                {
+                    sar[i] += (j != 1 ? '|':'') + a[j];
+
+                    if(j == si)
+                        sar[i] += '|' + a[0];
+                }
+            }
+        }
+
+        if(thisObj.m_sortOrder == 'desc')
+            sar.reverse();
+
+        thisObj.m_sortCol = col;
+        thisObj.m_sortColPrev = col;
+        return sar;
     }
 
 	this.f_setSortOnColPerformed = function(col, prevCol)

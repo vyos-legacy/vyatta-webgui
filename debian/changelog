@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+52) unstable; urgency=low
+
+  * * fixed code typo of using the wrong base class name in User List
+    screen file.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Mon, 08 Jun 2009 18:42:31 +0000
+
 vyatta-webgui (0.2+fxd0+51) unstable; urgency=low
 
   * add shared FT front-end style/image/etc. files

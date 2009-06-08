@@ -92,7 +92,7 @@ function FT_confUserList(name, callback, busLayer)
     {
         thisObj.f_clearViewRow();
 
-        var sortCol = FT_confDashboard.superclass.m_sortCol;
+        var sortCol = FT_confUserList.superclass.m_sortCol;
         var ulRec = thisObj.f_createSortingArray(sortCol, thisObj.m_uRec);
         for(var i=0; i<ulRec.length; i++)
         {

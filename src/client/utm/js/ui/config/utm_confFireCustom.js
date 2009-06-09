@@ -26,7 +26,7 @@ function UTM_confFireCustom(name, callback, busLayer)
     this.m_fieldIds = ["rulenoId-", "dirId-", "appId-", "proId-", "sipId-", "smipId-",
                         "sportId-", "dipId-", "dmipId-", "dportId-",
                         "actId-", "logId-", "enableId-"];
-    this.m_protocol = ["Any", "tcp", "udp", "icmp", "ipsec", "vrrp", " "];
+    this.m_protocol = ["Any", "tcp", "udp", "both", "icmp", "ip", " "];
 
     /**
      * @param name - name of configuration screens.
@@ -706,15 +706,9 @@ function f_fireCustomResetHandler()
         alert("Please select a Zone Direction from the Combobox 'Show rules only from:' to be reset ");
 }
 
-function f_fireCustomDeleteConfirm(ruleNo)
-{
-    g_configPanelObj.m_activeObj.f_handleDeleteRule(ruleNo);
-}
 function f_fireCustomDeleteHandler(ruleNo)
 {
-    g_utils.f_popupMessage(g_lang.m_fireDeleteConfirm,
-                'confirm', g_lang.m_fireCustDeleteConfirmHeader, true,
-                "f_fireCustomDeleteConfirm('" + ruleNo + "')");
+    g_configPanelObj.m_activeObj.f_handleDeleteRule(ruleNo);
 }
 function f_fireCustomBackHandler()
 {

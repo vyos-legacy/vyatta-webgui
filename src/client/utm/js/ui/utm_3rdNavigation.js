@@ -80,7 +80,7 @@ function UTM_3rdNavigation()
 		div.style.paddingTop = '5px';
 		div.setAttribute('id', 'sm_help');
 		div.setAttribute('class', 'help');
-		div.innerHTML = '<img id="context_help" src = "images/img_help.gif">';
+		div.innerHTML = '<img id="context_help" onclick="return loadHelp(\'help/en/helpSample.html\');" src = "images/img_help.gif">';
         return div;		
 	}
 	
@@ -187,8 +187,8 @@ function UTM_3rdNavigation()
             case VYA.UTM_CONST.DOM_2_NAV_LOG_ID:
                 return VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID;				
 			//starting section for network configuration
-            case VYA.UTM_CONST.DOM_2_NAV_DHCP_ID:
-                return VYA.UTM_CONST.DOM_3_NAV_SUB_DHCP_ID;			
+            case VYA.UTM_CONST.DOM_2_NAV_LAN_ID:
+                return VYA.UTM_CONST.DOM_3_NAV_SUB_PORTCONF_ID;			
             case VYA.UTM_CONST.DOM_2_NAV_NAT_ID:
                 return VYA.UTM_CONST.DOM_3_NAV_SUB_NAT_ID;			
             case VYA.UTM_CONST.DOM_2_NAV_IP_ROUTE_ID:
@@ -223,7 +223,7 @@ function UTM_3rdNavigation()
             case VYA.UTM_CONST.DOM_2_NAV_LOG_ID:
                 return 8;		
 			//Start network configuration portion	
-            case VYA.UTM_CONST.DOM_2_NAV_DHCP_ID:
+            case VYA.UTM_CONST.DOM_2_NAV_LAN_ID:
                 return 0;					
             case VYA.UTM_CONST.DOM_2_NAV_NAT_ID:
                 return 1;				
@@ -260,7 +260,7 @@ function UTM_3rdNavigation()
             case VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID:
                 return 8;				
 			//start network configuration portion	
-            case VYA.UTM_CONST.DOM_3_NAV_SUB_DHCP_ID:
+            case VYA.UTM_CONST.DOM_3_NAV_SUB_LAN_ID:
                 return 0;				
             case VYA.UTM_CONST.DOM_3_NAV_SUB_NAT_ID:
                 return 1;				

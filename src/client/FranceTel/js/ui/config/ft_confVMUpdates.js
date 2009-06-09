@@ -172,12 +172,16 @@ function f_vmHandleDeployCancel(e, vmId)
 {
     var cb = function(evt)
     {
+        g_utils.f_cursorDefault();
         if(!g_configPanelObj.m_activeObj.f_isServerError(evt, g_lang.m_uhErrorTitle))
             g_configPanelObj.m_activeObj.f_loadVMData();
     }
 
     if(e.getAttribute('id')== 'ft_popup_message_apply')
+    {
+        g_utils.f_cursorWait();
         g_busObj.f_cancelVMDeploy(vmId, cb);
+    }
 }
 
 function f_vmDeployCancel(vmId, vmName)

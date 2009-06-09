@@ -251,7 +251,7 @@ function FT_confRestore(name, callback, busLayer)
         div.style.backgroundColor = 'white';
         div.style.overflow = 'visible';
 
-        var innerHtml = '<form method="post" enctype="multipart/form-data" action="/cgi-bin/uploader.pl">' +
+        var innerHtml = '<form method="post" enctype="multipart/form-data" action="/cgi-bin/openapp-uploader.pl">' +
                       '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr height="40">';
 
@@ -318,6 +318,7 @@ function FT_confRestore(name, callback, busLayer)
 
         var cb = function()
         {
+
             alert('upload comleted');
         }
 
@@ -347,6 +348,7 @@ function f_handleDeleteRestoreFile(e, filename)
 {
     var cb = function(evt)
     {
+        g_utils.f_cursorDefault();
         if(g_configPanelObj.m_activeObj.f_isServerError(evt, g_lang.m_restoreErrorTitle))
             return;
 
@@ -354,13 +356,18 @@ function f_handleDeleteRestoreFile(e, filename)
     }
 
     if(e.getAttribute('id')== 'ft_popup_message_apply')
+    {
+        g_utils.f_cursorWait();
         g_busObj.f_deleteArchiveFileFromServer(filename, filename, cb);
+    }
 }
 
 function f_handleDownloadRestoreFile(e, filename)
 {
     var cb = function(evt)
     {
+        g_utils.f_cursorDefault();
+
         if(g_configPanelObj.m_activeObj.f_isServerError(evt, g_lang.m_restoreErrorTitle))
             return;
 
@@ -368,7 +375,10 @@ function f_handleDownloadRestoreFile(e, filename)
     }
 
     if(e.getAttribute('id')== 'ft_popup_message_apply')
+    {
+        g_utils.f_cursorWait();
         g_busObj.f_downloadArchiveFileFromServer(filename, filename, cb);
+    }
 }
 
 function f_handleDownloadRestore(filename)

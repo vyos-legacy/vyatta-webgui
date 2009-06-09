@@ -262,6 +262,7 @@ function FT_confUserRight(name, callback, busLayer)
 
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt != undefined && !evt.f_isError())
                 thisObj.f_loadData();
             else if(evt != undefined && evt.f_isError())
@@ -269,7 +270,10 @@ function FT_confUserRight(name, callback, busLayer)
         };
 
         if(cmdStr.length > 0)
+        {
+            g_utils.f_cursorWait();
             g_busObj.f_modifyUserRightToServer(cmdStr, cb);
+        }
     };
 
     this.f_resetUserInput = function()

@@ -92,14 +92,14 @@ function FT_confRestart(name, callback, busLayer)
             var restart = thisObj.f_renderButton(
                         'Restart', enabled, "f_vmRestart('" +
                         v[0] + "', '" + v[2] + "')",
-                        'Restart ' + v[0]);
+                        'Restart ' + v[2]);
             var stop = thisObj.f_renderButton(
                         'Stop', enabled, "f_vmStop('" +
                         v[0] + "', '" + v[2] + "')",
-                        'Stop ' + v[0]);
+                        'Stop ' + v[2]);
             var start = thisObj.f_renderButton(
                         'Start', !enabled, "f_vmHandleStart('" +
-                        v[0] + "', '" + v[2] + "')", 'Start ' + v[0]);
+                        v[0] + "', '" + v[2] + "')", 'Start ' + v[2]);
             var vmData = [v[2], img, restart, stop, start];
 
             var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData);
@@ -198,9 +198,11 @@ function f_vmHandleStop(e, vmId)
     {
         var cb = function()
         {
+            g_utils.f_cursorDefault();
             g_configPanelObj.m_activeObj.f_loadVMData();
         }
 
+        g_utils.f_cursorWait();
         g_busObj.f_stopVM(vmId, cb);
     }
 }
@@ -219,9 +221,11 @@ function f_vmHandleRestart(e, vmId)
     {
         var cb = function()
         {
+            g_utils.f_cursorDefault();
             g_configPanelObj.m_activeObj.f_loadVMData();
         }
 
+        g_utils.f_cursorWait();
         g_busObj.f_restartVM(vmId, cb);
     }
 }
@@ -230,9 +234,11 @@ function f_vmHandleStart(vm)
 {
     var cb = function()
     {
+        g_utils.f_cursorDefault();
         g_configPanelObj.m_activeObj.f_loadVMData();
     }
 
+    g_utils.f_cursorWait();
     g_busObj.f_startVM(vm, cb);
 }
 

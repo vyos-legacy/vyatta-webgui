@@ -191,6 +191,7 @@ function f_handleUserListDeleteUser(e, username)
 {
     var cb = function(evt)
     {
+        g_utils.f_cursorDefault();
         if(evt.f_isError())
         {
             alert('delete error');
@@ -200,7 +201,10 @@ function f_handleUserListDeleteUser(e, username)
     };
 
     if(e.getAttribute('id')== 'ft_popup_message_apply')
+    {
+        g_utils.f_cursorWait();
         g_busObj.f_deleteUserFromServer(username, cb);
+    }
 }
 
 function f_userListDeleteUser(username)

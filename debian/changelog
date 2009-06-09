@@ -1,3 +1,12 @@
+vyatta-webgui (0.2.14+fxdU+50) unstable; urgency=low
+
+  * * Firewall security level screen:
+  * * NAP/PAT page:
+  * * IP Routing page
+  * * fixed to avoid wait indicator display more than one.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Tue, 09 Jun 2009 01:37:57 +0000
+
 vyatta-webgui (0.2.14+fxdU+49) unstable; urgency=low
 
   [ Kevin Choi ]

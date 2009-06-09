@@ -10,7 +10,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // General
     m_tableTooltip1 : 'Click here to perform sorting.',
-    m_networkConfig : 'Network Configruation',
+    m_networkConfig : 'Network',
 
 	m_mainOA : 'Open Appliance',
 	m_mainLogin : 'Login',

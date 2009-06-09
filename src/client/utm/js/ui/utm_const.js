@@ -38,7 +38,7 @@ VYA.UTM_CONST = {
 	DOM_2_NAV_LOG_ID : 'log_l1',		
 
 	//-----Secondary Menu For Network Configuration
-	DOM_2_NAV_DHCP_ID : 'dhcp_l1',
+	DOM_2_NAV_LAN_ID : 'lan_l1',
 	DOM_2_NAV_NAT_ID : 'nat_l1',
 	DOM_2_NAV_IP_ROUTE_ID : 'ip_route_l1',
 	DOM_2_NAV_DNS_ID : 'dns_l1',
@@ -55,7 +55,7 @@ VYA.UTM_CONST = {
 	DOM_3_NAV_LOG_ID : 'sm_log',	
 
 	//-----Third Menu For Network Configuration	
-	DOM_3_NAV_DHCP_ID : 'sm_dhcp',
+	DOM_3_NAV_LAN_ID : 'sm_lan',
 	DOM_3_NAV_NAT_ID : 'sm_nat',
 	DOM_3_NAV_IP_ROUTE_ID : 'sm_ip_route',
 	DOM_3_NAV_DNS_ID : 'sm_dns',
@@ -86,8 +86,11 @@ VYA.UTM_CONST = {
     DOM_3_NAV_SUB_LOG_ID : 'log_l2',
 	
 	//-----Configuration menu item id for network configuration.
-	//-----DHCP
-	DOM_3_NAV_SUB_DHCP_ID : 'dhcp_l2',
+	//-----LAN/ MultiLAN
+	DOM_3_NAV_SUB_PORTCONF_ID : 'portconf_l2',	
+	DOM_3_NAV_SUB_LAN_ID : 'lan_l2',
+	DOM_3_NAV_SUB_LAN2_ID : 'lan2_l2',
+	DOM_3_NAV_SUB_DMZ_ID : 'dmz_l2',
     //-----NAT		
 	DOM_3_NAV_SUB_NAT_ID : 'nat_l2',
     //-----IP ROUTE	

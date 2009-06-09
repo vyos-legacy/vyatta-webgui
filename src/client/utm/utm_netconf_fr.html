@@ -10,7 +10,7 @@
 		<![endif]-->
 
         <script type="text/javascript">
-        	g_defaultMenuItem = 'dhcp_l1';        
+        	g_defaultMenuItem = 'lan_l1';        
         </script>
         <script type="text/javascript" src="utm_devConfig.js">
         </script>
@@ -33,14 +33,14 @@
                 <!-- **** 2nd nav start **** -->
                 <div id="oa_2_nav">
                     <ul id="oa_2_nav_ul">
-                        <li id="dhcp_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;DHCP</a>
+                        <li id="lan_l1">
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;LAN/ Multi LAN</a>
                         </li>
                         <li id="nat_l1">
                             <a href="#"><img border="0" src="images/carre.gif">&nbsp;NAT/PAT</a>
                         </li>
                         <li id="ip_route_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;IP routing</a>
+                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Cascaded Router</a>
                         </li>
                         <li id="dns_l1">
                             <a href="#"><img border="0" src="images/carre.gif">&nbsp;DNS</a>
@@ -52,16 +52,25 @@
                 <!-- **** 2nd nav end **** -->
 				<!-- **** 3nd nav start **** -->
                 <div id="sub_menu_container">
-                    <div id="sm_dhcp" class="left_sub_menu">
-                        <ul id="sm_dhcp_ul">
+                    <div id="sm_lan" class="left_sub_menu">
+                        <ul id="sm_lan_ul">
                             <li class="left_sub_menu_header">
-                                <h3>&nbsp;DHCP</h3>
+                                <h3>&nbsp;LAN/Multi LAN</h3>
                             </li>
                             <li class="left_sub_menu_liner">
                             </li>
-                            <li id="dhcp_l2">
-                                <a href="#" desc="DHCP"><img border="0" src="images/fleche_off.gif">&nbsp;DHCP</a>
+                            <li id="portconf_l2">
+                                <a href="#" desc="Port Configuration"><img border="0" src="images/fleche_off.gif">&nbsp;Port Configuration</a>
                             </li>
+                            <li id="lan_l2">
+                                <a href="#" desc="LAN"><img border="0" src="images/fleche_off.gif">&nbsp;LAN</a>
+                            </li>
+							<li id="lan2_l2">
+                                <a href="#" desc="LAN2"><img border="0" src="images/fleche_off.gif">&nbsp;LAN2</a>
+                            </li>
+                            <li id="dmz_l2">
+                                <a href="#" desc="DMZ"><img border="0" src="images/fleche_off.gif">&nbsp;DMZ</a>
+                            </li>							
                             <li class="left_sub_menu_liner">
                             </li>
                         </ul>
@@ -114,7 +123,7 @@
                 </div>
                 <div id="config_panel" valign="center">
                     <div id="config_panel_img_title">                       
-                       <img align="left" src="images/en/32_disquette.gif" class="config_panel_img"><h1 valign="bottom" id="config_panel_title">Place Holder</h1>
+                       <img align="left" src="/oa/images/title_icon_config.png" class="config_panel_img"><h1 valign="bottom" id="config_panel_title">Place Holder</h1>
                     </div>
                 </div>   				
                 <div id="ft_container" valign="top">

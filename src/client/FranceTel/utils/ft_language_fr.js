@@ -10,7 +10,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // General	
 	m_tableTooltip1 : "Cliquez ici pour faire le tri",
-    m_networkConfig : 'Network Configruation',
+    m_networkConfig : 'Network',
 	
 	m_mainOA : 'Open Appliance',
 	m_mainLogin : 'Login',

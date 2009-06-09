@@ -53,6 +53,7 @@ function UTM_firewallBusObj(busObj)
     this.m_busObj = busObj;
     this.m_lastCmdSent = null;
     this.m_fireRec = null;
+    this.m_zoneRecs = [];
 
     this.m_udpServices = ["DNS-UDP", "TFTP", "NTP", "SNMP", "L2TP", "Traceroute",
                         "IPSec", "UNIK", "H323 host call - UDP", "SIP-UDP",
@@ -110,12 +111,13 @@ function UTM_firewallBusObj(busObj)
                 else if(thisObj.m_lastCmdSent.indexOf(
                     '<handler>customize-firewall delete-rule') > 0)
                 {
-
+                    
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
                       "zone-mgmt get-zone-info") > 0)
                 {
-
+                    thisObj.m_zoneRecs = thisObj.f_parseFwZoneMgmt(err);
+                    evt = new UTM_eventObj(0, thisObj.m_zoneRecs, '');
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
                     '<handler>customize-firewall cancel ') > 0 ||
@@ -131,6 +133,46 @@ function UTM_firewallBusObj(busObj)
         }
     }
 
+
+    this.f_parseFwZoneMgmt = function(response)
+    {
+        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
+        var zones = [];
+
+        if(nodes != null)
+        {
+            for(var i=0; i<nodes.length; i++)
+            {
+                var n = nodes[i];
+                if(n.nodeName == "zone-mgmt")
+                {
+                    var vals = n.firstChild.nodeValue.split(":");
+                    for(var j=0; j<vals.length; j++)
+                    {
+                        var zone = new UTM_fwZoneRecord()
+
+                        zone.m_name = this.f_getValueFromNameValuePair("zone", vals[j]);
+                        zone.m_description = this.f_getValueFromNameValuePair("description", vals[j]);
+                        var inter = this.f_getValueFromNameValuePair("interfaces", vals[j]);
+
+                        if(inter.indexOf(",") >= 0)
+                        {
+                            var inters = inter.split(",");
+                            for(var k=0; k<inters.length; k++)
+                                zone.m_members.push(inters[k])
+                        }
+                        else
+                            zone.m_members.push(inter);
+
+                        if(zone.m_name.length > 0)
+                            zones.push(zone);
+                    }
+                }
+            }
+        }
+
+        return zones;
+    }
 
     /**
      * parse firewall security level data.
@@ -379,31 +421,6 @@ function UTM_firewallBusObj(busObj)
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
-        return;
-
-        var zm = function(name)
-        {
-            var z = new UTM_fwZoneRecord(name);
-            z.m_members = ['1', '2', '3'];
-            z.m_description = "zone description " + name;
-
-            return z;
-        }
-
-        var cb = function()
-        {
-            var z = [];
-            z.push(zm('zone1'));
-            z.push(zm('zone2'));
-            z.push(zm('zone3'));
-            z.push(zm('zone4'));
-            z.push(zm('zone5'));
-            z.push(zm('zone6'));
-
-            guicb(z);
-        }
-
-        window.setTimeout(cb, 500);
     }
 
     this.f_getFirewallZoneMemberAvailable = function(zoneRec, guicb)

@@ -156,7 +156,7 @@ function UTM_confNwRouting(name, callback, busLayer)
             var rec = thisObj.f_createRoutingRecord(r[5]);
             rec.m_destIpAddr = r[0];
             rec.m_destIpMask = r[1];
-            rec.m_isGateway = r[2];
+            rec.m_isGateway = r[2]=="true"? true: false;
             rec.m_gwOrInterface = r[3];
             rec.m_metric = r[4];
             recs.push(rec);
@@ -168,7 +168,7 @@ function UTM_confNwRouting(name, callback, busLayer)
     this.f_adjustGridHeight = function()
     {
         var counter = thisObj.m_rRecs != null ? thisObj.m_rRecs.length : 0;
-        var h = counter * 30 + 105;
+        var h = counter * 30 + 60;
 
         // the minimum height of grid is 160
         if(counter < 2)

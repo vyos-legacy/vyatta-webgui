@@ -36,8 +36,8 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
         this.f_colorGridBackgroundRow(true);
 
         cols[0] = this.f_createColumn(g_lang.m_fireZMZoneName, 110, 'text', '6', true, 'center');
-        cols[1] = this.f_createColumn(g_lang.m_fireZMMember, 150, 'combo', '3', true, 'center');
-        cols[2] = this.f_createColumn(g_lang.m_fireZMDesc, 250, 'combo', '3', false, 'center');
+        cols[1] = this.f_createColumn(g_lang.m_fireZMMember, 150, 'combo', '6', true, 'center');
+        cols[2] = this.f_createColumn(g_lang.m_fireZMDesc, 250, 'combo', '6', false, 'center');
         cols[3] = this.f_createColumn(g_lang.m_fireZMDelete, 100, 'textField', '3', false, 'center');
 
         return cols;
@@ -45,30 +45,66 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
-        thisObj.m_updateFields = [];
-
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
-            if(evt != undefined)// && evt.m_objName == 'UTM_eventObj')
+            if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
-                while(evt.length > 0)
-                {
-                    var rec = evt.pop();
-                    thisObj.m_zoneRecs.push(rec);
-                    thisObj.f_addFirewallIntoRow(rec);
-                }
+                thisObj.m_zoneRecs = evt.m_value;
+                thisObj.f_populateTable();
             }
 
             thisObj.f_adjustDivPosition(thisObj.m_buttons);
-            //thisObj.f_increateTableRowCounter(2);
             thisObj.f_resize();
         };
 
         g_utils.f_cursorWait();
-
         thisObj.m_busLayer.f_getFirewallZoneMgmtList(cb);
     };
+
+    this.f_populateTable = function()
+    {
+        thisObj.f_removeDivChildren(thisObj.m_div);
+        thisObj.f_removeDivChildren(thisObj.m_gridBody);
+
+        this.m_gridHeader = this.f_createGridHeader(this.m_colModel, "f_fwZMGridHeaderClick");
+        thisObj.m_div.appendChild(thisObj.m_gridHeader);
+        thisObj.m_div.appendChild(thisObj.m_gridBody);
+        thisObj.m_div.appendChild(thisObj.m_buttons);
+
+        var sortCol = UTM_confFireZoneMgmt.superclass.m_sortCol;
+        var ar = thisObj.f_createSortingArray(sortCol, thisObj.m_zoneRecs);
+
+        for(var i=0; i<ar.length; i++)
+            thisObj.f_addFirewallIntoRow(ar[i]);
+    }
+
+    this.f_createSortingArray = function(sortIndex, zRecs)
+    {
+        var ar = new Array();
+        var recs = new Array();
+
+        for(var i=0; i<zRecs.length; i++)
+        {
+            // NOTE: the order of this partition same as the order
+            // grid columns.
+            // compose a default table row
+            ar[i] = zRecs[i].m_name + '|' + zRecs[i].m_members + '|' +
+                    zRecs[i].m_description;
+        }
+
+        var sar = thisObj.f_sortArray(sortIndex, ar);
+        for(var i=0; i<sar.length; i++)
+        {
+            var r = sar[i].split("|");
+            var rec = new UTM_fwZoneRecord(r[0])
+            rec.m_members = [r[1]];
+            rec.m_description = r[2];
+            recs.push(rec);
+        }
+
+        return recs;
+    }
 
     this.f_addFirewallIntoRow = function(zoneRec)
     {
@@ -81,8 +117,7 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [zname, zoneRec.m_members, zoneRec.m_description,
-                    del]);
+                    [zname, zoneRec.m_members, zoneRec.m_description, del]);
         thisObj.m_gridBody.appendChild(div);
     };
 
@@ -96,7 +131,6 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
         var btns = [['Add', "f_fireZoneMgmtAddHandler()", g_lang.m_fireZMAddTip, this.m_btnAddId]];
         this.m_buttons = this.f_createButtons(btns);
 
-        //window.setTimeout(function(){thisObj.f_resize();}, 100);
         this.f_loadVMData();
         return [this.m_gridHeader, this.m_gridBody, this.m_buttons];
     };
@@ -115,6 +149,12 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
         return null;
     }
 
+    this.f_handleGridSort = function(col)
+    {
+        if(thisObj.f_isSortEnabled(thisObj.m_colModel, col))
+            thisObj.f_populateTable();
+    };
+
     this.f_handleDeleteZone= function(zname)
     {
         
@@ -130,9 +170,9 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
 }
 UTM_extend(UTM_confFireZoneMgmt, UTM_confBaseObj);
 
-function f_fwZMGridHeaderClick()
+function f_fwZMGridHeaderClick(col)
 {
-    
+    g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }
 
 function f_fireZoneMgmtAddHandler()

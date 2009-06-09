@@ -13,7 +13,7 @@
 
 .ft_wait_cursor
 {
-    cursor: url(../images/wait.gif), wait;
+    cursor: url(../images/wait-cursor.gif), wait;
 }
 
 .ft_default_cursor

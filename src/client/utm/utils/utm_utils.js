@@ -613,14 +613,17 @@ var g_utils =
 	},
 
     f_startWait: function(timeout)
-	{
-		var innerHTML = '<img aligh="center" src="images/wait.gif">';
-		var div = document.createElement('div');
+    {
+        if(document.getElementById('ft_wait_div') != null)
+            this.f_stopWait();
+
+        var innerHTML = '<img aligh="center" src="images/wait.gif">';
+	var div = document.createElement('div');
         div.setAttribute('id', 'ft_wait_div');
-		div.style.width = '32px';
-		div.style.height = '32px';
-		div.innerHTML = innerHTML;
-		//div.style.border = '2px solid red';
+	div.style.width = '32px';
+	div.style.height = '32px';
+	div.innerHTML = innerHTML;
+	//div.style.border = '2px solid red';
 
 		var width = 32;
         var html = document.body.parentNode;

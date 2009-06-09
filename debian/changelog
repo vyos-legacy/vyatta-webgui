@@ -1,3 +1,14 @@
+vyatta-webgui (0.2+fxd0+53) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Change the text from 'Network Configuration' to 'Network'
+
+  [ Kevin Choi ]
+  * * Per FT test feedback: added a wait cursor and a wait server
+    response indicator to the
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Tue, 09 Jun 2009 21:29:53 +0000
+
 vyatta-webgui (0.2+fxd0+52) unstable; urgency=low
 
   * * fixed code typo of using the wrong base class name in User List

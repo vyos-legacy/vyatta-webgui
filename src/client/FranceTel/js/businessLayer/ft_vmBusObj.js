@@ -194,7 +194,6 @@ function FT_vmBusObj(busObj)
         // server may not provide all the vm we need and the sorting
         // order we want. So we need to get some work done here....
         var finalVmsList = []; 
-        c = 0;  // vm counter
         
         // prepare BLB vm
         var vm = thisObj.f_findVM('blb', vms);
@@ -203,11 +202,20 @@ function FT_vmBusObj(busObj)
         var isPwRole = role == userRec.V_ROLE_ADMIN || role == userRec.V_ROLE_INSTALL ?
                         true : false;
         if(isPwRole)
-            finalVmsList[c++] = vm == null ? new FT_vmRecObj('blb', 'Business Livebox'):vm;
+            vm = vm == null ? new FT_vmRecObj('blb', 'Business Livebox'):vm;
+        finalVmsList.push(vm);
 
         // prepare OA vm
         vm = thisObj.f_findVM('openapp', vms);
-        finalVmsList[c++] = vm == null ? new FT_vmRecObj('openapp', 'Open Appliance'):vm;
+        vm = vm == null ? new FT_vmRecObj('openapp', 'Open Appliance'):vm;
+        finalVmsList.push(vm);
+
+        // utm/security vm
+        vm = thisObj.f_findVM('utm', vms);
+        if(vm == null && isPwRole)
+            vm = new FT_vmRecObj('utm', 'Security');
+        if(vm != null)
+            finalVmsList.push(vm);
 
         // pbx vm
         vm = thisObj.f_findVM('pbx', vms);
@@ -223,14 +231,7 @@ function FT_vmBusObj(busObj)
             vm.m_guiUri = '/' + uri[uri.length-2] + '/' + pbxURL;
         }
         if(vm != null)
-            finalVmsList[c++] = vm;
-
-        // utm/security vm
-        vm = thisObj.f_findVM('utm', vms);
-        if(vm == null && isPwRole)
-            vm = new FT_vmRecObj('utm', 'Security');
-        if(vm != null)
-            finalVmsList[c++] = vm;
+            finalVmsList.push(vm);
 
         // the rest of other vms
         for(var i=0; i<vms.length; i++)
@@ -239,7 +240,7 @@ function FT_vmBusObj(busObj)
                 vms[i].m_name == 'pbx' || vms[i].m_name == 'utm')
                 continue;
             else
-                finalVmsList[c++] = vms[i];
+                finalVmsList.push(vms[i]);
         }
 
         thisObj.m_vmRecObj = finalVmsList;

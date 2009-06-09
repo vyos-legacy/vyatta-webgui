@@ -117,7 +117,7 @@ function FT_confRestoreDesc(name, callback, busLayer)
             g_utils.f_cursorDefault();
         }
 
-        g_utils.f_cursorDefault();
+        g_utils.f_cursorWait();
         g_busObj.f_restore(vms, types, rec.m_file, callback);
     }
 

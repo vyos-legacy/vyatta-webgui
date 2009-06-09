@@ -374,7 +374,14 @@ sub execute_reset_fw_ruleset {
     }
 
   } # end of foreach loop
-
+ 
+  # save config on reset
+  $err = OpenApp::Conf::run_cmd_def_session('commit', 'save');
+  if (defined $err) {
+    # print error and return
+    print("<form name='customize-firewall' code=1></form>");
+    exit 1;
+  }
 }
 
 sub get_next_rulenum {

@@ -65,18 +65,6 @@ function UTM_businessLayer()
 	thisObj.m_request = createXMLHttpRequest();
 
     /**
-     * Force dom0  timeout
-     */
-    this.f_timeout = function()
-	{
-		if ((window.parent != undefined) && (window.parent != null)) {
-			if (window.parent.f_resizeChildIframe != undefined) {
-				window.parent.f_resizeChildIframe(h + padding);
-			}
-		}		
-	}
-
-    /**
      * send request to server. All server get must call this function.
      * @param content - content to be sent (w/o xml header)
      * @param callback - a callback function to be called upon respond

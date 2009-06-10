@@ -31,7 +31,7 @@ function FT_userRecObj(user, last, first, pw, role, type, email, right, newPw)
                 if(node.childNodes[i].firstChild != null)
                     this.m_first = node.childNodes[i].firstChild.nodeValue;
                 else
-                    this.m_firest = "";
+                    this.m_first = "";
             }
 
             if(node.childNodes[i].nodeName == 'last')

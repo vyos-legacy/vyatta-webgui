@@ -27,10 +27,20 @@ function FT_userRecObj(user, last, first, pw, role, type, email, right, newPw)
         for(var i=0; i<node.childNodes.length; i++)
         {
             if(node.childNodes[i].nodeName == 'first')
-                this.m_first = node.childNodes[i].firstChild.nodeValue;
+            {
+                if(node.childNodes[i].firstChild != null)
+                    this.m_first = node.childNodes[i].firstChild.nodeValue;
+                else
+                    this.m_firest = "";
+            }
 
             if(node.childNodes[i].nodeName == 'last')
-                this.m_last = node.childNodes[i].firstChild.nodeValue;
+            {
+                if(node.childNodes[i].firstChild != null)
+                    this.m_last = node.childNodes[i].firstChild.nodeValue;
+                else
+                    this.m_last = "";
+            }
         }
     }
 

@@ -119,10 +119,30 @@ function FT_mainFrame(){
         
 		//Make a copy of the vmList
 		thisObj.m_vmList = new Array();
+		
+		var bUtmIncluded = false;
+		var uriPath = '';
+		var index = -1;
+		
 		for (var i=0; i < vmList.length; i++) {
 			var vmRec = new FT_vmRecObj(vmList[i].m_name, vmList[i].m_displayName);
 			vmRec.m_guiUri = vmList[i].m_guiUri;
 			thisObj.m_vmList.push(vmRec);
+			//insert the 'network' tab right after the 'open appliance' tab.
+			if (vmRec.m_name == VYA.FT_CONST.OA_ID) {
+				vmRec = new FT_vmRecObj('netconf', g_lang.m_networkConfig);
+				vmRec.m_guiUri = '';
+			    thisObj.m_vmList.push(vmRec);		
+				index = i+1;		
+			} else if (vmRec.m_name == 'utm') {
+				bUtmIncluded = true;
+				uriPath = vmRec.m_guiUri;
+			}
+		}
+		if (bUtmIncluded) {
+		    thisObj.m_vmList[index].m_guiUri = uriPath;	
+		} else {
+			thisObj.m_vmList.splice(index,1);
 		}
         //thisObj.m_vmList = vmList;
         thisObj.m_priNavigation.f_init(thisObj, thisObj.m_vmList);

@@ -67,6 +67,12 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
                 desc.value = zr.m_description;
 
             thisObj.f_populateList("fwZoneMgmtEditorIncludeId", thisObj.m_zoneRec.m_members);
+
+            ///////////////////////////////
+            // set read only field
+            var tf = document.getElementById('fwZoneMgmtEditorZoneNameId')
+            tf.readOnly = true;
+            tf.style.backgroundColor = '#efefef';
         }
 
         g_utils.f_cursorWait();

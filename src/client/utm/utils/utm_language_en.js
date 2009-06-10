@@ -21,6 +21,8 @@ var g_lang =
     m_status : 'Status',
     m_ipAddr : 'IP Address',
     m_underConstruction : 'Under Construction',
+    m_applyTip : "Save changed",
+    m_cancelTip : "Cancel changed",
 
     ///////////////////////////////////////////////////////////////////
     // VPN Overview
@@ -45,6 +47,10 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Level
     m_fireLevelColName : "Security Level",
+    m_fireLevelColSelect : "Select",
+    m_fireLevelColDir : "Direction",
+    m_fireLevelColFrom : "From",
+    m_fireLevelColTo : "To",
     m_fireLevelHeader : "Lerem ipsum onsectetuer adipiscing elit, sed diam nonummy" +
                     " nibh euismod tincidunt ut looreet dolore magna aliquam erat " +
                     "volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation",
@@ -65,12 +71,13 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Firewall Zone Management
     m_fireZMAddTip : "Create new zone",
+    m_fireZMApplyTip : "Save change",
     m_fireZMZoneName : "Zone Name",
     m_fireZMMember : "Zone Members",
     m_fireZMMemIncluded : "Included",
     m_fireZMMemAvail : "Available",
     m_fireZMDesc : "Description",
-    m_fireZMDelete : "Delete",
+    m_fireZMEnable : "Enable",
     m_fireZMMemIncTip : "Double click on the selected item to move to Available list box.",
     m_fireZMMemAvailTip : "Double click on the selected item to move to Included list box.",
     m_fireZMMemError : "Member cannot be empty. Please select at least one memeber",

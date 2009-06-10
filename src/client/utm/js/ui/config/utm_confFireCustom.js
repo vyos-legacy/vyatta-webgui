@@ -21,7 +21,7 @@ function UTM_confFireCustom(name, callback, busLayer)
     this.m_btnBackId = "wfCustomizeBackId";
     this.m_fireRecs = [];
     this.thisObjName = 'UTM_confFireCustom';
-    this.m_ruleZoneOptName = [/*"Any",*/ "DMZ_to_LAN", "DMZ_to_WAN", "LAN_to_DMZ",
+    this.m_ruleZoneOptName = ["Any", "DMZ_to_LAN", "DMZ_to_WAN", "LAN_to_DMZ",
                       "LAN_to_WAN", "WAN_to_DMZ", "WAN_to_LAN"];
     this.m_fieldIds = ["rulenoId-", "dirId-", "appId-", "proId-", "sipId-", "smipId-",
                         "sportId-", "dipId-", "dmipId-", "dportId-",
@@ -133,14 +133,23 @@ function UTM_confFireCustom(name, callback, busLayer)
         thisObj.m_cb = function(evt)
         {
             g_utils.f_cursorDefault();
-            var enabled = true;
 
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
                 if(evt.m_value != null)
                 {
-                    thisObj.m_fireRecs = evt.m_value;
-                    thisObj.f_removeDivChildren(thisObj.m_gridBody);
+                    if(fireRec.m_zonePair != "Any")
+                    {
+                        thisObj.m_fireRecs = evt.m_value;
+                        thisObj.f_removeDivChildren(thisObj.m_gridBody);
+                    }
+                    else
+                    {
+                        var newArr = thisObj.m_fireRecs.concat(evt.m_value);
+                        thisObj.m_fireRecs = newArr;
+
+                        thisObj.f_getZoneAny(thisObj.m_cb);
+                    }
 
                     for(var i=0; i<evt.m_value.length; i++)
                         thisObj.f_addFirewallIntoRow(evt.m_value[i]);
@@ -149,26 +158,39 @@ function UTM_confFireCustom(name, callback, busLayer)
                 thisObj.f_onOffEnabledAllChkBox();
             }
 
-            thisObj.f_adjustGridHeight();
+            if(fireRec.m_zonePair != "Any")
+                thisObj.f_adjustGridHeight();
         };
 
-        g_utils.f_cursorWait();
-
         thisObj.m_zpIndex = 1;
+        thisObj.m_fireRecs = [];
         var ruleOp = document.getElementById(thisObj.m_headercbbId);
         var fireRec = new UTM_fireRecord(null, "LAN_to_WAN");
         if(ruleOp != null)
             fireRec = thisObj.f_createFireRecord(null);
 
-        thisObj.m_busLayer.f_getFirewallSecurityCustomize(fireRec, thisObj.m_cb);
+        ////////////////////////////////////////////
+        // if rule option is 'any', get all rules
+        if(fireRec.m_zonePair == "Any")
+        {
+            thisObj.f_getZoneAny(thisObj.m_cb);
+            thisObj.f_removeDivChildren(thisObj.m_gridBody);
+            thisObj.f_enabledDisableButton(thisObj.m_btnAddId, false);
+        }
+        else
+        {
+            g_utils.f_cursorWait();
+            thisObj.f_enabledDisableButton(thisObj.m_btnAddId, true);
+            thisObj.m_busLayer.f_getFirewallSecurityCustomize(fireRec, thisObj.m_cb);
+        }
     };
 
     this.f_stopLoadVMData = function()
     {
         thisObj.m_busLayer.f_cancelFirewallCustomizeRule(null);
     }
-/*/
-    this.f_getRuleAny = function(cb)
+
+    this.f_getZoneAny = function(cb)
     {
         if(thisObj.m_zpIndex < thisObj.m_ruleZoneOptName.length)
         {
@@ -176,8 +198,10 @@ function UTM_confFireCustom(name, callback, busLayer)
             var fr = new UTM_fireRecord(null, thisObj.m_ruleZoneOptName[thisObj.m_zpIndex++]);
             thisObj.m_busLayer.f_getFirewallSecurityCustomize(fr, cb);
         }
+        else
+            thisObj.f_adjustGridHeight();
     }
-*/
+
     this.f_adjustGridHeight = function()
     {
         var counter = thisObj.m_fireRecs != null ? thisObj.m_fireRecs.length : 0;
@@ -189,8 +213,7 @@ function UTM_confFireCustom(name, callback, busLayer)
 
         thisObj.m_grid.style.height = h+"px";
         thisObj.f_resetTableRowCounter(0);
-
-        window.setTimeout(function(){thisObj.f_resize();}, 30);
+        window.setTimeout(function(){thisObj.f_resize();}, 20);
     }
     this.f_addFirewallIntoRow = function(fireRec)
     {

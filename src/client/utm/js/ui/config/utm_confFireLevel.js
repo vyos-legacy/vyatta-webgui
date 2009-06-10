@@ -38,7 +38,21 @@ function UTM_confFireLevel(name, callback, busLayer)
         return this.f_getPanelDiv(this.f_init());
     }
 
-    this.f_createColumns = function()
+    this.f_createActiveTableColumns = function()
+    {
+        var cols = [];
+
+        cols[0] = this.f_createColumn(g_lang.m_fireLevelColSelect, 90, 'text', '6');
+        cols[1] = this.f_createColumn(g_lang.m_fireLevelColDir + "<br>" +
+                              g_lang.m_fireLevelColFrom, 120, 'text', '6');
+        cols[2] = this.f_createColumn(g_lang.m_fireLevelColDir + "<br>" +
+                              g_lang.m_fireLevelColTo, 120, 'text', '6');
+        cols[3] = this.f_createColumn(g_lang.m_fireLevelColName, 150, 'text', '6');
+
+        return cols;
+    }
+
+    this.f_createLevelColumns = function()
     {
         var cols = [];
         UTM_confFireLevel.superclass.m_allowSort = false;
@@ -66,6 +80,7 @@ function UTM_confFireLevel(name, callback, busLayer)
                     mainPanel.style.height = 380+'px';
             }
 
+            thisObj.f_adjustDivPosition(thisObj.m_buttons);
             thisObj.f_resize();
         };
 
@@ -137,7 +152,7 @@ function UTM_confFireLevel(name, callback, busLayer)
                         radioIds[i], "f_fireLevelRadioHandler('"+radioIds[i]+"')",
                         "secLevel", ""), rdHeaders[i], hdBodies[i]);
 
-            this.m_gridBody.appendChild(thisObj.f_createGridRow(this.m_colModel,
+            this.m_gridLevelBody.appendChild(thisObj.f_createGridRow(this.m_colLevelModel,
                     [radio], h[i]));
         }
 
@@ -150,9 +165,14 @@ function UTM_confFireLevel(name, callback, busLayer)
 
     this.f_init = function()
     {
-        this.m_colModel = this.f_createColumns();
-        this.m_gridHeader = this.f_createGridHeader(this.m_colModel);
-        this.m_gridBody = this.f_createGridView(this.m_colModel, false);
+        this.m_colLevelModel = this.f_createLevelColumns();
+        this.m_gridLevelHeader = this.f_createGridHeader(this.m_colLevelModel);
+        this.m_gridLevelBody = this.f_createGridView(this.m_colLevelModel, false);
+
+        this.m_colActiveModel = this.f_createActiveTableColumns();
+        this.m_gridActiveHeader = this.f_createGridHeader(this.m_colActiveModel);
+        this.m_gridActiveBody = this.f_createGridView(this.m_colActiveModel, false);
+
         this.f_initGridData();
         this.f_loadVMData();
 
@@ -161,10 +181,9 @@ function UTM_confFireLevel(name, callback, busLayer)
                     ['Cancel', "f_fireLevelCancelHandler()",
                     g_lang.m_fireLevelCancelTip, this.m_btnCancelId, false]];
         this.m_buttons = this.f_createButtons(btns);
-        this.f_adjustDivPosition(this.m_buttons);
 
-        return [this.f_headerText(), this.m_gridHeader,
-                this.m_gridBody, this.m_buttons];
+        return [this.f_headerText(), this.m_gridActiveHeader, this.m_gridLevelHeader,
+                this.m_gridActiveBody, this.m_gridLevelBody, this.m_buttons];
     };
 
     this.f_headerText = function()

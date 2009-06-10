@@ -15,8 +15,16 @@ function UTM_fwZoneRecord(name)
     this.m_members = [];        // members included
     this.m_memAvailable = [];   // members available
     this.m_description = null;
+    this.m_enabled = true;
 }
 
+
+function UTM_fwLevelRecord(dir)
+{
+    this.m_isSelected = false;
+    this.m_direction = dir;
+    this.m_level = null;
+}
 
 /**
  * Firewall data record
@@ -153,6 +161,7 @@ function UTM_firewallBusObj(busObj)
 
                         zone.m_name = this.f_getValueFromNameValuePair("zone", vals[j]);
                         zone.m_description = this.f_getValueFromNameValuePair("description", vals[j]);
+                        zone.m_enabled = this.f_getValueFromNameValuePair("enable", vals[j]);
                         var inter = this.f_getValueFromNameValuePair("interfaces", vals[j]);
 
                         if(inter.indexOf(",") >= 0)

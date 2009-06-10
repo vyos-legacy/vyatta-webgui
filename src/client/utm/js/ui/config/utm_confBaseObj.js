@@ -299,6 +299,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_createButtons = function(buttons)
     {
         var div = document.createElement('div');
+        div.setAttribute('align', 'center');
         div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';

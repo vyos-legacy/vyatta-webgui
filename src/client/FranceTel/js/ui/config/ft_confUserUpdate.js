@@ -222,18 +222,26 @@ function FT_confUserUpdate(name, callback, busLayer)
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
         var valid = true;
+		var t = '';
+		
         if (thisObj.form.conf_user_update_username.value.trim().length <= 0) {
             errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
 			                        g_lang.m_userUsername + ' ' + g_lang.m_formNoEmpty + '</li>';
             valid = false;
         }
-        if (!thisObj.f_checkEmail(thisObj.form.conf_user_update_email.value.trim())) {
-            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif)">' +
-			               g_lang.m_userEmail + ': ' +
-                           thisObj.form.conf_user_update_email.value +
-                           ' ' + g_lang.m_formInvalid + '</li>';
-            valid = false;
-        }
+		t = thisObj.form.conf_user_update_email.value.trim();
+		//if (t.length > 0) {
+			if (!thisObj.f_checkEmail(t)) {
+				errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif)">' +
+				g_lang.m_userEmail +
+				': ' +
+				thisObj.form.conf_user_update_email.value +
+				' ' +
+				g_lang.m_formInvalid +
+				'</li>';
+				valid = false;
+			}
+		//}
         if (!valid) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';

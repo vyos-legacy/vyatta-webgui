@@ -32,23 +32,11 @@ function FT_primaryNavigation()
                 }
                 thisObj.f_addVm(thisObj.m_vmList[i].m_name, thisObj.m_vmList[i].m_displayName, 
 				    thisObj.f_buildUrlPath(thisObj.m_vmList[i]));
-				if (thisObj.m_vmList[i].m_name == 'utm') {
-					this.f_addNetConf(thisObj.m_vmList[i]);
-				}
             }
         }
         thisObj.f_selectVm(VYA.FT_CONST.OA_ID);
     }
 	
-	this.f_addNetConf = function(vm)
-	{ 
-		var vmName = 'netconf';
-		var vmDispName = g_lang.m_networkConfig;
-		var vmRec = new FT_vmRecObj(vmName, vmDispName);
-		vmRec.m_guiUri = vm.m_guiUri;
-		thisObj.m_vmList.push(vmRec);
-	}
-    
     this.f_buildUrlPath = function(vm)
     {
         //return (window.location.protocol + '//' + vm.m_ip + ':' + vm.m_guiPort  + vm.m_guiUri);

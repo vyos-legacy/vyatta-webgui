@@ -251,7 +251,8 @@ function FT_confRestore(name, callback, busLayer)
         div.style.backgroundColor = 'white';
         div.style.overflow = 'visible';
 
-        var innerHtml = '<form method="post" enctype="multipart/form-data" action="/cgi-bin/openapp-uploader.pl">' +
+        var innerHtml = '<form method="post" enctype="multipart/form-data" ' +
+                      'action="/cgi-bin/openapp-uploader.pl" target="hiddeniframe">' +
                       '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr height="40">';
 
@@ -273,7 +274,7 @@ function FT_confRestore(name, callback, busLayer)
         div.innerHTML = innerHtml;
         return div;
     }
-
+/*
     this.f_createHiddenIframe = function(uploadFilename)
     {
         ///////////////////////
@@ -287,6 +288,7 @@ function FT_confRestore(name, callback, busLayer)
         // form element
         var iform = document.createElement('form');
         iform.method = 'post';
+        iform.target = 'hiddeniframe';
         iform.enctype = 'multipart/form-data name=mypc';
         iform.action = "/cgi-bin/openapp-uploader.pl";
         iform.appendChild(input);
@@ -295,14 +297,14 @@ function FT_confRestore(name, callback, busLayer)
         // iframe element
         var iframe = document.createElement('iframe');
         document.body.appendChild(iframe);
+        iframe.setAttribute("name", "hiddenifame");
+        iframe.setAttribute("style", "display:none");
         iframe.appendChild(iform);
-        iframe.className = 'hidden';
-        iframe.frameBorder = '0';
-        
+        //iframe.className = 'hidden';
 
         return iform;
     }
-
+*/
     this.f_sendRestoreFromPC = function(fn)
     {
         var cb = function()
@@ -327,15 +329,9 @@ function FT_confRestore(name, callback, busLayer)
             return;
         }
 
-        var iform = thisObj.f_createHiddenIframe(fn);
-        //iform = forms=document.forms;
-        iform.submit();
-
-        /////////////////////////////////////////////
-        // set initial load page to this page
-        g_cookie.f_set(g_consObj.V_COOKIES_INIT_LOAD_PAGE, g_consObj.V_LOAD_RESTORE,
-                        g_cookie.m_userNameExpire);
-        g_utils.f_gotoHomePage();
+        //var iform = thisObj.f_createHiddenIframe(fn);
+        var iform = document.forms;
+        iform[0].submit();
 
         //thisObj.f_sendRestoreFromPC(fn);
         var fnc = function()

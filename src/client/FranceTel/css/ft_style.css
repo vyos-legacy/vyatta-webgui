@@ -47,7 +47,7 @@ img
 
 #lang_bar {
     float: right;
-    margin-top: 1em;
+	margin-top: 20px;
 } 
 
 #welcome {
@@ -57,6 +57,8 @@ img
     width: 100%;
     background: #EFEFEF;
     font-size: 8pt;
+	margin-bottom: 10px;
+	margin-top: 0px;
 } 
 
 #welcome span {

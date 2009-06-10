@@ -195,7 +195,11 @@ function FT_mainFrame(){
 	this.f_handleClickLogoff = function(event) {
         thisObj.f_logout();	
 	}
-    
+	
+	this.f_timeout = function() {
+        g_utils.f_popupMessage('timeout', 'timeout', null, true,
+                      'f_confHandleSessionTimeoutConfirm()');		
+	}    
 }
 
 ///////////////////////////////////////////////
@@ -229,4 +233,7 @@ function f_resizeChildIframe(h)
 	g_mainFrameObj.f_resizeChildIframe(h);
 }
 
-
+function f_timeout()
+{
+	g_mainFrameObj.f_timeout();
+}

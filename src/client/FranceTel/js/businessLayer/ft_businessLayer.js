@@ -132,17 +132,26 @@ function FT_businessLayer()
             var cn = err[0].childNodes;
             for(var i=0; i<cn.length; i++)
             {
-                if (cn[i].nodeName == 'code') {
-					errCode = Number(cn[i].firstChild.nodeValue);
-					if (errCode == 8) {
-					    var sid = response.getElementsByTagName('id');
-                        if (sid != undefined && sid[0] != undefined) {
-							errSid = sid[0].firstChild.nodeValue;
-						}
-					}
-				} else if (cn[i].nodeName == 'msg' && errCode != 0) {
-					errmsg = cn[i].firstChild.nodeValue;
-				}
+                if (cn[i].nodeName == 'code')
+                {
+                    errCode = Number(cn[i].firstChild.nodeValue);
+                    if (errCode == 8)
+                    {
+			var sid = response.getElementsByTagName('id');
+                        if (sid != undefined && sid[0] != undefined)
+                        {
+                            errSid = sid[0].firstChild.nodeValue;
+			}
+                    }
+                    else if(errCode == 3)
+                    {
+                        thisObj.f_userLogout();
+                    }
+		} 
+                else if (cn[i].nodeName == 'msg' && errCode != 0)
+                {
+                    errmsg = cn[i].firstChild.nodeValue;
+		}
             }
         }
 

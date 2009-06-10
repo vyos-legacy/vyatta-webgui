@@ -260,7 +260,8 @@ function FT_confRestore(name, callback, busLayer)
                       'padding-top:3px;"><b>' + g_lang.m_restoreRestorePC + '</b></div></td></tr>';
 
         innerHtml += '<tr height="30"><td><div>' +
-                    '<input id="ft_mypcFile" name="mypcfile" type="file" ></div></td>'+
+                    '<input id="ft_mypcFile" name="mypcfile" type="file" ' +
+                    'onsubmit=f_checkUpload()></div></td>'+
                     '<td><div title="Browse my pc" style="padding-left:20px">' +
                     '<input type="button" name="OpenAppl" ' +
                     'style="cursor:pointer;" ' +
@@ -278,26 +279,40 @@ function FT_confRestore(name, callback, busLayer)
         ///////////////////////
         // input element
         var input = document.createElement('input');
-        input.name = 'pcFile'
-        input.type = 'file';
-        //input.value = uploadFilename;
+        input.name = 'mypcfile'
+        input.type = 'hidden';
+        input.value = uploadFilename;
 
         //////////////////////
         // form element
         var iform = document.createElement('form');
         iform.method = 'post';
-        iform.enctype = 'multipart/form-data';
+        iform.enctype = 'multipart/form-data name=mypc';
+        iform.action = "/cgi-bin/openapp-uploader.pl";
         iform.appendChild(input);
 
         /////////////////////////
         // iframe element
         var iframe = document.createElement('iframe');
+        document.body.appendChild(iframe);
         iframe.appendChild(iform);
         iframe.className = 'hidden';
         iframe.frameBorder = '0';
-        document.body.appendChild(iframe);
+        
 
-        iform.submit();
+        return iform;
+    }
+
+    this.f_sendRestoreFromPC = function(fn)
+    {
+        var cb = function()
+        {
+
+            alert('upload comleted');
+        }
+
+        fn = fn.substring(0, fn.length-4);
+        g_busObj.f_uploadArchiveFileFromServer(fn, fn, cb);
     }
 
     this.f_restoreFromPC = function()
@@ -312,24 +327,23 @@ function FT_confRestore(name, callback, busLayer)
             return;
         }
 
-        //thisObj.f_createHiddenIframe(fn);
-        var forms = document.forms;
-        forms[0].submit();
-
-        var cb = function()
-        {
-
-            alert('upload comleted');
-        }
-
-        fn = fn.substring(0, fn.length-4);
-        g_busObj.f_uploadArchiveFileFromServer(fn, fn, cb);
+        var iform = thisObj.f_createHiddenIframe(fn);
+        //iform = forms=document.forms;
+        iform.submit();
 
         /////////////////////////////////////////////
         // set initial load page to this page
         g_cookie.f_set(g_consObj.V_COOKIES_INIT_LOAD_PAGE, g_consObj.V_LOAD_RESTORE,
                         g_cookie.m_userNameExpire);
         g_utils.f_gotoHomePage();
+
+        //thisObj.f_sendRestoreFromPC(fn);
+        var fnc = function()
+        {
+            thisObj.f_sendRestoreFromPC(fn);
+        }
+        window.setTimeout(function(){fnc();}, 9000);
+        
     }
 }
 FT_extend(FT_confRestore, FT_confBaseObj);
@@ -398,4 +412,9 @@ function f_deleteRestoreFile(content, filename)
 function f_restoreGridHeaderOnclick(col)
 {
     g_configPanelObj.m_activeObj.f_handleGridSort(col);
+}
+
+function f_checkUpload()
+{
+    alert('got it')
 }

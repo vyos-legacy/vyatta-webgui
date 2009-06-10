@@ -64,6 +64,17 @@ function UTM_businessLayer()
     this.m_userObj = new UTM_userBusObj(this);
 	thisObj.m_request = createXMLHttpRequest();
 
+    /**
+     * Force dom0  timeout
+     */
+    this.f_timeout = function()
+	{
+		if ((window.parent != undefined) && (window.parent != null)) {
+			if (window.parent.f_resizeChildIframe != undefined) {
+				window.parent.f_resizeChildIframe(h + padding);
+			}
+		}		
+	}
 
     /**
      * send request to server. All server get must call this function.
@@ -110,7 +121,13 @@ function UTM_businessLayer()
                     response = error;
 
                 return response;
-            }
+            } else if (r.status == 404) { //assuming  timeout on dom0. dom0 stop proxy the request.
+		        if ((window.parent != undefined) && (window.parent != null)) {
+			        if (window.parent.f_resizeChildIframe != undefined) {
+				        window.parent.f_timeout();
+			        }
+		        }				
+			}
         }
 
         return null;

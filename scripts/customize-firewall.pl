@@ -72,9 +72,20 @@ sub get_rule {
 
  my ($ruleset, $rulenum) = @_;
  my $rule_string="rulenum=[$rulenum]";
+ my $level = "firewall name $ruleset rule $rulenum";
+
+ # get application name stored in description field of rule
+ my $config = new Vyatta::Config;
+ $config->setLevel("$level");
+ my $application = $config->returnValue('description');
+ if (!defined $application) {
+   $rule_string .= ",application=[Others]";
+ } else {
+   $rule_string .= ",application=[$application]";
+ }
 
  my $cli_rule = new Vyatta::IpTables::Rule;
- $cli_rule->setup("firewall name $ruleset rule $rulenum");
+ $cli_rule->setup("$level");
 
  if (defined $cli_rule->{_protocol}) {
    $rule_string .= ",protocol=[$cli_rule->{_protocol}]";
@@ -214,7 +225,7 @@ sub execute_set_value {
 
   # convert any capital letters to small caps to avoid any confusion
   $key =~ tr/A-Z/a-z/;
-  $value =~ tr/A-Z/a-z/;
+  $value =~ tr/A-Z/a-z/ if ! $key eq 'application';
 
   switch ($key) {
     case 'protocol' {
@@ -224,6 +235,17 @@ sub execute_set_value {
       @cmds = (
          "set $fw_rule_level protocol $value",
       );
+    }
+    case 'application' {
+      if (!$value eq '') {
+        @cmds = (
+         "set $fw_rule_level description $value",
+        );
+      } else {
+        @cmds = (
+         "set $fw_rule_level description Others",
+        );       
+      }
     }
     case 'saddr' {
       @cmds = get_addr_port_cmds(

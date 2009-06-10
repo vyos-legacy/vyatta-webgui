@@ -252,7 +252,7 @@ function FT_confRestore(name, callback, busLayer)
         div.style.overflow = 'visible';
 
         var innerHtml = '<form method="post" enctype="multipart/form-data" ' +
-                      'action="/cgi-bin/openapp-uploader.pl" target="hiddeniframe">' +
+                      'action="/cgi-bin/openapp-uploader.pl" target="uploadFrame">' +
                       '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr height="40">';
 

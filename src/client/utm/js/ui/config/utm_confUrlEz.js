@@ -58,7 +58,7 @@ function UTM_confUrlEz(name, callback, busLayer)
             }, EMPTY_ROW, {
                 v_type: 'html',
                 id: 'conf_url_ez_blacklist',
-                text: '<input id="conf_url_ez_blacklist" type="checkbox" name="filter_by" value="cat" checked>&nbsp;' + g_lang.m_url_ezByCat,
+                text: '<input id="conf_url_ez_blacklist" type="radio" name="filter_by" value="cat" checked>&nbsp;' + g_lang.m_url_ezByCat,
                 padding: '30px',
                 v_new_row: 'true',
                 v_end_row: 'true'
@@ -87,7 +87,7 @@ function UTM_confUrlEz(name, callback, busLayer)
 , {
                 v_type: 'html',
                 id: 'conf_url_ez_whitelist',
-                text: '<input id="conf_url_ez_whitelist" type="checkbox" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByUrl,
+                text: '<input id="conf_url_ez_whitelist" type="radio" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByUrl,
                 padding: '30px',
                 v_new_row: 'true'
             }, {
@@ -101,7 +101,7 @@ function UTM_confUrlEz(name, callback, busLayer)
 , {
                 v_type: 'html',
                 id: 'conf_url_ez_keyword',
-                text: '<input id="conf_url_ez_keyword" type="checkbox" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByWord,
+                text: '<input id="conf_url_ez_keyword" type="radio" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByWord,
                 padding: '30px',
                 v_new_row: 'true'
             }, {
@@ -496,9 +496,10 @@ function UTM_confUrlEz(name, callback, busLayer)
         thisObj.f_attachListener();
         thisObj.m_form = document.getElementById('conf_url_ez_form');
         thisObj.f_setFocus();
-        thisObj.f_resize();
+        //thisObj.f_resize();
                 
         thisObj.f_reload();
+        window.setTimeout(function(){thisObj.f_resize();}, 10);		
     }
     
     this.f_attachListener = function()

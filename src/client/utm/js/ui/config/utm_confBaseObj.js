@@ -557,23 +557,36 @@ function UTM_confBaseObj(name, callback, busLayer)
      * @param cb = callback
      * @param tooltip - tooltip for this checkbox
      */
-    this.f_renderCheckbox = function(val, elId, cb, tooltip)
+    this.f_renderCheckbox = function(val, elId, cb, tooltip, readonly)
     {
+		var ro = '';
         var checked = val == 'yes' || val == 'Yes' ? 'checked' : '';
         tooltip = tooltip == undefined ? "" : tooltip;
+
+		if (readonly != null) {
+			if (readonly==true) {
+				ro = ' disabled style="color:#CCC;"';
+			}
+		} 
 
         return '<input id="' + elId + '" type="checkbox" ' + checked +
         ' title="' +
         tooltip +
         '" onclick="' +
-        cb +
-        '"/>';
+        cb + '"' + ro + '/>';
     }
 
-    this.f_renderRadio = function(val, elId, cb, name, tooltip)
+    this.f_renderRadio = function(val, elId, cb, name, tooltip, readonly)
     {
+        var ro = '';		
         var checked = val == 'yes' ? 'checked' : '';
         tooltip = tooltip == undefined ? "" : tooltip;
+		
+		if (readonly != null) {
+			if (readonly==true) {
+				ro = ' disabled style="color:#CCC;"';
+			}
+		}   
 
         return '<input id="' + elId + '" type="radio" ' + checked +
         ' name="' +
@@ -581,8 +594,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         '" title="' +
         tooltip +
         '" onclick="' +
-        cb +
-        '"/>';
+        cb + '"' + ro + '/>';
     }
 
 
@@ -700,6 +712,13 @@ function UTM_confBaseObj(name, callback, busLayer)
         return '<a title="' + tooltip + '" href="' + link + '">' +
         text +
         '</a>';
+    }
+
+    this.f_renderImage = function(imgSrc, cb, tooltip)
+    {		
+        return '<input type="image" title="' + tooltip + 
+               '" src="' + imgSrc + '" ' +
+               ' onclick="' + cb + '">';
     }
 
     this.f_renderButton = function(text, enable, cb, tooltip)

@@ -78,7 +78,7 @@ function UTM_nwPortConfigRecord(num, name, group, enable)
  * port configuration
  * @param {Object} busObj
  */
-function UTM_nwPortConfigList(groupList, portList)
+function UTM_nwPortConfigObj(groupList, portList)
 {
 	var thisObj = this;
 	this.m_groupList = groupList;
@@ -848,7 +848,7 @@ function UTM_nwPortConfigBusObj(busObj)
     var thisObj = this;
     this.m_busObj = busObj;
     this.m_lastCmdSent = null;
-    this.m_portConfigRec = null;
+    this.m_portConfigObj = null;
 	this.m_GET_CMD = 'port-config get';
 	this.m_SET_CMD = 'port-config set';
 
@@ -884,8 +884,8 @@ function UTM_nwPortConfigBusObj(busObj)
 					}
 				}
                 if (thisObj.m_lastCmdSent.indexOf(thisObj.m_GET_CMD) > 0) {
-                    thisObj.m_portConfigRec = thisObj.f_parsePortConfig(err);
-                    evt = new UTM_eventObj(0, thisObj.m_portConfigRec, '');
+                    thisObj.m_portConfigObj = thisObj.f_parsePortConfig(err);
+                    evt = new UTM_eventObj(0, thisObj.m_portConfigObj, '');
 				}
             }
 
@@ -974,7 +974,7 @@ function UTM_nwPortConfigBusObj(busObj)
 		var groupList = thisObj.f_parseGroupList(form);
 		var portList =  thisObj.f_parsePortList(form);
 		
-		return new UTM_nwPortConfigList(groupList, portList);
+		return new UTM_nwPortConfigObj(groupList, portList);
 	}
 
     this.f_parsePortList = function(form)

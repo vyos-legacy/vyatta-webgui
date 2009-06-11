@@ -1,0 +1,290 @@
+/*
+ Document   : utm_confNwPortConfig.js
+ Created on : Apr 01, 2009, 11:21:31 AM
+ Author     : Loi.Vo
+ Description:
+ */
+function UTM_confNwPortConfig(name, callback, busLayer)
+{
+    var thisObj = this;
+    this.thisObjName = 'UTM_confNwPortConfig';
+    this.m_hdcolumns = undefined;	
+	this.m_headerText = undefined;
+	this.m_header = undefined;
+    this.m_buttons = undefined;	
+    this.m_body = undefined;
+	this.m_portConfig = undefined;
+	
+	this.m_prefix = 'conf_port_config_';			
+    this.m_btnCancelId = this.m_prefix + 'btn_cancel';
+    this.m_btnApplyId = this.m_prefix + 'btn_apply';
+	this.m_eventCbFunction = 'f_confPortConfigEventCallback';
+
+    /**
+     * @param name - name of configuration screens.
+     * @param callback - a container callback
+     * @param busLayer - business object
+     */
+    this.constructor = function(name, callback, busLayer)
+    {
+        this.privateConstructor(name, callback, busLayer);
+    }
+    
+    this.privateConstructor = function(name, callback, busLayer)
+    {
+        UTM_confNwPortConfig.superclass.constructor(name, callback, busLayer);
+    }
+    this.privateConstructor(name, callback, busLayer);	
+	
+	
+    this.f_getConfigurationPage = function()
+    {
+        var div = this.f_getPanelDiv(this.f_init());
+        this.f_loadVMData();
+        return div;
+    }	
+	
+    this.f_init = function()
+    {
+        this.m_hdcolumns = this.f_createHdColumns();
+		this.m_headerText = this.f_headerText();
+		this.f_createTableHeader();
+        this.m_body = this.f_createGridView(this.m_hdcolumns, true);
+        
+        var btns = [
+                      ['Apply', this.m_eventCbFunction + "('" + this.m_btnApplyId + "')", g_lang.m_tooltip_apply, this.m_btnApplyId, g_lang.m_imageDir + 'bt_apply.gif'],		           
+		              ['Cancel', this.m_eventCbFunction + "('" + this.m_btnCancelId + "')", g_lang.m_tooltip_cancel, this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif'] 
+				   ];
+		            
+        this.m_buttons = this.f_createButtons(btns, '530px');
+        
+        return [this.m_headerText, this.m_header, this.m_body,this.m_buttons];
+    }
+	
+	this.f_createTableHeader = function()
+	{
+        this.m_header = this.f_createGridHeader(this.m_hdcolumns, '');		
+	}
+
+    this.f_createHdColumns = function()
+    {
+        this.f_colorGridBackgroundRow(true);
+        var cols = [];
+        var chkbox = g_lang.m_enabled;
+        
+        cols[0] = this.f_createColumn('', 80, 'image', '28');
+		cols[1] = this.f_createColumn(g_lang.m_portconf_port, 100, 'text','10', true, 'left');
+        cols[2] = this.f_createColumn(g_lang.m_portconf_LAN, 70, 'radio', '28');
+        cols[3] = this.f_createColumn(g_lang.m_portconf_LAN2, 70, 'radio', '28');
+		cols[4] = this.f_createColumn(g_lang.m_portconf_DMZ, 70, 'radio', '28');
+        cols[5] = this.f_createColumn(g_lang.m_portconf_WAN, 70, 'radio', '28');						
+        cols[6] = this.f_createColumn(g_lang.m_enabled + '<br>', 70, 'checkbox', '28');
+        
+        return cols;
+    }	
+	
+    this.f_headerText = function()
+    {
+		var html = '<p>' + g_lang.m_vpnOverviewHeader + '</p><br/><br/>';
+		html += '<img src="images/port_config.png"><br/><br/>';
+		
+        return this.f_createHtmlDiv(html);
+    }	
+	
+	this.f_setPortConfig = function(portList, cb)
+	{
+		g_busObj.f_setPortConfig(portList, cb); 	
+	}
+	
+	this.f_getPortConfig = function(cb)
+	{
+		g_busObj.f_getPortConfig(cb);
+	}		
+	
+    this.f_loadVMData = function()
+    {		
+	    thisObj.f_cleanup();
+		
+        var cb = function(evt)
+        {        
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                if (evt.f_isError()) {                
+                    g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);  
+                    return;                    
+                }                
+                thisObj.m_portConfig = evt.m_value;    
+                thisObj.f_populateTable(thisObj.m_portConfig);     	
+				window.setTimeout(function(){thisObj.f_adjust();}, 10);
+                //thisObj.f_adjust();	
+            }                                 
+        };      
+        this.f_getPortConfig(cb);
+		this.f_enableAllButton(false);
+    }	
+	
+	this.f_sort = function(a,b)
+	{
+		var ap = a.m_num.trim();
+		var bp = b.m_num.trim();
+
+        return ap.cmp(bp);
+	}	
+	
+	this.f_getImgSrc = function(portNum)
+	{
+		switch (portNum) {
+			case '1':
+			    return 'images/1.png';
+			case '2':
+			    return 'images/2.png';
+			case '3':
+			    return 'images/3.png';
+			case '4':
+			    return 'images/4.png';
+			default:
+				return '';
+		}
+	}
+	
+	this.f_compareGroup = function(group1, group2)
+	{
+		var g1 = group1.toLowerCase();
+		var g2 = group2.toLowerCase();
+		if (g1 == g2) {
+			return 'yes';
+		}
+		return 'no';
+	}
+	
+    this.f_populateTable = function(portConfigObj)
+    {
+		var groupList = portConfigObj.m_groupList;
+		var portList = portConfigObj.m_portList;
+		portList.sort(thisObj.f_sort);
+		
+		for (var i=0; i < portList.length; i++) {
+			var pnum = thisObj.f_renderImage(thisObj.f_getImgSrc(portList[i].m_num), '', '');
+            var pname = portList[i].m_name;
+			var rId = thisObj.m_prefix + 'radio_' + portList[i].m_num;
+			
+			var lan = thisObj.f_renderRadio(
+			              thisObj.f_compareGroup('lan',portList[i].m_group), 
+						  thisObj.m_prefix + 'lan_' + portList[i].m_num,
+						  '', rId, '', true						  
+			          );
+			var lan2 = thisObj.f_renderRadio(
+			              thisObj.f_compareGroup('lan2',portList[i].m_group), 
+						  thisObj.m_prefix + 'lan2_' + portList[i].m_num,
+						  '', rId, '', true						  
+			          );
+			var dmz = thisObj.f_renderRadio(
+			              thisObj.f_compareGroup('dmz',portList[i].m_group), 
+						  thisObj.m_prefix + 'dmz_' + portList[i].m_num,
+						  '', rId, '', true						  
+			          );
+			var wan = thisObj.f_renderRadio(
+			              thisObj.f_compareGroup('wan',portList[i].m_group), 
+						  thisObj.m_prefix + 'wan_' + portList[i].m_num,
+						  '', rId, '', true					  
+			          );
+			var en = (portList[i].m_enable=='true')? 'yes' : 'no';
+			var cbId = thisObj.m_prefix + 'cb_' + portList[i].m_num;
+			var ro = false;
+			if (portList[i].m_group.toLowerCase() == 'wan') {
+				ro = true;
+			}
+			var enable = thisObj.f_renderCheckbox(en, 
+						  cbId,
+						  "f_confPortConfigEventCallback('" + cbId + "')" , '', ro						  
+			          );				
+		    var data = [pnum, pname, lan, lan2, dmz, wan, enable];
+			var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28);
+			//alert('row:' + bodyDiv.innerHTML);
+			thisObj.m_body.appendChild(bodyDiv);					
+		}
+    }	
+	
+    this.f_stopLoadVMData = function()
+    {
+    }	
+
+    this.f_enableAllButton = function(state) 
+	{
+		thisObj.f_enabledDisableButton(thisObj.m_btnApplyId, state);
+		thisObj.f_enabledDisableButton(thisObj.m_btnCancelId, state);
+		thisObj.f_enabledDisableButton(thisObj.m_btnResetId, state);
+	}	
+	
+	this.f_cleanup = function()
+	{		
+        this.f_removeDivChildren(this.m_div);
+		this.f_removeDivChildren(this.m_body);
+        this.f_removeDivChildren(this.m_header);
+		this.f_createTableHeader();
+		this.m_div.appendChild(this.m_headerText);
+        this.m_div.appendChild(this.m_header);
+        this.m_div.appendChild(this.m_body);
+        this.m_div.appendChild(this.m_buttons);			
+	}
+	
+    this.f_getTableHeight = function()
+    {
+        var h = this.m_tableRowCounter * 28;
+        return h;
+    }
+    
+    this.f_adjust = function()
+    {
+        this.m_body.style.height = '';
+		this.m_body.style.borderBottom = '';
+        this.f_adjustDivPositionByPixel(this.m_buttons, 20);
+        this.f_resize(20);
+    }	
+	
+    this.f_handleClick = function(id, obj)
+    {
+        if (id == thisObj.m_btnCancelId) {
+            thisObj.f_loadVMData();
+        } else if (id == thisObj.m_btnApplyId) {
+            thisObj.f_apply();
+        } else { //assume checkbox clicked
+			thisObj.f_enableAllButton(true);
+		}
+    }	
+	
+	this.f_apply = function()
+	{
+		var portList = thisObj.m_portConfig.m_portList;
+		for (var i=0; i < portList.length; i++) {
+			if (portList[i].m_group.toLowerCase()!= 'wan') {
+				var id = thisObj.m_prefix + 'cb_' + portList[i].m_num;
+				var cb = document.getElementById(id);
+				if (cb != null) {
+					if (cb.checked) {
+						portList[i].m_enable = true;
+					} else {
+						portList[i].m_enable = false;
+					}
+				}
+			}
+		}
+        var cb = function(evt)
+        {        
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                if (evt.f_isError()) {                
+                    g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);  
+                    return;                    
+                }                		
+                thisObj.f_enableAllButton(false);	
+            }                                 
+        };      
+        this.f_setPortConfig(thisObj.m_portConfig.m_portList,cb);
+	}
+}
+
+UTM_extend(UTM_confNwPortConfig, UTM_confBaseObjExt);
+
+function f_confPortConfigEventCallback(id, obj)
+{
+    g_configPanelObj.m_activeObj.f_handleClick(id, obj);
+}

@@ -104,7 +104,8 @@ function UTM_confBaseObjExt(name, callback, busLayer)
 		div.style.width = width;
         div.style.borderLeft = '1px solid #CCC';
         div.style.borderRight = '1px solid #CCC';
-        div.style.borderBottom = '1px solid #CCC';	
+        div.style.borderBottom = '1px solid #CCC';
+		div.setAttribute('align', '');	
 		return div;	
 	}	
 	
@@ -150,7 +151,27 @@ function UTM_confBaseObjExt(name, callback, busLayer)
         '" onclick="' +
         cb +
         '"/><input style="display:none" id="' + hiddenElId + '" type="checkbox" ' + checkedHidden + '/>';
-    }	
+    }
+	
+	this.f_createHtmlDiv = function(html)
+    {
+        var div = document.createElement('div');
+        div.style.position = 'relative';
+        div.style.display = 'block';
+        div.style.backgroundColor = 'white';
+        div.style.overflow = 'visible'
+
+        var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
+        innerHtml += '<tbody><tr><td>' +
+        '<div>' +
+        html +
+        '</div>' +
+        '</td></tr></tbody></table>';
+
+        div.innerHTML = innerHtml;
+
+        return div;
+    }
 	
 }
 

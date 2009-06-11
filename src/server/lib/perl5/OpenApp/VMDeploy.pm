@@ -728,21 +728,15 @@ sub _preRestoreProc {
   # arrange current/prev packages
   my $cur_dir = "$VIMG_DIR/$self->{_vmId}/current";
   my $prev_dir = "$VIMG_DIR/$self->{_vmId}/prev";
-  my $tmp_dir = mkdtemp('/tmp/restoreXXXXXX');
-  
-  my $cmd = "mv $cur_dir/oa-vimg-$self->{_vmId}_*_all.deb $tmp_dir/";
+ 
+  # [spec change] current package goes back to being new update 
+  my $cmd = "mv $cur_dir/oa-vimg-$self->{_vmId}_*_all.deb $NVIMG_DIR/";
   _system($cmd);
   return 'Failed to move current package' if ($? >> 8);
   
   $cmd = "mv $prev_dir/oa-vimg-$self->{_vmId}_${vver}_all.deb $cur_dir/";
   _system($cmd);
   return 'Failed to move prev package' if ($? >> 8);
-  
-  $cmd = "mv $tmp_dir/oa-vimg-$self->{_vmId}_*_all.deb $prev_dir/";
-  _system($cmd);
-  return 'Failed to save current package' if ($? >> 8);
- 
-  rmdir($tmp_dir); 
   
   return undef;
 }
@@ -886,7 +880,7 @@ sub restore {
   } else {
     # success. write status.
     my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
-    $self->_writeStatus('Succeeded', $vver, $time, "Restore $vver succeeded");
+    $self->_writeStatus('Restored', $vver, $time, "Restore $vver succeeded");
     return undef;
   } 
 }

@@ -423,6 +423,7 @@ function FT_vmBusObj(busObj)
                 if(val.nodeName == 'record')
                 {
                     vmd[index] = new FT_vmDeployObj();
+                    vmd[index].f_setIsOld(val.getAttribute("old"));
 
                     for(var j=0; j<val.childNodes.length; j++)
                     {
@@ -607,6 +608,15 @@ function FT_vmDeployObj(id, time, version, prevVer, status, msg)
     this.m_prevVersion = prevVer;
     this.m_status = status;
     this.m_msg = msg;
+    this.m_isOld = "false";
+
+    this.f_setIsOld = function(old)
+    {
+        if(old != null && old == "true")
+            this.m_isOld = true;
+        else if(old != null && old == "false")
+            this.m_isOld = false;
+    }
 }
 
 /**

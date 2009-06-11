@@ -35,10 +35,10 @@ function FT_confVMUpdates(name, callback, busLayer)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn(g_lang.m_uhHdDate, 200, 'text', '6', true);
-        cols[1] = this.f_createColumn(g_lang.m_dbHdApplication, 200, 'text', '6', true);
+        cols[0] = this.f_createColumn(g_lang.m_uhHdDate, 180, 'text', '6', true);
+        cols[1] = this.f_createColumn(g_lang.m_dbHdApplication, 280, 'text', '6', true);
         cols[2] = this.f_createColumn(g_lang.m_dbHdStatus, 120, 'text', '6', true);
-        cols[3] = this.f_createColumn(' ', 120, 'button', '25');
+        cols[3] = this.f_createColumn(' ', 100, 'button', '25');
 
         return cols;
     }
@@ -93,7 +93,7 @@ function FT_confVMUpdates(name, callback, busLayer)
 
             var vmRec = g_busObj.f_getVmRecByVmId(dep[1]);
             var button = thisObj.f_createRenderButton(dep[1],
-                          vmRec.m_displayName, dep[2], dep[3]);
+                          vmRec, dep[2], dep[3], dep[6]);
 
             var vmData = [dep[0], vmRec.m_displayName + " (" +
                           dep[4] + ")",
@@ -122,8 +122,7 @@ function FT_confVMUpdates(name, callback, busLayer)
             // compose a default table row
             ar[i] = vm[i].m_time + '|' + vm[i].m_id + '|' +
                     vm[i].m_status + '|' + vm[i].m_prevVersion + '|' +
-                    vm[i].m_version + '|' +
-                    vm[i].m_msg;
+                    vm[i].m_version + '|' + vm[i].m_msg + '|' + vm[i].m_isOld;
         }
 
         return thisObj.f_sortArray(sortIndex, ar);
@@ -137,20 +136,25 @@ function FT_confVMUpdates(name, callback, busLayer)
             return '<p title="' + msg + '">' + status + '</p>';
     }
 
-    this.f_createRenderButton = function(vmId, vmName, status, prevVer)
+    this.f_createRenderButton = function(vmId, vmRec, status, prevVer, isOld)
     {
         var cb = '';
-        if(status == 'Scheduled')
+        var vmName = vmRec.m_displayName;
+
+        if(isOld != "true")
         {
-            cb = "f_vmDeployCancel('" + vmId + "', '" + vmName + "')";
-            return thisObj.f_renderButton('Cancel', true, cb,
-                    'Cancel ' + vmName);
-        }
-        else if(status == 'Failed' || status == 'Succeeded')
-        {
-            cb = "f_vmDeployRestore('" + vmId + "', '" + vmName + "')";
-            return thisObj.f_renderButton('Restore', prevVer == undefined ||
-                prevVer == 'undefined' ? false:true, cb, 'Restore ' + vmName);
+            if(status == 'Scheduled')
+            {
+                cb = "f_vmDeployCancel('" + vmId + "', '" + vmName + "')";
+                return thisObj.f_renderButton('Cancel', true, cb,
+                        'Cancel ' + vmName);
+            }
+            else if(status == 'Failed' || status == 'Succeeded')
+            {
+                cb = "f_vmDeployRestore('" + vmId + "', '" + vmName + "')";
+                return thisObj.f_renderButton('Restore', prevVer == undefined ||
+                    prevVer == 'undefined' ? false:true, cb, 'Restore ' + vmName);
+            }
         }
 
         return "";

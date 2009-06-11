@@ -274,37 +274,7 @@ function FT_confRestore(name, callback, busLayer)
         div.innerHTML = innerHtml;
         return div;
     }
-/*
-    this.f_createHiddenIframe = function(uploadFilename)
-    {
-        ///////////////////////
-        // input element
-        var input = document.createElement('input');
-        input.name = 'mypcfile'
-        input.type = 'hidden';
-        input.value = uploadFilename;
 
-        //////////////////////
-        // form element
-        var iform = document.createElement('form');
-        iform.method = 'post';
-        iform.target = 'hiddeniframe';
-        iform.enctype = 'multipart/form-data name=mypc';
-        iform.action = "/cgi-bin/openapp-uploader.pl";
-        iform.appendChild(input);
-
-        /////////////////////////
-        // iframe element
-        var iframe = document.createElement('iframe');
-        document.body.appendChild(iframe);
-        iframe.setAttribute("name", "hiddenifame");
-        iframe.setAttribute("style", "display:none");
-        iframe.appendChild(iform);
-        //iframe.className = 'hidden';
-
-        return iform;
-    }
-*/
     this.f_sendRestoreFromPC = function(fn)
     {
         var cb = function()
@@ -329,16 +299,14 @@ function FT_confRestore(name, callback, busLayer)
             return;
         }
 
-        //var iform = thisObj.f_createHiddenIframe(fn);
         var iform = document.forms;
         iform[0].submit();
 
-        //thisObj.f_sendRestoreFromPC(fn);
         var fnc = function()
         {
             thisObj.f_sendRestoreFromPC(fn);
         }
-        window.setTimeout(function(){fnc();}, 9000);
+        window.setTimeout(function(){fnc();}, 5000);
         
     }
 }
@@ -408,9 +376,4 @@ function f_deleteRestoreFile(content, filename)
 function f_restoreGridHeaderOnclick(col)
 {
     g_configPanelObj.m_activeObj.f_handleGridSort(col);
-}
-
-function f_checkUpload()
-{
-    alert('got it')
 }

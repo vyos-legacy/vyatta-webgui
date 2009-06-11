@@ -55,6 +55,37 @@ function UTM_nwRoutingRecord(ruleNo, zonePair)
 }
 
 /**
+ * port configuration
+ * @param {Object} busObj
+ */
+function UTM_nwPortConfigRecord(num, name, group, enable)
+{
+	var thisObj = this;
+	this.m_num = num;
+	this.m_name = name;
+	this.m_group = group; /* group can be: LAN, LAN2, DMZ, WAN */
+	this.m_enable = enable;
+
+	this.f_toXml = function() {
+		var xml = '<port-config><num>' + thisObj.m_num + '</num>';
+		xml += '<name>' + thisObj.m_name + '</name><group>' + thisObj.m_group + '</group>';
+		xml += '<enable>' +  thisObj.m_enable + '</enable></port-config>';
+		return xml;
+	}
+}
+
+/**
+ * port configuration
+ * @param {Object} busObj
+ */
+function UTM_nwPortConfigList(groupList, portList)
+{
+	var thisObj = this;
+	this.m_groupList = groupList;
+	this.m_portList = portList;
+}
+
+/**
  * network configuration business object for NAT/PAT and Routing
  */
 function UTM_nwConfigBusObj(busObj)
@@ -809,3 +840,316 @@ function UTM_nwDNSBusObj(busObj)
         thisObj.f_respondRequestCallback(resp, guicb);
     }
 }
+
+function UTM_nwPortConfigBusObj(busObj)
+{
+    /////////////////////////////////////
+    // properties
+    var thisObj = this;
+    this.m_busObj = busObj;
+    this.m_lastCmdSent = null;
+    this.m_portConfigRec = null;
+	this.m_GET_CMD = 'port-config get';
+	this.m_SET_CMD = 'port-config set';
+
+    /**
+     * A callback function for all url filtering requests.
+     */
+    this.f_respondRequestCallback = function(resp, cmdSent, noUICallback)
+    {
+        var response = thisObj.m_busObj.f_getRequestResponse(
+                        thisObj.m_busObj.m_request);
+
+        if (g_devConfig.m_isLocalMode) {
+			response = resp;
+		}
+
+        if(response == null) return;
+
+        if(response.f_isError != null) { //This is server error case.
+            //alert('response.f_isError is not null');
+            if (noUICallback == undefined || !noUICallback) {
+				thisObj.m_guiCb(response);
+			}
+        } else {
+            var evt = new UTM_eventObj(0, thisObj, '');
+
+            var err = response.getElementsByTagName('error');
+			//alert('err: ' + err);
+            if(err != null && err[0] != null) { //The return value is inside the <error> tag.
+                var tmp = thisObj.f_getFormError(err);
+				if (tmp != null) { //form has error
+					if (thisObj.m_guiCb != undefined) {
+						return thisObj.m_guiCb(tmp);
+					}
+				}
+                if (thisObj.m_lastCmdSent.indexOf(thisObj.m_GET_CMD) > 0) {
+                    thisObj.m_portConfigRec = thisObj.f_parsePortConfig(err);
+                    evt = new UTM_eventObj(0, thisObj.m_portConfigRec, '');
+				}
+            }
+
+            if(thisObj.m_guiCb != undefined)
+                thisObj.m_guiCb(evt);
+        }
+    }
+
+    /////////////////////////////////////////
+    /**
+     * A callback function for all user management requests.
+     */
+    this.f_respondRequestCallbackSetCmd = function(resp, cmdSent, noUICallback)
+    {
+        var response = thisObj.m_busObj.f_getRequestResponse(
+                        thisObj.m_busObj.m_request);
+
+        if(response == null) return;
+
+        if(response.f_isError != null) { //This is server error case.
+            //alert('response.f_isError is not null');
+            if(noUICallback == undefined || !noUICallback)
+                thisObj.m_guiCb(response);
+        } else {
+            var evt = new UTM_eventObj(0, thisObj, '');
+
+
+            var err = response.getElementsByTagName('error');
+            if (err != null && err[0] != null) { //The return value is inside the <error> tag.
+				var tmp = thisObj.f_getFormError(err);
+				if (tmp != null) { //form has error
+					if (thisObj.m_guiCb != undefined) {
+						return thisObj.m_guiCb(tmp);
+					}
+				}
+			}
+
+            if(thisObj.m_guiCb != undefined)
+                thisObj.m_guiCb(evt);
+        }
+    }
+
+    this.f_getFormErrMsg = function(form)
+	{
+		var errmsgNode = g_utils.f_xmlGetChildNode(form, 'errmsg');
+		if (errmsgNode == null) return null;
+
+		return g_utils.f_xmlGetNodeValue(errmsgNode);
+	}
+
+    this.f_getFormNode = function(response)
+	{
+		var msgNode = g_utils.f_xmlGetChildNode(response[0], 'msg');
+		return g_utils.f_xmlGetChildNode(msgNode, 'form');
+	}
+
+    this.f_getFormError = function(response)
+	{
+		var cn = response[0].childNodes;
+		for (var i=0; i< cn.length; i++) {
+			if (cn[i].nodeName == 'msg') {
+				var node = cn[i].childNodes;
+				for (var j=0; j < node.length; j++) {
+					if (node != undefined && node[j] != undefined && node[j].nodeName == 'form') {
+						var errCode = node[j].getAttribute('code');
+						if (errCode==0) { //success case
+						    return null;
+						} else {
+                            var errMsg = thisObj.f_getFormErrMsg(node[j]);
+                            return (new UTM_eventObj(errCode, null, errMsg));
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+    this.f_parsePortConfig = function(response)
+	{
+		var a = new Array();
+		var nodeArray = ['num', 'name', 'group', 'enable'];
+		var nodeValue = [];
+
+		var form = thisObj.f_getFormNode(response);
+		var groupList = thisObj.f_parseGroupList(form);
+		var portList =  thisObj.f_parsePortList(form);
+		
+		return new UTM_nwPortConfigList(groupList, portList);
+	}
+
+    this.f_parsePortList = function(form)
+	{
+		var a = new Array();
+		var nodeArray = ['num', 'name', 'group', 'enable'];
+		var nodeValue = [];
+		var portConfigNode = g_utils.f_xmlGetChildNode(form, 'port-config');
+        var portNodeArray = g_utils.f_xmlGetChildNodeArray(portConfigNode, 'port');
+		
+		for (var j=0; j < portNodeArray.length; j++) {
+			var portNode = portNodeArray[j];
+			for (var i=0; i < nodeArray.length; i++) {
+			    var cnode = g_utils.f_xmlGetChildNode(portNode, nodeArray[i]);
+			    if (cnode != null) {
+					var value = g_utils.f_xmlGetNodeValue(cnode);
+					if (value != null) {
+						nodeValue[nodeArray[i]] = value;
+					}
+				}		
+			}
+		    var num = (nodeValue['num'] == undefined)? '' : nodeValue['num'];
+		    var name = (nodeValue['name'] == undefined)? '' : nodeValue['name'];
+		    var group = (nodeValue['group'] == undefined)? '' : nodeValue['group'];
+		    var enable = (nodeValue['enable'] == undefined)? 'false' : nodeValue['enable'];
+		
+		    a.push(new UTM_nwPortConfigRecord(num, name, group, enable));			
+		}
+        return a;		
+	}
+	
+	this.f_parseGroupList = function(form)
+	{
+		var groupListNode = g_utils.f_xmlGetChildNode(form, 'port-group');
+		var groupArray = g_utils.f_xmlGetChildNodeArray(groupListNode, 'group');
+		var a = new Array();
+		
+		for (var i=0; i < groupArray.length; i++) {
+			var value = g_utils.f_xmlGetNodeValue(groupArray[i]);
+			if (value != null) {
+			     a.push(value);
+			}			
+		}
+		
+		return a;
+	}
+
+	this.f_getPortConfig = function(guicb)
+	{
+		(g_devConfig.m_isLocalMode) ? thisObj.f_getPortConfigLocal(guicb) : thisObj.f_getPortConfigServer(guicb);
+	}
+
+    /**
+     */
+    this.f_getPortConfigServer = function(guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>port-config get" +
+                      "</handler><data></data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_setPortConfig = function(portConfigList, guicb)
+	{
+		if (g_devConfig.m_isLocalMode) {
+			thisObj.f_setPortConfigLocal(portConfigList,guicb);
+		} else {
+			thisObj.f_setPortConfigServer(portConfigList,guicb);
+		}
+	}
+
+	/**
+     * perform a set dns configuration request to server.
+     * @param dnsRecObj - dns config object.
+     * @param guicb - gui callback function
+     */
+    this.f_setPortConfigServer = function(portConfigList, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>port-config" +
+                      " set</handler><data>";
+		for (var i=0; i < portConfigList.length; i++) {
+			xmlstr += portConfigList[i].f_toXml();
+		}			  					
+        xmlstr +=  "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallbackSetCmd);
+    }
+	///////////////////////////////////////////////////////////////////////////////////////
+	/////// begining simulation
+	///////////////////////////////////////////////////////////////////////////////////////
+    this.f_getPortConfigLocal = function(guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>port-config get" +
+                      "</handler><data></data></statement></command>";
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+
+        thisObj.m_lastCmdSent = cmdSend;
+
+		var resp = g_utils.f_parseXmlFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' +
+                            '<code>0</code>' +
+                               '<msg>' +
+                                   '<form name=\'port-config\' code=\'0\'>' +
+								       '<port-group>' +
+									       '<group>LAN</group>' +
+										   '<group>LAN2</group>' +
+										   '<group>DMZ</group>' +
+										   '<group>WAN</group>' +
+									   '</port-group>' +
+                                       '<port-config>' +
+									       '<port>' +
+                                               '<num>4</num><name>Port E0</name><group>WAN</group><enable>true</enable>' +
+										   '</port><port>' +
+                                               '<num>1</num><name>Port E3</name><group>LAN2</group><enable>true</enable>' +
+										   '</port><port>' +
+										   	    '<num>2</num><name>Port E2</name><group>DMZ</group><enable>false</enable>' +
+										   '</port><port>' +
+                                                '<num>3</num><name>Port E1</name><group>LAN</group><enable>true</enable>' +
+                                           '</port>' +
+                                        '</port-config>' +									
+                                    '</form>' +
+                                '</msg>' +
+                          '</error>' +
+                  '</openappliance>');
+
+        thisObj.f_respondRequestCallback(resp, guicb);
+    }
+
+    this.f_setPortConfigLocal = function(portConfigList, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>port-config" +
+                      " set</handler><data>";
+		for (var i=0; i < portConfigList.length; i++) {
+			xmlstr += portConfigList[i].f_toXml();
+		}			  					
+        xmlstr +=  "</data></statement></command>";
+
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+
+		alert ('cmdSend: ' + cmdSend);
+
+        thisObj.m_lastCmdSent = cmdSend;
+
+		var resp = g_utils.f_parseXmlFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' +
+                            '<code>0</code>' +
+                               '<msg>' +
+                                   '<form name=\'port-config\' code=\'0\'>' +
+                                    '</form>' +
+                                '</msg>' +
+                          '</error>' +
+                  '</openappliance>');
+        thisObj.f_respondRequestCallback(resp, guicb);
+    }
+}
+

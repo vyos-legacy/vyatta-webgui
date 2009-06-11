@@ -61,6 +61,7 @@ function UTM_businessLayer()
     var m_nwObj = null;   // network config business obj for NAT/PAT and Routing
 	var m_urlObj = null;
 	var m_nwDNSObj = null;
+	var m_nwPortConfigObj = null;
     this.m_userObj = new UTM_userBusObj(this);
 	thisObj.m_request = createXMLHttpRequest();
 
@@ -111,7 +112,7 @@ function UTM_businessLayer()
                 return response;
             } else if (r.status == 404) { //assuming  timeout on dom0. dom0 stop proxy the request.
 		        if ((window.parent != undefined) && (window.parent != null)) {
-			        if (window.parent.f_resizeChildIframe != undefined) {
+			        if (window.parent.f_timeout != undefined) {
 				        window.parent.f_timeout();
 			        }
 		        }				
@@ -428,6 +429,28 @@ function UTM_businessLayer()
     {
         thisObj.f_getNwObject().f_getNwRoutingList(guicb);
     }
+	
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    // Port config section
+	this.f_getPortConfigObj = function()
+    {
+        if(m_nwPortConfigObj == null)
+            m_nwPortConfigObj = new UTM_nwPortConfigBusObj(thisObj);
+
+        return m_nwPortConfigObj;
+    }
+
+    this.f_getPortConfig = function(guicb)
+    {
+        thisObj.f_getPortConfigObj().f_getPortConfig(guicb);
+    }
+
+    this.f_setPortConfig = function(portConfigList, guicb)
+    {
+        thisObj.f_getPortConfigObj().f_setPortConfig(portConfigList, guicb);
+    }
+	
 }
 
 ///////////////////////////////////////////////

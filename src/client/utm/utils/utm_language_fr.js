@@ -14,7 +14,7 @@ var g_lang =
     // common
     m_tableTooltip1 : 'Click here to perform sorting.',
     m_name : 'Name',
-    m_enabled : 'Enabled',
+    m_enabled : 'Enable',
     m_delete : 'Delete',
     m_group : 'Group',
     m_username : 'User Name',
@@ -172,7 +172,15 @@ var g_lang =
 	m_dns_Primary: "Primary",
 	m_dns_Secondary: "Secondary",
 	m_dns_header: "This page enables you to configure DNS servers",
-					
+		
+    ///////////////////////////////////////////////////////////////////
+    // Port config
+    m_portconf_port : "Ports",
+    m_portconf_LAN : "LAN",
+    m_portconf_LAN2: "LAN2",
+    m_portconf_DMZ: "DMZ",
+    m_portconf_WAN: "WAN",
+						
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images
     m_imageDir : 'images/fr/',

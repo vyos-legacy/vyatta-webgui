@@ -920,6 +920,18 @@ var g_utils =
 		}
 		return null;
 	},
+	
+	f_xmlGetChildNodeArray : function(parent, child)
+	{
+		var a = new Array();
+	    var cn = parent.childNodes;
+		for (var i=0; i < cn.length; i++) {
+			if (cn[i].nodeName == child) {
+				a.push(cn[i]);
+			}
+		}
+		return a;
+	},	
 
 	f_xmlGetNodeValue : function(node)
 	{

@@ -349,7 +349,8 @@ function UTM_confFormObj(name, callback, busLayer)
         if (configItem.text != undefined) {
             html += configItem.text;
             if (this.f_checkCondition(configItem.require)) {
-                html = html + '</label><label style="color: #FF5500; font-weight: bold; font-size:14px;padding-left: 20px; text-align:right;">*';
+                html = html + '</label><img src="images/ico_required.png" style="padding-left: 20px;">';				
+                //html = html + '</label><label style="color: #FF5500; font-weight: bold; font-size:14px;padding-left: 20px; text-align:right;">*';
             }
         }
         html += enclosing;

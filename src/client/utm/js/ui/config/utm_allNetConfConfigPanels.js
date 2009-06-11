@@ -12,6 +12,7 @@ document.write('<script type="text/javascript" src="js/ui/config/utm_confFormObj
 document.write('<script type="text/javascript" src="js/ui/config/utm_confDNS.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confNwNatPat.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confNwRouting.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confNwPortConfig.js"></script>');
 
 
 

@@ -612,6 +612,37 @@ function UTM_confBaseObj(name, callback, busLayer)
     }
 
     /**
+     * disable/enable items in combobox.
+     * @param cbid - combobox element id
+     * @param optItems- an array of option items to be disable/enable depend on
+     *                  param 'enabled'
+     * @param enabled - true to enabled all items in 'optItems'.
+     */
+    this.f_enableComboboxSelection = function(cbid, optItems, enabled)
+    {
+        var cbb = document.getElementById(cbid);
+
+        if(cbb != null)
+        {
+            for(var i=0; i<cbb.length; i++)
+            {
+                var en = enabled;
+
+                var optVal = cbb.options[i].text;
+                for(var j=0; j<optItems.length; j++)
+                {
+                    if(optVal == optItems[j])
+                    {
+                        en = !enabled;
+                        break;
+                    }
+                }
+
+                cbb.options[i].disabled = en;
+            }
+        }
+    }
+    /**
      * @param elId - element id
      * @param val - value to be add to text field
      * @param tooltip - tooltip when mouse over

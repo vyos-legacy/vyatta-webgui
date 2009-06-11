@@ -219,6 +219,7 @@ function UTM_confFireCustom(name, callback, busLayer)
     {
         var zpRule = fireRec.m_zonePair + "-" + fireRec.m_ruleNo;
         var action = ["accept", "reject"]
+        var readonly = fireRec.m_appService.indexOf("Others") >= 0 ? false :true;
 
         var app = thisObj.f_renderCombobox(thisObj.m_fwObj.m_services, fireRec.m_appService, 90,
                             thisObj.m_fieldIds[2]+zpRule,
@@ -251,7 +252,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         var dport = thisObj.f_renderTextField(thisObj.m_fieldIds[9]+zpRule,
                             fireRec.m_destPort, fireRec.m_destPort, 80,
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[9]+
-                            zpRule + "')"], false);
+                            zpRule + "')"], readonly);
         var act = thisObj.f_renderCombobox(action, fireRec.m_action, 80,
                             thisObj.m_fieldIds[10]+zpRule,
                             ["f_fwCustomizeOnCbbBlur('" + thisObj.m_fieldIds[10]+
@@ -281,6 +282,12 @@ function UTM_confFireCustom(name, callback, busLayer)
                     [fireRec.m_direction, app, pro, sip, smip, sport, dip, dmip, dport,
                     act, log, enable, del]);
         thisObj.m_gridBody.appendChild(div);
+
+        if(fireRec.m_appService.indexOf("Others") < 0)
+        {
+            thisObj.f_enableComboboxSelection(thisObj.m_fieldIds[3]+zpRule,
+                    [fireRec.m_protocol], true);
+        }
     };
 
     this.f_handleAddFirewallCustomRow = function(ruleNo)
@@ -521,6 +528,51 @@ function UTM_confFireCustom(name, callback, busLayer)
         }
     };
 
+    /**
+     * handle application field changaed. populate protocol and dest port
+     * fields if application selection is not 'others'
+     * 
+     * @param fireRec - record
+     * @param cbb - application checkbox object
+     * @param rNo - rule number id
+     * @param cbeid - application element id
+     */
+    this.f_handleApplicationChanged = function(fireRec, cbb, rNo, cbeid)
+    {
+        var proId = thisObj.m_fieldIds[3]+rNo[1]+"-"+rNo[2];
+        var dport = document.getElementById(thisObj.m_fieldIds[9]+rNo[1]+"-"+rNo[2]);
+        var proto = document.getElementById(proId);
+
+        fireRec.m_appService = cbb.value;
+        if(fireRec.m_appService.indexOf("Others") < 0)
+        {
+            ////////////////////////////////////
+            // set protocol per appService
+            var proVal = thisObj.m_fwObj.f_getProtocol(fireRec);
+            proto.value = proVal;
+            fireRec.m_protocol = proto.value;
+            dport.value = thisObj.m_fwObj.f_getPortNumber(fireRec);
+
+            thisObj.f_sendSetCommand(fireRec, "dport", dport.value);
+
+            var sendproto = function(fr, val)
+            {
+                if(val != null)
+                    thisObj.f_sendSetCommand(fr, "protocol", val);
+            }
+
+            window.setTimeout(function(){sendproto(fireRec, proVal)}, 100);
+
+            dport.readOnly = true;
+            thisObj.f_enableComboboxSelection(proId, [fireRec.m_protocol], true);
+        }
+        else
+        {
+            dport.readOnly = false;
+            thisObj.f_enableComboboxSelection(proId, [], false);
+        }
+    }
+
     this.f_cbOnSelected = function(cbeid)
     {
         var cbb = document.getElementById(cbeid);
@@ -552,28 +604,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         // application/service cbb changed
         else if(cbeid.indexOf(thisObj.m_fieldIds[2]) >= 0)
         {
-            //var val = thisObj.f_getComboBoxOptionName(cbb);
-            var dport = document.getElementById(thisObj.m_fieldIds[9]+rNo[1]+"-"+rNo[2]);
-            var proto = document.getElementById(thisObj.m_fieldIds[3]+rNo[1]+"-"+rNo[2]);
-
-            fireRec.m_appService = cbb.value;
-
-            ////////////////////////////////////
-            // set protocol per appService
-            var proVal = thisObj.m_fwObj.f_getProtocol(fireRec);
-            proto.value = proVal;
-            fireRec.m_protocol = proto.value;
-            dport.value = thisObj.m_fwObj.f_getPortNumber(fireRec);
-            
-            thisObj.f_sendSetCommand(fireRec, "dport", dport.value);
-
-            var sendproto = function(fr, val)
-            {
-                if(val != null)
-                    thisObj.f_sendSetCommand(fr, "protocol", val);
-            }
-
-            window.setTimeout(function(){sendproto(fireRec, proVal)}, 100);
+            thisObj.f_handleApplicationChanged(fireRec, cbb, rNo, cbeid);
         }
         /////////////////////////////
         // protocol cbb changed

@@ -49,6 +49,7 @@ sub _checkSched {
   my $fd = undef;
   open($fd, '<', "$sched_file") or return (undef, undef, undef, undef);
   my $data = <$fd>;
+  close($fd);
   chomp($data);
   my ($sched, $job, $ver, $time) = split(/ /, $data, 4);
   return ($sched, $job, $ver, $time);
@@ -521,24 +522,50 @@ sub checkStatus {
   my $fd = undef;
   open($fd, '<', "$st_file") or return (undef, undef, undef, undef);
   my $data = <$fd>;
+  close($fd);
   chomp($data);
   my ($st, $ver, $t1, $t2, $msg) = split(/ /, $data, 5);
   return ($st, $ver, "$t1 $t2", $msg);
 }
 
+sub _getHistEntries {
+  my ($self) = @_;
+  my $vdir = "$VIMG_DIR/$self->{_vmId}";
+  my $hist_file = "$vdir/$HIST_FILE";
+  my $fd = undef;
+  open($fd, '<', "$hist_file") or return;
+  my @ret = ();
+  while (my $line = <$fd>) {
+    chomp($line);
+    my ($time, $id, $ver, $st, $msg) = split(/,/, $line, 5);
+    push @ret, [ $time, $id, $ver, $st, $msg ];
+  }
+  close($fd);
+  return \@ret;
+}
+
 sub _appendHist {
-  my ($self, $data) = @_;
+  my ($self, $time, $ver, $st, $msg) = @_;
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
   my $hist_file = "$vdir/$HIST_FILE";
   my $fd = undef;
   open($fd, '>>', "$hist_file") or return;
-  print $fd $data;
+  print $fd "$time,$self->{_vmId},$ver,$st,$msg\n";
   close($fd);
+}
+
+sub _saveSched {
+  my ($self) = @_;
+  my ($scheduled, $job, $ver, $time) = $self->checkSched();
+  return if (!defined($scheduled));
+  return if ($scheduled ne 'Canceled');
+  # only save canceled entry
+  $self->_appendHist($time, $ver, $scheduled, '');
 }
 
 sub _writeSched {
   my ($self, $sched, $job, $vver, $time) = @_;
-  # TODO move sched entry to history?
+  $self->_saveSched();
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
   my $sched_file = "$vdir/$SCHED_FILE";
   my $fd = undef;
@@ -547,9 +574,17 @@ sub _writeSched {
   close($fd);
 }
 
+sub _saveStatus {
+  my ($self) = @_;
+  my ($st, $ver, $time, $msg) = $self->checkStatus();
+  return if (!defined($st));
+  return if ($st eq 'Upgrading' || $st eq 'Restoring');
+  $self->_appendHist($time, $ver, $st, $msg);
+}
+
 sub _writeStatus {
   my ($self, $st, $vver, $time, $msg) = @_;
-  # TODO move status entry to history?
+  $self->_saveStatus();
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
   my $st_file = "$vdir/$STATUS_FILE";
   my $fd = undef;
@@ -560,6 +595,7 @@ sub _writeStatus {
 
 sub _clearSched {
   my ($self) = @_;
+  $self->_saveSched();
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
   my $sched_file = "$vdir/$SCHED_FILE";
   my $fd = undef;
@@ -617,8 +653,9 @@ sub cancel {
   my $cmd = "sudo atrm '$job'";
   _system($cmd);
   return 'Failed to cancel scheduled update' if ($? >> 8);
-  
-  $self->_writeSched('Canceled', '0', $ver, $time);
+ 
+  # record the cancel time
+  $self->_writeSched('Canceled', '0', $ver, epoch2time(time()));
   # success
   return undef;
 }
@@ -645,7 +682,6 @@ sub schedRestore {
   return "Failed to initiate restore: $err" if (!defined($j));
 
   # remove sched entry
-  # TODO move to history?
   $self->_clearSched();
 
   # success
@@ -683,7 +719,19 @@ sub getHist {
     push @records, \%shash;
   }
 
-  # TODO get history records
+  my $href = $self->_getHistEntries();
+  for my $aref (@{$href}) {
+    my ($time, $id, $ver, $st, $msg) = @{$aref};
+    my %shash = (
+                  _time => $time,
+                  _id => "$id",
+                  _ver => "$ver",
+                  _status => $st,
+                  _msg => $msg,
+                  _old => 1
+                );
+    push @records, \%shash;
+  }
 
   return \@records;
 }
@@ -728,21 +776,15 @@ sub _preRestoreProc {
   # arrange current/prev packages
   my $cur_dir = "$VIMG_DIR/$self->{_vmId}/current";
   my $prev_dir = "$VIMG_DIR/$self->{_vmId}/prev";
-  my $tmp_dir = mkdtemp('/tmp/restoreXXXXXX');
-  
-  my $cmd = "mv $cur_dir/oa-vimg-$self->{_vmId}_*_all.deb $tmp_dir/";
+ 
+  # [spec change] current package goes back to being new update 
+  my $cmd = "mv $cur_dir/oa-vimg-$self->{_vmId}_*_all.deb $NVIMG_DIR/";
   _system($cmd);
   return 'Failed to move current package' if ($? >> 8);
   
   $cmd = "mv $prev_dir/oa-vimg-$self->{_vmId}_${vver}_all.deb $cur_dir/";
   _system($cmd);
   return 'Failed to move prev package' if ($? >> 8);
-  
-  $cmd = "mv $tmp_dir/oa-vimg-$self->{_vmId}_*_all.deb $prev_dir/";
-  _system($cmd);
-  return 'Failed to save current package' if ($? >> 8);
- 
-  rmdir($tmp_dir); 
   
   return undef;
 }
@@ -832,7 +874,6 @@ sub upgrade {
   my ($self, $vver) = @_;
 
   # remove sched entry
-  # TODO move to history?
   $self->_clearSched();
 
   my $err = undef;
@@ -864,7 +905,6 @@ sub restore {
   my ($self, $vver) = @_;
 
   # remove sched entry
-  # TODO move to history?
   $self->_clearSched();
 
   my $err = undef;
@@ -886,7 +926,7 @@ sub restore {
   } else {
     # success. write status.
     my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
-    $self->_writeStatus('Succeeded', $vver, $time, "Restore $vver succeeded");
+    $self->_writeStatus('Restored', $vver, $time, "Restore $vver succeeded");
     return undef;
   } 
 }

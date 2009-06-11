@@ -1,3 +1,40 @@
+vyatta-webgui (0.2+fxd0+54) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fixed per FT feedback -
+
+  [ slioch ]
+  * modify put-archive to work in conjunction with uploader script.
+
+  [ Loi Vo ]
+  * 1. Fix the following:
+  * 1. Add 'required' icon.
+
+  [ Kevin Choi ]
+  * * temporary check in restore from mypc for Mike to test.
+
+  [ Loi Vo ]
+  * 1. Move network tab to be next to open appliance tab.
+
+  [ Kevin Choi ]
+  * * fixed user business logic to allow blank user first/last name
+  * * fixed typo from previous checked in.
+
+  [ Loi Vo ]
+  * 1. Add f_timeout function for domU to call when encountering a 404
+    error.
+
+  [ Kevin Choi ]
+  * * Restore from myPC screen: changed to use hidden frame method to
+    upload file to avoid
+  * * fixed hidden frame name from previous checked in
+
+  [ An-Cheng Huang ]
+  * add "restored" state (per spec change)
+  * add full update history support
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 10 Jun 2009 18:57:18 -0700
+
 vyatta-webgui (0.2+fxd0+53) unstable; urgency=low
 
   [ Loi Vo ]

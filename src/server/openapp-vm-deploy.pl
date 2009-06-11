@@ -113,9 +113,10 @@ sub do_list {
       my $ver = $href->{_ver};
       my $status = $href->{_status};
       my $msg = $href->{_msg};
+      my $old = (defined($href->{_old})) ? " old='true'" : '';
       my $prev = OpenApp::VMDeploy::vmCheckPrev($vid);
       print <<EOF;
-      <record>
+      <record$old>
         <time>$time</time>
         <id>$id</id>
         <ver>$ver</ver>

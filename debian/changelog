@@ -1,3 +1,40 @@
+vyatta-webgui (0.2.14+fxdU+51) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Use image from  /oa/image directory for the page title
+
+  [ Kevin Choi ]
+  * * Firewall Customize sreen - removed rule delete comfirmation.
+
+  [ Mohit Mehta ]
+  * save config after resetting customized firewall ruleset to default
+
+  [ Loi Vo ]
+  * 1. Add UTF-8 encoding to all utm html files
+
+  [ Mohit Mehta ]
+  * backend support for storing application name in description field of
+    a rule
+
+  [ Loi Vo ]
+  * 1. Add code to handle 404 timeout error .
+  * 1. Oops, forget to remove dummy function
+
+  [ Kevin Choi ]
+  * * changed zone management, security level and firewall customize
+    accorded to specification
+
+  [ Loi Vo ]
+  * 1. Add biz logic for port configuration.
+
+  [ Kevin Choi ]
+  * * firewall customize: enabled/disabled protocol and dest port fields
+    base on the selection
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 10 Jun 2009 18:59:33 -0700
+
 vyatta-webgui (0.2.14+fxdU+50) unstable; urgency=low
 
   * * Firewall security level screen:

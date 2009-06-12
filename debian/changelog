@@ -1,3 +1,11 @@
+vyatta-webgui (0.2.14+fxdU+53) unstable; urgency=low
+
+  * * firewall customize :
+  * * updated English language file for fw customize confirmation
+    message.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 12 Jun 2009 00:44:31 +0000
+
 vyatta-webgui (0.2.14+fxdU+52) unstable; urgency=low
 
   * 1. Add images for port config screen.

@@ -153,10 +153,11 @@ sub execute_get {
  if ($rulenum eq 'all') {
    # ask for all rules one by one and keep appending to $rules_string
    foreach (sort @rules) {
+     next if $_ == 1; # 1st rule is a default state established, related rule
      $rules_string .= get_rule ($fw_ruleset, $_);
    }
  } else {
-   # proced only if rule is a valid one
+   # proceed only if rule is a valid one
    if (!scalar(grep(/^$rulenum$/, @rules)) > 0) {
      print "<customize-firewall>Invalid rule number</customize-firewall>";
      return;
@@ -225,7 +226,9 @@ sub execute_set_value {
 
   # convert any capital letters to small caps to avoid any confusion
   $key =~ tr/A-Z/a-z/;
-  $value =~ tr/A-Z/a-z/ if ! $key eq 'application';
+  if (!($key eq 'application')) {
+    $value =~ tr/A-Z/a-z/;
+  }
 
   switch ($key) {
     case 'protocol' {

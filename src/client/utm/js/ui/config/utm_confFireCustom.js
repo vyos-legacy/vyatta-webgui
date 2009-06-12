@@ -12,11 +12,12 @@ function UTM_confFireCustom(name, callback, busLayer)
 {
     var thisObj = this;
     this.m_fwObj = busLayer.f_getFWObject();
+    this.m_isDirty = false;
     this.m_headercbbId = "fwCustomHeaderCombo_id";
     this.m_enabledchkId = "firewallCustomEnableId";
     this.m_btnAddId = "wfCustomizeAddId";
     this.m_btnSaveId = "wfCustomizeSaveId";
-    this.m_btnRestId = "wfCustomizeResetId";
+    this.m_btnResetId = "wfCustomizeResetId";
     this.m_btnCancelId = "wfCustomeizeCancelId";
     this.m_btnBackId = "wfCustomizeBackId";
     this.m_fireRecs = [];
@@ -176,11 +177,13 @@ function UTM_confFireCustom(name, callback, busLayer)
             thisObj.f_getZoneAny(thisObj.m_cb);
             thisObj.f_removeDivChildren(thisObj.m_gridBody);
             thisObj.f_enabledDisableButton(thisObj.m_btnAddId, false);
+            thisObj.f_enabledDisableButton(thisObj.m_btnResetId, false);
         }
         else
         {
             g_utils.f_cursorWait();
             thisObj.f_enabledDisableButton(thisObj.m_btnAddId, true);
+            thisObj.f_enabledDisableButton(thisObj.m_btnResetId, true);
             thisObj.m_busLayer.f_getFirewallSecurityCustomize(fireRec, thisObj.m_cb);
         }
     };
@@ -309,7 +312,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         var btns = [['Add', "f_fireCustomAddHandler()",
                     g_lang.m_fireCustAddTip, this.m_btnAddId],
                     ['Reset', "f_fireCustomResetHandler()",
-                    g_lang.m_fireCustResetTip, this.m_btnRestId],
+                    g_lang.m_fireCustResetTip, this.m_btnResetId],
                     ['Apply', "f_fireCustomSaveHandler()",
                     g_lang.m_fireCustSaveTip, this.m_btnSaveId],
                     ['Cancel', "f_fireCustomCancelHandler()",
@@ -387,7 +390,7 @@ function UTM_confFireCustom(name, callback, busLayer)
     this.f_headerCombo = function()
     {
         var combo = this.f_renderCombobox(thisObj.m_ruleZoneOptName,
-                    this.m_ruleZoneOptName[3], 180,
+                    this.m_ruleZoneOptName[4], 180,
                     thisObj.m_headercbbId, ["f_onwfCustomizeHeaderCombo()",
                     this.m_ruleZoneOptName]);
 
@@ -397,6 +400,7 @@ function UTM_confFireCustom(name, callback, busLayer)
 
     this.f_enabledActionButtons = function(enabled)
     {
+        thisObj.m_isDirty = enabled;
         thisObj.f_enabledDisableButton(thisObj.m_btnSaveId, enabled);
         thisObj.f_enabledDisableButton(thisObj.m_btnCancelId, enabled);
     };
@@ -563,13 +567,29 @@ function UTM_confFireCustom(name, callback, busLayer)
 
             window.setTimeout(function(){sendproto(fireRec, proVal)}, 100);
 
-            dport.readOnly = true;
+            thisObj.f_enableTextField(dport, false);
             thisObj.f_enableComboboxSelection(proId, [fireRec.m_protocol], true);
         }
         else
         {
-            dport.readOnly = false;
+            thisObj.f_enableTextField(dport, true);
             thisObj.f_enableComboboxSelection(proId, [], false);
+        }
+    }
+
+    this.f_handleShowRuleChanged = function()
+    {
+        if(!thisObj.m_isDirty)
+        {
+            thisObj.m_busLayer.f_cancelFirewallCustomizeRule(null);
+            thisObj.f_enabledActionButtons(false);
+            thisObj.f_loadVMData();
+        }
+        else
+        {
+            g_utils.f_popupMessage(g_lang.m_confModify,
+                'confirm', "Firewall Customize", true,
+                "f_fireCustomShowRuleConfirm(this)");
         }
     }
 
@@ -583,9 +603,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         // show rule from cbb
         if(cbeid.indexOf(thisObj.m_headercbbId) >= 0)
         {
-            thisObj.m_busLayer.f_cancelFirewallCustomizeRule(null);
-            thisObj.f_enabledActionButtons(false);
-            thisObj.f_loadVMData();
+            this.f_handleShowRuleChanged();
         }
         /*
         else if(cbeid.indexOf(thisObj.m_fieldIds[1]) >= 0)
@@ -764,9 +782,24 @@ function f_fireCustomDeleteHandler(ruleNo)
 {
     g_configPanelObj.m_activeObj.f_handleDeleteRule(ruleNo);
 }
+
+function f_fireCustomBackConfirm(e)
+{
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+    {
+        f_fireCustomCancelHandler();
+        g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_ID);
+    }
+}
+
 function f_fireCustomBackHandler()
 {
-    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_ID);
+    if(g_configPanelObj.m_activeObj.m_isDirty)
+        g_utils.f_popupMessage(g_lang.m_confModify,
+                'confirm', "Firewall Customize", true,
+                "f_fireCustomBackConfirm(this)");
+    else
+        g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_ID);
 }
 
 function f_fireCustomArrowUpHandler(ruleNo)
@@ -793,6 +826,15 @@ function f_fwCustomOnTFBlur(tfeid)
         aObj.f_handleNetMaskOnBlur(tfeid);
 }
 
+function f_fireCustomShowRuleConfirm(e)
+{
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+    {
+        var aObj = g_configPanelObj.m_activeObj;
+        aObj.m_isDirty = false;
+        aObj.f_handleShowRuleChanged();
+    }
+}
 function f_fwCustomizeOnCbbBlur(cbeId)
 {
     g_configPanelObj.m_activeObj.f_cbOnSelected(cbeId);

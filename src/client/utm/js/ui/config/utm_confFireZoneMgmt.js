@@ -13,6 +13,7 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
     var thisObj = this;
     this.m_isDirty = false;
     this.m_zoneRecs = [];
+    this.m_zoneRecsCur = [];
     this.m_btnApplyId = "fwZoneMgmt_apply_id";
     this.m_btnCancelId = "fwZoneMgmt_cancel_id";
 
@@ -37,9 +38,9 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
         var cols = [];
         this.f_colorGridBackgroundRow(true);
 
-        cols[0] = this.f_createColumn(g_lang.m_fireZMZoneName, 110, 'text', '6', true, 'center');
-        cols[1] = this.f_createColumn(g_lang.m_fireZMMember, 150, 'combo', '6', true, 'center');
-        cols[2] = this.f_createColumn(g_lang.m_fireZMDesc, 250, 'combo', '6', false, 'center');
+        cols[0] = this.f_createColumn(g_lang.m_fireZMZoneName, 160, 'text', '6', true, 'center');
+        cols[1] = this.f_createColumn(g_lang.m_fireZMMember, 130, 'combo', '6', true, 'center');
+        cols[2] = this.f_createColumn(g_lang.m_fireZMDesc, 300, 'combo', '6', false, 'center');
         cols[3] = this.f_createColumn(g_lang.m_enabled, 100, 'checkbox', '3', false, 'center');
 
         return cols;
@@ -53,19 +54,39 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
                 thisObj.m_zoneRecs = evt.m_value;
-                thisObj.f_populateTable();
+                thisObj.m_zoneRecsCur = thisObj.f_copyZoneRecords(evt.m_value);
+                thisObj.f_populateTable(thisObj.m_zoneRecsCur);
             }
 
             thisObj.f_increateTableRowCounter(-1);
             thisObj.f_adjustDivPosition(thisObj.m_buttons);
             thisObj.f_resize();
+            thisObj.f_enableActionButtons(thisObj.m_zoneRecs);
         };
 
         g_utils.f_cursorWait();
         thisObj.m_busLayer.f_getFirewallZoneMgmtList(cb);
     };
 
-    this.f_populateTable = function()
+    this.f_copyZoneRecords = function(recs)
+    {
+        var ar = [];
+
+        for(var i=0; i<recs.length; i++)
+        {
+            var zone = new UTM_fwZoneRecord();
+            zone.m_name = recs[i].m_name;
+            zone.m_description = recs[i].m_description;
+            zone.m_enabled = recs[i].m_enabled;
+            zone.m_members = recs[i].m_members;
+
+            ar.push(zone);
+        }
+
+        return ar;
+    }
+
+    this.f_populateTable = function(rec)
     {
         thisObj.f_removeDivChildren(thisObj.m_div);
         thisObj.f_removeDivChildren(thisObj.m_gridBody);
@@ -76,7 +97,7 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
         thisObj.m_div.appendChild(thisObj.m_buttons);
 
         var sortCol = UTM_confFireZoneMgmt.superclass.m_sortCol;
-        var ar = thisObj.f_createSortingArray(sortCol, thisObj.m_zoneRecs);
+        var ar = thisObj.f_createSortingArray(sortCol, rec);
 
         for(var i=0; i<ar.length; i++)
             thisObj.f_addFirewallIntoRow(ar[i]);
@@ -93,7 +114,7 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
             // grid columns.
             // compose a default table row
             ar[i] = zRecs[i].m_name + '|' + zRecs[i].m_members + '|' +
-                    zRecs[i].m_description;
+                    zRecs[i].m_description + '|' + zRecs[i].m_enabled;
         }
 
         var sar = thisObj.f_sortArray(sortIndex, ar);
@@ -103,10 +124,39 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
             var rec = new UTM_fwZoneRecord(r[0])
             rec.m_members = [r[1]];
             rec.m_description = r[2];
+            rec.m_enabled = r[3];
             recs.push(rec);
         }
 
         return recs;
+    }
+
+    this.f_enableActionButtons = function(recs)
+    {
+        var enable = false;
+
+        for(var i=0; i<recs.length; i++)
+        {
+            var rec = recs[i];
+            var enDiv = document.getElementById(rec.m_name+"_id");
+
+            if(enDiv != null)
+            {
+                if(enDiv.checked && rec.m_enabled == 'yes')
+                    continue;
+                else if(!enDiv.checked && rec.m_enabled == 'no')
+                    continue;
+                else
+                {
+                    enable = true;
+                    break;
+                }
+            }
+        }
+
+        thisObj.f_enabledDisableButton(this.m_btnApplyId, enable);
+        thisObj.f_enabledDisableButton(this.m_btnCancelId, enable);
+
     }
 
     this.f_addFirewallIntoRow = function(zoneRec)
@@ -157,12 +207,36 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
     this.f_handleGridSort = function(col)
     {
         if(thisObj.f_isSortEnabled(thisObj.m_colModel, col))
-            thisObj.f_populateTable();
+            thisObj.f_populateTable(thisObj.m_zoneRecsCur);
     };
+
+    this.f_handleCancelAction = function()
+    {
+        thisObj.f_populateTable(thisObj.m_zoneRecs);
+        thisObj.f_enableActionButtons(thisObj.m_zoneRecs);
+        thisObj.m_zoneRecsCur = thisObj.f_copyZoneRecords(thisObj.m_zoneRecs);
+    }
+
+    this.f_handelApplyAction = function()
+    {
+        thisObj.f_loadVMData();
+    }
 
     this.f_handleEnabledZone= function(zname)
     {
-        alert(zname);
+        var enDiv = document.getElementById(zname+"_id");
+
+        var ar = thisObj.m_zoneRecsCur;
+        for(var i=0; i<ar.length; i++)
+        {
+            if(ar[i].m_name == zname)
+            {
+                ar[i].m_enabled = enDiv.checked ? 'yes' : 'no';
+                break;
+            }
+        }
+
+        thisObj.f_enableActionButtons(thisObj.m_zoneRecs);
     }
 
     this.f_handleUpdateZone = function(zname)
@@ -182,11 +256,12 @@ function f_fwZMGridHeaderClick(col)
 
 function f_fireZoneMgmtApplyHandler()
 {
+    g_configPanelObj.m_activeObj.f_handelApplyAction();
 }
 
 function f_fireZoneMgmtCancelHandler()
 {
-    g_configPanelObj.m_activeObj.f_populateTable();
+    g_configPanelObj.m_activeObj.f_handleCancelAction();
 }
 function f_fwZoneMgmtEnabledHandler(zname)
 {

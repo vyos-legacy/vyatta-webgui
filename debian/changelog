@@ -1,3 +1,23 @@
+vyatta-webgui (0.2.14+fxdU+54) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Move 2nd navigation, sub menu, and dynamic menu item out of utm
+    html page.
+  * 1. Move static label text outside of html pages.
+
+  [ Kevin Choi ]
+  * * firewall customize :
+  * * firewall zone management : change data structure by replacing
+    delete column to
+
+  [ Mohit Mehta ]
+  * * do not show default 1st rule i.e. 'state esablished,related ->
+    allow' rule
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 12 Jun 2009 17:29:27 +0000
+
 vyatta-webgui (0.2.14+fxdU+53) unstable; urgency=low
 
   * * firewall customize :

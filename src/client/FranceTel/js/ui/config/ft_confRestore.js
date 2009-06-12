@@ -279,8 +279,9 @@ function FT_confRestore(name, callback, busLayer)
     {
         var cb = function()
         {
-
-            alert('upload comleted');
+            g_utils.f_cursorDefault();
+            g_utils.f_popupMessage(g_lang.m_resUploadCompleted,
+                'ok', g_lang.m_restoreUploadTitle, true, null, null);
         }
 
         fn = fn.substring(0, fn.length-4);
@@ -306,7 +307,8 @@ function FT_confRestore(name, callback, busLayer)
         {
             thisObj.f_sendRestoreFromPC(fn);
         }
-        window.setTimeout(function(){fnc();}, 5000);
+        g_utils.f_cursorWait();
+        window.setTimeout(function(){fnc();}, 10000);
         
     }
 }

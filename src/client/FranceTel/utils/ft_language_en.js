@@ -15,7 +15,7 @@ var g_lang =
     m_mainLang : 'en',
 	m_mainOA : 'Open Appliance',
 	m_mainEnglish : 'English',
-	m_mainFrench : 'Français',	
+	m_mainFrench : 'Franï¿½ais',	
 	m_mainLogin : 'Login',
 	m_mainLogout: 'log out',
 	m_mainUserName: 'User name',
@@ -153,6 +153,7 @@ var g_lang =
 	m_resUpdateCurVer: "Current version",
 	m_resUpdatePrevVer: "Previous version",
 	m_resUpdateFail: "Restore failed:",
+        m_resUploadCompleted: "Upload files has completed.",
 
     ///////////////////////////////////////////////////////////////////
     // VM Schedule Update

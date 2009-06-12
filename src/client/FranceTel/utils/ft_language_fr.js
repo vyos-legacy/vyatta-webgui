@@ -152,7 +152,8 @@ var g_lang =
 	m_resUpdateVmName : "vm nom",		
 	m_resUpdateCurVer: "Version actuelle",
 	m_resUpdatePrevVer: "version précédente",
-	m_resUpdateFail: "Restore a échoué:",	
+	m_resUpdateFail: "Restore a échoué:",
+	m_resUploadCompleted: "Upload files has completed.",
 
     ///////////////////////////////////////////////////////////////////
     // VM Schedule Update

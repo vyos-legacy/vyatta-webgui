@@ -23,6 +23,7 @@ var g_lang =
     m_underConstruction : 'Under Construction',
     m_applyTip : "Save changed",
     m_cancelTip : "Cancel changed",
+    m_confModify : "Configuration has been modified and not saved. Do you want to continue?",
 
     ///////////////////////////////////////////////////////////////////
     // VPN Overview

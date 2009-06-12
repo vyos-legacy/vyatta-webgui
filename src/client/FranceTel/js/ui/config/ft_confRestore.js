@@ -131,7 +131,7 @@ function FT_confRestore(name, callback, busLayer)
 
         if(role == userRec.V_ROLE_ADMIN && r[2] == 'admin')
             return true;
-        else if(role == userRec.V_ROLE_INSTALL && r[2] == 'installer')
+        else if(role == userRec.V_ROLE_INSTALL)
             return true;
         else
             return false;

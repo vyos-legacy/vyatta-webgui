@@ -139,7 +139,7 @@ function FT_confBaseObj(name, callback, busLayer)
         }
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">' +
-                      '<thead><tr height="25">' + inner +
+                      '<thead style="background-color:#efefef;"><tr height="25">' + inner +
                       '</tr></thead></table>';
 
         div.style.width = width + 'px';

@@ -80,7 +80,7 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
     //capture the backup command and direct to the chunker
 //    cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
-    opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + ";source /etc/bash_completion; _vyatta_op_run " + cmd;
+    opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + ";export " + WebGUI::OA_GUI_ENV_SESSION_ID + "=" + _proc->get_msg().id() + ";source /etc/bash_completion; _vyatta_op_run " + cmd;
     if (multi_part_op_cmd(cmd,opmodecmd)) {
       //success
       return;

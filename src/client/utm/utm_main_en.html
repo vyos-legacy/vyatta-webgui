@@ -11,7 +11,7 @@
 		<![endif]-->
 		<script type="text/javascript" src="/common/oa/js/util.js"></script>
         <script type="text/javascript">
-        	g_defaultMenuItem = 'dashboard_l1';        
+        	g_defaultMenuItem = 'webf_l1';        
         </script>
         <script type="text/javascript" src="utm_devConfig.js">
         </script>
@@ -21,6 +21,8 @@
         </script>
         <script type="text/javascript" src="js/businessLayer/utm_allBusLayers.js">
         </script>
+        <script type="text/javascript" src="js/ui/utm_htmlBuilder.js">
+        </script>		
         <script type="text/javascript" src="js/ui/utm_allUI.js">
         </script>
         <script type="text/javascript" src="js/ui/config/utm_allConfigPanels.js">
@@ -33,218 +35,25 @@
                 </div>
                 <!-- **** 2nd nav start **** -->
                 <div id="oa_2_nav">
-                    <ul id="oa_2_nav_ul">
-                        <li id="dashboard_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;dashboard</a>
-                        </li>
-                        <li id="firewall_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;firewall</a>
-                        </li>
-                        <li id="idp_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;intrusion prevention</a>
-                        </li>
-                        <li id="avs_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;anti-virus</a>
-                        </li>
-                        <li id="asp_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;anti-spam</a>
-                        </li>
-                        <li id="webf_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;web filtering</a>
-                        </li>
-                        <li id="imp2p_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;IM & P2P filtering</a>
-                        </li>
-						<li id="vpn_l1">						                    
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;VPN</a>
-                        </li>
-                        <li id="log_l1">
-                            <a href="#"><img border="0" src="images/carre.gif">&nbsp;Logs</a>
-                        </li>						
-                    </ul>
-                    <div class="liner">
-                    </div>
                 </div>
                 <!-- **** 2nd nav end **** -->
 				<!-- **** 3nd nav start **** -->
                 <div id="sub_menu_container">
-                    <div id="sm_dashboard" class="left_sub_menu">
-                        <ul id="sm_dashboard_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;dashboard</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="dashboard_l2">
-                                <a href="#" desc="Dashboard"><img border="0" src="images/fleche_off.gif">&nbsp;dashboard</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="sm_firewall" class="left_sub_menu">
-                        <ul id="sm_firewall_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;firewall</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="zone_l2">
-                                <a href="#" desc="Zone management"><img border="0" src="images/fleche_off.gif">&nbsp;zone management</a>
-                            </li>
-                            <li id="firewall_l2">
-                                <a href="#" desc="Firewall"><img border="0" src="images/fleche_off.gif">&nbsp;firewall</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="sm_idp" class="left_sub_menu">
-                        <ul id="sm_idp_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;intrustion prevention</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="easy_idp_l2">
-                                <a href="#" desc="Easy mode"><img border="0" src="images/fleche_off.gif">&nbsp;easy mode</a>
-                            </li>
-                            <li id="expert_idp_l2">
-                                <a href="#" desc="Expert mode"><img border="0" src="images/fleche_off.gif">&nbsp;expert mode</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="sm_avs" class="left_sub_menu">
-                        <ul id="sm_avs_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;anti-virus</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="avs_l2">
-                                <a href="#" desc="Anti-virus"><img border="0" src="images/fleche_off.gif">&nbsp;anti-virus</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="sm_asp" class="left_sub_menu">
-                        <ul id="sm_asp_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;anti-spam</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="asp_l2">
-                                <a href="#" desc="Anti-spam"><img border="0" src="images/fleche_off.gif">&nbsp;anti-spam</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="sm_webf" class="left_sub_menu">
-                        <ul id="sm_webf_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;web filtering</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="easy_webf_l2">
-                                <a href="#" desc="Easy filtering"><img border="0" src="images/fleche_off.gif">&nbsp;easy filtering</a>
-                            </li>
-                            <li id="expert_webf_l2">
-                                <a href="#" desc="Expert filtering"><img border="0" src="images/fleche_off.gif">&nbsp;expert filtering</a>
-                            </li>							
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>		
-					<div id="sm_imp2p" class="left_sub_menu">
-                        <ul id="sm_imp2p_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;IM & P2P filtering</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="imp2p_l2">
-                                <a href="#" desc="IM & P2P filtering"><img border="0" src="images/fleche_off.gif">&nbsp;IM & P2P filtering</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="sm_vpn" class="left_sub_menu">
-                        <ul id="sm_vpn_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;VPN</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="vpn_overview_l2">
-                                <a href="#" desc="Overview"><img border="0" src="images/fleche_off.gif">&nbsp;overview</a>
-                            </li>
-                            <li id="vpn_s2s_l2">
-                                <a href="#" desc="Site to site"><img border="0" src="images/fleche_off.gif">&nbsp;site to site</a>
-                            </li>		
-							<li id="vpn_remote_l2">
-                                <a href="#" desc="Remote users"><img border="0" src="images/fleche_off.gif">&nbsp;remote users</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>	
-					<div id="sm_log" class="left_sub_menu">
-                        <ul id="sm_log_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;logs</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="log_l2">
-                                <a href="#" desc="Logs"><img border="0" src="images/fleche_off.gif">&nbsp;logs</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
+                    <div id="sm_dashboard" class="left_sub_menu"></div>
+                    <div id="sm_firewall" class="left_sub_menu"></div>
+                    <div id="sm_idp" class="left_sub_menu"></div>
+                    <div id="sm_avs" class="left_sub_menu"></div>
+                    <div id="sm_asp" class="left_sub_menu"></div>
+                    <div id="sm_webf" class="left_sub_menu"></div>		
+					<div id="sm_imp2p" class="left_sub_menu"></div>
+                    <div id="sm_vpn" class="left_sub_menu"></div>	
+					<div id="sm_log" class="left_sub_menu"></div>
                 </div>
                 <!-- **** 3nd nav end **** -->
-                <div id="dyn_sub_menu" class="dyn_sub_menu">
-                    <ul id="sm_firewall_zone_dyn_ul">
-                        <li id="firewall_zone_mgmt_editor_l2">
-                            <a href="#" desc="Add zone"><img border="0" src="images/fleche_off.gif">&nbsp;zone management</a>
-                        </li>
-                        <li id="firewall_zone_mgmt_editor_updatel2">
-                            <a href="#" desc="Update zone"><img border="0" src="images/fleche_off.gif">&nbsp;zone management</a>
-                        </li>
-                    </ul>
-                    <ul id="sm_firewall_dyn_ul">
-                        <li id="firewall_custom_l2">
-                            <a href="#" desc="Customized firewall"><img border="0" src="images/fleche_off.gif">&nbsp;firewall</a>
-                        </li>
-                    </ul>     
-                    <ul id="sm_webf_dyn_ul">
-                        <li id="easy_webf_by_url_l2">
-                            <a href="#" desc="Authorized URLs"><img border="0" src="images/fleche_off.gif">&nbsp;easy filtering</a>
-                        </li>
-                        <li id="easy_webf_by_word_l2">
-                            <a href="#" desc="Banned keywords in URL"><img border="0" src="images/fleche_off.gif">&nbsp;easy filtering</a>
-                        </li>							
-                    </ul>										           	
-                    <ul id="sm_vpn_dyn_ul">
-                        <li id="vpn_remote_usr_grp_l2">
-                            <a href="#" desc="Remote users"><img border="0" src="images/fleche_off.gif">&nbsp;remote users</a>
-                        </li>
-                        <li id="vpn_remote_usr_add_l2">
-                            <a href="#" desc="Remote users"><img border="0" src="images/fleche_off.gif">&nbsp;remote users</a>
-                        </li>		
-             		</ul>				
-                </div>
+                <div id="dyn_sub_menu" class="dyn_sub_menu"></div>
                 <div id="config_panel" valign="center">
                     <div id="config_panel_img_title">                       
-                       <img align="left" src="/oa/images/title_icon_config.png" class="config_panel_img"><h1 valign="bottom" id="config_panel_title">Place Holder</h1>
+                       <img align="left" src="/oa/images/title_icon_config.png" class="config_panel_img"><h1 valign="bottom" id="config_panel_title"></h1>
                     </div>
                 </div>   				
                 <div id="ft_container" valign="top">

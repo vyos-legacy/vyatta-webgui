@@ -1,3 +1,16 @@
+vyatta-webgui (0.2+fxd0+56) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * add function to provide full user list
+
+  [ slioch ]
+  * convert user listing to user library. should fix the ft accent
+    problem on user retrieval
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 11 Jun 2009 18:46:48 -0700
+
 vyatta-webgui (0.2+fxd0+55) unstable; urgency=low
 
   * * VM Update screen: changed per FT feedback ver 0.2.2,

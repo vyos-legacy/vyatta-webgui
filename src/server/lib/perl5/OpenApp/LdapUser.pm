@@ -21,6 +21,43 @@ my $OA_LDAP_ATTR_ROLE = 'description';
 my $OA_LDAP_ATTR_PASSWORD = 'userPassword';
 
 ### "static" functions
+sub listAllUsers {
+  # set up LDAP
+  my $ldap = Net::LDAP->new("$OA_LDAP_SERVER");
+  return [] if (!defined($ldap));
+  my $res;
+  if (!defined($OA_LDAP_READDN)) {
+    # bind anonymously
+    $res = $ldap->bind();
+  } else {
+    # bind with readonly credential
+    $res = $ldap->bind("$OA_LDAP_READDN",
+                       password => "$OA_LDAP_READ_PASSWORD");
+  }
+  if ($res->is_error()) {
+    # bind failed
+    $ldap->disconnect();
+    return [];
+  }
+
+  # do query
+  $res = $ldap->search(base => "$OA_LDAP_USER_SUFFIX",
+                       filter => "$OA_LDAP_ATTR_UID=*",
+                       attrs => [ "$OA_LDAP_ATTR_UID" ]);
+  if ($res->is_error()) {
+    $ldap->disconnect();
+    return [];
+  }
+  my @ret = ();
+  for my $ent ($res->entries()) {
+    my $uid = $ent->get_value($OA_LDAP_ATTR_UID);
+    next if (!defined($uid));
+    push @ret, $uid;
+  }
+  $ldap->disconnect();
+  return \@ret;
+}
+
 sub _deleteUserAttr {
   my ($user, $attr) = @_;
   my $ldif =<<EOF;

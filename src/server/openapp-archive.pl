@@ -45,9 +45,6 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   exit 1;
 }
 
-
-my $auth_user_role = "admin";
-
 ##########################################################################
 # Directory layout is as follows:
 # /var/archive                               #root directory
@@ -399,22 +396,23 @@ sub backup_and_get_archive {
 # 5) status flag is set to true
 # 6) no provision is enabled to remove file.
 #
+    #then a get accessor
+    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
+    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
+    #now remove archive
+    `rm -f /var/www/archive/$OA_SESSION_ID/*.tar`;
    #first perform backup w/o normal limit
     $backup = $backup_get;
     backup();
 
     $get_archive = $filename;
 
-    #then a get accessor
-    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
     get_archive();
-#    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
     
     #will move to a common name now to manage bu archives with single image for now.
-    `mv /var/www/archive/$OA_SESSION_ID/$get_archive.tar /var/www/archive/bu.tar`;
-
-    #now remove archive
-    `rm -f $ARCHIVE_ROOT_DIR/$filename.tar`;
+#    `mv /var/www/archive/$OA_SESSION_ID/$get_archive.tar /var/www/archive/$OA_SESSION_ID/bu/.`;
+    #now let's remove this archive from the archive location
+    `rm -f $ARCHIVE_ROOT_DIR/$get_archive.tar`;
 }
 
 
@@ -692,6 +690,11 @@ sub put_archive {
     print "VERBATIM_OUTPUT\n";
     `cp /tmp/$put_archive.tar $ARCHIVE_ROOT_DIR/.`;
     `rm -f /tmp/$put_archive.tar`;
+
+
+    #also restore this now.
+    my $restore = $put_archive;
+    restore_archive();
 }
 
 ##########################################################################

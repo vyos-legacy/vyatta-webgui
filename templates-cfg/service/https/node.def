@@ -1,22 +1,26 @@
 help: Enable/disable the Web server
-delete: sudo /usr/sbin/invoke-rc.d lighttpd stop
-        sudo /etc/init.d/vyatta-webgui-chunker stop
-        if [ -r /var/run/vm-monitor.pid ]; then
-          kill $(cat /var/run/vm-monitor.pid)
-          rm /var/run/vm-monitor.pid
-        fi
-end: if [ ! -f /etc/lighttpd/server.pem ]; then
-          sudo openssl req -new -x509 -keyout /etc/lighttpd/server.pem \
+end: 
+        if [ ${COMMIT_ACTION} = 'DELETE' ]; then
+          sudo /usr/sbin/invoke-rc.d lighttpd stop
+          sudo /etc/init.d/vyatta-webgui-chunker stop
+          if [ -r /var/run/vm-monitor.pid ]; then
+            kill $(cat /var/run/vm-monitor.pid)
+            rm /var/run/vm-monitor.pid
+          fi
+        else
+          if [ ! -f /etc/lighttpd/server.pem ]; then
+            sudo openssl req -new -x509 -keyout /etc/lighttpd/server.pem \
                 -out /etc/lighttpd/server.pem \
                 -days 3650 -nodes -passout pass:'' \
                 -subj '/C=US/CN=Vyatta Web GUI/O=Vyatta Inc./ST=CA/L=Belmont'
-        fi
-        sudo /usr/sbin/invoke-rc.d lighttpd restart
-        sudo /etc/init.d/vyatta-webgui-chunker restart $VAR(./background/@)
-        if [ -r /var/run/vm-monitor.pid ]; then
-          kill $(cat /var/run/vm-monitor.pid)
-        fi
-        if [ -f /proc/xen/capabilities ]; then
-          nohup /opt/vyatta/sbin/openapp-vm-monitor.pl >&/dev/null &
-          jobs -p %1 >/var/run/vm-monitor.pid
+          fi
+          sudo /usr/sbin/invoke-rc.d lighttpd restart
+          sudo /etc/init.d/vyatta-webgui-chunker restart $VAR(./background/@)
+          if [ -r /var/run/vm-monitor.pid ]; then
+            kill $(cat /var/run/vm-monitor.pid)
+          fi
+          if [ -f /proc/xen/capabilities ]; then
+            nohup /opt/vyatta/sbin/openapp-vm-monitor.pl >&/dev/null &
+            jobs -p %1 >/var/run/vm-monitor.pid
+          fi
         fi

@@ -32,6 +32,7 @@ use File::Copy;
 use Getopt::Long;
 use OpenApp::VMMgmt;
 use OpenApp::Rest;
+use OpenApp::LdapUser;
 
 my ($list,$delete,$modify,$add,$password,$oldpassword,$lastname,$firstname,$email,$role,$rights);
 
@@ -268,88 +269,39 @@ sub del_user {
 sub list_user {
     #if $list is empty then list all
 #
-    my @output;
-    my $output;
+    print "VERBATIM_OUTPUT\n";
+    
     if ($list eq '') {
-	@output = `ldapsearch -x -b "dc=localhost,dc=localdomain" "uid=*"`;
+	my $users = OpenApp::LdapUser::listAllUsers();
+	for my $u (@{$users}) {
+	    my $user = new OpenApp::LdapUser($u);
+	    
+	    print "<user name='".$user->getName()."'>";
+	    print "<name>";
+	    print "<first>".$user->getFirst()."</first>";
+	    print "<last>".$user->getLast()."</last>";
+	    print "</name>";
+	    print "<email>".$user->getMail()."</email>";
+	    for my $r (keys %{$user->getRights()}) {
+		print "<rights>$r</rights>";
+	    }
+	    print "<role>".$user->getRole()."</role>";
+	    print "</user>";
+	}
     }
     else {
-	@output = `ldapsearch -x -b "dc=localhost,dc=localdomain" "uid=$list"`;
-    }
-#   now construct and print out xml response
-# foo, People, nodomain
-#dn: uid=foo,ou=People,dc=nodomain
-#objectClass: account
-#objectClass: posixAccount
-#cn: foo
-#uid: foo
-#uidNumber: 1001
-#gidNumber: 1001
-#homeDirectory: /home/foo
-#loginShell: /bin/bash
-#gecos: foo
-#description: User account
-
-#how to parse the stdout
-
-# cn: foo
-
-    #iterate by line
-    my $open_entry = 0;
-    my $hash_arr = {};
-    print "VERBATIM_OUTPUT\n";
-    for $output (@output) {
-#	print $output;
-	my @o = split(' ',$output);
-	if (defined $o[0] && defined $o[1]) {
-	    if ($o[0] eq "uid:") {
-		$open_entry = 1;
-		$hash_arr->{'name'} = $o[1];
-	    }
-	    if ($o[0] eq 'mail:') {
-		$hash_arr->{'mail'} = $o[1];
-	    }
-	    #The assumption is that mail is the last entry per user
-#	    print "<first>$o[1]</first>";
-	    if ($o[0] eq 'sn:') {
-		$hash_arr->{'last'} = $o[1];
-	    }
-	    if ($o[0] eq 'cn:') {
-		$hash_arr->{'first'} = $o[1];
-	    }
-	    if ($o[0] eq 'memberUid:') {
-		$hash_arr->{'rights'} .= "<rights>$o[1]</rights>";
-	    }
-	    if ($o[0] eq 'description:') {
-		$hash_arr->{'role'} = $o[1];
-	    }
-	    
-	    my @groups;
-	    if ($open_entry == 1 && $o[0] eq '#') {
-		#now squirt out everything.
-		print "<user name='$hash_arr->{'name'}'>";
-		print "<name>";
-		print "<first>$hash_arr->{'first'}</first>";
-		print "<last>$hash_arr->{'last'}</last>";
-		print "</name>";
-		print "<email>$hash_arr->{'mail'}</email>";
-		if (defined $hash_arr->{'rights'}) {
-		    print "$hash_arr->{'rights'}";
-		}
-		print "<role>$hash_arr->{'role'}</role>";
-		print "</user>";
-
-		#let's clear the entry now
-		$hash_arr->{'name'} = "";
-		$hash_arr->{'first'} = "";
-		$hash_arr->{'last'} = "";
-		$hash_arr->{'mail'} = "";
-		$hash_arr->{'rights'} = "";
-		$hash_arr->{'role'} = "";
-
-		$open_entry = 0;
-	    }
+	my $user = new OpenApp::LdapUser($list);
+	print "<user name='".$user->getName()."'>";
+	print "<name>";
+	print "<first>".$user->getFirst()."</first>";
+	print "<last>".$user->getLast()."</last>";
+	print "</name>";
+	print "<email>".$user->getMail()."</email>";
+	for my $r (keys %{$user->getRights()}) {
+	    print "<rights>$r</rights>";
 	}
+	print "<role>".$user->getRole()."</role>";
+	print "</user>";
     }
 }
 

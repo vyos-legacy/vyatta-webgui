@@ -18,6 +18,8 @@
         </script>
 		<script type="text/javascript" src="ft_devConfig.js">
         </script>
+        <script type="text/javascript" src="js/ui/ft_htmlBuilder.js">
+        </script>		
         <script type="text/javascript" src="utils/ft_allUtils.js">
         </script>
         <script type="text/javascript" src="js/businessLayer/ft_allBusLayers.js">
@@ -37,16 +39,13 @@
                             <a href="#" onclick="f_home()"><img src="images/en/Logo_OBS-Web.gif" alt="logo Orange Business Services" border="0"></a>
                         </div>
                         <div id="lang_bar">
-                            <select id="ft_language" name="language" size="1" STYLE="width: 87px; background-color: #EFEFEF; font-size: 8pt; border-style: solid; border-color: #CCC;" onChange="f_onLanguageChange();">
-                                <option value="en" selected="selected">English</option>
-                                <option value="fr">Franï¿½ais</option>
-                            </select>
+                            <select id="ft_language" name="language" size="1" STYLE="width: 87px; background-color: #EFEFEF; font-size: 8pt; border-style: solid; border-color: #CCC;" onChange="f_onLanguageChange();"></select>
                         </div>
                     </nobr>
                     <!-- **** welcome start **** -->
                     <div id="welcome">
-                        <span id="welcome_admin">welcome guest, please sign in to the Open Appliance admin service</span>
-                        <a href="#" id="logoff" class="logoff" onfocus="this.blur();"><img border="0" src="images/en/puce_simple.gif">&nbsp;log out</a>
+                        <span id="welcome_admin"></span>
+                        <a href="#" id="logoff" class="logoff" onfocus="this.blur();"></a>
                     </div><!-- ****  welcome end **** --><!-- **** pri nav start **** -->
                     <div id="pri_nav">
                         <table class="nav1" cellpadding="0" cellspacing="0">
@@ -65,48 +64,7 @@
                             <div id="ft_login_container" align="center">
                                 <div align='center'><img id='login_banner' src='images/en/oa_banner.gif'></div>
 								<br/><br/><br/><br/>
-                                <!--
-								<div id="bar">
-                                    <div id="labeltext">
-                                        Login
-                                    </div>
-                                </div>
-								-->
                                 <div id="login_content" align="center">
-                                    <div id="login_form">
-                                        <table id="ft_table" align="center">
-                                            <tbody>
-                                                <tr>
-                                                    <td class="alignLeft">
-                                                        User name
-                                                    </td>
-                                                    <td class="alignLeft">
-                                                        <input id="username" class="login_form_input" name="username" size="32" type="text" onkeydown="f_LoginKeyPressHandler(event)">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="alignLeft">
-                                                        Password
-                                                    </td>
-                                                    <td class="alignLeft">
-                                                        <input id="password" name="password" class="login_form_input" size="32" type="password" onkeydown="f_LoginKeyPressHandler(event)">
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <br>
-                                        <br>
-                                        <div align="center">
-                                            <img id="goto22" src="images/en/bt_login.gif" onclick="f_submit()">
-                                        </div>
-                                    </div>
-									<br/><br/><br/>
-                                    <div id='messageContactServiceCustomer' align='center'>
-                                        <p>
-                                            If you have no username and password, contact your Customer Service Center.<br/>
-                                            Warning: to connect to the Open Appliance program your browser must accept pop-ups and cookies.
-                                        </p>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -119,184 +77,22 @@
                 <div id="oa_container">
                 </div>
                 <!-- **** 2nd nav start **** -->
-                <div id="oa_2_nav">
-                    <ul id="oa_2_nav_ul">
-                        <li id="app_l1">
-                            <a href="#"><img border="0" src="images/en/carre.gif">&nbsp;applications</a>
-                        </li>
-                        <li id="user_l1">
-                            <a href="#"><img border="0" src="images/en/carre.gif">&nbsp;users</a>
-                        </li>
-                        <li id="mon_l1">
-                            <a href="#"><img border="0" src="images/en/carre.gif">&nbsp;monitoring</a>
-                        </li>
-                        <li id="backup_l1">
-                            <a href="#"><img border="0" src="images/en/carre.gif">&nbsp;backup</a>
-                        </li>
-                        <li id="config_l1">
-                            <a href="#"><img border="0" src="images/en/carre.gif">&nbsp;configuration</a>
-                        </li>
-                        <li id="myprof_l1">
-                            <a href="#"><img border="0" src="images/en/carre.gif">&nbsp;my profile</a>
-                        </li>
-                    </ul>
-                    <div class="liner">
-                    </div>
-                </div>
+                <div id="oa_2_nav"></div>
                 <!-- **** 2nd nav end **** -->
 				<!-- **** 3nd nav start **** -->
                 <div id="sub_menu_container">
-                    <div id="sm_applications" class="left_sub_menu">
-                        <ul id="sm_applications_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;applications</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="dashboard_l2">
-                                <a href="#" desc="Dashboard"><img border="0" src="images/en/fleche_off.gif">&nbsp;dashboard</a>
-                            </li>
-                            <li id="update_l2">
-                                <a href="#" desc="Updates planning and history"><img border="0" src="images/en/fleche_off.gif">&nbsp;updates</a>
-                            </li>
-                            <li id="restart_l2">
-                                <a href="#" desc="Restart Application or Open appliance"><img border="0" src="images/en/fleche_off.gif">&nbsp;restart</a>
-                            </li>
-                            <li id="subscribe_l2">
-                                <a href="#" desc="Subscription"><img border="0" src="images/en/fleche_off.gif">&nbsp;subscribe</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="sm_users" class="left_sub_menu">
-                        <ul id="sm_users_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;users</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="user_l2">
-                                <a href="#" desc="Users list"><img border="0" src="images/en/fleche_off.gif">&nbsp;users</a>
-                            </li>
-                            <li id="user_right_l2">
-                                <a href="#" desc="Users rights"><img border="0" src="images/en/fleche_off.gif">&nbsp;users rights</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="sm_monitoring" class="left_sub_menu">
-                        <ul id="sm_monitoring_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;monitoring</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="hardware_l2">
-                                <a href="#" desc="Hardware monitor"><img border="0" src="images/en/fleche_off.gif">&nbsp;hardware</a>
-                            </li>
-                            <li id="network_l2">
-                                <a href="#" desc="Network monitor"><img border="0" src="images/en/fleche_off.gif">&nbsp;network</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="sm_backup" class="left_sub_menu">
-                        <ul id="sm_backup_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;backup</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="backup_l2">
-                                <a href="#" desc="Configuration backup"><img border="0" src="images/en/fleche_off.gif">&nbsp;configuration backup</a>
-                            </li>
-                            <li id="restore_l2">
-                                <a href="#" desc="Configuration restore"><img border="0" src="images/en/fleche_off.gif">&nbsp;configuration restore</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="sm_config" class="left_sub_menu">
-                        <ul id="sm_config_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;configuration</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="email_serv_l2">
-                                <a href="#" desc="Email server configuration"><img border="0" src="images/en/fleche_off.gif">&nbsp;email server</a>
-                            </li>
-                            <li id="time_serv_l2">
-                                <a href="#" desc="Time server configuration"><img border="0" src="images/en/fleche_off.gif">&nbsp;time server</a>
-                            </li>
-                            <li id="user_dir_l2">
-                                <a href="#" desc="LDAP server configuration"><img border="0" src="images/en/fleche_off.gif">&nbsp;user directory</a>
-                            </li>
-                            <li id="blb_l2">
-                                <a href="#" desc="BLB association"><img border="0" src="images/en/fleche_off.gif">&nbsp;BLB association</a>
-                            </li><!-- Remove 3rd_party_l2 link.  OSGi is not applicable.
-                            <li id="3rd_party_l2">
-                            <a href="#" desc="OSGi"><img border="0" src="images/en/fleche_off.gif">&nbsp;3rd Parties</a>
-                            </li>
-                            -->
-                            <li id="password_l2">
-                                <a href="#" desc="Password policy"><img border="0" src="images/en/fleche_off.gif">&nbsp;password policy</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="sm_myprof" class="left_sub_menu">
-                        <ul id="sm_myprof_ul">
-                            <li class="left_sub_menu_header">
-                                <h3>&nbsp;my profile</h3>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                            <li id="myprof_l2">
-                                <a href="#" desc="My profile"><img border="0" src="images/en/fleche_off.gif">&nbsp;my profile</a>
-                            </li>
-                            <li class="left_sub_menu_liner">
-                            </li>
-                        </ul>
-                    </div>
+                    <div id="sm_applications" class="left_sub_menu"></div>
+                    <div id="sm_users" class="left_sub_menu"></div>
+                    <div id="sm_monitoring" class="left_sub_menu"></div>
+                    <div id="sm_backup" class="left_sub_menu"></div>
+                    <div id="sm_config" class="left_sub_menu"></div>
+                    <div id="sm_myprof" class="left_sub_menu"></div>
                 </div>
                 <!-- **** 3nd nav end **** -->
-                <div id="dyn_sub_menu" class="dyn_sub_menu">
-                    <ul id="sm_users_dyn_ul">
-                        <li id="user_add_l2">
-                            <a href="#" desc="Add user" virtual="true"><img border="0" src="images/en/fleche_off.gif">&nbsp;add user</a>
-                        </li>
-                        <li id="user_update_l2">
-                            <a href="#" desc="Update user" virtual="true"><img border="0" src="images/en/fleche_off.gif">&nbsp;update user</a>
-                        </li>
-                    </ul>
-                    <ul id="sm_applications_dyn_ul">
-                        <li id="sched_update_l2">
-                            <a href="#" desc="Update" virtual="true"><img border="0" src="images/en/fleche_off.gif">&nbsp;update</a>
-                        </li>
-                        <li id="restore_update_l2">
-                            <a href="#" desc="Restore" virtual="true"><img border="0" src="images/en/fleche_off.gif">&nbsp;restore</a>
-                        </li>
-                    </ul>
-					<ul id="sm_backup_dyn_ul">
-                        <li id="restore_desc_l2">
-                           <a href="#" desc="Configuration restore description"><img border="0" src="images/en/fleche_off.gif">&nbsp;configuration restore description</a>
-                        </li>
-					</ul>
-					<ul id="sm_config_dyn_ul">
-                        <li id="blb_check_l2">
-                           <a href="#" desc="BLB credentials check"><img border="0" src="images/en/fleche_off.gif">&nbsp;BLB credentials check</a>
-                        </li>
-					</ul>
-                </div>
+                <div id="dyn_sub_menu" class="dyn_sub_menu"></div>
                 <div id="config_panel" valign="center">
                 	<div id="config_panel_img_title">
-                        <img align="left" src="images/en/32_disquette.gif" class="config_panel_img"><h1 valign="bottom" id="config_panel_title">Place Holder</h1>
+                        <img align="left" src="images/en/32_disquette.gif" class="config_panel_img"><h1 valign="bottom" id="config_panel_title"></h1>
 					</div>
                 </div>
                 <div id="ft_container" valign="top">

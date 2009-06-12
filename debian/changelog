@@ -1,3 +1,37 @@
+vyatta-webgui (0.2+fxd0+57) unstable; urgency=low
+
+  [ slioch ]
+  * added static scrub utility for input parameters.
+  * fixed init behavior on http service startup--switches on env action
+
+  [ Michael Larson ]
+  * fix for background processor to remove non-interactive mode
+    warnings.
+  * backup to my pc now supports original archive name in download.
+    client needs to read chunker response to build out correct get
+    request message on retrieving archive.
+
+  [ Loi Vo ]
+  * 1. Move static label text out of html pages.
+
+  [ An-Cheng Huang ]
+  * use LdapUser module getRights
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 12 Jun 2009 18:58:34 -0700
+
+vyatta-webgui (0.2+fxd0+56) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * add function to provide full user list
+
+  [ slioch ]
+  * convert user listing to user library. should fix the ft accent
+    problem on user retrieval
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 11 Jun 2009 18:46:48 -0700
+
 vyatta-webgui (0.2+fxd0+55) unstable; urgency=low
 
   * * VM Update screen: changed per FT feedback ver 0.2.2,

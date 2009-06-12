@@ -115,30 +115,11 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   close( cp[0]);
 
   string opmodecmd = cmd;
-
-  //  opmodecmd = WebGUI::mass_replace(cmd,"'","'\\''");
-  //  opmodecmd = opmodecmd + "'";
-
-  //opmodecmd = WebGUI::mass_replace(cmd,"'","");
-
-  
-  //--rcfile /etc/bash_completion -i -c
-  string arg1="--rcfile";
-  string arg2="/etc/bash_completion";
-  string arg3="-i";
-  string arg4="-c";
-
-  syslog(LOG_DEBUG,"command: %s",opmodecmd.c_str());
-  if (_debug) {
-    cout << "ChunkerProcessor::writer(): command to be executed: " << opmodecmd << endl;
-  }
+  string arg="-c";
 
   int err = execlp("/bin/bash",
 		   "/bin/bash",
-		   arg1.c_str(),
-		   arg2.c_str(),
-		   arg3.c_str(),
-		   arg4.c_str(),
+		   arg.c_str(),
 		   opmodecmd.c_str(),
 		   NULL);
   if (_debug) {
@@ -181,19 +162,6 @@ void
 ChunkerProcessor::process_chunk_end(string &str, string &token, long &chunk_ct)
 {
   string chunk = str;
-  /*
-  //OK, let's find a natural break and start processing
-  size_t pos = str.rfind('\n');
-  string chunk;
-  if (pos != string::npos) {
-    chunk = str.substr(0,pos);
-    str = str.substr(pos+1,str.length());
-  }
-  else {
-    chunk = str;
-    str = string("");
-  }
-  */
   char buf[80];
   sprintf(buf,"%lu",chunk_ct);
   string file = WebGUI::CHUNKER_RESP_TOK_DIR + WebGUI::CHUNKER_RESP_TOK_BASE + token + "_" + string(buf);

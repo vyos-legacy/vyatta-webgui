@@ -9,19 +9,16 @@ function UTM_htmlBuilder()
 	var thisObj =  this;
 		
 	this.f_prepare = function() {
-		//thisObj.f_buildNav2();
+	    thisObj.f_buildNav2();
+		thisObj.f_buildSm();
+		thisObj.f_buildDynSm();		
 	}
 		
     var nav2menu = [ 
-		{ 'key': 'dashboard_l1', 'value': g_lang.m_menu_dashboard },
-        { 'key': 'firewall_l1', 'value' : g_lang.m_menu_firewall },
-		{ 'key': 'idp_l1', 'value' : g_lang.m_menu_idp },
-        { 'key': 'avs_l1', 'value' : g_lang.m_menu_avs },
-        { 'key': 'asp_l1', 'value' : g_lang.m_menu_asp },
-        { 'key': 'webf_l1', 'value': g_lang.m_menu_webf },
-		{ 'key': 'imp2p_l1', 'value': g_lang.m_menu_imp2p },
-		{ 'key': 'vpn_l1', 'value': g_lang.m_menu_vpn },
-        { 'key': 'log_l1', 'value': g_lang.m_menu_log }							
+		{ 'key': 'lan_l1', 'value': g_lang.m_menu_lan_multi },
+        { 'key': 'nat_l1', 'value' : g_lang.m_menu_nat_pat },
+		{ 'key': 'ip_route_l1', 'value' : g_lang.m_menu_csc_router }//,
+        //{ 'key': 'dns_l1', 'value' : g_lang.m_menu_dns }					
 	]	
 	this.f_buildNav2 = function() {		
 		var html = '<ul id="oa_2_nav_ul">';
@@ -39,7 +36,100 @@ function UTM_htmlBuilder()
 		}
 	}
 	
+	var smLanMenu = [
+	    { 'key': 'portconf_l2', 'desc': g_lang.m_menu_des_port_config, 'value': g_lang.m_menu_port_config},
+	    { 'key': 'lan_l2', 'desc': g_lang.m_menu_lan, 'value': g_lang.m_menu_lan},
+	    { 'key': 'lan2_l2', 'desc': g_lang.m_menu_lan2, 'value': g_lang.m_menu_lan2},
+	    { 'key': 'dmz_l2', 'desc': g_lang.m_menu_dmz, 'value': g_lang.m_menu_dmz}	
+	];
+	var smNatPatMenu = [
+	    { 'key': 'nat_l2', 'desc': g_lang.m_menu_nat_pat, 'value': g_lang.m_menu_nat_pat}
+	];		
+	var smIpRouteMenu = [
+	    { 'key': 'ip_route_l2', 'desc': g_lang.m_menu_des_csc_router, 'value': g_lang.m_menu_csc_router}
+	];	
+	var smDnsMenu = [
+	    { 'key': 'dns_l2', 'desc': g_lang.m_menu_dns, 'value': g_lang.m_menu_dns}
+	];		
+	var smArray = [
+	    { 'divId' : 'sm_lan', 'h3': g_lang.m_menu_lan_multi, 'subMenu': smLanMenu},
+	    { 'divId' : 'sm_nat', 'h3': g_lang.m_menu_nat_pat, 'subMenu': smNatPatMenu},
+	    { 'divId' : 'sm_ip_route', 'h3': g_lang.m_menu_des_csc_router, 'subMenu': smIpRouteMenu}//,
+	    //{ 'divId' : 'sm_dns', 'h3': g_lang.m_menu_dns, 'subMenu': smDnsMenu}	
+	];	
 	
+	this.f_buildSmElement = function(smItem) {
+					
+		var divId = smItem.divId;
+		var h3 = smItem.h3;
+		var subMenu = smItem.subMenu;
+				
+		var html = '<ul id="' + divId + '_ul">' +
+                       '<li class="left_sub_menu_header">' +
+                          '<h3>&nbsp;' + h3 + '</h3>' +
+                       '</li>' + 
+                       '<li class="left_sub_menu_liner"></li>';
+					   
+        for (var i=0; i < subMenu.length; i++) {
+			html += '<li id="' + subMenu[i].key + '">' +
+			        '<a href="#" desc="' + subMenu[i].desc + '"><img border="0" src="images/fleche_off.gif">&nbsp;' + 
+					    subMenu[i].value + '</a>' +
+					'</li>';
+		}					   
+		html += '<li class="left_sub_menu_liner"></li></ul>';
+                  
+		var div = document.getElementById(divId);
+		if (div != null) {
+			div.innerHTML = html;
+		}		
+	}	
+	
+	
+	this.f_buildSm= function() {
+	    for (var i=0; i < smArray.length; i++) {
+			thisObj.f_buildSmElement(smArray[i]);
+		}
+	}
+
+    /*
+	var dynSmZoneMenu = [
+	    { 'key': 'firewall_zone_mgmt_editor_l2', 'desc': g_lang.m_menu_des_add_zone, 'value': g_lang.m_menu_add_zone},
+	    { 'key': 'firewall_zone_mgmt_editor_updatel2', 'desc': g_lang.m_menu_des_update_zone, 'value': g_lang.m_menu_update_zone}		
+	];
+	*/	
+	var dynSmArray = [
+	    //{ 'id' : 'sm_firewall_zone_dyn_ul', 'subMenu': dynSmZoneMenu},		
+	]
+
+	this.f_buildDynSmElement = function(smItem) {
+		
+		var id = smItem.id;
+		var subMenu = smItem.subMenu;
+		var ul = document.createElement('ul');
+		ul.setAttribute('id', id);
+
+		var html = '';
+					   
+        for (var i=0; i < subMenu.length; i++) {
+			html += '<li id="' + subMenu[i].key + '">' +
+			        '<a href="#" desc="' + subMenu[i].desc + '"><img border="0" src="images/fleche_off.gif">&nbsp;' + 
+					    subMenu[i].value + '</a>' +
+					'</li>';
+		}				
+		
+		ul.innerHTML = html;
+                  
+		var div = document.getElementById('dyn_sub_menu');
+		if (div != null) {
+			div.appendChild(ul);
+		}		
+	}	
+		
+	this.f_buildDynSm= function() {
+	    for (var i=0; i < dynSmArray.length; i++) {
+			thisObj.f_buildDynSmElement(dynSmArray[i]);
+		}
+	}		
 	
 	
 }

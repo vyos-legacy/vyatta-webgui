@@ -48,8 +48,17 @@ var g_lang =
     m_menu_des_custom_firewall: "Customized firewall",
     m_menu_des_authorized_urls : "Authorized URLs",
     m_menu_des_ban_keyword : "Banned keywords in URL",
-    
-    
+	
+    ///////////////////////////////////////////////////////////////////
+    // Network configuration menu    
+    m_menu_lan_multi : "LAN / multi LAN",
+	m_menu_lan : "LAN",
+	m_menu_lan2: "LAN2",
+	m_menu_dmz : "DMZ",
+	m_menu_nat_pat: "NAT/PAT",
+	m_menu_csc_router: "cascaded router",
+	m_menu_des_csc_router: "Cascaded router",	
+	m_menu_dns : "DNS",
     
     ///////////////////////////////////////////////////////////////////
     // Dash board screen

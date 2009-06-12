@@ -15,7 +15,7 @@ function UTM_fwZoneRecord(name)
     this.m_members = [];        // members included
     this.m_memAvailable = [];   // members available
     this.m_description = null;
-    this.m_enabled = true;
+    this.m_enabled = 'yes';     // yes/no
 }
 
 
@@ -157,11 +157,13 @@ function UTM_firewallBusObj(busObj)
                     var vals = n.firstChild.nodeValue.split(":");
                     for(var j=0; j<vals.length; j++)
                     {
-                        var zone = new UTM_fwZoneRecord()
+                        var zone = new UTM_fwZoneRecord();
 
                         zone.m_name = this.f_getValueFromNameValuePair("zone", vals[j]);
                         zone.m_description = this.f_getValueFromNameValuePair("description", vals[j]);
-                        zone.m_enabled = this.f_getValueFromNameValuePair("enable", vals[j]);
+                        var enabled = this.f_getValueFromNameValuePair("enable", vals[j]);
+                        zone.m_enabled = enabled == "" ? 'yes' : enabled;
+
                         var inter = this.f_getValueFromNameValuePair("interfaces", vals[j]);
 
                         if(inter.indexOf(",") >= 0)
@@ -273,8 +275,8 @@ function UTM_firewallBusObj(busObj)
                         fws[x].m_action = this.f_getValueFromNameValuePair("action", vals[j]);
                         fws[x].m_log = this.f_getValueFromNameValuePair("log", vals[j]);
                         fws[x].m_enabled = this.f_getValueFromNameValuePair("enable", vals[j]);
-
-                        this.f_mapAppServiceFromPort(fws[x]);
+                        fws[x].m_appService = this.f_getValueFromNameValuePair("application", vals[j]);
+                        //this.f_mapAppServiceFromPort(fws[x]);
                     }
                 }
             }
@@ -282,7 +284,7 @@ function UTM_firewallBusObj(busObj)
 
         return fws;
     };
-
+/*/
     this.f_mapAppServiceFromPort = function(fireRec)
     {
         fireRec.m_appService = "Others";
@@ -372,7 +374,7 @@ function UTM_firewallBusObj(busObj)
             fireRec.m_appService = s[19];
         }
     };
-
+*/
     this.f_setSrouceAddress = function(fireRec, addr)
     {
         if(addr.length > 0)

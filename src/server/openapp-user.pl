@@ -282,7 +282,9 @@ sub list_user {
 	    print "<last>".$user->getLast()."</last>";
 	    print "</name>";
 	    print "<email>".$user->getMail()."</email>";
-	    print "<rights>".$user->getRights()."</rights>";
+	    for my $r (keys %{$user->getRights()}) {
+		print "<rights>$r</rights>";
+	    }
 	    print "<role>".$user->getRole()."</role>";
 	    print "</user>";
 	}
@@ -295,7 +297,9 @@ sub list_user {
 	print "<last>".$user->getLast()."</last>";
 	print "</name>";
 	print "<email>".$user->getMail()."</email>";
-	print "<rights>".$user->getRights()."</rights>";
+	for my $r (keys %{$user->getRights()}) {
+	    print "<rights>$r</rights>";
+	}
 	print "<role>".$user->getRole()."</role>";
 	print "</user>";
     }

@@ -78,13 +78,13 @@ function UTM_confFireLevel(name, callback, busLayer)
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
                 thisObj.m_levelRecs = evt.m_value;
-                thisObj.f_populateActiveTable(thisObj.m_levelRecs);
+                if(thisObj.m_selLvlRec == null)
+                    thisObj.m_selLvlRec = thisObj.m_levelRecs[0];
+
+                thisObj.f_populateActiveTable(thisObj.m_levelRecs, thisObj.m_selLvlRec);
 
                 thisObj.m_div.appendChild(thisObj.m_gridLevelHeader);
                 thisObj.m_div.appendChild(thisObj.m_gridLevelBody);
-
-                if(thisObj.m_selLvlRec == null)
-                    thisObj.m_selLvlRec = thisObj.m_levelRecs[0];
 
                 thisObj.f_populateLevelTable(thisObj.m_selLvlRec);
             }
@@ -94,14 +94,17 @@ function UTM_confFireLevel(name, callback, busLayer)
         this.m_busLayer.f_getFirewallSecurityLevel('ALL', cb);
     };
 
-    this.f_populateActiveTable = function(recs)
+    this.f_populateActiveTable = function(recs, selRec)
     {
         thisObj.f_removeDivChildren(thisObj.m_gridActiveBody);
 
         for(var i=0; i<recs.length; i++)
         {
             var rec = recs[i];
-            var check = i == 0 ? 'yes' : 'no';
+            var check = 'no';
+
+            if(rec.m_direction == selRec.m_direction)
+                check = 'yes';
 
             var radio = "<div align=center>" + this.f_renderRadio(check,
                         rec.m_direction+"-id",

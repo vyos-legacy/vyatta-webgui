@@ -193,9 +193,10 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 			if (portList[i].m_group.toLowerCase() == 'wan') {
 				ro = true;
 			}
-			var enable = thisObj.f_renderCheckbox(en, 
+			var enable = thisObj.f_renderSmartCheckbox(en, 
 						  cbId,
-						  "f_confPortConfigEventCallback('" + cbId + "')" , '', ro						  
+						  "f_confPortConfigEventCallback('" + cbId + "')" , '', 
+						  cbId + '_hidden', en, ro						  
 			          );				
 		    var data = [pnum, pname, lan, lan2, dmz, wan, enable];
 			var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28);
@@ -254,16 +255,21 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 	
 	this.f_apply = function()
 	{
+		var pl = new Array();
 		var portList = thisObj.m_portConfig.m_portList;
 		for (var i=0; i < portList.length; i++) {
 			if (portList[i].m_group.toLowerCase()!= 'wan') {
 				var id = thisObj.m_prefix + 'cb_' + portList[i].m_num;
 				var cb = document.getElementById(id);
-				if (cb != null) {
+				var cbHidden = document.getElementById(id + '_hidden');
+				if ((cb != null) && (cbHidden != null)) {
 					if (cb.checked) {
 						portList[i].m_enable = true;
 					} else {
 						portList[i].m_enable = false;
+					}
+					if (cb.checked != cbHidden.checked) {
+						pl.push(portList[i]);
 					}
 				}
 			}
@@ -274,11 +280,22 @@ function UTM_confNwPortConfig(name, callback, busLayer)
                 if (evt.f_isError()) {                
                     g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);  
                     return;                    
-                }                		
+                }        
+				var portList = thisObj.m_portConfig.m_portList;
+                for (var i = 0; i < portList.length; i++) {
+                    if (portList[i].m_group.toLowerCase() != 'wan') {
+                        var id = thisObj.m_prefix + 'cb_' + portList[i].m_num;
+                        var cb = document.getElementById(id);
+                        var cbHidden = document.getElementById(id + '_hidden');
+                        if ((cb != null) && (cbHidden != null)) {
+                            cbHidden.checked = cb.checked;
+                        }
+                    }
+                }
                 thisObj.f_enableAllButton(false);	
             }                                 
         };      
-        this.f_setPortConfig(thisObj.m_portConfig.m_portList,cb);
+        this.f_setPortConfig(pl,cb);
 	}
 }
 

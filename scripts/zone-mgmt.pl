@@ -38,7 +38,17 @@ sub get_zoneinfo {
   my $zoneintfs = "";
   my $description = "";
 
-  $zoneintfs = join(',', Vyatta::Zone::get_zone_interfaces("returnValues", $zonename));
+  my @zone_interfaces = Vyatta::Zone::get_zone_interfaces("returnValues", $zonename);
+  my $index = 0;
+  foreach my $intf (@zone_interfaces) {
+    if ($intf eq $zonename) {
+      # remove dummy interfaces i.e. zone name itself
+      delete @zone_interfaces[$index];
+    }
+    $index++;
+  }
+
+  $zoneintfs = join(',', @zone_interfaces);
   $returnstring .= ",interfaces=[$zoneintfs]";
 
   my $config = new Vyatta::Config;
@@ -54,12 +64,15 @@ sub get_zoneinfo {
 sub execute_get_zoneinfo {
   my $zonename = shift;
   my $return_string;
+  my @internal_zones = ('DMZ2', 'Internal', 'JVM', 'Management', 'Voice', 'WAN');
 
   if ($zonename eq 'ALL') {
     # return info for all zones
     my @all_zones = Vyatta::Zone::get_all_zones("listNodes");
     foreach my $zone (sort @all_zones) {
-      $return_string .= get_zoneinfo($zone);
+      if (!scalar(grep(/^$zone$/, @internal_zones)) > 0) {
+        $return_string .= get_zoneinfo($zone);
+      }
     }
   } else {
     # return info for a particular zone

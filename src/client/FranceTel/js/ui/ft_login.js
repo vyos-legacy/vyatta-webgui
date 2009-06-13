@@ -24,68 +24,47 @@ function FT_login(busObj)
      * create a login div for login page
      */
     this.f_createLoginDiv = function()
-    {
-		/*
-        var div = document.createElement('div');
-        div.setAttribute('id', 'ft_login_div');
-        div.setAttribute('align', 'center');
-        div.className = 'className';
-
-        /////////////////////////////////////////
-        // set inner styling of the div tag
-        //div.style.position = 'absolute';
-        div.style.pixelLeft = 0;
-        div.style.backgroundColor = 'white';
-
-        //////////////////////////////////////
-        // set the html content inside the div tag
-        div.innerHTML = this.f_createLoginInnerHTML();
-         
-        document.getElementById('ft_container').appendChild(div);
-        */
-		
-		var div = document.getElementById('ft_login_container');
-		
+    {		
+		var div = document.getElementById('login_content');
+		div.innerHTML = thisObj.f_createLoginInnerHTML();
         ///////////////////////////////////
         // set initial focus
         var el = document.getElementById('username');
-		//if (!g_xbObj.m_isSafari) {
-			el.focus();
-		//}
-		
+		el.focus();
+        div = document.getElementById('ft_login_container');		
         return div;
     }
 
     this.f_createLoginInnerHTML = function()
     {
-        var str = '<br><br><div id="login_content" align="center">' +
-                  '<table id="ft_table" align="center" width="100%">'+
-                  '<tbody><tr>'+
-                  '<td class="alignRight"><label for="username">' +
-                  '<script>document.write(eval("user_"+lang))</script>username</label></td>'+
-		  '<td class="alignLeft">' +
-                  '<input id="username" name="username" type="text" '+
-                  'onkeydown="f_LoginKeyPressHandler(event)"></td>'+
-		  '</tr>'+
-		  '<tr>'+
-		  '<td class="alignRight"><label for="password">'+
-                  '<script>document.write(eval("password_"+lang))'+
-                  '</script>password</label></td>'+
-		  '<td class="alignLeft">'+
-                  '<input id="password" name="password" type="password" '+
-                  'onkeydown="f_LoginKeyPressHandler(event)"></td>'+
-		  '</tr>'+
-		  '</tbody></table></div>';
-
-        str += '<div align="center"><input name="goto2" id="goto22" value="OK" onclick="f_submit()" '+
-                'class="OneButton" type="button"></div>';
-
-        str += "<br><br><div id='messageContactServiceCustomer' align='center'>" +
-                  g_lang.m_loginContactCS + "<br>";
-        str += g_lang.m_loginEnableJS;
-		str += "</div>";
-
-        return str;
+		var html = 
+		    '<div id="login_form">' +
+                 '<table id="ft_table" align="center">' +
+                      '<tbody>' +
+                         '<tr>' +
+                             '<td class="alignLeft">' + g_lang.m_mainUserName + '</td>' +
+                             '<td class="alignLeft">' +
+                                 '<input id="username" class="login_form_input" name="username" size="32" type="text" onkeydown="f_LoginKeyPressHandler(event)">' +
+                             '</td>' +
+                         '</tr>' +
+                         '<tr>' +
+                             '<td class="alignLeft">' + g_lang.m_mainPassword + '</td>' +
+                             '<td class="alignLeft">' +
+                                 '<input id="password" name="password" class="login_form_input" size="32" type="password" onkeydown="f_LoginKeyPressHandler(event)">' +
+                             '</td>' +
+                         '</tr>' +
+                      '</tbody>' +
+                 '</table>' + '<br/><br/>' +
+                 '<div align="center">' +
+                      '<img id="goto22" src="' + g_lang.m_imageDir + 'bt_login.gif" onclick="f_submit()">' +
+                 '</div>' +
+           '</div>' +
+		   '<br/><br/><br/>' +
+           '<div id="messageContactServiceCustomer" align="center">' +
+           g_lang.m_mainWarning +
+           '</div>';
+		
+        return html;
     }
 }
 g_loginObj = new FT_login();

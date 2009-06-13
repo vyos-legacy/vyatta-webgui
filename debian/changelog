@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+59) unstable; urgency=low
+
+  * * reworked firewall security level screen to add active zone table.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sat, 13 Jun 2009 10:36:59 +0000
+
 vyatta-webgui (0.2.14+fxdU+58) unstable; urgency=low
 
   [ An-Cheng Huang ]

@@ -172,6 +172,14 @@ var g_lang =
     m_fireCustEnable : "Enable",
     m_fireCustDelete : "Delete",
     m_fireCustRuleOption : "Show rules only from",
+    m_fireCustApplyTip : "Save all changed",
+    m_fireCustCancelTip : "Cancel all changed",
+    m_fireCustResetTip : "Reset to default",
+    m_fireCustBackTip : "Back to Firewall Level screen",
+    m_fireCustAddTip : "Add a new rule",
+    m_fireCustLogEnabled : "Log is enabled",
+    m_fireCustEnableEnabled : "Enable field is enabled",
+    m_fireCustDeleteNotAllow : "Delete is not allowed",
 
     ///////////////////////////////////////////////////////////////////
     // VPN Site 2 Site

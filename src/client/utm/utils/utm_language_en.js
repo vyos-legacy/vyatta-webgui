@@ -61,7 +61,7 @@ var g_lang =
 	m_menu_dns : "DNS",
     m_menu_port_config: "port configuration",
 	m_menu_des_port_config: "Port configuration",
-	
+
     ///////////////////////////////////////////////////////////////////
     // Dash board screen
 
@@ -173,6 +173,9 @@ var g_lang =
     m_fireCustResetTip : "Reset to default",
     m_fireCustBackTip : "Back to Firewall Level screen",
     m_fireCustAddTip : "Add a new rule",
+    m_fireCustLogEnabled : "Log is enabled",
+    m_fireCustEnableEnabled : "Enable field is enabled",
+    m_fireCustDeleteNotAllow : "Delete is not allowed",
 
     ////////////////////////////////////////////////////////////////////
     // network configuration NAT/PAT

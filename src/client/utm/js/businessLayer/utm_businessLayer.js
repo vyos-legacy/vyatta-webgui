@@ -252,9 +252,9 @@ function UTM_businessLayer()
         thisObj.f_getFWObject().f_getFirewallZoneMemberAvailable(zoneRec,guicb);
     }
 
-    this.f_getFirewallSecurityLevel = function(guicb)
+    this.f_getFirewallSecurityLevel = function(zonepair, guicb)
     {
-        thisObj.f_getFWObject().f_getFirewallSecurityLevel(guicb);
+        thisObj.f_getFWObject().f_getFirewallSecurityLevel(zonepair, guicb);
     }
 
     /**

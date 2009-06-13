@@ -34,32 +34,32 @@ var g_lang =
     m_menu_expert_mode : "expert mode",
     m_menu_des_expert_mode : "Expert mode",
     m_menu_easy_filtering : "easy filtering",
-    m_menu_des_easy_filtering : "Easy filtering", 
+    m_menu_des_easy_filtering : "Easy filtering",
     m_menu_expert_filtering : "expert filtering",
-    m_menu_des_expert_filtering : "Expert filtering",    
+    m_menu_des_expert_filtering : "Expert filtering",
     m_menu_overview : "overview",
     m_menu_des_overview : "Overview",
     m_menu_s2s : "site to site",
     m_menu_des_s2s: "Site to site",
-    m_menu_remote_users : "remote users",    
+    m_menu_remote_users : "remote users",
     m_menu_des_remote_users: "Remote users",
     m_menu_des_add_zone : "Add zone",
     m_menu_des_update_zone: "Update zone",
     m_menu_des_custom_firewall: "Customized firewall",
     m_menu_des_authorized_urls : "Authorized URLs",
     m_menu_des_ban_keyword : "Banned keywords in URL",
-	
+
     ///////////////////////////////////////////////////////////////////
-    // Network configuration menu    
+    // Network configuration menu
     m_menu_lan_multi : "LAN / multi LAN",
 	m_menu_lan : "LAN",
 	m_menu_lan2: "LAN2",
 	m_menu_dmz : "DMZ",
 	m_menu_nat_pat: "NAT/PAT",
 	m_menu_csc_router: "cascaded router",
-	m_menu_des_csc_router: "Cascaded router",	
+	m_menu_des_csc_router: "Cascaded router",
 	m_menu_dns : "DNS",
-    
+
     ///////////////////////////////////////////////////////////////////
     // Dash board screen
 
@@ -77,7 +77,7 @@ var g_lang =
     m_applyTip : "Save changed",
     m_cancelTip : "Cancel changed",
     m_confModify : "Configuration has been modified and not saved. Do you want to continue?",
-    
+
     ///////////////////////////////////////////////////////////////////
     // VPN Overview
     m_vpnOverviewHeader : "Lorem ipsum onsectetuer adipiscing elit, sed diam " +
@@ -100,14 +100,17 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Level
+    m_fireLevelHeader : "Lerem ipsum onsectetuer adipiscing elit, sed diam nonummy" +
+                    " nibh euismod tincidunt ut looreet dolore magna aliquam erat " +
+                    "volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation",
+    m_fireActiveHeader : "Active Zone Table",
     m_fireLevelColName : "Security Level",
     m_fireLevelColSelect : "Select",
     m_fireLevelColDir : "Direction",
     m_fireLevelColFrom : "From",
     m_fireLevelColTo : "To",
-    m_fireLevelHeader : "Lerem ipsum onsectetuer adipiscing elit, sed diam nonummy" +
-                    " nibh euismod tincidunt ut looreet dolore magna aliquam erat " +
-                    "volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation",
+    m_fireLevelHdDef : "Default",
+    m_fireLevelBdDef : "All traffic blocked",
     m_fireLevelHdAuth : "Authorize All",
     m_fireLevelBdAuth : "Firewall functionality is disabled. All incoming and outgoing traffic is authorized.",
     m_fireLevelHdStand : "Standard",

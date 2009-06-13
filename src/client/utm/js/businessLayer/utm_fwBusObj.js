@@ -19,6 +19,9 @@ function UTM_fwZoneRecord(name)
 }
 
 
+/*
+ * Firewall security level active table record
+ */
 function UTM_fwLevelRecord(dir)
 {
     this.m_isSelected = false;
@@ -27,12 +30,11 @@ function UTM_fwLevelRecord(dir)
 }
 
 /**
- * Firewall data record
+ * Firewall security level and customize record
  */
 function UTM_fireRecord(ruleNo, zonePair)
 {
     var thisObj = this;
-    this.m_level = null;  // 'Authorize All', 'Standard', 'Advanced', 'Customized', 'Block All'
     this.m_ruleNo = ruleNo;   // data type int
     this.m_zonePair = zonePair;
     this.m_direction = zonePair;
@@ -76,6 +78,10 @@ function UTM_firewallBusObj(busObj)
                         "69", "995", "143", "119", "199", "161-162", "23", "22",
                         "1701", "32769-65535", "500, 4500", "500, 4500",
                         "1720", "1718, 1719", "5060", "5060", "1494", "1494", " ", " "];
+    this.m_ruleZonePair = ["Any", "LAN_to_WAN", "WAN_to_LAN", "LAN2_to_WAN",
+                      "WAN_to_LAN2", "DMZ_to_WAN", "WAN_to_DMZ", "LAN_to_DMZ",
+                      "DMZ_to_LAN", "LAN2_to_DMZ", "DMZ_to_LAN2", "LAN_to_LAN2",
+                      "LAN2_to_LAN"];
 
     /**
      * A callback function for request.
@@ -191,6 +197,7 @@ function UTM_firewallBusObj(busObj)
     this.f_parseFirewallSecurityLevel = function(response)
     {
         var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
+        var zones = [];
 
         if(nodes != null)
         {
@@ -199,14 +206,20 @@ function UTM_firewallBusObj(busObj)
                 var n = nodes[i];
                 if(n.nodeName == 'firewall-security-level')
                 {
-                    var fr = new UTM_fireRecord();
-                    fr.m_level = n.firstChild.nodeValue;
-                    return fr;
+                    var vals = n.firstChild.nodeValue.split(":");
+                    for(var j=0; j<vals.length-1; j++)
+                    {
+                        var zone = new UTM_fwLevelRecord();
+
+                        zone.m_direction = this.f_getValueFromNameValuePair("zonepair", vals[j]);
+                        zone.m_level = this.f_getValueFromNameValuePair("security-level", vals[j]);
+                        zones.push(zone);
+                    }
                 }
             }
         }
 
-        return null;
+        return zones;
     }
 
     this.f_parseFirewallNextRuleNo = function(response)
@@ -463,15 +476,17 @@ function UTM_firewallBusObj(busObj)
         window.setTimeout(cb, 500);
     }
 
+
     /**
      */
-    this.f_getFirewallSecurityLevel = function(guicb)
+    this.f_getFirewallSecurityLevel = function(zonePair, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
                       "<handler>firewall-security-level get" +
-                      "</handler></statement></command>";
+                      "</handler><data>zonepair=[" + zonePair +
+                      "]</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -488,8 +503,9 @@ function UTM_firewallBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>firewall-security-level" +
-                      " set</handler><data>" + fireRec.m_level +
-                      "</data></statement></command>";
+                      " set</handler><data>zonepair=[" + fireRec.m_direction +
+                      "], security-level=[" + fireRec.m_level +
+                      "]</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

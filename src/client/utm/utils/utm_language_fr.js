@@ -122,14 +122,21 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Level
-    m_fireLevelColName : "Security Level",
     m_fireLevelHeader : "Lerem ipsum onsectetuer adipiscing elit, sed diam nonummy" +
                     " nibh euismod tincidunt ut looreet dolore magna aliquam erat " +
                     "volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation",
+    m_fireActiveHeader : "Active Zone Table",
+    m_fireLevelColName : "Security Level",
+    m_fireLevelColSelect : "Select",
+    m_fireLevelColDir : "Direction",
+    m_fireLevelColFrom : "From",
+    m_fireLevelColTo : "To",
+    m_fireLevelHdDef : "Default",
+    m_fireLevelBdDef : "All traffic blocked",
     m_fireLevelHdAuth : "Authorize All",
     m_fireLevelBdAuth : "Firewall functionality is disabled. All incoming and outgoing traffic is authorized.",
     m_fireLevelHdStand : "Standard",
-    m_fireLevelBdStand : "All incoming traffic blocked/outgoing traffic alloed except Netbios.",
+    m_fireLevelBdStand : "All incoming traffic blocked/outgoing traffic allowed except Netbios.",
     m_fireLevelHdAdvan : "Advanced",
     m_fireLevelBdAdvan : "All incoming and outgoing traffic blocked except those involving internet browsing and email.",
     m_fireLevelHdCustom : "Customized",
@@ -137,6 +144,9 @@ var g_lang =
     m_fireLevelHdBlock : "Block All",
     m_fireLevelBdBlock : "The access to internet is blocked all users.",
     m_fireLevelCustConfTip : "Configure customize security",
+    m_fireLevelApplyTip : "Save changed",
+    m_fireLevelCancelTip : "Cancel changed",
+
 
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Customize Level

@@ -11,16 +11,20 @@
 function UTM_confFireLevel(name, callback, busLayer)
 {
     var thisObj = this;
+    this.m_fwObj = busLayer.f_getFWObject();
     this.thisObjName = 'UTM_confFireLevel';
+    this.m_levelRecs = [];
     this.m_btnApplyId = "id_fireLevelApply";
     this.m_btnCancelId = "id_fireLevelCancel";
+    this.m_rdDefaultId = "id_fireLevelDefault";
     this.m_rdAuthAllId = "id_fireLevelAuthAll";
     this.m_rdStandId = "id_fireLevelStandard";
     this.m_rdAdvanId = "id_fireLevelAdvance";
     this.m_rdCustomId = "id_fireLevelCustomized";
     this.m_rdBlockId = "id_fireLevelBlockAll";
-    this.m_selRadioId = this.m_rdAuthAllId;
-    this.m_curSelRadioId = null;
+    this.m_selLvlRadioId = this.m_rdAuthAllId;
+    this.m_curSelLvlRadioId = null;
+    this.m_selLvlRec = null;
 
     /**
      * @param name - name of configuration screens.
@@ -41,24 +45,25 @@ function UTM_confFireLevel(name, callback, busLayer)
     this.f_createActiveTableColumns = function()
     {
         var cols = [];
+        UTM_confFireLevel.superclass.m_allowSort = false;
 
-        cols[0] = this.f_createColumn(g_lang.m_fireLevelColSelect, 90, 'text', '6');
+        cols[0] = this.f_createColumn(g_lang.m_fireLevelColSelect, 90, 'checkbox', '3', false);
         cols[1] = this.f_createColumn(g_lang.m_fireLevelColDir + "<br>" +
-                              g_lang.m_fireLevelColFrom, 120, 'text', '6');
+                              g_lang.m_fireLevelColFrom, 120, 'text', '11', false);
         cols[2] = this.f_createColumn(g_lang.m_fireLevelColDir + "<br>" +
-                              g_lang.m_fireLevelColTo, 120, 'text', '6');
-        cols[3] = this.f_createColumn(g_lang.m_fireLevelColName, 150, 'text', '6');
+                              g_lang.m_fireLevelColTo, 120, 'text', '11', false);
+        cols[3] = this.f_createColumn(g_lang.m_fireLevelColName, 150, 'text', '11', false);
 
         return cols;
     }
 
-    this.f_createLevelColumns = function()
+    this.f_createLevelColumns = function(dir)
     {
         var cols = [];
         UTM_confFireLevel.superclass.m_allowSort = false;
 
-        cols[0] = this.f_createColumn(g_lang.m_fireLevelColName, 780, 'radTxt',
-                    '10', false, 'left');
+        cols[0] = this.f_createColumn(g_lang.m_fireLevelColName + " for " + dir,
+                    780, 'radTxt', '10', false, 'left');
 
         return cols;
     }
@@ -72,21 +77,110 @@ function UTM_confFireLevel(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
-                var val = evt.m_value;
-                thisObj.f_updateGridRowRadioValue(val);
+                thisObj.m_levelRecs = evt.m_value;
+                thisObj.f_populateActiveTable(thisObj.m_levelRecs);
 
-                var mainPanel = document.getElementById("utm_confpanel_");
-                if(mainPanel != null)
-                    mainPanel.style.height = 380+'px';
+                thisObj.m_div.appendChild(thisObj.m_gridLevelHeader);
+                thisObj.m_div.appendChild(thisObj.m_gridLevelBody);
+
+                if(thisObj.m_selLvlRec == null)
+                    thisObj.m_selLvlRec = thisObj.m_levelRecs[0];
+
+                thisObj.f_populateLevelTable(thisObj.m_selLvlRec);
             }
-
-            thisObj.f_adjustDivPosition(thisObj.m_buttons);
-            thisObj.f_resize();
         };
 
         g_utils.f_cursorWait();
-        this.m_busLayer.f_getFirewallSecurityLevel(cb);
+        this.m_busLayer.f_getFirewallSecurityLevel('ALL', cb);
     };
+
+    this.f_populateActiveTable = function(recs)
+    {
+        thisObj.f_removeDivChildren(thisObj.m_gridActiveBody);
+
+        for(var i=0; i<recs.length; i++)
+        {
+            var rec = recs[i];
+            var check = i == 0 ? 'yes' : 'no';
+
+            var radio = "<div align=center>" + this.f_renderRadio(check,
+                        rec.m_direction+"-id",
+                        "f_fireActiveRadioHandler('"+rec.m_direction+"')",
+                        "activeLevel", "") + "</div>";
+            var dirs = this.f_getDirection(rec.m_direction);
+
+            this.m_gridActiveBody.appendChild(thisObj.f_createGridRow(this.m_colActiveModel,
+                    [radio, dirs[0], dirs[1], rec.m_level]));
+        }
+
+        thisObj.m_gridActiveBody.style.height = (recs.length * 28 + 10) + "px";
+    }
+
+    this.f_getDirection = function(zonePair)
+    {
+        var dirs = [];
+
+        if(zonePair.indexOf("_to_") > 0)
+        {
+            var zps = zonePair.split("_");
+            dirs.push(zps[0]);
+            dirs.push(zps[2]);
+        }
+
+        return dirs;
+    }
+
+    this.f_populateLevelTable = function(rec)
+    {
+        thisObj.f_removeDivChildren(thisObj.m_gridLevelBody);
+
+        var custom = g_lang.m_fireLevelBdCustom + "&nbsp;&nbsp;&nbsp;<input type='" +
+                      "image' src='" + g_lang.m_imageDir + "bt_config.png' " +
+                      "onclick='f_fireLevelConfigHandler()' title='" +
+                      g_lang.m_fireLevelCustConfTip + "'>";
+
+        var radioIds = [];
+        var rdHeaders = [];
+        var hdBodies = [];
+        var h = [];
+        if(rec.m_direction != "LAN_to_WAN" && rec.m_direction != "WAN_to_LAN")
+        {
+            radioIds = [this.m_rdDefaultId, this.m_rdCustomId];
+            rdHeaders = [g_lang.m_fireLevelHdDef, g_lang.m_fireLevelHdCustom];
+            hdBodies = [g_lang.m_fireLevelBdDef, custom];
+            h = [43, 53];
+        }
+        else
+        {
+            radioIds = [this.m_rdAuthAllId, this.m_rdStandId,
+                        this.m_rdAdvanId, this.m_rdCustomId, this.m_rdBlockId];
+            rdHeaders = [g_lang.m_fireLevelHdAuth, g_lang.m_fireLevelHdStand,
+                        g_lang.m_fireLevelHdAdvan, g_lang.m_fireLevelHdCustom,
+                        g_lang.m_fireLevelHdBlock];
+            hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand,
+                        g_lang.m_fireLevelBdAdvan, custom,
+                        g_lang.m_fireLevelBdBlock];
+            h = [43, 43, 43, 53, 43];
+        }
+
+        for(var i=0; i<radioIds.length; i++)
+        {
+            var radio = this.f_getGridRowData(this.f_renderRadio('no',
+                        radioIds[i], "f_fireLevelRadioHandler('"+radioIds[i]+"')",
+                        "secLevel", ""), rdHeaders[i], hdBodies[i]);
+
+            this.m_gridLevelBody.appendChild(thisObj.f_createGridRow(this.m_colLevelModel,
+                    [radio], h[i]));
+        }
+
+        thisObj.f_updateGridRowRadioValue(rec);
+
+        var height = (h.length*43) + 30;
+        thisObj.m_gridLevelBody.style.height = height + "px";
+        thisObj.f_adjustButtonsPosition(height);
+        thisObj.f_resize();
+    }
+
 
     this.f_updateGridRowRadioValue = function(val)
     {
@@ -94,6 +188,9 @@ function UTM_confFireLevel(name, callback, busLayer)
 
         switch(val.m_level)
         {
+            case "Default":
+                rId = thisObj.m_rdDefaultId;
+            break;
             case "Authorize All":
                 rId = thisObj.m_rdAuthAllId;
             break;
@@ -116,13 +213,28 @@ function UTM_confFireLevel(name, callback, busLayer)
         if(r != null)
             r.checked = true;
 
-        thisObj.m_selRadioId = rId;
+        thisObj.m_selLvlRadioId = rId;
         thisObj.f_enabledActionButtons(rId);
     };
 
+    this.f_updateLevelTableHeader = function(direction)
+    {
+        var zp = thisObj.m_fwObj.m_ruleZonePair;
+
+        for(var i=1; i<zp.length; i++)
+        {
+            if(thisObj.m_gridLevelHeader.innerHTML.indexOf(zp[i]) > 0)
+            {
+                thisObj.m_gridLevelHeader.innerHTML =
+                    thisObj.m_gridLevelHeader.innerHTML.replace(zp[i], direction);
+                break;
+            }
+        }
+    }
+
     this.f_getGridRowData = function(radio, header, msg)
     {
-        html = "<table cellspacing=0 cellpadding=0 border=0><tbody><tr>" +
+        var html = "<table cellspacing=0 cellpadding=0 border=0><tbody><tr>" +
                "<td rowspan=2 valign=top>" + radio +
                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><b>" + header +
                "</b></td><tr><td>" + msg + "</td></tr></tbody></table>";
@@ -130,50 +242,24 @@ function UTM_confFireLevel(name, callback, busLayer)
         return html;
     };
 
-    this.f_initGridData = function()
+    this.f_adjustButtonsPosition = function(h)
     {
-        var custom = g_lang.m_fireLevelBdCustom + "&nbsp;&nbsp;&nbsp;<input type='" +
-                      "image' src='" + g_lang.m_imageDir + "bt_config.png' " +
-                      "onclick='f_fireLevelConfigHandler()' title='" +
-                      g_lang.m_fireLevelCustConfTip + "'>";
-        var radioIds = [this.m_rdAuthAllId, this.m_rdStandId,
-                        this.m_rdAdvanId, this.m_rdCustomId, this.m_rdBlockId];
-        var rdHeaders = [g_lang.m_fireLevelHdAuth, g_lang.m_fireLevelHdStand,
-                        g_lang.m_fireLevelHdAdvan, g_lang.m_fireLevelHdCustom,
-                        g_lang.m_fireLevelHdBlock];
-        var hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand,
-                        g_lang.m_fireLevelBdAdvan, custom,
-                        g_lang.m_fireLevelBdBlock];
-        var h = [43, 43, 43, 53, 43];
-
-        for(var i=0; i<radioIds.length; i++)
-        {
-            var radio = this.f_getGridRowData(this.f_renderRadio('no',
-                        radioIds[i], "f_fireLevelRadioHandler('"+radioIds[i]+"')",
-                        "secLevel", ""), rdHeaders[i], hdBodies[i]);
-
-            this.m_gridLevelBody.appendChild(thisObj.f_createGridRow(this.m_colLevelModel,
-                    [radio], h[i]));
-        }
-
-        ////////////////////////////////////
-        // by default the grid row height is 28px. and since we change the
-        // height to 43, we want to re-adjust grid height by adding addition
-        // 2 rows
-        this.f_increateTableRowCounter(2);
+        thisObj.m_buttons.style.top = (h + 60) + "px";
+        thisObj.f_resetTableRowCounter(1);
     }
 
     this.f_init = function()
     {
-        this.m_colLevelModel = this.f_createLevelColumns();
-        this.m_gridLevelHeader = this.f_createGridHeader(this.m_colLevelModel);
-        this.m_gridLevelBody = this.f_createGridView(this.m_colLevelModel, false);
-
         this.m_colActiveModel = this.f_createActiveTableColumns();
         this.m_gridActiveHeader = this.f_createGridHeader(this.m_colActiveModel);
         this.m_gridActiveBody = this.f_createGridView(this.m_colActiveModel, false);
 
-        this.f_initGridData();
+        this.m_dummy = this.f_createAnchorDiv('', '');
+
+        this.m_colLevelModel = this.f_createLevelColumns("LAN_to_WAN");
+        this.m_gridLevelHeader = this.f_createGridHeader(this.m_colLevelModel);
+        this.m_gridLevelBody = this.f_createGridView(this.m_colLevelModel, false);
+
         this.f_loadVMData();
 
         var btns = [['Apply', "f_fireLevelApplyHandler()",
@@ -182,8 +268,11 @@ function UTM_confFireLevel(name, callback, busLayer)
                     g_lang.m_fireLevelCancelTip, this.m_btnCancelId, false]];
         this.m_buttons = this.f_createButtons(btns);
 
-        return [this.f_headerText(), this.m_gridActiveHeader, this.m_gridLevelHeader,
-                this.m_gridActiveBody, this.m_gridLevelBody, this.m_buttons];
+        var actHeader = this.f_createGeneralDiv("<u>" +
+                        g_lang.m_fireActiveHeader+"</u><br><br>");
+
+        return [this.f_headerText(), actHeader, this.m_gridActiveHeader,
+                this.m_gridActiveBody, this.m_buttons];
     };
 
     this.f_headerText = function()
@@ -191,31 +280,57 @@ function UTM_confFireLevel(name, callback, busLayer)
         return this.f_createGeneralDiv(g_lang.m_fireLevelHeader+"<br><br><br>");
     };
 
+    this.f_handleActiveRadioChanged = function(rId)
+    {
+        var dir = rId.split("-");
+
+        if(dir[0] != null)
+        {
+            for(var i=0; i<thisObj.m_levelRecs.length; i++)
+            {
+                var rec = thisObj.m_levelRecs[i];
+
+                if(rec.m_direction == dir[0])
+                {
+                    thisObj.f_populateLevelTable(rec);
+                    thisObj.f_updateLevelTableHeader(rec.m_direction);
+                    thisObj.f_enabledActionButtons(thisObj.m_selLvlRadioId);
+                    thisObj.m_selLvlRec = rec;
+                    break;
+                }
+            }
+        }
+    };
+
     this.f_enabledActionButtons = function(rId)
     {
-        var isDirty = rId == thisObj.m_selRadioId ? false : true;
+        var isDirty = rId == thisObj.m_selLvlRadioId ? false : true;
 
-        thisObj.m_curSelRadioId = rId;
+        thisObj.m_curSelLvlRadioId = rId;
         thisObj.f_enabledDisableButton(this.m_btnApplyId, isDirty);
         thisObj.f_enabledDisableButton(this.m_btnCancelId, isDirty);
     };
 
     this.f_resetInput = function()
     {
-        var r = document.getElementById(thisObj.m_selRadioId);
+        var r = document.getElementById(thisObj.m_selLvlRadioId);
         if(r != null)
         {
             r.checked = true;
-            thisObj.f_enabledActionButtons(thisObj.m_selRadioId);
+            thisObj.f_enabledActionButtons(thisObj.m_selLvlRadioId);
         }
     };
 
     this.f_applyHandler = function()
     {
-        var fr = new UTM_fireRecord();
+        var fr = new UTM_fwLevelRecord();
+        fr.m_direction = thisObj.m_selLvlRec.m_direction;
 
-        switch(thisObj.m_curSelRadioId)
+        switch(thisObj.m_curSelLvlRadioId)
         {
+            case thisObj.m_rdDefaultId:
+                fr.m_level = "Default";
+            break;
             case thisObj.m_rdAuthAllId:
                 fr.m_level = 'Authorize All';
             break;
@@ -237,6 +352,7 @@ function UTM_confFireLevel(name, callback, busLayer)
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
+            thisObj.m_selLvlRec = fr;
             thisObj.f_loadVMData();
         };
 
@@ -260,6 +376,11 @@ function f_fireLevelApplyHandler(e)
 function f_fireLevelCancelHandler(e)
 {
     g_configPanelObj.m_activeObj.f_resetInput();
+}
+
+function f_fireActiveRadioHandler(rId)
+{
+    g_configPanelObj.m_activeObj.f_handleActiveRadioChanged(rId);
 }
 
 function f_fireLevelRadioHandler(rId)

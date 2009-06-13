@@ -48,7 +48,7 @@ sub get_zoneinfo {
   foreach my $intf (@zone_interfaces) {
     if ($intf eq $zonename) {
       # remove dummy interfaces i.e. zone name itself
-      delete @zone_interfaces[$index];
+      delete $zone_interfaces[$index];
     } else {
       # replace dom-U interface with dom-0 interface
       $zone_interfaces[$index] = $domU_to_dom0_intfhash{$intf};
@@ -93,7 +93,39 @@ sub execute_get_zoneinfo {
 }
 
 sub execute_get_avail_intfs {
-  # return all available interfaces that can be added to a zone
+
+  my @domU_intfs = ('eth1', 'eth3', 'eth5');
+  my @available_intfs = ();
+  my $return_string;
+
+  foreach my $interface (@domU_intfs) {
+    my $intf_in_zone='false';
+
+    my $config = new Vyatta::Config;
+    $config->setLevel("interfaces ethernet");
+    my $intf_disabled = $config->exists("$interface disable");
+    next if defined $intf_disabled;
+
+    # check it is not under any of zone
+    my @all_zones = Vyatta::Zone::get_all_zones("listNodes");
+    foreach my $zone (@all_zones) {
+      my @zone_interfaces =
+                Vyatta::Zone::get_zone_interfaces("returnValues", $zone);
+      if (scalar(grep(/^$interface$/, @zone_interfaces)) > 0) {
+        $intf_in_zone='true';
+      }
+    }
+
+    # interface not part of any zone and not disabled, add it available list
+    if ($intf_in_zone eq 'false') {
+      push (@available_intfs, $domU_to_dom0_intfhash{$interface});
+    }
+  }
+
+  my $intfs_list = join(',', sort(@available_intfs));
+  $return_string = "<zone-mgmt>available-interfaces=[$intfs_list]</zone-mgmt>";
+  print "$return_string";
+
 }
 
 sub usage() {
@@ -124,7 +156,7 @@ switch ($action) {
   }
   case 'get-available-interfaces'
   {
-    execute_get_avail_intfs($args);
+    execute_get_avail_intfs();
   }
   else
   {

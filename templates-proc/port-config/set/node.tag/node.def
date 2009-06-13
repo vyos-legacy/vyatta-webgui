@@ -1,0 +1,1 @@
+run: /opt/vyatta/sbin/oa-utm-port-cfg.pl --set "$3"

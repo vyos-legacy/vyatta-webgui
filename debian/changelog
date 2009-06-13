@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+57) unstable; urgency=low
+
+  * 1. Fix an exception in removing dynamic menu item.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Tue, 16 Jun 2009 23:12:11 +0000
+
 vyatta-webgui (0.2.14+fxdU+56) unstable; urgency=low
 
   * add backend for getting information for all active zonepairs

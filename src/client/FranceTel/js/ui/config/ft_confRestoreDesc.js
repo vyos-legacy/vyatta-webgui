@@ -162,7 +162,7 @@ function FT_confRestoreDesc(name, callback, busLayer)
 
     this.f_headerText = function()
     {
-        return this.f_createGeneralDiv(g_lang.m_confHeaderText);
+        return this.f_createGeneralDiv("<br>");
     }
 }
 FT_extend(FT_confRestoreDesc, FT_confBaseObj);

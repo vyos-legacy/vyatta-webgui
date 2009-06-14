@@ -228,11 +228,6 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Common variables
-    m_confHeaderText : 'Lorem ipsum onsectetuer adipiscing elit, sed diam ' +
-            'nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam ' +
-            'erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci ' +
-            'tation ullamcorper suscipit lobortis nisl ut aliquip ex ea ' +
-            'commodo consequat.<br><br>',
     m_cancelConfirm : 'Are you sure you want to cancel',
     m_deleteConfirm : 'Are you sure you want to delete',
     m_login: 'Login',

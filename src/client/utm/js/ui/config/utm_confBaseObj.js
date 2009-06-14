@@ -511,7 +511,7 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         if (colName != null && colName.length > 2) {
             if (thisObj.m_sortCol == col) {
-                var sortIcon = thisObj.m_sortOrder == 'asc' ? 
+                var sortIcon = thisObj.m_sortOrder == 'asc' ?
                     '<img src="' + g_lang.m_imageDir + 'sortAsc.gif"/>' :
                     '<img src="' + g_lang.m_imageDir + 'sortDesc.gif"/>';
 
@@ -567,7 +567,7 @@ function UTM_confBaseObj(name, callback, busLayer)
 			if (readonly==true) {
 				ro = ' disabled style="color:#CCC;"';
 			}
-		} 
+		}
 
         return '<input id="' + elId + '" type="checkbox" ' + checked +
         ' title="' +
@@ -578,15 +578,15 @@ function UTM_confBaseObj(name, callback, busLayer)
 
     this.f_renderRadio = function(val, elId, cb, name, tooltip, readonly)
     {
-        var ro = '';		
+        var ro = '';
         var checked = val == 'yes' ? 'checked' : '';
         tooltip = tooltip == undefined ? "" : tooltip;
-		
+
 		if (readonly != null) {
 			if (readonly==true) {
 				ro = ' disabled style="color:#CCC;"';
 			}
-		}   
+		}
 
         return '<input id="' + elId + '" type="radio" ' + checked +
         ' name="' +
@@ -663,6 +663,17 @@ function UTM_confBaseObj(name, callback, busLayer)
             }
         }
     }
+
+    this.f_enableTextField = function(tfElement, enable)
+    {
+        tfElement.disabled = !enable;
+
+        if(enable)
+            tfElement.style.backgroundColor = "white"
+        else
+            tfElement.style.backgroundColor = "#EFEFEF";
+    }
+
     /**
      * @param elId - element id
      * @param val - value to be add to text field
@@ -677,26 +688,26 @@ function UTM_confBaseObj(name, callback, busLayer)
         var ro = '';
         var roStyle = '"';
         if ((readonly != undefined) && (readonly!=null) && (readonly==true)) {
-            ro += 'readonly';
+            ro += 'disabled=true';
             roStyle += 'background-color: #EFEFEF;';
         }
 
         var onblur = '';
 		var onkeydown = '';
-		
+
         if(events!= null) {
 			if (events[0] != null) {
-                onblur = 'onblur="' + events[0] + '"';				
-			} 
+                onblur = 'onblur="' + events[0] + '"';
+			}
 			if (events[1] != null) {
 				onkeydown = 'onkeydown="' + events[1] + '"';
 			}
-		} 
-            
+		}
+
         var html = '<input id="' + elId + '" type="text" value="' +
                 val + '" name="' + name + '" title="' + tooltip +
-                '" style=' + roStyle + ' width:' + width + 'px;"' + ro + ' ' +
-                onblur + ' ' + onkeydown + '/>';
+                '" style=' + roStyle + ' width:' + width + 'px;" ' + ro + ' ' +
+                onblur + ' ' + onkeydown + ' class="v_form_input"/>';
 		return html;
     }
 
@@ -715,8 +726,8 @@ function UTM_confBaseObj(name, callback, busLayer)
     }
 
     this.f_renderImage = function(imgSrc, cb, tooltip)
-    {		
-        return '<input type="image" title="' + tooltip + 
+    {
+        return '<input type="image" title="' + tooltip +
                '" src="' + imgSrc + '" ' +
                ' onclick="' + cb + '">';
     }
@@ -826,7 +837,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_enabledDisableButton = function(elementId, enabled)
     {
         var button = document.getElementById(elementId);
-        if (button != undefined) 
+        if (button != undefined)
         {
             var src = button.src;
 

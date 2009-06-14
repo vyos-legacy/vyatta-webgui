@@ -447,7 +447,7 @@ function UTM_confFireCustom(name, callback, busLayer)
 
     this.f_headerText = function()
     {
-        return this.f_createGeneralDiv(g_lang.m_fireLevelHeader+"<br><br>");
+        return this.f_createGeneralDiv("<br>");
     };
 
     this.f_subHeaderText = function()
@@ -616,33 +616,40 @@ function UTM_confFireCustom(name, callback, busLayer)
         var proto = document.getElementById(proId);
 
         fireRec.m_appService = cbb.value;
-        if(fireRec.m_appService.indexOf("Others") < 0)
+        thisObj.f_sendSetCommand(fireRec, "application", cbb.value);
+
+        var sendDPort = function(fireRec)
         {
-            ////////////////////////////////////
-            // set protocol per appService
-            var proVal = thisObj.m_fwObj.f_getProtocol(fireRec);
-            proto.value = proVal;
-            fireRec.m_protocol = proto.value;
-            dport.value = thisObj.m_fwObj.f_getPortNumber(fireRec);
-
-            thisObj.f_sendSetCommand(fireRec, "dport", dport.value);
-
-            var sendproto = function(fr, val)
+            if(fireRec.m_appService.indexOf("Others") < 0)
             {
-                if(val != null)
-                    thisObj.f_sendSetCommand(fr, "protocol", val);
+                ////////////////////////////////////
+                // set protocol per appService
+                var proVal = thisObj.m_fwObj.f_getProtocol(fireRec);
+                proto.value = proVal;
+                fireRec.m_protocol = proto.value;
+                dport.value = thisObj.m_fwObj.f_getPortNumber(fireRec);
+
+                thisObj.f_sendSetCommand(fireRec, "dport", dport.value);
+
+                var sendproto = function(fr, val)
+                {
+                    if(val != null)
+                        thisObj.f_sendSetCommand(fr, "protocol", val);
+                }
+
+                window.setTimeout(function(){sendproto(fireRec, proVal)}, 100);
+
+                thisObj.f_enableTextField(dport, false);
+                thisObj.f_enableComboboxSelection(proId, [fireRec.m_protocol], true);
             }
-
-            window.setTimeout(function(){sendproto(fireRec, proVal)}, 100);
-
-            thisObj.f_enableTextField(dport, false);
-            thisObj.f_enableComboboxSelection(proId, [fireRec.m_protocol], true);
+            else
+            {
+                thisObj.f_enableTextField(dport, true);
+                thisObj.f_enableComboboxSelection(proId, [], false);
+            }
         }
-        else
-        {
-            thisObj.f_enableTextField(dport, true);
-            thisObj.f_enableComboboxSelection(proId, [], false);
-        }
+
+        window.setTimeout(function(){sendDPort(fireRec)}, 100);
     }
 
     this.f_handleShowRuleChanged = function()

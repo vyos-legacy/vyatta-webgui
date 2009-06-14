@@ -280,7 +280,7 @@ function UTM_confFireLevel(name, callback, busLayer)
 
     this.f_headerText = function()
     {
-        return this.f_createGeneralDiv(g_lang.m_fireLevelHeader+"<br><br><br>");
+        return this.f_createGeneralDiv("<br>");
     };
 
     this.f_handleActiveRadioChanged = function(rId)

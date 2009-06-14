@@ -1,3 +1,24 @@
+vyatta-webgui (0.2.14+fxdU+62) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * changed to fw customized screen :
+  * * Removed Latin header text from Security Level and Customize
+    screens
+
+  [ Loi Vo ]
+  * 1. New images for port configuration.
+
+  [ Kevin Choi ]
+  * * Remote Latin header text from VPN Over view screen and languages
+    files
+  * * Security Level screen: fixed level table header to match the
+    selection from active table.
+
+  [ Mohit Mehta ]
+  * * add backend support for adding/removing interface to/from zone
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Wed, 17 Jun 2009 11:55:25 -0700
+
 vyatta-webgui (0.2.14+fxdU+61) unstable; urgency=low
 
   * * change dom-0 interface names to what's specified in spec

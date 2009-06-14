@@ -39,6 +39,7 @@ function UTM_confFireLevel(name, callback, busLayer)
 
     this.f_getConfigurationPage = function()
     {
+        this.m_selLvlRec = null;
         return this.f_getPanelDiv(this.f_init());
     }
 
@@ -177,6 +178,7 @@ function UTM_confFireLevel(name, callback, busLayer)
         }
 
         thisObj.f_updateGridRowRadioValue(rec);
+        thisObj.f_updateLevelTableHeader(rec.m_direction);
 
         var height = (h.length*43) + 30;
         thisObj.m_gridLevelBody.style.height = height + "px";
@@ -228,8 +230,18 @@ function UTM_confFireLevel(name, callback, busLayer)
         {
             if(thisObj.m_gridLevelHeader.innerHTML.indexOf(zp[i]) > 0)
             {
-                thisObj.m_gridLevelHeader.innerHTML =
-                    thisObj.m_gridLevelHeader.innerHTML.replace(zp[i], direction);
+                ////////////////////////////////////
+                // make sure we not fall in LAN2
+                if(thisObj.m_gridLevelHeader.innerHTML.indexOf(zp[i]+2) > 0)
+                {
+                    thisObj.m_gridLevelHeader.innerHTML =
+                    thisObj.m_gridLevelHeader.innerHTML.replace(zp[i]+2, direction);
+                }
+                else
+                {
+                    thisObj.m_gridLevelHeader.innerHTML =
+                      thisObj.m_gridLevelHeader.innerHTML.replace(zp[i], direction);
+                }
                 break;
             }
         }
@@ -296,7 +308,6 @@ function UTM_confFireLevel(name, callback, busLayer)
                 if(rec.m_direction == dir[0])
                 {
                     thisObj.f_populateLevelTable(rec);
-                    thisObj.f_updateLevelTableHeader(rec.m_direction);
                     thisObj.f_enabledActionButtons(thisObj.m_selLvlRadioId);
                     thisObj.m_selLvlRec = rec;
                     break;

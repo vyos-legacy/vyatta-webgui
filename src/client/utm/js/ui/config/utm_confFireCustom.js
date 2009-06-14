@@ -265,12 +265,12 @@ function UTM_confFireCustom(name, callback, busLayer)
     this.f_addReadOnlyRecIntoTable = function(fireRec)
     {
         var c = "<div align=center>";
-        var log = fireRec.m_log == 'Yes' ? c +
-              thisObj.f_renderImage("images/check.gif", "f_fwCustomNotUse",
-              g_lang.m_fireCustLogEnabled) + "</div>" : "";
-        var enable = fireRec.m_enabled == 'Yes' ? c +
-              thisObj.f_renderImage("images/check.gif", "f_fwCustomNotUse",
-              g_lang.m_fireCustEnableEnabled) + "</div>" : "";
+        var chkImg = fireRec.m_log == 'Yes' ? "images/check.gif" : "images/uncheck.gif";
+        var log = c + thisObj.f_renderImage(chkImg, "f_fwCustomNotUse",
+                  g_lang.m_fireCustLogEnabled) + "</div>";
+        chkImg = fireRec.m_enabled == 'Yes' ? "images/check.gif" : "images/uncheck.gif";
+        var enable = c + thisObj.f_renderImage(chkImg, "f_fwCustomNotUse",
+                    g_lang.m_fireCustEnableEnabled) + "</div>";
         var del = c + thisObj.f_renderImage("images/en/ico_delete_disabled.gif",
               "f_fwCustomNotUse", g_lang.m_fireCustDeleteNotAllow) + "</div>";
 
@@ -778,7 +778,7 @@ function UTM_confFireCustom(name, callback, busLayer)
 
         thisObj.f_enabledActionButtons(false);
         g_utils.f_cursorWait();
-        thisObj.m_busLayer.f_saveFirewallCustomizeRule(cb);
+        thisObj.m_busLayer.f_saveFirewallCustomizeRule("customize-firewall", cb);
     };
 
     this.f_handleResetAction = function()
@@ -802,7 +802,7 @@ function UTM_confFireCustom(name, callback, busLayer)
 
         g_utils.f_cursorWait();
         thisObj.f_enabledActionButtons(false);
-        thisObj.m_busLayer.f_cancelFirewallCustomizeRule(cb);
+        thisObj.m_busLayer.f_cancelFirewallCustomizeRule("customize-firewall", cb);
     };
 
     this.f_handleDeleteRule = function(ruleNo)

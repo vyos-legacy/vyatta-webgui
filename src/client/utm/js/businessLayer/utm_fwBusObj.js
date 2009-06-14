@@ -11,7 +11,7 @@
 function UTM_fwZoneRecord(name)
 {
     var thisObj = this;
-    this.m_name = name;
+    this.m_name = name;         // zone name
     this.m_members = [];        // members included
     this.m_memAvailable = [];   // members available
     this.m_description = null;
@@ -123,9 +123,10 @@ function UTM_firewallBusObj(busObj)
                     evt = new UTM_eventObj(0, thisObj.m_fireRec, '');
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
-                    '<handler>customize-firewall delete-rule') > 0)
+                    '<handler>zone-mgmt get-available-interfaces') > 0)
                 {
-                    
+                    var fr = thisObj.f_parseFwZoneMgmtAvail(err);
+                    evt = new UTM_eventObj(0, fr, '');
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
                       "zone-mgmt get-zone-info") > 0)
@@ -161,16 +162,16 @@ function UTM_firewallBusObj(busObj)
                 if(n.nodeName == "zone-mgmt")
                 {
                     var vals = n.firstChild.nodeValue.split(":");
-                    for(var j=0; j<vals.length; j++)
+                    for(var j=0; j<vals.length-1; j++)
                     {
                         var zone = new UTM_fwZoneRecord();
 
                         zone.m_name = this.f_getValueFromNameValuePair("zone", vals[j]);
                         zone.m_description = this.f_getValueFromNameValuePair("description", vals[j]);
-                        var enabled = this.f_getValueFromNameValuePair("enable", vals[j]);
-                        zone.m_enabled = enabled == "" ? 'yes' : enabled;
+                        //var enabled = this.f_getValueFromNameValuePair("enable", vals[j]);
 
                         var inter = this.f_getValueFromNameValuePair("interfaces", vals[j]);
+                        zone.m_enabled = inter.length > 0 ? 'yes' : 'no';
 
                         if(inter.indexOf(",") >= 0)
                         {
@@ -184,6 +185,36 @@ function UTM_firewallBusObj(busObj)
                         if(zone.m_name.length > 0)
                             zones.push(zone);
                     }
+                }
+            }
+        }
+
+        return zones;
+    }
+
+    this.f_parseFwZoneMgmtAvail = function(response)
+    {
+        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
+        var zones = [];
+
+        if(nodes != null)
+        {
+            for(var i=0; i<nodes.length; i++)
+            {
+                var n = nodes[i];
+                if(n.nodeName.indexOf("zone-mgmt") >= 0)
+                {
+                    var rec = new UTM_fwZoneRecord();
+                    var val = n.firstChild.nodeValue;
+                    var vals = this.f_getValueFromNameValuePair("available-interfaces", val);
+
+                    vals = vals.split(",");
+                    for(var j=0; j<vals.length; j++)
+                    {
+                        rec.m_memAvailable.push(vals[j]);
+                    }
+
+                    zones.push(rec);
                 }
             }
         }
@@ -451,31 +482,39 @@ function UTM_firewallBusObj(busObj)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>zone-mgmt get-available-interfaces" +
+                      "</handler></statement></command>";
 
-        var zm = function(name)
-        {
-            var z = new UTM_fwZoneRecord(name);
-            z.m_memAvailable = ['eth0', 'eth1', 'eth2', 'eth3'];
-
-            return z;
-        }
-
-        var cb = function()
-        {
-            var z = [];
-            z.push(zm('zone1'));
-            z.push(zm('zone2'));
-            z.push(zm('zone3'));
-            z.push(zm('zone4'));
-            z.push(zm('zone5'));
-            z.push(zm('zone6'));
-
-            guicb(z);
-        }
-
-        window.setTimeout(cb, 500);
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
     }
+    this.f_setFirewallZoneMgmtDescription = function(rec, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>zone-mgmt " +
+                      "set-zone-description</handler><data>zone=[" + rec.m_name +
+                      "], description=['" + rec.m_description + "']" +
+                      "</data></statement></command>";
 
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+    this.f_setFirewallZoneMgmtInterface = function(rec, cmd, interf, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>zone-mgmt " + cmd +
+                      "</handler><data>zone=[" + rec.m_name +
+                      "], interface=[" + interf + "]" +
+                      "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
 
     /**
      */
@@ -560,30 +599,6 @@ function UTM_firewallBusObj(busObj)
                       " delete-rule</handler><data>zonepair=[" + fireRec.m_zonePair +
                       "], rulenum=[" + fireRec.m_ruleNo +
                       "]</data></statement></command>";
-
-        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-    }
-
-    this.f_saveFirewallCustomizeRule = function(guicb)
-    {
-        thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
-                      " save</handler><data></data></statement></command>";
-
-        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-    }
-
-    this.f_cancelFirewallCustomizeRule = function(guicb)
-    {
-        thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
-                      " cancel</handler><data></data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -674,5 +689,29 @@ function UTM_firewallBusObj(busObj)
             return "udp";
         else
             return "tcp";
+    }
+
+    this.f_saveFirewallInput = function(handler, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>" + handler +
+                      " save</handler><data></data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_cancelFirewallInput = function(handler, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>" + handler +
+                      " cancel</handler><data></data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
     }
 }

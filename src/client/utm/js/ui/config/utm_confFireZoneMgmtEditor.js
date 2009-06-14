@@ -13,6 +13,8 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
 {
     var thisObj = this;
     this.m_isDirty = false;
+    this.m_btnCancelId = "fwZoneMgmtEditorCancelButtonId";
+    this.m_btnApplyId = "fwZoneMgmtEditorApplyButtonId";
     this.m_zoneRec = zoneRec;
     this.m_availZoneRec = new UTM_fwZoneRecord("dummy");
 
@@ -36,22 +38,30 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
     {
         var children = new Array();
         children.push(this.f_getForm());
+        this.m_isDirty = false;
 
         return this.f_getPage(children);
     }
 
+    this.f_enableButtons = function(enable)
+    {
+        thisObj.f_enabledDisableButton(thisObj.m_btnCancelId, enable);
+            thisObj.f_enabledDisableButton(thisObj.m_btnApplyId, enable);
+    }
     this.f_populateData = function()
     {
         var cb = function(avt)
         {
             g_utils.f_cursorDefault();
-            while(avt != null && avt.length > 0)
+            if(avt != null && avt.m_value.length > 0)
             {
-                var rc = avt.pop();
-                thisObj.m_availZoneRec.m_memAvailable = rc.m_memAvailable;
+                var rec = avt.m_value[0];
+                thisObj.m_availZoneRec.m_memAvailable = rec.m_memAvailable;
                 thisObj.f_populateList("fwZoneMgmtEditorAvailId",
                                         thisObj.m_availZoneRec.m_memAvailable);
             }
+
+            thisObj.f_enableButtons(false);
         }
 
         if(thisObj.m_zoneRec != null)
@@ -117,14 +127,14 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
                 onclick: this.f_handleClick
             },
             {
-                id: 'fwZoneMgmtEditorCancelButtonId',
+                id: this.m_btnCancelId,
                 align: 'right',
                 text: 'Cancel',
                 tooltip: g_lang.m_tooltip_cancel,
                 onclick: this.f_handleClick
             },
             {
-                id: 'fwZoneMgmtEditorApplyButtonId',
+                id: this.m_btnApplyId,
 		align: 'right',
                 text: 'Apply',
 		tooltip: g_lang.m_tooltip_apply,
@@ -132,8 +142,8 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
             }
         ]);
 
-        defObj.f_addInput('fwZoneMgmtEditorZoneNameId', '70', g_lang.m_fireZMZoneName);
-        defObj.f_addInput('fwZoneMgmtEditorDescId', '70', g_lang.m_fireZMDesc);
+        defObj.f_addInput('fwZoneMgmtEditorZoneNameId', '70', g_lang.m_fireZMZoneName, null);
+        defObj.f_addInput('fwZoneMgmtEditorDescId', '70', g_lang.m_fireZMDesc, "f_zmDescpOnblur()");
         defObj.f_addEmptySpace('spacerId','2');
         defObj.f_addHtml('fwZoneMgmtEditorMemId', this.f_createZoneMemberDiv(),
                           g_lang.m_fireZMMember);
@@ -188,12 +198,13 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
     {
         var elFrom = document.getElementById(from);
         var elTo = document.getElementById(to);
+        var newOpt = null;
 
         for(var i=0; i<elFrom.length; i++)
         {
             if(elFrom.options[i].selected)
             {
-                var newOpt = document.createElement('option')
+                newOpt = document.createElement('option')
                 newOpt.text = elFrom.options[i].text;
                 newOpt.value = elFrom.options[i].value;
                 try
@@ -207,6 +218,27 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
 
                 elFrom.remove(i);
             }
+        }
+
+        ////////////////////////////////////////////
+        // send server cmd
+        var rec = new UTM_fwZoneRecord(thisObj.m_zoneRec.m_name);
+        var cb = function(evt)
+        {
+            // check for server error here...
+
+            thisObj.m_isDirty = true;
+            thisObj.f_enableButtons(true);
+        }
+        if(from == "fwZoneMgmtEditorIncludeId" && newOpt != null)
+        {
+            thisObj.m_busLayer.f_setFirewallZoneMgmtInterface(rec,
+                      "remove-interface-from-zone", newOpt.value, cb);
+        }
+        else if(to == "fwZoneMgmtEditorIncludeId" && newOpt != null)
+        {
+            thisObj.m_busLayer.f_setFirewallZoneMgmtInterface(rec,
+                      "add-interface-to-zone", newOpt.value, cb);
         }
     }
 
@@ -223,31 +255,46 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
 
     this.f_handleApply = function()
     {
+        var cb = function(evt)
+        {
+            g_utils.f_cursorDefault();
+            thisObj.m_isDirty = false;
+            thisObj.f_enableButtons(false);
+        }
+
+        g_utils.f_cursorWait();
+        thisObj.m_busLayer.f_saveFirewallZoneMgmt("zone-mgmt", cb);
+    }
+
+    this.f_handleDescriptionChanged = function()
+    {
+        var cb = function(evt)
+        {
+            g_utils.f_cursorDefault();
+            thisObj.m_isDirty = true;
+            thisObj.f_enableButtons(true);
+        }
+
+        g_utils.f_cursorWait();
         var name = document.getElementById("fwZoneMgmtEditorZoneNameId");
         var desc = document.getElementById("fwZoneMgmtEditorDescId");
-        var mem = document.getElementById("fwZoneMgmtEditorIncludeId");
-
-        if(name.value.length == 0)
-        {
-            g_utils.f_popupMessage(g_lang.m_fireZMNameError, 'error',
-                    'Zone Management', true, null, null);
-            return;
-        }
-
-        if(mem.length == 0)
-        {
-            g_utils.f_popupMessage(g_lang.m_fireZMMemError, 'error',
-                    'Zone Management', true, null, null);
-            return;
-        }
-
         var rec = new UTM_fwZoneRecord(name.value);
         rec.m_description = desc.value;
+        thisObj.m_busLayer.f_setFirewallZoneMgmtDescription(rec, cb);
+    }
 
-        for(var i=0; i<mem.value.length; i++)
-            rec.m_members.push(mem.options[i].value);
+    this.f_handleCancelZoneMgmt = function(isblur)
+    {
+        var cb = function()
+        {
+            if(!isblur)
+            {
+                thisObj.m_isDirty = false;
+                thisObj.f_populateData();
+            }
+        }
 
-        //thisObj.m_busLayer.f_setZone(rec, cb);
+        thisObj.m_busLayer.f_cancelFireallZoneMgmt("zone-mgmt", cb);
     }
 
     this.f_handleClick = function(e)
@@ -257,17 +304,22 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
         {
             var id = target.getAttribute('id');
 
-            if (id == 'fwZoneMgmtEditorApplyButtonId')
+            if (id == thisObj.m_btnApplyId)
             {
 		thisObj.f_handleApply();
             }
-            else if (id == 'fwZoneMgmtEditorCancelButtonId')
+            else if (id == thisObj.m_btnCancelId)
             { //cancel clicked
-                thisObj.f_populateData();
+                thisObj.f_handleCancelZoneMgmt(false);
             }
             else if (id == 'fwZoneMgmtEditorBackButtonId')
             {
-                g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_ZONE_ID);
+                if(thisObj.m_isDirty)
+                    g_utils.f_popupMessage(g_lang.m_confModify,
+                    'confirm', "Firewall Customize", true,
+                    "f_fireZoneMgmtBackConfirm(this)");
+                else
+                    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_ZONE_ID);
             }
         }
     }
@@ -310,4 +362,18 @@ function f_fwZoneMgmtEditorAvailOnDblClick()
     g_configPanelObj.m_activeObj.f_exchangeListBoxData("fwZoneMgmtEditorAvailId",
           "fwZoneMgmtEditorIncludeId");
     g_configPanelObj.m_activeObj.f_enableDisableListButtons();
+}
+
+function f_fireZoneMgmtBackConfirm(e)
+{
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+    {
+        g_configPanelObj.m_activeObj.f_handleCancelZoneMgmt(true);
+        g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_ZONE_ID);
+    }
+}
+
+function f_zmDescpOnblur()
+{
+    g_configPanelObj.m_activeObj.f_handleDescriptionChanged();
 }

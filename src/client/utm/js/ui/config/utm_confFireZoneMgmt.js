@@ -59,7 +59,7 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
             }
 
             thisObj.f_increateTableRowCounter(-1);
-            thisObj.f_adjustDivPosition(thisObj.m_buttons);
+            //thisObj.f_adjustDivPosition(thisObj.m_buttons);
             thisObj.f_resize();
             thisObj.f_enableActionButtons(thisObj.m_zoneRecs);
         };
@@ -94,7 +94,7 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
         this.m_gridHeader = this.f_createGridHeader(this.m_colModel, "f_fwZMGridHeaderClick");
         thisObj.m_div.appendChild(thisObj.m_gridHeader);
         thisObj.m_div.appendChild(thisObj.m_gridBody);
-        thisObj.m_div.appendChild(thisObj.m_buttons);
+        //thisObj.m_div.appendChild(thisObj.m_buttons);
 
         var sortCol = UTM_confFireZoneMgmt.superclass.m_sortCol;
         var ar = thisObj.f_createSortingArray(sortCol, rec);
@@ -161,10 +161,14 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
 
     this.f_addFirewallIntoRow = function(zoneRec)
     {
-        var enable = "<div align=center>" + thisObj.f_renderCheckbox(
-                  zoneRec.m_enabled, zoneRec.m_name+"_id",
-                  "f_fwZoneMgmtEnabledHandler('"+zoneRec.m_name+"')",
-                  "") + "</div>";
+        //var enable = "<div align=center>" + thisObj.f_renderCheckbox(
+        //          zoneRec.m_enabled, zoneRec.m_name+"_id",
+        //          "f_fwZoneMgmtEnabledHandler('"+zoneRec.m_name+"')",
+        //          "") + "</div>";
+        var enable = "<div align=center>" + thisObj.f_renderImage(
+                    zoneRec.m_enabled == "yes" ? "images/check.gif" :
+                    "images/uncheck.gif", "f_fwMgmtNotUse",
+                    g_lang.m_fireCustEnableEnabled) + "</div>"
         var zname = thisObj.f_renderAnchor(zoneRec.m_name, "f_fwZoneMgmtUpdateHandler('" +
                     zoneRec.m_name + "')", 'Click on name to update zone');
 
@@ -182,12 +186,12 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
         this.m_gridHeader = this.f_createGridHeader(this.m_colModel, "f_fwZMGridHeaderClick");
         this.m_gridBody = this.f_createGridView(this.m_colModel, false);
 
-        var btns = [['Apply', "f_fireZoneMgmtApplyHandler()", g_lang.m_applyTip, this.m_btnApplyId],
-              ['Cancel', "f_fireZoneMgmtCancelHandler()", g_lang.m_cancelTip, this.m_btnCancelId]];
-        this.m_buttons = this.f_createButtons(btns);
+        //var btns = [['Apply', "f_fireZoneMgmtApplyHandler()", g_lang.m_applyTip, this.m_btnApplyId],
+        //      ['Cancel', "f_fireZoneMgmtCancelHandler()", g_lang.m_cancelTip, this.m_btnCancelId]];
+        //this.m_buttons = this.f_createButtons(btns);
 
         this.f_loadVMData();
-        return [this.m_gridHeader, this.m_gridBody, this.m_buttons];
+        return [this.m_gridHeader, this.m_gridBody];
     };
 
     this.f_getZoneRecByName = function(zname)
@@ -271,4 +275,9 @@ function f_fwZoneMgmtEnabledHandler(zname)
 function f_fwZoneMgmtUpdateHandler(zname)
 {
     g_configPanelObj.m_activeObj.f_handleUpdateZone(zname);
+}
+
+function f_fwMgmtNotUse()
+{
+
 }

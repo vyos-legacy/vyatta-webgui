@@ -278,6 +278,10 @@ function UTM_confFormObj(name, callback, busLayer)
         if (this.f_checkCondition(configItem.readonly)) {
             html = html + ' readonly style="background-color: #EFEFEF;"';
         }
+
+        if(configItem.on_blur != null)
+            html += ' onblur="' + configItem.on_blur + '" ';
+
         return html;
     }
     

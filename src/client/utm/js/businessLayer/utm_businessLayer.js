@@ -246,6 +246,22 @@ function UTM_businessLayer()
     {
         thisObj.f_getFWObject().f_getFirewallZoneMgmtList(guicb);
     }
+    this.f_setFirewallZoneMgmtDescription = function(rec, guicb)
+    {
+        thisObj.f_getFWObject().f_setFirewallZoneMgmtDescription(rec, guicb);
+    }
+    this.f_setFirewallZoneMgmtInterface = function(rec, cmd, interf, guicb)
+    {
+        thisObj.f_getFWObject().f_setFirewallZoneMgmtInterface(rec,cmd, interf, guicb);
+    }
+    this.f_saveFirewallZoneMgmt = function(handler, guicb)
+    {
+        thisObj.f_getFWObject().f_saveFirewallInput(handler, guicb);
+    }
+    this.f_cancelFireallZoneMgmt = function(handler, cb)
+    {
+        thisObj.f_getFWObject().f_cancelFirewallInput(handler, cb);
+    }
 
     this.f_getFirewallZoneMemberAvailable = function(zoneRec, guicb)
     {
@@ -276,9 +292,9 @@ function UTM_businessLayer()
         thisObj.f_getFWObject().f_setFirewallCustomize(fireRec, name, value, guicb);
     }
 
-    this.f_saveFirewallCustomizeRule = function(guicb)
+    this.f_saveFirewallCustomizeRule = function(handler, guicb)
     {
-        thisObj.f_getFWObject().f_saveFirewallCustomizeRule(guicb);
+        thisObj.f_getFWObject().f_saveFirewallInput(handler, guicb);
     }
 
     this.f_resetFirewallCustomizeRule = function(fireRec, guicb)
@@ -291,9 +307,9 @@ function UTM_businessLayer()
         thisObj.f_getFWObject().f_deleteFirewallCustomizeRule(fireRec, guicb);
     }
 
-    this.f_cancelFirewallCustomizeRule = function(guicb)
+    this.f_cancelFirewallCustomizeRule = function(handler, guicb)
     {
-        thisObj.f_getFWObject().f_cancelFirewallCustomizeRule(guicb);
+        thisObj.f_getFWObject().f_cancelFirewallInput(handler, guicb);
     }
 
     /**

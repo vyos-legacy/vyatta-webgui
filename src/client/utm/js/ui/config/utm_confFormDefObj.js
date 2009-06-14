@@ -41,12 +41,12 @@ function UTM_confFormDefObj(_id, _width, _items, _buttons)
 	{
 		thisObj.f_addItem(thisObj.f_createEmptySpace(_id, _colspan));
 	}
-	this.f_addInput = function(_id, _size, _label) 
+	this.f_addInput = function(_id, _size, _label, _onblur)
 	{
 		if ((_label != undefined) && (_label != null)) {
 			thisObj.f_addLabel(_id + '_label', _label, 'false');
 		}
-		thisObj.f_addItem(thisObj.f_createInput(_id, 'false', 'true', 'right', undefined, undefined, _size));
+		thisObj.f_addItem(thisObj.f_createInput(_id, 'false', 'true', 'right', undefined, undefined, _size, _onblur));
 	}
 	this.f_addPassword = function(_id, _size, _label) 
 	{
@@ -84,10 +84,10 @@ function UTM_confFormDefObj(_id, _width, _items, _buttons)
 		return new UTM_formItemObj('empty', _id, undefined,'true','true',undefined, undefined,
 		                           _colspan, undefined, undefined, undefined);   		
 	}
-	this.f_createInput = function(_id, _newRow, _endRow, _align, _colspan, _padding, _size) 
+	this.f_createInput = function(_id, _newRow, _endRow, _align, _colspan, _padding, _size, _onblur)
 	{
 		return new UTM_formItemObj('text', _id, undefined, _newRow, _endRow, undefined, _align,
-		                           _colspan, _padding, _size, undefined);
+		                           _colspan, _padding, _size, undefined, _onblur);
 	}
 	this.f_createPassword = function(_id, _newRow, _endRow, _align, _colspan, _padding, _size) 
 	{
@@ -108,7 +108,7 @@ function UTM_confFormDefObj(_id, _width, _items, _buttons)
 
 
 function UTM_formItemObj(_type, _id, _text, _newRow, _endRow, _fontWeight, _align, 
-                         _colspan, _padding, _size, _no_left_margin)
+                         _colspan, _padding, _size, _no_left_margin, _on_blur)
 {
     this.v_type = _type;
 	this.id = _id;
@@ -121,6 +121,7 @@ function UTM_formItemObj(_type, _id, _text, _newRow, _endRow, _fontWeight, _alig
 	this.padding = _padding;
 	this.size = _size;
 	this.no_left_margin = _no_left_margin;
+        this.on_blur = _on_blur;
 }
 
 function UTM_formButtonObj(_id, _text, _align, _clickHandler)

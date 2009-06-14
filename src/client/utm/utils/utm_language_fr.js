@@ -80,11 +80,6 @@ var g_lang =
 	
     ///////////////////////////////////////////////////////////////////
     // VPN Overview
-    m_vpnOverviewHeader : "Lorem ipsum onsectetuer adipiscing elit, sed diam " +
-            "nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam " +
-            "erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci " +
-            "tation ullamcorper suscipit lobortis nisl ut aliquip ex ea " +
-            "commodo consequat.",
     m_vpnOVSource : 'Source',
     m_vpnOVDest : 'Destination',
     m_vpnOVPeerDomainName : 'Peer Address /Domain name',
@@ -122,9 +117,6 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Level
-    m_fireLevelHeader : "Lerem ipsum onsectetuer adipiscing elit, sed diam nonummy" +
-                    " nibh euismod tincidunt ut looreet dolore magna aliquam erat " +
-                    "volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation",
     m_fireActiveHeader : "Active Zone Table",
     m_fireLevelColName : "Security Level",
     m_fireLevelColSelect : "Select",

@@ -181,7 +181,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
 
     this.f_headerText = function()
     {
-        return this.f_createGeneralDiv(g_lang.m_vpnOverviewHeader+"<br><br>");
+        return this.f_createGeneralDiv("<br>");
     }
 }
 UTM_extend(UTM_confVPNOverview, UTM_confBaseObj);

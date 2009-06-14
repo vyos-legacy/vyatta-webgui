@@ -1,3 +1,34 @@
+vyatta-webgui (0.2.14+fxdU+65) unstable; urgency=low
+
+  * Enable blacklist auto-update daily in url-filter.
+
+ -- Stig Thormodsrud <stig@vyatta.com>  Wed, 17 Jun 2009 18:16:59 -0700
+
+vyatta-webgui (0.2.14+fxdU+64) unstable; urgency=low
+
+  * Remove sudo from buisness logic script.
+
+ -- Stig Thormodsrud <stig@vyatta.com>  Wed, 17 Jun 2009 17:58:37 -0700
+
+vyatta-webgui (0.2.14+fxdU+63) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Zone Mgmt screen:
+
+  [ Mohit Mehta ]
+  * * disabled interfaces should not be returned as members of a zone
+
+  [ Loi Vo ]
+  * 1. Fix screen continue to scroll to a long page, although the
+    content is short.
+  * 1. Fix:
+  * 1. Fix change detection/ sorting/ and apply, update for url
+    filtering feature.
+  * 1. Place the back panel port image in the center of the page per
+    Robert's suggestion.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 18 Jun 2009 00:39:28 +0000
+
 vyatta-webgui (0.2.14+fxdU+62) unstable; urgency=low
 
   [ Kevin Choi ]

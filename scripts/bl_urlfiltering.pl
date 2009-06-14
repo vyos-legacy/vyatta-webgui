@@ -34,9 +34,6 @@ use XML::Simple;
 use Data::Dumper;
 use POSIX;
 
-use Vyatta::Webproxy;
-
-
 my %dispatcher = (
     'filter_get'     => \&filter_get,
     'filter_set'     => \&filter_set,
@@ -216,6 +213,7 @@ sub configure_webproxy {
     push @cmds, "set $path rule 10 log all";
     
     push @cmds, "set $path redirect-url \"$redirect\" ";
+    push @cmds, "set $path auto-update daily";
 
     return @cmds;
 }
@@ -253,6 +251,14 @@ sub is_block_keyword_enabled {
     return 0;
 }
 
+sub is_blacklist_installed {
+    # probably should be calling the routine in Vyatta::Webproxy
+    # but we don't want to run this script with sudo
+    system("sudo /usr/bin/test -f /var/lib/squidguard/db/porn/urls");
+    return 0 if $?;
+    return 1;
+}
+
 sub filter_set {
     my ($data) = @_;
 
@@ -284,7 +290,7 @@ sub filter_set {
 	    print $msg;
 	    return 1;
 	}
-	if (! squidguard_is_blacklist_installed()) {
+	if (! is_blacklist_installed()) {
 	    uf_log("filter_set: Missing blacklist");
 	    $msg  = "<form name='url-filtering-easy-config' code='1'>";
 	    $msg .= "<key>blacklist</key>";

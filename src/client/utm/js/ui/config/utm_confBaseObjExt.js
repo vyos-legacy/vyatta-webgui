@@ -168,7 +168,7 @@ function UTM_confBaseObjExt(name, callback, busLayer)
         div.style.backgroundColor = 'white';
         div.style.overflow = 'visible'
 
-        var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
+        var innerHtml = '<table width="100%" cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr><td>' +
         '<div>' +
         html +

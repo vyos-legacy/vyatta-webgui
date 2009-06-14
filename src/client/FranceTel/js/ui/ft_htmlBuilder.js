@@ -19,21 +19,18 @@ function FT_htmlBuilder()
 	this.f_initLangBar = function()
 	{
 		 var html = '';
-		 if (g_lang.m_mainLang == 'en') {
-		 	html += '<option value="en" selected="selected">' +
-		 	g_lang.m_mainEnglish +
-		 	'</option><option value="fr">' +
-		 	g_lang.m_mainFrench +
-		 	'</option>';
-		 } else {
-		 	html += '<option value="en">' +
-		 	g_lang.m_mainEnglish +
-		 	'</option><option value="fr" selected="selected">' +
-		 	g_lang.m_mainFrench +
-		 	'</option>';		 	
-		 }
-		 var el = document.getElementById('ft_language');
-		 el.innerHTML = html;		
+		 var el = document.getElementById('lang_option_en');
+		 el.innerHTML = g_lang.m_mainEnglish;
+		 el = document.getElementById('lang_option_fr');
+		 el.innerHTML = g_lang.m_mainFrench;	
+	}
+	
+	this.f_initFooter = function()
+	{
+	     var el = document.getElementById('contact_href');
+		 el.innerHTML = g_lang.m_menuContact;
+		 el = document.getElementById('sitemap_href');
+		 el.innerHTML = g_lang.m_menuSitemap;
 	}
 	
 	this.f_initLogout = function()
@@ -47,6 +44,7 @@ function FT_htmlBuilder()
 	{
          thisObj.f_initLangBar();
 		 thisObj.f_initLogout();	
+		 thisObj.f_initFooter();
 	}
 		
     var nav2menu = [ 
@@ -74,7 +72,7 @@ function FT_htmlBuilder()
 	}	
 
 	var smAppMenu = [
-	    { 'key': 'dashboard_l2', 'desc': g_lang.m_menu_des_App, 'value': g_lang.m_menuApp},
+	    { 'key': 'dashboard_l2', 'desc': g_lang.m_menu_des_Dashboard, 'value': g_lang.m_menuDashboard},
 	    { 'key': 'update_l2', 'desc': g_lang.m_menu_des_UpdatePlan, 'value': g_lang.m_menuUpdates},
 	    { 'key': 'restart_l2', 'desc': g_lang.m_menu_des_RestartApp, 'value': g_lang.m_menuRestart},
 	    { 'key': 'subscribe_l2', 'desc': g_lang.m_menu_des_Subcription, 'value': g_lang.m_menuSubscribe}		

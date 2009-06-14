@@ -31,37 +31,10 @@ function FT_primaryNavigation()
                     thisObj.m_lastVm = thisObj.m_vmList[i].m_name;
                 }
                 thisObj.f_addVm(thisObj.m_vmList[i].m_name, thisObj.m_vmList[i].m_displayName, 
-				    thisObj.f_buildUrlPath(thisObj.m_vmList[i]));
+				    thisObj.m_vmList[i].m_guiUri);
             }
         }
         thisObj.f_selectVm(VYA.FT_CONST.OA_ID);
-    }
-	
-    this.f_buildUrlPath = function(vm)
-    {
-        //return (window.location.protocol + '//' + vm.m_ip + ':' + vm.m_guiPort  + vm.m_guiUri);
-		/*
-		if (vm.m_name == 'utm') {
-			return 'UTM/utm_main_en.html';
-		}
-		*/
-		var lang = g_utils.f_getLanguage();
-		if (lang == g_consObj.V_NOT_FOUND) {
-			lang = g_consObj.V_LANG_EN;
-		}
-		if (g_devConfig.m_debug) {
-			if (vm.m_name == 'utm') {
-				return vm.m_guiUri + g_devConfig.m_utmPathSuffix;
-			} else if (vm.m_name == 'netconf') {
-				return vm.m_guiUri + g_devConfig.m_utmPathSuffix + 'utm_netconf_' + lang + '.html';
-			}
-		} else {
-			if (vm.m_name == 'netconf') {
-				return vm.m_guiUri + 'utm_netconf_' + lang + '.html';
-			}
-		}
-		
-		return vm.m_guiUri;
     }
     
     this.f_getUrlPath = function(vmId, vmURL)

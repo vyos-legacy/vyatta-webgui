@@ -28,6 +28,14 @@ function FT_mainFrame(){
 		thisObj.m_siteMap = new FT_siteMap();
     }
 	
+	this.f_isSitemapSelection = function() {
+		return thisObj.m_siteMap.f_isSitemapSelection();
+	}
+	
+	this.f_setSitemapSelection = function(flag) {
+		thisObj.m_siteMap.f_setSitemapSelection(flag);
+	}
+	
 	this.f_resizeChildIframe = function(h)
 	{
 		this.m_tabPanel.f_resizeChildIframe(h);
@@ -137,6 +145,16 @@ function FT_mainFrame(){
 			} else if (vmRec.m_name == 'utm') {
 				bUtmIncluded = true;
 				uriPath = vmRec.m_guiUri;
+				
+				if (g_devConfig.m_debug) {
+					vmRec.m_guiUri = vmRec.m_guiUri + g_devConfig.m_utmPathSuffix;
+				}
+				
+		        var lang = g_utils.f_getLanguage();
+		        if (lang == g_consObj.V_NOT_FOUND) {
+			        lang = g_consObj.V_LANG_EN;
+		        }
+				uriPath = vmRec.m_guiUri + 'utm_netconf_' + lang + '.html';																			
 			}
 		}
 		if (bUtmIncluded) {

@@ -130,6 +130,36 @@ sub backup {
 
     ##########################################################################
     #
+    # Build out archive filename according to spec. Also build out metadata
+    # format and write to metadata file.
+    #
+    ##########################################################################
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
+    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
+
+    my $am_pm='AM';
+    $hour >= 12 and $am_pm='PM'; # hours 12-23 are afternoon
+    $hour > 12 and $hour=$hour-12; # 13-23 ==> 1-11 (PM)
+    $hour == 0 and $hour=12; # convert day's first hour
+
+    my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
+    my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
+
+    my $datamodel = '1';
+
+    my $metafile = $BACKUP_WORKSPACE_DIR."/".$date."_".$time."_".$datamodel;
+    if (!defined($filename) || $filename eq '') {
+	$filename = $date."_".$time."_".$datamodel;
+    }
+    if (-e "$ARCHIVE_ROOT_DIR/$filename.tar") {
+	print STDERR "Backup in progress.";
+	exit 1;
+    }
+
+    `touch $metafile.tar`;
+
+    ##########################################################################
+    #
     # Set the status of the backup to 0%
     #
     ##########################################################################
@@ -289,30 +319,6 @@ sub backup {
 	exit 0;
     }
 
-    ##########################################################################
-    #
-    # Build out archive filename according to spec. Also build out metadata
-    # format and write to metadata file.
-    #
-    ##########################################################################
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
-    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
-
-    my $am_pm='AM';
-    $hour >= 12 and $am_pm='PM'; # hours 12-23 are afternoon
-    $hour > 12 and $hour=$hour-12; # 13-23 ==> 1-11 (PM)
-    $hour == 0 and $hour=12; # convert day's first hour
-
-    my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
-    my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
-
-    my $datamodel = '1';
-
-    my $metafile = $BACKUP_WORKSPACE_DIR."/".$date."_".$time."_".$datamodel;
-    if (!defined($filename) || $filename eq '') {
-	$filename = $date."_".$time."_".$datamodel;
-    }
-
     #now create metadata file
     my $FILE;
 
@@ -440,7 +446,6 @@ sub restore_archive {
 	    return;
 	}
     }
-
     ##########################################################################
     #
     # Now build out an archive list as provided in the argument list, or if
@@ -465,17 +470,34 @@ sub restore_archive {
 	}
     }
     else {
-	#not currently used by the restore cmd
+	#used with restore from my pc command
 	#instead use the xml file to fill out hash_coll...
-	my $metafile = $BACKUP_WORKSPACE_DIR."/".$restore;
-
-	my @output = `tar -xf $metafile -O ./$restore_target.txt 2>/dev/null`;
+	my $metafile = $ARCHIVE_ROOT_DIR."/".$restore;
+	my @output = `tar -xf $metafile.tar -O ./$restore.txt 2>/dev/null`;
 	my $text = join("",@output);
-	my $opt = XMLin($text);
+	my $xs = new XML::Simple(forcearray=>1);
+	my $opt = $xs->XMLin($text);
 	#now parse the rest code
-	
+
+	my $arrayref = $opt->{contents}->[0]->{entry};
+	for (my $i = 0; $i < @$arrayref; $i++) {
+#	    print "$opt->{contents}->[0]->{entry}->[$i]->{vm}->[0]\n";
+#	    print "$opt->{contents}->[0]->{entry}->[$i]->{type}->[0]\n";
+	    my $ar_type = $opt->{contents}->[0]->{entry}->[$i]->{type}->[0];
+	    if ($ar_type eq 'data') {
+		$hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = 1;
+	    }
+	    elsif ($ar_type eq 'config') {
+		$hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = 2;
+	    }
+	    else {
+		$hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = 3;
+	    }
+
+#	    $hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = $opt->{contents}->[0]->{entry}->[$i]->{type}->[0];
+	}
 	#now something like for each instance
-	$hash_coll{ $opt->{archive}->{contents}->{vm} } = $opt->{archive}->{contents}->{type};
+#	$hash_coll{ $opt->{archive}->{contents}->{vm} } = $opt->{archive}->{contents}->{type};
     }
 
     ##########################################################################
@@ -650,7 +672,6 @@ sub get_archive {
     `rm -fr /var/www/archive/$OA_SESSION_ID/*`;
     `mkdir -p /var/www/archive/$OA_SESSION_ID`;
 
-#    print "VERBATIM_OUTPUT\n";
     my $file = "$ARCHIVE_ROOT_DIR/$get_archive.tar";
     if (-e $file) {
 	`cp $file /var/www/archive/$OA_SESSION_ID/$get_archive.tar`;
@@ -685,15 +706,13 @@ sub put_archive {
     }
 
     #very simple now, copy to archive directory and that's it!
-    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
+#    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
 
-    print "VERBATIM_OUTPUT\n";
     `cp /tmp/$put_archive.tar $ARCHIVE_ROOT_DIR/.`;
     `rm -f /tmp/$put_archive.tar`;
 
-
     #also restore this now.
-    my $restore = $put_archive;
+    $restore = $put_archive;
     restore_archive();
 }
 
@@ -732,12 +751,37 @@ sub restore_status {
 #
 ##########################################################################
 sub backup_status {
-    my $file = "$BACKUP_WORKSPACE_DIR/status";
-    if (-e $file) {
-	my $out = `cat $file`;
-	print $out;
-	return;
+    ##########################################################################
+    #
+    # Build out archive filename according to spec. Also build out metadata
+    # format and write to metadata file.
+    #
+    ##########################################################################
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
+    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
+
+    my $am_pm='AM';
+    $hour >= 12 and $am_pm='PM'; # hours 12-23 are afternoon
+    $hour > 12 and $hour=$hour-12; # 13-23 ==> 1-11 (PM)
+    $hour == 0 and $hour=12; # convert day's first hour
+
+    my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
+    my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
+
+    my $datamodel = '1';
+
+    $filename = $date."_".$time."_".$datamodel;
+    if (-e "$ARCHIVE_ROOT_DIR/$filename.tar") {
+	print "0";
+	exit 0;
     }
+
+#    my $file = "$BACKUP_WORKSPACE_DIR/status";
+#    if (-e $file) {
+#	my $out = `cat $file`;
+#	print $out;
+#	return;
+#    }
     print "100";
 }
 

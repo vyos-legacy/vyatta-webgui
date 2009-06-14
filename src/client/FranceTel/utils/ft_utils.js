@@ -173,60 +173,62 @@ var g_utils =
     },
 
     f_startWait: function(timeout)
-    {
-        if(document.getElementById('ft_wait_div') != null)
+    {		        
+        if (document.getElementById('ft_wait_div') != null) 
             this.f_stopWait();
-
+        
         var innerHTML = '<img aligh="center" src="images/wait.gif">';
-	var div = document.createElement('div');
+        var div = document.createElement('div');
         div.setAttribute('id', 'ft_wait_div');
-	div.style.width = '32px';
-	div.style.height = '32px';
-	div.innerHTML = innerHTML;
-	//div.style.border = '2px solid red';
-
-		var width = 32;
+        div.style.width = '32px';
+        div.style.height = '32px';
+        div.innerHTML = innerHTML;
+        //div.style.border = '2px solid red';
+        
+        var width = 32;
         var html = document.body.parentNode;
         var scrollx = html.scrollLeft;
         var scrolly = html.scrollTop;
         var x = html.clientWidth;
         var y = html.clientHeight;
         var hDiv = div.clientHeight;
-        var wOffset = scrollx + (x - width)/2;
-        var hOffset = scrolly + (y - hDiv)/2;
-
+        var wOffset = scrollx + (x - width) / 2;
+        var hOffset = scrolly + (y - hDiv) / 2;
+        
         div.style.position = 'absolute';
         div.style.top = hOffset + 'px';
         div.style.left = wOffset + 'px';
-
+        
         var divContainer = document.getElementById('ft_modal_wait_message');
         divContainer.appendChild(div);
         divContainer.style.height = html.scrollHeight + 'px';
         divContainer.style.width = html.scrollWidth + 'px';
-        divContainer.style.visibility = "visible";
-
-        if(timeout != null)
-        {
+		divContainer.style.display = "block";
+        
+        if (timeout != null) {
             var thisObj = this;
             var cb = function()
             {
                 thisObj.f_stopWait();
             }
-
+            
             window.setTimeout(cb, timeout);
         }
+        
     },
 
     f_stopWait: function()
     {
+		
         var div = document.getElementById('ft_modal_wait_message');
         if(div != null)
         {
-            div.style.visibility = "hidden";
+			div.style.display = "none";
             var cDiv = document.getElementById('ft_wait_div');
             if(cDiv != null)
                 div.removeChild(cDiv);
         }
+        
     },
 
     f_createPopupDiv : function(isModal, width)

@@ -80,7 +80,7 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
     //capture the backup command and direct to the chunker
 //    cmd = WebGUI::mass_replace(cmd,"'","'\\''");
 
-    opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + ";export " + WebGUI::OA_GUI_ENV_SESSION_ID + "=" + _proc->get_msg().id() + ";source /etc/bash_completion; _vyatta_op_run " + cmd;
+    opmodecmd = "export " + WebGUI::OA_GUI_ENV_AUTH_USER + "=" + username + ";export " + WebGUI::OA_GUI_ENV_SESSION_ID + "=" + _proc->get_msg().id() + ";source /etc/bash_completion 2>/dev/null; _vyatta_op_run " + cmd;
     if (multi_part_op_cmd(cmd,opmodecmd)) {
       //success
       return;
@@ -138,6 +138,9 @@ Command::multi_part_op_cmd(std::string &orig_cmd,std::string &mod_cmd)
     }
     if (str_proc.get(2) != "backup" && str_proc.get(2) != "restore") {
       return false;
+    }
+    if (str_proc.get(3) == "status") {
+      return false; //force the status message to be returned from the webgui process
     }
   }
 

@@ -103,7 +103,8 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
                 thisObj.m_sortCol = 0;
                 thisObj.m_sortColPrev = 0;					
 				thisObj.f_addRow();
-                thisObj.f_adjust();	
+                window.setTimeout(function(){thisObj.f_adjust();}, 10);										
+                //thisObj.f_adjust();	
             }                                 
         };      
         this.f_getEntryList(cb);

@@ -310,6 +310,7 @@ var g_lang =
     m_portconf_LAN2: "LAN2",
     m_portconf_DMZ: "DMZ",
     m_portconf_WAN: "WAN",
+	m_portconf_attach: "Port attachment",
 
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images

@@ -110,11 +110,7 @@ function UTM_confIDSEz(name, callback, busLayer)
     
     this.f_createHeader = function()
     {
-        var txt = 'Lorem ipsum onsectetuer adipiscing elit, sed diam ' +
-        'nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam ' +
-        'erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci ' +
-        'tation ullamcorper suscipit lobortis nisl ut aliquip ex ea ' +
-        'commodo consequat.<br>';
+        var txt = '<br>';
         
         return this.f_createGeneralDiv(txt);
     }

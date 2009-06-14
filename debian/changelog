@@ -1,3 +1,16 @@
+vyatta-webgui (0.2+fxd0+63) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * removed Latin header text from restore description screen and
+    language files
+
+  [ Loi Vo ]
+  * 1. Remove static text: contact/ sitemap from html page.
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sun, 14 Jun 2009 12:42:19 +0000
+
 vyatta-webgui (0.2+fxd0+62) unstable; urgency=low
 
   * 1. Fix screen continue to scroll to a very long page, although the

@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+65) unstable; urgency=low
+
+  * * business logic : fixed null pointer exception for case regular
+    user who does not have any
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Mon, 15 Jun 2009 04:56:46 +0000
+
 vyatta-webgui (0.2+fxd0+64) unstable; urgency=low
 
   [ Michael Larson ]

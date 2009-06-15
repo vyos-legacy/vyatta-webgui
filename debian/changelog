@@ -1,3 +1,22 @@
+vyatta-webgui (0.2+fxd0+58) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fixed bug #4565 on restore screen: enabled installer user to
+    delete admin's backup
+
+  [ slioch ]
+  * remove debug admin setting. this was most likely the cause of 4566.
+
+  [ Kevin Choi ]
+  * * fixed bug #4564 restore srceen: added user wait indicator and
+    popup completed message
+
+  [ Loi Vo ]
+  * 1. Bug: 4557: in user creation, all fields are mandatory except
+    email.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Mon, 15 Jun 2009 22:35:33 +0000
+
 vyatta-webgui (0.2+fxd0+57) unstable; urgency=low
 
   [ slioch ]

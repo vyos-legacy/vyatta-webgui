@@ -237,6 +237,8 @@ function UTM_firewallBusObj(busObj)
                 var n = nodes[i];
                 if(n.nodeName == 'firewall-security-level')
                 {
+                    if(n.firstChild == null) break;
+
                     var vals = n.firstChild.nodeValue.split(":");
                     for(var j=0; j<vals.length-1; j++)
                     {

@@ -87,7 +87,14 @@ function UTM_confFireLevel(name, callback, busLayer)
                 thisObj.m_div.appendChild(thisObj.m_gridLevelHeader);
                 thisObj.m_div.appendChild(thisObj.m_gridLevelBody);
 
-                thisObj.f_populateLevelTable(thisObj.m_selLvlRec);
+                if(thisObj.m_selLvlRec != null)
+                    thisObj.f_populateLevelTable(thisObj.m_selLvlRec);
+                else
+                {
+                    thisObj.f_updateLevelTableHeader("-");
+                    thisObj.f_adjustButtonsPosition(50);
+                    thisObj.f_resize();
+                }
             }
         };
 

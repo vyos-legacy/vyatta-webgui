@@ -56,7 +56,7 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 		              ['Cancel', this.m_eventCbFunction + "('" + this.m_btnCancelId + "')", g_lang.m_tooltip_cancel, this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif'] 
 				   ];
 		            
-        this.m_buttons = this.f_createButtons(btns, '530px');
+        this.m_buttons = this.f_createButtons(btns, '650px');
         
         return [this.m_headerText, this.m_header, this.m_body,this.m_buttons];
     }
@@ -74,10 +74,14 @@ function UTM_confNwPortConfig(name, callback, busLayer)
         
         cols[0] = this.f_createColumn('', 80, 'image', '28');
 		cols[1] = this.f_createColumn(g_lang.m_portconf_port, 100, 'text','10', true, 'left');
-        cols[2] = this.f_createColumn(g_lang.m_portconf_LAN, 70, 'radio', '28');
-        cols[3] = this.f_createColumn(g_lang.m_portconf_LAN2, 70, 'radio', '28');
-		cols[4] = this.f_createColumn(g_lang.m_portconf_DMZ, 70, 'radio', '28');
-        cols[5] = this.f_createColumn(g_lang.m_portconf_WAN, 70, 'radio', '28');						
+        cols[2] = this.f_createColumn(g_lang.m_portconf_LAN + 
+		                              ' ' + g_lang.m_portconf_interface, 100, 'radio', '28');
+        cols[3] = this.f_createColumn(g_lang.m_portconf_LAN2 + ' ' +
+		                              g_lang.m_portconf_interface, 100, 'radio', '28');
+		cols[4] = this.f_createColumn(g_lang.m_portconf_DMZ + ' ' +
+		                              g_lang.m_portconf_interface, 100, 'radio', '28');
+        cols[5] = this.f_createColumn(g_lang.m_portconf_WAN + ' ' +
+		                              g_lang.m_portconf_interface, 100, 'radio', '28');						
         cols[6] = this.f_createColumn(g_lang.m_enabled + '<br>', 70, 'checkbox', '28');
         
         return cols;
@@ -89,7 +93,7 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 		html += '<h1 align="center"><img src="images/port_config.png"></h1><br/><br/><br/><span class="v_label_bold"><p>' + g_lang.m_portconf_attach
 		        + '</p></span><br/>';
 		
-        return this.f_createHtmlDiv(html, '530px');
+        return this.f_createHtmlDiv(html, '650px');
     }	
 	
 	this.f_setPortConfig = function(portList, cb)
@@ -258,6 +262,7 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 	
 	this.f_apply = function()
 	{
+		g_utils.f_startWait();
 		var pl = new Array();
 		var portList = thisObj.m_portConfig.m_portList;
 		for (var i=0; i < portList.length; i++) {
@@ -279,6 +284,7 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 		}
         var cb = function(evt)
         {        
+		    g_utils.f_stopWait();
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
                 if (evt.f_isError()) {                
                     g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);  

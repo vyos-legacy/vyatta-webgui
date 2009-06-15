@@ -159,7 +159,10 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
             }
         }
         if (thisObj.m_goBack) {
-            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);
+			var f = function () {
+			    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);	
+			}
+            window.setTimeout(f,10);
         }
     }	
 			

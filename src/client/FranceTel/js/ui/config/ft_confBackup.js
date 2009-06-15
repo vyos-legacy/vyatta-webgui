@@ -150,7 +150,7 @@ function FT_confBackup(name, callback, busLayer)
             }
         }
         g_busObj.f_backup(vms, mode, thisObj.f_pcBackupCb, '2pc');	
-        //g_utils.f_popupMessage(g_lang.m_backup2pcInProgress + '.', 'ok', g_lang.m_info, false);
+        g_utils.f_popupMessage(g_lang.m_backup2pcInProgress + '.', 'ok', g_lang.m_info, false);
     }
     
     this.f_pcBackupCb = function(eventObj)

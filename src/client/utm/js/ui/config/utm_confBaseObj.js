@@ -91,19 +91,25 @@ function UTM_confBaseObj(name, callback, busLayer)
             width += h[1]
             var cursor = ' ';
             var tooltip = '';
+            var isSort = false;
+            var sortColor = "";
             if (h[4] != undefined && h[4]) {
                 tooltip = 'title="' + g_lang.m_tableTooltip1 + '" ';
                 cursor = 'cursor:pointer; ';
+                isSort = true;
+
+                if(thisObj.m_sortCol == i)
+                    sortColor = "background-color:#939393;";
             }
 
             var align = h[5] == undefined ? 'center' : h[5];
             var pLeft = align == "center" ? 0 : h[3];
 
-            var colName = thisObj.f_createColNameHTML(h[0], i, h[5]);
+            var colName = thisObj.f_createColNameHTML(h[0], i, h[5], isSort);
             var rBorder = (i == header.length-1) || h[0].length < 2 ?
                               '' : 'border-right:1px solid #CCC; ';
 
-            inner += '<td width="' + h[1] + '" align="' + align +
+            inner += '<td style="' + sortColor + '" width="' + h[1] + '" align="' + align +
                 '" valign="top" style="' + rBorder + '">' +
                 '<div style="padding-top:5px; padding-bottom:5px; ' +
                 'padding-left:' + pLeft + 'px; ' +
@@ -112,7 +118,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         }
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">' +
-                      '<thead><tr>' + inner +
+                      '<thead backgroundcolor=red><tr>' + inner +
                       '</tr></thead></table>';
 
         div.style.width = width + 'px';
@@ -505,9 +511,10 @@ function UTM_confBaseObj(name, callback, busLayer)
         return [colName, width, type, paddLeft, sortable, align];
     }
 
-    this.f_createColNameHTML = function(colName, col, align)
+    this.f_createColNameHTML = function(colName, col, align, isSortCol)
     {
         var header = "";
+        var cName = isSortCol != null && isSortCol ? "<u>" + colName + "</u>" : colName;
 
         if (colName != null && colName.length > 2) {
             if (thisObj.m_sortCol == col) {
@@ -518,13 +525,11 @@ function UTM_confBaseObj(name, callback, busLayer)
                 if (!thisObj.m_allowSort)
                     sortIcon = '';
                 header = "<p valign='center' align='" + align + "'><b>" +
-                colName +
-                "&nbsp;" +
-                sortIcon +
-                "<br></b></p>";
-            } else header = "<p valign='center' align='" + align + "'><b>" +
-            colName +
-            "<br></b></p>";
+                cName + "&nbsp;" + sortIcon + "<br></b></p>";
+            } 
+            else
+                header = "<p valign='center' align='" + align + "'><b>" +
+                cName + "<br></b></p>";
         }
 
         return header;

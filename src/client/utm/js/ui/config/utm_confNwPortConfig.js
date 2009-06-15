@@ -73,7 +73,7 @@ function UTM_confNwPortConfig(name, callback, busLayer)
         var chkbox = g_lang.m_enabled;
         
         cols[0] = this.f_createColumn('', 80, 'image', '28');
-		cols[1] = this.f_createColumn(g_lang.m_portconf_port, 100, 'text','10', true, 'left');
+		cols[1] = this.f_createColumn(g_lang.m_portconf_port, 100, 'text','10', false, 'left');
         cols[2] = this.f_createColumn(g_lang.m_portconf_LAN + 
 		                              ' ' + g_lang.m_portconf_interface, 100, 'radio', '28');
         cols[3] = this.f_createColumn(g_lang.m_portconf_LAN2 + ' ' +

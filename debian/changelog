@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+67) unstable; urgency=low
+
+  * 1. Change for f_gotoHomePage:
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 18 Jun 2009 18:58:17 +0000
+
 vyatta-webgui (0.2+fxd0+66) unstable; urgency=low
 
   * * business logic layer : check for BLB association for display tabs

@@ -203,7 +203,8 @@ function FT_vmBusObj(busObj)
                         true : false;
         if(isPwRole)
             vm = vm == null ? new FT_vmRecObj('blb', 'Business Livebox'):vm;
-        finalVmsList.push(vm);
+        if(vm != null)
+            finalVmsList.push(vm);
 
         // prepare OA vm
         vm = thisObj.f_findVM('openapp', vms);

@@ -379,7 +379,8 @@ UTM_extend(UTM_confFireLevel, UTM_confBaseObj);
 
 function f_fireLevelConfigHandler(e)
 {
-    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_CUSTOM_ID);
+    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_CUSTOM_ID,
+            g_configPanelObj.m_activeObj.m_selLvlRec);
 }
 
 function f_fireLevelApplyHandler(e)

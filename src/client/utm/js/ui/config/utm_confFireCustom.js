@@ -8,10 +8,11 @@
 /**
  * Firewall Customized configuration panel screen
  */
-function UTM_confFireCustom(name, callback, busLayer)
+function UTM_confFireCustom(name, callback, busLayer, levelRec)
 {
     var thisObj = this;
     this.m_fwObj = busLayer.f_getFWObject();
+    this.m_levelRec = levelRec;
     this.m_isDirty = false;
     this.m_headercbbId = "fwCustomHeaderCombo_id";
     this.m_enabledchkId = "firewallCustomEnableId";
@@ -152,7 +153,7 @@ function UTM_confFireCustom(name, callback, busLayer)
                     combo.innerHTML += inner;
                 }
 
-                thisObj.f_loadVMData();
+                thisObj.f_loadVMData(thisObj.m_levelRec.m_direction);
             }
         };
 
@@ -160,7 +161,7 @@ function UTM_confFireCustom(name, callback, busLayer)
         this.m_busLayer.f_getFirewallSecurityLevel('ALL', cb);
     }
 
-    this.f_loadVMData = function()
+    this.f_loadVMData = function(zonePair)
     {
         thisObj.m_updateFields = [];
 
@@ -198,9 +199,11 @@ function UTM_confFireCustom(name, callback, busLayer)
         thisObj.m_zpIndex = 1;
         thisObj.m_fireRecs = [];
         var ruleOp = document.getElementById(thisObj.m_headercbbId);
-        var fireRec = new UTM_fireRecord(null, "LAN_to_WAN");
-        if(ruleOp != null)
+        var fireRec = new UTM_fireRecord(null, zonePair);
+        if(zonePair == null && ruleOp != null)
             fireRec = thisObj.f_createFireRecord(null);
+        else
+            thisObj.f_setComboBoxOptionName(zonePair);
 
         ////////////////////////////////////////////
         // if rule option is 'any', get all rules
@@ -728,6 +731,12 @@ function UTM_confFireCustom(name, callback, busLayer)
             thisObj.f_sendSetCommand(fireRec, "action", act.value);
         }
     };
+
+    this.f_setComboBoxOptionName = function(zonepair)
+    {
+        var ruleOp = document.getElementById(thisObj.m_headercbbId);
+        ruleOp.value = zonepair;
+    }
 
     this.f_getComboBoxOptionName = function(cbb)
     {

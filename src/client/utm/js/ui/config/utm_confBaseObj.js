@@ -202,9 +202,9 @@ function UTM_confBaseObj(name, callback, busLayer)
                     tPadding = '0px';
             }
 
-            innerHtml += '<td cellspacing="0" cellpadding="0" width="' +
+            innerHtml += '<td cellspacing="0" cellpadding="0" style="width:' +
             fWidth +
-            '"><div style=" ' +
+            'px; overflow:hidden;"><div style="overflow:hidden; ' +
             lBorder +
             rBorder +
             ' padding-top:0px; padding-bottom:0px; ' +
@@ -213,7 +213,7 @@ function UTM_confBaseObj(name, callback, busLayer)
             lPadding +
             'padding-top:' +
             tPadding +
-            ';">' +
+            '; overflow:hidden;">' +
             data[i] +
             '</div></div></td>';
         }

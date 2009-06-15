@@ -293,10 +293,26 @@ sub list_user {
 	my $user = new OpenApp::LdapUser($list);
 	print "<user name='".$user->getName()."'>";
 	print "<name>";
-	print "<first>".$user->getFirst()."</first>";
-	print "<last>".$user->getLast()."</last>";
+	if (defined $user->getFirst()) {
+	    print "<first>".$user->getFirst()."</first>";
+	}
+	else {
+	    print "<first></first>";
+	}
+
+	if (defined $user->getLast()) {
+	    print "<last>".$user->getLast()."</last>";
+	}
+	else {
+	    print "<last></last>";
+	}
 	print "</name>";
-	print "<email>".$user->getMail()."</email>";
+	if (defined $user->getMail()) {
+	    print "<email>".$user->getMail()."</email>";
+	}
+	else {
+	    print "<email></email>";
+	}
 	for my $r (keys %{$user->getRights()}) {
 	    print "<rights>$r</rights>";
 	}

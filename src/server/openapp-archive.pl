@@ -45,9 +45,6 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   exit 1;
 }
 
-
-my $auth_user_role = "admin";
-
 ##########################################################################
 # Directory layout is as follows:
 # /var/archive                               #root directory

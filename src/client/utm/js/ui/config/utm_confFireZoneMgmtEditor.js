@@ -70,7 +70,7 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
 
             var name = document.getElementById("fwZoneMgmtEditorZoneNameId");
             if(name != null)
-                name.value = zr.m_name;
+                name.value = zr.m_name + " Zone";
 
             var desc = document.getElementById("fwZoneMgmtEditorDescId");
             if(desc != null)

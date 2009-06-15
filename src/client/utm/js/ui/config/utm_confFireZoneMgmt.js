@@ -169,7 +169,8 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
                     zoneRec.m_enabled == "yes" ? "images/check.gif" :
                     "images/uncheck.gif", "f_fwMgmtNotUse",
                     g_lang.m_fireCustEnableEnabled) + "</div>"
-        var zname = thisObj.f_renderAnchor(zoneRec.m_name, "f_fwZoneMgmtUpdateHandler('" +
+        var zname = thisObj.f_renderAnchor(zoneRec.m_name + " Zone",
+                    "f_fwZoneMgmtUpdateHandler('" +
                     zoneRec.m_name + "')", 'Click on name to update zone');
 
         ///////////////////////////////////

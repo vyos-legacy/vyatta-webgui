@@ -202,7 +202,11 @@ function FT_vmBusObj(busObj)
         var isPwRole = role == userRec.V_ROLE_ADMIN || role == userRec.V_ROLE_INSTALL ?
                         true : false;
         if(isPwRole)
-            vm = vm == null ? new FT_vmRecObj('blb', 'Business Livebox'):vm;
+        {
+            // let check if BLB associated
+            if(g_utils.f_getIsBLB() == g_consObj.V_BLB_YES)
+                vm = vm == null ? new FT_vmRecObj('blb', 'Business Livebox'):vm;
+        }
         if(vm != null)
             finalVmsList.push(vm);
 

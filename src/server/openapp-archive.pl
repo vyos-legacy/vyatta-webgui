@@ -650,7 +650,7 @@ sub get_archive {
     `rm -fr /var/www/archive/$OA_SESSION_ID/*`;
     `mkdir -p /var/www/archive/$OA_SESSION_ID`;
 
-    print "VERBATIM_OUTPUT\n";
+#    print "VERBATIM_OUTPUT\n";
     my $file = "$ARCHIVE_ROOT_DIR/$get_archive.tar";
     if (-e $file) {
 	`cp $file /var/www/archive/$OA_SESSION_ID/$get_archive.tar`;

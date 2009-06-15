@@ -277,13 +277,16 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         var del = c + thisObj.f_renderImage("images/en/ico_delete_disabled.gif",
               "f_fwCustomNotUse", g_lang.m_fireCustDeleteNotAllow) + "</div>";
 
+        var dport = fireRec.m_destPort;
+        dport = dport.length > 15 ? dport.substring(0, 15) : dport;
+
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
                     [fireRec.m_direction, fireRec.m_appService, fireRec.m_protocol,
                      fireRec.m_srcIpAddr, fireRec.m_srcMaskIpAddr,
                      fireRec.m_srcPort, fireRec.m_destIpAddr, fireRec.m_destMaskIpAddr,
-                     fireRec.m_destPort, fireRec.m_action, log, enable, del]);
+                     dport, fireRec.m_action, log, enable, del]);
         thisObj.m_gridBody.appendChild(div);
     }
 

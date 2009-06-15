@@ -32,6 +32,11 @@ use Vyatta::Config;
 use Vyatta::Zone;
 use OpenApp::Conf;
 
+# mapping for dom-U to dom-0 interfaces
+my %domU_to_dom0_intfhash = ( 'eth1'     => 'eth1',
+                              'eth3'     => 'eth2',
+                              'eth5'     => 'eth3');
+
 sub get_zoneinfo {
   my $zonename = shift;
   my $returnstring = "zone=[$zonename]";
@@ -44,6 +49,9 @@ sub get_zoneinfo {
     if ($intf eq $zonename) {
       # remove dummy interfaces i.e. zone name itself
       delete @zone_interfaces[$index];
+    } else {
+      # replace dom-U interface with dom-0 interface
+      $zone_interfaces[$index] = $domU_to_dom0_intfhash{$intf};
     }
     $index++;
   }

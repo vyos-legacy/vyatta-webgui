@@ -303,17 +303,29 @@ function FT_userBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement>" +
                     "open-app user add '" + ur.m_user;
-        xmlstr += "' password '" + ur.m_pw;
-        xmlstr += "' last '" + ur.m_last;
-        xmlstr += "' first '" + ur.m_first;
-        xmlstr += "' email '" + ur.m_email + "' ";
+        xmlstr += "' password '" + ur.m_pw + "'";
+		if ((ur.m_last != null) && (ur.m_last.trim().length > 0)) {
+			xmlstr += " last '" + ur.m_last + "'";
+		} else {
+            xmlstr += " last ' '";
+		}
+		if ((ur.m_first != null) && (ur.m_first.trim().length > 0)) {
+            xmlstr += " first '" + ur.m_first + "'";;
+		} else {		
+            xmlstr += " first '";
+		}
+		if ((ur.m_email != null) && (ur.m_email.trim().length > 0)) {
+			xmlstr += " email '" + ur.m_email + "'";
+		} else {
+			xmlstr += " email ' '";
+		}
         if(ur.m_right != null) {
-            xmlstr += "rights '" + ur.m_rights + "' ";
+            xmlstr += " rights '" + ur.m_rights + "'";
         } else {
-            xmlstr += "rights 'none' ";
+            xmlstr += " rights 'none'";
         }
         if(ur.m_role != null)
-            xmlstr += "role '" + ur.m_role + "'";
+            xmlstr += " role '" + ur.m_role + "'";
 
         xmlstr += "</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -352,18 +364,41 @@ function FT_userBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement>" +
                     "open-app user modify '" + ur.m_user + "' ";
-
-        if(ur.m_last != undefined && ur.m_last.length > 0)
-            xmlstr += "last '" + ur.m_last + "' ";
-        if(ur.m_first != undefined && ur.m_first.length > 0)
-            xmlstr += "first '" + ur.m_first + "' ";
-        if(ur.m_email != undefined && ur.m_email.length > 0)
-            xmlstr += "email '" + ur.m_email + "' ";
+        /*
+        if (ur.m_last != undefined && ur.m_last.length > 0) {
+			xmlstr += "last '" + ur.m_last + "' ";
+		} 
+        if (ur.m_first != undefined && ur.m_first.length > 0) {
+			xmlstr += "first '" + ur.m_first + "' ";
+		} 
+		*/
+        if (ur.m_last != undefined) {
+            if (ur.m_last.length > 0) {
+				xmlstr += "last '" + ur.m_last + "' ";
+			} else {
+				xmlstr += "last ' ' ";
+			}
+		} 
+        if (ur.m_first != undefined) { 
+            if (ur.m_first.length > 0) {
+				xmlstr += "first '" + ur.m_first + "' ";
+			} else {
+				xmlstr += "first ' ' ";
+			}
+		} 		
+        if (ur.m_email != undefined) {
+			if (ur.m_email.length > 0) {
+				xmlstr += "email '" + ur.m_email + "' ";
+			} else {
+				xmlstr += "email ' ' ";
+			}
+		} 
         if(ur.m_rights != undefined && ur.m_email.length > 0)
             xmlstr += "rights '" + ur.m_rights + "' ";
         if(ur.m_role != undefined && ur.m_role.llength > 0)
             xmlstr += "role '" + ur.m_role + "'";
-
+			
+        xmlstr = xmlstr.trim();
         xmlstr += "</statement></command>";
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -500,9 +535,12 @@ function FT_userBusObj(busObj)
                     var cNode = val.childNodes[j];
                     if(cNode == undefined) continue;
 
-                    if(cNode.nodeName == 'email' &&
-                        cNode.firstChild != undefined)
-                        ul[c].m_email = cNode.firstChild.nodeValue;
+                    if(cNode.nodeName == 'email') {
+                        if (cNode.firstChild != undefined)
+                            ul[c].m_email = cNode.firstChild.nodeValue;
+						else 
+						    ul[c].m_email = ' ';
+					}
                     else if(cNode.nodeName == 'role' &&
                         cNode.firstChild != undefined)
                         ul[c].m_role = cNode.firstChild.nodeValue;

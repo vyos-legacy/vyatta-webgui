@@ -45,6 +45,7 @@ function FT_confUserUpdate(name, callback, busLayer)
                 v_type: 'label',
                 id: 'conf_user_update_username_label',
                 text: g_lang.m_userUsername,
+				colspan: '2',
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
@@ -58,8 +59,13 @@ function FT_confUserUpdate(name, callback, busLayer)
             }, {
                 v_type: 'label',
                 id: 'conf_user_update_surname_label',
-                text: g_lang.m_userSurname,
+                text: g_lang.m_userSurname,				
                 v_new_row: 'true'
+            },  {
+                v_type: 'label',
+                id: 'conf_user_update_surname_label_require',
+                text: ' ',		
+				require: 'true'		
             }, {
                 v_type: 'text',
                 id: 'conf_user_update_surname',
@@ -70,6 +76,11 @@ function FT_confUserUpdate(name, callback, busLayer)
                 id: 'conf_user_update_givenname_label',
                 text: g_lang.m_userGivenName,
                 v_new_row: 'true'
+            },   {
+                v_type: 'label',
+                id: 'conf_user_update_givenname_label_require',
+                text: ' ',		
+				require: 'true'		
             }, {
                 v_type: 'text',
                 id: 'conf_user_update_givenname',
@@ -79,6 +90,7 @@ function FT_confUserUpdate(name, callback, busLayer)
                 v_type: 'label',
                 id: 'conf_user_update_email_label',
                 text: g_lang.m_userEmail,
+				colspan: '2',
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
@@ -106,9 +118,21 @@ function FT_confUserUpdate(name, callback, busLayer)
         g_xbObj.f_xbAttachEventListener(href, 'click', thisObj.f_handleClick, true);
         thisObj.form = document.getElementById('conf_user_update' + "_form");
         thisObj.form.conf_user_update_username.value = thisObj.m_user.m_user;
-        thisObj.form.conf_user_update_surname.value = thisObj.m_user.m_last;
-        thisObj.form.conf_user_update_givenname.value = thisObj.m_user.m_first;
-        thisObj.form.conf_user_update_email.value = thisObj.m_user.m_email;
+		if ((thisObj.m_user.m_last == undefined) || (thisObj.m_user.m_last == null)) {
+			thisObj.form.conf_user_update_surname.value = '';
+		} else {
+			thisObj.form.conf_user_update_surname.value  = thisObj.m_user.m_last;
+		}		
+		if ((thisObj.m_user.m_first == undefined) || (thisObj.m_user.m_first == null)) {
+			thisObj.form.conf_user_update_givenname.value = '';
+		} else {
+			thisObj.form.conf_user_update_givenname.value = thisObj.m_user.m_first;
+		}		
+		if ((thisObj.m_user.m_email == undefined) || (thisObj.m_user.m_email == null)) {
+			thisObj.m_user.m_email = '';
+		} else {
+			thisObj.form.conf_user_update_email.value = thisObj.m_user.m_email;
+		}
         thisObj.f_setFocus();
     }
 	
@@ -143,7 +167,9 @@ function FT_confUserUpdate(name, callback, busLayer)
         
         if (thisObj.m_transaction.length > 0) {
             thisObj.f_processTransaction();
-        }
+        } else {
+			g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID);
+		}
     }
     
     this.f_processTransaction = function()
@@ -229,8 +255,18 @@ function FT_confUserUpdate(name, callback, busLayer)
 			                        g_lang.m_userUsername + ' ' + g_lang.m_formNoEmpty + '</li>';
             valid = false;
         }
+        if (thisObj.form.conf_user_update_surname.value.trim().length <= 0) {
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
+			                        g_lang.m_userSurname + ' ' + g_lang.m_formNoEmpty + '</li>';
+            valid = false;
+        }		
+        if (thisObj.form.conf_user_update_givenname.value.trim().length <= 0) {
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
+			                        g_lang.m_userGivenName + ' ' + g_lang.m_formNoEmpty + '</li>';
+            valid = false;
+        }		
 		t = thisObj.form.conf_user_update_email.value.trim();
-		//if (t.length > 0) {
+		if (t.length > 0) {
 			if (!thisObj.f_checkEmail(t)) {
 				errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif)">' +
 				g_lang.m_userEmail +
@@ -241,7 +277,7 @@ function FT_confUserUpdate(name, callback, busLayer)
 				'</li>';
 				valid = false;
 			}
-		//}
+		}
         if (!valid) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';

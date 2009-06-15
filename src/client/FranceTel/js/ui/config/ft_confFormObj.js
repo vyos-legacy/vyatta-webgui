@@ -275,7 +275,7 @@ function FT_confFormObj(name, callback, busLayer) {
         if (configItem.text != undefined) {
             html += configItem.text;
             if (this.f_checkCondition(configItem.require)) {
-                html = html + '</label><img src="images/ico_required.png" style="padding-left: 20px;">';
+                html = html + '</label><img src="images/ico_required.png" style="padding-left: 10px;">';
             }
         }        
         html += enclosing;

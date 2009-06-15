@@ -32,8 +32,12 @@ function FT_confUserAdd (name, callback, busLayer)
 				v_type: 'label',
 				id: 'conf_user_add_username_label',
 				text: g_lang.m_userUsername,
-				require: 'true',
 				v_new_row: 'true'
+			}, {
+				v_type: 'label',
+				id: 'conf_user_add_username_label_require',
+				text: ' ',
+				require: 'true'
 			}, {
 				v_type: 'text',
 				id: 'conf_user_add_username',
@@ -42,8 +46,13 @@ function FT_confUserAdd (name, callback, busLayer)
 			}, {
 				v_type: 'label',
 				id: 'conf_user_add_surname_label',
-				text: g_lang.m_userSurname,
+				text: g_lang.m_userSurname,			
 				v_new_row: 'true'
+			}, {
+				v_type: 'label',
+				id: 'conf_user_add_surname_label_require',
+				text: ' ',
+				require: 'true'
 			}, {
 				v_type: 'text',
 				id: 'conf_user_add_surname',
@@ -52,8 +61,13 @@ function FT_confUserAdd (name, callback, busLayer)
 			}, {
 				v_type: 'label',
 				id: 'conf_user_add_givenname_label',
-				text: g_lang.m_userGivenName,
+				text: g_lang.m_userGivenName,				
 				v_new_row: 'true'
+			}, {
+				v_type: 'label',
+				id: 'conf_user_add_givenname_label_require',
+				text: ' ',
+				require: 'true'
 			}, {
 				v_type: 'text',
 				id: 'conf_user_add_givenname',
@@ -63,6 +77,7 @@ function FT_confUserAdd (name, callback, busLayer)
 				v_type: 'label',
 				id: 'conf_user_add_email_label',
 				text: g_lang.m_userEmail,
+				colspan: '2',
 				v_new_row: 'true'
 			}, {
 				v_type: 'text',
@@ -144,8 +159,18 @@ function FT_confUserAdd (name, callback, busLayer)
 			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">'+ g_lang.m_userUsernameInvalidCharacter + '</li>';
 			valid = false;			
 		}
+        if (thisObj.form.conf_user_add_surname.value.trim().length <= 0) {
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
+			                        g_lang.m_userSurname + ' ' + g_lang.m_formNoEmpty + '</li>';
+            valid = false;
+        }		
+        if (thisObj.form.conf_user_add_givenname.value.trim().length <= 0) {
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
+			                        g_lang.m_userGivenName + ' ' + g_lang.m_formNoEmpty + '</li>';
+            valid = false;
+        }		
 		t = thisObj.form.conf_user_add_email.value.trim();
-		//if (t.length > 0) {			            
+		if (t.length > 0) {			            
             if (!thisObj.f_checkEmail(t)) {
                 errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">' +
                 g_lang.m_userEmail +
@@ -156,7 +181,7 @@ function FT_confUserAdd (name, callback, busLayer)
                 '</li>';
                 valid = false;
             }
-		//}
+		}
 		if (!valid) {
 			error = error + '<ul style="padding-left:30px;">';
 			error = error + errorInner + '</ul>';

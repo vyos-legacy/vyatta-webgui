@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.14+fxdU+55) unstable; urgency=low
+
+  * translate dom-U interfaces to dom-0 interfaces
+  * * change firewall secrity level page per the new spec to have
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Mon, 15 Jun 2009 18:04:58 -0700
+
 vyatta-webgui (0.2.14+fxdU+54) unstable; urgency=low
 
   [ Loi Vo ]

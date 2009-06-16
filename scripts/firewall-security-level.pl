@@ -32,146 +32,142 @@ use Vyatta::Config;
 use Vyatta::Zone;
 use OpenApp::Conf;
 
-sub set_rulesets_other_zones {
-  my $customize = shift;
-  my $zone_level="zone-policy zone";
-  my $DMZ_from_Wan="DMZ from WAN firewall name";
-  my $DMZ_from_Lan="DMZ from LAN firewall name";
-  my $Lan_from_DMZ="LAN from DMZ firewall name";
-  my $Wan_from_DMZ="WAN from DMZ firewall name";
-  my @cmds = ();
-  my $ruleset_prefix = '';
+sub get_zone_names {
+   my $zonepair = shift;
 
-  if ($customize eq 'true') {
-    $ruleset_prefix = 'Customized_';
-  }
+   # split the zonepair to get to_zone and from_zone
+   my @zonenames = split('to', $zonepair);
+   $zonenames[0] =~ s/_//;
+   $zonenames[1] =~ s/_//;
 
-  my $Wan_to_DMZ_ruleset = $ruleset_prefix . 'WAN_to_DMZ';
-  my $Lan_to_DMZ_ruleset = $ruleset_prefix . 'LAN_to_DMZ';
-  my $DMZ_to_Lan_ruleset = $ruleset_prefix . 'DMZ_to_LAN';
-  my $DMZ_to_Wan_ruleset = $ruleset_prefix . 'DMZ_to_WAN';
-
-  @cmds = (
-    "set $zone_level $DMZ_from_Wan $Wan_to_DMZ_ruleset",
-    "set $zone_level $DMZ_from_Lan $Lan_to_DMZ_ruleset",
-    "set $zone_level $Lan_from_DMZ $DMZ_to_Lan_ruleset",
-    "set $zone_level $Wan_from_DMZ $DMZ_to_Wan_ruleset",
-  );
-  return @cmds;
+   return ($zonenames[1], $zonenames[0]);
 }
 
 sub execute_set {
 
-    my $firewall_type = shift;
+    my ($zonepair, $firewall_type) = @_;
     my @cmds=();
-    my $zone_level="zone-policy zone";
-    my $Lan_from_Wan="LAN from WAN firewall name";
-    my $Wan_from_Lan="WAN from LAN firewall name";
+    my ($to_zone, $from_zone) = get_zone_names($zonepair);
+    my $zone_fw_level="zone-policy zone $to_zone from $from_zone firewall";
     my $invalid_arg='false';
-    my $customized = 'false';    
 
-    # depending on what you get from the frontend, map that to rulesets
-    # in the backend and apply in both directions for Lan and Wan zones
-
-    switch ($firewall_type) {
-      case "Authorize All"
+    if ($zonepair eq 'LAN_to_WAN' || $zonepair eq 'WAN_to_LAN') {
+      switch ($firewall_type) {
+        case 'Authorize All'
         {
-          @cmds = (
-          "set $zone_level $Lan_from_Wan Low_WAN_to_LAN",
-          "set $zone_level $Wan_from_Lan Low_LAN_to_WAN",
-          );
+         my $fw_ruleset = 'Low_' . $zonepair;
+         @cmds = (
+         "set $zone_fw_level name $fw_ruleset"
+         );
         }
-      case "Standard"
+        case 'Standard'
         {
-          @cmds = (
-          "set $zone_level $Lan_from_Wan Medium_WAN_to_LAN",
-          "set $zone_level $Wan_from_Lan Medium_LAN_to_WAN",
-          );
+         my $fw_ruleset = 'Medium_' . $zonepair;
+         @cmds = (
+         "set $zone_fw_level name $fw_ruleset"
+         );
         }
-      case "Advanced"
+        case 'Advanced'
         {
-          @cmds = (
-          "set $zone_level $Lan_from_Wan High_WAN_to_LAN",
-          "set $zone_level $Wan_from_Lan High_LAN_to_WAN",
-          );
+         my $fw_ruleset = 'High_' . $zonepair;
+         @cmds = (
+         "set $zone_fw_level name $fw_ruleset"
+         );
         }
-      case "Customized"
+        case 'Customized'
         {
-          @cmds = (
-          "set $zone_level $Lan_from_Wan Customized_WAN_to_LAN",
-          "set $zone_level $Wan_from_Lan Customized_LAN_to_WAN",
-          );
-          $customized = 'true';
+         my $fw_ruleset = 'Customized_' . $zonepair;
+         @cmds = (
+         "set $zone_fw_level name $fw_ruleset"
+         );
         }
-      case "Block All"
+        case 'Block All'
         {
-          @cmds = (
-          "delete $zone_level $Lan_from_Wan",
-          "delete $zone_level $Wan_from_Lan",
-          );
+         @cmds = (
+         "delete $zone_fw_level"
+         );
         }
-      else
+        else
         {
           $invalid_arg = 'true';
         }
-    }
-
-    # set default/customized filter policies for other zones
-    if ($customized eq 'true') {
-      # set customized rulesets for other user-controllable zones
-      push (@cmds, set_rulesets_other_zones('true'));
-    } else {
-      # set default policies for other user-controllable zones
-      push (@cmds, set_rulesets_other_zones('false'));
-    }
-
-    if ($invalid_arg eq 'false') {
-      # append commit and save to @cmds if case not in else
-      push (@cmds, "commit", "save");
-      my $err = OpenApp::Conf::execute_session(@cmds);
-      if (defined $err) {
-        # print error and return
-        print("<form name='firewall-security-level' code=1></form>");
-        exit 1;
-      }
-    } else {
-      # print error and return
-      print("<form name='firewall-security-level' code=2></form>");
-      exit 1;
-    }
-}
-
-sub execute_get {
-
-   my $Wan_to_Lan_fw=Vyatta::Zone::get_firewall_ruleset("returnValue",
-                        'LAN', 'WAN', 'name');
-   my $Lan_to_Wan_fw=Vyatta::Zone::get_firewall_ruleset("returnValue",
-                        'WAN', 'LAN', 'name');
-
-   my $firewall_type;
-   my $return_string;
-
-   if (!defined $Wan_to_Lan_fw && !defined $Lan_to_Wan_fw) {
-      $firewall_type='Block All';
+     }
    } else {
-     if ($Wan_to_Lan_fw =~ /^Low_/ && $Lan_to_Wan_fw =~ /^Low_/) {
-        $firewall_type='Authorize All';
-     } elsif ($Wan_to_Lan_fw =~ /^Medium_/ && $Lan_to_Wan_fw =~ /^Medium_/ ) {
-        $firewall_type='Standard';
-     } elsif ($Wan_to_Lan_fw =~ /^High_/ && $Lan_to_Wan_fw =~ /^High_/ ) {
-        $firewall_type='Advanced';
-     } elsif ($Wan_to_Lan_fw =~ /^Customized_/ && $Lan_to_Wan_fw =~ /^Customized_/) {
-        $firewall_type='Customized';
+     # for all other directions
+     switch ($firewall_type) {
+       case 'Customized'
+       {
+        my $fw_ruleset = 'Customized_' . $zonepair;
+        @cmds = (
+        "set $zone_fw_level name $fw_ruleset"
+        );
+       }
+       case 'Default'
+       {
+        @cmds = (
+        "set $zone_fw_level name $zonepair"
+        );
+       }
+       else
+       {
+        $invalid_arg = 'true';
+       }
      }
    }
 
-   $return_string = "<firewall-security-level>$firewall_type</firewall-security-level>";
+   if ($invalid_arg eq 'false') {
+     # append commit and save to @cmds if case not in else
+     push (@cmds, "commit", "save");
+     my $err = OpenApp::Conf::execute_session(@cmds);
+     if (defined $err) {
+       # print error and return
+       print("<form name='firewall-security-level' code=1></form>");
+       exit 1;
+     }
+   } else {
+      # print error and return
+      print("<form name='firewall-security-level' code=2></form>");
+      exit 1;
+   }
+}
+
+sub execute_get {
+   my $zonepair = shift;
+   my ($firewall_type, $return_string);
+
+   my ($to_zone, $from_zone) = get_zone_names($zonepair);
+   my $fw_ruleset=Vyatta::Zone::get_firewall_ruleset("returnValue",
+                        "$to_zone", "$from_zone", 'name');
+
+   if ($zonepair eq 'LAN_to_WAN' || $zonepair eq 'WAN_to_LAN') {
+     if (!defined $fw_ruleset) {
+       # this should only happen in case direction is LAN_to_WAN or WAN_to_LAN
+       $firewall_type='Block All';
+     } elsif ($fw_ruleset =~ /^Low_/) {
+       $firewall_type='Authorize All';
+     } elsif ($fw_ruleset =~ /^Medium_/) {
+       $firewall_type='Standard';
+     } elsif ($fw_ruleset =~ /^High_/) {
+       $firewall_type='Advanced';
+     } elsif ($fw_ruleset =~ /^Customized_/) {
+       $firewall_type='Customized';
+     }
+   } else {
+     # for all other directions there's jst 2 options - default or customized
+     if ($fw_ruleset =~ /^Customized_/) {
+       $firewall_type='Customized';
+     } else {
+       $firewall_type='Default';
+     }
+   }
+
+   $return_string="<firewall-security-level>zonepair=[$zonepair]," .
+                  "security-level=[$firewall_type]</firewall-security-level>";
    print "$return_string\n";
 }
 
 sub usage() {
-    print "       $0 --set=<firewall-type>\n";
-    print "       $0 --get\n";
+    print "       $0 --action='<action>' --args='<arguments>'\n";
     exit 1;
 }
 
@@ -179,18 +175,41 @@ sub usage() {
 # main
 #
 
-my ($set, $get);
+my ($action, $args);
 
 GetOptions(
-    "set=s"              => \$set,
-    "get"                => \$get,
-    ) or usage();
+    "action=s"                  => \$action,
+    "args=s"                    => \$args,
+    );
 
-if (defined $set) {
-    execute_set($set);
-}
-else {
-    execute_get();
+usage() if ! defined $action;
+usage() if ! defined $args;
+
+# parse out args. args in the form - key=[value],key=[value]
+# 1st arg is zonepair, if action is set 2nd arg is security level
+my @arguments=split(/\]/,$args);
+
+my (@zonepair, @security_level);
+@zonepair = split(/\[/,$arguments[0]);
+@security_level = split(/\[/,$arguments[1]) if defined $arguments[1];
+
+# zonepair - $zonepair[1], security_level - $security_level[1]
+
+switch ($action) {
+  case 'get'
+  {
+    execute_get ($zonepair[1]);
+  }
+  case 'set'
+  {
+    execute_set ($zonepair[1], $security_level[1]);
+  }
+  else
+  {
+    # invalid action
+    print "Invalid Action for $0\n";
+    exit 1;
+  }
 }
 
 exit 0;

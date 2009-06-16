@@ -1,1 +1,1 @@
-run: /opt/vyatta/sbin/firewall-security-level.pl --set="$3"
+run: /opt/vyatta/sbin/firewall-security-level.pl --action='set' --args="$3"

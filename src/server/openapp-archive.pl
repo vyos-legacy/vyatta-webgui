@@ -433,6 +433,7 @@ sub restore_archive {
     `mkdir -p $WEB_RESTORE_ROOT/`;
     `mkdir -p $RESTORE_WORKSPACE_DIR/`;
     #test for failure here
+print "A: $ARCHIVE_ROOT_DIR/$restore.tar\n";
     my $err = `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $RESTORE_WORKSPACE_DIR/.`;
     if ($err =~ /No such file/) {
 	my $err = `tar xf $ARCHIVE_BASE_DIR/admin/$restore.tar -C $RESTORE_WORKSPACE_DIR/.`;
@@ -440,7 +441,6 @@ sub restore_archive {
 	    return;
 	}
     }
-
     ##########################################################################
     #
     # Now build out an archive list as provided in the argument list, or if
@@ -465,17 +465,34 @@ sub restore_archive {
 	}
     }
     else {
-	#not currently used by the restore cmd
+	#used with restore from my pc command
 	#instead use the xml file to fill out hash_coll...
-	my $metafile = $BACKUP_WORKSPACE_DIR."/".$restore;
-
-	my @output = `tar -xf $metafile -O ./$restore_target.txt 2>/dev/null`;
+	my $metafile = $ARCHIVE_ROOT_DIR."/".$restore;
+	my @output = `tar -xf $metafile.tar -O ./$restore.txt 2>/dev/null`;
 	my $text = join("",@output);
-	my $opt = XMLin($text);
+	my $xs = new XML::Simple(forcearray=>1);
+	my $opt = $xs->XMLin($text);
 	#now parse the rest code
-	
+
+	my $arrayref = $opt->{contents}->[0]->{entry};
+	for (my $i = 0; $i < @$arrayref; $i++) {
+#	    print "$opt->{contents}->[0]->{entry}->[$i]->{vm}->[0]\n";
+#	    print "$opt->{contents}->[0]->{entry}->[$i]->{type}->[0]\n";
+	    my $ar_type = $opt->{contents}->[0]->{entry}->[$i]->{type}->[0];
+	    if ($ar_type eq 'data') {
+		$hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = 1;
+	    }
+	    elsif ($ar_type eq 'config') {
+		$hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = 2;
+	    }
+	    else {
+		$hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = 3;
+	    }
+
+#	    $hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = $opt->{contents}->[0]->{entry}->[$i]->{type}->[0];
+	}
 	#now something like for each instance
-	$hash_coll{ $opt->{archive}->{contents}->{vm} } = $opt->{archive}->{contents}->{type};
+#	$hash_coll{ $opt->{archive}->{contents}->{vm} } = $opt->{archive}->{contents}->{type};
     }
 
     ##########################################################################
@@ -650,7 +667,7 @@ sub get_archive {
     `rm -fr /var/www/archive/$OA_SESSION_ID/*`;
     `mkdir -p /var/www/archive/$OA_SESSION_ID`;
 
-#    print "VERBATIM_OUTPUT\n";
+    print "VERBATIM_OUTPUT\n";
     my $file = "$ARCHIVE_ROOT_DIR/$get_archive.tar";
     if (-e $file) {
 	`cp $file /var/www/archive/$OA_SESSION_ID/$get_archive.tar`;
@@ -685,15 +702,14 @@ sub put_archive {
     }
 
     #very simple now, copy to archive directory and that's it!
-    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
+#    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
 
     print "VERBATIM_OUTPUT\n";
     `cp /tmp/$put_archive.tar $ARCHIVE_ROOT_DIR/.`;
     `rm -f /tmp/$put_archive.tar`;
 
-
     #also restore this now.
-    my $restore = $put_archive;
+    $restore = $put_archive;
     restore_archive();
 }
 

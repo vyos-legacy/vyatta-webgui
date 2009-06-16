@@ -72,6 +72,12 @@ function UTM_nwPortConfigRecord(num, name, group, enable)
 		xml += '<enable>' +  thisObj.m_enable + '</enable></port-config>';
 		return xml;
 	}
+	
+	this.f_toXmlForSet = function() {
+		var xml = '<port><num>' + thisObj.m_num + '</num>';;
+		xml += '<enable>' +  thisObj.m_enable + '</enable></port>';
+		return xml;		
+	}
 }
 
 /**
@@ -1062,10 +1068,11 @@ function UTM_nwPortConfigBusObj(busObj)
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>port-config" +
                       " set</handler><data>";
+	    xmlstr += '<port-config>';
 		for (var i=0; i < portConfigList.length; i++) {
-			xmlstr += portConfigList[i].f_toXml();
+			xmlstr += portConfigList[i].f_toXmlForSet();
 		}			  					
-        xmlstr +=  "</data></statement></command>";
+        xmlstr +=  "</port-config></data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
@@ -1125,10 +1132,11 @@ function UTM_nwPortConfigBusObj(busObj)
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>port-config" +
                       " set</handler><data>";
+		xmlstr += '<port-config>';
 		for (var i=0; i < portConfigList.length; i++) {
-			xmlstr += portConfigList[i].f_toXml();
+			xmlstr += portConfigList[i].f_toXmlForSet();
 		}			  					
-        xmlstr +=  "</data></statement></command>";
+        xmlstr +=  "</port-config></data></statement></command>";
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";

@@ -59,7 +59,9 @@ var g_lang =
 	m_menu_csc_router: "cascaded router",
 	m_menu_des_csc_router: "Cascaded router",	
 	m_menu_dns : "DNS",
-    
+    m_menu_port_config: "port configuration",
+	m_menu_des_port_config: "Port configuration",
+	
     ///////////////////////////////////////////////////////////////////
     // Dash board screen
 

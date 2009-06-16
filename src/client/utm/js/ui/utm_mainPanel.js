@@ -27,13 +27,16 @@ function UTM_mainPanel()
             if (event.f_isError()) {
 				alert('error: ' + event.m_errMsg);
             } else {
-		        g_utmMainPanel.f_init();
-		        g_utmMainPanel.f_show();
-                g_utmMainPanel.f_selectMenuItem(g_defaultMenuItem);			
-				/*
-                g_utils.f_saveUserLoginId(event.m_value.m_sid);
-                g_utils.f_saveUserName(un);
-                */
+				var f = function() {
+		            g_utmMainPanel.f_init();
+		            g_utmMainPanel.f_show();
+                    g_utmMainPanel.f_selectMenuItem(g_defaultMenuItem);			
+				    /*
+                     g_utils.f_saveUserLoginId(event.m_value.m_sid);
+                     g_utils.f_saveUserName(un);
+                    */					
+				};
+                window.setTimeout(f,10);			
             }
         }
         

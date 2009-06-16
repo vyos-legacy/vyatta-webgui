@@ -28,7 +28,9 @@ GetOptions(
 );
 
 if (defined($sched)) {
-  if (!defined($ver) || !defined($time)) {
+  if (!OpenApp::VMMgmt::isValidId($sched) 
+      || !OpenApp::VMDeploy::isValidNewVer($sched, $ver) 
+      || !OpenApp::VMDeploy::isValidSchedTime($time)) {
     print "Invalid command\n";
     exit 1;
   }
@@ -37,12 +39,17 @@ if (defined($sched)) {
 }
 
 if (defined($cancel)) {
+  if (!OpenApp::VMMgmt::isValidId($cancel)) {
+    print "Invalid command\n";
+    exit 1;
+  }
   do_cancel($cancel);
   exit 0;
 }
 
 if (defined($restore)) {
-  if (!defined($ver)) {
+  if (!OpenApp::VMMgmt::isValidId($restore) 
+      || !OpenApp::VMDeploy::isValidPrevVer($restore, $ver)) {
     print "Invalid command\n";
     exit 1;
   }
@@ -54,6 +61,9 @@ if ($list) {
   do_list();
   exit 0;
 }
+
+print "Invalid command\n";
+exit 1;
 
 sub do_sched {
   my ($id, $ver, $time) = @_;

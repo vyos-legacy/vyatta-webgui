@@ -20,6 +20,18 @@ my $UPD_URG_CONTROL = 'OA-Update-Urgency';
 my $CRITICAL_UPDATE_AUTO_INST_INTVL = 3600 * 24; # 24 hours
 
 ### "static" functions
+sub isValidNewVer {
+  my ($id, $ver) = @_;
+  my $file = "$NVIMG_DIR/oa-vimg-${id}_${ver}_all.deb";
+  return (-r "$file") ? 1 : 0;
+}
+
+sub isValidPrevVer {
+  my ($id, $ver) = @_;
+  my $file = "$VIMG_DIR/$id/prev/oa-vimg-${id}_${ver}_all.deb";
+  return (-r "$file") ? 1 : 0;
+}
+
 sub vmCheckUpdate {
   my $vid = shift;
   my $dd = undef;
@@ -53,6 +65,11 @@ sub _checkSched {
   chomp($data);
   my ($sched, $job, $ver, $time) = split(/ /, $data, 4);
   return ($sched, $job, $ver, $time);
+}
+
+sub isValidSchedTime {
+  my ($t) = @_;
+  return (defined(time2epoch("$t"))) ? 1 : 0;
 }
 
 sub time2epoch {

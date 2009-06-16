@@ -1,3 +1,16 @@
+vyatta-webgui (0.2+fxd0+59) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Bug: 4563:
+
+  [ slioch ]
+  * remove verbatim tag from get of archive.
+
+  [ Loi Vo ]
+  * 1. Fix the following:
+
+ -- Loi Vo <loi.vo@vyatta.com>  Tue, 16 Jun 2009 00:17:36 +0000
+
 vyatta-webgui (0.2+fxd0+58) unstable; urgency=low
 
   [ Kevin Choi ]

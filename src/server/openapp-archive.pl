@@ -130,6 +130,36 @@ sub backup {
 
     ##########################################################################
     #
+    # Build out archive filename according to spec. Also build out metadata
+    # format and write to metadata file.
+    #
+    ##########################################################################
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
+    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
+
+    my $am_pm='AM';
+    $hour >= 12 and $am_pm='PM'; # hours 12-23 are afternoon
+    $hour > 12 and $hour=$hour-12; # 13-23 ==> 1-11 (PM)
+    $hour == 0 and $hour=12; # convert day's first hour
+
+    my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
+    my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
+
+    my $datamodel = '1';
+
+    my $metafile = $BACKUP_WORKSPACE_DIR."/".$date."_".$time."_".$datamodel;
+    if (!defined($filename) || $filename eq '') {
+	$filename = $date."_".$time."_".$datamodel;
+    }
+    if (-e "$ARCHIVE_ROOT_DIR/$filename.tar") {
+	print STDERR "Backup in progress.";
+	exit 1;
+    }
+
+    `touch $metafile.tar`;
+
+    ##########################################################################
+    #
     # Set the status of the backup to 0%
     #
     ##########################################################################
@@ -287,30 +317,6 @@ sub backup {
     if (keys (%hash_coll) == 0) {
 	`logger 'backup is empty, exiting'`;
 	exit 0;
-    }
-
-    ##########################################################################
-    #
-    # Build out archive filename according to spec. Also build out metadata
-    # format and write to metadata file.
-    #
-    ##########################################################################
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
-    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
-
-    my $am_pm='AM';
-    $hour >= 12 and $am_pm='PM'; # hours 12-23 are afternoon
-    $hour > 12 and $hour=$hour-12; # 13-23 ==> 1-11 (PM)
-    $hour == 0 and $hour=12; # convert day's first hour
-
-    my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
-    my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
-
-    my $datamodel = '1';
-
-    my $metafile = $BACKUP_WORKSPACE_DIR."/".$date."_".$time."_".$datamodel;
-    if (!defined($filename) || $filename eq '') {
-	$filename = $date."_".$time."_".$datamodel;
     }
 
     #now create metadata file

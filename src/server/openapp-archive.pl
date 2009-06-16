@@ -433,7 +433,6 @@ sub restore_archive {
     `mkdir -p $WEB_RESTORE_ROOT/`;
     `mkdir -p $RESTORE_WORKSPACE_DIR/`;
     #test for failure here
-print "A: $ARCHIVE_ROOT_DIR/$restore.tar\n";
     my $err = `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $RESTORE_WORKSPACE_DIR/.`;
     if ($err =~ /No such file/) {
 	my $err = `tar xf $ARCHIVE_BASE_DIR/admin/$restore.tar -C $RESTORE_WORKSPACE_DIR/.`;
@@ -667,7 +666,6 @@ sub get_archive {
     `rm -fr /var/www/archive/$OA_SESSION_ID/*`;
     `mkdir -p /var/www/archive/$OA_SESSION_ID`;
 
-    print "VERBATIM_OUTPUT\n";
     my $file = "$ARCHIVE_ROOT_DIR/$get_archive.tar";
     if (-e $file) {
 	`cp $file /var/www/archive/$OA_SESSION_ID/$get_archive.tar`;
@@ -704,7 +702,6 @@ sub put_archive {
     #very simple now, copy to archive directory and that's it!
 #    `mkdir -p /var/www/archive/$OA_SESSION_ID`;
 
-    print "VERBATIM_OUTPUT\n";
     `cp /tmp/$put_archive.tar $ARCHIVE_ROOT_DIR/.`;
     `rm -f /tmp/$put_archive.tar`;
 

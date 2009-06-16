@@ -132,25 +132,32 @@ function UTM_confBaseObjExt(name, callback, busLayer)
         this.f_reflow();
         g_utmMainPanel.f_requestResize();			
     }	
-	
+		
     /**
      * @param val - check or un-check the checkbox
      * @param elId - this element id
      * @param cb = callback
      * @param tooltip - tooltip for this checkbox
      */
-    this.f_renderSmartCheckbox = function(val, elId, cb, tooltip, hiddenElId, hiddenElVal)
+    this.f_renderSmartCheckbox = function(val, elId, cb, tooltip, hiddenElId, hiddenElVal, readonly)
     {
+		var ro = '';
         var checked = val == 'yes' ? 'checked' : '';
         tooltip = tooltip == undefined ? "" : tooltip;
         var checkedHidden = hiddenElVal == 'yes' ? 'checked' : '';
+		
+		if (readonly != null) {
+			if (readonly==true) {
+				ro = ' disabled style="color:#CCC;"';
+			}
+		} 		
 		
         return '<input id="' + elId + '" type="checkbox" ' + checked +
         ' title="' +
         tooltip +
         '" onclick="' +
         cb +
-        '"/><input style="display:none" id="' + hiddenElId + '" type="checkbox" ' + checkedHidden + '/>';
+        '"' + ro +'/><input style="display:none" id="' + hiddenElId + '" type="checkbox" ' + checkedHidden + '/>';
     }
 	
 	this.f_createHtmlDiv = function(html)

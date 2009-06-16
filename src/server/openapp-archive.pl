@@ -751,12 +751,37 @@ sub restore_status {
 #
 ##########################################################################
 sub backup_status {
-    my $file = "$BACKUP_WORKSPACE_DIR/status";
-    if (-e $file) {
-	my $out = `cat $file`;
-	print $out;
-	return;
+    ##########################################################################
+    #
+    # Build out archive filename according to spec. Also build out metadata
+    # format and write to metadata file.
+    #
+    ##########################################################################
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
+    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
+
+    my $am_pm='AM';
+    $hour >= 12 and $am_pm='PM'; # hours 12-23 are afternoon
+    $hour > 12 and $hour=$hour-12; # 13-23 ==> 1-11 (PM)
+    $hour == 0 and $hour=12; # convert day's first hour
+
+    my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
+    my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
+
+    my $datamodel = '1';
+
+    $filename = $date."_".$time."_".$datamodel;
+    if (-e "$ARCHIVE_ROOT_DIR/$filename.tar") {
+	print "0";
+	exit 0;
     }
+
+#    my $file = "$BACKUP_WORKSPACE_DIR/status";
+#    if (-e $file) {
+#	my $out = `cat $file`;
+#	print $out;
+#	return;
+#    }
     print "100";
 }
 

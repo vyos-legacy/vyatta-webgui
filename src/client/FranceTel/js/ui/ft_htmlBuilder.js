@@ -19,21 +19,10 @@ function FT_htmlBuilder()
 	this.f_initLangBar = function()
 	{
 		 var html = '';
-		 if (g_lang.m_mainLang == 'en') {
-		 	html += '<option value="en" selected="selected">' +
-		 	g_lang.m_mainEnglish +
-		 	'</option><option value="fr">' +
-		 	g_lang.m_mainFrench +
-		 	'</option>';
-		 } else {
-		 	html += '<option value="en">' +
-		 	g_lang.m_mainEnglish +
-		 	'</option><option value="fr" selected="selected">' +
-		 	g_lang.m_mainFrench +
-		 	'</option>';		 	
-		 }
-		 var el = document.getElementById('ft_language');
-		 el.innerHTML = html;		
+		 var el = document.getElementById('lang_option_en');
+		 el.innerHTML = g_lang.m_mainEnglish;
+		 el = document.getElementById('lang_option_fr');
+		 el.innerHTML = g_lang.m_mainFrench;	
 	}
 	
 	this.f_initLogout = function()

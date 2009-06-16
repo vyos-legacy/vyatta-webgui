@@ -155,12 +155,17 @@ function FT_confBackup(name, callback, busLayer)
     
     this.f_pcBackupCb = function(eventObj)
     {
+		var path = '';
         if (eventObj.f_isError()) {
             g_utils.f_popupMessage(g_lang.m_backupFail + ': ' + eventObj.m_errMsg, 'error', g_lang.m_error, true);
             return;
         }
         /* http://[oaip]/archive/[sessionid]/bu.tar */
-        var url = g_utils.f_getHomePageIP() + '/archive/' /*+ g_utils.f_getUserLoginedID()*/ + 'bu.tar';
+		if (eventObj.m_value != null) {
+			path = eventObj.m_value;
+		}
+        var url = g_utils.f_getHomePageIP() +  '/' + path;
+		//'/archive/' /*+ g_utils.f_getUserLoginedID()*/ + 'bu.tar';
         window.open(url, 'Download');
     }
     

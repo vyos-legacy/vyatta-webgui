@@ -122,7 +122,7 @@ function FT_tabPanel()
     
     this.f_setIframeHeight = function()
     {
-		var iframeName = 'mainframe';		
+		var iframeName = 'mainFrame';		
 		var iframeEl = document.getElementById ? document.getElementById(iframeName) : document.all ? document.all[iframeName] : null;
 		var defaultSize = screen.height - 200;
 		
@@ -159,7 +159,7 @@ function FT_tabPanel()
 	{
 		alert('f_resizeFrame called');
         var defaultSize = screen.height - 200;		
-		var f = document.getElementById('mainframe');	
+		var f = document.getElementById('mainFrame');	
 		var w = f.contentWindow;
 		//window.frames[f.id];
 		if (!w) {
@@ -180,7 +180,7 @@ function FT_tabPanel()
     {
         var url = urlPath;
         var ifr = document.createElement('iframe');
-        ifr.setAttribute('id', 'mainframe');
+        ifr.setAttribute('id', 'mainFrame');
         ifr.setAttribute('border', 0);
         ifr.setAttribute('frameBorder', '0');
         ifr.style.width = '100%';
@@ -188,18 +188,18 @@ function FT_tabPanel()
         //ifr.style.height = screen.height;
         ifr.setAttribute('height', screen.height-40);
         thisObj.m_container.appendChild(ifr);
-		ifr = document.getElementById('mainframe');		
+		ifr = document.getElementById('mainFrame');		
         g_xbObj.f_xbAttachEventListener(ifr, 'load', thisObj.f_setIframeHeight, true);
 		//ifr.onload = thisObj.f_resizeFrame;				
-        //ifr.onload = "f_setIframeHeight('mainframe')";
+        //ifr.onload = "f_setIframeHeight('mainFrame')";
         ifr.setAttribute('src', url);
     }
 	
 	this.f_adjustIframeHeight = function()
 	{
-		var ifr = document.getElementById('mainframe');
+		var ifr = document.getElementById('mainFrame');
         ifr.style.height = "auto";		
-        var iframeWin = window.frames['mainframe'];/*window.frames[iframeName]*/;
+        var iframeWin = window.frames['mainFrame'];/*window.frames[iframeName]*/;
 		if (!iframeWin) {
 		    iframeWin = ifr.contentWindow; /* for firefox */
 		}	
@@ -215,7 +215,7 @@ function FT_tabPanel()
 	this.f_scrollRemove = function()
 	{
 		try {
-			var ifr = document.getElementById('mainframe');
+			var ifr = document.getElementById('mainFrame');
 			if (ifr) {
 				//console.log('tick...');
 			    thisObj.f_adjustIframeHeight();
@@ -226,7 +226,7 @@ function FT_tabPanel()
     
 	this.f_resizeChildIframe = function(h)
 	{
-		var ifr = document.getElementById('mainframe');
+		var ifr = document.getElementById('mainFrame');
 		if (ifr) {
 			ifr.style.height = h + 'px';
 		}

@@ -43,8 +43,8 @@ function FT_mainFrame(){
 		var login = document.getElementById(VYA.FT_CONST.DOM_LOGIN_CONTAINER_ID);
 		login.style.display = 'block';		
         var e = document.getElementById('welcome_admin');
-		e.innerHTML = g_lang.m_mainFrmWelcome + ' <font>' + 
-		  g_lang.m_mainFrmGuest + '</font>, ' +
+		e.innerHTML = g_lang.m_mainFrmWelcome + ' ' + 
+		  g_lang.m_mainFrmGuest + ', ' +
 		  g_lang.m_mainFrmSignIn;	
 	}
 	
@@ -81,8 +81,8 @@ function FT_mainFrame(){
         var e = document.getElementById('welcome_admin');		
 		var admin = g_busObj.f_getLoginUserRec().m_user;
 		//alert('admin: ' + admin + ' loginObj: ' + g_busObj.f_getLoginUserRec());
-		e.innerHTML = g_lang.m_mainFrmWelcome + ' <font>' + 
-		    admin + '</font>, ' +
+		e.innerHTML = g_lang.m_mainFrmWelcome + ' ' + 
+		    admin + ', ' +
 			g_lang.m_mainFrmConnected;		
 	}
 	

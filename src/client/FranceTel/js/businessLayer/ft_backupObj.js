@@ -116,6 +116,7 @@ function FT_backupObj(busObj)
     this.m_archiveRec = null;
     this.m_downloadFile = null;
     this.m_limit = false;
+	this.m_backup2pcPath = null;
 
     /////////////////////////////////////////
     /**
@@ -156,8 +157,11 @@ function FT_backupObj(busObj)
                       cmdSent.indexOf('multi_') >= 0)
                 {
                     var segment = thisObj.f_parseBackup2PCData(err);
-                    if(segment == null || segment.indexOf('_end') < 0)
-                        return;
+                    if (segment == null || segment.indexOf('_end') < 0) {
+						return;
+					} else {
+						evt = new FT_eventObj(0, thisObj.m_backup2pcPath, '');
+					}
 
                     if(thisObj.m_segmentGuiCb != undefined)
                         thisObj.m_segmentGuiCb(evt);
@@ -282,14 +286,18 @@ function FT_backupObj(busObj)
             {
                 var attr = cn[i].getAttribute('segment');
 
-                if(attr.indexOf('_end') < 0)
-                {
-                    window.setTimeout(function(){
-                    thisObj.f_backupToPC(null, null, thisObj.m_segmentGuiCb, attr)}, 5000);
-                    return null;
-                }
-                else
-                    return attr;
+                if (attr.indexOf('_end') < 0) {
+					if (cn[i].childNodes[0] != null) { //save the path in multi_segment_1
+						thisObj.m_backup2pcPath = cn[i].childNodes[0].nodeValue;
+					}					
+					window.setTimeout(function()
+					{
+						thisObj.f_backupToPC(null, null, thisObj.m_segmentGuiCb, attr)
+					}, 5000);
+					return null;
+				} else {					
+					return attr;
+				}
             }
         }
 

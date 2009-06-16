@@ -131,7 +131,7 @@ sub execute_set {
    }
 }
 
-sub execute_get {
+sub execute_getzonelevel {
    my $zonepair = shift;
    my ($firewall_type, $return_string);
 
@@ -161,9 +161,38 @@ sub execute_get {
      }
    }
 
-   $return_string="<firewall-security-level>zonepair=[$zonepair]," .
-                  "security-level=[$firewall_type]</firewall-security-level>";
+   $return_string="zonepair=[$zonepair],security-level=[$firewall_type]:";
+   return $return_string;
+}
+
+sub execute_get {
+   my $zonepair = shift;
+   my $return_string = '<firewall-security-level>';
+
+   if ($zonepair eq 'ALL') {
+     my @active_zonepairs = get_active_zonepairs();
+     foreach my $zonepairs (@active_zonepairs) {
+       $return_string .= execute_getzonelevel ($zonepairs);
+     }
+   } else {
+     $return_string .= execute_getzonelevel ($zonepair);
+   }
+
+   $return_string .= '</firewall-security-level>';
    print "$return_string\n";
+}
+
+sub get_active_zonepairs {
+  my @zonepairs = ('LAN_to_DMZ', 'LAN_to_LAN2', 'LAN_to_WAN',
+                   'LAN2_to_DMZ', 'LAN2_to_LAN', 'LAN2_to_WAN',
+                   'WAN_to_DMZ', 'WAN_to_LAN', 'WAN_to_LAN',
+                   'DMZ_to_LAN', 'DMZ_to_LAN2', 'DMZ_to_WAN');
+
+  # later we would have to check if one of LAN, LAN2, DMZ zones is disabled
+  # then from zonepairs array remove 'zone_*' or '*_zone' for the disabled zone
+
+  return sort @zonepairs;
+
 }
 
 sub usage() {

@@ -185,7 +185,7 @@ sub execute_get {
 sub get_active_zonepairs {
   my @zonepairs = ('LAN_to_DMZ', 'LAN_to_LAN2', 'LAN_to_WAN',
                    'LAN2_to_DMZ', 'LAN2_to_LAN', 'LAN2_to_WAN',
-                   'WAN_to_DMZ', 'WAN_to_LAN', 'WAN_to_LAN',
+                   'WAN_to_DMZ', 'WAN_to_LAN', 'WAN_to_LAN2',
                    'DMZ_to_LAN', 'DMZ_to_LAN2', 'DMZ_to_WAN');
 
   # later we would have to check if one of LAN, LAN2, DMZ zones is disabled

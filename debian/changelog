@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+56) unstable; urgency=low
+
+  * add backend for getting information for all active zonepairs
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 16 Jun 2009 14:50:21 -0700
+
 vyatta-webgui (0.2.14+fxdU+55) unstable; urgency=low
 
   * translate dom-U interfaces to dom-0 interfaces

@@ -139,6 +139,9 @@ Command::multi_part_op_cmd(std::string &orig_cmd,std::string &mod_cmd)
     if (str_proc.get(2) != "backup" && str_proc.get(2) != "restore") {
       return false;
     }
+    if (str_proc.get(3) == "status") {
+      return false; //force the status message to be returned from the webgui process
+    }
   }
 
   //does the cmd either equal an in-process bground op multi-part cmd                                                                                 

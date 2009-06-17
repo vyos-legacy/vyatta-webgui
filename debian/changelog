@@ -1,3 +1,20 @@
+vyatta-webgui (0.2.14+fxdU+60) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * additional checked in for security level screen to remember user's
+    input after click on
+
+  [ Loi Vo ]
+  * 1. Implement change checking before sending set request to backend
+    per AnCheng's request.
+
+  [ An-Cheng Huang ]
+  * support change detection on front-end
+
+  [ Loi Vo ]
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 17 Jun 2009 00:28:34 +0000
+
 vyatta-webgui (0.2.14+fxdU+59) unstable; urgency=low
 
   * * reworked firewall security level screen to add active zone table.

@@ -175,12 +175,32 @@ function FT_backupObj(busObj)
                 else if(cmdSent.indexOf('archive delete') > 0)
                 {
                 }
+				else if (cmdSent.indexOf('archive backup status') > 0)
+				{
+					var progress = thisObj.f_parseBackupStatus(err);
+					evt = new FT_eventObj(0, progress, '');
+				}
             }
 
             if(thisObj.m_guiCb != undefined)
                 thisObj.m_guiCb(evt);
         }
     };
+
+    this.f_parseBackupStatus = function(err)
+	{		
+        var errmsg = '';
+        
+        var cn = err[0].childNodes;
+        for (var i = 0; i < cn.length; i++) {
+            if (cn[i].nodeName == 'msg') {
+                errmsg = cn[i].firstChild.nodeValue;
+                break;
+            }
+        }
+        
+        return errmsg;
+	}
 
     this.f_parseRestoreData = function(response)
     {
@@ -460,4 +480,17 @@ function FT_backupObj(busObj)
     {
         thisObj.m_guiCb = guiCb;
     };
+	
+	/**
+	 * retrieve the backup status whether we're allowed to do backup from backend.
+	 */
+    this.f_getBackupStatus = function(guiCb)
+	{
+        thisObj.m_guiCb = guiCb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement>open-app archive backup status" +
+		             "</statement></command>";
+        this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr, 
+		                         thisObj.f_respondRequestCallback);
+	}
 }

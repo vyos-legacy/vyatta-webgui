@@ -13,6 +13,7 @@ var g_lang =
     m_networkConfig : 'Network',
 	
 	m_mainLang : 'fr',
+    m_mainMap : 'map',	
 	m_mainOA : 'Open Appliance',
 	m_mainEnglish : 'English',
 	m_mainFrench : 'Français',	
@@ -301,6 +302,7 @@ var g_lang =
 	m_backupMyPC: "Mon PC",	
     m_backupTooltipCancel : "Réinitialiser la sélection",
     m_backupTooltipBackup : "Certaines applications de sauvegarde",	
+	m_backupPlsWait: "Another backup request is currently being processed.  Please wait for a few minutes and try again.",
 	
 
     ///////////////////////////////////////////////////////////////////
@@ -374,6 +376,11 @@ var g_lang =
 	m_tooltip_back: "Go back to previous screen",	
 	m_tooltip_restore: "Restore",
 	m_tooltip_update: "Update",	
+		
+    ///////////////////////////////////////////////////////////////////
+    // Contact page
+	m_contact : "Contact",
+	m_contact_message: "For your questions, please contact your customer service and dial 3901.",	
 	
     /////////////////////////////////////////
     // plesae do not edit beyound dummy

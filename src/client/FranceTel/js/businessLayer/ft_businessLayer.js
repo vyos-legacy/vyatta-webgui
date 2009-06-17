@@ -620,6 +620,11 @@ function FT_businessLayer()
 
     }
 
+    this.f_getBackupStatus = function(guiCb)
+	{
+		thisObj.m_backup.f_getBackupStatus(guiCb);
+	}
+
 	/**
 	 * upgrade vm, one vm at a time.
 	 * @param {Object} vm

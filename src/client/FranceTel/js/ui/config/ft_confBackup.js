@@ -214,6 +214,28 @@ function FT_confBackup(name, callback, busLayer)
             thisObj.f_oaBackup();
         }
     }
+	
+	this.f_backupStatusCb = function(evt)
+	{
+        if (evt.f_isError()) {
+            g_utils.f_popupMessage(eventObj.m_errMsg, 'error', g_lang.m_error, true);
+        } else {
+			var status = evt.m_value.trim();
+			if (status != '100') {
+                g_utils.f_popupMessage(g_lang.m_backupPlsWait + '!', 'error', g_lang.m_error, true);
+                return;
+            }
+            var el = document.getElementById('conf_backup_form');
+            
+            if (el.target_group[0].checked == true) {
+                thisObj.f_pcBackup();
+                return;
+            }
+            //g_utils.f_cursorWait();
+            thisObj.m_busLayer.f_getVMRestoreListFromServer(thisObj.f_overflow);
+        }		
+	}
+	
     
     this.f_backup = function()
     {
@@ -221,13 +243,7 @@ function FT_confBackup(name, callback, busLayer)
             return;
         }
         
-        var el = document.getElementById('conf_backup_form');
-        if (el.target_group[0].checked == true) {
-            thisObj.f_pcBackup();
-            return;
-        }
-        //g_utils.f_cursorWait();
-        thisObj.m_busLayer.f_getVMRestoreListFromServer(thisObj.f_overflow);
+		thisObj.m_busLayer.f_getBackupStatus(thisObj.f_backupStatusCb);		
     }
     
     this.f_filterVm = function(vm)
@@ -289,6 +305,7 @@ function FT_confBackup(name, callback, busLayer)
                 thisObj.f_resize(10);
             }
         }
+		console.log('callign f_getVMDataFromServer');
         thisObj.m_busLayer.f_getVMDataFromServer(cb);
     }
     

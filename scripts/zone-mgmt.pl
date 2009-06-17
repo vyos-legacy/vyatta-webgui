@@ -33,9 +33,9 @@ use Vyatta::Zone;
 use OpenApp::Conf;
 
 # mapping for dom-U to dom-0 interfaces
-my %domU_to_dom0_intfhash = ( 'eth1'     => 'eth1',
-                              'eth3'     => 'eth2',
-                              'eth5'     => 'eth3');
+my %domU_to_dom0_intfhash = ( 'eth1'     => 'LAN (E1)',
+                              'eth3'     => 'DMZ (E2)',
+                              'eth5'     => 'LAN2 (E3)');
 
 sub get_zoneinfo {
   my $zonename = shift;
@@ -128,6 +128,38 @@ sub execute_get_avail_intfs {
 
 }
 
+sub set_zone_description {
+  my $args = shift;
+  my @cmds=();
+  my @arguments=split(/\]/,$args);
+  my (@zone, @description);
+  @zone = split(/\[/,$arguments[0]);
+  @description = split(/\[/,$arguments[1]);
+  $description[0] = '';
+  my $zone_description = join (" ", @description);
+
+  # zone - $zone[1], zone description - $zone_description
+
+  if (defined $zone_description && !($zone_description eq '')) {
+    # set zone description
+    @cmds = (
+       "set zone-policy zone $zone[1] description $zone_description",
+    );
+  } else {
+    # delete zone description if any
+    @cmds = (
+       "delete zone-policy zone $zone[1] description",
+    );
+  }
+
+  my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+  if (defined $err) {
+    # print error and return
+    print("<form name='zone-mgmt' code=2>$err</form>");
+    exit 1;
+  }
+}
+
 sub usage() {
     print "     $0 --action='<action>' --args='<arguments>'\n";
     exit 1;
@@ -157,6 +189,20 @@ switch ($action) {
   case 'get-available-interfaces'
   {
     execute_get_avail_intfs();
+  }
+  case 'set-zone-description'
+  {
+    set_zone_description($args);
+  }
+  case 'save'
+  {
+    my @cmds = ('commit', 'save');
+    my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+    if (defined $err) {
+      # print error and return
+      print("<form name='customize-firewall' code=1></form>");
+      exit 1;
+    }
   }
   else
   {

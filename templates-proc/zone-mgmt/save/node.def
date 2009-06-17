@@ -1,0 +1,1 @@
+run: /opt/vyatta/sbin/zone-mgmt.pl --action='save'

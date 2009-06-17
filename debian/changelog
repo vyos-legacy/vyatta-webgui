@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+61) unstable; urgency=low
+
+  * 1. Remove console.log debug message from ft_backup
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 17 Jun 2009 22:03:46 +0000
+
 vyatta-webgui (0.2+fxd0+60) unstable; urgency=low
 
   [ Loi Vo ]

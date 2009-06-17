@@ -14,7 +14,7 @@ my %port_map = (
                 '4' => 'eth0'
                );
 
-my $dbg_log = '/tmp/pc.log';
+my $dbg_log = undef;
 
 my ($get, $set) = (undef);
 GetOptions(
@@ -91,7 +91,7 @@ EOF
 
 sub do_set {
   my ($data) = @_;
-  my $xs  = new XML::Simple;
+  my $xs  = XML::Simple->new(ForceArray => [ 'port' ]);
   my $xml = $xs->XMLin($data);
   if (!defined($xml->{port})) {
     print "No ports to configure\n";

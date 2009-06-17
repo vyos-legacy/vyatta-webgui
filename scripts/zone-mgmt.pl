@@ -33,9 +33,9 @@ use Vyatta::Zone;
 use OpenApp::Conf;
 
 # mapping for dom-U to dom-0 interfaces
-my %domU_to_dom0_intfhash = ( 'eth1'     => 'LAN (E1)',
-                              'eth3'     => 'DMZ (E2)',
-                              'eth5'     => 'LAN2 (E3)');
+my %domU_to_dom0_intfhash = ( 'eth1'     => 'Eth1',
+                              'eth3'     => 'Eth2',
+                              'eth5'     => 'Eth3');
 
 sub get_zoneinfo {
   my $zonename = shift;
@@ -155,9 +155,47 @@ sub set_zone_description {
   my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
   if (defined $err) {
     # print error and return
-    print("<form name='zone-mgmt' code=2>$err</form>");
+    print("<form name='zone-mgmt' code=3>$err</form>");
     exit 1;
   }
+}
+
+sub add_delete_interface {
+
+  my ($action, $args) = @_;
+  my @cmds=();
+  my @arguments=split(/\]/,$args);
+  my (@zone, @interface);
+  @zone = split(/\[/,$arguments[0]);
+  @interface = split(/\[/,$arguments[1]);
+
+  # zone - $zone[1], dom0 interface - $interface[1]
+
+  my %rhash = reverse %domU_to_dom0_intfhash;
+  my $domU_intf = $rhash{$interface[1]};
+
+  switch($action) {
+    case 'add' 
+    {
+      @cmds = (
+         "set zone-policy zone $zone[1] interface $domU_intf",
+      );
+    }
+    case 'delete'
+    {
+      @cmds = (
+         "delete zone-policy zone $zone[1] interface $domU_intf",
+      );
+    }
+  }
+
+  my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+  if (defined $err) {
+    # print error and return
+    print("<form name='zone-mgmt' code=4>$err</form>");
+    exit 1;
+  }
+
 }
 
 sub usage() {
@@ -194,6 +232,14 @@ switch ($action) {
   {
     set_zone_description($args);
   }
+  case 'add-interface-to-zone'
+  {
+    add_delete_interface('add', $args);
+  }
+  case 'remove-interface-from-zone'
+  {
+    add_delete_interface('delete', $args);
+  }
   case 'save'
   {
     my @cmds = ('commit', 'save');
@@ -201,6 +247,16 @@ switch ($action) {
     if (defined $err) {
       # print error and return
       print("<form name='customize-firewall' code=1></form>");
+      exit 1;
+    }
+  }
+  case 'cancel'
+  {
+    my @cmds = ('discard');
+    my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+    if (defined $err) {
+      # print error and return
+      print("<form name='customize-firewall' code=2></form>");
       exit 1;
     }
   }

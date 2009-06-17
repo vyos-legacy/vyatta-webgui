@@ -1,0 +1,1 @@
+run: /opt/vyatta/sbin/zone-mgmt.pl --action='remove-interface-from-zone' --args="$3"

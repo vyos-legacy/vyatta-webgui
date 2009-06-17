@@ -247,7 +247,6 @@ function UTM_configPanel()
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID:
 			    thisObj.m_selectObj = new UTM_confEmptyComponent();
-	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
           /////////////////////////////////////////////////////////////////////////////

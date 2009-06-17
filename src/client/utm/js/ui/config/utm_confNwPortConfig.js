@@ -85,8 +85,9 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 	
     this.f_headerText = function()
     {
-		var html = '<p>' + g_lang.m_vpnOverviewHeader + '</p><br/><br/>';
-		html += '<img src="images/port_config.png"><br/><br/>';
+		var html = '<br/>';
+		html += '<img src="images/port_config.png"><br/><br/><br/><span class="v_label_bold"><p>' + g_lang.m_portconf_attach
+		        + '</p></span><br/>';
 		
         return this.f_createHtmlDiv(html);
     }	
@@ -134,13 +135,15 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 	{
 		switch (portNum) {
 			case '1':
-			    return 'images/1.png';
+			    return 'images/1.gif';
 			case '2':
-			    return 'images/2.png';
+			    return 'images/2.gif';
 			case '3':
-			    return 'images/3.png';
+			    return 'images/3.gif';
 			case '4':
-			    return 'images/4.png';
+			    return 'images/4.gif';
+			case '5':
+			    return 'images/5.gif';
 			default:
 				return '';
 		}

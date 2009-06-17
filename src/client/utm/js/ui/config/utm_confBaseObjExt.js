@@ -28,7 +28,7 @@ function UTM_confBaseObjExt(name, callback, busLayer)
 	
 	this.f_headerText = function()
 	{
-		return this.f_createGeneralDiv(g_lang.m_vpnOverviewHeader + "<br><br>");
+		return this.f_createGeneralDiv("<br><br>");
 	}
 	
     this.f_addButtonLeft = function(bt)

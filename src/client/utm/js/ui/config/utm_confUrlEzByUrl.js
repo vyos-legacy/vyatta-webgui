@@ -107,7 +107,8 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
             thisObj.f_populateTable(thisObj.m_entryList);
 			thisObj.f_setSortOnColPerformed(0,0);			
 		    thisObj.f_addRow();
-            thisObj.f_adjust();			
+            window.setTimeout(function(){thisObj.f_adjust();}, 10);									
+            //thisObj.f_adjust();			
         }
     }
     

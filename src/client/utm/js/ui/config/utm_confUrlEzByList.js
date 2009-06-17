@@ -242,7 +242,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 			var cbHidden = document.getElementById(this.m_prefix + 'cb_hidden_' + seedId);
 			
 			if ((text != undefined) && (text != null)) {
-				if (!text.readOnly) {
+				if (!text.disabled) {
 					if (text.value.trim().length > 0) {
 						changed = true;
 						return changed;

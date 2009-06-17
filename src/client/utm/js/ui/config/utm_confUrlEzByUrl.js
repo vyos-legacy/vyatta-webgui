@@ -146,6 +146,8 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
                     var url = document.getElementById(thisObj.m_prefix + 'addr_' + seedId);
                     cbHidden.checked = cb.checked;					
                     url.readOnly = true;
+					url.disabled = true;
+					url.style.backgroundColor = '#EFEFEF';					
                 }
                 for (var i = 0; i < thisObj.m_updatedRow.length; i++) {
                     var seedId = thisObj.m_updatedRow[i];

@@ -643,6 +643,7 @@ var g_utils =
         divContainer.appendChild(div);
         divContainer.style.height = html.scrollHeight + 'px';
         divContainer.style.width = html.scrollWidth + 'px';
+		divContainer.style.visibility = "visible";
         divContainer.style.display = "block";
         
         if (timeout != null) {

@@ -1,3 +1,31 @@
+vyatta-webgui (0.2+fxd0+60) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Fix a cross-browser issue.  IE doesn't show the language
+    selection correctly.
+
+  [ An-Cheng Huang ]
+  * add more input validations
+
+  [ Michael Larson ]
+  * fixes applied for restore from my pc.
+  * removed unneeded verbatim manipulators. suppressed error on sourcing
+    bash completions script. Fixes final problems with backup to my pc
+
+  [ slioch ]
+  * validate file parameter before creating file on disk
+  * check existance of archive before allowing current back to run. will
+    prevent overwriting of archives.
+  * modified status return value to return 0 if requested backup will
+    overwrite an archive, 100 if it will not.
+  * force the status check to be done in the webgui and not the chunker.
+
+  [ Loi Vo ]
+  * 1. Add support for backup status check before allowing the user to
+    move forward to schedule a backup.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 17 Jun 2009 18:25:01 +0000
+
 vyatta-webgui (0.2+fxd0+59) unstable; urgency=low
 
   [ Loi Vo ]

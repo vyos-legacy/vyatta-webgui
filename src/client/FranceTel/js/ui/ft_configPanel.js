@@ -316,7 +316,8 @@ function FT_configPanel()
                 thisObj.m_selectObj.f_init(obj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
         }
-        return (new FT_confEmptyComponent()).f_getConfigurationPage();
+		thisObj.m_selectObj = new FT_confEmptyComponent();
+        return thisObj.m_selectObj.f_getConfigurationPage();
     }
 
     this.f_render = function(component)

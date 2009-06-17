@@ -305,7 +305,6 @@ function FT_confBackup(name, callback, busLayer)
                 thisObj.f_resize(10);
             }
         }
-		console.log('callign f_getVMDataFromServer');
         thisObj.m_busLayer.f_getVMDataFromServer(cb);
     }
     

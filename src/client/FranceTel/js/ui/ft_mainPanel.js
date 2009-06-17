@@ -46,8 +46,9 @@ function FT_mainPanel(){
 	}
 
     this.f_selectPage = function(id, subId) {
-		thisObj.m_2navMenu.f_selectItem(id);
-        thisObj.m_3navMenu.f_selectItem(subId);		
+		//thisObj.m_2navMenu.f_selectItem(id);
+        //thisObj.m_3navMenu.f_selectItem(subId);		
+		thisObj.m_2navMenu.f_selectNav3Item(id, subId);
 	}
 
     this.f_selectMenuItem = function(itemId) {
@@ -76,6 +77,17 @@ function FT_mainPanel(){
         thisObj.m_3navMenu.f_selectItem(thisObj.f_getDefaultSelection(id));
     }
     
+    this.f_2navSelectNav3ItemCb	= function(id, subId) {
+		if (thisObj.m_3navSelectedItem != undefined) {
+			thisObj.m_3navMenu.f_hide(thisObj.m_3navSelectedItem);
+		}
+		
+        thisObj.m_3navSelectedItem = id;
+        thisObj.m_3navMenu.f_show(id);
+		//alert('mp.f_selectItem: id' + id + 'defaultSelection: ' + thisObj.f_getDefaultSelection(id));
+        thisObj.m_3navMenu.f_selectItem(subId);		
+	} 
+	
     this.f_3navSelectItemCb = function(id, desc) {
         thisObj.m_configPanel.f_show(id, desc);        
     }	

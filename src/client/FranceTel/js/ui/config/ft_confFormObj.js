@@ -442,7 +442,7 @@ function FT_confEmptyComponent()
 
     this.f_distructor = function(){ }	
 	this.f_loadVMData = function() { }
-	this.f_stopVMData = function() { }
+	this.f_stopLoadVMData = function() { }
 	this.f_onUnload = function() { }	
 	
 	this.f_getConfigurationPage =  function() 

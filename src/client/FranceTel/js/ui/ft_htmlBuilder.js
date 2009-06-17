@@ -63,7 +63,7 @@ function FT_htmlBuilder()
 	}	
 
 	var smAppMenu = [
-	    { 'key': 'dashboard_l2', 'desc': g_lang.m_menu_des_App, 'value': g_lang.m_menuApp},
+	    { 'key': 'dashboard_l2', 'desc': g_lang.m_menu_des_Dashboard, 'value': g_lang.m_menuDashboard},
 	    { 'key': 'update_l2', 'desc': g_lang.m_menu_des_UpdatePlan, 'value': g_lang.m_menuUpdates},
 	    { 'key': 'restart_l2', 'desc': g_lang.m_menu_des_RestartApp, 'value': g_lang.m_menuRestart},
 	    { 'key': 'subscribe_l2', 'desc': g_lang.m_menu_des_Subcription, 'value': g_lang.m_menuSubscribe}		

@@ -102,8 +102,7 @@ function FT_2ndNavigation(){
 		}        
     }	
 	
-    this.f_selectItem = function(id){
-		//alert('2_nav_f_selectItem called');
+	this.f_highlightItem = function(id) {
         thisObj.m_selectedItem = id;
         var menu = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_2_NAV_UL_ID);
         for (var i = 0; menu.childNodes[i]; i++) {
@@ -118,8 +117,17 @@ function FT_2ndNavigation(){
 					nodeHref.style.fontWeight = VYA.DYN_STYLE.SEC_NAV_ACT_ITEM_FONT_WEIGHT;
                 }
             }
-        }
+        }		
+	}
+	
+    this.f_selectItem = function(id){
+		//alert('2_nav_f_selectItem called');
+        thisObj.f_highlightItem(id);
         thisObj.m_parent.f_2navSelectItemCb(id);
     }
     
+	this.f_selectNav3Item = function(id, subId) {
+		thisObj.f_highlightItem(id);
+		thisObj.m_parent.f_2navSelectNav3ItemCb(id, subId);
+	}
 }

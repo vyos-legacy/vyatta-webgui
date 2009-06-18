@@ -86,7 +86,7 @@ function UTM_confNwPortConfig(name, callback, busLayer)
     this.f_headerText = function()
     {
 		var html = '<br/>';
-		html += '<img src="images/port_config.png"><br/><br/><br/><span class="v_label_bold"><p>' + g_lang.m_portconf_attach
+		html += '<h1 align="center"><img src="images/port_config.png"></h1><br/><br/><br/><span class="v_label_bold"><p>' + g_lang.m_portconf_attach
 		        + '</p></span><br/>';
 		
         return this.f_createHtmlDiv(html);

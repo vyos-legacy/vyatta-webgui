@@ -145,7 +145,6 @@ function UTM_confUrlEzByKeyword(name, callback, busLayer)
                     var cbHidden = document.getElementById(thisObj.m_prefix + 'cb_hidden_' + seedId);
                     var url = document.getElementById(thisObj.m_prefix + 'addr_' + seedId);
                     cbHidden.checked = cb.checked;					
-                    url.readOnly = true;
 					url.disabled = true;
 					url.style.backgroundColor = '#EFEFEF';
                 }

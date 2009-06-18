@@ -1,3 +1,14 @@
+vyatta-webgui (0.2.14+fxdU+66) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * removed splash (Please wait while connecting to server...) screen
+    while loading UTM tab.
+
+  [ Mohit Mehta ]
+  * * disabled zones should not show up on the zonepair direction page
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Wed, 17 Jun 2009 18:26:43 -0700
+
 vyatta-webgui (0.2.14+fxdU+65) unstable; urgency=low
 
   * Enable blacklist auto-update daily in url-filter.

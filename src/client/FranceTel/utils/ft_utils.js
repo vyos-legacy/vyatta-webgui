@@ -152,7 +152,8 @@ var g_utils =
 		} else if (typeof window.opera != "undefined") {
 			window.location.reload(true);
 		} else {
-			window.location = hp;
+			//window.location = hp;
+			window.location.reload(true);
 		}
     },
 

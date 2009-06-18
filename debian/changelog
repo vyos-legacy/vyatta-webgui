@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+65) unstable; urgency=low
+
+  * Enable blacklist auto-update daily in url-filter.
+
+ -- Stig Thormodsrud <stig@vyatta.com>  Wed, 17 Jun 2009 18:16:59 -0700
+
 vyatta-webgui (0.2.14+fxdU+64) unstable; urgency=low
 
   * Remove sudo from buisness logic script.

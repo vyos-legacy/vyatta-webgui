@@ -98,7 +98,7 @@ sub do_blb {
     'commit',
     'save'
   );
-  $err = OpenApp::Conf::execute_session(@cmds);
+  my $err = OpenApp::Conf::execute_session(@cmds);
   if (defined($err)) {
     print "Failed to save BLB configuration: $err\n";
     exit 1;

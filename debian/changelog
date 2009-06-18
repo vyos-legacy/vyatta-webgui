@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+62) unstable; urgency=low
+
+  * 1. Fix screen continue to scroll to a very long page, although the
+    content is short.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 18 Jun 2009 01:00:50 +0000
+
 vyatta-webgui (0.2+fxd0+61) unstable; urgency=low
 
   * 1. Remove console.log debug message from ft_backup

@@ -1,3 +1,24 @@
+vyatta-webgui (0.2.14+fxdU+69) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * zone mgmt and update zone screens : appended text "Zone" to zone
+    name as for dispaly
+  * * base class : darker color for sorted coloumn and changed sorting
+    images to orange color
+
+  [ Loi Vo ]
+  * 1. Fix an issue where:
+  * Fix bug: 4612.
+
+  [ Kevin Choi ]
+  * * previous checked in messed up the table column border. this will
+    fixed it.
+
+  [ Stig Thormodsrud ]
+  * Fix 4613: Whitelist filtering does not block any URLs
+
+ -- Stig Thormodsrud <stig@vyatta.com>  Thu, 18 Jun 2009 14:45:23 -0700
+
 vyatta-webgui (0.2.14+fxdU+68) unstable; urgency=low
 
   [ Kevin Choi ]

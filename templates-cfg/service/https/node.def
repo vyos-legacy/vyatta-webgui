@@ -3,9 +3,9 @@ end:
         if [ ${COMMIT_ACTION} = 'DELETE' ]; then
           sudo /usr/sbin/invoke-rc.d lighttpd stop
           sudo /etc/init.d/vyatta-webgui-chunker stop
-          if [ -r /var/run/vm-monitor.pid ]; then
-            kill $(cat /var/run/vm-monitor.pid)
-            rm /var/run/vm-monitor.pid
+          if [ -e /var/run/vm-monitor.pid ]; then
+            sudo kill $(cat /var/run/vm-monitor.pid)
+            sudo rm /var/run/vm-monitor.pid
           fi
         else
           if [ ! -f /etc/lighttpd/server.pem ]; then
@@ -16,11 +16,12 @@ end:
           fi
           sudo /usr/sbin/invoke-rc.d lighttpd restart
           sudo /etc/init.d/vyatta-webgui-chunker restart $VAR(./background/@)
-          if [ -r /var/run/vm-monitor.pid ]; then
-            kill $(cat /var/run/vm-monitor.pid)
+          if [ -e /var/run/vm-monitor.pid ]; then
+            sudo kill $(cat /var/run/vm-monitor.pid)
+            sudo rm /var/run/vm-monitor.pid
           fi
           if [ -f /proc/xen/capabilities ]; then
-            nohup /opt/vyatta/sbin/openapp-vm-monitor.pl >&/dev/null &
+            nohup sudo /opt/vyatta/sbin/openapp-vm-monitor.pl >&/dev/null &
             jobs -p %1 >/var/run/vm-monitor.pid
           fi
         fi

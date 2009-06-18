@@ -1,3 +1,14 @@
+vyatta-webgui (0.2.14+fxdU+68) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fw security level : fixed for case there are not zone available in
+    active table.
+
+  [ Loi Vo ]
+  * Add interface to the label for port configuration
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 18 Jun 2009 17:54:41 +0000
+
 vyatta-webgui (0.2.14+fxdU+67) unstable; urgency=low
 
   [ Loi Vo ]

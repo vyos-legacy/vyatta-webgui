@@ -86,12 +86,7 @@ sub do_standalone {
 sub do_blb {
   my ($user, $pass) = @_;
   
-  # do BLB association. check credential.
-  system("/opt/vyatta/sbin/blb-login '$user' '$pass'");
-  if ($? >> 8) {
-    print "BLB login failed\n";
-    exit 1;
-  }
+  # TODO do BLB association. check credential.
  
   # login succeeded. change installer password.
   my ($rfd, $wfd) = (undef, undef);

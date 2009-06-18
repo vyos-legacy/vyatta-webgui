@@ -152,7 +152,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 			var text = document.getElementById(this.m_prefix + 'addr_' + seedId);
 			var cbHidden = document.getElementById(this.m_prefix + 'cb_hidden_' + seedId);
 			
-			if (text.readOnly) {
+			if (text.disabled) {
 			//need to send delete command to the server.
 			    var entryList = new Array();
 				var listObj = new UTM_urlFilterListObj(text.value);
@@ -190,7 +190,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 			var cbHidden = document.getElementById(this.m_prefix + 'cb_hidden_' + seedId);
 			
 			if ((text != undefined) && (text != null)) {
-				if (!text.readOnly) {
+				if (!text.disabled) {
 					if (text.value.trim().length <= 0) {
 						continue;
 					}
@@ -412,7 +412,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
                 var cbHidden = document.getElementById(this.m_prefix + 'cb_hidden_' + seedId);				
                 var text = document.getElementById(this.m_prefix + 'addr_' + seedId);	
 				o.m_action='noop';
-				o.m_readonly = text.readOnly;
+				o.m_readonly = text.disabled;
 				o.m_value = text.value;
 				o.m_status = cb.checked;
 				o.m_cbHidden = cbHidden.checked;		
@@ -436,7 +436,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 	this.f_handleKeydown = function(id)
 	{
 		var el = document.getElementById(id);
-		if (!el.readOnly) {
+		if (!el.disabled) {
 			this.f_enableAllButton(true);
 		}
 	}	

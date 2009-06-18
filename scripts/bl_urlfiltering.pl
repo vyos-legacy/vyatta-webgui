@@ -213,6 +213,7 @@ sub configure_webproxy {
     push @cmds, "set $path rule 10 log all";
     
     push @cmds, "set $path redirect-url \"$redirect\" ";
+    push @cmds, "set $path auto-update daily";
 
     return @cmds;
 }

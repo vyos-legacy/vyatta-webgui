@@ -160,13 +160,17 @@ function UTM_confBaseObjExt(name, callback, busLayer)
         '"' + ro +'/><input style="display:none" id="' + hiddenElId + '" type="checkbox" ' + checkedHidden + '/>';
     }
 	
-	this.f_createHtmlDiv = function(html)
+	this.f_createHtmlDiv = function(html, width)
     {
         var div = document.createElement('div');
         div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.overflow = 'visible'
+
+        if (width != null) {
+			div.style.width = width;
+		}
 
         var innerHtml = '<table width="100%" cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr><td>' +

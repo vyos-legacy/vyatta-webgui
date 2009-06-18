@@ -87,7 +87,14 @@ function UTM_confFireLevel(name, callback, busLayer)
                 thisObj.m_div.appendChild(thisObj.m_gridLevelHeader);
                 thisObj.m_div.appendChild(thisObj.m_gridLevelBody);
 
-                thisObj.f_populateLevelTable(thisObj.m_selLvlRec);
+                if(thisObj.m_selLvlRec != null)
+                    thisObj.f_populateLevelTable(thisObj.m_selLvlRec);
+                else
+                {
+                    thisObj.f_updateLevelTableHeader("-");
+                    thisObj.f_adjustButtonsPosition(50);
+                    thisObj.f_resize();
+                }
             }
         };
 
@@ -379,7 +386,8 @@ UTM_extend(UTM_confFireLevel, UTM_confBaseObj);
 
 function f_fireLevelConfigHandler(e)
 {
-    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_CUSTOM_ID);
+    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_FW_CUSTOM_ID,
+            g_configPanelObj.m_activeObj.m_selLvlRec);
 }
 
 function f_fireLevelApplyHandler(e)

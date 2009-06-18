@@ -182,16 +182,56 @@ sub execute_get {
    print "$return_string\n";
 }
 
+sub is_intf_disabled {
+  my $interface = shift;
+  my $config = new Vyatta::Config;
+  $config->setLevel("interfaces ethernet");
+  return $config->exists("$interface disable");
+}
+
 sub get_active_zonepairs {
-  my @zonepairs = ('LAN_to_DMZ', 'LAN_to_LAN2', 'LAN_to_WAN',
-                   'LAN2_to_DMZ', 'LAN2_to_LAN', 'LAN2_to_WAN',
-                   'WAN_to_DMZ', 'WAN_to_LAN', 'WAN_to_LAN2',
-                   'DMZ_to_LAN', 'DMZ_to_LAN2', 'DMZ_to_WAN');
 
-  # later we would have to check if one of LAN, LAN2, DMZ zones is disabled
-  # then from zonepairs array remove 'zone_*' or '*_zone' for the disabled zone
+  my @zonepairs = ("LAN_to_DMZ", "LAN_to_LAN2", "LAN_to_WAN",
+                   "LAN2_to_DMZ", "LAN2_to_LAN", "LAN2_to_WAN",
+                   "WAN_to_DMZ", "WAN_to_LAN", "WAN_to_LAN2",
+                   "DMZ_to_LAN", "DMZ_to_LAN2", "DMZ_to_WAN");
 
-  return sort @zonepairs;
+  my @user_zones = ('DMZ', 'LAN', 'LAN2');
+  my @all_inactive_zonepairs = ();
+
+  # remove zonepairs that involve a disabled zone i.e. zone with no active intfs
+  foreach my $zone (@user_zones) {
+
+    my @active_interfaces = ();
+    my $zone_underscore_suffix = $zone . '_to_';
+    my $zone_underscore_prefix = '_to_' . $zone;
+    my @zone_interfaces =
+        Vyatta::Zone::get_zone_interfaces("returnValues", $zone);
+
+    foreach my $intf (@zone_interfaces) {
+      my $intf_disabled = is_intf_disabled($intf);
+      if (!($intf eq $zone || defined $intf_disabled)) {
+        push (@active_interfaces, $intf);
+      }
+    }
+
+    if (scalar(@active_interfaces) == 0) {
+      # this is an inactive zone, remove its zonepairs
+      my @inactive_zonepairs = grep (/$zone_underscore_suffix|$zone_underscore_prefix$/, @zonepairs);
+      push (@all_inactive_zonepairs, @inactive_zonepairs);
+    }
+
+  }
+
+  my @intersection = ();
+  my @difference = ();
+  my %count = ();
+  foreach my $element (@zonepairs, @all_inactive_zonepairs) { $count{$element}++ }
+  foreach my $element (keys %count) {
+    push @{ $count{$element} > 1 ? \@intersection : \@difference }, $element;
+  }
+
+  return sort @difference;
 
 }
 

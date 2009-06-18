@@ -691,6 +691,19 @@ function UTM_confUrlEz(name, callback, busLayer)
 			document.getElementById(a[0]).checked = 'checked';
 		}
 	}
+	
+	this.f_unsetSubCat = function()
+	{
+		var el;
+		var a = ['conf_url_ez_legal','conf_url_ez_productivity','conf_url_ez_strict'];
+		
+		for (var i=0; i < a.length; i++) {
+			el = document.getElementById(a[i]);
+			if (el.checked) {
+				el.checked = '';
+			} 
+		}		
+	}
     
     this.f_handleClickById = function(id)
     {
@@ -722,6 +735,7 @@ function UTM_confUrlEz(name, callback, busLayer)
 				break;	
 			case 'conf_url_ez_whitelist':
 			case 'conf_url_ez_keyword':
+			    thisObj.f_unsetSubCat();
 				thisObj.f_enableAllButton(true);
 				break;				
         }

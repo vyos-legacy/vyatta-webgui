@@ -178,7 +178,7 @@ function UTM_configPanel()
 	        thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_FW_CUSTOM_ID:
-                thisObj.m_selectObj = new UTM_confFireCustom('FirewallCustomized', cb, g_busObj);
+                thisObj.m_selectObj = new UTM_confFireCustom('FirewallCustomized', cb, g_busObj, obj);
 	        thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
             case VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_IDP_ID:

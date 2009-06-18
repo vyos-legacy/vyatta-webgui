@@ -141,9 +141,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 	}	
 	
 	this.f_deleteRow = function(rowId)
-	{
-		g_utils.f_startWait();
-				
+	{				
 		var prefix = this.m_prefix + 'row_';
         var row = document.getElementById(rowId);
 		
@@ -164,6 +162,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 				}				
 				entryList.push(listObj);
 				this.m_deletedRow = seedId;
+		        g_utils.f_startWait();				
 				this.f_setEntryList(entryList, this.f_deleteRowCb); 	
 				return;
 			} else {
@@ -180,9 +179,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 		var entryList = new Array();
 		this.m_addedRow = new Array();
 		this.m_updatedRow = new Array();
-		
-		g_utils.f_startWait();
-		
+				
 		for (var i = 0; i < this.m_rowIdArray.length; i++) {
 			var seedId = this.f_getSeedIdByRowId(this.m_rowIdArray[i]);
 			var text = document.getElementById(this.m_prefix + 'addr_' + seedId);
@@ -222,6 +219,7 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 		}
 				
 		if (entryList.length > 0) {
+			g_utils.f_startWait();
 			this.f_setEntryList(entryList, this.f_applyCb);
 		}
 	}

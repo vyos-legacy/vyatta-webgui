@@ -197,7 +197,7 @@ sub configure_webproxy {
 
     # squidguard config
     $path      = 'service webproxy url-filtering squidguard';
-    $redirect  = "http://172.16.117.2/cgi-bin/squidGuard-simple.cgi?";
+    $redirect  = "https://192.168.1.1/cgi-bin/squidGuard-simple.cgi?";
     $redirect .= "targetclass=%t&url=%u&srcclass=%s";
     push @cmds, "set $path source-group ALL address 0.0.0.0/0";
     push @cmds, "set $path source-group NONE address 255.255.255.255";
@@ -313,6 +313,7 @@ sub filter_set {
 	if (! is_whitelist_enabled()) {
 	    # move from 1025 to 10 any enabled
 	    $config->setLevel("$path rule 1025 local-ok");
+	    push @cmds, "set $path rule 10 default-action block";
 	    my @values = $config->returnOrigValues();
 	    if (scalar(@values) > 0) {
 		foreach my $value (@values) {
@@ -331,6 +332,7 @@ sub filter_set {
 	# move all enbled to disabled (i.e. 10 --> 1025)
 	$config->setLevel("$path rule 10 local-ok");
 	my @values = $config->returnOrigValues();
+	push @cmds, "set $path rule 10 default-action allow";
 	if (scalar(@values) > 0) {
 	    push @cmds, "delete $path rule 10 local-ok";
 	    foreach my $value (@values) {

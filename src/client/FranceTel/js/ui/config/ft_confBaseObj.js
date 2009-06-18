@@ -122,24 +122,30 @@ function FT_confBaseObj(name, callback, busLayer)
 
             var cursor = '';
             var tooltip = '';
+            var isSortable = false;
+            var sortColor = "";
             if(h[4] != undefined && h[4])
             {
                 tooltip = 'title="' + g_lang.m_tableTooltip1 + '" ';
                 cursor = 'cursor:pointer; ';
+                isSortable = true;
+
+                if(thisObj.m_sortCol == i)
+                    sortColor = "background-color:#939393;";
             }
 
-            var colName = thisObj.f_createColNameHTML(h[0], i);
+            var colName = thisObj.f_createColNameHTML(h[0], i, isSortable);
             var rBorder = (i == header.length-1) || h[0].length < 2 ?
                               '' : 'border-right:1px solid #CCC; ';
 
-            inner += '<td width="' + h[1] +'">' +
+            inner += '<td style="' + sortColor + ';" width="' + h[1] +'">' +
                 '<div style="padding-top:5px; padding-bottom:5px; ' +
                 cursor + rBorder + '" onclick="' + onclick + '(' + i + ')" ' +
                 tooltip + '>' + colName + '</div></td>';
         }
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">' +
-                      '<thead style="background-color:#efefef;"><tr height="25">' + inner +
+                      '<thead><tr height="25">' + inner +
                       '</tr></thead></table>';
 
         div.style.width = width + 'px';
@@ -410,9 +416,10 @@ function FT_confBaseObj(name, callback, busLayer)
         return [colName, width, type, paddLeft, sortable];
     }
 
-    this.f_createColNameHTML = function(colName, col)
+    this.f_createColNameHTML = function(colName, col, isSortable)
     {
         var header = "";
+        var cName = isSortable != null && isSortable ? "<u>" + colName + "</u>" : colName;
 
         if(colName != null && colName.length > 2)
         {
@@ -424,11 +431,11 @@ function FT_confBaseObj(name, callback, busLayer)
 
                 if(!thisObj.m_allowSort) sortIcon = '';
                 header = "<p valign='center' align='center'><b>" +
-                      colName + "&nbsp;" + sortIcon + "<br></b></p>";
+                      cName + "&nbsp;" + sortIcon + "<br></b></p>";
             }
             else
                 header = "<p valign='center' align='center'><b>" +
-                      colName + "<br></b></p>";
+                      cName + "<br></b></p>";
         }
 
         return header;

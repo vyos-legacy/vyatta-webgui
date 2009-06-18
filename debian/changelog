@@ -1,3 +1,19 @@
+vyatta-webgui (0.2.14+fxdU+67) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Make the image center over the table instead of over the entire
+    panel.
+
+  [ Kevin Choi ]
+  * * fw customize : improved this page to display the initial zone pair
+    provided by user from
+  * * fw customize : cut off over text if its length is longer then the
+    column width
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 18 Jun 2009 10:27:37 -0700
+
 vyatta-webgui (0.2.14+fxdU+66) unstable; urgency=low
 
   [ Kevin Choi ]

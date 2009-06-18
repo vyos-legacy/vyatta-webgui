@@ -25,6 +25,14 @@ function FT_htmlBuilder()
 		 el.innerHTML = g_lang.m_mainFrench;	
 	}
 	
+	this.f_initFooter = function()
+	{
+	     var el = document.getElementById('contact_href');
+		 el.innerHTML = g_lang.m_menuContact;
+		 el = document.getElementById('sitemap_href');
+		 el.innerHTML = g_lang.m_menuSitemap;
+	}
+	
 	this.f_initLogout = function()
 	{
 		 var html = '<img border="0" src="images/en/puce_simple.gif">&nbsp;log out';
@@ -36,6 +44,7 @@ function FT_htmlBuilder()
 	{
          thisObj.f_initLangBar();
 		 thisObj.f_initLogout();	
+		 thisObj.f_initFooter();
 	}
 		
     var nav2menu = [ 

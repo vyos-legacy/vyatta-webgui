@@ -109,8 +109,8 @@ function UTM_confBaseObj(name, callback, busLayer)
             var rBorder = (i == header.length-1) || h[0].length < 2 ?
                               '' : 'border-right:1px solid #CCC; ';
 
-            inner += '<td style="' + sortColor + '" width="' + h[1] + '" align="' + align +
-                '" valign="top" style="' + rBorder + '">' +
+            inner += '<td width="' + h[1] + '" align="' + align +
+                '" valign="top" style="' + rBorder + ' ' + sortColor + '">' +
                 '<div style="padding-top:5px; padding-bottom:5px; ' +
                 'padding-left:' + pLeft + 'px; ' +
                 cursor + '" onclick="' + onclick + '(' + i + ')" ' +

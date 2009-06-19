@@ -105,6 +105,8 @@ var g_lang =
     m_fireLevelColTo : "to",
     m_fireLevelHdDef : "default",
     m_fireLevelBdDef : "all traffic blocked",
+    m_fireLevelBdLANtoDMZ_Def : "All incoming traffic blocked/outgoing traffic allowed.",
+    m_fireLevelBdDMZtoLAN : "All incoming traffic allowed/outgoing traffic blocked.",
     m_fireLevelHdAuth : "authorize all",
     m_fireLevelBdAuth : "Firewall functionality is disabled. All incoming and outgoing traffic is authorized.",
     m_fireLevelHdStand : "standard",
@@ -119,6 +121,10 @@ var g_lang =
     m_fireLevelCustConfTip : "configure customize security",
     m_fireLevelApplyTip : "save changes",
     m_fireLevelCancelTip : "cancel changes",
+    m_fireLevelAllowed : "All traffic allowed.",
+    m_fireLevelExcepted : "All traffic allowed except Netbios.",
+    m_fireLevelBlocked : "All traffic blocked.",
+
 
     ///////////////////////////////////////////////////////////////////
     // Firewall Zone Management

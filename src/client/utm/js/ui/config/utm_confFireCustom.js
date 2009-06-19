@@ -638,7 +638,18 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
         var sendDPort = function(fireRec)
         {
-            if(fireRec.m_appService.indexOf("Others") < 0)
+            thisObj.f_enableTextField(dport, true);
+            var app = fireRec.m_appService;
+
+            if(app.indexOf("UNIK") >= 0)
+            {
+                thisObj.f_enableComboboxSelection(proId, ["udp", "ip"], true);
+            }
+            else if(app.indexOf("IPSec") >= 0)
+            {
+                thisObj.f_enableComboboxSelection(proId, ["tcp","udp","ip"], true);
+            }
+            else if(app.indexOf("Others") < 0)
             {
                 ////////////////////////////////////
                 // set protocol per appService
@@ -661,10 +672,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                 thisObj.f_enableComboboxSelection(proId, [fireRec.m_protocol], true);
             }
             else
-            {
-                thisObj.f_enableTextField(dport, true);
                 thisObj.f_enableComboboxSelection(proId, [], false);
-            }
         }
 
         window.setTimeout(function(){sendDPort(fireRec)}, 100);
@@ -761,22 +769,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
     this.f_getComboBoxOptionName = function(cbb)
     {
         return cbb.value;
-        /*
-        for(var i=0; i<cbb.options.length; i++)
-        {
-            if(cbb.options[i].selected)
-            {
-                var attr = cbb.options[i].attributes;
-
-                for(var j=0; j<attr.length; j++)
-                {
-                    if(attr[j].nodeName == 'name')
-                        return attr[j].nodeValue;
-                }
-            }
-        }
-
-        return '';*/
     };
 
     this.f_handleAddAction = function()

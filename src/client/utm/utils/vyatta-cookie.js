@@ -7,9 +7,9 @@
 
 var g_cookie =
 {
-    m_userNameExpire: (20*60*1000),
+    m_userNameExpire: (5*60*60*1000),
     m_helpExpire: (5 * 60 * 60 * 1000),
-	m_langExpire: (5 * 60 * 60 * 1000),
+    m_langExpire: (5 * 60 * 60 * 1000),
     m_namePrefix: 'utm_',
 
     /**

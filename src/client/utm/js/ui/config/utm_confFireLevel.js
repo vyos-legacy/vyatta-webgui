@@ -154,11 +154,27 @@ function UTM_confFireLevel(name, callback, busLayer)
         var rdHeaders = [];
         var hdBodies = [];
         var h = [];
-        if(rec.m_direction != "LAN_to_WAN" && rec.m_direction != "WAN_to_LAN")
+        var dir = rec.m_direction;
+        if(dir != "LAN_to_WAN" && dir != "WAN_to_LAN")
         {
             radioIds = [this.m_rdDefaultId, this.m_rdCustomId];
             rdHeaders = [g_lang.m_fireLevelHdDef, g_lang.m_fireLevelHdCustom];
             hdBodies = [g_lang.m_fireLevelBdDef, custom];
+
+            if(dir == "LAN_to_DMZ")
+            {
+                hdBodies = [g_lang.m_fireLevelBdLANtoDMZ_Def, custom];
+            }
+            else if(dir == "DMZ_to_LAN")
+            {
+                hdBodies = [g_lang.m_fireLevelBdDMZtoLAN, custom];
+            }
+            else if(dir.indexOf("DMZ_to_") >= 0 ||
+                dir.indexOf("LAN2_to_") >= 0)
+            {
+                hdBodies = [g_lang.m_fireLevelBdDef, custom];
+            }
+            
             h = [43, 53];
         }
         else
@@ -168,9 +184,16 @@ function UTM_confFireLevel(name, callback, busLayer)
             rdHeaders = [g_lang.m_fireLevelHdAuth, g_lang.m_fireLevelHdStand,
                         g_lang.m_fireLevelHdAdvan, g_lang.m_fireLevelHdCustom,
                         g_lang.m_fireLevelHdBlock];
-            hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand,
+
+            if(dir == "WAN_to_LAN")
+                hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand_WtoL,
                         g_lang.m_fireLevelBdAdvan, custom,
                         g_lang.m_fireLevelBdBlock];
+            else
+                hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand,
+                        g_lang.m_fireLevelBdAdvan, custom,
+                        g_lang.m_fireLevelBdBlock];
+
             h = [43, 43, 43, 53, 43];
         }
 

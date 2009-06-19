@@ -61,7 +61,7 @@ function UTM_confUrlEzByUrl(name, callback, busLayer)
         var addBtn = [['AddInner', this.m_eventCbFunction + "('" + this.m_btnAddId + "')", g_lang.m_tooltip_add, this.m_btnAddId]];
         this.m_addButton = this.f_createInnerButtons(addBtn, '790px');
 		        
-        var btns = [['Back', this.m_eventCbFunction + "('" + this.m_btnBackId + "')", g_lang.m_tooltip_back, this.m_btnBackId, g_lang.m_imageDir + 'bt_back.png', 'left'], ['Apply', this.m_eventCbFunction + "('" + this.m_btnApplyId + "')", g_lang.m_tooltip_apply, this.m_btnApplyId, g_lang.m_imageDir + 'bt_apply.gif', 'right'], ['Cancel', this.m_eventCbFunction + "('" + this.m_btnCancelId + "')", g_lang.m_tooltip_cancel, this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif', 'right']]
+        var btns = [['Back', this.m_eventCbFunction + "('" + this.m_btnBackId + "')", g_lang.m_tooltip_back, this.m_btnBackId, g_lang.m_imageDir + 'bt_back.gif', 'left'], ['Apply', this.m_eventCbFunction + "('" + this.m_btnApplyId + "')", g_lang.m_tooltip_apply, this.m_btnApplyId, g_lang.m_imageDir + 'bt_apply.gif', 'right'], ['Cancel', this.m_eventCbFunction + "('" + this.m_btnCancelId + "')", g_lang.m_tooltip_cancel, this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif', 'right']]
         this.m_buttons = this.f_createLRButtons(btns, '790px');
         
         return [this.f_headerText(), this.m_header, this.m_body, this.m_addButton, this.m_buttons];

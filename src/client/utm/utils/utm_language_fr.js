@@ -1,288 +1,317 @@
-/*
-    Document   : utm_language_fr.js
-    Created on : Mar 23, 2009, 2:18:11 PM
-    Author     : Kevin.Choi
-    Description:
+/*;;;
+    Document   ; utm_language_en.js;;
+    Created on ; Mar 23, 2009, 2;18;11:00 PM
+    Author     ; Kevin.Choi;;
+    Description;;;
 */
 
 var g_lang =
 {
-    ///////////////////////////////////////////////////////////////////
-    // Menu
-    m_menu_dashboard : "dashboard",
-    m_menu_des_dashboard: "Dashboard",
-    m_menu_firewall : "firewall",
-    m_menu_des_firewall : "Firewall",
-    m_menu_idp : "intrusion prevention",
-    m_menu_des_idp : "Intrustion prevention",
-    m_menu_avs : "anti-virus",
-    m_menu_des_avs: "Anti-virus",
-    m_menu_asp : "anti-spam",
-    m_menu_des_asp: "Anti-spam",
-    m_menu_webf : "web filtering",
-    m_menu_des_webf: "Web filtering",
-    m_menu_imp2p : "IM & P2P filtering",
-    m_menu_des_imp2p: "IM & P2P filtering",
-    m_menu_vpn : "VPN",
-    m_menu_des_vpn: "VPN",
-    m_menu_log : "logs",
-    m_menu_des_log : "Logs",
-    m_menu_zone_mgt : "zone management",
-    m_menu_des_zone_mgt: "Zone management",
-    m_menu_easy_mode : "easy mode",
-    m_menu_des_easy_mode : "Easy mode",
-    m_menu_expert_mode : "expert mode",
-    m_menu_des_expert_mode : "Expert mode",
-    m_menu_easy_filtering : "easy filtering",
-    m_menu_des_easy_filtering : "Easy filtering", 
-    m_menu_expert_filtering : "expert filtering",
-    m_menu_des_expert_filtering : "Expert filtering",    
-    m_menu_overview : "overview",
-    m_menu_des_overview : "Overview",
-    m_menu_s2s : "site to site",
-    m_menu_des_s2s: "Site to site",
-    m_menu_remote_users : "remote users",    
-    m_menu_des_remote_users: "Remote users",
-    m_menu_des_add_zone : "Add zone",
-    m_menu_des_update_zone: "Update zone",
-    m_menu_des_custom_firewall: "Customized firewall",
-    m_menu_des_authorized_urls : "Authorized URLs",
-    m_menu_des_ban_keyword : "Banned keywords in URL",
-	
-    ///////////////////////////////////////////////////////////////////
-    // Network configuration menu    
-    m_menu_lan_multi : "LAN / multi LAN",
+    ///////////////////////////////////////////////////////////////////;English;French;
+    // Menu;;;
+    m_menu_dashboard : "tableau de bord", 
+    m_menu_des_dashboard : "tableau de bord",
+    m_menu_firewall : "pare-feu", 
+    m_menu_des_firewall : "pare-feu", 
+    m_menu_idp : "prévention d'intrusion", 
+    m_menu_des_idp : "prévention d'intrusion", 
+    m_menu_avs : "anti-virus", 
+    m_menu_des_avs : "anti-virus", 
+    m_menu_asp : "anti-spam", 
+    m_menu_des_asp : "anti-spam", 
+    m_menu_webf : "filtrage web",
+    m_menu_des_webf: "filtrage web",
+    m_menu_imp2p : "filtrage MI & P2P",
+    m_menu_des_imp2p : "filtrage MI & P2P", 
+    m_menu_vpn : "VPN", 
+    m_menu_des_vpn : "VPN", 
+    m_menu_log : "logs", 
+    m_menu_des_log : "logs", 
+    m_menu_zone_mgt : "gestion des zones", 
+    m_menu_des_zone_mgt : "gestion des zones", 
+    m_menu_easy_mode : "mode facile", 
+    m_menu_des_easy_mode : "mode facile", 
+    m_menu_expert_mode : "mode expert", 
+    m_menu_des_expert_mode : "mode expert", 
+    m_menu_easy_filtering : "mode facile", 
+    m_menu_des_easy_filtering : "mode facile", 
+    m_menu_expert_filtering : "mode expert", 
+    m_menu_des_expert_filtering : "mode expert", 
+    m_menu_overview : "overview", 
+    m_menu_des_overview : "overview",
+    m_menu_s2s : "site à site", 
+    m_menu_des_s2s : "site à site", 
+    m_menu_remote_users : "utilisateurs nomades", 
+    m_menu_des_remote_users : "utilisateurs nomades", 
+    m_menu_des_add_zone : "ajouter une zone", 
+    m_menu_des_update_zone : "modifier une zone", 
+    m_menu_des_custom_firewall : "pare-feu personnalisé", 
+    m_menu_des_authorized_urls : "URLs autorisées", 
+    m_menu_des_ban_keyword : "mots interdits dans URL",
+
+    ///////////////////////////////////////////////////////////////////;;
+    // Network configuration menu    ;;
+    m_menu_lan_multi : "LAN / multi LAN", 
 	m_menu_lan : "LAN",
-	m_menu_lan2: "LAN2",
-	m_menu_dmz : "DMZ",
-	m_menu_nat_pat: "NAT/PAT",
-	m_menu_csc_router: "cascaded router",
-	m_menu_des_csc_router: "Cascaded router",	
-	m_menu_dns : "DNS",
-			
-    ///////////////////////////////////////////////////////////////////
-    // Dash board screen
-	
-    ////////////////////////////////////////////////////////////////////
-    // common
-    m_tableTooltip1 : 'Click here to perform sorting.',
-    m_name : 'Name',
-    m_enabled : 'Enable',
-    m_delete : 'Delete',
-    m_group : 'Group',
-    m_username : 'User Name',
-    m_status : 'Status',
-    m_ipAddr : 'IP Address',
-    m_underConstruction : 'Travaux en cours',
-    m_applyTip : "Save changed",
-    m_cancelTip : "Cancel changed",
-    m_confModify : "Configuration has been modified and not saved. Do you want to continue?",
-	
-    ///////////////////////////////////////////////////////////////////
-    // VPN Overview
-    m_vpnOVSource : 'Source',
-    m_vpnOVDest : 'Destination',
-    m_vpnOVPeerDomainName : 'Peer Address /Domain name',
-    m_vpnOVConfNode : 'Configuration Node',
-    m_vpnOVLocal : 'Local',
-    m_vpnOVS2S : 'Site to site connections',
-    m_vpnOVRemote : 'Remote Users',
+	m_menu_lan2 : "LAN2", 
+	m_menu_dmz : "DMZ", 
+	m_menu_nat_pat : "NAT/PAT", 
+	m_menu_csc_router : "routeur cascadé", 
+	m_menu_des_csc_router : "routeur cascadé", 
+	m_menu_dns : "DNS", 
+    m_menu_port_config : "paramétrage des ports", 
+	m_menu_des_port_config : "paramétrage des ports", 
 
-    ///////////////////////////////////////////////////////////////////
-    // VPN RemoteUser View
-    m_vpnRemoteviewHeader : "This page enables you to configure a Virtual " +
-        "Private Network (VPN) Server to connect remote users.",
-			
-    ///////////////////////////////////////////////////////////////////
-    // VPN General
-    m_vpn_BasicSettings : "Basic settings",
-	m_vpn_auth: "Authentication",
-	m_vpn_TunnelSettings: "Tunnel Settings",
-	m_vpn_TunnelConfigMode: "Tunnel Configuration Mode",
-	m_vpn_PresharedKey : "Preshared Key",
-	m_vpn_Confirm: "Confirm",	
-    m_vpn_IKEnegPhase1 : "IKE Negotiation (Phase 1)",	
-    m_vpn_IKE_p1_proto : "Type/Protocol",	
-    m_vpn_IKE_p1_ex_mode : "Exchange Mode",	
-    m_vpn_Encrypt : "Encryption",	
-    m_vpn_Diffle : "Diffle Hellmann Group",		
-    m_vpn_LifeTime : "Life Time (n seconds)",				
-    m_vpn_IKEphase2 : "IKE (Phase 2)",		
-	m_vpn_LocalNetwork: "Local Network",
-	m_vpn_RemoteNetwork: "Remote Network",	
-	m_vpn_EZ : "Easy",
-	m_vpn_Expert: "Expert",
-    m_vpn_DFS : "DFS Group",		
-	m_vpn_Users : "Users",
+    ///////////////////////////////////////////////////////////////////;;
+    // Dash board screen;;
 
-    ///////////////////////////////////////////////////////////////////
-    // Firewall Security Level
-    m_fireActiveHeader : "Active Zone Table",
-    m_fireLevelColName : "Security Level",
-    m_fireLevelColSelect : "Select",
-    m_fireLevelColDir : "Direction",
-    m_fireLevelColFrom : "From",
-    m_fireLevelColTo : "To",
-    m_fireLevelHdDef : "Default",
-    m_fireLevelBdDef : "All traffic blocked",
-    m_fireLevelHdAuth : "Authorize All",
-    m_fireLevelBdAuth : "Firewall functionality is disabled. All incoming and outgoing traffic is authorized.",
-    m_fireLevelHdStand : "Standard",
-    m_fireLevelBdStand : "All incoming traffic blocked/outgoing traffic allowed except Netbios.",
-    m_fireLevelHdAdvan : "Advanced",
-    m_fireLevelBdAdvan : "All incoming and outgoing traffic blocked except those involving internet browsing and email.",
-    m_fireLevelHdCustom : "Customized",
-    m_fireLevelBdCustom : "Customisation of Advanced Profile.",
-    m_fireLevelHdBlock : "Block All",
-    m_fireLevelBdBlock : "The access to internet is blocked all users.",
-    m_fireLevelCustConfTip : "Configure customize security",
-    m_fireLevelApplyTip : "Save changed",
-    m_fireLevelCancelTip : "Cancel changed",
+    ////////////////////////////////////////////////////////////////////;;
+    // common;;
+    m_tableTooltip1 : "cliquez ici pour trier", 
+    m_name : "nom", 
+    m_enabled : "activer",
+    m_delete : "supprimer",
+    m_group : "groupe",
+    m_username : "utilisateur",
+    m_status : "statut",
+    m_ipAddr : "adresse IP", 
+    m_underConstruction : "en construction",
+    m_applyTip : "sauvegarder les modifications",
+    m_cancelTip : "annuler les modifications", 
+    m_confModify : "les modifications effectuées n'ont pas été sauvegardées. Voulez-vous continuer ?",
+
+    ///////////////////////////////////////////////////////////////////;;
+    // VPN Overview;;
+    m_vpnOVSource : 'source',
+    m_vpnOVDest : 'destination',
+    m_vpnOVPeerDomainName : "adresse du site distant / nom de domaine",
+    m_vpnOVConfNode : 'mode de configuration',
+    m_vpnOVLocal : 'local',
+    m_vpnOVS2S : "connexions site à site",
+    m_vpnOVRemote : "utilisateurs nomades",
+
+    ///////////////////////////////////////////////////////////////////;;
+    // VPN RemoteUser View;;
+    m_vpnRemoteviewHeader : "Cette page vous permet de configurer un serveur VPN pour connecter des utilisateurs nomades",
+
+    ///////////////////////////////////////////////////////////////////;;
+    // Firewall Security Level;;
+    m_fireLevelColName : "niveaux de sécurité",
+    m_fireLevelColSelect : "sélectionner", 
+    m_fireLevelColDir : "direction", 
+    m_fireLevelColFrom : "de",
+    m_fireLevelColTo : "vers",
+    m_fireLevelHdAuth : "faible", 
+    m_fireLevelBdAuth : "Le pare-feu est désactivé. Tout trafic sortant est autorisé", 
+    m_fireLevelHdStand : "moyen", 
+    m_fireLevelBdStand : "Tout trafic sortant est autorisé, excepté les services Netbios",
+    m_fireLevelHdAdvan : "élevé", 
+    m_fireLevelBdAdvan : "seuls les services Web et mail sont autorisés depuis votre réseau local",
+    m_fireLevelHdCustom : "personnalisé",
+    m_fireLevelBdCustom : "personnalisation du profil élevé",
+    m_fireLevelHdBlock : "bloquer tout", 
+    m_fireLevelBdBlock : "l'accès internet est bloqué à tout utilisateur", 
+    m_fireLevelCustConfTip : "personnaliser votre niveau de sécurité", 
+    m_fireLevelApplyTip : "sauvegarder les modifications", 
+    m_fireLevelCancelTip : "annuler les modifications", 
+
+    ///////////////////////////////////////////////////////////////////;;
+    // Firewall Zone Management;;
+    m_fireZMAddTip : "créer une nouvelle zone",
+    m_fireZMApplyTip : "sauvegarder les modifications",
+    m_fireZMZoneName : "nom de la zone", 
+    m_fireZMMember : "membres de la zone", 
+    m_fireZMMemIncluded : "inclus", 
+    m_fireZMMemAvail : "disponible", 
+    m_fireZMDesc : "description",
+    m_fireZMEnable : "activer", 
+    m_fireZMMemIncTip : "Double cliquer sur l'élément sélectionné pour l'enlever de la zone", 
+    m_fireZMMemAvailTip : "Double cliquer sur l'élément sélectionné pour l'inclure dans la zone", 
+    m_fireZMMemError : "le champ membre(s) ne peut pas rester vide. Veuillez au moins en sélectionner un.", 
+    m_fireZMNameError : "le champ nom de la zone ne peut rester vide.",
+
+    ///////////////////////////////////////////////////////////////////;;
+    // Firewall Security Customize Level;;
+    m_fireDeleteConfirm : "Etes-vous sûr de vouloir supprimer cette règle ?",
+    m_fireCustDeleteConfirmHeader : "supprimer",
+    m_discardConfirm : "Vous aller effacer toutes les modifications effectuées. Etes vous sûr de vouloir annuler ?", 
+    m_fireCustDiscardConfirmHeader : "Effacer tous les changements?", 
+    m_fireResetConfirm : "Vous allez recharger ",
+    m_fireCustResetConfirmHeader : "Reset Customize Rules", 
+    m_fireCustSubHeader : "règles spécifiques", 
+    m_fireCustDirection : "direction", 
+    m_fireCustAppService : "application<br>/service",
+    m_fireCustProtocol : "protocole", 
+    m_fireCustSrcIpAddr : "adresse IP d'origine", 
+    m_fireCustSrcMaskIpAddr : "masque d'origine", 
+    m_fireCustSrcPort : "port d'origine<small><br>port or<br>plage<br>(200-300)</small>", 
+    m_fireCustDestIpAddr : "adresse IP de destination", 
+    m_fireCustDestMaskIpAddr : "masque de destination", 
+    m_fireCustDestPort: "port de destination<small><br>port or<br>plage<br>(200-300)</small>", 
+    m_fireCustInternIpAddr : "internal IP<br>Address<small><br>Single IP or an IP<br>range</small>", 
+    m_fireCustInternPort : "internal<br>port<small><br>Enter single<br>port number <br>or port range<br>(200-300)</small>",
+    m_fireCustAction : "action", 
+    m_fireCustLog : "log",
+    m_fireCustOrder : "ordre", 
+    m_fireCustEnable : "activer", 
+    m_fireCustDelete : "supprimer",
+    m_fireCustRuleOption  : "Affichage des règles par direction", 
+    m_fireCustApplyTip : "sauvegarder les modifications", 
+    m_fireCustCancelTip : "annuler les modifications", 
+    m_fireCustResetTip : "réinitialiser", 
+    m_fireCustBackTip : "retour à la page précédente", 
+    m_fireCustAddTip : "ajouter une nouvelle règle",
+
+    ////////////////////////////////////////////////////////////////////;;
+    // network configuration NAT/PAT;;
+    m_nwNatPatHeader :  "Cette page vous permet de paramétrer des règles de NAT/PAT."  + 
+                        "Saisir un numéro de port unique ou une plage de ports (ex: 200-300)" + 
+                        "Assurez-vous de ne pas avoir filtré ces ports dans le pare-feu.",
+
+    ////////////////////////////////////////////////////////////////////;;
+    // network configuration Routing;;
+    m_nwRoutHeader : "Cette page vous permet de configurer une table de routage statique.",
+    m_nwRoutDestNetwork : "réseau de destination",
+    m_nwRoutDestNwMask : "masque du réseau de destination", 
+    m_nwRoutConf : "configurer l'option", 
+    m_nwRoutGwInterface : "interface de<br>l'Open Appliance", 
+    m_nwRoutMetric : "métrique",
 
 
-    ///////////////////////////////////////////////////////////////////
-    // Firewall Security Customize Level
-    m_fireDeleteConfirm : "Are you sure you want to delete this rule?",
-    m_fireCustDeleteConfirmHeader : "Delete Customize Rule",
-    m_discardConfirm : "This action will discard all your changes. Are you sure you still want to cancel?",
-    m_fireCustDiscardConfirmHeader : "Cancel All Changes",
-    m_fireResetConfirm : "This action will reload rules from default profile. Are you sure you still want to reset?",
-    m_fireCustResetConfirmHeader : "Reset Customize Rules",
-    m_fireCustSubHeader : "Specific Rules",
-    m_fireCustDirection : "Direction",
-    m_fireCustAppService : "Application<br>/Service",
-    m_fireCustProtocol : "Protocol",
-    m_fireCustSrcIpAddr : "Source IP<br> address",
-    m_fireCustSrcMaskIpAddr : "Source mask IP<br>address",
-    m_fireCustSrcPort : "Source port<small><br>Enter single<br>port number or<br>port range<br>(200-300)</small>",
-    m_fireCustDestIpAddr : "Destination IP<br>address",
-    m_fireCustDestMaskIpAddr : "Destination mask<br>IP address",
-    m_fireCustDestPort : "Destination<br>port<small><br>Enter single<br>port number <br>or port range<br>(200-300)</small>",
-    m_fireCustAction : "Action",
-    m_fireCustLog : "Log",
-    m_fireCustOrder : "Order",
-    m_fireCustEnable : "Enable",
-    m_fireCustDelete : "Delete",
-    m_fireCustRuleOption : "Show rules only from",
-    m_fireCustApplyTip : "Save all changed",
-    m_fireCustCancelTip : "Cancel all changed",
-    m_fireCustResetTip : "Reset to default",
-    m_fireCustBackTip : "Back to Firewall Level screen",
-    m_fireCustAddTip : "Add a new rule",
-    m_fireCustLogEnabled : "Log is enabled",
-    m_fireCustEnableEnabled : "Enable field is enabled",
-    m_fireCustDeleteNotAllow : "Delete is not allowed",
+    ///////////////////////////////////////////////////////////////////;;
+    // VPN General;;
+    m_vpn_BasicSettings : "paramètres de base", 
+	m_vpn_auth : "authentification", 
+	m_vpn_TunnelSettings : "paramètres du tunnel", 
+	m_vpn_TunnelConfigMode : "mode de configuration",
+	m_vpn_PresharedKey : "clef partagée", 
+	m_vpn_Confirm : "confirmer", 
+    m_vpn_IKEnegPhase1 : "négociation IKE (Phase 1)",
+    m_vpn_IKE_p1_proto : "type/protocole", 
+    m_vpn_IKE_p1_ex_mode : "mode d'échange",
+    m_vpn_Encrypt : "cryptage", 
+    m_vpn_Diffle : "groupe Diffie Hellmann", 
+    m_vpn_LifeTime : "durée de vie (en secondes)", 
+    m_vpn_IKEphase2 : "IKE (Phase 2)", 
+	m_vpn_LocalNetwork : "réseau local", 
+	m_vpn_RemoteNetwork : "réseau distant",
+	m_vpn_EZ : "facile",
+	m_vpn_Expert : "expert",
+    m_vpn_DFS : "groupe DFS",
+	m_vpn_Users : "utilisateurs",
 
-    ///////////////////////////////////////////////////////////////////
-    // VPN Site 2 Site
-    m_vpnS2S_VpnConSettings : "VPN Connection setttings",
+    ///////////////////////////////////////////////////////////////////;;
+    // VPN Site 2 Site;;
+    m_vpnS2S_VpnConSettings : "paramètres de connexion VPN", 
 
-    m_vpnS2S_TunnelName : "Tunnel Name",	
-	m_vpnS2S_DomainName : "Peer IP Address / Domain Name",	
-	m_vpnS2S_RemoteVPNdevice : "Remote site VPN device",
-		
-    ///////////////////////////////////////////////////////////////////
-    // VPN Remote User Group
-    m_vpnRUG_GroupSettings : "Group setttings",	
-    m_vpnRUG_ProfileName : "Profile Name",		
-    m_vpnRUG_VPNsoft : "VPN software",			
-    m_vpnRUG_UsrSettings : "User setttings",		
-    m_vpnRUG_IPAlloc : "IP Allocation",	
-    m_vpnRUG_InternetAccess : "Internet Access",	
-		
-    ///////////////////////////////////////////////////////////////////
-    // VPN Remote User Add
-    m_vpnRUadd_RemoteUserSettings : "Remote user setttings",		
-    m_vpnRUadd_UserName : "User Name",	
-    m_vpnRUadd_UserPasswd : "User Password",	
-    m_vpnRUadd_VPNGroup : "VPN Group",			
-	
-    ///////////////////////////////////////////////////////////////////
-    // URL Filtering
-    m_url_ezByCat : "by categories",		
-    m_url_ezLegal : "legal",	
-    m_url_ezProf : "professional",	
-    m_url_ezStrict : "strict",
-    m_url_ezByUrl : "by authorized URLs",		
-    m_url_ezByWord : "by banned words in URLs",	
-    m_url_ezFilterPolicy : "Filtering policy",	
-    m_url_ezFilterPolicyImp : "Filtering policy implementation",	
-    m_url_ezDay : "Day",	
-    m_url_ezDayArray : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-    m_url_ezTime : "Time",	
-    m_url_ezAlways : "Always",			
-    m_url_ezOn : "ON",	
-	m_url_ezOff : "OFF",			
-	m_url_ezWebSiteAddress : "Web sites' addresses",
-    m_url_ezBannedKeywordInUrl : "Banned keywords in URL",	
-    m_url_ezDeleteConfirm : "Are you sure you want to delete this row?",	
-	m_url_ezPolicyDisableConfirm : "You have not selected any filtering policy options.  Are you sure you want to leave it unconfigured?",
-	m_url_ezBLsubUnSelected : "Please select at least one category: legal, professional, or strict",	
-	m_url_ezConfigureWL : "Configure authorized URLs",
-	m_url_ezConfigureKeyword: "Configure banned words in URLs",	
-	m_url_expertSubscribeP1: "This mode is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
-	                         "It enables you to:",
-	m_url_expertSubscribeListItem1: "benefit from enriched URLs categories you can also customize.",
-	m_url_expertSubscribeListItem2: "assign a specific filtering policy per user group",
-	m_url_expertSubscribeListItem3: "combine the different filtering functions proposed (category/ authorized URLs/ banned keywords).",
-	m_url_expertSubscribeP2: "To get this service, please press the button \"subscribe\" hereunder.",	
+    m_vpnS2S_TunnelName : "nom du tunnel", 
+	m_vpnS2S_DomainName : "adresse du site distant / nom de domaine", 
+	m_vpnS2S_RemoteVPNdevice : "équipement VPN du site distant", 
+
+    ///////////////////////////////////////////////////////////////////;;
+    // VPN Remote User Group;;
+    m_vpnRUG_GroupSettings : "paramètres du groupe", 
+    m_vpnRUG_ProfileName : "nom du groupe", 
+    m_vpnRUG_VPNsoft : "logiciel VPN", 
+    m_vpnRUG_UsrSettings : "paramètres utilisateurs", 
+    m_vpnRUG_IPAlloc : "attribution d'adresses IP", 
+    m_vpnRUG_InternetAccess : "accès internet",
+
+    ///////////////////////////////////////////////////////////////////;;
+    // VPN Remote User Add;;
+    m_vpnRUadd_RemoteUserSettings : "paramètres utilisateur nomade",
+    m_vpnRUadd_UserName : "nom d'utilisateur",
+    m_vpnRUadd_UserPasswd : "mot de passe d'utilisateur ",
+    m_vpnRUadd_VPNGroup : "groupe VPN",
 
 	///////////////////////////////////////////////////////////////////
-    // IDS/IPS
-	m_ids_Subscribe: "This mode is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
-	                         "It enables you to benefit from a larger database of IDS/ IPS signatures that you can also customize.<br/><br/>" +
-							 "To get this service, please press the button \"subscribe\" hereunder.",
-    m_ids_ezEnable: "Enable Instrusion Prevention",								 
-							 
-	///////////////////////////////////////////////////////////////////
-    // Anti-virus
-	m_avs_Subscribe: "Anti-Virus protection (for user devices and servers) is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
-					 "To get this service, please press the button \"subscribe\" hereunder.",
+    // URL Filtering;;
+    m_url_ezByCat : "par catégorie", 
+    m_url_ezLegal : "légale",
+    m_url_ezProf : "professionnelle",
+    m_url_ezStrict : "stricte", 
+    m_url_ezByUrl : "par URLs autorisées",
+    m_url_ezByWord : "par mots interdits dans les URLs",
+    m_url_ezFilterPolicy : "politique de filtrage",
+    m_url_ezFilterPolicyImp : "application de la politique de filtrage",
+    m_url_ezDay : "jour",
+    m_url_ezDayArray: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
+    m_url_ezTime : "plage horaire", 
+    m_url_ezAlways : "filtrage", 
+    m_url_ezOn : "activé", 
+	m_url_ezOff : "désactivé", 
+	m_url_ezWebSiteAddress : "adresses de sites web", 
+    m_url_ezBannedKeywordInUrl : "mots interdits dans URLs", 
+	m_url_expertSubscribeP1 : "Ce mode est seulement disponible avec la brique de service UTM Orange fournie par Netasq.<br/><br/>" + 
+	                          "Cette mode vous permettra de :",
+    m_url_ezDeleteConfirm : "Etes-vous sûr de vouloir supprimer cette ligne?", 
+    m_url_ezPolicyDisableConfirm : "Vous n'avez sélectionner aucune option de politique de filtrage. Etes-vous sûr de ne pas vouloir paramétrer cette fonction ?", 
+	m_url_ezBLsubUnSelected : "Merci de bien vouloir sélectionner au moins une catégorie",
+	m_url_ezConfigureWL : "Paramétrer les URLs autorisées", 
+	m_url_ezConfigureKeyword : "Paramétrer les mots interdits dans les URLs",
 
-	///////////////////////////////////////////////////////////////////
-    // Anti-spam
-	m_asm_Subscribe: "Anti-Spam protection (for user devices and servers) is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
-					 "To get this service, please press the button \"subscribe\" hereunder.",
+	m_url_expertSubscribeListItem1 : "bénéficier de catégories d'URL enrichies que vous pouvez aussi personnaliser.",
+	m_url_expertSubscribeListItem2 : "appliquer une politique de filtrage spécifique par groupe d'utilisateurs",
+	m_url_expertSubscribeListItem3 : "combiner les différentes fonctions de filtrage proposées (catégories / URLs autorisées / mots interdits).",
+	m_url_expertSubscribeP2 : "Pour obtenir ces services avancés, veuillez cliquer sur le bouton \"souscrire\" ci-dessous.",
 
-	///////////////////////////////////////////////////////////////////
-    // IM&P2P filtering
-	m_imp2p_Subscribe: "Instant Messaging & Peer to Peer application filtering is only available with Orange UTM brick powered by Netasq.<br/><br/>" +
-					 "To get this service, please press the button \"subscribe\" hereunder.",							 
+	///////////////////////////////////////////////////////////////////";;
+    // IDS/IPS;;
+	m_ids_Subscribe : "Ce mode est seulement disponible avec la brique de service UTM Orange fournie par Netasq.<br/><br/>" +
+	                  "Cette mode vous permettra de bénéficier d'une base de signatures IDS /IPS enrichie que vous pourrez aussi personnaliser.<br/><br/>",
 
-	///////////////////////////////////////////////////////////////////
-    // DNS
-	m_dns_setServer : "Set DNS server",
-    m_dns_autoDhcp : "Automatically via DHCP",
-	m_dns_manual: "Manually",
-	m_dns: "DNS",
-	m_dns_Primary: "Primary",
-	m_dns_Secondary: "Secondary",
-	m_dns_header: "This page enables you to configure DNS servers",
-		
-    ///////////////////////////////////////////////////////////////////
-    // Port config
-    m_portconf_port : "Ports",
+    m_ids_ezEnable : "Pour obtenir ces services avancés, veuillez cliquer sur le bouton \"souscrire\" ci-dessous.",
+
+	///////////////////////////////////////////////////////////////////";;
+    // Anti-virus;;
+	m_avs_Subscribe : "La protection anti-virus (pour PCs / ordinateurs portables et serveurs)  est seulement disponible avec la brique de service UTM Orange fournie par Netasq.<br/><br/>" + 
+					  "Pour obtenir cette protection, veuillez cliquer sur le bouton \"souscrire\" ci-dessous.",
+
+	///////////////////////////////////////////////////////////////////";;
+    // Anti-spam;;
+	m_asm_Subscribe : "La protection anti-spam (pour PCs / ordinateurs portables et serveurs)  est seulement disponible avec la brique de service UTM Orange fournie par Netasq.<br/><br/>" + 
+					  "Pour obtenir cette protection, veuillez cliquer sur le bouton \"souscrire\" ci-dessous.",
+
+	///////////////////////////////////////////////////////////////////";;
+    // IM&P2P filtering;;
+	m_imp2p_Subscribe : "Le filtrage messageries instantanées et applications peer to peer est seulement disponible avec la brique de service UTM Orange fournie par Netasq.<br/><br/>" +
+					    "Pour obtenir ces services avancés, veuillez cliquer sur le bouton \"souscrire\" ci-dessous.",
+
+    ///////////////////////////////////////////////////////////////////;;
+    // DNS;;
+       m_dns_setServer : "Set DNS server",
+       m_dns_autoDhcp : "automatically via DHCP", 
+       m_dns_manual : "manually", 
+       m_dns : "DNS", 
+       m_dns_Primary : "primary", 
+       m_dns_Secondary : "secondary", 
+       m_dns_header : "This page enables you to configure DNS servers",
+
+    ///////////////////////////////////////////////////////////////////;;
+    // Port config;;
+    m_portconf_port : "Ports", 
     m_portconf_LAN : "LAN",
-    m_portconf_LAN2: "LAN2",
-    m_portconf_DMZ: "DMZ",
-    m_portconf_WAN: "WAN",
+    m_portconf_LAN2 : "LAN2",
+    m_portconf_DMZ : "DMZ",
+    m_portconf_WAN : "WAN",
 	m_portconf_attach: "Affectation des ports",
 	m_portconf_interface: "interface",
-								
-    ///////////////////////////////////////////////////////////////////
-    // Buttons and Images
+	
+    ///////////////////////////////////////////////////////////////////;;
+    // Buttons and Images;;
     m_imageDir : 'images/fr/',
-	m_ok: 'ok',
-	m_error: 'Erreur',
-	m_info: 'Information',
-	m_subscribe: 'Subscribe',	
-	m_tooltip_cancel : "Reset current form",
-	m_tooltip_apply: "Apply changes",
-	m_tooltip_add: "Add a new row",
-	m_tooltip_delete: "Delete a row",
-	m_tooltip_back: "Go back to previous screen",		
-    m_remindSaveChange : 'You changes have not been saved.  Would you like to save it?',			
-    /////////////////////////////////////////
-    // plesae do not edit beyound dummy
+	m_ok : 'ok',
+	m_error : 'erreur',
+	m_info : 'information',
+	m_subscribe : 'Souscrire',
+	m_tooltip_cancel : "supprimer les modifications", 
+	m_tooltip_apply : "sauvegarder les modifications",
+	m_tooltip_add : "ajouter une nouvelle ligne",
+	m_tooltip_delete : "supprimer une ligne", 
+	m_tooltip_back: "revenir à l'écran précédent",
+    m_remindSaveChange : "Vos modifications n'ont pas été sauvegardées. Voulez-vous les sauvegarder maintenant ?",
+
+    /////////////////////////////////////////;
+    // plesae do not edit beyound dummy;
     dummy : ''
-}
+};

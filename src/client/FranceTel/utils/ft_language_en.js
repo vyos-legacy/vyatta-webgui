@@ -22,9 +22,9 @@ var g_lang =
 	m_mainUserName: 'user name',
 	m_mainPassword: 'password',
 	m_mainWarning: '<p>if you have no username and password, contact your Customer Service Center<br/>' +
-                   'Warning : to connect to the Open Appliance program, your browser must accept pop-ups and cookies</p>',
+                   'Warning : to connect to the Open Appliance program your browser must accept pop-ups and cookies</p>',
 	m_mainBLBWarning: '<p>if you have no username and password, contact your Customer Service Center<br/>' +
-                   'Warning: to connect to the Business Livebox configuration program, your browser must accept pop-ups and cookies</p>',
+                   'Warning: to connect to the Business Livebox configuration program your browser must accept pop-ups and cookies</p>',
 	m_mainWelcome: 'welcome',
 	m_mainPleaseSignIn: 'please sign in to the Open Appliance admin service',
 	m_menuApp: 'applications',
@@ -131,7 +131,7 @@ var g_lang =
     m_dbUpdateNeeded : 'update needed',
     m_dbTooltipUpdateNeed : 'version to be updated - ',
     m_dbTooltipCancel : 'reset selection',
-    m_dbTooltipUpdate : 'update selected VM(s)',
+    m_dbTooltipUpdate : 'update selected applicationss',
     m_dbUsed : "used",
     m_dbTotal : "total",
     m_dbFree : "free",
@@ -144,7 +144,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // VM Update & History screen
     m_uhHdDate : "date",
-    m_uhHdWho : 'backup By',
+    m_uhHdWho : 'backup by',
     m_uhErrorTitle : "update error",
     m_uhCancelTitle : 'cancel update schedule',
 
@@ -154,7 +154,7 @@ var g_lang =
 	m_resUpdateCurVer: "current version",
 	m_resUpdatePrevVer: "previous version",
 	m_resUpdateFail: "restore failed:",
-        m_resUploadCompleted: "upload files has completed.",
+    m_resUploadCompleted: "upload files has completed.",
 
     ///////////////////////////////////////////////////////////////////
     // VM Schedule Update
@@ -203,7 +203,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // User Add screen
     m_userUsername: "username",
-	m_userSurname: "name",
+	m_userSurname: "last name",
 	m_userGivenName: "first name",
 	m_userEmail: "email",
     m_userUsernameInvalidCharacter: "User name can only contain alpha numeric characters",
@@ -285,8 +285,8 @@ var g_lang =
 	m_myprofNewPasswd : "new password",
 	m_myprofConfirmPasswd : "confirm password",
 	m_myprofNPWnotCPW : "New password does not match confirm password",
-	m_myprofPasswdRestSucessful: "Password reset successfully",
-	m_myprofResetPasswdDone: "Reset password completed",
+	m_myprofPasswdRestSucessful: "password reset successfully",
+	m_myprofResetPasswdDone: "reset password completed",
 
     ///////////////////////////////////////////////////////////////////
     // Backup configuration
@@ -314,7 +314,7 @@ var g_lang =
     m_restoreHdDownload : 'download',
     m_restoreClickRestore : 'click here to restore',
     m_restoreArchive : 'restore backup archive',
-    m_restoreDelTitle : 'delete Backup Archive File',
+    m_restoreDelTitle : 'delete backup archive file',
     m_restoreDel : 'delete backup archive',
     m_restoreDlConfirm : 'Are you sure you want to download the following backup file',
     m_restoreDownload : "download backup archive",

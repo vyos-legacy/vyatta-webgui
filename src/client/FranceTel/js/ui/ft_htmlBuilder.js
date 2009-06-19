@@ -35,7 +35,7 @@ function FT_htmlBuilder()
 	
 	this.f_initLogout = function()
 	{
-		 var html = '<img border="0" src="images/en/puce_simple.gif">&nbsp;log out';
+		 var html = '<img border="0" src="images/en/puce_simple.gif">&nbsp;' + g_lang.m_mainLogout;
 		 var el = document.getElementById('logoff');
 		 el.innerHTML = html;		
 	}

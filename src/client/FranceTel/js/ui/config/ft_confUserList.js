@@ -101,7 +101,7 @@ function FT_confUserList(name, callback, busLayer)
             var anchor = thisObj.f_renderAnchor(ul[1],
                     "f_userListEditUser('" + ul[1] + "')",
                     g_lang.m_ulClick2Edit + " (" + ul[0] + ")");
-            var email = ul[2] != undefined ?
+            var email = ul[2] != undefined && ul[2].length > 3?
                     thisObj.f_renderAnchorHref(
                     '<img src="' + g_lang.m_imageDir + 'ico_mail.gif">',
                     "mailto:" + ul[2],

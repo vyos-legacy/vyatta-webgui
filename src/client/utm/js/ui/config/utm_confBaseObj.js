@@ -316,7 +316,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:10px;padding-left:10px;padding-bottom:5px" >' +
                     '<input type="image" src="' + g_lang.m_imageDir +
-                    'bt_add.PNG" ' + elId + ' name="' + btn[2]+'" ' +
+                    'bt_add.gif" ' + elId + ' name="' + btn[2]+'" ' +
                     'value="add" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -325,7 +325,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<input type="image" src="' + g_lang.m_imageDir +
-                    'bt_back.png" ' + elId + ' name="back" ' +
+                    'bt_back.gif" ' + elId + ' name="back" ' +
                     'value="back" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -343,7 +343,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<input type="image" src="' + g_lang.m_imageDir +
-                    'bt_add.PNG" ' + elId + ' name="' + btn[2]+'" ' +
+                    'bt_add.gif" ' + elId + ' name="' + btn[2]+'" ' +
                     'value="' + btn[2]+'" onclick="' + btn[1] +
                     '"></div></td>';
                 break;

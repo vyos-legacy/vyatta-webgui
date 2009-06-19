@@ -94,7 +94,7 @@ function UTM_confUrlEz(name, callback, busLayer)
                 v_type: 'html',
                 id: 'conf_url_ez_whitelist_config',
                 text: '<div title="' + g_lang.m_url_ezConfigureWL + '">' +
-				      '<input type="image" id="conf_url_ez_whitelist_config" src="' + g_lang.m_imageDir + 'bt_config.png">'
+				      '<input type="image" id="conf_url_ez_whitelist_config" src="' + g_lang.m_imageDir + 'bt_config.gif">'
 					  + '</div>',
                 v_end_row: 'true'
             }//,  EMPTY_ROW
@@ -108,7 +108,7 @@ function UTM_confUrlEz(name, callback, busLayer)
                 v_type: 'html',
                 id: 'conf_url_ez_keyword_config',
                 text: '<div title="' + g_lang.m_url_ezConfigureKeyword + '">' + 
-				      '<input type="image" id="conf_url_ez_keyword_config" src="' + g_lang.m_imageDir + 'bt_config.png">'
+				      '<input type="image" id="conf_url_ez_keyword_config" src="' + g_lang.m_imageDir + 'bt_config.gif">'
 					  + '</div>',
                 v_end_row: 'true'
             }, EMPTY_ROW, {

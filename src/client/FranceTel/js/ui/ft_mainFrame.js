@@ -153,9 +153,10 @@ function FT_mainFrame(){
 		        var lang = g_utils.f_getLanguage();
 		        if (lang == g_consObj.V_NOT_FOUND) {
 			        lang = g_consObj.V_LANG_EN;
-		        }
-				uriPath = vmRec.m_guiUri + 'utm_netconf_' + lang + '.html';																			
-			}
+		        }				
+				uriPath = vmRec.m_guiUri + 'utm_netconf_' + lang + '.html';	
+				vmRec.m_guiUri = vmRec.m_guiUri + 'utm_main_' + lang + '.html';
+			} 
 		}
 		if (bUtmIncluded) {
 		    thisObj.m_vmList[index].m_guiUri = uriPath;	

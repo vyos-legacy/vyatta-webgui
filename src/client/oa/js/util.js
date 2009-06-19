@@ -9,3 +9,11 @@ function loadHelp(helpUrl) {
 
 	return false;
 }
+
+function resizeFrameHeight(pixel) {    
+    if ((window.parent != undefined) && (window.parent != null)) {
+        if (window.parent.f_resizeChildIframe != undefined) {
+            window.parent.f_resizeChildIframe(pixel);
+        }
+    }
+}

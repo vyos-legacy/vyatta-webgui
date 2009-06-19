@@ -5,379 +5,386 @@
     Description:
 */
 
+//Label;English;English corrected;French;Comments
+
 var g_lang =
 {
     ///////////////////////////////////////////////////////////////////
-    // General	
-	m_tableTooltip1 : "Cliquez ici pour faire le tri",
-    m_networkConfig : 'Network',
-	
-	m_mainLang : 'fr',
-    m_mainMap : 'map',	
+    // General
+    m_tableTooltip1 : "Cliquer ici pour effectuer un tri.",
+    m_networkConfig : "réseau",
+    m_mainLang : 'fr',    
+	m_mainMap : 'plan',
 	m_mainOA : 'Open Appliance',
 	m_mainEnglish : 'English',
-	m_mainFrench : 'Français',	
-	m_mainLogin : 'Login',
-	m_mainLogout: 'log out',
-	m_mainUserName: 'User name',
-	m_mainPassword: 'Password',
-	m_mainWarning: "<p>Si vous ne possédez pas de login et/ou de mot de passe, contacter votre Centre Service Client<br/>" +
-                   "Attention ! Pour pouvoir vous connecter au programme de configuration de l'Open Appliance, votre navigateur doit accepter les pop-up et cookies</p>",
-	m_mainBLBWarning: "<p>Si vous ne possédez pas de login et/ou de mot de passe, contacter votre Centre Service Client<br/>" +
-                   "Attention ! Pour pouvoir vous connecter au programme de configuration de la Business Livebox, votre navigateur doit accepter les pop-up et cookies</p>",				   
-	m_mainWelcome: 'Welcome',
-	m_mainPleaseSignIn: 'please sign in to the Open Appliance admin service',
-	m_menuApp: 'applications',
-	m_menuUsers: 'users',
-	m_menuMonitor: 'monitoring',
-	m_menuBackup: 'backup',
-	m_menuConfig: 'configuration',
-	m_menuMyProfile: 'my profile',
-	m_menuDashboard: 'dashboard',
-	m_menuUpdates: 'updates',
-	m_menuUpdatePlan: 'updates planning and history',
-	m_menuRestart: 'restart',
-	m_menuRestartApp: 'restart application or Open Appliance',
-	m_menuSubscribe: 'subscribe',
-	m_menuSubcription: 'subscription',
-	m_menuUserList: 'user list',
-	m_menuUserRight: 'user rights',
-	m_menuHardware : 'hardware',
-	m_menuHardwareMonitor: 'hardware monitor',
-	m_menuNetwork: 'network',
-	m_menuNetworkMonitor: 'network monitor',
-	m_menuConfigBackup: 'configuration backup',
-	m_menuConfigRestore: 'configuration restore',
-	m_menuEmailServer: 'email server',
-	m_menuEmailServerConfig: 'email server configuration',
-	m_menuTimeServer: 'time server',
-	m_menuTimerServerConfig: 'time server configuration',
-	m_menuUserDir: 'user directory',
-	m_menuLDAPConfig: 'LDAP server configuration',
-	m_menuBLBAssocication: 'BLB association',
-	m_menuPasswordPolicy: 'password policy',
-	m_menuAddUser: 'add user',
-	m_menuUpdateUser: 'update user',
-	m_menuUpdate: 'update',
-	m_menuRestore: 'restore',
-	m_menuRestoreDesc: 'configuration restore description',
-	m_menuBLBCredCheck: 'BLB credentials check',
-	m_menuContact: 'contact',
-	m_menuSitemap: 'site map',
-	m_menuCopyRight: 'Copyright France Telecom',
-	
-	m_menu_des_App: 'Applications',
-	m_menu_des_Users: 'Users',
-	m_menu_des_Monitor: 'Monitoring',
-	m_menu_des_Backup: 'Backup',
-	m_menu_des_Config: 'Configuration',
-	m_menu_des_MyProfile: 'My Profile',
-	m_menu_des_Dashboard: 'Dashboard',
-	m_menu_des_Updates: 'Updates',
-	m_menu_des_UpdatePlan: 'Updates planning and history',
-	m_menu_des_Restart: 'Restart',
-	m_menu_des_RestartApp: 'Restart application or Open Appliance',
-	m_menu_des_Subscribe: 'Subscribe',
-	m_menu_des_Subcription: 'Subscription',
-	m_menu_des_UserList: 'User List',
-	m_menu_des_UserRight: 'User rights',
-	m_menu_des_Hardware : 'Hardware',
-	m_menu_des_HardwareMonitor: 'Hardware monitor',
-	m_menu_des_Network: 'Network',
-	m_menu_des_NetworkMonitor: 'Network monitor',
-	m_menu_des_ConfigBackup: 'Configuration backup',
-	m_menu_des_ConfigRestore: 'Configuration restore',
-	m_menu_des_EmailServer: 'Email server',
-	m_menu_des_EmailServerConfig: 'Email server configuration',
-	m_menu_des_TimeServer: 'Time server',
-	m_menu_des_TimerServerConfig: 'Time server configuration',
-	m_menu_des_UserDir: 'User directory',
-	m_menu_des_LDAPConfig: 'LDAP server configuration',
-	m_menu_des_BLBAssocication: 'BLB association',
-	m_menu_des_PasswordPolicy: 'Password Policy',
-	m_menu_des_AddUser: 'Add user',
-	m_menu_des_UpdateUser: 'Update user',
-	m_menu_des_Update: 'Update',
-	m_menu_des_Restore: 'Restore',
-	m_menu_des_RestoreDesc: 'Configuration restore description',
-	m_menu_des_BLBCredCheck: 'BLB credentials check',
+	m_mainFrench : "Français",
+	m_mainLogin : "entrer",
+	m_mainLogout : "déconnecter", 
+	m_mainUserName : "utilisateur", 
+	m_mainPassword : "mot de passe",
+	m_mainWarning : "<p>si vous n'avez pas de login et mot de passe, veuillez contacter votre centre support clients.<br/>" +  
+                    "Attention : pour vous connecter, votre navigateur doit accepter les pop-ups et les cookies.</p>",
+	m_mainBLBWarning : "<p>si vous n'avez pas de login et mot de passe, veuillez contacter votre centre support clients.<br/>" + 
+                     "Attention : pour vous connecter, votre navigateur doit accepter les pop-ups et les cookies.</p>",
+	m_mainWelcome : "bienvenue",
+	m_mainPleaseSignIn : "veuillez vous authentifier pour accéder au web d'administration de l'Open Appliance",
+	m_menuApp : "applications",
+	m_menuUsers : "utilisateurs",
+	m_menuMonitor : "supervision",
+	m_menuBackup : "sauvegarde / restauration",
+	m_menuConfig : "configuration",
+	m_menuMyProfile : "mon profil",
+	m_menuDashboard : "tableau de bord",
+	m_menuUpdates : "mises à jour", 
+	m_menuUpdatePlan : "historique et planification des mises à jour", 
+	m_menuRestart : "redémarrage",
+	m_menuRestartApp : "redémarrage d'application(s) ou de l'Open Appliance",
+	m_menuSubscribe : "souscrire", 
+	m_menuSubcription : "souscription",
+	m_menuUserList: "liste des utilisateurs",
+	m_menuUserRight : "droits des utilisateurs",
+	m_menuHardware : "hardware", 
+	m_menuHardwareMonitor : "supervision hardware",
+	m_menuNetwork : "réseau",
+	m_menuNetworkMonitor : "supervision réseau",
+	m_menuConfigBackup : "sauvegarde",
+	m_menuConfigRestore : "restauration", 
+	m_menuEmailServer : "serveur mails",
+	m_menuEmailServerConfig : "paramétrage du serveur mails",
+	m_menuTimeServer : "serveur NTP",
+	m_menuTimerServerConfig : "paramétrage du serveur NTP",
+	m_menuUserDir : "serveur LDAP",
+	m_menuLDAPConfig : "paramétrage serveur LDAP",
+	m_menuBLBAssocication : "association BLB", 
+	m_menuPasswordPolicy : "politique mots de passe", 
+	m_menuAddUser : "ajouter un utilisateur",
+	m_menuUpdateUser : "modifier un utilisateur",
+	m_menuUpdate : "mettre à jour",
+	m_menuRestore : "restaurer", 
+	m_menuRestoreDesc : "description du fichier de sauvegarde",
+	m_menuBLBCredCheck : "vérification des identifiants de la BLB",
+	m_menuContact : "contact",
+	m_menuSitemap : "plan du site",
+	m_menuCopyRight : "copyright France Telecom",
 
-    ///////////////////////////////////////////////////////////////////
-    // Calendar
+	m_menu_des_App : "applications",
+	m_menu_des_Users : "utilisateurs",
+	m_menu_des_Monitor : "supervision",
+	m_menu_des_Backup : "sauvegarde / restauration",
+	m_menu_des_Config : "configuration",
+	m_menu_des_MyProfile : "mon profil",
+	m_menu_des_Dashboard : "tableau de bord",
+	m_menu_des_Updates : "mises à jour",
+	m_menu_des_UpdatePlan : "historique et planification des mises à jour",
+	m_menu_des_Restart : "redémarrage",
+	m_menu_des_RestartApp : "redémarrage d'application(s) ou de l'Open Appliance",
+	m_menu_des_Subscribe : "souscrire",
+	m_menu_des_Subcription : "souscription", 
+	m_menu_des_UserList : "liste des utilisateurs",
+	m_menu_des_UserRight : "droits des utilisateurs",
+	m_menu_des_Hardware : "hardware",
+	m_menu_des_HardwareMonitor : "supervision hardware",
+	m_menu_des_Network : "réseau", 
+	m_menu_des_NetworkMonitor : "supervision réseau",
+	m_menu_des_ConfigBackup : "sauvegarde",
+	m_menu_des_ConfigRestore : "restauration",
+	m_menu_des_EmailServer : "serveur mails",
+	m_menu_des_EmailServerConfig : "paramétrage du serveur mails",
+	m_menu_des_TimeServer : "serveur NTP",
+	m_menu_des_TimerServerConfig : "paramétrage du serveur NTP",
+	m_menu_des_UserDir : "serveur LDAP", 
+	m_menu_des_LDAPConfig : "paramétrage serveur LDAP",
+	m_menu_des_BLBAssocication : "association BLB",
+	m_menu_des_PasswordPolicy : "politique mots de passe",
+	m_menu_des_AddUser : "ajouter un utilisateur", 
+	m_menu_des_UpdateUser : "modifier un utilisateur",
+	m_menu_des_Update : "mettre à jour",
+	m_menu_des_Restore : "restaurer",
+	m_menu_des_RestoreDesc : "description du fichier de sauvegarde",
+	m_menu_des_BLBCredCheck : "vérification des identifiants de la BLB", 
+
+    ///////////////////////////////////////////////////////////////////;;;
+    // Calendar;;;
 	m_calToday : "aujourd'hui",
-	m_calClear : 'Clear',
-	m_calArrMonthNames : ['janv.', 'fevr.', 'mars', 'avril', 'mai', 'juin', 'juil', 'août', 'sept.', 'oct.', 'nov.', 'dec.'],
-    m_calArrWeekInits : ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
-    m_calInvalidDateMsg : "La date d'entrée n'est pas valide.\n",
-    m_calOutOfRangeMsg : "La date d'entrée est hors de portée.",
-    m_calDoesNotExistMsg : "La date d'entrée n'existe pas.",
-    m_calInvalidAlert : ["Date incorrecte (", ") ignoré."],
-    m_calDateDisablingError : ["Erreur ", " la date n'est pas un objet."],
-    m_calRangeDisablingError : ["Erreur ", " devrait être composé de deux éléments."],
+	m_calClear : "Clear",
+	m_calArrMonthNames : ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aou', 'Sep', 'Oct', 'Nov', 'Déc'],
+    m_calArrWeekInits : ['Di', 'Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa'],
+    m_calInvalidDateMsg : "la date entrée est invalide",
+    m_calOutOfRangeMsg : "la date entrée est invalide",
+    m_calDoesNotExistMsg : "la date entrée est invalide",
+    m_calInvalidAlert : ["date invalide(", ") ignorée."],
+    m_calDateDisablingError : ["Erreur ", " n'est pas un objet date."],
+    m_calRangeDisablingError : ["Erreur ", "doit contenir 2 éléments."],
     m_calDateDisplayFormat : 'dd-mm-yy',
-    m_calDateOutputFormat : 'DD/MM/YYYY',
-    //Set it to: 0 (Zero) for Sunday, 1 (One) for Monday etc..	
-    m_calWeekStart : 1,		
-	
-    ///////////////////////////////////////////////////////////////////
-    // Dash board screen
+    m_calDateOutputFormat : 'DD/MM/YYYY', 
+    //Set it to;; 0 (Zero) for Sunday, 1 (One) for Monday etc..; 1 (Zero) for Dimanche, 1 (One) for Lundi etc..
+    m_calWeekStart : 1,
 
-    // dashboard header
-    m_dbHdApplication : "Application",
-    m_dbHdStatus : "Status",
-    m_dbHdCPU : "CPU",
-    m_dbMemory : "Memory",
-    m_dbDiskSpace : "Disk Space",
-    m_dbUpdateNeeded : "Update Needed",
-    m_dbTooltipUpdateNeed : "Version to be updated - ",
-    m_dbTooltipCancel : "Reset selection",
-    m_dbTooltipUpdate : "Update selected VM(s)",
-    m_dbUsed : "Used",
-    m_dbTotal : "Total",
-    m_dbFree : "Free",
-    m_dbStatusUp : "Status is Up",
-    m_dbStatusDown : "Status is Down",
-    m_dbStatusUnknown : "Status is Unknown",
-    m_dbErrorTitle : 'VM Dashboard Error',
-    m_dbCriticalUpdate : "Une mise à jour critique sera installé automatiquement pour",
+    ///////////////////////////////////////////////////////////////////;;;
+    // Dash board screen;;;
 
-    ///////////////////////////////////////////////////////////////////
-    // VM Update & History screen
-    m_uhHdDate : "Date",
-    m_uhHdWho : "Sauvegarde En",
-    m_uhErrorTitle : "Erreur de mise à jour de VM",
-    m_uhCancelTitle : "Annuler la mise à jour de l'annexe",
+    // dashboard header;;;
+    m_dbHdApplication : "application",
+    m_dbHdStatus : "état", 
+    m_dbHdCPU : "CPU", 
+    m_dbMemory : "mémoire", 
+    m_dbDiskSpace : "espace disque",
+    m_dbUpdateNeeded : "mise à jour nécessaire",
+    m_dbTooltipUpdateNeed : "version à mettre à jour - ", 
+    m_dbTooltipCancel : "annuler la sélection", 
+    m_dbTooltipUpdate : "mettre à jour les applications sélectionnées", 
+    m_dbUsed : "utilisé", 
+    m_dbTotal : "total", 
+    m_dbFree : "libre",
+    m_dbStatusUp : "état : actif", 
+    m_dbStatusDown : "état : inactif", 
+    m_dbStatusUnknown : "état inconnu", 
+    m_dbErrorTitle : "tableau de bord non disponible", 
+    m_dbCriticalUpdate : "Une mise à jour critique vient d'être installée", 
 
-    ///////////////////////////////////////////////////////////////////
-    // VM Update Restore
-	m_resUpdateVmName : "vm nom",		
-	m_resUpdateCurVer: "Version actuelle",
-	m_resUpdatePrevVer: "version précédente",
-	m_resUpdateFail: "Restore a échoué:",
-	m_resUploadCompleted: "Upload files has completed.",
+    ///////////////////////////////////////////////////////////////////;;;
+    // VM Update & History screen;;;
+    m_uhHdDate : "Date", 
+    m_uhHdWho : "sauvegarder par",
+    m_uhErrorTitle : "erreur de mise à jour",  
+    m_uhCancelTitle : "annuler la planification de mise(s) à jour",
 
-    ///////////////////////////////////////////////////////////////////
-    // VM Schedule Update
-	m_schedUpdateSched: "S'il vous plaît le calendrier de mise à jour pour les applications suivantes",		
-	m_schedUpdateNow: "Now",
-	m_schedUpdateLater: "Ultérieure",
-	m_schedUpdateNewVer: "nouvelle version",
-	m_schedUpdateRangeChk: "vous planifiez six mois à venir",
-	m_schedUpdateDate: "Tableau date",
-	m_schedUpdateHour: "Tableau heure",
-	m_schedUpdateMinute: "Tableau minute",
-	m_schedUpdateErrorOccur: "Les erreurs suivantes se produisent lorsque nous tentons de prévoir une mise à jour:",
+    ///////////////////////////////////////////////////////////////////;;;
+    // VM Update Restore;;;
+	m_resUpdateVmName : "nom de l'application",
+	m_resUpdateCurVer : "version courante",
+	m_resUpdatePrevVer : "version précédente", 
+	m_resUpdateFail : "échec de la restauration",
+    m_resUploadCompleted : "le téléchargement de fichiers est effectué",
 
+    ///////////////////////////////////////////////////////////////////;;;
+    // VM Schedule Update;;;
+	m_schedUpdateSched : "Veuillez planifier une mise à jour pour les applications suivantes",
+	m_schedUpdateNow : "maintenant",
+	m_schedUpdateLater : "plus tard", 
+	m_schedUpdateNewVer : "nouvelle version",
+	m_schedUpdateRangeChk : "vous planifiez à six mois",
+	m_schedUpdateDate : "date de planification",
+	m_schedUpdateHour : "heure de planification", 
+	m_schedUpdateMinute : "minute de planification",
+	m_schedUpdateErrorOccur : "les erreurs suivantes sont survenues alors qu'une planification de mise(s) à jour était en cours",
 
-    ///////////////////////////////////////////////////////////////////
-    // VM Restart screen
-    m_restartOA : 'Open Appliance',
-    m_restartErrorTitle : 'VM Restart Error',
-    m_restartTitle : 'Restart VM',
-    m_restartStopTitle : 'Stop VM',
-    m_restartConfirm : "Êtes-vous sûr de vouloir redémarrer",
-    m_restartStopConfirm : "Êtes-vous sûr de vouloir arrêter",
+    ///////////////////////////////////////////////////////////////////;;;
+    // VM Restart screen;;;
+    m_restartOA : "Open Appliance",
+    m_restartErrorTitle : "erreur de redémarrage",
+    m_restartTitle : "redémarrer une application", 
+    m_restartStopTitle : "stopper une application", 
+    m_restartConfirm : "Etes-vous sûr de vouloir redémarrer",
+    m_restartStopConfirm : "Etes-vous sûr de vouloir stopper",
 
-    ///////////////////////////////////////////////////////////////////
-    // Subscribe screen
-    m_subscribePlease : "S'il vous plaît cliquer sur le texte suivant pour installer / supprimer une application",
-	m_subscribeInstall: "Installer une nouvelle application",
-	m_subscribeRemove: "Supprimer une nouvelle application",
+    ///////////////////////////////////////////////////////////////////;;;
+    // Subscribe screen;;;
+    m_subscribePlease : "Veuillez cliquer sur les liens suivants pour ajouter ou supprimer une application",
+	m_subscribeInstall: "installer une nouvelle application",
+	m_subscribeRemove : "supprimer une nouvelle application",
 
-    ///////////////////////////////////////////////////////////////////
-    // User List screen
-    m_ulErrorTitle : "Get User List erreur",
-    m_ulTooltipAddUser : "Créer un nouveau compte utilisateur",
-    m_ulDeleteHeader : "Supprimer des comptes utilisateur",
-    m_ulClick2Edit : "Cliquez ici pour modifier",
-    m_ulSendEmail : "Envoyer un e-mail à",
-    m_ulDeleteUser : "Supprimer l'utilisateur",
+    ///////////////////////////////////////////////////////////////////;;;
+    // User List screen;;;
+    m_ulErrorTitle : "erreur de chargement de la liste utilisateurs", 
+    m_ulTooltipAddUser : "créer un nouveau compte utilisateur", 
+    m_ulDeleteHeader : "supprimer un compte utilisateur", 
+    m_ulClick2Edit : "cliquer ici pour éditer cet utilisateur",
+    m_ulSendEmail : "envoyer un email à cet utilisateur", 
+    m_ulDeleteUser : "supprimer un compte utilisateur", 
 
-    ///////////////////////////////////////////////////////////////////
-    // User Right screen
-    nm_urErrorTitle : "Erreur de droit de l'utilisateur",
-    m_urConfirmTitle : "changement droit de l'utilisateur",
-    m_urCommitChange : "Êtes-vous sûr de vouloir engager le changement?",
-    m_urBtnApply : "de sélection fixés",
-    m_urBtnCancel : "Réinitialiser la sélection",
+    ///////////////////////////////////////////////////////////////////;;;
+    // User Right screen;;;
+    m_urErrorTitle : "erreur sur la gestion des droits utilisateurs",
+    m_urConfirmTitle : "modifier les droits utilisateurs", 
+    m_urCommitChange : "Etes-vous sûr de vouloir changer ces droits ?", 
+    m_urBtnApply : "modifier les droits", 
+    m_urBtnCancel : "annuler les modifications",
 
-    ///////////////////////////////////////////////////////////////////
-    // User Add screen
-    m_userUsername: "utilisateur",
-	m_userSurname: "nom",
-	m_userGivenName: "prénom",
-	m_userEmail: "e-mail",
-    m_userUsernameInvalidCharacter: "User name can only alpha numeric characters",
+    ///////////////////////////////////////////////////////////////////;;;
+    // User Add screen;;;
+    m_userUsername : "nom d'utilisateur",
+	m_userSurname : "nom", 
+	m_userGivenName : "prénom", 
+	m_userEmail : "email",
+    m_userUsernameInvalidCharacter : "nom d'utilisateur", 
 
-    ///////////////////////////////////////////////////////////////////
-    // User Editor screen
-    m_userResetPasswdExit : "L'utilisateur existe déjà",
-    m_userResetPasswdNotExit : "L'utilisateur n'existe pas",
-    m_userResetPasswd: "Réinitialiser le mot de passe",
-    m_userResetPasswdConfirm: "Êtes-vous sûr de vouloir réinitialiser le mot de passe pour cet utilisateur?",
-	m_userConfirmation: "confirmation",
-	m_userResetPasswdSuccess: "Mot de passe réinitialisé avec succès",
-	m_userResetPasswdComplete: "Réinitialiser le mot de passe achevé",
+    ///////////////////////////////////////////////////////////////////;;;
+    // User Editor screen;;;
+    m_userResetPasswdExit : "l'utilisateur existe déjà", 
+    m_userResetPasswdNotExit : "l'utilisateur n'existe pas", 
+    m_userResetPasswd : "réinitialiser le mot de passe", 
+    m_userResetPasswdConfirm : "Etes-vous sûr de vouloir réinitialiser le mot de passe de cet utilisateur ?", 
+	m_userConfirmation : "confirmation", 
+	m_userResetPasswdSuccess : "changement de mot de passe effectué",
+	m_userResetPasswdComplete : "changement de mot de passe", 
 
-    ///////////////////////////////////////////////////////////////////
-    // Configuration Restore Description screen
-    m_confRestorDescp : 'lorem ipsum onsectetuer....',
+    ///////////////////////////////////////////////////////////////////;;;
+    // Configuration Restore Description screen;;;
+    m_confRestorDescp : "lorem ipsum onsectetuer....", 
 
-    ///////////////////////////////////////////////////////////////////
-    // Common variables
-    m_cancelConfirm : 'Êtes-vous sûr de vouloir annuler',
-    m_deleteConfirm : 'Êtes-vous sûr de vouloir supprimer',
-    m_login: 'Login',
-    m_name: 'Nom',
-    m_delete: "Supprimer",
-    m_email: 'Email',
-    m_password :'Password',
-
-    ///////////////////////////////////////////////////////////////////
-    // Buttons & Images
-    m_imageDir : 'images/fr/',
-	m_ok: 'ok',
-	m_error: 'Erreur',
-	m_info: 'Information',
-
-    ///////////////////////////////////////////////////////////////////
-    // Popup Message Dialog
-    m_puSessionTimeout : "Session Time Out",
-    m_puSessionTimeoutMsg : "Pour des raisons de sécurité, votre session n'est plus active<br>S'il vous plaît ré-ouvrir une nouvelle session.",
-
-    ///////////////////////////////////////////////////////////////////
-    // Login Dialog
-    m_loginPrompt : "S'il vous plaît entrer le nom d'utilisateur et mot de passe pour vous connecter.",
-    m_loginError : "Erreur d'identification",
-    m_loginUnableToLogin : "Impossible de se connecter: ",
-	m_loginContactCS : "Si vous n'avez pas de nom d'utilisateur et votre mot de passe, contactez votre Centre de Service à la clientèle.",
-	m_loginEnableJS: "Attention: pour se connecter à l'Open Appliance programme, votre navigateur doit accepter les pop-ups et les cookies.",
-
-    ///////////////////////////////////////////////////////////////////
-    // Mainframe
-	m_mainFrmGuest : "visiteur",
-    m_mainFrmWelcome : "salut",	
-	m_mainFrmConnected: "vous êtes connecté à l'Open Appliance service admin",
-	m_mainFrmSignIn: "s'il vous plaît vous connecter à l'Open Appliance service admin",
-
-    ///////////////////////////////////////////////////////////////////
-    // My Form
-	m_formNoEmpty : "ne peut pas être vide",		
-	m_formFixError: "S'il vous plaît corriger les erreurs suivantes:",
-	m_formInvalid: "est invalide",
-	m_formSave : "sauvé",
-
-     //////////////////////////////////////////////////////////
-    // Password change dialog
-      m_passwordChangePlease : "S'il vous plaît changer votre mot de passe pour continuer",
-      m_passwordChangeSuccess: "Le nouveau mot de passe a été enregistré.",
-      m_passwordChangeRelogin: "S'il vous plaît cliquez sur OK pour une reconnexion avec le nouveau mot de passe",
-
-    ///////////////////////////////////////////////////////////////////
-    // My Profile
-	m_myprofLogin : "Login",
-	m_myprofOldPasswd : "Ancien mot de passe",		
-	m_myprofNewPasswd : "Nouveau mot de passe",
-	m_myprofConfirmPasswd : "Confirmer le mot de passe",	
-	m_myprofNPWnotCPW : "Nouveau mot de passe ne correspond pas à confirmer le mot de passe",
-	m_myprofPasswdRestSucessful: "Réinitialisation de mot de passe avec succès",	
-	m_myprofResetPasswdDone: "Réinitialiser le mot de passe achevé",
+    ///////////////////////////////////////////////////////////////////;;;
+    // Hw monitor;;;
+    m_component : "composant", 
 
 
-    ///////////////////////////////////////////////////////////////////
-    // Backup configuration
-	m_backupConfig : "Config.",
-	m_backupData : "Data",	
-	m_backupApp : "Application",	
-	m_backupSelectOne: "S'il vous plaît choisir au moins une application de sauvegarde",		
-	m_backupFail: "Pas de sauvegarde",
-	m_backupInProgress: "Sauvegarde est en cours. Vous recevrez une notification par email lors de l'opération est finshed",
-	m_backup2pcInProgress: "Backup is in progress.  It may take a while to finish.  A notification window will popup when the backup file is ready.",		
-	m_backupPlsDelete: "Vous avez atteint le nombre maximum de sauvegardes stockées sur l'Open Appliance. S'il vous plaît supprimer des archives de sauvegarde et essayez à nouveau",
-	m_backupMyPC: "Mon PC",	
-    m_backupTooltipCancel : "Réinitialiser la sélection",
-    m_backupTooltipBackup : "Certaines applications de sauvegarde",	
+    ///////////////////////////////////////////////////////////////////;;;
+    // Common variables;;;
+    m_cancelConfirm : "Etes-vous sûr de vouloir annuler", 
+    m_deleteConfirm : "Etes-vous sûr de vouloir supprimer", 
+    m_login : "login", 
+    m_name : "nom", 
+    m_delete : "supprimer", 
+    m_email : "email",
+    m_password : "mot de passe",
+
+    ///////////////////////////////////////////////////////////////////;;;
+    // Buttons & Images;;;
+    m_imageDir : "images/fr/",
+	m_ok : "ok",
+	m_error : "erreur", 
+	m_info : "information",
+
+    ///////////////////////////////////////////////////////////////////;;;
+    // Popup Message Dialog;;;
+    m_puSessionTimeout : "session expirée",
+    m_puSessionTimeoutMsg : "Pour des raisons de sécurité, votre session n'est plus active.<br>Veuillez vous ré-authentifier.",
+
+    ///////////////////////////////////////////////////////////////////;;;
+    // Login Dialog;;;
+    m_loginPrompt : "Veuillez entrer vos identifiants.", 
+    m_loginError : "erreur de login", 
+    m_loginUnableToLogin : "impossible de se connecter",
+	m_loginContactCS : "Si vous n'avez pas de login et mot de passe, veuillez contacter votre centre support clients.",
+	m_loginEnableJS : "Attention : pour vous connecter, votre navigateur doit accepter les pop-ups et les cookies.",
+
+    ///////////////////////////////////////////////////////////////////;;;
+    // Mainframe;;;
+	m_mainFrmGuest : "invité",
+    m_mainFrmWelcome : "bienvenue",
+	m_mainFrmConnected : "Vous êtes connecté au module d'administration de l'Open Appliance",
+	m_mainFrmSignIn : "Veuillez vous authentifier", 
+
+    ///////////////////////////////////////////////////////////////////;;;
+    // My Form;;;
+	m_formNoEmpty : "ne peut être vide",
+	m_formFixError : "veuillez corriger les erreurs suivantes", 
+	m_formInvalid : "est invalide",
+	m_formSave : "sauvegardé",
+	m_formPassword : "mot de passe",
+
+    ///////////////////////////////////////////////////////////////////;;;
+    // Password change dialog;;;
+	m_passwordChangePlease : "Veuillez changer votre mot de passe pour continuer",
+	m_passwordChangeSuccess : "Votre nouveau mot de passe a été enregistré.", 
+	m_passwordChangeRelogin : "Veuillez cliquer sur le bouton entrer pour vous loguer avec votre nouveau mot de passe",
+
+    ///////////////////////////////////////////////////////////////////;;;
+    // My Profile;;;
+	m_myprofLogin : "utilisateur",
+	m_myprofOldPasswd : "ancien mot de passe", 
+	m_myprofNewPasswd : "nouveau mot de passe",
+	m_myprofConfirmPasswd : "confirmation mot de passe", 
+	m_myprofNPWnotCPW : " Les mots de passe rentrés dans les champs 'nouveau' et 'confirmation' ne sont pas identiques", 
+	m_myprofPasswdRestSucessful : "changement de mot de passe effectué", 
+	m_myprofResetPasswdDone : "changement de mot de passe",
+
+    ///////////////////////////////////////////////////////////////////;;;
+    // Backup configuration;;;
+	m_backupConfig : "config.", 
+	m_backupData : "données", 
+	m_backupApp : "application",
+	m_backupSelectOne : "Veuillez sélectionner au moins une application à sauvegarder",
+	m_backupFail : "échec de sauvegarde", 
+	m_backupInProgress : "Sauvegarde en cours.",
+	m_backup2pcInProgress : "sauvegarde en cours. Veuillez patienter un moment. Une fenêtre vous avertira lorsque la sauvegarde sera effectuée",
+	m_backupPlsDelete : "Le nombre maximum de sauvegardes stockées sur l'Open Appliance est atteint. Veuillez supprimer la plus vieille et réessayez",
+	m_backupMyPC : "mon PC", 
+    m_backupTooltipCancel : "annuler les modifications", 
+    m_backupTooltipBackup : "sauvegarder les applications sélectionnées",
+
+    ///===================================================================================================================
 	m_backupPlsWait: "Another backup request is currently being processed.  Please wait for a few minutes and try again.",
-	
 
-    ///////////////////////////////////////////////////////////////////
-    // Restore configuration
-    m_restoreErrorTitle : "Rétablir la configuration d'erreur",
-    m_restoreUploadTitle : "Envoyer dossier de restauration",
-    m_resoteUploadErrFileType : "Type de fichier n'est pas pris en charge.",
-    m_restoreHdContent : "Contenu",
-    m_restoreHdRestore : "Sestaurer",
-    m_restoreHdDownload : "Télécharger",
-    m_restoreClickRestore : "Cliquez ici pour rétablir la",
-    m_restoreArchive : "Restaurer la sauvegarde des archives",
-    m_restoreDelTitle : "Supprimer le fichier d'archive de sauvegarde",
-    m_restoreDel : "Supprimer la sauvegarde des archives",
-    m_restoreDlConfirm : "Etes-vous sûr que vous voulez télécharger",
-    m_restoreDownload : "Télécharger archive de sauvegarde",
-    m_restoreRestorePC : "Restaurer à partir de mon PC",
-    m_restoreFromMyPCTip : "Cliquez ici pour commencer la restauration de mon PC",
 
-    ///////////////////////////////////////////////////////////////////
-    // Restore Desc. configuration
-    m_resDescErrorTitle : "Configuration Restore Description",
-    m_resDescConfirm : "Etes-vous sûr que vous voulez restaurer la sélection VM?",
-    m_resDescHdConf : "Config.",
-    m_resDescHdData : "Data",
+    ///////////////////////////////////////////////////////////////////;;;
+    // Restore configuration;;;
+    m_restoreErrorTitle : "erreur de restauration", 
+    m_restoreUploadTitle : "télécharger un fichier de restauration",
+    m_resoteUploadErrFileType : "type de fichier non compatible.",
+    m_restoreHdContent : "contenu",
+    m_restoreHdRestore : "restaurer", 
+    m_restoreHdDownload : "télécharger",
+    m_restoreClickRestore : "cliquer ici pour restaurer", 
+    m_restoreArchive : "restaurer la sauvegarde", 
+    m_restoreDelTitle : "supprimer la sauvegarde", 
+    m_restoreDel : "supprimer la sauvegarde", 
+    m_restoreDlConfirm : "Etes-vous sûr de vouloir télécharger le fichier suivant", 
+    m_restoreDownload : "télécharger la sauvegarde", 
+    m_restoreRestorePC : "restaurer un fichier de mon PC", 
+    m_restoreFromMyPCTip : "Cliquer ici pour démarrer la restauration d'un fichier de mon PC",
 
-    ///////////////////////////////////////////////////////////////////
-    // BLB configuration
-	m_blbStandAloneOA : "Autonome Open Appliance",
-	m_blbAssociation : "BLB association",		
-	m_blbComplete : "BLB association a terminé avec succès",
+    ///////////////////////////////////////////////////////////////////;;;
+    // Restore Desc. configuration;;;
+    m_resDescErrorTitle : "description de la configuration à restaurer", 
+    m_resDescConfirm : "Etes-vous sur de vouloir restaurer les éléments sélectionnés ?", 
+    m_resDescHdConf : "config.", 
+    m_resDescHdData : "données", 
 
-    ///////////////////////////////////////////////////////////////////
-    // Email Server configuration
-	m_emailSmtpAddr : "Adresse de serveur SMTP",
-	m_emailLocalMachName : "Nom de la machine locale",
-	m_emailLocalEmail : "Local e-mail",
-	m_emailAuthName : "Autorisation de nom",
-	m_emailAuthPasswd : "Autorisation de mot de passe",
-	m_emailSrvConfig : "Envoi de la configuration du serveur",
+    ///////////////////////////////////////////////////////////////////;;;
+    // BLB configuration;;;
+	m_blbStandAloneOA : "Open Appliance seule", 
+	m_blbAssociation : "BLB associée", 
+	m_blbComplete : "L'association à la BLB a réussi", 
 
-    ///////////////////////////////////////////////////////////////////
-    // LDAP Server configuration
-	m_ldapSrvLoc : "Serveur LDAP",	
-	m_ldapInOA : "Dans l'Open Appliance",
-	m_ldapInLan : "Dans la compagnie LAN",
-	m_ldapSrvAddr: "Adresse du serveur",
-	m_ldapSuffix: "Suffix",		
-	m_ldapUsrUpdateRt : "Utilisateur (mise à jour des droits)",
-	m_ldapUsrReadRt: "Utilisateur (lire droits)",
-	m_ldapPasswdUpdateRt: "Mot de passe (mise à jour des droits)",
-	m_ldapPasswdReadRt: "Mot de passe (lecture des droits)",
+    ///////////////////////////////////////////////////////////////////;;;
+    // Email Server configuration;;;
+	m_emailSmtpAddr : "adresse serveur SMTP", 
+	m_emailLocalMachName : "nom d'expéditeur", 
+	m_emailLocalEmail : "adresse email expéditeur", 
+	m_emailAuthName : "nom utilisateur",
+	m_emailAuthPasswd : "mot de passe utilisateur",
+	m_emailSrvConfig : "paramétrage du serveur serveur mail",
 
-    ///////////////////////////////////////////////////////////////////
-    // Password Policy configuration
-	m_passwdPolicyChangeAtLogin : "L'utilisateur doit changer son mot de passe lors de la première connexion",	
-	m_passwdPolicyCanKeep : "L'utilisateur peut conserver hsi mot de passe par défaut",	
+    ///////////////////////////////////////////////////////////////////;;;
+    // LDAP Server configuration;;;
+	m_ldapSrvLoc : "localisation du serveur LDAP",
+	m_ldapInOA : "dans l'Open Appliance", 
+	m_ldapInLan : "sur le LAN Entreprise", 
+	m_ldapSrvAddr : "adresse du serveur", 
+	m_ldapSuffix : "Suffixe", 
+	m_ldapUsrUpdateRt : "utilisateur (droits d'écriture)", 
+	m_ldapUsrReadRt : "utilisateur (droits de lecture)",
+	m_ldapPasswdUpdateRt : "mot de passe (droits d'écriture)", 
+	m_ldapPasswdReadRt : "mot de passe (droits de lecture)", 
 
-    ///////////////////////////////////////////////////////////////////
-    // NTP server configuration
-	m_ntpSrvAddr : "Adresse de serveur NTP",
-	m_ntpTimeSrvAddr : "Adresse du serveur de temps",
-	m_ntpTimeSrvConfig: "Le temps de configuration du serveur",
+    ///////////////////////////////////////////////////////////////////;;;
+    // Password Policy configuration;;;
+	m_passwdPolicyChangeAtLogin : "l'utilisateur doit changer son mot de passe à la première connexion", 
+	m_passwdPolicyCanKeep : "l'utilisateur peut conserver son mot de passe par défaut", 
 
-    ///////////////////////////////////////////////////////////////////
-    // Tooltip
-	m_tooltip_cancel : "Reset current form",
-	m_tooltip_apply: "Apply changes",
-	m_tooltip_add: "Add a new row",
-	m_tooltip_delete: "Delete a row",
-	m_tooltip_back: "Go back to previous screen",	
-	m_tooltip_restore: "Restore",
-	m_tooltip_update: "Update",	
-		
-    ///////////////////////////////////////////////////////////////////
-    // Contact page
-	m_contact : "Contact",
-	m_contact_message: "For your questions, please contact your customer service and dial 3901.",	
-	
-    /////////////////////////////////////////
-    // plesae do not edit beyound dummy
+    ///////////////////////////////////////////////////////////////////;;;
+    // NTP server configuration;;;
+	m_ntpSrvAddr : "adresse serveur NTP", 
+	m_ntpTimeSrvAddr : "adresse serveur de temps", 
+	m_ntpTimeSrvConfig : "configuration serveur de temps", 
+
+    ///////////////////////////////////////////////////////////////////;;;
+    // Tooltip;;;
+	m_tooltip_cancel : "supprimer les modifications", 
+	m_tooltip_apply : "sauvegarder les modifications",
+	m_tooltip_add : "ajouter une nouvelle ligne", 
+	m_tooltip_delete : "supprimer une ligne", 
+	m_tooltip_back : "revenir à l'écran précédent", 
+	m_tooltip_restore : "restaurer", 
+	m_tooltip_update : "mettre à jour", 
+
+    ///////////////////////////////////////////////////////////////////;;;
+    // Contact page;;;
+	m_contact : "contact",
+	m_contact_message : "Pour toute question, veuillez contacter votre service clients en appelant le 3901",
+
+    /////////////////////////////////////////;;;
+    // plesae do not edit beyound dummy;;;
     dummy : ''
 }

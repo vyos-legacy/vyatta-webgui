@@ -211,7 +211,11 @@ function FT_confBackup(name, callback, busLayer)
                 g_utils.f_popupMessage(g_lang.m_backupPlsDelete + '!', 'error', g_lang.m_error, true);
                 return;
             }
-            thisObj.f_oaBackup();
+			var f = function()
+			{
+				thisObj.f_oaBackup();
+			}
+			window.setTimeout(f, 10);
         }
     }
 	
@@ -228,11 +232,18 @@ function FT_confBackup(name, callback, busLayer)
             var el = document.getElementById('conf_backup_form');
             
             if (el.target_group[0].checked == true) {
-                thisObj.f_pcBackup();
+                window.setTimeout(function()
+				{
+					thisObj.f_pcBackup();
+				}, 10);
                 return;
             }
             //g_utils.f_cursorWait();
-            thisObj.m_busLayer.f_getVMRestoreListFromServer(thisObj.f_overflow);
+			var f = function()
+			{
+				thisObj.m_busLayer.f_getVMRestoreListFromServer(thisObj.f_overflow);
+			}
+			window.setTimeout(f, 10);
         }		
 	}
 	

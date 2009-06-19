@@ -96,11 +96,14 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////;;
     // Firewall Security Level;;
+    m_fireActiveHeader : "Active Zone Table",	
     m_fireLevelColName : "niveaux de sécurité",
     m_fireLevelColSelect : "sélectionner", 
     m_fireLevelColDir : "direction", 
     m_fireLevelColFrom : "de",
     m_fireLevelColTo : "vers",
+    m_fireLevelHdDef : "Default",	
+    m_fireLevelBdDef : "All traffic blocked",	
     m_fireLevelHdAuth : "faible", 
     m_fireLevelBdAuth : "Le pare-feu est désactivé. Tout trafic sortant est autorisé", 
     m_fireLevelHdStand : "moyen", 
@@ -161,6 +164,9 @@ var g_lang =
     m_fireCustResetTip : "réinitialiser", 
     m_fireCustBackTip : "retour à la page précédente", 
     m_fireCustAddTip : "ajouter une nouvelle règle",
+    m_fireCustLogEnabled : "Log is enabled",
+    m_fireCustEnableEnabled : "Enable field is enabled",
+    m_fireCustDeleteNotAllow : "Delete is not allowed",	
 
     ////////////////////////////////////////////////////////////////////;;
     // network configuration NAT/PAT;;

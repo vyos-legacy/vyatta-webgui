@@ -140,17 +140,23 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                 if(evt.m_value != null && evt.m_value.length > 0)
                 {
                     var combo = document.getElementById(thisObj.m_headercbbId);
-                    var inner = "";
 
                     for(var i=0; i<evt.m_value.length; i++)
                     {
+                        var newOpt = document.createElement('option')
                         var dir = evt.m_value[i].m_direction;
+                        newOpt.text = dir;
+                        newOpt.value = dir;
+                        try
+                        {
+                            combo.add(newOpt, null);
+                        }
+                        catch(ex)
+                        {
+                            combo.add(newOpt);   // for IE
+                        }
                         thisObj.m_zonePairs.push(dir);
-                        inner += "<option value='" + dir + "' name='" + dir +
-                                  "'>" + dir + "</option>";
                     }
-
-                    combo.innerHTML += inner;
                 }
 
                 thisObj.f_loadVMData(thisObj.m_levelRec.m_direction);
@@ -196,7 +202,8 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                 thisObj.f_adjustGridHeight();
         };
 
-        thisObj.m_zpIndex = 1;
+        thisObj.m_zpIndex = 1;  // start from the show rules combo index 1
+                                // index 0 is 'Any' which we want to skip.
         thisObj.m_fireRecs = [];
         var ruleOp = document.getElementById(thisObj.m_headercbbId);
         var fireRec = new UTM_fireRecord(null, zonePair);
@@ -225,7 +232,12 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
     this.f_stopLoadVMData = function()
     {
-        thisObj.m_busLayer.f_cancelFirewallCustomizeRule(null);
+        var cb = function()
+        {
+
+        }
+
+        thisObj.m_busLayer.f_cancelFirewallCustomizeRule("customize-firewall", cb);
     }
 
     this.f_getZoneAny = function(cb)
@@ -660,9 +672,14 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
     this.f_handleShowRuleChanged = function()
     {
+        var cb = function()
+        {
+
+        };
+
         if(!thisObj.m_isDirty)
         {
-            thisObj.m_busLayer.f_cancelFirewallCustomizeRule(null);
+            thisObj.m_busLayer.f_cancelFirewallCustomizeRule("customize-firewall", cb);
             thisObj.f_enabledActionButtons(false);
             thisObj.f_loadVMData();
         }
@@ -743,6 +760,8 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
     this.f_getComboBoxOptionName = function(cbb)
     {
+        return cbb.value;
+        /*
         for(var i=0; i<cbb.options.length; i++)
         {
             if(cbb.options[i].selected)
@@ -757,7 +776,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             }
         }
 
-        return '';
+        return '';*/
     };
 
     this.f_handleAddAction = function()

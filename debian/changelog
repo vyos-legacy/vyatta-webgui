@@ -1,3 +1,32 @@
+vyatta-webgui (0.2+fxd0+68) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * changed base class to darken the sorted column background and
+    under line the sorted column
+
+  [ An-Cheng Huang ]
+  * use sudo for process management
+
+  [ Loi Vo ]
+  * On Mike's browser (a derivative version of Mozilla firefox) running
+    on Linux, blacklist status get response gets overwritten by other
+    responses.
+
+  [ An-Cheng Huang ]
+  * remove BLB test
+  * remove rest of BLB test
+  * fix typo
+  * change encoding to accommodate Latin-1-encoded translations from FT
+
+  [ Loi Vo ]
+  * 1. update language files.
+  * fix lang
+  * chagne encoding
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 18 Jun 2009 17:52:38 -0700
+
 vyatta-webgui (0.2+fxd0+67) unstable; urgency=low
 
   * 1. Change for f_gotoHomePage:

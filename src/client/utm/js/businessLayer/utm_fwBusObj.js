@@ -95,7 +95,13 @@ function UTM_firewallBusObj(busObj)
 
         if(response.f_isError != undefined)
         {
-            thisObj.m_guiCb(response);
+            if(thisObj.m_guiCb != null)
+                thisObj.m_guiCb(response);
+            else
+            {
+                g_utils.f_popupMessage("Connection failed! Please refresh page and  try again",
+                    'error', "Connection Error", true);
+            }
         }
         else
         {

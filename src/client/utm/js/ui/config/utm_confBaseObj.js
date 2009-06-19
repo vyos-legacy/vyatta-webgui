@@ -209,19 +209,10 @@ function UTM_confBaseObj(name, callback, busLayer)
             }
 
             innerHtml += '<td cellspacing="0" cellpadding="0" style="width:' +
-            fWidth +
-            'px; overflow:hidden;"><div style="overflow:hidden; ' +
-            lBorder +
-            rBorder +
-            ' padding-top:0px; padding-bottom:0px; ' +
-            ' margin-top:0px; margin-bottom: 0px">' +
-            '<div style="' +
-            lPadding +
-            'padding-top:' +
-            tPadding +
-            '; overflow:hidden;">' +
-            data[i] +
-            '</div></div></td>';
+            fWidth + 'px;"><div style="overflow:hidden; ' +
+            lBorder + rBorder + ' padding-top:0px; padding-bottom:0px; ' +
+            ' margin-top:0px; margin-bottom: 0px"><div style="' + lPadding +
+            'padding-top:' + tPadding + ';">' + data[i] + '</div></div></td>';
         }
 
         innerHtml += '</tr></tbody></table>';

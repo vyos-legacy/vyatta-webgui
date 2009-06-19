@@ -304,7 +304,7 @@ var g_lang =
     m_backupTooltipBackup : "sauvegarder les applications sélectionnées",
 
     ///===================================================================================================================
-	m_backupPlsWait: "Another backup request is currently being processed.  Please wait for a few minutes and try again.",
+	m_backupPlsWait: "Une autre demande de sauvegarde est actuellement en cours de traitement. S'il vous plaît attendez quelques minutes et essayez à nouveau",
 
 
     ///////////////////////////////////////////////////////////////////;;;

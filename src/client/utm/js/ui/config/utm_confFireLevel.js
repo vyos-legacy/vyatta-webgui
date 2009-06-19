@@ -146,7 +146,7 @@ function UTM_confFireLevel(name, callback, busLayer)
         thisObj.f_removeDivChildren(thisObj.m_gridLevelBody);
 
         var custom = g_lang.m_fireLevelBdCustom + "&nbsp;&nbsp;&nbsp;<input type='" +
-                      "image' src='" + g_lang.m_imageDir + "bt_config.png' " +
+                      "image' src='" + g_lang.m_imageDir + "bt_config.gif' " +
                       "onclick='f_fireLevelConfigHandler()' title='" +
                       g_lang.m_fireLevelCustConfTip + "'>";
 

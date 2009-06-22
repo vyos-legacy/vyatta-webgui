@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+71) unstable; urgency=low
+
+  * * help windows : forgot to include css style file from previous
+    checked in.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Mon, 22 Jun 2009 18:49:28 +0000
+
 vyatta-webgui (0.2+fxd0+70) unstable; urgency=low
 
   * * help windows : changed code to popup help window instead of open

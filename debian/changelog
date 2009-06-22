@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+70) unstable; urgency=low
+
+  * * help windows : changed code to popup help window instead of open
+    up a new window as a new
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Mon, 22 Jun 2009 18:43:40 +0000
+
 vyatta-webgui (0.2+fxd0+69) unstable; urgency=low
 
   [ Loi Vo ]

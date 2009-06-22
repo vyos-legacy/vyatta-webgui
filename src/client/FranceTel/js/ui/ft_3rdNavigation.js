@@ -302,9 +302,11 @@ function FT_3rdNavigation()
 
 function f_onOAHelpClick()
 {
+    var fea = "width=700px, height=500px, menubar=yes, scrollbars=yes";
+
     if(g_utils.f_getLanguage() == g_consObj.V_LANG_FR)
-        window.open(g_oaConfig.m_oaHelpURL_fr);
+        window.open(g_oaConfig.m_oaHelpURL_fr, "Open Appliance", fea);
     else
-        window.open(g_oaConfig.m_oaHelpURL_en);
+        window.open(g_oaConfig.m_oaHelpURL_en, "Open Appliance", fea);
     
 }

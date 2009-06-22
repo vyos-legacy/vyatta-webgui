@@ -26,7 +26,11 @@ function FT_tabPanel()
         thisObj.m_container.style.width = VYA.DYN_STYLE.APP_WIDTH;
         thisObj.m_mainPanel = new FT_mainPanel();
         thisObj.m_mainPanel.f_init();
-		//thisObj.threadId = setInterval(thisObj.f_scrollRemove, 5000);
+		/*
+		alert('isIE: ' + g_xbObj.m_isIE + ' isChrome: ' + g_xbObj.m_isChrome + ' isSafari: ' + 
+		      g_xbObj.m_isSafari + ' isGecko: ' + g_xbObj.m_isGecko + ' isOpera: ' + g_xbObj.m_isOpera);
+		*/
+		thisObj.threadId = setInterval(thisObj.f_scrollRemove, 500);
     }
     
 	this.f_stopPolling = function()
@@ -186,30 +190,63 @@ function FT_tabPanel()
         ifr.style.width = '100%';
 		ifr.style.overflowX = 'hidden';
         //ifr.style.height = screen.height;
-        ifr.setAttribute('height', screen.height-40);
+        //ifr.setAttribute('height', screen.height-40);
         thisObj.m_container.appendChild(ifr);
 		ifr = document.getElementById('mainFrame');		
-        g_xbObj.f_xbAttachEventListener(ifr, 'load', thisObj.f_setIframeHeight, true);
+        //g_xbObj.f_xbAttachEventListener(ifr, 'load', thisObj.f_setIframeHeight, true);
 		//ifr.onload = thisObj.f_resizeFrame;				
         //ifr.onload = "f_setIframeHeight('mainFrame')";
         ifr.setAttribute('src', url);
     }
-	
+		
 	this.f_adjustIframeHeight = function()
 	{
 		var ifr = document.getElementById('mainFrame');
-        ifr.style.height = "auto";		
-        var iframeWin = window.frames['mainFrame'];/*window.frames[iframeName]*/;
+		//ifr.style.height = "auto";		
+		var iframeWin = window.frames['mainFrame'];/*window.frames[iframeName]*/
+		;
 		if (!iframeWin) {
-		    iframeWin = ifr.contentWindow; /* for firefox */
-		}	
+			iframeWin = ifr.contentWindow; /* for firefox */
+		}
 		var d = iframeWin.document;
-		var r = (d.compatMode=='BackCompat') ? d.body : d.documentElement;
-		//console.log('r.scrollHeight: ' + r.scrollHeight + ' r.clientHeight: ' + r.clientHeight);
+		var r = (d.compatMode == 'BackCompat') ? d.body : d.documentElement;
 		var isVS = r.scrollHeight > r.clientHeight;
-		if (isVS) {
-			ifr.style.height = (r.scrollHeight + 20) + 'px';
-		}	
+		
+		/*
+		g_utils.f_debug('r.scrollHeight: ' + r.scrollHeight + ' r.clientHeight: ' + r.clientHeight +
+		                ' r.offsetHeight: ' +
+		                r.offsetHeight +
+		                ' d.body.oh: ' +
+		                d.body.offsetHeight + ' d.body.sh: ' + d.body.scrollHeight + ' d.body.ch: ' + d.body.clientHeight +
+		                ' d.de.oh' +
+		                d.documentElement.offsetHeight + ' d.de.sh: ' + d.documentElement.scrollHeight  + ' d.de.ch: ' + d.documentElement.clientHeight + 
+		                ' isVS=' +
+		                isVS);		
+        */
+		
+        if (isVS) {
+			ifr.height = (r.scrollHeight + 30) + 'px';
+        } else {			
+		    if (g_xbObj.m_isIE) {
+                if (r.scrollHeight - d.body.offsetHeight > 30) {
+                    ifr.height = (d.body.offsetHeight + 30) + 'px';
+                }
+            } else if (g_xbObj.m_isSafari || g_xbObj.m_isChrome) {				
+                if (r.clientHeight - r.scrollHeight > 30) {
+                    ifr.height = (r.scrollHeight + 30) + 'px';
+                }
+            } else if (g_xbObj.m_isOpera) {
+				/*
+				if (r.scrollHeight < r.clientHeight) {
+					ifr.style.height = "auto";
+				}
+				*/
+            } else {
+                if (r.clientHeight - r.offsetHeight > 30) {
+                    ifr.height = (r.offsetHeight + 30) + 'px';
+                }
+            }								
+		} 
 	}
 	
 	this.f_scrollRemove = function()
@@ -217,7 +254,6 @@ function FT_tabPanel()
 		try {
 			var ifr = document.getElementById('mainFrame');
 			if (ifr) {
-				//console.log('tick...');
 			    thisObj.f_adjustIframeHeight();
 			}
 		} catch (e) { //console.log('f_scrollRemove exception:' + e)
@@ -226,10 +262,12 @@ function FT_tabPanel()
     
 	this.f_resizeChildIframe = function(h)
 	{
+		/*
 		var ifr = document.getElementById('mainFrame');
 		if (ifr) {
 			ifr.style.height = h + 'px';
 		}
+		*/
 	}
 }
 function f_tabPanelSelectMenuItem()

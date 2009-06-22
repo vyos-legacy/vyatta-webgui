@@ -15,6 +15,7 @@ function FT_crossBrowser()
     this.m_isKDE = false;
     this.m_isIE5mac = false;
     this.m_isSafari = false;
+	this.m_isChrome = false;	
     this.m_browserVer = undefined;
     this.m_domReadyCb = undefined;
 
@@ -77,17 +78,21 @@ function FT_crossBrowser()
             return false;
         } else if (typeof document.getElementById != "undefined") {
             if (navigator.vendor.indexOf("Apple Computer, Inc.") != -1) {
-                thisObj.m_isSafari = true;
-                if (typeof window.XMLHttpRequest != "undefined") {
-                
-                    thisObj.m_browserVer = "1.2";
-                }
-                thisObj.m_browserVer = "1";
-                return true;
-            } else if (agent.indexOf("gecko") != -1) {
-                thisObj.m_isGecko = true;
-                return true;
-            }
+				thisObj.m_isSafari = true;
+				if (typeof window.XMLHttpRequest != "undefined") {
+				
+					thisObj.m_browserVer = "1.2";
+				}
+				thisObj.m_browserVer = "1";
+				return true;
+			} else if (navigator.userAgent.indexOf('Chrome') > 0) {
+				thisObj.m_isChrome = true;
+				thisObj.m_isGecko = true;
+				return true;				
+			} else if (agent.indexOf("gecko") != -1) {
+				thisObj.m_isGecko = true;
+				return true;
+			} 			
         }
         return false;
     }

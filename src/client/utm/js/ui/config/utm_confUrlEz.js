@@ -481,7 +481,7 @@ function UTM_confUrlEz(name, callback, busLayer)
             }                                 
         };      
 		
-	    g_busObj.f_getUrlFilterConfig(cb);
+	    window.setTimeout(function() { g_busObj.f_getUrlFilterConfig(cb); }, 10);
 	}
 	
     this.f_loadVMData = function(element)

@@ -1,3 +1,37 @@
+vyatta-webgui (0.2.14+fxdU+71) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fixed in base class to fixed domU timeout too soon.
+
+  [ Loi Vo ]
+  * 1. add more images.
+  * 1. Modify so that the utm will call the common resizeFrameSize
+    function from the common.
+
+  [ Kevin Choi ]
+  * * fixed confirmation dialog missing 'ok' and confirmation images.
+
+  [ Loi Vo ]
+  * 1. update back button  path
+
+  [ Kevin Choi ]
+  * * fw customize : additional fixed to filter protocol & port fields
+    when app service
+
+  [ Loi Vo ]
+  * Updated english language file with feedbacks from FT.
+
+  [ Kevin Choi ]
+  * * fw security level : display proper level messages for FT pre-
+    define zone.
+  * * added additional security level message to language files.
+  * * zone mgmt editor screen : fixed cross-browser issue on firefox to
+    remove an
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 22 Jun 2009 16:32:33 -0700
+
 vyatta-webgui (0.2.14+fxdU+70) unstable; urgency=low
 
   [ An-Cheng Huang ]

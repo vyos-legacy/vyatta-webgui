@@ -1,3 +1,14 @@
+vyatta-webgui (0.2.14+fxdU+72) unstable; urgency=low
+
+  [ Loi Vo ]
+  * Fix a race condition which results in an exception intermittently.
+
+  [ Kevin Choi ]
+  * * base class: After we recieved the new image files from FT. we
+    messed up the Back
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Tue, 23 Jun 2009 02:12:24 +0000
+
 vyatta-webgui (0.2.14+fxdU+71) unstable; urgency=low
 
   [ Kevin Choi ]

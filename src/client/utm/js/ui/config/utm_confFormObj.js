@@ -188,7 +188,7 @@ function UTM_confFormObj(name, callback, busLayer)
             case 'restore':
                 imgSrc = g_lang.m_imageDir + 'bt_restore.gif';
             case 'back':
-                imgSrc = g_lang.m_imageDir + 'bt_back.png';				
+                imgSrc = g_lang.m_imageDir + 'bt_back.gif';
             default:
                 break;
         }

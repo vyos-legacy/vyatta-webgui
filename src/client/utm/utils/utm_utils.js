@@ -946,8 +946,21 @@ var g_utils =
 	{
 		if (node==null) return null;
 		return node.getAttribute(attr);
-	}
-
+	},
+	
+	f_debug : function(t, overwrite)
+	{
+		if (g_devConfig.m_debug) {
+			var el = document.getElementById('debug_tray');
+			var text = '';
+			if (overwrite) {
+				text = '&nbsp;[' + t + ']';
+			} else {
+				text = el.innerHTML + '<br/>' + '&nbsp;[' + t + ']';
+			}
+			el.innerHTML = text;
+		}
+	}	
 };
 
 function f_utilsPopupTimeout(id)

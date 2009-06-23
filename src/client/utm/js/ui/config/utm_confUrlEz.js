@@ -492,10 +492,13 @@ function UTM_confUrlEz(name, callback, busLayer)
         thisObj.f_attachListener();
         thisObj.m_form = document.getElementById('conf_url_ez_form');
         thisObj.f_setFocus();
-        //thisObj.f_resize();
-                
-        thisObj.f_reload();
-        window.setTimeout(function(){thisObj.f_resize();}, 10);		
+		thisObj.f_resize();
+		thisObj.f_reload();
+		/*
+		window.setTimeout(function() {
+            thisObj.f_resize();		
+            thisObj.f_reload(); }, 100);
+        */
     }
     
     this.f_attachListener = function()

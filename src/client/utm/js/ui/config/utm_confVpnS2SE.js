@@ -222,8 +222,8 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		          '<a href="#" onclick="f_loadVpnLink(\'usr\')">Remote User</a><br/>';
 				  
         var div = document.createElement('div');
-        div.style.position = 'relative';
         div.style.display = 'block';
+		div.style.height = 'auto';
         div.style.backgroundColor = 'white';
         div.style.overflow = 'visible';
 		

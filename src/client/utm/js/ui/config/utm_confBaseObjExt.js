@@ -74,9 +74,10 @@ function UTM_confBaseObjExt(name, callback, busLayer)
     this.f_createLRButtons = function(buttons, width)
     {
         var div = document.createElement('div');
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
+		div.style.paddingTop = '10px';
         div.style.height = '40px';
 		div.style.width = width;
 
@@ -133,11 +134,14 @@ function UTM_confBaseObjExt(name, callback, busLayer)
         if (padding) {
             h += padding;
         }
+        g_utils.f_debug('utm_confBaseObjExt.f_resize: h=' + h, true);		
         //console.log('f_resize to: ' + h);
+		/*
         this.m_div.style.height = h + 'px';
         document.getElementById('ft_container').style.height = h + 'px';
         this.f_reflow();
-        g_utmMainPanel.f_requestResize();			
+        g_utmMainPanel.f_requestResize();		
+        */	
     }	
 		
     /**
@@ -170,7 +174,8 @@ function UTM_confBaseObjExt(name, callback, busLayer)
 	this.f_createHtmlDiv = function(html, width)
     {
         var div = document.createElement('div');
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
+		div.style.height = 'auto';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.overflow = 'visible'

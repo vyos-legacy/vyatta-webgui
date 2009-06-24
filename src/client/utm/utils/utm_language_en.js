@@ -75,6 +75,8 @@ var g_lang =
     m_username : 'user name',
     m_status : 'status',
     m_ipAddr : 'IP address',
+    m_invalidIpAddr : "Invalid IP address",
+    m_ipaddrTitle : "IP address validation",
     m_underConstruction : 'Under Construction',
     m_applyTip : "save changes",
     m_cancelTip : "cancel changes",

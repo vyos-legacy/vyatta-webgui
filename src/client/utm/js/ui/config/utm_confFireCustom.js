@@ -500,7 +500,8 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         // validate ip address
         if(!g_utils.f_validateIP(ip))
         {
-            alert("invalid ip address : " + ip);
+            g_utils.f_popupMessage(g_lang.m_invalidIpAddr + " : " + ip, "error",
+                          g_lang.m_ipaddrTitle, true);
             tf.focus();
             return;
         }

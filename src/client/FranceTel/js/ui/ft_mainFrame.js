@@ -41,6 +41,11 @@ function FT_mainFrame(){
 		this.m_tabPanel.f_resizeChildIframe(h);
 	}
     
+	this.f_stopAutoResize = function(state)
+	{
+		this.m_tabPanel.f_stopAutoResize(state);
+	}	
+	
 	this.f_getTabPanel = function() {
 		return thisObj.m_tabPanel;
 	}
@@ -156,7 +161,9 @@ function FT_mainFrame(){
 		        }				
 				uriPath = vmRec.m_guiUri + 'utm_netconf_' + lang + '.html';	
 				vmRec.m_guiUri = vmRec.m_guiUri + 'utm_main_' + lang + '.html';
-			} 
+			} /* else if (vmRec.m_name == 'jvm') {
+				vmRec.m_guiUri = '/utm/Loi/test.html';
+			} */
 		}
 		if (bUtmIncluded) {
 		    thisObj.m_vmList[index].m_guiUri = uriPath;	
@@ -250,6 +257,11 @@ function f_contact()
 function f_resizeChildIframe(h)
 {
 	g_mainFrameObj.f_resizeChildIframe(h);
+}
+
+function f_stopAutoResize(state)
+{
+	g_mainFrameObj.f_stopAutoResize(state);
 }
 
 function f_timeout()

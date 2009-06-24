@@ -13,6 +13,7 @@ function FT_tabPanel()
     this.m_mainPanel = undefined;
     this.threadId = undefined;
 	this.m_selectedId = undefined;
+	this.m_stopAutoResize = false;
 	
     ///////////////////////////////////////
     // functions    
@@ -76,8 +77,14 @@ function FT_tabPanel()
         thisObj.m_mainPanel.f_selectPage(id, subId);
     }
     
+	this.f_stopAutoResize = function(state)
+	{
+		thisObj.m_stopAutoResize = state;
+	}
+	
     this.f_showOApanel = function()
     {
+		thisObj.f_stopAutoResize(true);
         thisObj.m_container.appendChild(thisObj.m_mainPanel.f_getMainPanel());
         thisObj.m_mainPanel.f_show();
         if (g_roleManagerObj.f_isUser()) {
@@ -182,6 +189,7 @@ function FT_tabPanel()
     */
     this.f_showVm = function(vmId, urlPath)
     {
+		thisObj.f_stopAutoResize(false);
         var url = urlPath;
         var ifr = document.createElement('iframe');
         ifr.setAttribute('id', 'mainFrame');
@@ -209,24 +217,36 @@ function FT_tabPanel()
 			iframeWin = ifr.contentWindow; /* for firefox */
 		}
 		var d = iframeWin.document;
+		if (thisObj.m_stopAutoResize) {
+			g_utils.f_debug('Inner iframe is in waiting state.  So return from here.');
+			return;
+		} 
 		var r = (d.compatMode == 'BackCompat') ? d.body : d.documentElement;
 		var isVS = r.scrollHeight > r.clientHeight;
 		
-		/*
-		g_utils.f_debug('r.scrollHeight: ' + r.scrollHeight + ' r.clientHeight: ' + r.clientHeight +
-		                ' r.offsetHeight: ' +
-		                r.offsetHeight +
-		                ' d.body.oh: ' +
-		                d.body.offsetHeight + ' d.body.sh: ' + d.body.scrollHeight + ' d.body.ch: ' + d.body.clientHeight +
-		                ' d.de.oh' +
-		                d.documentElement.offsetHeight + ' d.de.sh: ' + d.documentElement.scrollHeight  + ' d.de.ch: ' + d.documentElement.clientHeight + 
-		                ' isVS=' +
-		                isVS);		
-        */
+		if (g_devConfig.m_debug) {
+			g_utils.f_debug('r.scrollHeight: ' + r.scrollHeight + ' r.clientHeight: ' + r.clientHeight +
+			' r.offsetHeight: ' +
+			r.offsetHeight +
+			' d.body.oh: ' +
+			d.body.offsetHeight +
+			' d.body.sh: ' +
+			d.body.scrollHeight +
+			' d.body.ch: ' +
+			d.body.clientHeight +
+			' d.de.oh: ' +
+			d.documentElement.offsetHeight +
+			' d.de.sh: ' +
+			d.documentElement.scrollHeight +
+			' d.de.ch: ' +
+			d.documentElement.clientHeight +
+			' isVS=' +
+			isVS);
+		}
 		
         if (isVS) {
 			ifr.height = (r.scrollHeight + 30) + 'px';
-        } else {			
+        } else {		
 		    if (g_xbObj.m_isIE) {
                 if (r.scrollHeight - d.body.offsetHeight > 30) {
                     ifr.height = (d.body.offsetHeight + 30) + 'px';
@@ -236,16 +256,12 @@ function FT_tabPanel()
                     ifr.height = (r.scrollHeight + 30) + 'px';
                 }
             } else if (g_xbObj.m_isOpera) {
-				/*
-				if (r.scrollHeight < r.clientHeight) {
-					ifr.style.height = "auto";
-				}
-				*/
+                ;
             } else {
                 if (r.clientHeight - r.offsetHeight > 30) {
                     ifr.height = (r.offsetHeight + 30) + 'px';
                 }
-            }								
+            }							
 		} 
 	}
 	

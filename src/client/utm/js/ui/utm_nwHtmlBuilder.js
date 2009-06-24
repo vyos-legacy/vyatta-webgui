@@ -12,6 +12,7 @@ function UTM_htmlBuilder()
 	    thisObj.f_buildNav2();
 		thisObj.f_buildSm();
 		thisObj.f_buildDynSm();		
+		thisObj.f_initDebugTray();		
 	}
 		
     var nav2menu = [ 
@@ -133,6 +134,17 @@ function UTM_htmlBuilder()
 			thisObj.f_buildDynSmElement(dynSmArray[i]);
 		}
 	}		
-	
+
+	this.f_initDebugTray = function() {
+		var div = document.getElementById('debug_div');		
+		if (div != null) {
+			if (g_devConfig.m_debug) {
+				div.style.backgroundColor = '#CCC';
+				div.style.display = 'block';
+			} else {
+			    div.style.display = 'none';
+			}
+		}
+	}	
 	
 }

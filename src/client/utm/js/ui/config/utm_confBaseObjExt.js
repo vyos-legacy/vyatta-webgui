@@ -111,17 +111,24 @@ function UTM_confBaseObjExt(name, callback, busLayer)
 	
     this.f_resize = function(padding)
     {
-		//console.log('utm_confBaseObjExt.f_resize: table height: ' + thisObj.m_tableRowCounter * thisObj.m_rowHeight);
-        if (this.m_id != g_configPanelObj.m_selectedItem ||
-		this.m_div == undefined) {
+		//console.log('utm_confBaseObj.f_resize called');
+		if ((this.m_id == null) || (g_configPanelObj.m_selectedItem == null) || (this.m_div == undefined)) {
+			//console.log('utm_confBaseObj.f_resize: get out since m_id, m_selectedItem, m_div is not defined');
+			return;
+		} else if ((this.m_id.indexOf(g_configPanelObj.m_selectedItem) == -1) ||
+		(this.m_id.length != g_configPanelObj.m_selectedItem.length)) {
+			//if (this.m_id != g_configPanelObj.m_selectedItem ||
+			//this.m_div == undefined)
 			//to avoid the race condition between callback from server, and user click event.
+			//console.log('utm_configBaseObj.f_resize: this.m_id: ' + this.m_id + ' g_configPanelObj.m_selecteditem:' +
+			//g_configPanelObj.m_selectedItem);
 			return;
 		}
         var h = 0;
         for (var i = 0; this.m_div.childNodes[i]; i++) {
-			//console.log('child.offsetHeight: ' + this.m_div.childNodes[i].offsetHeight);
+			//console.log('utm_confBaseObj.f.resize: ' + i);
             h += this.m_div.childNodes[i].offsetHeight;
-        }
+        }		
 
         if (padding) {
             h += padding;

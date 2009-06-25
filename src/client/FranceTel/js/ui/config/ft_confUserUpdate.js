@@ -145,11 +145,6 @@ function FT_confUserUpdate(name, callback, busLayer)
     {
     }
     
-    this.f_validate = function()
-    {
-        return true;
-    }
-    
     this.f_updateUser = function()
     {
         thisObj.f_enableClick(false);
@@ -255,16 +250,31 @@ function FT_confUserUpdate(name, callback, busLayer)
 			                        g_lang.m_userUsername + ' ' + g_lang.m_formNoEmpty + '</li>';
             valid = false;
         }
+        if (thisObj.form.conf_user_update_username.value.trim().length > 32) {
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
+			                        g_lang.m_userUsername + ' ' + g_lang.m_formTooLong + ' 32 ' + g_lang.m_formChar  + '</li>';
+            valid = false;
+        }		
         if (thisObj.form.conf_user_update_surname.value.trim().length <= 0) {
             errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
 			                        g_lang.m_userSurname + ' ' + g_lang.m_formNoEmpty + '</li>';
             valid = false;
         }		
+        if (thisObj.form.conf_user_update_surname.value.trim().length > 32) {
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
+			                        g_lang.m_userSurname + ' ' + g_lang.m_formTooLong + ' 32 ' + g_lang.m_formChar  + '</li>';
+            valid = false;
+        }			
         if (thisObj.form.conf_user_update_givenname.value.trim().length <= 0) {
             errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
 			                        g_lang.m_userGivenName + ' ' + g_lang.m_formNoEmpty + '</li>';
             valid = false;
         }		
+        if (thisObj.form.conf_user_update_givenname.value.trim().length > 32) {
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
+			                        g_lang.m_userGivenName + ' ' + g_lang.m_formTooLong + ' 32 ' + g_lang.m_formChar  + '</li>';
+            valid = false;
+        }			
 		t = thisObj.form.conf_user_update_email.value.trim();
 		if (t.length > 0) {
 			if (!thisObj.f_checkEmail(t)) {

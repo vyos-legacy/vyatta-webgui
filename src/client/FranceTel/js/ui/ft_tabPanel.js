@@ -193,6 +193,7 @@ function FT_tabPanel()
         var url = urlPath;
         var ifr = document.createElement('iframe');
         ifr.setAttribute('id', 'mainFrame');
+		ifr.setAttribute('name', 'mainFrame');
         ifr.setAttribute('border', 0);
         ifr.setAttribute('frameBorder', '0');
         ifr.style.width = '100%';

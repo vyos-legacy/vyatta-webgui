@@ -270,6 +270,8 @@ var g_lang =
 	m_formNoEmpty : "ne peut être vide",
 	m_formFixError : "veuillez corriger les erreurs suivantes", 
 	m_formInvalid : "est invalide",
+	m_formTooLong : "cannot have more than",
+	m_formChar: "characters",	
 	m_formSave : "sauvegardé",
 	m_formPassword : "mot de passe",
 

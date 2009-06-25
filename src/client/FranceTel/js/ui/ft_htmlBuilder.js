@@ -16,6 +16,12 @@ function FT_htmlBuilder()
 		thisObj.f_buildDynSm();
 	}
 	
+	this.f_initVersion = function()
+	{
+		var el = document.getElementById('footer_clock');
+		el.innerHTML = g_version;
+	}
+	
 	this.f_initLangBar = function()
 	{
 		 var html = '';
@@ -42,6 +48,7 @@ function FT_htmlBuilder()
 	
 	this.f_init = function()
 	{
+		 thisObj.f_initVersion();
          thisObj.f_initLangBar();
 		 thisObj.f_initLogout();	
 		 thisObj.f_initFooter();

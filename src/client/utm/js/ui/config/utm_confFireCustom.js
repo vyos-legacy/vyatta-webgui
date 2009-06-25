@@ -197,9 +197,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
                 thisObj.f_onOffEnabledAllChkBox();
             }
-
-            if(fireRec.m_zonePair != "Any")
-                thisObj.f_adjustGridHeight();
         };
 
         thisObj.m_zpIndex = 1;  // start from the show rules combo index 1
@@ -248,22 +245,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             var fr = new UTM_fireRecord(null, thisObj.m_zonePairs[thisObj.m_zpIndex++]);
             thisObj.m_busLayer.f_getFirewallSecurityCustomize(fr, cb);
         }
-        else
-            thisObj.f_adjustGridHeight();
-    }
-
-    this.f_adjustGridHeight = function()
-    {
-        var counter = thisObj.m_fireRecs != null ? thisObj.m_fireRecs.length : 0;
-        var h = counter * 30 + 105;
-
-        // the minimum height of grid is 160
-        if(counter < 2)
-            h = 168;
-
-        thisObj.m_grid.style.height = h+"px";
-        thisObj.f_resetTableRowCounter(0);
-        window.setTimeout(function(){thisObj.f_resize();}, 20);
     }
 
     this.populateTable = function(records, zonePair)
@@ -385,7 +366,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         thisObj.m_fireRecs.push(fireRec);
         thisObj.f_addRecordIntoTable(fireRec);
         thisObj.f_setRuleDefaultValues(fireRec);
-        thisObj.f_adjustGridHeight();
     };
 
     this.f_init = function()
@@ -411,7 +391,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
         window.setTimeout(function()
         {
-            thisObj.f_adjustGridHeight();
             thisObj.f_enabledActionButtons(false);
         }, 100);
 

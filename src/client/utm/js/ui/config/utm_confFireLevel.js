@@ -84,16 +84,11 @@ function UTM_confFireLevel(name, callback, busLayer)
 
                 thisObj.f_populateActiveTable(thisObj.m_levelRecs, thisObj.m_selLvlRec);
 
-                thisObj.m_div.appendChild(thisObj.m_gridLevelHeader);
-                thisObj.m_div.appendChild(thisObj.m_gridLevelBody);
-
                 if(thisObj.m_selLvlRec != null)
                     thisObj.f_populateLevelTable(thisObj.m_selLvlRec);
                 else
                 {
                     thisObj.f_updateLevelTableHeader("-");
-                    thisObj.f_adjustButtonsPosition(50);
-                    thisObj.f_resize();
                 }
             }
         };
@@ -209,11 +204,6 @@ function UTM_confFireLevel(name, callback, busLayer)
 
         thisObj.f_updateGridRowRadioValue(rec);
         thisObj.f_updateLevelTableHeader(rec.m_direction);
-
-        var height = (h.length*43) + 30;
-        thisObj.m_gridLevelBody.style.height = height + "px";
-        thisObj.f_adjustButtonsPosition(height);
-        thisObj.f_resize();
     }
 
 
@@ -287,22 +277,15 @@ function UTM_confFireLevel(name, callback, busLayer)
         return html;
     };
 
-    this.f_adjustButtonsPosition = function(h)
-    {
-        thisObj.m_buttons.style.top = (h + 60) + "px";
-        thisObj.f_resetTableRowCounter(1);
-    }
-
     this.f_init = function()
     {
         this.m_colActiveModel = this.f_createActiveTableColumns();
         this.m_gridActiveHeader = this.f_createGridHeader(this.m_colActiveModel);
         this.m_gridActiveBody = this.f_createGridView(this.m_colActiveModel, false);
 
-        this.m_dummy = this.f_createAnchorDiv('', '');
-
         this.m_colLevelModel = this.f_createLevelColumns("LAN_to_WAN");
         this.m_gridLevelHeader = this.f_createGridHeader(this.m_colLevelModel);
+        this.m_gridLevelHeader.style.marginTop = "35px";
         this.m_gridLevelBody = this.f_createGridView(this.m_colLevelModel, false);
 
         this.f_loadVMData();
@@ -317,7 +300,8 @@ function UTM_confFireLevel(name, callback, busLayer)
                         g_lang.m_fireActiveHeader+"</u><br><br>");
 
         return [this.f_headerText(), actHeader, this.m_gridActiveHeader,
-                this.m_gridActiveBody, this.m_buttons];
+                this.m_gridActiveBody, this.m_gridLevelHeader,
+                this.m_gridLevelBody, this.m_buttons];
     };
 
     this.f_headerText = function()

@@ -60,7 +60,7 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
 
             thisObj.f_increateTableRowCounter(-1);
             //thisObj.f_adjustDivPosition(thisObj.m_buttons);
-            thisObj.f_resize();
+            //thisObj.f_resize();
             thisObj.f_enableActionButtons(thisObj.m_zoneRecs);
         };
 

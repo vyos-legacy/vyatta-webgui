@@ -190,6 +190,7 @@ function FT_tabPanel()
     this.f_showVm = function(vmId, urlPath)
     {
 		thisObj.f_stopAutoResize(false);
+		
         var url = urlPath;
         var ifr = document.createElement('iframe');
         ifr.setAttribute('id', 'mainFrame');
@@ -205,28 +206,37 @@ function FT_tabPanel()
         //g_xbObj.f_xbAttachEventListener(ifr, 'load', thisObj.f_setIframeHeight, true);
 		//ifr.onload = thisObj.f_resizeFrame;				
         //ifr.onload = "f_setIframeHeight('mainFrame')";
-        ifr.setAttribute('src', url);
+        ifr.setAttribute('src', url);		
     }
 		
 	this.f_adjustIframeHeight = function()
 	{
+		var t = (new Date()).getSeconds();
+		g_utils.f_debug('ft_tabPanel.f_adjustIframeHeight: ' + t);
+		
 		var ifr = document.getElementById('mainFrame');
 		//ifr.style.height = "auto";		
-		var iframeWin = window.frames['mainFrame'];/*window.frames[iframeName]*/
-		;
+		var iframeWin = window.frames['mainFrame'];/*window.frames[iframeName]*/		
 		if (!iframeWin) {
 			iframeWin = ifr.contentWindow; /* for firefox */
 		}
-		var d = iframeWin.document;
+		d = iframeWin.document;
+		if (!d) { 
+		    //this is the case when we switching between different tabs on firefox
+			//somehow window.frames['mainFrame'] will return a reference to the top window
+			//instead of the frame window.
+            d = ifr.contentWindow.document;
+		}
 		if (thisObj.m_stopAutoResize) {
 			g_utils.f_debug('Inner iframe is in waiting state.  So return from here.');
 			return;
 		} 
 		var r = (d.compatMode == 'BackCompat') ? d.body : d.documentElement;
+		
 		var isVS = r.scrollHeight > r.clientHeight;
 		
 		if (g_devConfig.m_debug) {
-			g_utils.f_debug('r.scrollHeight: ' + r.scrollHeight + ' r.clientHeight: ' + r.clientHeight +
+			g_utils.f_debug('t=' + t + ' r.scrollHeight: ' + r.scrollHeight + ' r.clientHeight: ' + r.clientHeight +
 			' r.offsetHeight: ' +
 			r.offsetHeight +
 			' d.body.oh: ' +
@@ -273,7 +283,8 @@ function FT_tabPanel()
 			if (ifr) {
 			    thisObj.f_adjustIframeHeight();
 			}
-		} catch (e) { //console.log('f_scrollRemove exception:' + e)
+		} catch (e) { 
+		    //console.log('f_scrollRemove exception:' + e)
 		}
 	}
     

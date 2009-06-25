@@ -71,6 +71,7 @@ function UTM_configPanel()
         thisObj.m_title.innerHTML = thisObj.m_currentDesc;
         thisObj.m_selectedItem = id;
         thisObj.m_container.style.display = 'block';
+		thisObj.m_container.style.height = 'auto';
         thisObj.m_parent_container.appendChild(thisObj.m_container);
     }
 

@@ -617,6 +617,8 @@ var g_utils =
         if (document.getElementById('ft_wait_div') != null)
             this.f_stopWait();
 
+        stopAutoResize(true);
+		
         var innerHTML = '<img aligh="center" src="images/wait.gif">';
         var div = document.createElement('div');
         div.setAttribute('id', 'ft_wait_div');
@@ -660,6 +662,8 @@ var g_utils =
 
 	f_stopWait: function()
 	{
+		stopAutoResize(false);
+		
 	    var div = document.getElementById('ft_modal_wait_message');
             if(div != null)
             {

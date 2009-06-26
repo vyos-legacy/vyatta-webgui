@@ -406,8 +406,10 @@ var g_utils =
     },
 	
 	f_debug : function(t) {
-		var el = document.getElementById('welcome_admin');
-		el.innerHTML = t;
+        if (g_devConfig.m_debug) {
+			var el = document.getElementById('welcome_admin');
+			el.innerHTML = t;
+		}
 	}	
 };
 

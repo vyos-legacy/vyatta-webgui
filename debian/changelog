@@ -1,3 +1,25 @@
+vyatta-webgui (0.2.14+fxdU+73) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add a debug panel to display debug messages when
+    g_devConfig.m_debug is set to true
+
+  [ Kevin Choi ]
+  * * zone management screen : fixed null pointer exception if server
+    return 0 data.
+
+  [ Loi Vo ]
+  * 1. Update wait image to be the same as dom0
+
+  [ Kevin Choi ]
+  * * adjusted div size due too the base class changed to handle frame
+    resizes.
+
+  [ Stig Thormodsrud ]
+  * Fix 4660: Disabling all web filtering times has no effect.
+
+ -- Stig Thormodsrud <stig@vyatta.com>  Fri, 26 Jun 2009 15:35:43 -0700
+
 vyatta-webgui (0.2.14+fxdU+72) unstable; urgency=low
 
   [ Loi Vo ]

@@ -140,17 +140,23 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                 if(evt.m_value != null && evt.m_value.length > 0)
                 {
                     var combo = document.getElementById(thisObj.m_headercbbId);
-                    var inner = "";
 
                     for(var i=0; i<evt.m_value.length; i++)
                     {
+                        var newOpt = document.createElement('option')
                         var dir = evt.m_value[i].m_direction;
+                        newOpt.text = dir;
+                        newOpt.value = dir;
+                        try
+                        {
+                            combo.add(newOpt, null);
+                        }
+                        catch(ex)
+                        {
+                            combo.add(newOpt);   // for IE
+                        }
                         thisObj.m_zonePairs.push(dir);
-                        inner += "<option value='" + dir + "' name='" + dir +
-                                  "'>" + dir + "</option>";
                     }
-
-                    combo.innerHTML += inner;
                 }
 
                 thisObj.f_loadVMData(thisObj.m_levelRec.m_direction);
@@ -191,12 +197,10 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
                 thisObj.f_onOffEnabledAllChkBox();
             }
-
-            if(fireRec.m_zonePair != "Any")
-                thisObj.f_adjustGridHeight();
         };
 
-        thisObj.m_zpIndex = 1;
+        thisObj.m_zpIndex = 1;  // start from the show rules combo index 1
+                                // index 0 is 'Any' which we want to skip.
         thisObj.m_fireRecs = [];
         var ruleOp = document.getElementById(thisObj.m_headercbbId);
         var fireRec = new UTM_fireRecord(null, zonePair);
@@ -225,7 +229,12 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
     this.f_stopLoadVMData = function()
     {
-        thisObj.m_busLayer.f_cancelFirewallCustomizeRule(null);
+        var cb = function()
+        {
+
+        }
+
+        thisObj.m_busLayer.f_cancelFirewallCustomizeRule("customize-firewall", cb);
     }
 
     this.f_getZoneAny = function(cb)
@@ -236,22 +245,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             var fr = new UTM_fireRecord(null, thisObj.m_zonePairs[thisObj.m_zpIndex++]);
             thisObj.m_busLayer.f_getFirewallSecurityCustomize(fr, cb);
         }
-        else
-            thisObj.f_adjustGridHeight();
-    }
-
-    this.f_adjustGridHeight = function()
-    {
-        var counter = thisObj.m_fireRecs != null ? thisObj.m_fireRecs.length : 0;
-        var h = counter * 30 + 105;
-
-        // the minimum height of grid is 160
-        if(counter < 2)
-            h = 168;
-
-        thisObj.m_grid.style.height = h+"px";
-        thisObj.f_resetTableRowCounter(0);
-        window.setTimeout(function(){thisObj.f_resize();}, 20);
     }
 
     this.populateTable = function(records, zonePair)
@@ -373,7 +366,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         thisObj.m_fireRecs.push(fireRec);
         thisObj.f_addRecordIntoTable(fireRec);
         thisObj.f_setRuleDefaultValues(fireRec);
-        thisObj.f_adjustGridHeight();
     };
 
     this.f_init = function()
@@ -399,7 +391,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
         window.setTimeout(function()
         {
-            thisObj.f_adjustGridHeight();
             thisObj.f_enabledActionButtons(false);
         }, 100);
 
@@ -488,7 +479,8 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         // validate ip address
         if(!g_utils.f_validateIP(ip))
         {
-            alert("invalid ip address : " + ip);
+            g_utils.f_popupMessage(g_lang.m_invalidIpAddr + " : " + ip, "error",
+                          g_lang.m_ipaddrTitle, true);
             tf.focus();
             return;
         }
@@ -626,7 +618,18 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
         var sendDPort = function(fireRec)
         {
-            if(fireRec.m_appService.indexOf("Others") < 0)
+            thisObj.f_enableTextField(dport, true);
+            var app = fireRec.m_appService;
+
+            if(app.indexOf("UNIK") >= 0)
+            {
+                thisObj.f_enableComboboxSelection(proId, ["udp", "ip"], true);
+            }
+            else if(app.indexOf("IPSec") >= 0)
+            {
+                thisObj.f_enableComboboxSelection(proId, ["tcp","udp","ip"], true);
+            }
+            else if(app.indexOf("Others") < 0)
             {
                 ////////////////////////////////////
                 // set protocol per appService
@@ -649,10 +652,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                 thisObj.f_enableComboboxSelection(proId, [fireRec.m_protocol], true);
             }
             else
-            {
-                thisObj.f_enableTextField(dport, true);
                 thisObj.f_enableComboboxSelection(proId, [], false);
-            }
         }
 
         window.setTimeout(function(){sendDPort(fireRec)}, 100);
@@ -660,9 +660,14 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
     this.f_handleShowRuleChanged = function()
     {
+        var cb = function()
+        {
+
+        };
+
         if(!thisObj.m_isDirty)
         {
-            thisObj.m_busLayer.f_cancelFirewallCustomizeRule(null);
+            thisObj.m_busLayer.f_cancelFirewallCustomizeRule("customize-firewall", cb);
             thisObj.f_enabledActionButtons(false);
             thisObj.f_loadVMData();
         }
@@ -743,21 +748,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
     this.f_getComboBoxOptionName = function(cbb)
     {
-        for(var i=0; i<cbb.options.length; i++)
-        {
-            if(cbb.options[i].selected)
-            {
-                var attr = cbb.options[i].attributes;
-
-                for(var j=0; j<attr.length; j++)
-                {
-                    if(attr[j].nodeName == 'name')
-                        return attr[j].nodeValue;
-                }
-            }
-        }
-
-        return '';
+        return cbb.value;
     };
 
     this.f_handleAddAction = function()

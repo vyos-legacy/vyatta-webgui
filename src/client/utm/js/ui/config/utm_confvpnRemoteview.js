@@ -85,7 +85,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             }
         };
 
-        g_utils.f_cursorWait();
+        //g_utils.f_cursorWait();
         //this.m_threadId = this.m_busLayer.f_startVMRequestThread(cb);
     };
 

@@ -84,16 +84,11 @@ function UTM_confFireLevel(name, callback, busLayer)
 
                 thisObj.f_populateActiveTable(thisObj.m_levelRecs, thisObj.m_selLvlRec);
 
-                thisObj.m_div.appendChild(thisObj.m_gridLevelHeader);
-                thisObj.m_div.appendChild(thisObj.m_gridLevelBody);
-
                 if(thisObj.m_selLvlRec != null)
                     thisObj.f_populateLevelTable(thisObj.m_selLvlRec);
                 else
                 {
                     thisObj.f_updateLevelTableHeader("-");
-                    thisObj.f_adjustButtonsPosition(50);
-                    thisObj.f_resize();
                 }
             }
         };
@@ -146,7 +141,7 @@ function UTM_confFireLevel(name, callback, busLayer)
         thisObj.f_removeDivChildren(thisObj.m_gridLevelBody);
 
         var custom = g_lang.m_fireLevelBdCustom + "&nbsp;&nbsp;&nbsp;<input type='" +
-                      "image' src='" + g_lang.m_imageDir + "bt_config.png' " +
+                      "image' src='" + g_lang.m_imageDir + "bt_config.gif' " +
                       "onclick='f_fireLevelConfigHandler()' title='" +
                       g_lang.m_fireLevelCustConfTip + "'>";
 
@@ -154,11 +149,27 @@ function UTM_confFireLevel(name, callback, busLayer)
         var rdHeaders = [];
         var hdBodies = [];
         var h = [];
-        if(rec.m_direction != "LAN_to_WAN" && rec.m_direction != "WAN_to_LAN")
+        var dir = rec.m_direction;
+        if(dir != "LAN_to_WAN" && dir != "WAN_to_LAN")
         {
             radioIds = [this.m_rdDefaultId, this.m_rdCustomId];
             rdHeaders = [g_lang.m_fireLevelHdDef, g_lang.m_fireLevelHdCustom];
             hdBodies = [g_lang.m_fireLevelBdDef, custom];
+
+            if(dir == "LAN_to_DMZ")
+            {
+                hdBodies = [g_lang.m_fireLevelBdLANtoDMZ_Def, custom];
+            }
+            else if(dir == "DMZ_to_LAN")
+            {
+                hdBodies = [g_lang.m_fireLevelBdDMZtoLAN, custom];
+            }
+            else if(dir.indexOf("DMZ_to_") >= 0 ||
+                dir.indexOf("LAN2_to_") >= 0)
+            {
+                hdBodies = [g_lang.m_fireLevelBdDef, custom];
+            }
+            
             h = [43, 53];
         }
         else
@@ -168,9 +179,16 @@ function UTM_confFireLevel(name, callback, busLayer)
             rdHeaders = [g_lang.m_fireLevelHdAuth, g_lang.m_fireLevelHdStand,
                         g_lang.m_fireLevelHdAdvan, g_lang.m_fireLevelHdCustom,
                         g_lang.m_fireLevelHdBlock];
-            hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand,
+
+            if(dir == "WAN_to_LAN")
+                hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand_WtoL,
                         g_lang.m_fireLevelBdAdvan, custom,
                         g_lang.m_fireLevelBdBlock];
+            else
+                hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand,
+                        g_lang.m_fireLevelBdAdvan, custom,
+                        g_lang.m_fireLevelBdBlock];
+
             h = [43, 43, 43, 53, 43];
         }
 
@@ -186,11 +204,6 @@ function UTM_confFireLevel(name, callback, busLayer)
 
         thisObj.f_updateGridRowRadioValue(rec);
         thisObj.f_updateLevelTableHeader(rec.m_direction);
-
-        var height = (h.length*43) + 30;
-        thisObj.m_gridLevelBody.style.height = height + "px";
-        thisObj.f_adjustButtonsPosition(height);
-        thisObj.f_resize();
     }
 
 
@@ -264,22 +277,15 @@ function UTM_confFireLevel(name, callback, busLayer)
         return html;
     };
 
-    this.f_adjustButtonsPosition = function(h)
-    {
-        thisObj.m_buttons.style.top = (h + 60) + "px";
-        thisObj.f_resetTableRowCounter(1);
-    }
-
     this.f_init = function()
     {
         this.m_colActiveModel = this.f_createActiveTableColumns();
         this.m_gridActiveHeader = this.f_createGridHeader(this.m_colActiveModel);
         this.m_gridActiveBody = this.f_createGridView(this.m_colActiveModel, false);
 
-        this.m_dummy = this.f_createAnchorDiv('', '');
-
         this.m_colLevelModel = this.f_createLevelColumns("LAN_to_WAN");
         this.m_gridLevelHeader = this.f_createGridHeader(this.m_colLevelModel);
+        this.m_gridLevelHeader.style.marginTop = "35px";
         this.m_gridLevelBody = this.f_createGridView(this.m_colLevelModel, false);
 
         this.f_loadVMData();
@@ -294,7 +300,8 @@ function UTM_confFireLevel(name, callback, busLayer)
                         g_lang.m_fireActiveHeader+"</u><br><br>");
 
         return [this.f_headerText(), actHeader, this.m_gridActiveHeader,
-                this.m_gridActiveBody, this.m_buttons];
+                this.m_gridActiveBody, this.m_gridLevelHeader,
+                this.m_gridLevelBody, this.m_buttons];
     };
 
     this.f_headerText = function()

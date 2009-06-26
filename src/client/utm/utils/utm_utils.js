@@ -613,10 +613,12 @@ var g_utils =
 	},
 
     f_startWait: function(timeout)
-    {		
-        if (document.getElementById('ft_wait_div') != null) 
+    {
+        if (document.getElementById('ft_wait_div') != null)
             this.f_stopWait();
-        
+
+        stopAutoResize(true);
+		
         var innerHTML = '<img aligh="center" src="images/wait.gif">';
         var div = document.createElement('div');
         div.setAttribute('id', 'ft_wait_div');
@@ -624,7 +626,7 @@ var g_utils =
         div.style.height = '32px';
         div.innerHTML = innerHTML;
         //div.style.border = '2px solid red';
-        
+
         var width = 32;
         var html = document.body.parentNode;
         var scrollx = html.scrollLeft;
@@ -634,39 +636,41 @@ var g_utils =
         var hDiv = div.clientHeight;
         var wOffset = scrollx + (x - width) / 2;
         var hOffset = scrolly + (y - hDiv) / 2;
-        
+
         div.style.position = 'absolute';
         div.style.top = hOffset + 'px';
         div.style.left = wOffset + 'px';
-        
+
         var divContainer = document.getElementById('ft_modal_wait_message');
         divContainer.appendChild(div);
         divContainer.style.height = html.scrollHeight + 'px';
         divContainer.style.width = html.scrollWidth + 'px';
 		divContainer.style.visibility = "visible";
         divContainer.style.display = "block";
-        
+
         if (timeout != null) {
             var thisObj = this;
             var cb = function()
             {
                 thisObj.f_stopWait();
             }
-            
+
             window.setTimeout(cb, timeout);
         }
-        
+
 	},
 
 	f_stopWait: function()
-	{		
+	{
+		stopAutoResize(false);
+		
 	    var div = document.getElementById('ft_modal_wait_message');
             if(div != null)
             {
 		div.style.display = "none";
                 var cDiv = document.getElementById('ft_wait_div');
                 div.removeChild(cDiv);
-            }        
+            }
 	},
 
     f_popupMessage: function(message, type, title, isModal, cb, ccb)
@@ -723,7 +727,7 @@ var g_utils =
                               '<input type="image" src="' + g_lang.m_imageDir + 'bt_ok.gif" ' +
                               'onclick="' + timeoutHandler + '"></div>';
                 innerHtml += '<tbody><tr height="73">' +
-                        '<td width="48"><img src="' + g_lang.m_imageDir + 'ft_confirm.PNG"></td>' +
+                        '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="350"><p ' +
                         'style="padding-left:5px; font:normal 10pt arial;">' +
                         message + '</p></td>';
@@ -741,7 +745,7 @@ var g_utils =
                               '<input type="image" src="' + g_lang.m_imageDir +  'bt_ok.gif" ' +
                               'onclick="' + cb + '"></div>';
                 innerHtml += '<tbody><tr height="73">' +
-                        '<td width="48"><img src="' + g_lang.m_imageDir + 'ft_confirm.PNG"></td>' +
+                        '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="300"><p ' +
                         'style="padding-left:5px; font:normal 10pt arial;">' +
                         message + '</p></td>';
@@ -759,7 +763,7 @@ var g_utils =
                               '<img src="' + g_lang.m_imageDir + 'bt_ok.gif" ' +
                               'onclick="' + cb + '"></div>';
                 innerHtml += '<tbody><tr height="73">' +
-                        '<td width="48"><img src="' + g_lang.m_imageDir + 'ft_confirm.PNG"></td>' +
+                        '<td width="48"><img src="images/ft_confirm.PNG"></td>' +
                         '<td style="text-align:left;" width="300"><p ' +
                         'style="padding-left:5px; font:normal 10pt arial;">' +
                         message + '</p></td>';
@@ -921,7 +925,7 @@ var g_utils =
 		}
 		return null;
 	},
-	
+
 	f_xmlGetChildNodeArray : function(parent, child)
 	{
 		var a = new Array();
@@ -932,7 +936,7 @@ var g_utils =
 			}
 		}
 		return a;
-	},	
+	},
 
 	f_xmlGetNodeValue : function(node)
 	{
@@ -946,8 +950,21 @@ var g_utils =
 	{
 		if (node==null) return null;
 		return node.getAttribute(attr);
-	}
-
+	},
+	
+	f_debug : function(t, overwrite)
+	{
+		if (g_devConfig.m_debug) {
+			var el = document.getElementById('debug_tray');
+			var text = '';
+			if (overwrite) {
+				text = '&nbsp;[' + t + ']';
+			} else {
+				text = el.innerHTML + '<br/>' + '&nbsp;[' + t + ']';
+			}
+			el.innerHTML = text;
+		}
+	}	
 };
 
 function f_utilsPopupTimeout(id)

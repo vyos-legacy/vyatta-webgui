@@ -59,15 +59,18 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         /////////////////////////////////////////
         // set inner styling of the div tag
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-        div.style.height = '300px';
+        //div.style.height = '300px';
+		div.style.height = 'auto';
         div.style.overflow = 'visible';
         div.style.fontFamily = 'Arial, sans-serif';
 
-        document.getElementById('ft_container').appendChild(div);
-
+        var ft = document.getElementById('ft_container');
+		ft.appendChild(div);
+		ft.style.height = 'auto';
+        
         for (var i = 0; i < children.length; i++)
             div.appendChild(children[i]);
 
@@ -78,7 +81,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_createGridHeader = function(header, onclick)
     {
         var div = document.createElement('div');
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
         div.style.border = '1px solid #CCC';
         div.style.backgroundColor = '#EFEFEF';
         div.style.color = '#000';
@@ -133,7 +136,8 @@ function UTM_confBaseObj(name, callback, busLayer)
         var div = document.createElement('div');
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-        div.style.height = '50px';
+		div.style.height = 'auto';
+        //div.style.height = '50px';
         div.style.overflow = 'visible';
 
         if (isBorder == undefined || isBorder)
@@ -161,7 +165,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_createGridRow = function(header, data, height, rowId)
     {
         var div = document.createElement('div');
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
         div.style.borderBottom = '1px dotted #CCC';
         div.style.backgroundColor = 'white';
         div.style.paddingTop = '0px';
@@ -209,19 +213,10 @@ function UTM_confBaseObj(name, callback, busLayer)
             }
 
             innerHtml += '<td cellspacing="0" cellpadding="0" style="width:' +
-            fWidth +
-            'px; overflow:hidden;"><div style="overflow:hidden; ' +
-            lBorder +
-            rBorder +
-            ' padding-top:0px; padding-bottom:0px; ' +
-            ' margin-top:0px; margin-bottom: 0px">' +
-            '<div style="' +
-            lPadding +
-            'padding-top:' +
-            tPadding +
-            '; overflow:hidden;">' +
-            data[i] +
-            '</div></div></td>';
+            fWidth + 'px;"><div style="overflow:hidden; ' +
+            lBorder + rBorder + ' padding-top:0px; padding-bottom:0px; ' +
+            ' margin-top:0px; margin-bottom: 0px"><div style="' + lPadding +
+            'padding-top:' + tPadding + ';">' + data[i] + '</div></div></td>';
         }
 
         innerHtml += '</tr></tbody></table>';
@@ -240,20 +235,27 @@ function UTM_confBaseObj(name, callback, busLayer)
 
     this.f_adjustDivPosition = function(div)
     {
+		//comment this out since we don't use relative position, we don't need adjustment.
+		/*
         var adVal = (thisObj.m_tableRowCounter * thisObj.m_rowHeight) - 10;
         div.style.top = adVal + 'px';
+        */
     }
 
 
     this.f_adjustDivPositionByPixel = function(div, pixel)
     {
+		//comment this out since we don't use relative position, we don't need adjustment.
+		/*
         div.style.top = pixel + 'px';
+        */
     }
 
     this.f_createGeneralDiv = function(text)
     {
         var div = document.createElement('div');
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
+		div.style.height = 'auto';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.overflow = 'visible'
@@ -273,7 +275,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_createAnchorDiv = function(refText, tooltip, ref)
     {
         var div = document.createElement('div');
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.height = '25px';
@@ -306,10 +308,15 @@ function UTM_confBaseObj(name, callback, busLayer)
     {
         var div = document.createElement('div');
         div.setAttribute('align', 'center');
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.height = '40px';
+		//Uncomment the following line to add a padding between grid body, and the 
+		//button panel.
+		//We leave it comment out for now since Kevin's firewall, zone management screen
+		//has its own layout.
+		//div.style.paddingTop = '10px';		
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr height="22">';
@@ -325,7 +332,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:10px;padding-left:10px;padding-bottom:5px" >' +
                     '<input type="image" src="' + g_lang.m_imageDir +
-                    'bt_add.PNG" ' + elId + ' name="' + btn[2]+'" ' +
+                    'bt_add.gif" ' + elId + ' name="' + btn[2]+'" ' +
                     'value="add" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -334,7 +341,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<input type="image" src="' + g_lang.m_imageDir +
-                    'bt_back.png" ' + elId + ' name="back" ' +
+                    'bt_back.gif" ' + elId + ' name="back" ' +
                     'value="back" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -352,7 +359,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                     '<div title="' + btn[2] + '" style="height:30px; ' +
                     'padding-top:15px;" >' +
                     '<input type="image" src="' + g_lang.m_imageDir +
-                    'bt_add.PNG" ' + elId + ' name="' + btn[2]+'" ' +
+                    'bt_add.gif" ' + elId + ' name="' + btn[2]+'" ' +
                     'value="' + btn[2]+'" onclick="' + btn[1] +
                     '"></div></td>';
                 break;
@@ -884,13 +891,22 @@ function UTM_confBaseObj(name, callback, busLayer)
 
     this.f_resize = function(padding)
     {
-        if (this.m_id != g_configPanelObj.m_selectedItem ||
-        this.m_div == undefined)
-            //to avoid the race condition between callback from server, and user click event.
-            return;
-
+		//console.log('utm_confBaseObj.f_resize called');
+		if ((this.m_id == null) || (g_configPanelObj.m_selectedItem == null) || (this.m_div == undefined)) {
+			//console.log('utm_confBaseObj.f_resize: get out since m_id, m_selectedItem, m_div is not defined');
+			return;
+		} else if ((this.m_id.indexOf(g_configPanelObj.m_selectedItem) == -1) ||
+		(this.m_id.length != g_configPanelObj.m_selectedItem.length)) {
+			//if (this.m_id != g_configPanelObj.m_selectedItem ||
+			//this.m_div == undefined)
+			//to avoid the race condition between callback from server, and user click event.
+			//console.log('utm_configBaseObj.f_resize: this.m_id: ' + this.m_id + ' g_configPanelObj.m_selecteditem:' +
+			//g_configPanelObj.m_selectedItem);
+			return;
+		}
         var h = 0;
         for (var i = 0; this.m_div.childNodes[i]; i++) {
+			//console.log('utm_confBaseObj.f.resize: ' + i);
             h += this.m_div.childNodes[i].offsetHeight;
         }
 
@@ -898,11 +914,13 @@ function UTM_confBaseObj(name, callback, busLayer)
         if (padding) {
             h += padding;
         }
-
+        g_utils.f_debug('utm_confBaseObj.f_resize: h=' + h, true);
+        /*
         this.m_div.style.height = h + 'px';
         document.getElementById('ft_container').style.height = h + 'px';
         this.f_reflow();
         g_utmMainPanel.f_requestResize();
+        */
     }
 
     this.f_resetSorting = function()

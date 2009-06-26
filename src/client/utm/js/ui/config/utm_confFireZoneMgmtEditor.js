@@ -207,6 +207,13 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
                 newOpt = document.createElement('option')
                 newOpt.text = elFrom.options[i].text;
                 newOpt.value = elFrom.options[i].value;
+
+                ////////////////////////////////////////////////////////////////
+                // remove the empty item from list. Only happen in FireFox, when
+                // create a new empty list, FF add an empty item if list is empty.
+                if(elTo.length == 1 && elTo.options[0].value.length < 1)
+                    elTo.remove(0);
+
                 try
                 {
                     elTo.add(newOpt, null);

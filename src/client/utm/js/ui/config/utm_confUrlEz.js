@@ -94,7 +94,7 @@ function UTM_confUrlEz(name, callback, busLayer)
                 v_type: 'html',
                 id: 'conf_url_ez_whitelist_config',
                 text: '<div title="' + g_lang.m_url_ezConfigureWL + '">' +
-				      '<input type="image" id="conf_url_ez_whitelist_config" src="' + g_lang.m_imageDir + 'bt_config.png">'
+				      '<input type="image" id="conf_url_ez_whitelist_config" src="' + g_lang.m_imageDir + 'bt_config.gif">'
 					  + '</div>',
                 v_end_row: 'true'
             }//,  EMPTY_ROW
@@ -108,7 +108,7 @@ function UTM_confUrlEz(name, callback, busLayer)
                 v_type: 'html',
                 id: 'conf_url_ez_keyword_config',
                 text: '<div title="' + g_lang.m_url_ezConfigureKeyword + '">' + 
-				      '<input type="image" id="conf_url_ez_keyword_config" src="' + g_lang.m_imageDir + 'bt_config.png">'
+				      '<input type="image" id="conf_url_ez_keyword_config" src="' + g_lang.m_imageDir + 'bt_config.gif">'
 					  + '</div>',
                 v_end_row: 'true'
             }, EMPTY_ROW, {
@@ -481,7 +481,7 @@ function UTM_confUrlEz(name, callback, busLayer)
             }                                 
         };      
 		
-	    g_busObj.f_getUrlFilterConfig(cb);
+	    window.setTimeout(function() { g_busObj.f_getUrlFilterConfig(cb); }, 10);
 	}
 	
     this.f_loadVMData = function(element)
@@ -492,10 +492,13 @@ function UTM_confUrlEz(name, callback, busLayer)
         thisObj.f_attachListener();
         thisObj.m_form = document.getElementById('conf_url_ez_form');
         thisObj.f_setFocus();
-        //thisObj.f_resize();
-                
-        thisObj.f_reload();
-        window.setTimeout(function(){thisObj.f_resize();}, 10);		
+		thisObj.f_resize();
+		thisObj.f_reload();
+		/*
+		window.setTimeout(function() {
+            thisObj.f_resize();		
+            thisObj.f_reload(); }, 100);
+        */
     }
     
     this.f_attachListener = function()

@@ -95,7 +95,13 @@ function UTM_firewallBusObj(busObj)
 
         if(response.f_isError != undefined)
         {
-            thisObj.m_guiCb(response);
+            if(thisObj.m_guiCb != null)
+                thisObj.m_guiCb(response);
+            else
+            {
+                g_utils.f_popupMessage("Connection failed! Please refresh page and  try again",
+                    'error', "Connection Error", true);
+            }
         }
         else
         {
@@ -161,6 +167,8 @@ function UTM_firewallBusObj(busObj)
                 var n = nodes[i];
                 if(n.nodeName == "zone-mgmt")
                 {
+                    if(n.firstChild == null) break;
+
                     var vals = n.firstChild.nodeValue.split(":");
                     for(var j=0; j<vals.length-1; j++)
                     {

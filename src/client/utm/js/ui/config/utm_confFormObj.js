@@ -82,6 +82,7 @@ function UTM_confFormObj(name, callback, busLayer)
         //div.style.position = 'absolute';
         //div.style.pixelLeft = 0;
 		//div.style.paddingLeft = 30;
+		div.style.height = 'auto';
         div.style.backgroundColor = 'white';
         div.style.display = 'block';
 
@@ -105,11 +106,13 @@ function UTM_confFormObj(name, callback, busLayer)
 		div.style.paddingLeft = 30;		
         div.style.backgroundColor = 'white';
         div.style.display = 'block';
-
+        div.style.height = 'auto';
+		
         for(var i=0; i<children.length; i++)
             div.appendChild(children[i]);
-		
+         		
         document.getElementById('ft_container').appendChild(div);
+		document.getElementById('ft_container').style.height = 'auto';
         this.m_div = div;
         this.f_attachEventListener();
         this.f_loadVMData(div);
@@ -188,7 +191,7 @@ function UTM_confFormObj(name, callback, busLayer)
             case 'restore':
                 imgSrc = g_lang.m_imageDir + 'bt_restore.gif';
             case 'back':
-                imgSrc = g_lang.m_imageDir + 'bt_back.png';				
+                imgSrc = g_lang.m_imageDir + 'bt_back.gif';				
             default:
                 break;
         }
@@ -490,25 +493,43 @@ function UTM_confFormObj(name, callback, busLayer)
 		var h = 0;
 		for (var i=0; this.m_div.childNodes[i]; i++) {
 			h += this.m_div.childNodes[i].offsetHeight;
+			//h += this.m_div.childNodes[i].clientHeight;	
+			/*	
+			console.log('utm_confFormObj.f.getHeight: ' + i + ' offset: ' + this.m_div.childNodes[i].offsetHeight + 
+			            ' clientHeight: ' + this.m_div.childNodes[i].clientHeight);	*/		
 		}
 		return h;		
 	}	
 	
+	/*
+	 * This function now just print out the debugging message.  
+	 * The actual resizing is left to be done automatically by the browser:
+	 *     div.style.height = 'auto';
+	 */
     this.f_resize = function(padding)
     {
-		 /*
-		 if (this.m_id !=  g_configPanelObj.m_selectedItem) {
-			 return;
-		 }
-		 */		
+		//to avoid the race condition between callback from server, and user click event.
+		if ((this.m_id == null) || (g_configPanelObj.m_selectedItem == null) || (this.m_div == undefined)) {
+			//console.log('utm_confFormObj.f_resize: get out since m_id, m_selectedItem, m_div is not defined');
+			return;
+		} else if ((this.m_id.indexOf(g_configPanelObj.m_selectedItem) == -1) ||
+		(this.m_id.length != g_configPanelObj.m_selectedItem.length)) {
+
+			//console.log('utm_configFormObj.f_resize: this.m_id: ' + this.m_id + ' g_configPanelObj.m_selecteditem:' +
+			//g_configPanelObj.m_selectedItem);
+			return;
+		}		
+		
 		 var h = this.f_getHeight();
 		 var ft = document.getElementById('ft_container');
 		 if (padding) {
 		 	h += padding;
 		 } 
-         ft.style.height = h + 'px';
-         this.f_reflow();
-		 g_utmMainPanel.f_requestResize();			 
+		 g_utils.f_debug('utm_confFormObj.f_resize to: ' + h, true);
+         //ft.style.height = h + 'px';
+		 //this.m_div.style.height = h + 'px';
+         //this.f_reflow();
+		 //g_utmMainPanel.f_requestResize();			 
     }
 		
     this.f_handleClick = function(e)

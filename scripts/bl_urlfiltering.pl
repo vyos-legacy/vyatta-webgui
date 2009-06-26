@@ -165,6 +165,8 @@ sub filter_get {
 		}
 	    }
 	}
+    } else {
+	$msg .= "<alloff>true</alloff>";
     }
     $msg .= "</schedule>";
     # footer
@@ -214,6 +216,8 @@ sub configure_webproxy {
     
     push @cmds, "set $path redirect-url \"$redirect\" ";
     push @cmds, "set $path auto-update daily";
+
+    push @cmds, "set $path time-period ALLON days all time '00:00-24:00' ";
 
     return @cmds;
 }
@@ -412,6 +416,9 @@ sub filter_set {
     }
     if ($time_period) {
 	push @cmds, "set $path rule 10 time-period OA";
+    } else {
+	# no time selected = no filtering
+	push @cmds, "set $path rule 10 time-period !ALLON";
     }
     
     push @cmds, ('commit', 'save');

@@ -166,7 +166,10 @@ sub filter_get {
 	    }
 	}
     } else {
-	$msg .= "<alloff>true</alloff>";
+	$config->setLevel('service webproxy');
+	if ($config->exists('url-filtering squidguard')) {
+	    $msg .= "<alloff>true</alloff>";
+	}
     }
     $msg .= "</schedule>";
     # footer

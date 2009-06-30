@@ -12,6 +12,10 @@ var g_oaConfig =
     m_oaRefreshTime : 5000,     // 5 seconds
 
     ///////////////////////////////////////
+    // Number of rows per paging.
+    m_oaNumRowPerPage : 15,     // 15 rows per page
+
+    ///////////////////////////////////////
     // OA WUI help URL link
     // For example: 'www.orange-bussiness.com/help/somefile.html',
     m_oaHelpURL_en : 'ft_oaHelp_en.html',

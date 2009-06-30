@@ -34,6 +34,16 @@ use OpenApp::Conf;
 use Vyatta::IpTables::Rule;
 use Vyatta::IpTables::AddressFilter;
 
+sub aindex (\@$;$) {
+  # get index of value in array
+  # http://www.perlmonks.org/?node_id=75710
+  my ($aref, $val, $pos) = @_;
+  for ($pos ||= 0; $pos < @$aref; $pos++) {
+    return $pos if $aref->[$pos] eq $val;
+  }
+  return -1;
+}
+
 sub get_srcdst_address {
  my ($level, $orig_or_active) = @_;
  my $address = "";
@@ -185,6 +195,42 @@ sub execute_delete_rule {
    print("<form name='customize-firewall' code=3></form>");
    exit 1;
  }
+}
+
+sub execute_move_rule {
+
+ my ($zonepair, $rulenum, $up_or_down) = @_;
+ my $swap_rule_index;
+ my $config = new Vyatta::Config;
+ my $fw_ruleset=get_zonepair_fwruleset($zonepair);
+ $config->setLevel("firewall name $fw_ruleset rule");
+ my @rules = sort $config->listNodes();
+ my $rule_index = aindex(@rules, $rulenum);
+ if ($up_or_down eq 'up') {
+   $swap_rule_index = $rule_index - 1;
+ } elsif ($up_or_down eq 'down') {
+   $swap_rule_index = $rule_index + 1;
+ }
+ my $swap_to_rule = $rules[$swap_rule_index];
+ swap_rules ($swap_to_rule, $rulenum, $fw_ruleset);
+
+}
+
+sub swap_rules {
+
+  my ($swap_to_rule, $rulenum, $fw_ruleset) = @_;
+  my @cmds = (
+    "firewall-rule-rename $fw_ruleset rule $swap_to_rule to rule 1024",
+    "firewall-rule-rename $fw_ruleset rule $rulenum to rule $swap_to_rule",
+    "firewall-rule-rename $fw_ruleset rule 1024 to rule $rulenum",
+    );
+  my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+  if (defined $err) {
+   # print error and return
+   print("<form name='customize-firewall' code=7>$err</form>");
+   exit 1;
+  }
+
 }
 
 sub get_addr_port_cmds {
@@ -526,6 +572,16 @@ switch ($action) {
   {
     # get next-rulenum for new rule
     get_next_rulenum ($zonepair[1]);
+  }
+  case 'move-rule-up'
+  {
+    # do rule move up action here
+    execute_move_rule ($zonepair[1], $rulenum[1], 'up');
+  }
+  case 'move-rule-down'
+  {
+    # do rule move down action here
+    execute_move_rule ($zonepair[1], $rulenum[1], 'down');
   }
   else
   {

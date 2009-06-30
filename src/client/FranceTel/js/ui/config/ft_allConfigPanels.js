@@ -5,6 +5,7 @@
     Description:
 */
 
+document.write('<script type="text/javascript" src="js/ui/config/ft_confPagination.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confBaseObj.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confDashboard.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/ft_confVMUpdates.js"></script>');

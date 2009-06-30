@@ -5,10 +5,15 @@
     Description: a base object for all OA configuration screens
 */
 
+function f_paginationCallback(pageNo)
+{
+    g_configPanelObj.m_activeObj.f_handlePagingCall(pageNo);
+}
 
 function FT_confBaseObj(name, callback, busLayer)
 {
     var thisObj = this;
+    this.m_pagingObj = null;
     this.m_allowSort = false;
     this.m_sortColPrev = -1;
     this.m_sortCol = 0;
@@ -154,7 +159,7 @@ function FT_confBaseObj(name, callback, busLayer)
         return div;
     }
 
-    this.f_createGridView = function(header)
+    this.f_createGridView = function(header, pagingOn)
     {
         thisObj.m_tableRowCounter = 0;
         var div = document.createElement('div');
@@ -162,7 +167,6 @@ function FT_confBaseObj(name, callback, busLayer)
         div.style.backgroundColor = 'white';
         div.style.height = '50px';
         div.style.overflow = 'visible';
-        //div.style.border = '1px solid #CCC';
         div.style.color = '#000';
 
         var width = 0;
@@ -173,6 +177,13 @@ function FT_confBaseObj(name, callback, busLayer)
         }
 
         div.style.width = (width) + 'px';
+
+        ////////////////////////////////////
+        //init paging object
+        var isPagingOn = pagingOn == null ? false : pagingOn
+        if(isPagingOn)
+            thisObj.m_pagingObj = new FT_pagingObj(null, 1, g_oaConfig.m_oaNumRowPerPage);
+
         return div;
     };
 
@@ -205,7 +216,10 @@ function FT_confBaseObj(name, callback, busLayer)
         return div;
     }
 
-    this.f_createGridRow = function(header, data)
+    /**
+     * create a grid row record div to be added into grid table
+     */
+    this.f_createGridRow = function(header, data, totalRecs)
     {
         var div = document.createElement('div');
         div.style.position = 'relative';
@@ -224,9 +238,10 @@ function FT_confBaseObj(name, callback, busLayer)
             width += h[1];
             var fWidth = i == 0 || i == data.length-1 ? h[1] : h[1];
             var lBorder = i == -1 ? 'border-left:1px solid #CCC; ' : '';
-            //var rBorder = i == data.length-1 ? ' ' :
-            //                    'border-right:1px dotted #ccc; ';
             var rBorder = '';
+
+            //////////////////////////////
+            // define padding
             var lPadding = h[3] == undefined ? "padding-left:5px; " :
                           'padding-left:' + h[3] + 'px; ';
             var tPadding = '5px';
@@ -255,18 +270,76 @@ function FT_confBaseObj(name, callback, busLayer)
                         tPadding + ';">' + data[i] + '</div></td>';
         }
 
-        innerHtml += '</tr></tbody></table>' ;
+        var term = '</tr></tbody></table>';
+        thisObj.m_tableRowCounter++;
+
+        /////////////////////////////////////////
+        // handle paging calculation
+        if(thisObj.m_pagingObj != null)
+        {
+            thisObj.m_pagingObj.m_totalRecs = totalRecs;
+            var rowNo = thisObj.m_tableRowCounter;
+            var pageNo = thisObj.m_pagingObj.m_curPage;
+            var rpp = g_oaConfig.m_oaNumRowPerPage;
+
+            // reach last row of paging
+            if(rowNo == (pageNo*rpp) || rowNo == totalRecs &&
+                !thisObj.m_pagingObj.m_endPage)
+            {
+                div.innerHTML = innerHtml + term;
+                div.style.width = (width) + 'px';
+
+                var pageDiv = thisObj.m_pagingObj.createPagingDiv(width);
+                div = this.addPagingDiv(div, pageDiv);
+            }
+            // within page
+            else if(rowNo > (pageNo-1)*rpp && rowNo < pageNo*rpp)
+            {
+                innerHtml += term;
+                div.innerHTML = innerHtml;
+            }
+            // outside of paging
+            else
+                return null;
+        }
+        // no pagination define
+        else
+        {
+            innerHtml += term;
+            div.innerHTML = innerHtml;
+        }
 
         div.style.width = (width) + 'px';
-        div.innerHTML = innerHtml;
 
-        thisObj.m_tableRowCounter++;
         return div;
     }
 
-    this.f_adjustDivPosition = function(div)
+    this.addPagingDiv = function(rowDiv, pagingDiv)
     {
-        var adVal = (thisObj.m_tableRowCounter * 31) - 10;
+        var div = document.createElement('div');
+        div.style.position = 'relative';
+        div.style.backgroundColor = 'white';
+        div.style.paddingTop = '3px';
+
+        var innerHtml = rowDiv.innerHTML + pagingDiv.innerHTML;
+        div.innerHTML = innerHtml;
+
+        return div;
+    }
+
+    this.f_handlePagingCall = function(pageNo)
+    {
+        thisObj.m_pagingObj.m_curPage = pageNo;
+        thisObj.m_pagingObj.m_endPage = false;
+        thisObj.prototype.apply(thisObj);
+    }
+
+    this.f_adjustDivPosition = function(div, numOfRows)
+    {
+        var rows = numOfRows == null ? thisObj.m_tableRowCounter : numOfRows;
+        thisObj.m_tableRowCounter = rows;
+
+        var adVal = (rows * 31) - 10;
         div.style.top = adVal+'px';
     }
 

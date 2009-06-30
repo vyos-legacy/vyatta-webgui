@@ -62,7 +62,6 @@ function FT_confUserList(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
-        var thisObj = this;
         thisObj.f_resetSorting();
 
         var cb = function(evt)
@@ -85,7 +84,7 @@ function FT_confUserList(name, callback, busLayer)
         };
 
         g_utils.f_cursorWait();
-        this.m_busLayer.f_getUserListFromServer(cb);
+        thisObj.m_busLayer.f_getUserListFromServer(cb);
     };
 
     this.f_populateTable = function()
@@ -116,11 +115,14 @@ function FT_confUserList(name, callback, busLayer)
                     "";
             var data = [ul[0], anchor, email, del];
 
-            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, data);
-            thisObj.m_body.appendChild(bodyDiv);
+            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, data,
+                          thisObj.m_uRec.length);
+
+            if(bodyDiv != null)
+                thisObj.m_body.appendChild(bodyDiv);
         }
 
-        thisObj.f_adjustDivPosition(thisObj.m_buttons);
+        thisObj.f_adjustDivPosition(thisObj.m_buttons, g_oaConfig.m_oaNumRowPerPage);
     };
 
     this.f_createSortingArray = function(sortIndex, vm)
@@ -156,8 +158,13 @@ function FT_confUserList(name, callback, busLayer)
     {
         this.m_colHd = this.f_createColumns();
         this.m_header = this.f_createGridHeader(this.m_colHd, 'f_ulGridHeaderOnclick');
-        this.m_body = this.f_createGridView(this.m_colHd);
+        this.m_body = this.f_createGridView(this.m_colHd, true);
         this.f_loadVMData();
+
+        /////////////////////////////////////////////////////////
+        // create a callback for paging. when user click on the
+        // page number, this function will be called.
+        FT_confUserList.superclass.prototype = this.f_loadVMData;
 
         var btns = [['AddUser', 'f_userListAddUserCallback()', g_lang.m_ulTooltipAddUser]];
         this.m_buttons = this.f_createButtons(btns);

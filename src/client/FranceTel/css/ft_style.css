@@ -379,4 +379,32 @@ img
     background-image:url(../images/en/ccc.gif);
 	
 }
- 
+
+/*########## Pagination ##########*/
+.pagination-off
+{
+    display: inline;
+    list-style-image: none;
+    list-style-type: none;
+    color: silver;
+}
+
+.pagination  {
+	display: inline;
+	list-style-image: none;
+	list-style-type: none;
+}
+
+.pagination a {
+	color: #000000;
+	text-decoration: none;
+}
+
+.pagination a:hover {
+	color: #000000;
+	text-decoration: underline;
+}
+.pagination-page-on {
+	color: #FF5500;
+	font-weight: bold;
+}

@@ -120,6 +120,7 @@ my %fields = (
   _vmLdapFormat => undef,
   _vmStatusOid => undef,
   _vmDisplayName => undef,
+  _vmDnameLang => {},
 
   # status
   _vmState => undef,
@@ -149,8 +150,13 @@ sub _setupMeta {
     open($fd, '<', "$META_DIR/$id") or return;
   }
   my $data = <$fd>;
+  my @dnames = <$fd>;
   close($fd);
   chomp($data);
+  foreach (@dnames) {
+    next if (!/^displayName\.([^:]+): +(.+)$/);
+    $self->{_vmDnameLang}->{$1} = $2;
+  }
   my ($ip, $port, $uri, $ver, $vend, $bform, $lform, $oid, $dname)
     = split(/ /, $data, 9);
   $self->{_vmId} = $id;
@@ -261,6 +267,12 @@ sub getStatusOid {
 sub getDisplayName {
   my ($self) = @_;
   return $self->{_vmDisplayName};
+}
+
+sub getDisplayNameLang {
+  my ($self, $lang) = @_;
+  return (defined($self->{_vmDnameLang}->{$lang})
+          ? $self->{_vmDnameLang}->{$lang} : $self->{_vmDisplayName});
 }
 
 sub getLibvirtCfg {

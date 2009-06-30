@@ -1,3 +1,11 @@
+vyatta-webgui (0.2.13-9+jenner7) unstable; urgency=low
+
+  * fix for bug 4645. redirect stderr to stdout for load cmd.
+  * also apply to merge operation. will have same bug and requires same
+    fix.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Tue, 30 Jun 2009 15:52:05 -0700
+
 vyatta-webgui (0.2.13-9+jenner6) unstable; urgency=low
 
   * merge is now supported on backend. Frontend support needs to be

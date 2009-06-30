@@ -103,6 +103,13 @@ var g_lang =
 	m_menu_des_RestoreDesc : "description du fichier de sauvegarde",
 	m_menu_des_BLBCredCheck : "vérification des identifiants de la BLB", 
 
+    ///////////////////////////////////////////////////////////////////
+    // pagination
+    m_pgFirst : "first",
+    m_pgPrev : "previous",
+    m_pgLast : "last",
+    m_pgNext : "next",
+
     ///////////////////////////////////////////////////////////////////;;;
     // Calendar;;;
 	m_calToday : "aujourd'hui",

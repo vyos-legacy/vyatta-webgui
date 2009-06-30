@@ -16,7 +16,7 @@ var g_lang =
 	m_mainMap : 'map',
 	m_mainOA : 'Open Appliance',
 	m_mainEnglish : 'English',
-	m_mainFrench : 'Français',	
+	m_mainFrench : 'Franï¿½ais',
 	m_mainLogin : 'OK',
 	m_mainLogout: 'log off',
 	m_mainUserName: 'user name',
@@ -101,6 +101,13 @@ var g_lang =
 	m_menu_des_Restore: 'restore',
 	m_menu_des_RestoreDesc: 'configuration restore description',
 	m_menu_des_BLBCredCheck: 'BLB credentials check',
+
+    ///////////////////////////////////////////////////////////////////
+    // pagination
+    m_pgFirst : "first",
+    m_pgPrev : "previous",
+    m_pgLast : "last",
+    m_pgNext : "next",
 
     ///////////////////////////////////////////////////////////////////
     // Calendar
@@ -207,7 +214,7 @@ var g_lang =
 	m_userGivenName: "first name",
 	m_userEmail: "email",
     m_userUsernameInvalidCharacter: "User name can only contain alpha numeric characters",
-	
+
     ///////////////////////////////////////////////////////////////////
     // User Editor screen
     m_userResetPasswdExit : "User already exist",
@@ -298,11 +305,11 @@ var g_lang =
 	m_backupSelectOne: "Please select at least one application to backup",
 	m_backupFail: "Backup failed",
 	m_backupInProgress: "Backup is in progress.",
-	m_backup2pcInProgress: "Backup is in progress.  It may take a while to finish.  A notification window will popup when the backup file is ready.",	
+	m_backup2pcInProgress: "Backup is in progress.  It may take a while to finish.  A notification window will popup when the backup file is ready.",
 	m_backupPlsDelete: "Maximum of backups stored on the Open Appliance is reached.  Please delete the oldest and try again",
 	m_backupMyPC: "my PC",
     m_backupTooltipCancel : 'reset selection',
-    m_backupTooltipBackup : 'backup selected applications',	
+    m_backupTooltipBackup : 'backup selected applications',
 	m_backupPlsWait: "Another backup request is currently being processed.  Please wait for a few minutes and try again.",
 
 
@@ -351,7 +358,7 @@ var g_lang =
 	m_ldapInOA : "in the Open Appliance",
 	m_ldapInLan : "in the company LAN",
 	m_ldapSrvAddr: "server address",
-	m_ldapSuffix: "Suffix",	
+	m_ldapSuffix: "Suffix",
 	m_ldapUsrUpdateRt : "user (update rights)",
 	m_ldapUsrReadRt: "user (read rights)",
 	m_ldapPasswdUpdateRt: "password (update rights)",
@@ -374,15 +381,15 @@ var g_lang =
 	m_tooltip_apply: "apply changes",
 	m_tooltip_add: "add a new row",
 	m_tooltip_delete: "delete a row",
-	m_tooltip_back: "go back to previous screen",	
+	m_tooltip_back: "go back to previous screen",
 	m_tooltip_restore: "restore",
 	m_tooltip_update: "update",
-	
+
     ///////////////////////////////////////////////////////////////////
     // Contact page
 	m_contact : "contact",
 	m_contact_message: "For your questions, please contact your customer service and dial 3901.",
-	
+
     /////////////////////////////////////////
     // plesae do not edit beyound dummy
     dummy : ''

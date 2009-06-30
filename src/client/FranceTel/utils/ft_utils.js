@@ -403,7 +403,14 @@ var g_utils =
         }
 
         return str;
-    }
+    },
+	
+	f_debug : function(t) {
+        if (g_devConfig.m_debug) {
+			var el = document.getElementById('welcome_admin');
+			el.innerHTML = t;
+		}
+	}	
 };
 
 function f_utilsPopupTimeout(id)

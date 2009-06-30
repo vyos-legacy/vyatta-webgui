@@ -30,21 +30,6 @@ function FT_confUserAdd (name, callback, busLayer)
 			id: 'conf_user_add',
 			items: [{
 				v_type: 'label',
-				id: 'conf_user_add_username_label',
-				text: g_lang.m_userUsername,
-				v_new_row: 'true'
-			}, {
-				v_type: 'label',
-				id: 'conf_user_add_username_label_require',
-				text: ' ',
-				require: 'true'
-			}, {
-				v_type: 'text',
-				id: 'conf_user_add_username',
-				size: '32',
-				v_end_row: 'true'
-			}, {
-				v_type: 'label',
 				id: 'conf_user_add_surname_label',
 				text: g_lang.m_userSurname,			
 				v_new_row: 'true'
@@ -82,6 +67,21 @@ function FT_confUserAdd (name, callback, busLayer)
 			}, {
 				v_type: 'text',
 				id: 'conf_user_add_email',
+				size: '32',
+				v_end_row: 'true'
+			}, {
+				v_type: 'label',
+				id: 'conf_user_add_username_label',
+				text: g_lang.m_userUsername,
+				v_new_row: 'true'
+			}, {
+				v_type: 'label',
+				id: 'conf_user_add_username_label_require',
+				text: ' ',
+				require: 'true'
+			}, {
+				v_type: 'text',
+				id: 'conf_user_add_username',
 				size: '32',
 				v_end_row: 'true'
 			}],
@@ -155,6 +155,10 @@ function FT_confUserAdd (name, callback, busLayer)
 			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">'+ g_lang.m_userUsername + ' ' + g_lang.m_formNoEmpty + '</li>';
 			valid = false;
 		}
+		if (thisObj.form.conf_user_add_username.value.trim().length > 32 ) {
+			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">'+ g_lang.m_userUsername + ' ' + g_lang.m_formTooLong + ' 32 ' + g_lang.m_formChar  + '</li>';
+			valid = false;
+		}		
 		if (!thisObj.f_checkUsername(thisObj.form.conf_user_add_username.value.trim())) {
 			errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir + 'puce_squar.gif);">'+ g_lang.m_userUsernameInvalidCharacter + '</li>';
 			valid = false;			
@@ -164,9 +168,19 @@ function FT_confUserAdd (name, callback, busLayer)
 			                        g_lang.m_userSurname + ' ' + g_lang.m_formNoEmpty + '</li>';
             valid = false;
         }		
+        if (thisObj.form.conf_user_add_surname.value.trim().length > 32) {
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
+			                        g_lang.m_userSurname + ' ' + g_lang.m_formTooLong + ' 32 ' + g_lang.m_formChar  + '</li>';
+            valid = false;
+        }		
         if (thisObj.form.conf_user_add_givenname.value.trim().length <= 0) {
             errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
 			                        g_lang.m_userGivenName + ' ' + g_lang.m_formNoEmpty + '</li>';
+            valid = false;
+        }		
+        if (thisObj.form.conf_user_add_givenname.value.trim().length > 32) {
+            errorInner = errorInner + '<li style="list-style-type:square;list-style-image: url(' + g_lang.m_imageDir +'puce_squar.gif)">' + 
+			                        g_lang.m_userGivenName + ' ' + g_lang.m_formTooLong + ' 32 ' + g_lang.m_formChar  + '</li>';
             valid = false;
         }		
 		t = thisObj.form.conf_user_add_email.value.trim();

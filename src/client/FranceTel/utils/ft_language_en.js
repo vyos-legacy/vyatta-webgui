@@ -268,6 +268,8 @@ var g_lang =
     // My Form
 	m_formNoEmpty : "cannot be empty",
 	m_formFixError: "Please fix the following errors:",
+	m_formTooLong : "cannot have more than",
+	m_formChar: "characters",
 	m_formInvalid: "is invalid",
 	m_formSave : "saved",
 	m_formPassword: "password",

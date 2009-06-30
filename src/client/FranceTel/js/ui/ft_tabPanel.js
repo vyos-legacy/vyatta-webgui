@@ -13,6 +13,7 @@ function FT_tabPanel()
     this.m_mainPanel = undefined;
     this.threadId = undefined;
 	this.m_selectedId = undefined;
+	this.m_stopAutoResize = false;
 	
     ///////////////////////////////////////
     // functions    
@@ -26,7 +27,11 @@ function FT_tabPanel()
         thisObj.m_container.style.width = VYA.DYN_STYLE.APP_WIDTH;
         thisObj.m_mainPanel = new FT_mainPanel();
         thisObj.m_mainPanel.f_init();
-		//thisObj.threadId = setInterval(thisObj.f_scrollRemove, 5000);
+		/*
+		alert('isIE: ' + g_xbObj.m_isIE + ' isChrome: ' + g_xbObj.m_isChrome + ' isSafari: ' + 
+		      g_xbObj.m_isSafari + ' isGecko: ' + g_xbObj.m_isGecko + ' isOpera: ' + g_xbObj.m_isOpera);
+		*/
+		thisObj.threadId = setInterval(thisObj.f_scrollRemove, 500);
     }
     
 	this.f_stopPolling = function()
@@ -72,8 +77,14 @@ function FT_tabPanel()
         thisObj.m_mainPanel.f_selectPage(id, subId);
     }
     
+	this.f_stopAutoResize = function(state)
+	{
+		thisObj.m_stopAutoResize = state;
+	}
+	
     this.f_showOApanel = function()
     {
+		thisObj.f_stopAutoResize(true);
         thisObj.m_container.appendChild(thisObj.m_mainPanel.f_getMainPanel());
         thisObj.m_mainPanel.f_show();
         if (g_roleManagerObj.f_isUser()) {
@@ -178,38 +189,91 @@ function FT_tabPanel()
     */
     this.f_showVm = function(vmId, urlPath)
     {
+		thisObj.f_stopAutoResize(false);
+		
         var url = urlPath;
         var ifr = document.createElement('iframe');
         ifr.setAttribute('id', 'mainFrame');
+		ifr.setAttribute('name', 'mainFrame');
         ifr.setAttribute('border', 0);
         ifr.setAttribute('frameBorder', '0');
         ifr.style.width = '100%';
 		ifr.style.overflowX = 'hidden';
         //ifr.style.height = screen.height;
-        ifr.setAttribute('height', screen.height-40);
+        //ifr.setAttribute('height', screen.height-40);
         thisObj.m_container.appendChild(ifr);
 		ifr = document.getElementById('mainFrame');		
-        g_xbObj.f_xbAttachEventListener(ifr, 'load', thisObj.f_setIframeHeight, true);
+        //g_xbObj.f_xbAttachEventListener(ifr, 'load', thisObj.f_setIframeHeight, true);
 		//ifr.onload = thisObj.f_resizeFrame;				
         //ifr.onload = "f_setIframeHeight('mainFrame')";
-        ifr.setAttribute('src', url);
+        ifr.setAttribute('src', url);		
     }
-	
+		
 	this.f_adjustIframeHeight = function()
 	{
+		var t = (new Date()).getSeconds();
+		g_utils.f_debug('ft_tabPanel.f_adjustIframeHeight: ' + t);
+		
 		var ifr = document.getElementById('mainFrame');
-        ifr.style.height = "auto";		
-        var iframeWin = window.frames['mainFrame'];/*window.frames[iframeName]*/;
+		//ifr.style.height = "auto";		
+		var iframeWin = window.frames['mainFrame'];/*window.frames[iframeName]*/		
 		if (!iframeWin) {
-		    iframeWin = ifr.contentWindow; /* for firefox */
-		}	
-		var d = iframeWin.document;
-		var r = (d.compatMode=='BackCompat') ? d.body : d.documentElement;
-		//console.log('r.scrollHeight: ' + r.scrollHeight + ' r.clientHeight: ' + r.clientHeight);
+			iframeWin = ifr.contentWindow; /* for firefox */
+		}
+		d = iframeWin.document;
+		if (!d) { 
+		    //this is the case when we switching between different tabs on firefox
+			//somehow window.frames['mainFrame'] will return a reference to the top window
+			//instead of the frame window.
+            d = ifr.contentWindow.document;
+		}
+		if (thisObj.m_stopAutoResize) {
+			g_utils.f_debug('Inner iframe is in waiting state.  So return from here.');
+			return;
+		} 
+		var r = (d.compatMode == 'BackCompat') ? d.body : d.documentElement;
+		
 		var isVS = r.scrollHeight > r.clientHeight;
-		if (isVS) {
-			ifr.style.height = (r.scrollHeight + 20) + 'px';
-		}	
+		
+		if (g_devConfig.m_debug) {
+			g_utils.f_debug('t=' + t + ' r.scrollHeight: ' + r.scrollHeight + ' r.clientHeight: ' + r.clientHeight +
+			' r.offsetHeight: ' +
+			r.offsetHeight +
+			' d.body.oh: ' +
+			d.body.offsetHeight +
+			' d.body.sh: ' +
+			d.body.scrollHeight +
+			' d.body.ch: ' +
+			d.body.clientHeight +
+			' d.de.oh: ' +
+			d.documentElement.offsetHeight +
+			' d.de.sh: ' +
+			d.documentElement.scrollHeight +
+			' d.de.ch: ' +
+			d.documentElement.clientHeight +
+			' isVS=' +
+			isVS);
+		}
+		
+        if (isVS) {
+			ifr.height = (r.scrollHeight + 30) + 'px';
+        } else {		
+		    if (g_xbObj.m_isIE) {
+                if (r.scrollHeight - d.body.offsetHeight > 30) {
+                    ifr.height = (d.body.offsetHeight + 30) + 'px';
+                }
+            } else if (g_xbObj.m_isSafari || g_xbObj.m_isChrome) {				
+                if (r.clientHeight - r.scrollHeight > 30) {
+                    ifr.height = (r.scrollHeight + 30) + 'px';
+                }
+            } else if (g_xbObj.m_isOpera) {
+                ;
+            } else {
+                if (r.clientHeight - r.offsetHeight > 30) {
+                    ifr.height = (r.offsetHeight + 30) + 'px';
+                }
+            }							
+		} 
 	}
 	
 	this.f_scrollRemove = function()
@@ -217,19 +281,21 @@ function FT_tabPanel()
 		try {
 			var ifr = document.getElementById('mainFrame');
 			if (ifr) {
-				//console.log('tick...');
 			    thisObj.f_adjustIframeHeight();
 			}
-		} catch (e) { //console.log('f_scrollRemove exception:' + e)
+		} catch (e) { 
+		    //console.log('f_scrollRemove exception:' + e)
 		}
 	}
     
 	this.f_resizeChildIframe = function(h)
 	{
+		/*
 		var ifr = document.getElementById('mainFrame');
 		if (ifr) {
 			ifr.style.height = h + 'px';
 		}
+		*/
 	}
 }
 function f_tabPanelSelectMenuItem()

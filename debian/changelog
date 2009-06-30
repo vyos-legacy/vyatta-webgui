@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+72) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add code to do the following:
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 22 Jun 2009 16:46:46 -0700
+
 vyatta-webgui (0.2+fxd0+71) unstable; urgency=low
 
   * * help windows : forgot to include css style file from previous

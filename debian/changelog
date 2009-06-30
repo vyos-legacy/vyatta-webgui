@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+75) unstable; urgency=low
+
+  * backend support for swapping firewall rules in up or down direction
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 30 Jun 2009 11:45:00 -0700
+
 vyatta-webgui (0.2.14+fxdU+74) unstable; urgency=low
 
   [ Stig Thormodsrud ]

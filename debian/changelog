@@ -1,3 +1,81 @@
+vyatta-webgui (0.2.13-9+jenner7) unstable; urgency=low
+
+  * fix for bug 4645. redirect stderr to stdout for load cmd.
+  * also apply to merge operation. will have same bug and requires same
+    fix.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Tue, 30 Jun 2009 15:52:05 -0700
+
+vyatta-webgui (0.2.13-9+jenner6) unstable; urgency=low
+
+  * merge is now supported on backend. Frontend support needs to be
+    added.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Fri, 05 Jun 2009 16:56:05 -0700
+
+vyatta-webgui (0.2.13-9+jenner5) unstable; urgency=low
+
+  * fix for bug 4193. Remove support for error location in configuration
+    tree.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Thu, 04 Jun 2009 15:29:59 -0700
+
+vyatta-webgui (0.2.13-9+jenner4) unstable; urgency=low
+
+  * fix for bug 4487
+  * fix for bug 4193.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Wed, 03 Jun 2009 16:57:50 -0700
+
+vyatta-webgui (0.2.13-9+jenner3) unstable; urgency=low
+
+  * alter lighttpd configuration for event notification recommended for
+    2.6+ kernel
+  * fix for bug 4422. found condition that caused webgui to get stuck in
+    loop. fixed.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Mon, 01 Jun 2009 17:53:39 -0700
+
+vyatta-webgui (0.2.13-9+jenner2) unstable; urgency=low
+
+  * fix for bug 4440 and 4193. copy of cli subsystem out of sync with
+    webgui. future sync problems will be resolved when cli subsystem is
+    set up as a library project.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Mon, 01 Jun 2009 14:43:51 -0700
+
+vyatta-webgui (0.2.13-9+jenner1) unstable; urgency=low
+
+  [ slioch ]
+  * converted session id to 8 byte field.
+  * delay on failure and source ip support
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 29 May 2009 18:33:17 -0700
+
+vyatta-webgui (0.2.13-9) unstable; urgency=low
+
+  [ slioch ]
+  * remove vtysh symlink from cgi-path. create vtysh script in /usr/sbin
+    for chunker to find vtysh
+  * need additional directory setup
+  * remove vtysh from cgi dir.
+  * modified remove cmd
+
+  [ An-Cheng Huang ]
+  * more cgi cleanup
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 19 May 2009 14:29:29 -0700
+
+vyatta-webgui (0.2.13-8) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fixed buy 4281. By default, Ext.js get a blank image from their
+    website. this fixed to
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 08 May 2009 18:42:21 -0700
+
 vyatta-webgui (0.2.13-7) unstable; urgency=low
 
   * Don't redirect webproxy cgi script to https.

@@ -3,6 +3,9 @@
 #include <security/pam_misc.h>
 #include <pwd.h>
 #include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
@@ -46,48 +49,47 @@ Authenticate::~Authenticate()
 bool
 Authenticate::create_new_session()
 {
-  unsigned long id = 0;
+  string id;
   bool init_session = false;
 
   Message msg = _proc->get_msg();
   if (test_auth(msg._user, msg._pswd) == true) {
     //check for current session
-    if ((id = reuse_session()) == 0) {
+    id = reuse_session();
+    if (id.empty()) {
       id = create_new_id();
       init_session = true;
     }
   }
   else {
+    usleep(WebGUI::SLEEP_ON_AUTH_FAILURE);
     _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
     return false;
   }
 
-  if (id > 0) {
+  if (!id.empty()) {
     //these commands are from vyatta-cfg-cmd-wrapper script when entering config mode
     string cmd;
-    char buf[20];
     string stdout;
-    sprintf(buf, "%lu", id);
 
     if (init_session == true) {
       WebGUI::mkdir_p(WebGUI::ACTIVE_CONFIG_DIR.c_str());
-      WebGUI::mkdir_p((WebGUI::LOCAL_CHANGES_ONLY + string(buf)).c_str());
-      WebGUI::mkdir_p((WebGUI::LOCAL_CONFIG_DIR + string(buf)).c_str());
+      WebGUI::mkdir_p((WebGUI::LOCAL_CHANGES_ONLY + id).c_str());
+      WebGUI::mkdir_p((WebGUI::LOCAL_CONFIG_DIR + id).c_str());
       
       string unionfs = WebGUI::unionfs();
       
-      cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+string(buf)+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ string(buf);
-      
+      cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+id+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ id;
       if (WebGUI::execute(cmd, stdout) != 0) {
 	//syslog here
 	_proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
 	return false;
       }
       
-      WebGUI::mkdir_p((WebGUI::CONFIG_TMP_DIR+string(buf)).c_str());
+      WebGUI::mkdir_p((WebGUI::CONFIG_TMP_DIR+id).c_str());
       
       //write the username here to modify file
-      string file = WebGUI::VYATTA_MODIFY_FILE + buf;
+      string file = WebGUI::VYATTA_MODIFY_FILE + id;
       FILE *fp = fopen(file.c_str(), "w");
       if (!fp) {
 	_proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
@@ -98,10 +100,9 @@ Authenticate::create_new_session()
     }
 
     //now generate successful response
+    char buf[80];
     sprintf(buf, "%d", WebGUI::SUCCESS);
-    char buf1[40];
-    sprintf(buf1, "%lu", id);
-    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->_msg._token+"</token><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code><msg/></error></vyatta>";
+    string tmpstr = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->_msg._token+"</token><id>"+id+"</id><error><code>"+string(buf)+"</code><msg/></error></vyatta>";
     _proc->set_response(tmpstr);
     
     //need to verify that system is set up correctly here to provide proper return code.
@@ -221,42 +222,57 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
 /**
  *
  **/
-unsigned long
+string
 Authenticate::create_new_id()
 {
   struct stat tmp;
-  unsigned long id = 0;
   string file;
   unsigned long val;
+  char buf[40];
+  string id;
+
+  //let's grab the src ip of the request first
+  unsigned long src_ip = 0;
+
+  //  string hack = "echo \"" + string(getenv("REMOTE_ADDR")) + "\" >> /tmp/BAR";system(hack.c_str());
+  string ip = string(getenv("REMOTE_ADDR"));
+  if (!ip.empty()) {
+    in_addr_t addr = inet_addr(ip.c_str());
+    src_ip = (unsigned long)addr;
+  }
 
   FILE *fp = fopen("/dev/urandom", "r");
   if (fp) {
     char *ptr = (char*)&val;
     
     do {
-      *ptr = fgetc(fp); if (*ptr == EOF) return 0;
-      *(ptr+1) = fgetc(fp); if (*(ptr+1) == EOF) return 0;
-      *(ptr+2) = fgetc(fp); if (*(ptr+2) == EOF) return 0;
-      *(ptr+3) = fgetc(fp); if (*(ptr+3) == EOF) return 0;
+      *ptr = fgetc(fp); if (*ptr == EOF) return id;
+      *(ptr+1) = fgetc(fp); if (*(ptr+1) == EOF) return id;
+      *(ptr+2) = fgetc(fp); if (*(ptr+2) == EOF) return id;
+      *(ptr+3) = fgetc(fp); if (*(ptr+3) == EOF) return id;
       
-      id = WebGUI::ID_START + (float(val) / float(WebGUI::ID_MAX)) * WebGUI::ID_RANGE;
+      unsigned long id = WebGUI::ID_START + (float(val) / float(WebGUI::ID_MAX)) * WebGUI::ID_RANGE;
       
       //now check for collision
-      char buf[40];
-      sprintf(buf, "%lu", id);
+      
+      //need to pad out src_ip to fill up 10 characters
+      sprintf(buf, "%.8lX%.8lX",src_ip,id);
+      //      sprintf(buf, "%*lu%lu",10,src_ip,id);
       file = WebGUI::VYATTA_MODIFY_FILE + string(buf);
     }
     while (stat(file.c_str(), &tmp) == 0);
 
     fclose(fp);
   }
+
+  id = string(buf);
   return id;  
 }
 
 /**
  *
  **/
-unsigned long
+std::string
 Authenticate::reuse_session()
 {
   //take username and look for a match in .vyattamodify project, if found return....
@@ -265,7 +281,7 @@ Authenticate::reuse_session()
   struct dirent *dirp;
   string id_str;
   if ((dp = opendir(WebGUI::VYATTA_MODIFY_DIR.c_str())) == NULL) {
-    return 0;
+    return id_str;
   }
 
   while ((dirp = readdir(dp)) != NULL) {
@@ -286,5 +302,5 @@ Authenticate::reuse_session()
     }
   }  
   closedir(dp);
-  return strtoul(id_str.c_str(),NULL,10);
+  return id_str;
 }

@@ -17,11 +17,11 @@ public:
 class ChunkerManager
 {
 public:
-  typedef std::map<unsigned long, ProcessData> ProcColl;
-  typedef std::map<unsigned long, ProcessData>::iterator ProcIter;
+  typedef std::map<std::string, ProcessData> ProcColl;
+  typedef std::map<std::string, ProcessData>::iterator ProcIter;
 
 public:
-  ChunkerManager(const std::string &pid, unsigned long kill_timeout, unsigned long chunk_size,bool debug) : 
+  ChunkerManager(const std::string &pid, unsigned long kill_timeout, unsigned long chunk_size, bool debug) : 
     _pid(pid),
     _kill_timeout(kill_timeout),
     _chunk_size(chunk_size),
@@ -46,7 +46,7 @@ private:
   process(char *buf);
 
   void
-  kill_process(unsigned long key);
+  kill_process(std::string key);
 
 private:
   ProcColl _proc_coll;

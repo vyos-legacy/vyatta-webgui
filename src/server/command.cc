@@ -44,7 +44,7 @@ Command::execute_command(WebGUI::AccessLevel access_level)
   }
 
   //validate session id
-  if (!validate_session(_proc->get_msg().id_by_val())) {
+  if (!validate_session(_proc->get_msg().id())) {
     _proc->set_response(WebGUI::SESSION_FAILURE);
     return;
   }
@@ -131,13 +131,21 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       tmp = "/opt/vyatta/sbin/my_" + cmd;
     }
     else if (strncmp(tmp.c_str(),"commit",6) == 0) {
-      tmp = "/opt/vyatta/sbin/my_" + cmd + " -e"; //add error location flag
+      tmp = "/opt/vyatta/sbin/my_" + cmd;// + " -e"; //add error location flag
     }
     else if (strncmp(tmp.c_str(),"load",4) == 0) {
       tmp = "/opt/vyatta/sbin/vyatta-load-config.pl";
       //grab filename is present
       StrProc str_proc(cmd, " ");
       tmp += " " + str_proc.get(1);
+      tmp += " 2>&1";
+    }
+    else if (strncmp(tmp.c_str(),"merge",5) == 0) {
+      tmp = "/opt/vyatta/sbin/vyatta-load-config.pl";
+      //grab filename is present
+      StrProc str_proc(cmd, " ");
+      tmp += " " + str_proc.get(1) + " --merge";
+      tmp += " 2>&1";
     }
     else if (strncmp(tmp.c_str(),"save",4) == 0) {
       tmp = "umask 0002 ; sudo /opt/vyatta/sbin/vyatta-save-config.pl";
@@ -227,7 +235,12 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   }
   */
   //NOTE error codes are not currently being returned via the popen call--temp fix until later investigation
-  WebGUI::execute(command,stdout,true);
+  if (WebGUI::execute(command,stdout,true) == 0) {
+    err = WebGUI::SUCCESS;
+  } else {
+    err = WebGUI::COMMAND_ERROR;
+  }
+
   if (stdout.empty() == true) {
     err = WebGUI::SUCCESS;
   }
@@ -244,7 +257,6 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       }
     }
   }
-
   resp = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
 }
 
@@ -252,11 +264,8 @@ export vyatta_localedir=/opt/vyatta/share/locale";
  *
  **/
 bool
-Command::validate_session(unsigned long id)
+Command::validate_session(string id)
 {
-  if (id <= WebGUI::ID_START) {
-    return false;
-  }
   //then add a directory check here for valid configuration
   string directory = WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id();
   DIR *dp = opendir(directory.c_str());

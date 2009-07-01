@@ -2,6 +2,7 @@
 #define __MANAGER_HH__
 
 #include <map>
+#include <string>
 #include "session.hh"
 #include "sessionexchange.hh"
 #include "processor.hh"
@@ -10,8 +11,8 @@
 class Manager 
 {
 public:
-  typedef std::map<unsigned long,Session> SessionColl;
-  typedef std::map<unsigned long,Session>::iterator SessionIter;
+  typedef std::map<std::string,Session> SessionColl;
+  typedef std::map<std::string,Session>::iterator SessionIter;
 
   Manager(SessionExchange *se, bool strip_error_message, bool debug);
   ~Manager();

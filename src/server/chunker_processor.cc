@@ -125,8 +125,8 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
 
   syslog(LOG_DEBUG,"command: %s",opmodecmd.c_str());
 
-  int err = execlp("/usr/lib/cgi-bin/chunker_cmd",
-		   "/usr/lib/cgi-bin/chunker_cmd",
+  int err = execlp("/usr/sbin/chunker_cmd",
+		   "/usr/sbin/chunker_cmd",
 		   opmodecmd.c_str(),
 		   NULL);
   syslog(LOG_ERR, "ERROR RECEIVED FROM EXECVP(1): %d, %d",err, errno);

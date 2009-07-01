@@ -1,34 +1,15 @@
 #!/bin/bash
 
 prefix=/opt/vyatta
-CHUNKER_DIR=/usr/lib/cgi-bin/tmp/webgui
-CHUNKER_INIT_DIR=/usr/lib/cgi-bin/etc/init.d
-CHUNKER_PID_DIR=/usr/lib/cgi-bin/var/run
-
-# create chunker temp directory
-mkdir -p $CHUNKER_DIR
-chmod 0777 $CHUNKER_DIR
-touch ${CHUNKER_DIR}/dummy
-
-#create chunker proc directory
-mkdir -p $CHUNKER_INIT_DIR
-chmod 0755 $CHUNKER_INIT_DIR
-touch ${CHUNKER_INIT_DIR}/dummy
-
-#create chunker pid directory
-mkdir -p $CHUNKER_PID_DIR
-chmod 0777 $CHUNKER_PID_DIR
-touch ${CHUNKER_PID_DIR}/dummy
 
 # enable CGI for lighttpd
 ln -sf /etc/lighttpd/conf-available/10-cgi.conf /etc/lighttpd/conf-enabled/
 
+#vtysh access
+rm -f /usr/lib/cgi-bin/vtysh
+
 # enable https
 ln -sf /etc/lighttpd/conf-available/10-ssl.conf /etc/lighttpd/conf-enabled/
-
-# add hook for vtysh to be executed by the chunker
-ln -sf  /usr/bin/vyatta-vtysh /usr/lib/cgi-bin/vtysh
-
 
 # fix debian cgi config file
 sed -i '/^\$HTTP.*127\.0\.0\.1/,/^}$/{s/^\(.*\)$/# \1/}' \
@@ -43,11 +24,17 @@ if grep -q '^#.*mod_redirect' /etc/lighttpd/lighttpd.conf; then
   sed -i 's/^#\(.*mod_redirect.*\)$/ \1/' /etc/lighttpd/lighttpd.conf
 fi
 
+
 # enable syslog for lighttpd
 if ! grep -q '^server.errorlog-use-syslog' /etc/lighttpd/lighttpd.conf; then
   echo '#/usr/pkg/etc/lighttpd/lighttpd.conf' >> /etc/lighttpd/lighttpd.conf
   echo 'server.errorlog-use-syslog      = "enable"' >> /etc/lighttpd/lighttpd.conf
   echo 'accesslog.use-syslog = "enable"'  >> /etc/lighttpd/lighttpd.conf
+fi
+
+# enable syslog for lighttpd
+if ! grep -q '^server.event-handler =' /etc/lighttpd/lighttpd.conf; then
+  echo 'server.event-handler = "linux-sysepoll"' >> /etc/lighttpd/lighttpd.conf
 fi
 
 # redirect http to https

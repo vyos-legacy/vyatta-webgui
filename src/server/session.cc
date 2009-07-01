@@ -293,11 +293,14 @@ Session::clean_up_old_sessions()
   if ((dp = opendir(WebGUI::VYATTA_MODIFY_DIR.c_str())) == NULL) {
     return;
   }
+
   while ((dirp = readdir(dp)) != NULL) {
     if (strncmp(dirp->d_name, ".vyattamodify_", 14) == 0) {
       struct stat tmp;
       if (lstat((WebGUI::VYATTA_MODIFY_DIR + string(dirp->d_name)).c_str(), &tmp) == 0) {
-	string id_str = string(dirp->d_name).substr(14,24);
+
+	//the session portion is 20 characters in length
+	string id_str = string(dirp->d_name).substr(14,34);
 	time_t t = time(NULL);
 	if ((tmp.st_mtime + WebGUI::SESSION_TIMEOUT_WINDOW) < (unsigned)t) {
 

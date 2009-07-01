@@ -23,7 +23,7 @@ int Processor::_REQ_BUFFER_SIZE = 2048;
  *
  **/
 void
-Message::set_id(unsigned long id)
+Message::set_id(string &id)
 {
   _id = id;
 }
@@ -31,16 +31,8 @@ Message::set_id(unsigned long id)
 /**
  *
  **/
-string
+std::string
 Message::id()
-{
-  char buf[40];
-  sprintf(buf, "%lu", _id);
-  return string(buf);
-}
-
-unsigned long
-Message::id_by_val()
 {
   return _id;
 }
@@ -157,7 +149,7 @@ data_hndl(void *data, const XML_Char *s, int len) {
     str = WebGUI::trim_whitespace(str);
 
     if (m->_node == WebGUI::GETCONFIG_ID) {
-      m->set_id(strtoul(str.c_str(), NULL, 10));
+      m->set_id(str);
     }
     else if (m->_node == WebGUI::GETCONFIG_NODE) {
       //value between configuration tags
@@ -195,7 +187,7 @@ data_hndl(void *data, const XML_Char *s, int len) {
     str = WebGUI::trim_whitespace(str);
 
     if (m->_node == WebGUI::CLICMD_ID) {
-      m->set_id(strtoul(str.c_str(), NULL, 10));
+      m->set_id(str);
     }
     else {
       m->_command_coll.push_back(str);
@@ -298,6 +290,7 @@ end_hndl(void *data, const XML_Char *el) {
 Processor::Processor(bool debug) : 
   _debug(debug)
 {
+
   _xml_parser = XML_ParserCreate(NULL);
   if (!_xml_parser) {
     cerr << "error setting up xml parser()" << endl;
@@ -308,6 +301,7 @@ Processor::Processor(bool debug) :
 
   XML_SetElementHandler(_xml_parser, start_hndl, end_hndl);
   XML_SetCharacterDataHandler(_xml_parser, data_hndl);
+
 }
 
 /**

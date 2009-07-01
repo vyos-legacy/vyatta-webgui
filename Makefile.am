@@ -1,11 +1,12 @@
-tmpdir = /usr/lib/cgi-bin/tmp/webgui
-chunkerinitdir = /usr/lib/cgi-bin/etc/init.d
-chunkerpiddir = /usr/lib/cgi-bin/var/run
+tmpdir = $(prefix)/tmp/webgui
+chunkerpiddir = $(prefix)/var/run
 wwwdir = /var/www
 cgidir = /usr/lib/cgi-bin
 initddir = /etc/init.d
 cfgdir = $(datadir)/vyatta-cfg/templates
+cfgrootdir = $(datadir)/vyatta-cfg
 opdir = $(datadir)/vyatta-op/templates
+ssbindir = /usr/sbin
 
 AM_CPPFLAGS = -I src/server -I src/lib -Wall -DDEBUG -g \
               -I /usr/include/glib-2.0 -I /usr/lib/glib-2.0/include
@@ -17,10 +18,10 @@ src_server_chunker_SOURCES += src/server/chunker_manager.cc
 src_server_chunker_SOURCES += src/server/chunker_processor.cc
 src_server_chunker_SOURCES += src/server/common.cc
 
-src_server_chunker_test_SOURCES = src/server/chunker_test.cc
-src_server_chunker_test_SOURCES += src/server/common.cc
+#src_server_chunker_test_SOURCES = src/server/chunker_test.cc
+#src_server_chunker_test_SOURCES += src/server/common.cc
 
-src_server_test_SOURCES = src/server/test.cc
+#src_server_test_SOURCES = src/server/test.cc
 
 src_server_webgui_SOURCES = src/server/main.cc
 src_server_webgui_SOURCES += src/server/common.cc
@@ -44,10 +45,16 @@ src_server_webgui_LDADD += src/lib/libclibe.a
 
 
 cgi_PROGRAMS = src/server/webgui
-cgi_PROGRAMS += src/server/chunker
-cgi_PROGRAMS += src/server/test
-cgi_PROGRAMS += src/server/chunker_test
 cgi_SCRIPTS = src/server/webgui-wrap
+
+ssbin_PROGRAMS = src/server/chunker
+
+ssbin_SCRIPTS = scripts/vtysh
+ssbin_SCRIPTS += scripts/chunker_cmd
+
+initd_SCRIPTS = scripts/vyatta-webgui-chunker
+
+cfgroot_DATA = scripts/mandatory
 
 # library
 AM_CFLAGS = -I src/lib -Wall -I /usr/include/glib-2.0 \
@@ -66,17 +73,10 @@ cpiop = find  . ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 | \
 
 # XXX get Ext here for now
 install-exec-hook:
-	mkdir -p $(DESTDIR)$(chunkerinitdir)/
 	mkdir -p $(DESTDIR)$(chunkerpiddir)/
 	mkdir -p $(DESTDIR)$(tmpdir)/
 	touch $(DESTDIR)$(tmpdir)/dummy
-	mkdir -p $(DESTDIR)/$(initddir)
-	cp scripts/vyatta-webgui-chunker.init $(DESTDIR)/$(initddir)/vyatta-webgui-chunker
-	cp scripts/chunker_cmd $(DESTDIR)/$(cgidir)/chunker_cmd
-	cp scripts/show $(DESTDIR)/$(cgidir)/show
-	cp scripts/mandatory $(DESTDIR)/$(cgidir)/mandatory
-	mkdir -p $(DESTDIR)/$(cgidir)/
-	cp scripts/webgui.conf $(DESTDIR)/$(cgidir)/
+	
 	@mkdir -p $(DESTDIR)/var/www
 	@for v in 2.1 2.2; do \
 		rm -f /tmp/ext-$$v.zip; \

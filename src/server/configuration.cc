@@ -36,7 +36,7 @@ void
 Configuration::get_config()
 {
   //now check for directory
-  if (!validate_session(_proc->get_msg().id_by_val())) {
+  if (!validate_session(_proc->get_msg().id())) {
     _proc->set_response(WebGUI::SESSION_FAILURE);
     return;
   }
@@ -558,6 +558,9 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  string::size_type start_pos = 0;
 	  while ((start_pos = tmp.find("<")) != string::npos) {
 	    int end_pos = tmp.find(">");
+	    if (end_pos == string::npos) {
+	      break;
+	    }
 	    tmp = tmp.substr(0,start_pos) + tmp.substr(end_pos+1,tmp.length());
 	  }
 
@@ -656,15 +659,10 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
  *
  **/
 bool
-Configuration::validate_session(unsigned long id)
+Configuration::validate_session(string id)
 {
-  if (id <= WebGUI::ID_START) {
-    return false;
-  }
   //then add a directory check here for valid configuration
-  char buf[40];
-  sprintf(buf, "%lu", id);
-  string directory = WebGUI::LOCAL_CONFIG_DIR + string(buf);
+  string directory = WebGUI::LOCAL_CONFIG_DIR + id;
   DIR *dp = opendir(directory.c_str());
   if (dp == NULL) {
     return false;

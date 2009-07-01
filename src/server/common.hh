@@ -4,6 +4,7 @@
 class WebGUI
 {
 public:
+  const static unsigned long SLEEP_ON_AUTH_FAILURE;
   const static unsigned long ID_MAX;
   const static unsigned long ID_START;
   const static unsigned long ID_RANGE;
@@ -27,7 +28,6 @@ public:
   const static std::string VYATTA_MODIFY_FILE;
 
   const static std::string CHUNKER_RESP_CMDS;
-  const static std::string CHUNKER_RESP_INIT;
   const static std::string CHUNKER_RESP_TOK_DIR;
   const static std::string CHUNKER_RESP_TOK_BASE;
   const static std::string CHUNKER_RESP_PID;
@@ -121,7 +121,7 @@ public:
    *
    **/
   static void
-  remove_session(unsigned long id);
+  remove_session(std::string id);
   static void
   discard_session(std::string &id);
   

@@ -113,8 +113,9 @@ function FT_confRestoreDesc(name, callback, busLayer)
 
         var callback = function(evt)
         {
-            //alert('restore in progress....' + evt);
             g_utils.f_cursorDefault();
+            g_utils.f_popupMessage(g_lang.m_restoreInProgress, 'ok',
+                        g_lang.m_restoreUploadTitle, false);
         }
 
         g_utils.f_cursorWait();

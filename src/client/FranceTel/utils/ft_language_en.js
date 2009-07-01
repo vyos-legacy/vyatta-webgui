@@ -168,7 +168,6 @@ var g_lang =
 	m_resUpdateCurVer: "current version",
 	m_resUpdatePrevVer: "previous version",
 	m_resUpdateFail: "restore failed:",
-    m_resUploadCompleted: "upload files has completed.",
 
     ///////////////////////////////////////////////////////////////////
     // VM Schedule Update
@@ -336,6 +335,8 @@ var g_lang =
     m_restoreDownload : "download backup archive",
     m_restoreRestorePC : "restore from my PC",
     m_restoreFromMyPCTip : "Click here to start restore from my PC",
+    m_restoreInProgress : "restore is in progress.",
+    m_resUploadCompleted: "upload files to server has completed.",
 
     ///////////////////////////////////////////////////////////////////
     // Restore Desc. configuration

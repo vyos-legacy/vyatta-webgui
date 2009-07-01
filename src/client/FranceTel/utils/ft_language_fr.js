@@ -169,7 +169,6 @@ var g_lang =
 	m_resUpdateCurVer : "version courante",
 	m_resUpdatePrevVer : "version précédente", 
 	m_resUpdateFail : "échec de la restauration",
-    m_resUploadCompleted : "le téléchargement de fichiers est effectué",
 
     ///////////////////////////////////////////////////////////////////;;;
     // VM Schedule Update;;;
@@ -339,6 +338,8 @@ var g_lang =
     m_restoreDownload : "télécharger la sauvegarde", 
     m_restoreRestorePC : "restaurer un fichier de mon PC", 
     m_restoreFromMyPCTip : "Cliquer ici pour démarrer la restauration d'un fichier de mon PC",
+    m_restoreInProgress : "restore is in progress.",
+    m_resUploadCompleted: "le téléchargement de fichiers est effectué."
 
     ///////////////////////////////////////////////////////////////////;;;
     // Restore Desc. configuration;;;

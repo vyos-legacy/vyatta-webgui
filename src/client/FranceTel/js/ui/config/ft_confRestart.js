@@ -86,7 +86,7 @@ function FT_confRestart(name, callback, busLayer)
         {
             var v = vm[i].split('|');
 
-            var enabled = v[1] == 'up' ? true : false;
+            var enabled = v[1] == 'down' ? false : true;
 
             var img = thisObj.f_renderStatus(v[1]);
             var restart = thisObj.f_renderButton(
@@ -94,7 +94,7 @@ function FT_confRestart(name, callback, busLayer)
                         v[0] + "', '" + v[2] + "')",
                         'Restart ' + v[2]);
             var stop = thisObj.f_renderButton(
-                        'Stop', enabled, "f_vmStop('" +
+                        'Stop', v[2] == "Security" ? false : enabled, "f_vmStop('" +
                         v[0] + "', '" + v[2] + "')",
                         'Stop ' + v[2]);
             var start = thisObj.f_renderButton(

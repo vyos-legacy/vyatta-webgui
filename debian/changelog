@@ -1,3 +1,36 @@
+vyatta-webgui (0.2+fxd0+73) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add method to support canceling auto resizing.
+  * Fix the following:
+  * Add the version file.
+  * Fix auto-resizing issue when we switch between 'Network', and
+    'Security' tabs, it fails to auto resize.  This is due to a fix
+    earlier per FT feedback about the center iframe name.  Since the
+    name attribute is introduced, the window.frames['frame_name']
+    returns the frame for the first time, but not sub quentially
+    afterward.  This make the d = iframeWin.document  become undefined,
+    as iframeWin for the second time returns a reference to the main
+    window, instead of the iframe window.
+  * Only print debug message when debug tag is true
+
+  [ Kevin Choi ]
+  * * created a base class to support grid table pagination to all our
+    existing grid table.
+  * * changed sorting images from orange to black as request by FT
+  * * forgot to check in certian files from previous checked in for
+    pagination supported
+
+  [ An-Cheng Huang ]
+  * add support for multi-language VM display name
+
+  [ Kevin Choi ]
+  * * restart vm screen :
+  * * support multi-lang for tab-name
+  * * restore screen : prompted user comfirmation.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 01 Jul 2009 01:03:22 +0000
+
 vyatta-webgui (0.2+fxd0+72) unstable; urgency=low
 
   [ Loi Vo ]

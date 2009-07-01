@@ -1169,8 +1169,9 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                         ///////////////////////////////////////////////
                         // if segment id == '_0', server ack command.
                         // update to user.
-                        if(g_cliCmdObj.m_segmentId.indexOf('_0') >= 0 &&
-                            values.length == 0)
+                        var pro_sid = g_cliCmdObj.m_segmentId.substr(
+                                      g_cliCmdObj.m_segmentId.length-2, 2);
+                        if(pro_sid.indexOf('_0') >= 0 && values.length == 0)
                         {
                             values = '';
                             var id = ePanel.m_opTextArea.m_outputId;

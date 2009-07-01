@@ -882,6 +882,8 @@ function f_parseServerCallback(xmlRoot)
                 break;
             case "0":
                 success = true;
+                if(msg.length > 7)
+                    f_promptInfoMessage("Warning", msg);
                 break;
             case "3":
                 f_promptUserNotLoginMessage();

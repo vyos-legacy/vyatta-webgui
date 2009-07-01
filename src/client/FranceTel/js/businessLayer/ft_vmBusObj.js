@@ -51,7 +51,7 @@ function FT_vmBusObj(busObj)
                     thisObj.m_vmDeployRecObj = thisObj.f_parseVMDeployList(err);
                     evt = new FT_eventObj(0, thisObj.m_vmDeployRecObj, '');
                 }
-                else if(thisObj.m_lastCmdSent.indexOf('open-app vm list') > 0)
+                else if(thisObj.m_lastCmdSent.indexOf('open-app vm list-lang') > 0)
                 {
                     thisObj.f_parseVMSummaryData(err);
                     evt = new FT_eventObj(0, thisObj.m_vmRecObj, '');
@@ -87,7 +87,8 @@ function FT_vmBusObj(busObj)
         thisObj.m_guiCb = guiCb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement>" +
-                      "open-app vm list </statement></command>";
+                      "open-app vm list-lang '" + g_utils.f_getLanguage() +
+                      "'</statement></command>";
 
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -205,20 +206,20 @@ function FT_vmBusObj(busObj)
         {
             // let check if BLB associated
             if(g_utils.f_getIsBLB() == g_consObj.V_BLB_YES)
-                vm = vm == null ? new FT_vmRecObj('blb', 'Business Livebox'):vm;
+                vm = vm == null ? new FT_vmRecObj('blb', g_lang.m_tnBLB):vm;
         }
         if(vm != null)
             finalVmsList.push(vm);
 
         // prepare OA vm
         vm = thisObj.f_findVM('openapp', vms);
-        vm = vm == null ? new FT_vmRecObj('openapp', 'Open Appliance'):vm;
+        vm = vm == null ? new FT_vmRecObj('openapp', g_lang.m_tnOA):vm;
         finalVmsList.push(vm);
 
         // utm/security vm
         vm = thisObj.f_findVM('utm', vms);
         if(vm == null && isPwRole)
-            vm = new FT_vmRecObj('utm', 'Security');
+            vm = new FT_vmRecObj('utm', g_lang.m_tnUTM);
         if(vm != null)
             finalVmsList.push(vm);
 
@@ -230,7 +231,7 @@ function FT_vmBusObj(busObj)
             if(g_utils.f_getLanguage() == g_consObj.V_LANG_FR)
                 pbxURL = g_oaConfig.m_pbxURI_fr;
 
-            vm = new FT_vmRecObj('pbx', 'Telephony');
+            vm = new FT_vmRecObj('pbx', g_lang.m_tnPBX);
             vm.m_ip = document.domain;
             var uri = document.URL.split('/');
             vm.m_guiUri = '/' + uri[uri.length-2] + '/' + pbxURL;

@@ -103,6 +103,13 @@ var g_lang =
 	m_menu_des_BLBCredCheck: 'BLB credentials check',
 
     ///////////////////////////////////////////////////////////////////
+    // tab name
+    m_tnBLB : "Business Livebox",
+    m_tnOA : "Open Appliance",
+    m_tnUTM : "Security",
+    m_tnPBX : "Telephony",
+
+    ///////////////////////////////////////////////////////////////////
     // pagination
     m_pgFirst : "first",
     m_pgPrev : "previous",

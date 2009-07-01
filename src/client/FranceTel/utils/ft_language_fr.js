@@ -12,7 +12,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // General
     m_tableTooltip1 : "Cliquer ici pour effectuer un tri.",
-    m_networkConfig : "réseau",
+    m_networkConfig : "Réseau",
     m_mainLang : 'fr',    
 	m_mainMap : 'plan',
 	m_mainOA : 'Open Appliance',
@@ -102,6 +102,13 @@ var g_lang =
 	m_menu_des_Restore : "restaurer",
 	m_menu_des_RestoreDesc : "description du fichier de sauvegarde",
 	m_menu_des_BLBCredCheck : "vérification des identifiants de la BLB", 
+
+    ///////////////////////////////////////////////////////////////////
+    // tab name
+    m_tnBLB : "Business Livebox",
+    m_tnOA : "Open Appliance",
+    m_tnUTM : "Sécurité",
+    m_tnPBX : "Téléphonie",
 
     ///////////////////////////////////////////////////////////////////
     // pagination

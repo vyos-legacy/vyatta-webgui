@@ -14,15 +14,16 @@ my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
 my %auth_user_rights = %{$auth_user->getRights()};
 my $auth_user_role = $auth_user->getRole();
 
-my ($list, $status, $hwmon) = ('NO_VALUE', 'NO_VALUE', 0);
+my ($list, $status, $hwmon, $lang) = ('NO_VALUE', 'NO_VALUE', 0, 'en');
 GetOptions(
   'list:s' => \$list,
+  'lang=s' => \$lang,
   'status:s' => \$status,
   'hwmon' => \$hwmon
 );
 
 if ($list ne 'NO_VALUE') {
-  do_list($list);
+  do_list($list, $lang);
   exit 0;
 }
 if ($status ne 'NO_VALUE') {
@@ -44,7 +45,7 @@ if ($hwmon) {
 
 sub do_list {
   print "VERBATIM_OUTPUT\n";
-  my $id = shift;
+  my ($id, $lang) = @_;
   my @VMs = ();
   if ($id ne '') {
     @VMs = ( $id );
@@ -62,7 +63,7 @@ sub do_list {
     my $port = $vm->getWuiPort();
     my $uri = $vm->getWuiUri();
     my $ver = $vm->getImgVer();
-    my $dname = $vm->getDisplayName();
+    my $dname = $vm->getDisplayNameLang($lang);
     print <<EOF;
       <vm id='$vid'>
         <ip>$ip</ip>

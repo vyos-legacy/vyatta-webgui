@@ -1,0 +1,7 @@
+help: List the specified VM using specific language setting
+access:admin
+run: if /opt/vyatta/sbin/openapp-vm-query.pl --list "$5" --lang "$4"; then
+       return 0
+     else
+       return 1
+     fi

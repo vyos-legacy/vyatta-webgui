@@ -1,3 +1,19 @@
+vyatta-webgui (0.2+fxd0+77) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * implement pagination for restore screen.
+  * * updated pagination base class to handle case the current page is
+    no long available and
+
+  [ Michael Larson ]
+  * initial support for dom0 backup support. only set for config support
+    at this time. restore won't work yet until dom0 restore work has
+    been completed.
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 02 Jul 2009 08:20:04 +0000
+
 vyatta-webgui (0.2+fxd0+76) unstable; urgency=low
 
   * * implement pagination for user list, user right and vm update

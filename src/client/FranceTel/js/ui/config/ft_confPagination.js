@@ -17,11 +17,18 @@ function FT_pagingObj(total, curPage, rowPerPage)
 {
     var thisObj = this;
     this.m_totalRecs = total;    // total rows/records from database
-    this.m_curPage = curPage;
-    this.m_rowPerPage = rowPerPage;
-    this.m_totalPages = 0;
+    this.m_curPage = curPage;   // current page number
+    this.m_rowPerPage = rowPerPage; // number of row allow per page
+    this.m_totalPages = 0;      // total pages
+    this.m_numOfRowInPage = 0;    // number of row on current display page.
     this.m_endPage = false;
 
+
+    this.f_resetValues = function()
+    {
+        this.m_numOfRowInPage = 0;
+        this.m_endPage = false;
+    }
 
     this.f_calculateTotalPage = function()
     {

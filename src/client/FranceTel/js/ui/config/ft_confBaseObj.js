@@ -30,14 +30,20 @@ function FT_confBaseObj(name, callback, busLayer)
     }
 
     this.privateConstructor = function(name, callback, busLayer)
-	{
-		this.m_busLayer = busLayer;
+    {
+	this.m_busLayer = busLayer;
         this.m_name = name;
         this.m_containerCb = callback;
         this.m_treadId = null;
         this.m_allowSort = false;
-	}
-	this.privateConstructor(name, callback, busLayer);
+        this.m_sortColPrev = -1;
+        this.m_sortOrder = 'asc';
+        this.m_pagingObj = null;
+        this.m_id = undefined;
+        this.m_tableRowCounter = 0;
+    }
+    this.privateConstructor(name, callback, busLayer);
+
     /**
      * call this function when this object is no longer used. it will
      * do all the clean up and stop the thread.
@@ -49,6 +55,7 @@ function FT_confBaseObj(name, callback, busLayer)
             this.m_busLayer.f_stopVMRequestThread(this.m_treadId);
             this.m_threadId = null;
         }
+        this.m_pagingObj = null;
     }
 
     this.f_setId = function(id) {
@@ -291,12 +298,14 @@ function FT_confBaseObj(name, callback, busLayer)
 
                 var pageDiv = thisObj.m_pagingObj.createPagingDiv(width);
                 div = this.addPagingDiv(div, pageDiv);
+                thisObj.m_pagingObj.m_numOfRowInPage++;
             }
             // within page
             else if(rowNo > (pageNo-1)*rpp && rowNo < pageNo*rpp)
             {
                 innerHtml += term;
                 div.innerHTML = innerHtml;
+                thisObj.m_pagingObj.m_numOfRowInPage++;
             }
             // outside of paging
             else
@@ -329,14 +338,18 @@ function FT_confBaseObj(name, callback, busLayer)
 
     this.f_handlePagingCall = function(pageNo)
     {
+        thisObj.m_pagingObj.f_resetValues();
         thisObj.m_pagingObj.m_curPage = pageNo;
-        thisObj.m_pagingObj.m_endPage = false;
         thisObj.prototype.apply(thisObj);
     }
 
     this.f_adjustDivPosition = function(div, numOfRows)
     {
         var rows = numOfRows == null ? thisObj.m_tableRowCounter : numOfRows;
+
+        if(thisObj.m_pagingObj != null && rows > thisObj.m_pagingObj.m_numOfRowInPage)
+            rows = thisObj.m_pagingObj.m_numOfRowInPage;
+
         thisObj.m_tableRowCounter = rows;
 
         var adVal = (rows * 31) - 10;
@@ -708,6 +721,11 @@ function FT_confBaseObj(name, callback, busLayer)
 
         thisObj.m_sortCol = col;
         thisObj.m_sortOrder = order;
+
+        ///////////////////////////////
+        // reset the pagination attributes
+        if(thisObj.m_pagingObj != null)
+            thisObj.m_pagingObj.f_resetValues();
 
         return true;
     }

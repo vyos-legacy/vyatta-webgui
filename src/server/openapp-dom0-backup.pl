@@ -51,6 +51,19 @@ if (defined($restore)) {
 
 exit 1;
 
+# copy a file while preserving ownership and mode
+sub cp_p {
+  my ($src, $dst) = @_;
+  system("cp -p '$src' '$dst'");
+  return (($? >> 8) ? 0 : 1);
+}
+
+sub save_ldap {
+  my ($file) = @_;
+  system("slapcat >'$file'");
+  return (($? >> 8) ? 0 : 1);
+}
+
 sub do_backup {
   my ($what, $file) = @_;
   my $fd;
@@ -68,13 +81,15 @@ sub do_backup {
     }
     my $err = undef;
     while (1) {
-      # preserve ownership and mode
-      system("cp -p '$OA_CFG_PATH' '$tdir/files/$OA_CFG_FILE'");
-      if ($? >> 8) {
+      if (!cp_p("$OA_CFG_PATH", "$tdir/files/$OA_CFG_FILE")) {
         $err = 'Cannot backup OA config file';
         last;
       }
-      my $bfiles = "$OA_CFG_FILE";
+      if (!save_ldap("$tdir/files/$OA_LDAP_DUMP_FILE")) {
+        $err = 'Cannot backup OA LDAP database';
+        last;
+      }
+      my $bfiles = "$OA_CFG_FILE $OA_LDAP_DUMP_FILE";
       system("tar -cf \"$file\" -C \"$tdir/files\" $bfiles");
       if ($? >> 8) {
         $err = 'Cannot create OA backup';

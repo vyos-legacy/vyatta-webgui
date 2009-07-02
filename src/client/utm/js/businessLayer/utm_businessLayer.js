@@ -111,11 +111,7 @@ function UTM_businessLayer()
 
                 return response;
             } else if (r.status == 404) { //assuming  timeout on dom0. dom0 stop proxy the request.
-		        if ((window.parent != undefined) && (window.parent != null)) {
-			        if (window.parent.f_timeout != undefined) {
-				        window.parent.f_timeout();
-			        }
-		        }				
+                thisObj.f_userTimeout();            			
 			}
         }
 
@@ -226,6 +222,16 @@ function UTM_businessLayer()
     {
         thisObj.m_userObj.f_logout(guiCb);
     }
+	
+    this.f_userTimeout = function(guiCb)
+    {
+        thisObj.m_userObj.f_timeout(guiCb);
+		if ((window.parent != undefined) && (window.parent != null)) {
+			if (window.parent.f_timeout != undefined) {
+				window.parent.f_timeout();
+			}
+		}			
+    }	
 
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////

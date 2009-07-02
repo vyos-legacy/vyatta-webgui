@@ -77,6 +77,12 @@ function UTM_userBusObj(busObj)
         g_cookie.f_remove_all();
     }
 
+    this.f_timeout = function(cb)
+    {
+        thisObj.m_sid = undefined;
+        g_cookie.f_remove_session();
+    }
+
     /**
      * set user's request login data before send to server.
      */

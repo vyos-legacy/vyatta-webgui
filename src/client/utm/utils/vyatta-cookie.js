@@ -93,5 +93,33 @@ var g_cookie =
             this.f_set_raw(avp[1], '', -1);
         }
       }
-    }
+    },
+	
+	f_session_cookie: function(key) 
+	{	
+		var a = [g_consObj.V_COOKIES_USER_ID];		
+		for (var i =0; i < a.length; i++) {
+			if (key.indexOf(a[i]) >= 0) {
+				return true;
+			}
+		}
+		return false;		 
+	},
+	
+    f_remove_session: function()
+    {
+      var str = document.cookie;
+      var keys = str.split(';');
+      for (var i = 0; i < keys.length; i++) 
+      {
+	  	if (!this.f_session_cookie(keys[i])) 
+		    continue;
+		
+        var avp = keys[i].match(new RegExp('^\\s*([^\\s]+)=([^\\s]*)\\s*$'));
+        if (avp != undefined && avp[1] != undefined)
+        {
+            this.f_set_raw(avp[1], '', -1);
+        }
+      }
+    }	
 }

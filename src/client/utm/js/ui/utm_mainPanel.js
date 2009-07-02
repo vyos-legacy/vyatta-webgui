@@ -42,11 +42,6 @@ function UTM_mainPanel()
         
         g_busObj.f_userLoginRequest(un, pw, cb);
     }
-	
-	this.f_logout = function()
-	{
-		
-	}
     
     /*
      * Initialization function
@@ -102,10 +97,48 @@ function UTM_mainPanel()
         return thisObj.m_oa_container;
     }
     
+    this.f_getNav2SelectionPath = function() {	
+	    var id = g_cookie.f_get(g_myVmId + '_' + g_consObj.V_COOKIES_NAV_2_PATH, g_consObj.V_NOT_FOUND);
+		if (id==g_consObj.V_NOT_FOUND) {
+			id = g_defaultMenuItem;
+		} 	
+		return id;		
+	}
+	
+	this.f_getNav3SelectionPath = function(nav2Id) {
+	    var id = g_cookie.f_get(g_myVmId + '_' + g_consObj.V_COOKIES_NAV_3_PATH, g_consObj.V_NOT_FOUND);
+		if (id==g_consObj.V_NOT_FOUND) {
+			id = thisObj.f_getDefaultSelection(nav2Id);
+		} 	
+		return id;			
+	}
+
+    /*
+    this.f_saveCurrentPage = function()
+	{
+		id =  thisObj.m_2navMenu.m_selectedItem; 
+		subId = thisObj.m_3navMenu.m_selectedItem;
+		g_cookie.f_set(g_myVmId + '_' + g_consObj.V_COOKIES_NAV_2_PATH, id, g_cookie.m_userNameExpire);			
+	    g_cookie.f_set(g_myVmId + '_' + g_consObj.V_COOKIES_NAV_3_PATH, subId, g_cookie.m_userNameExpire);					
+	}
+    */
+	
+    this.f_selectDefaultPage = function() {
+		var id = thisObj.f_getNav2SelectionPath();
+		var subId = thisObj.f_getNav3SelectionPath(id);
+		
+		var f = function() { 
+		    thisObj.f_selectPage(id, subId);			
+		}
+		window.setTimeout(f, 100);		
+	}	
+	
+	
     this.f_selectPage = function(id, subId)
     {
-        thisObj.m_2navMenu.f_selectItem(id);
-        thisObj.m_3navMenu.f_selectItem(subId);
+        //thisObj.m_2navMenu.f_selectItem(id);
+        //thisObj.m_3navMenu.f_selectItem(subId);
+        thisObj.m_2navMenu.f_selectNav3Item(id, subId);		
     }
     
     this.f_selectMenuItem = function(itemId)
@@ -135,6 +168,17 @@ function UTM_mainPanel()
         //alert('mp.f_selectItem: id' + id + 'defaultSelection: ' + thisObj.f_getDefaultSelection(id));
         thisObj.m_3navMenu.f_selectItem(thisObj.f_getDefaultSelection(id));
     }
+	
+    this.f_2navSelectNav3ItemCb	= function(id, subId) {
+		if (thisObj.m_3navSelectedItem != undefined) {
+			thisObj.m_3navMenu.f_hide(thisObj.m_3navSelectedItem);
+		}
+		
+        thisObj.m_3navSelectedItem = id;
+        thisObj.m_3navMenu.f_show(id);
+		//alert('mp.f_selectItem: id' + id + 'defaultSelection: ' + thisObj.f_getDefaultSelection(id));
+        thisObj.m_3navMenu.f_selectItem(subId);		
+	} 
     
     this.f_3navSelectItemCb = function(id, desc)
     {

@@ -12,7 +12,8 @@ g_xbObj.f_xbOnDomReady(function(){
 	} else {	
 		g_utmMainPanel.f_init();
 		g_utmMainPanel.f_show();
-		g_utmMainPanel.f_selectMenuItem(g_defaultMenuItem);			
+		//g_utmMainPanel.f_selectMenuItem(g_defaultMenuItem);
+		g_utmMainPanel.f_selectDefaultPage();			
 	}
 });
 

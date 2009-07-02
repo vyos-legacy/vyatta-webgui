@@ -82,7 +82,7 @@ function FT_confBaseObj(name, callback, busLayer)
 
         var ft = document.getElementById('ft_container');
 		if (ft) {
-		    ft.appendChild(div);	
+		    ft.appendChild(div);
 		}
 
         this.m_div = div;
@@ -104,7 +104,7 @@ function FT_confBaseObj(name, callback, busLayer)
             this.m_div == undefined)
 	//to avoid the race condition between callback from server, and user click event.
             return;
-    
+
         var h = 0;
         for (var i=0; this.m_div.childNodes[i]; i++) {
             h += this.m_div.childNodes[i].offsetHeight;
@@ -664,7 +664,7 @@ function FT_confBaseObj(name, callback, busLayer)
         if(evt.f_isError())
         {
 			if (evt.m_errCode == 3) {
-				g_utils.f_popupMessage('timeout', 'timeout', null, true);				
+				g_utils.f_popupMessage('timeout', 'timeout', null, true);
 			}
 			else {
 				g_utils.f_popupMessage(evt.m_errMsg, 'ok', errTitle, true);
@@ -703,6 +703,12 @@ function FT_confBaseObj(name, callback, busLayer)
         }
     }
 
+    this.f_resetPagination = function()
+    {
+        if(thisObj.m_pagingObj != null)
+            thisObj.m_pagingObj.f_resetValues();
+    }
+
     this.f_resetSorting = function()
     {
         thisObj.m_sortOrder = 'asc';
@@ -730,8 +736,7 @@ function FT_confBaseObj(name, callback, busLayer)
 
         ///////////////////////////////
         // reset the pagination attributes
-        if(thisObj.m_pagingObj != null)
-            thisObj.m_pagingObj.f_resetValues();
+        thisObj.f_resetPagination();
 
         return true;
     }

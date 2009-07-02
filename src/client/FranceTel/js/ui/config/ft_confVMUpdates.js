@@ -46,11 +46,12 @@ function FT_confVMUpdates(name, callback, busLayer)
     this.f_loadVMData = function()
     {
         thisObj.f_stopLoadVMData();
-        thisObj.f_resetSorting();
 
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
+            thisObj.f_resetPagination();
+
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
                 if(thisObj.f_isServerError(evt, g_lang.m_uhErrorTitle))
@@ -100,8 +101,9 @@ function FT_confVMUpdates(name, callback, busLayer)
                           thisObj.f_createRenderStatus(dep[2],
                           dep[5]), button];
 
-            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData);
-            thisObj.m_body.appendChild(bodyDiv);
+            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData, depArray.length);
+            if(bodyDiv != null)
+                thisObj.m_body.appendChild(bodyDiv);
         }
     }
 
@@ -164,8 +166,14 @@ function FT_confVMUpdates(name, callback, busLayer)
     {
         this.m_colHd = this.f_createColumns();
         this.m_header = this.f_createGridHeader(this.m_colHd, 'f_vmGridHeaderOnclick');
-        this.m_body = this.f_createGridView(this.m_colHd);
+        this.m_body = this.f_createGridView(this.m_colHd, true);
         this.f_loadVMData();
+        this.f_resetSorting();
+
+        /////////////////////////////////////////////////////////
+        // create a callback for paging. when user click on the
+        // page number, this function will be called.
+        FT_confVMUpdates.superclass.prototype = this.f_populateTable;
 
         return [this.m_header, this.m_body];
     }

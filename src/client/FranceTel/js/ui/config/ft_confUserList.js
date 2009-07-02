@@ -62,8 +62,6 @@ function FT_confUserList(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
-        thisObj.f_resetSorting();
-
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
@@ -160,6 +158,7 @@ function FT_confUserList(name, callback, busLayer)
         this.m_header = this.f_createGridHeader(this.m_colHd, 'f_ulGridHeaderOnclick');
         this.m_body = this.f_createGridView(this.m_colHd, true);
         this.f_loadVMData();
+        this.f_resetSorting();
 
         /////////////////////////////////////////////////////////
         // create a callback for paging. when user click on the

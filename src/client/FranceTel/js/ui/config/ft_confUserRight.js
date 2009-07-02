@@ -56,7 +56,7 @@ function FT_confUserRight(name, callback, busLayer)
                 continue;
 
             cols[vmIndex++] = this.f_createColumn(vm[i].m_displayName,
-                              80, 'checkbox', '35');
+                              80, 'checkbox', '38');
         }
 
         return cols;
@@ -74,10 +74,8 @@ function FT_confUserRight(name, callback, busLayer)
         thisObj.m_div.appendChild(thisObj.m_buttons);
     };
 
-    this.f_loadData = function()
+    this.f_loadVMData = function()
     {
-        thisObj.f_resetSorting();
-
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
@@ -109,6 +107,19 @@ function FT_confUserRight(name, callback, busLayer)
         var sortCol = FT_confDashboard.superclass.m_sortCol;
         var ulRec = thisObj.f_createSortingArray(sortCol, thisObj.m_uRec);
         var vm = g_busObj.f_getVmRecObj();
+
+        ///////////////////////////////////////////////
+        // find the total data length to be displayed.
+        var dataLen = 0;
+        for(var i=0; i<ulRec.length; i++)
+        {
+            var ul = ulRec[i].split('|');
+
+            if(ul[3] == 'admin' || ul[3] == 'installer')
+                continue;
+
+            dataLen++;
+        }
 
         // create table row
         var c=0;
@@ -146,8 +157,9 @@ function FT_confUserRight(name, callback, busLayer)
             // etc. id (username+vmName), check/no check, username, vmname
             thisObj.m_uiData[c++] = uiData;
 
-            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, data);
-            thisObj.m_body.appendChild(bodyDiv);
+            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, data, dataLen);
+            if(bodyDiv != null)
+                thisObj.m_body.appendChild(bodyDiv);
         }
 
         thisObj.f_adjustDivPosition(thisObj.m_buttons);
@@ -264,7 +276,7 @@ function FT_confUserRight(name, callback, busLayer)
         {
             g_utils.f_cursorDefault();
             if(evt != undefined && !evt.f_isError())
-                thisObj.f_loadData();
+                thisObj.f_loadVMData();
             else if(evt != undefined && evt.f_isError())
                 alert(evt.m_errMsg);
         };
@@ -299,8 +311,14 @@ function FT_confUserRight(name, callback, busLayer)
     {
         this.m_colHd = this.f_createColumns();
         this.m_header = this.f_createGridHeader(this.m_colHd, 'f_urGridHeaderOnclick');
-        this.m_body = this.f_createGridView(this.m_colHd);
-        this.f_loadData();
+        this.m_body = this.f_createGridView(this.m_colHd, true);
+        this.f_loadVMData();
+        thisObj.f_resetSorting();
+
+        /////////////////////////////////////////////////////////
+        // create a callback for paging. when user click on the
+        // page number, this function will be called.
+        FT_confUserRight.superclass.prototype = this.f_loadVMData;
 
         var btns = [['Apply', "f_userRightHandleApply()", g_lang.m_urBtnApply,
                       this.m_btnApplyId],

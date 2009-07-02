@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+76) unstable; urgency=low
+
+  * * implement pagination for user list, user right and vm update
+    screens
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 02 Jul 2009 06:24:30 +0000
+
 vyatta-webgui (0.2+fxd0+75) unstable; urgency=low
 
   [ Kevin Choi ]

@@ -302,9 +302,12 @@ function FT_confBaseObj(name, callback, busLayer)
                 div.innerHTML = innerHtml + term;
                 div.style.width = (width) + 'px';
 
-                var pageDiv = thisObj.m_pagingObj.createPagingDiv(width);
-                div = this.addPagingDiv(div, pageDiv);
-                thisObj.m_pagingObj.m_numOfRowInPage++;
+                if(pageNo > 1 || totalRecs > rowNo)
+                {
+                    var pageDiv = thisObj.m_pagingObj.createPagingDiv(width);
+                    div = this.addPagingDiv(div, pageDiv);
+                    thisObj.m_pagingObj.m_numOfRowInPage++;
+                }
             }
             // within page
             else if(rowNo > (pageNo-1)*rpp && rowNo < pageNo*rpp)

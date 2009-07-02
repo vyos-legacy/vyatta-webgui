@@ -57,7 +57,7 @@ function FT_confUserList(name, callback, busLayer)
                             'f_ulGridHeaderOnclick');
         thisObj.m_div.appendChild(thisObj.m_header);
         thisObj.m_div.appendChild(thisObj.m_body);
-        thisObj.m_div.appendChild(thisObj.m_buttons);		
+        thisObj.m_div.appendChild(thisObj.m_buttons);
     };
 
     this.f_loadVMData = function()
@@ -65,6 +65,8 @@ function FT_confUserList(name, callback, busLayer)
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
+            thisObj.f_resetPagination();
+
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
                 if(thisObj.f_isServerError(evt, g_lang.m_ulErrorTitle))
@@ -170,8 +172,8 @@ function FT_confUserList(name, callback, busLayer)
         /*
         if (g_roleManagerObj.f_isInstaller()) {
 			thisObj.f_hideButtons();
-		}	   
-	    */ 
+		}
+	    */
         return [this.m_header, this.m_body, this.m_buttons];
     };
 };

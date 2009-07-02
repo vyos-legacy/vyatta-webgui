@@ -54,8 +54,6 @@ function FT_confRestore(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
-        thisObj.f_resetSorting();
-
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
@@ -117,8 +115,9 @@ function FT_confRestore(name, callback, busLayer)
             else
                 vmData = [r[0], anchor, restore, download, del];
 
-            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData);
-            thisObj.m_body.appendChild(bodyDiv);
+            var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData, rRec.length);
+            if(bodyDiv != null)
+                thisObj.m_body.appendChild(bodyDiv);
         }
 
         thisObj.f_adjustDivPosition(thisObj.m_restorePC);
@@ -219,9 +218,15 @@ function FT_confRestore(name, callback, busLayer)
         this.m_colHd = this.f_createColumns();
         this.m_header = this.f_createGridHeader(this.m_colHd,
                                     'f_restoreGridHeaderOnclick');
-        this.m_body = this.f_createGridView(this.m_colHd);
+        this.m_body = this.f_createGridView(this.m_colHd, true);
         this.m_restorePC = this.f_createRestoreFromPC();
         this.f_loadVMData();
+        thisObj.f_resetSorting();
+
+        /////////////////////////////////////////////////////////
+        // create a callback for paging. when user click on the
+        // page number, this function will be called.
+        FT_confVMUpdates.superclass.prototype = this.f_populateTable;
 
         return [this.m_header, this.m_body, this.m_restorePC];
     }

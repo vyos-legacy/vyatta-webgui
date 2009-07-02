@@ -107,7 +107,9 @@ function FT_confFormObj(name, callback, busLayer) {
 		 if (padding) {
 		 	h += padding;
 		 } 
-         ft.style.height = h + 'px';
+		 if (ft) {
+		 	ft.style.height = h + 'px';
+		 }
 		 //console.log('ft.height.after: ' + ft.style.height);
 		 //alert('ft_container height: ' + document.getElementById('ft_container').style.height);
          this.f_reflow();

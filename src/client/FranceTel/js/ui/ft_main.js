@@ -7,6 +7,7 @@ g_xbObj.f_xbOnDomReady(function(){
      + ' isOpera:' + g_isOpera + ' isSafari:' + g_isSafari + ' isKDE:' + g_isKDE
      + ' isIE5mac:' + g_isIE5mac + ' browserVer:' + g_browserVer);
      */
+	
 	g_htmlBuilder = new FT_htmlBuilder();
     g_htmlBuilder.f_prepare();	
 	

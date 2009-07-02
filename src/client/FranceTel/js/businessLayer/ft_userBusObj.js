@@ -146,6 +146,19 @@ function FT_userBusObj(busObj)
     }
 
     /**
+     * timeout current login user. This end the user session, clean up cookie
+     * and load the login page.
+     * @param cb - is optional. (it is not use right now)
+     */
+    this.f_timeout = function(cb)
+    {
+        thisObj.m_sid = undefined;
+        // need to remove all cookies
+        g_cookie.f_remove_session();
+        g_utils.f_gotoHomePage();
+    }
+
+    /**
      * set user's request login data before send to server.
      */
     this.f_setLogin = function(u, p, cb)

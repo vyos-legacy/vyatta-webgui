@@ -73,7 +73,10 @@ function FT_confBaseObj(name, callback, busLayer)
         for(var i=0; i<children.length; i++)
             div.appendChild(children[i]);
 
-        document.getElementById('ft_container').appendChild(div);
+        var ft = document.getElementById('ft_container');
+		if (ft) {
+		    ft.appendChild(div);	
+		}
 
         this.m_div = div;
         return this.m_div;
@@ -106,7 +109,10 @@ function FT_confBaseObj(name, callback, busLayer)
         }
 
          this.m_div.style.height = h + 'px';
-         document.getElementById('ft_container').style.height = h + 'px';
+         var ft = document.getElementById('ft_container');
+		 if (ft) {
+		 	ft.style.height = h + 'px';
+		 }
          this.f_reflow();
     }
 
@@ -644,12 +650,12 @@ function FT_confBaseObj(name, callback, busLayer)
     {
         if(evt.f_isError())
         {
-            if(evt.m_errCode == 3)  // timeout error
-                g_utils.f_popupMessage('timeout', 'timeout', null, true,
-                      'f_confHandleSessionTimeoutConfirm()');
-            else
-                g_utils.f_popupMessage(evt.m_errMsg, 'ok', errTitle, true);
-
+			if (evt.m_errCode == 3) {
+				g_utils.f_popupMessage('timeout', 'timeout', null, true);				
+			}
+			else {
+				g_utils.f_popupMessage(evt.m_errMsg, 'ok', errTitle, true);
+			}
             return true;
         }
         else
@@ -787,7 +793,9 @@ function FT_confBaseObj(name, callback, busLayer)
     }
 }
 
+/*
 function f_confHandleSessionTimeoutConfirm()
 {
-    g_busObj.f_userLogout();
+	g_busObj.f_userTimeout();
 }
+*/

@@ -16,7 +16,7 @@ var g_lang =
 	m_mainMap : 'map',
 	m_mainOA : 'Open Appliance',
 	m_mainEnglish : 'English',
-	m_mainFrench : 'Franï¿½ais',
+	m_mainFrench : "Français",
 	m_mainLogin : 'OK',
 	m_mainLogout: 'log off',
 	m_mainUserName: 'user name',

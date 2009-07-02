@@ -16,7 +16,11 @@ function FT_constanst()
     this.V_COOKIES_ISLOGIN = 'isLogin';
     this.V_COOKIES_LANG = 'lang';
     this.V_COOKIES_BLB = 'blb';
-    this.V_COOKIES_INIT_LOAD_PAGE = 'initLoadPage';
+    this.V_COOKIES_VM_PATH = 'vmpath';	
+    this.V_COOKIES_NAV_2_PATH = 'nav2path';
+    this.V_COOKIES_NAV_3_PATH = 'nav3path';
+	this.V_COOKIES_LOC = 'loc';
+		
 
     //////////////////////////////////////////////
     // cookies value
@@ -25,7 +29,6 @@ function FT_constanst()
     this.V_LANG_FR = 'fr';
     this.V_BLB_YES = 'yes';
     this.V_BLB_NO = 'no';
-    this.V_LOAD_RESTORE = 'restore';
 
     /////////////////////////////////////////////////
     //

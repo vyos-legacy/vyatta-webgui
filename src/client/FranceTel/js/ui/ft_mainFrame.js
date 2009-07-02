@@ -162,7 +162,8 @@ function FT_mainFrame(){
 				uriPath = vmRec.m_guiUri + 'utm_netconf_' + lang + '.html';	
 				vmRec.m_guiUri = vmRec.m_guiUri + 'utm_main_' + lang + '.html';
 			} /* else if (vmRec.m_name == 'jvm') {
-				vmRec.m_guiUri = '/utm/Loi/test.html';
+				//vmRec.m_guiUri = '/utm/Loi/test.html';
+				vmRec.m_guiUri = '/utm/Loi/wui/brickId/components.html';
 			} */
 		}
 		if (bUtmIncluded) {
@@ -189,7 +190,14 @@ function FT_mainFrame(){
     this.f_showOApanel = function(vmId, urlPath){					
         thisObj.m_tabPanel.f_show(vmId, urlPath);
     }
-	
+
+	/*
+	 * Select a default page for OA.
+	 */
+	this.f_selectDefaultPage = function(vmId) {
+        thisObj.m_tabPanel.f_selectDefaultPage(vmId);		
+	}
+		
 	/*
 	 * Select a page inside OA
 	 */
@@ -223,10 +231,28 @@ function FT_mainFrame(){
 	}
 	
 	this.f_timeout = function() {
-        g_utils.f_popupMessage('timeout', 'timeout', null, true,
-                      'f_confHandleSessionTimeoutConfirm()');		
+        g_utils.f_popupMessage('timeout', 'timeout', null, true);		
 	}    
-}
+	
+	this.f_saveCurrentDomUlocation = function() {
+		var vmId = thisObj.m_priNavigation.m_selectedVm;
+		thisObj.f_saveDomUlocation(vmId);
+	}
+	
+	this.f_saveDomUlocation = function(vmId) {
+		this.m_tabPanel.f_saveDomUlocation(vmId);
+	}
+	
+	this.f_onBeforeUnload = function() {
+		//alert('before unload');
+		//g_busObj.f_getVMBackupListFromServer();
+	}
+	
+	this.f_onUnload = function() {
+		//alert('unload');
+		//g_busObj.f_getHWMonitorFromServer();
+	}
+} 
 
 ///////////////////////////////////////////////
 // new FT_mainFrame object
@@ -236,11 +262,13 @@ function f_onLanguageChange()
 {
 	var e = document.getElementById('ft_language');
 	g_utils.f_saveLanguage(e.value);
+	g_mainFrameObj.f_saveCurrentDomUlocation();
     g_utils.f_gotoHomePage();
 }
 
 function f_home()
 {
+	//g_mainFrameObj.f_saveCurrentDomUlocation();
     g_utils.f_gotoHomePage();	
 }
 
@@ -267,4 +295,14 @@ function f_stopAutoResize(state)
 function f_timeout()
 {
 	g_mainFrameObj.f_timeout();
+}
+
+function f_onBeforeUnload()
+{
+	g_mainFrameObj.f_onBeforeUnload();
+}
+
+function f_onUnload()
+{
+	g_mainFrameObj.f_onUnload();
 }

@@ -178,10 +178,11 @@ function FT_3rdNavigation()
                 return VYA.FT_CONST.DOM_3_NAV_SUB_HARDWARE_ID;
             case VYA.FT_CONST.DOM_2_NAV_BACKUP_ID:
             {
+				/*
                 if(g_cookie.f_get(g_consObj.V_COOKIES_INIT_LOAD_PAGE,
                               g_cookie.V_NOT_FOUND) == g_consObj.V_LOAD_RESTORE)
                     return VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID;
-
+                */
                 return VYA.FT_CONST.DOM_3_NAV_SUB_BACKUP_ID;
             }
             case VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_UPDATE_ID:
@@ -269,6 +270,7 @@ function FT_3rdNavigation()
         //console.log('3rd: f_selectItem: ' + id);
         thisObj.m_selectedItem = id;
         if (id != undefined) {
+	        g_cookie.f_set(g_consObj.V_COOKIES_NAV_3_PATH, id, g_cookie.m_userNameExpire);										
             var menu = document.getElementById(id).parentNode; //This is @ UL node
             var desc = undefined;
             for (var i = 0; menu.childNodes[i]; i++) { //This is @ LI node

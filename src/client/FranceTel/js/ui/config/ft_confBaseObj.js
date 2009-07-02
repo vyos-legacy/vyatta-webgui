@@ -706,10 +706,10 @@ function FT_confBaseObj(name, callback, busLayer)
         }
     }
 
-    this.f_resetPagination = function()
+    this.f_resetPagination = function(totalRecs)
     {
         if(thisObj.m_pagingObj != null)
-            thisObj.m_pagingObj.f_resetValues();
+            thisObj.m_pagingObj.f_resetValues(totalRecs);
     }
 
     this.f_resetSorting = function()

@@ -65,8 +65,6 @@ function FT_confUserList(name, callback, busLayer)
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
-            thisObj.f_resetPagination();
-
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
                 if(thisObj.f_isServerError(evt, g_lang.m_ulErrorTitle))
@@ -77,6 +75,7 @@ function FT_confUserList(name, callback, busLayer)
                 if(thisObj.m_uRec != undefined && thisObj.m_uRec.m_userList != null)
                 {
                     thisObj.m_uRec = thisObj.m_uRec.m_userList;
+                    thisObj.f_resetPagination(thisObj.m_uRec.length);
                     thisObj.f_populateTable();
                 }
                 thisObj.f_resize();

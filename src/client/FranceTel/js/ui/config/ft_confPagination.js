@@ -24,10 +24,22 @@ function FT_pagingObj(total, curPage, rowPerPage)
     this.m_endPage = false;
 
 
-    this.f_resetValues = function()
+    this.f_resetValues = function(totalRecs)
     {
         this.m_numOfRowInPage = 0;
         this.m_endPage = false;
+
+        ///////////////////////////////////////////////////
+        // reset m_totalRecs and m_curPage for case that
+        // curpage is no long available.
+        if(totalRecs != null && this.m_totalRecs != null)
+        {
+            this.m_totalRecs = totalRecs;
+            this.f_calculateTotalPage();
+
+            if(this.m_curPage > this.m_totalPages)
+                this.m_curPage = this.m_totalPages;
+        }
     }
 
     this.f_calculateTotalPage = function()

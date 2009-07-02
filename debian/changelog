@@ -1,3 +1,14 @@
+vyatta-webgui (0.2+fxd0+74) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * remove version file (now generated during build)
+  * initial implementation of dom0 backup
+
+  [ Loi Vo ]
+  * 1. Adding retain current page language switch/ timeout support
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 02 Jul 2009 17:18:32 +0000
+
 vyatta-webgui (0.2+fxd0+73) unstable; urgency=low
 
   [ Loi Vo ]

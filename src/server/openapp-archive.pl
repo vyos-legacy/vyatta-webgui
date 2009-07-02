@@ -192,10 +192,15 @@ sub backup {
     foreach $key (keys (%hash_coll)) {
 	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
+
+	if ($key =~ /openapp/) {
+	    next; #don't send rest message to myself
+	}
+
 	my $ip = $vm->getIP();
 	my $port = $vm->getWuiPort();
 	if (defined $ip && $ip ne '') {
-            my $value = $hash_coll{$key};
+	    my $value = $hash_coll{$key};
 	    my $cmd;
 	    if (defined $port && $port ne '') {
 		$cmd = "http://$ip:$port/backup/backupArchive?";
@@ -245,62 +250,74 @@ sub backup {
 	    
 	    my $vm = new OpenApp::VMMgmt($key);
 	    next if (!defined($vm));
-	    my $ip = '';
-	    my $ip = $vm->getIP();
-	    my $port = $vm->getWuiPort();
-	    if (defined $ip && $ip ne '') {
-		my $cmd;
-		if (defined $port && $port ne '') {
-		    $cmd = "http://$ip:$port/backup/getArchive";		
-		}
-		else {
-		    $cmd = "http://$ip/backup/getArchive";		
-		}
-		my $obj = new OpenApp::Rest();
-		my $err = $obj->send("GET",$cmd);
-		if ($err->{_http_code} == 302) { #redirect means server is done with archive
-		    #now parse the new location...
-		    my $header = $err->{_header};
-		    my $archive_location = get_archive_location($header);
-		    
-		    #and retrieve the archive
-		    #writes to specific location on disk
-		    my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
-		    `mkdir -p $BACKUP_WORKSPACE_DIR`;
-		    my $rc = `wget $archive_location -O $bufile 2>&1`;
-		    
-		    if ($rc =~ /200 OK/) {
+
+	    if ($key =~ /openapp/) {
+		#run dom0 backup script
+		my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
+		`sudo /opt/vyatta/sbin/openapp-dom0-backup.pl --backup=config=true --filename=$bufile`;
+		my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+		`rm -f $bufile`;  #now remove source file
+		#and remove from poll collection
+		delete $new_hash_coll{$key};
+	    }
+	    else {
+		my $ip = '';
+		my $ip = $vm->getIP();
+		my $port = $vm->getWuiPort();
+		if (defined $ip && $ip ne '') {
+		    my $cmd;
+		    if (defined $port && $port ne '') {
+			$cmd = "http://$ip:$port/backup/getArchive";		
+		    }
+		    else {
+			$cmd = "http://$ip/backup/getArchive";		
+		    }
+		    my $obj = new OpenApp::Rest();
+		    my $err = $obj->send("GET",$cmd);
+		    if ($err->{_http_code} == 302) { #redirect means server is done with archive
+			#now parse the new location...
+			my $header = $err->{_header};
+			my $archive_location = get_archive_location($header);
+			
+			#and retrieve the archive
+			#writes to specific location on disk
+			my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
+			`mkdir -p $BACKUP_WORKSPACE_DIR`;
+			my $rc = `wget $archive_location -O $bufile 2>&1`;
+			
+			if ($rc =~ /200 OK/) {
+			    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+			    `rm -f $bufile`;  #now remove source file
+			    #and remove from poll collection
+			    delete $new_hash_coll{$key};
+			}		
+			else {
+			    `logger 'error when retrieve archiving from $key: $rc'`;
+			}
+		    }
+		    elsif ($err->{_http_code} == 200 && defined($err->{_body})) {
+			#we'll now interpret this as including the archive in the response
+			my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
+			open (MYFILE, '>$bufile');
+			print (MYFILE $err->{_body});
+			close (MYFILE);
+			
 			my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
 			`rm -f $bufile`;  #now remove source file
 			#and remove from poll collection
 			delete $new_hash_coll{$key};
-		    }		
-		    else {
-			`logger 'error when retrieve archiving from $key: $rc'`;
 		    }
-		}
-		elsif ($err->{_http_code} == 200 && defined($err->{_body})) {
-		    #we'll now interpret this as including the archive in the response
-		    my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
-		    open (MYFILE, '>$bufile');
-		    print (MYFILE $err->{_body});
-		    close (MYFILE);
-
-		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
-		    `rm -f $bufile`;  #now remove source file
-		    #and remove from poll collection
-		    delete $new_hash_coll{$key};
-		}
-		elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
-		    #log error and delete backup request
-		    `logger 'error received from $key, canceling backup of this VM: $err->{_http_code}'`;
-		    delete $new_hash_coll{$key};
-		    
-		    #also remove this from the original list so it is not included in the backup
-		    delete $hash_coll{$key};
-		}
-		else {
-		    next;
+		    elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
+			#log error and delete backup request
+			`logger 'error received from $key, canceling backup of this VM: $err->{_http_code}'`;
+			delete $new_hash_coll{$key};
+			
+			#also remove this from the original list so it is not included in the backup
+			delete $hash_coll{$key};
+		    }
+		    else {
+			next;
+		    }
 		}
 	    }
 	}
@@ -513,33 +530,41 @@ sub restore_archive {
 	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
 
-	my $ip = '';
-	my $ip = $vm->getIP();
-	my $port = $vm->getWuiPort();
-	if (defined $ip && $ip ne '') {
-	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$key.enc -out /var/www/backup/restore/$key`;
-	    my $cmd;
-	    if (defined $port && $port ne '') {
-		$cmd = "http://$ip:$port/backup/backupArchive?";
-	    }
-	    else {
-		$cmd = "http://$ip/backup/backupArchive?";
-	    }
-            my $value = $hash_coll{$key};
-	    if ($value == 1) {
-		$cmd .= "data=true&config=false";
-	    }
-	    elsif ($value == 2) {
-		$cmd .= "data=false&config=true";
-	    }
-	    else {
-		$cmd .= "data=true&config=true";
-	    }
-	    $cmd .= "&file=http://192.168.0.101/backup/restore/$key";
-	    my $obj = new OpenApp::Rest();
-	    my $err = $obj->send("PUT",$cmd);
-	    if ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
-		`logger 'Rest notification error in response from $ip when starting restore: $err->{_http_code}'`;
+	if ($key =~ /openapp/) {
+	    my $restorefile = "/tmp/$key";
+	    #call dom0 backup script here
+	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$key.enc -out $restorefile`;
+	    `sudo /opt/vyatta/sbin/openapp-dom0-backup.pl --restore=config=true --filename=$restorefile`;
+	}
+	else {
+	    my $ip = '';
+	    my $ip = $vm->getIP();
+	    my $port = $vm->getWuiPort();
+	    if (defined $ip && $ip ne '') {
+		my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$key.enc -out /var/www/backup/restore/$key`;
+		my $cmd;
+		if (defined $port && $port ne '') {
+		    $cmd = "http://$ip:$port/backup/backupArchive?";
+		}
+		else {
+		    $cmd = "http://$ip/backup/backupArchive?";
+		}
+		my $value = $hash_coll{$key};
+		if ($value == 1) {
+		    $cmd .= "data=true&config=false";
+		}
+		elsif ($value == 2) {
+		    $cmd .= "data=false&config=true";
+		}
+		else {
+		    $cmd .= "data=true&config=true";
+		}
+		$cmd .= "&file=http://192.168.0.101/backup/restore/$key";
+		my $obj = new OpenApp::Rest();
+		my $err = $obj->send("PUT",$cmd);
+		if ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
+		    `logger 'Rest notification error in response from $ip when starting restore: $err->{_http_code}'`;
+		}
 	    }
 	}
     }

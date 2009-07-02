@@ -104,6 +104,7 @@ function FT_2ndNavigation(){
 	
 	this.f_highlightItem = function(id) {
         thisObj.m_selectedItem = id;
+		g_cookie.f_set(g_consObj.V_COOKIES_NAV_2_PATH, id, g_cookie.m_userNameExpire);					
         var menu = document.getElementById(VYA.FT_CONST.DOM_MAIN_PANEL_2_NAV_UL_ID);
         for (var i = 0; menu.childNodes[i]; i++) {
             var sid = f_elemGetAttribute(menu.childNodes[i], 'id');

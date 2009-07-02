@@ -24,19 +24,36 @@ function FT_primaryNavigation()
     
         thisObj.m_vmList = vmList;
         thisObj.m_parent = p;
-        
+        var selectionVmId = thisObj.f_getVmSelectionPath();
+		var selectionVmPath = null;
+		        
         if (thisObj.m_vmList != undefined) {
             for (i = 0; i < thisObj.m_vmList.length; i++) {
                 if (i == (thisObj.m_vmList.length - 1)) {
                     thisObj.m_lastVm = thisObj.m_vmList[i].m_name;
                 }
+				if (selectionVmId == thisObj.m_vmList[i].m_name) {
+					selectionVmPath = thisObj.m_vmList[i].m_guiUri;
+				}
                 thisObj.f_addVm(thisObj.m_vmList[i].m_name, thisObj.m_vmList[i].m_displayName, 
 				    thisObj.m_vmList[i].m_guiUri);
             }
         }
-        thisObj.f_selectVm(VYA.FT_CONST.OA_ID);
+		thisObj.f_selectVm(selectionVmId, selectionVmPath);
+		thisObj.m_parent.f_selectDefaultPage(thisObj.m_selectedVm);
+	
     }
     
+    this.f_getVmSelectionPath = function() {	
+	    var id = g_cookie.f_get(g_consObj.V_COOKIES_VM_PATH, g_consObj.V_NOT_FOUND);
+		if (id==g_consObj.V_NOT_FOUND) {
+			id = VYA.FT_CONST.OA_ID;
+		} /* else {
+			g_cookie.f_set(g_consObj.V_COOKIES_VM_PATH, g_consObj.V_NOT_FOUND, g_cookie.m_userNameExpire);			
+		} */	
+		return id;		
+	}	
+	
     this.f_getUrlPath = function(vmId, vmURL)
     {
         if (vmId == VYA.FT_CONST.OA_ID) {
@@ -176,7 +193,10 @@ function FT_primaryNavigation()
                 return false;
             }
             var urlPath = target.getAttribute('urlPath');
+		    g_cookie.f_set(g_consObj.V_COOKIES_VM_PATH, vmId, g_cookie.m_userNameExpire);	
+			thisObj.m_parent.f_saveDomUlocation(thisObj.m_selectedVm);							
             thisObj.f_selectVm(vmId, urlPath);
+			thisObj.m_parent.f_selectDefaultPage(thisObj.m_selectedVm);
         }
     }
 }

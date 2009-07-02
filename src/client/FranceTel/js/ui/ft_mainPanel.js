@@ -45,9 +45,53 @@ function FT_mainPanel(){
 		return thisObj.m_oa_container;
 	}
 
-    this.f_selectPage = function(id, subId) {
-		//thisObj.m_2navMenu.f_selectItem(id);
-        //thisObj.m_3navMenu.f_selectItem(subId);		
+    this.f_getNav2SelectionPath = function() {	
+	    var id = g_cookie.f_get(g_consObj.V_COOKIES_NAV_2_PATH, g_consObj.V_NOT_FOUND);
+		if (id==g_consObj.V_NOT_FOUND) {
+			id = VYA.FT_CONST.DOM_2_NAV_APP_ID;
+		} 	
+		return id;		
+	}
+	
+	this.f_getNav3SelectionPath = function(nav2Id) {
+	    var id = g_cookie.f_get(g_consObj.V_COOKIES_NAV_3_PATH, g_consObj.V_NOT_FOUND);
+		if (id==g_consObj.V_NOT_FOUND) {
+			id = thisObj.f_getDefaultSelection(nav2Id);
+		} 	
+		return id;			
+	}
+
+    /*
+    this.f_saveCurrentPage = function()
+	{
+		id =  thisObj.m_2navMenu.m_selectedItem; 
+		subId = thisObj.m_3navMenu.m_selectedItem;
+		g_cookie.f_set(g_consObj.V_COOKIES_NAV_2_PATH, id, g_cookie.m_userNameExpire);			
+	    g_cookie.f_set(g_consObj.V_COOKIES_NAV_3_PATH, subId, g_cookie.m_userNameExpire);					
+	}
+    */
+	
+    this.f_selectDefaultPage = function(vmId) {
+		if (vmId != VYA.FT_CONST.OA_ID) {
+			return;
+		}
+		var id = undefined;
+		var subId = undefined;
+		
+        if (g_roleManagerObj.f_isUser()) {
+			id = VYA.FT_CONST.DOM_2_NAV_MYPROFILE_ID;
+			subId = thisObj.f_getDefaultSelection(id);
+        }  else {
+			id = thisObj.f_getNav2SelectionPath();
+			subId = thisObj.f_getNav3SelectionPath(id);
+        }
+		var f = function() { 
+		    thisObj.f_selectPage(id, subId);			
+		}
+		window.setTimeout(f, 100);		
+	}
+
+    this.f_selectPage = function(id, subId) {	
 		thisObj.m_2navMenu.f_selectNav3Item(id, subId);
 	}
 

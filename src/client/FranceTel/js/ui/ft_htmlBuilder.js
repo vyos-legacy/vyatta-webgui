@@ -19,7 +19,9 @@ function FT_htmlBuilder()
 	this.f_initVersion = function()
 	{
 		var el = document.getElementById('footer_clock');
-		el.innerHTML = g_version;
+		if (g_version) {
+			el.innerHTML = g_version;
+		} 
 	}
 	
 	this.f_initLangBar = function()

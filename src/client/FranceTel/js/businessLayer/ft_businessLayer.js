@@ -137,21 +137,20 @@ function FT_businessLayer()
                     errCode = Number(cn[i].firstChild.nodeValue);
                     if (errCode == 8)
                     {
-			var sid = response.getElementsByTagName('id');
+			            var sid = response.getElementsByTagName('id');
                         if (sid != undefined && sid[0] != undefined)
                         {
                             errSid = sid[0].firstChild.nodeValue;
-			}
+			             }
                     }
-                    else if(errCode == 3)
-                    {
-                        thisObj.f_userLogout();
-                    }
-		} 
+                    else if(errCode == 3) {
+						thisObj.f_userTimeout();
+					} //handle in confBaseObj
+		        } 
                 else if (cn[i].nodeName == 'msg' && errCode != 0)
                 {
                     errmsg = cn[i].firstChild.nodeValue;
-		}
+		        }
             }
         }
 
@@ -330,11 +329,21 @@ function FT_businessLayer()
 
     /**
      * logout the system.
+     * Logout will remove all the cookies, including the selection path
      */
     this.f_userLogout = function(guiCb)
     {
         thisObj.m_userObj.f_logout(guiCb);
     }
+
+    /**
+     * timeout the system.
+     * Timeout will remove all the cookies, except the selection path
+     */
+    this.f_userTimeout = function(guiCb)
+    {
+        thisObj.m_userObj.f_timeout(guiCb);
+    } 
 
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////

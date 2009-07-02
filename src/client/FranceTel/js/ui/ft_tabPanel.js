@@ -37,7 +37,7 @@ function FT_tabPanel()
 	this.f_stopPolling = function()
 	{
 		if (thisObj.m_selectedId) {
-			if (thisObj.m_selectedId == 'oa') {
+			if (thisObj.m_selectedId == VYA.FT_CONST.OA_ID) {
 				//stop the polling thread
 				thisObj.m_mainPanel.f_stopPolling();
 			}
@@ -47,7 +47,7 @@ function FT_tabPanel()
     this.f_reset = function()
     {
 		if (thisObj.m_selectedId) {
-			if (thisObj.m_selectedId == 'oa') {
+			if (thisObj.m_selectedId == VYA.FT_CONST.OA_ID) {
 				//stop the polling thread
 				thisObj.m_mainPanel.f_stopPolling();
 			}
@@ -62,16 +62,28 @@ function FT_tabPanel()
     {
         //alert('ft_tabPanel.f_show: vmId: ' + vmId + ' urlPath: ' + urlPath);
         thisObj.f_reset();
-        
+        thisObj.m_selectedId = vmId;
+		
         if (vmId == VYA.FT_CONST.OA_ID) {
-			thisObj.m_selectedId = 'oa';
             thisObj.f_showOApanel();
         } else {
-			thisObj.m_selectedId = 'ifrm';
             thisObj.f_showVm(vmId, urlPath);
         }
     }
     
+	/*
+    this.f_saveCurrentPage = function()
+	{
+		g_cookie.f_set(g_consObj.V_COOKIES_VM_PATH, thisObj.m_selectedId, g_cookie.m_userNameExpire);					
+	    thisObj.m_mainPanel.f_saveCurrentPage();		
+	}
+    */
+	
+    this.f_selectDefaultPage = function(vmId)
+    {
+        thisObj.m_mainPanel.f_selectDefaultPage(vmId);
+    }	
+	
     this.f_selectPage = function(id, subId)
     {
         thisObj.m_mainPanel.f_selectPage(id, subId);
@@ -87,32 +99,6 @@ function FT_tabPanel()
 		thisObj.f_stopAutoResize(true);
         thisObj.m_container.appendChild(thisObj.m_mainPanel.f_getMainPanel());
         thisObj.m_mainPanel.f_show();
-        if (g_roleManagerObj.f_isUser()) {
-            //alert('is regular user');
-            thisObj.m_mainPanel.f_selectMenuItem(VYA.FT_CONST.DOM_2_NAV_MYPROFILE_ID);
-        } 
-        else
-        {
-            //alert('other user');
-            /////////////////////////////////////////////////////////
-            // try to load initial page if there are any define in cookie
-            if (g_cookie.f_get(g_consObj.V_COOKIES_INIT_LOAD_PAGE, g_cookie.V_NOT_FOUND) ==
-			g_consObj.V_LOAD_RESTORE) {
-				thisObj.m_mainPanel.f_selectMenuItem(VYA.FT_CONST.DOM_2_NAV_BACKUP_ID);
-				g_cookie.f_set(g_consObj.V_COOKIES_INIT_LOAD_PAGE, g_consObj.V_NOT_FOUND, g_cookie.m_userNameExpire);
-				
-				//////////////////////////////////////////////
-				// for some reasions, select the menu item above
-				// did not display the data. we delay and call
-				// select menu item again.
-				g_thisTabPanel = thisObj.m_mainPanel.m_3navMenu;
-				setTimeout('f_tabPanelSelectMenuItem()', 100);
-			} else if (!g_mainFrameObj.f_isSitemapSelection()) {
-				thisObj.m_mainPanel.f_selectMenuItem(VYA.FT_CONST.DOM_2_NAV_APP_ID);
-			} else {
-				g_mainFrameObj.f_setSitemapSelection(false);
-			}
-        }
     }
     
     this.f_getDocHeight = function(doc)
@@ -189,9 +175,16 @@ function FT_tabPanel()
     */
     this.f_showVm = function(vmId, urlPath)
     {
-		thisObj.f_stopAutoResize(false);
+		thisObj.f_stopAutoResize(false);		
+ 
+	    var url= g_cookie.f_get(vmId + '_' + g_consObj.V_COOKIES_LOC, g_consObj.V_NOT_FOUND);
+		if (url == g_consObj.V_NOT_FOUND) {
+			url = urlPath;
+		}
+		if ((vmId == 'utm') || (vmId=='netconf')) {
+			url = urlPath;
+		}
 		
-        var url = urlPath;
         var ifr = document.createElement('iframe');
         ifr.setAttribute('id', 'mainFrame');
 		ifr.setAttribute('name', 'mainFrame');
@@ -208,10 +201,25 @@ function FT_tabPanel()
         //ifr.onload = "f_setIframeHeight('mainFrame')";
         ifr.setAttribute('src', url);		
     }
+	
+	this.f_saveDomUlocation = function(vmId) 
+	{
+		if ((vmId == VYA.FT_CONST.OA_ID) || (vmId == 'utm') || (vmId == 'netconf')) {
+			return;
+		}
+		var ifr = document.getElementById('mainFrame');
+		if (ifr) {
+			var d = ifr.contentWindow.document;
+			if (d) {
+				g_cookie.f_set(vmId + '_' + g_consObj.V_COOKIES_LOC, d.location, g_cookie.m_userNameExpire);
+			}
+		}
+	}
 		
 	this.f_adjustIframeHeight = function()
 	{
 		var t = (new Date()).getSeconds();
+		
 		g_utils.f_debug('ft_tabPanel.f_adjustIframeHeight: ' + t);
 		
 		var ifr = document.getElementById('mainFrame');
@@ -297,8 +305,4 @@ function FT_tabPanel()
 		}
 		*/
 	}
-}
-function f_tabPanelSelectMenuItem()
-{
-    g_thisTabPanel.f_selectItem(VYA.FT_CONST.DOM_3_NAV_SUB_RESTORE_ID);
 }

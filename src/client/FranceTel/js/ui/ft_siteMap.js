@@ -11,9 +11,7 @@ function FT_siteMap()
 	var thisObj = this;
 	this.m_vmList = undefined;
 	this.m_div = undefined;
-	this.m_siteMapSelection = false;
-	
-	
+		
 	///////////////////////////////////////
 	// functions
 	/**
@@ -57,15 +55,7 @@ function FT_siteMap()
 			h3.innerHTML = g_lang.m_mainMap;
 		}	
 	}
-	
-	this.f_isSitemapSelection = function() {
-		return thisObj.m_siteMapSelection;
-	}
-	
-	this.f_setSitemapSelection = function(flag) {
-		thisObj.m_siteMapSelection = flag;
-	}	
-	
+		
 	this.f_addVmLink = function()
 	{
 		var ul = document.getElementById('sitemap_vmlink_ul');
@@ -110,7 +100,6 @@ function FT_siteMap()
 		} else if (id == 'closeButton') {
 		    return;
 		} else { //OA panel clicked, and a sub link is selected.
-		    thisObj.m_siteMapSelection = true;
 			g_mainFrameObj.f_selectVm(VYA.FT_CONST.OA_ID, '#');
 			g_mainFrameObj.f_selectPage(id, subId);
 		} 
@@ -191,7 +180,7 @@ function FT_siteMap()
 		var i=0;
 		var removeIds  = ['sm_applications', 'sm_users', 'sm_monitoring', 'sm_backup', 'sm_config'];
 		while ( i < smArray.length) {
-			if (removeIds.indexOf(smArray[i].divId) > 0) {
+			if (removeIds.indexOf(smArray[i].divId) >= 0) {
 				smArray.splice(i,1);
 			} else {
 				i++;

@@ -1,3 +1,15 @@
+vyatta-webgui (0.2.13-9+jenner8) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fixed bug#4671 - fixed output window clears itself after display.
+    This bug cause by server
+  * * prompted warning message to user even the error code is 0.
+
+  [ slioch ]
+  * ping target is optional for wlb. update mandatory file for webgui.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Thu, 02 Jul 2009 13:11:55 -0700
+
 vyatta-webgui (0.2.13-9+jenner7) unstable; urgency=low
 
   * fix for bug 4645. redirect stderr to stdout for load cmd.

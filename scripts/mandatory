@@ -22,7 +22,6 @@ interfaces/tunnel/node.tag/encapsulation
 interfaces/tunnel/node.tag/local-ip
 interfaces/tunnel/node.tag/remote-ip
 load-balancing/wan/interface-health/node.tag/nexthop
-load-balancing/wan/interface-health/node.tag/ping
 load-balancing/wan/rule/node.tag/inbound-interface
 load-balancing/wan/rule/node.tag/interface
 policy/access-list/node.tag/rule/node.tag/action

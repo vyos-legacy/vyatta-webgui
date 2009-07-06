@@ -106,10 +106,10 @@ function UTM_2ndNavigation(){
 			}			
 		}        
     }	
-	
-    this.f_selectItem = function(id){
-		//alert('2_nav_f_selectItem called');
+
+	this.f_highlightItem = function(id) {
         thisObj.m_selectedItem = id;
+		g_cookie.f_set(g_myVmId + '_' + g_consObj.V_COOKIES_NAV_2_PATH, id, g_cookie.m_userNameExpire);					
         var menu = document.getElementById(VYA.UTM_CONST.DOM_MAIN_PANEL_2_NAV_UL_ID);
         for (var i = 0; menu.childNodes[i]; i++) {
             var sid = f_elemGetAttribute(menu.childNodes[i], 'id');
@@ -123,8 +123,19 @@ function UTM_2ndNavigation(){
 					nodeHref.style.fontWeight = VYA.DYN_STYLE.SEC_NAV_ACT_ITEM_FONT_WEIGHT;
                 }
             }
-        }
+        }		
+	}
+	
+    this.f_selectItem = function(id){
+		//alert('2_nav_f_selectItem called');
+        thisObj.f_highlightItem(id);
         thisObj.m_parent.f_2navSelectItemCb(id);
     }
+    
+	this.f_selectNav3Item = function(id, subId) {
+		thisObj.f_highlightItem(id);
+		thisObj.m_parent.f_2navSelectNav3ItemCb(id, subId);
+	}
+
     
 }

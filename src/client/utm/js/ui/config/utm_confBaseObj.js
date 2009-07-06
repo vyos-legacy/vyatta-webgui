@@ -841,10 +841,12 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_isServerError = function(evt, errTitle)
     {
         if (evt.f_isError()) {
-            if (evt.m_errCode == 3) // timeout error
-                g_utils.f_popupMessage('timeout', 'timeout', null, true, 'f_confHandleSessionTimeoutConfirm()');
-            else g_utils.f_popupMessage(evt.m_errMsg, 'ok', errTitle, true);
-
+            if (evt.m_errCode == 3) {// timeout error
+                g_busObj.f_userTimeout();				
+				//g_utils.f_popupMessage('timeout', 'timeout', null, true, 'f_confHandleSessionTimeoutConfirm()');
+			} else {
+				g_utils.f_popupMessage(evt.m_errMsg, 'ok', errTitle, true);
+			}  
             return true;
         } else
             return false;
@@ -1026,5 +1028,5 @@ function UTM_confBaseObj(name, callback, busLayer)
 
 function f_confHandleSessionTimeoutConfirm()
 {
-    g_busObj.f_userLogout();
+    g_busObj.f_userTimeout();
 }

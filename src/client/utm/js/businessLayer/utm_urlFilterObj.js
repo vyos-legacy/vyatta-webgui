@@ -50,6 +50,7 @@ function UTM_urlFilterScheduleObj(schedArray)
         for (var i = 0; i < 24; i++) {
             a[i] = 0;
         }		
+
         var period = thisObj.m_schedule[day];
         if (period==null) {
 			return a;
@@ -446,6 +447,11 @@ function UTM_urlFilterBusObj(busObj)
 		
 		return w;
 	}
+	
+	this.f_getAllOffUrlSched = function()
+	{
+		return new Array();
+	}
 
     /**
      * Return an array of:
@@ -474,6 +480,13 @@ function UTM_urlFilterBusObj(busObj)
 		}
 		
 		if (!found) {
+			var alloffNode = g_utils.f_xmlGetChildNode(schedule, 'alloff');
+			if (alloffNode != null) {
+				var alloff = g_utils.f_xmlGetNodeValue(alloffNode);
+				if ((alloff!=null) && (alloff == 'true')) {
+					return thisObj.f_getAllOffUrlSched();
+				}
+			}
 			return defaultSched;
 		}
 
@@ -780,13 +793,14 @@ function UTM_urlFilterBusObj(busObj)
                                                '<keyword status=\'false\'></keyword>' + 
                                            '</policy>' + 
                                            '<schedule>' + 
-                                               '<m>00:00-12:59,15:00-19:59</m>' + 
-                                               '<t>00:00-23:59</t>' + 
-                                               '<w>00:00-02:59,06:00-08:59,13:00-23:59</w>' +
-                                               '<h>00:00-23:59</h>' + 
-                                               '<f>00:00-23:59</f>' + 
-                                               '<a></a>' + 
-                                               '<s></s>' + 
+//                                               '<m>00:00-12:59,15:00-19:59</m>' + 
+//                                               '<t>00:00-23:59</t>' + 
+//                                               '<w>00:00-02:59,06:00-08:59,13:00-23:59</w>' +
+//                                               '<h>00:00-23:59</h>' + 
+//                                               '<f>00:00-23:59</f>' + 
+//                                               '<a></a>' + 
+//                                               '<s></s>' + 
+                                                 '<alloff>true</alloff>' +
                                            '</schedule>' + 
                                         '</url-filtering-easy-config>' + 
                                     '</form>' + 

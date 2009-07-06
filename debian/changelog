@@ -1,3 +1,48 @@
+vyatta-webgui (0.2.14+fxdU+76) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add retaining current page for language switch/ timeout
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 06 Jul 2009 13:07:53 -0700
+
+vyatta-webgui (0.2.14+fxdU+75) unstable; urgency=low
+
+  * backend support for swapping firewall rules in up or down direction
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 30 Jun 2009 11:45:00 -0700
+
+vyatta-webgui (0.2.14+fxdU+74) unstable; urgency=low
+
+  [ Stig Thormodsrud ]
+  * Only send <alloff> tag is url-filter is actually configured.
+
+  [ Loi Vo ]
+  * 1. Add 'alloff' support
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 26 Jun 2009 21:38:19 +0000
+
+vyatta-webgui (0.2.14+fxdU+73) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add a debug panel to display debug messages when
+    g_devConfig.m_debug is set to true
+
+  [ Kevin Choi ]
+  * * zone management screen : fixed null pointer exception if server
+    return 0 data.
+
+  [ Loi Vo ]
+  * 1. Update wait image to be the same as dom0
+
+  [ Kevin Choi ]
+  * * adjusted div size due too the base class changed to handle frame
+    resizes.
+
+  [ Stig Thormodsrud ]
+  * Fix 4660: Disabling all web filtering times has no effect.
+
+ -- Stig Thormodsrud <stig@vyatta.com>  Fri, 26 Jun 2009 15:35:43 -0700
+
 vyatta-webgui (0.2.14+fxdU+72) unstable; urgency=low
 
   [ Loi Vo ]

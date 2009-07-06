@@ -34,6 +34,8 @@ use OpenApp::Conf;
 use Vyatta::IpTables::Rule;
 use Vyatta::IpTables::AddressFilter;
 
+sub numerically { $a <=> $b; }
+
 sub aindex (\@$;$) {
   # get index of value in array
   # http://www.perlmonks.org/?node_id=75710
@@ -162,7 +164,7 @@ sub execute_get {
 
  if ($rulenum eq 'all') {
    # ask for all rules one by one and keep appending to $rules_string
-   foreach (sort @rules) {
+   foreach (sort numerically @rules) {
      next if $_ == 1; # 1st rule is a default state established, related rule
      $rules_string .= get_rule ($fw_ruleset, $_);
    }
@@ -204,7 +206,7 @@ sub execute_move_rule {
  my $config = new Vyatta::Config;
  my $fw_ruleset=get_zonepair_fwruleset($zonepair);
  $config->setLevel("firewall name $fw_ruleset rule");
- my @rules = sort $config->listNodes();
+ my @rules = sort numerically $config->listNodes();
  my $rule_index = aindex(@rules, $rulenum);
  if ($up_or_down eq 'up') {
    $swap_rule_index = $rule_index - 1;
@@ -387,7 +389,7 @@ sub execute_reset_fw_ruleset {
   # for all rules in default ruleset copy those rules over
   $config->setLevel("firewall name $default_fwruleset rule");
   my @rules = $config->listNodes();
-  foreach my $rulenum (sort @rules) {
+  foreach my $rulenum (sort numerically @rules) {
     my $cli_rule = new Vyatta::IpTables::Rule;
     $cli_rule->setup("firewall name $default_fwruleset rule $rulenum");
 
@@ -458,6 +460,8 @@ sub execute_reset_fw_ruleset {
 sub get_next_rulenum {
   my $zonepair = shift;
   my $config = new Vyatta::Config;
+  my $max_rulenum = 1000;
+  my $return_string;
 
   # get customized firewall ruleset applied to that zone_pair
   my $fw_ruleset=get_zonepair_fwruleset($zonepair);
@@ -466,8 +470,8 @@ sub get_next_rulenum {
   $config->setLevel("firewall name $fw_ruleset rule");
   my @rules = $config->listNodes();
   my @origrules = $config->listOrigNodes();
-  my @reverse_sort_rules = reverse sort @rules;
-  my @reverse_sort_origrules = reverse sort @origrules;
+  my @reverse_sort_rules = reverse sort numerically @rules;
+  my @reverse_sort_origrules = reverse sort numerically @origrules;
 
   my $rulenum;
 
@@ -477,7 +481,29 @@ sub get_next_rulenum {
     $rulenum = $reverse_sort_origrules[0] + 1;
   }
 
-  my $return_string = "<customize-firewall>zonepair=[$zonepair]:rulenum=[$rulenum]:</customize-firewall>";
+  if ($rulenum > $max_rulenum) {
+    # reorder rules to get back unused rule numbers
+    my $rule_cnt = 1;
+    foreach my $rulenumber (sort numerically @rules) {
+      if ($rulenumber != $rule_cnt) {
+        my @cmds = (
+          "firewall-rule-rename $fw_ruleset rule $rulenumber to rule $rule_cnt",
+        );
+        my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+        if (defined $err) {
+          # print error and return
+          print("<form name='customize-firewall' code=8>$err</form>");
+          exit 1;
+        }
+      }
+      $rule_cnt++;
+    }
+    $return_string = "<customize-firewall>zonepair=[$zonepair]:rulenum=[resync]:</customize-firewall>";
+    print "$return_string";
+    return;
+  }
+
+  $return_string = "<customize-firewall>zonepair=[$zonepair]:rulenum=[$rulenum]:</customize-firewall>";
   print "$return_string";
 }
 

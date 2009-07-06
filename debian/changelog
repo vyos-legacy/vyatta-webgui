@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.14+fxdU+76) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Add retaining current page for language switch/ timeout
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 06 Jul 2009 13:07:53 -0700
+
 vyatta-webgui (0.2.14+fxdU+75) unstable; urgency=low
 
   * backend support for swapping firewall rules in up or down direction

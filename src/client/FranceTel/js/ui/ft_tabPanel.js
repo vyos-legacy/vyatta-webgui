@@ -14,6 +14,9 @@ function FT_tabPanel()
     this.threadId = undefined;
 	this.m_selectedId = undefined;
 	this.m_stopAutoResize = false;
+	this.m_iePageHeight = -1;
+	this.m_ffPageHeight = -1;
+	this.m_sacrPageHeight = -1;
 	
     ///////////////////////////////////////
     // functions    
@@ -240,8 +243,9 @@ function FT_tabPanel()
 			return;
 		} 
 		var r = (d.compatMode == 'BackCompat') ? d.body : d.documentElement;
-		
-		var isVS = r.scrollHeight > r.clientHeight;
+		var scrollHeight = Math.max(r.scrollHeight, d.body.scrollHeight);
+		var isVS = scrollHeight > r.clientHeight;
+		//var isVS = r.scrollHeight > r.clientHeight;
 		
 		if (g_devConfig.m_debug) {
 			g_utils.f_debug('t=' + t + ' r.scrollHeight: ' + r.scrollHeight + ' r.clientHeight: ' + r.clientHeight +
@@ -264,24 +268,37 @@ function FT_tabPanel()
 		}
 		
         if (isVS) {
-			ifr.height = (r.scrollHeight + 30) + 'px';
+			//ifr.height = (r.scrollHeight + 30) + 'px';
+			ifr.height = (scrollHeight + 30) + 'px';
         } else {		
 		    if (g_xbObj.m_isIE) {
-                if (r.scrollHeight - d.body.offsetHeight > 30) {
-                    ifr.height = (d.body.offsetHeight + 30) + 'px';
-                }
-            } else if (g_xbObj.m_isSafari || g_xbObj.m_isChrome) {				
-                if (r.clientHeight - r.scrollHeight > 30) {
-                    ifr.height = (r.scrollHeight + 30) + 'px';
-                }
+		        //IE: d.body.offsetHeight doesn't change in static html page.  We cannot scale back to prevent juggling
+				if (thisObj.m_iePageHeight != d.body.offsetHeight) {
+					if (r.scrollHeight - d.body.offsetHeight > 30) {
+						ifr.height = (d.body.offsetHeight + 30) + 'px';
+					}
+				}
+            } else if (g_xbObj.m_isSafari || g_xbObj.m_isChrome) {		
+		        //Safari, Chrome: r.scrollHeight doesn't change in static html page.  We cannot scale back to prevent juggling			
+			    if (thisObj.m_sacrPageHeight != r.scrollHeight) {
+					if (r.clientHeight - r.scrollHeight > 30) {
+						ifr.height = (r.scrollHeight + 30) + 'px';
+					}
+				}
             } else if (g_xbObj.m_isOpera) {
                 ;
             } else {
-                if (r.clientHeight - r.offsetHeight > 30) {
-                    ifr.height = (r.offsetHeight + 30) + 'px';
-                }
-            }							
+                //Mozilla: r.offsetHeight doesn't change in static html page.  We cannot scale back to prevent juggling.
+				if (thisObj.m_ffPageHeight != r.offsetHeight) {
+					if (r.clientHeight - r.offsetHeight > 30) {
+						ifr.height = (r.offsetHeight + 30) + 'px';
+					}
+				}
+            }						
 		} 
+	    thisObj.m_iePageHeight = d.body.offsetHeight;
+	    thisObj.m_ffPageHeight = r.offsetHeight;
+	    thisObj.m_sacrPageHeight = r.scrollHeight;		
 	}
 	
 	this.f_scrollRemove = function()

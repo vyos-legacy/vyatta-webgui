@@ -40,19 +40,19 @@ function UTM_confFireLevel(name, callback, busLayer)
     this.f_getConfigurationPage = function()
     {
         this.m_selLvlRec = null;
+        UTM_confFireLevel.superclass.m_sortCol = 1;
         return this.f_getPanelDiv(this.f_init());
     }
 
     this.f_createActiveTableColumns = function()
     {
         var cols = [];
-        UTM_confFireLevel.superclass.m_allowSort = false;
 
         cols[0] = this.f_createColumn(g_lang.m_fireLevelColSelect, 90, 'checkbox', '3', false);
         cols[1] = this.f_createColumn(g_lang.m_fireLevelColDir + "<br>" +
-                              g_lang.m_fireLevelColFrom, 120, 'text', '11', false);
+                              g_lang.m_fireLevelColFrom, 120, 'text', '11', true, 'center');
         cols[2] = this.f_createColumn(g_lang.m_fireLevelColDir + "<br>" +
-                              g_lang.m_fireLevelColTo, 120, 'text', '11', false);
+                              g_lang.m_fireLevelColTo, 120, 'text', '11', true, 'center');
         cols[3] = this.f_createColumn(g_lang.m_fireLevelColName, 150, 'text', '11', false);
 
         return cols;
@@ -100,26 +100,42 @@ function UTM_confFireLevel(name, callback, busLayer)
     this.f_populateActiveTable = function(recs, selRec)
     {
         thisObj.f_removeDivChildren(thisObj.m_gridActiveBody);
+        var sorted = this.f_createActiveTableSortingArray(
+                      UTM_confFireLevel.superclass.m_sortCol, recs, selRec);
 
-        for(var i=0; i<recs.length; i++)
+        for(var i=0; i<sorted.length; i++)
         {
-            var rec = recs[i];
-            var check = 'no';
-
-            if(rec.m_direction == selRec.m_direction)
-                check = 'yes';
-
-            var radio = "<div align=center>" + this.f_renderRadio(check,
-                        rec.m_direction+"-id",
-                        "f_fireActiveRadioHandler('"+rec.m_direction+"')",
+            var rec = sorted[i].split('|');
+            var radio = "<div align=center>" + this.f_renderRadio(rec[0],
+                        rec[4]+"-id",
+                        "f_fireActiveRadioHandler('"+rec[4]+"')",
                         "activeLevel", "") + "</div>";
-            var dirs = this.f_getDirection(rec.m_direction);
 
             this.m_gridActiveBody.appendChild(thisObj.f_createGridRow(this.m_colActiveModel,
-                    [radio, dirs[0], dirs[1], rec.m_level]));
+                    [radio, rec[1]+" zone", rec[2]+" zone", rec[3]]));
         }
 
         thisObj.m_gridActiveBody.style.height = (recs.length * 28 + 10) + "px";
+    }
+
+    this.f_createActiveTableSortingArray = function(sortIndex, zRecs, selRec)
+    {
+        var ar = new Array();
+
+        for(var i=0; i<zRecs.length; i++)
+        {
+            var rec = zRecs[i];
+            var check = rec.m_direction == selRec.m_direction ? 'yes' : 'no';
+            var dirs = this.f_getDirection(rec.m_direction);
+
+            // NOTE: the order of this partition same as the order
+            // grid columns.
+            // compose a default table row
+            ar[i] = check + '|' + dirs[0] + '|' + dirs[1] + '|' +
+                    rec.m_level + '|' + rec.m_direction;
+        }
+
+        return thisObj.f_sortArray(sortIndex, ar);
     }
 
     this.f_getDirection = function(zonePair)
@@ -280,7 +296,8 @@ function UTM_confFireLevel(name, callback, busLayer)
     this.f_init = function()
     {
         this.m_colActiveModel = this.f_createActiveTableColumns();
-        this.m_gridActiveHeader = this.f_createGridHeader(this.m_colActiveModel);
+        this.m_gridActiveHeader = this.f_createGridHeader(this.m_colActiveModel,
+                                  "f_fwLevelGridHeaderClick");
         this.m_gridActiveBody = this.f_createGridView(this.m_colActiveModel, false);
 
         this.m_colLevelModel = this.f_createLevelColumns("LAN_to_WAN");
@@ -337,6 +354,23 @@ function UTM_confFireLevel(name, callback, busLayer)
         thisObj.m_curSelLvlRadioId = rId;
         thisObj.f_enabledDisableButton(this.m_btnApplyId, isDirty);
         thisObj.f_enabledDisableButton(this.m_btnCancelId, isDirty);
+    };
+
+    this.f_handleGridSort = function(col)
+    {
+        if(thisObj.f_isSortEnabled(thisObj.m_colActiveModel, col))
+        {
+            UTM_confFireLevel.superclass.m_allowSort = true;
+            thisObj.f_removeDivChildren(thisObj.m_div);
+            thisObj.m_gridActiveHeader = thisObj.f_createGridHeader(
+                      thisObj.m_colActiveModel, "f_fwLevelGridHeaderClick");
+            thisObj.m_div.appendChild(thisObj.m_gridActiveHeader);
+            thisObj.m_div.appendChild(thisObj.m_gridActiveBody);
+            thisObj.m_div.appendChild(thisObj.m_gridLevelHeader);
+            thisObj.m_div.appendChild(thisObj.m_gridLevelBody);
+
+            thisObj.f_populateActiveTable(thisObj.m_levelRecs, thisObj.m_selLvlRec);
+        }
     };
 
     this.f_resetInput = function()
@@ -415,4 +449,9 @@ function f_fireActiveRadioHandler(rId)
 function f_fireLevelRadioHandler(rId)
 {
     g_configPanelObj.m_activeObj.f_enabledActionButtons(rId);
+}
+
+function f_fwLevelGridHeaderClick(col)
+{
+    g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }

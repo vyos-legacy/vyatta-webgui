@@ -41,7 +41,7 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
         cols[0] = this.f_createColumn(g_lang.m_fireZMZoneName, 160, 'text', '6', true, 'center');
         cols[1] = this.f_createColumn(g_lang.m_fireZMMember, 130, 'combo', '6', true, 'center');
         cols[2] = this.f_createColumn(g_lang.m_fireZMDesc, 300, 'combo', '6', false, 'center');
-        cols[3] = this.f_createColumn(g_lang.m_enabled, 100, 'checkbox', '3', false, 'center');
+        cols[3] = this.f_createColumn(g_lang.m_fireZMEnable, 100, 'checkbox', '3', false, 'center');
 
         return cols;
     }
@@ -169,7 +169,7 @@ function UTM_confFireZoneMgmt(name, callback, busLayer)
                     zoneRec.m_enabled == "yes" ? "images/check.gif" :
                     "images/uncheck.gif", "f_fwMgmtNotUse",
                     g_lang.m_fireCustEnableEnabled) + "</div>"
-        var zname = thisObj.f_renderAnchor(zoneRec.m_name + " Zone",
+        var zname = thisObj.f_renderAnchor(zoneRec.m_name + " zone",
                     "f_fwZoneMgmtUpdateHandler('" +
                     zoneRec.m_name + "')", 'Click on name to update zone');
 

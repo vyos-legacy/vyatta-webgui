@@ -31,6 +31,12 @@ function UTM_confBaseObj(name, callback, busLayer)
         this.m_busLayer = busLayer;
         this.m_name = name;
         this.m_containerCb = callback;
+        this.m_colorGridRow = false;
+        this.m_rowHeight = 31;
+        this.m_allowSort = false;
+        this.m_sortColPrev = -1;
+        this.m_sortCol = 0;
+        this.m_sortOrder = 'asc';
         this.m_treadId = null;
     }
     this.privateConstructor(name, callback, busLayer);
@@ -70,7 +76,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         var ft = document.getElementById('ft_container');
 		ft.appendChild(div);
 		ft.style.height = 'auto';
-        
+
         for (var i = 0; i < children.length; i++)
             div.appendChild(children[i]);
 
@@ -251,6 +257,13 @@ function UTM_confBaseObj(name, callback, busLayer)
         */
     }
 
+    this.f_createSimpleDiv = function(text, align)
+    {
+        var al = align == null ? 'left' : align;
+
+        return "<div align=" + al + ">" + text + "</div>";
+    }
+
     this.f_createGeneralDiv = function(text)
     {
         var div = document.createElement('div');
@@ -312,11 +325,11 @@ function UTM_confBaseObj(name, callback, busLayer)
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.height = '40px';
-		//Uncomment the following line to add a padding between grid body, and the 
+		//Uncomment the following line to add a padding between grid body, and the
 		//button panel.
 		//We leave it comment out for now since Kevin's firewall, zone management screen
 		//has its own layout.
-		//div.style.paddingTop = '10px';		
+		//div.style.paddingTop = '10px';
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr height="22">';
@@ -533,7 +546,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                     sortIcon = '';
                 header = "<p valign='center' align='" + align + "'><b>" +
                 cName + "&nbsp;" + sortIcon + "<br></b></p>";
-            } 
+            }
             else
                 header = "<p valign='center' align='" + align + "'><b>" +
                 cName + "<br></b></p>";

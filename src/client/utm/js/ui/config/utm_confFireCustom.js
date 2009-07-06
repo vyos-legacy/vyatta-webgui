@@ -197,6 +197,9 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
                 thisObj.f_onOffEnabledAllChkBox();
             }
+
+            if(fireRec.m_zonePair != "Any")
+                thisObj.f_adjustGridHeight();
         };
 
         thisObj.m_zpIndex = 1;  // start from the show rules combo index 1
@@ -245,6 +248,22 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             var fr = new UTM_fireRecord(null, thisObj.m_zonePairs[thisObj.m_zpIndex++]);
             thisObj.m_busLayer.f_getFirewallSecurityCustomize(fr, cb);
         }
+        else
+            thisObj.f_adjustGridHeight();
+    }
+
+    this.f_adjustGridHeight = function()
+    {
+        var counter = thisObj.m_fireRecs != null ? thisObj.m_fireRecs.length : 0;
+        var h = counter * 30 + 105;
+
+        // the minimum height of grid is 160
+        if(counter < 2)
+            h = 168;
+
+        thisObj.m_grid.style.height = h+"px";
+        thisObj.f_resetTableRowCounter(0);
+        window.setTimeout(function(){thisObj.f_resize();}, 20);
     }
 
     this.populateTable = function(records, zonePair)
@@ -276,10 +295,17 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [fireRec.m_direction, fireRec.m_appService, fireRec.m_protocol,
-                     fireRec.m_srcIpAddr, fireRec.m_srcMaskIpAddr,
-                     fireRec.m_srcPort, fireRec.m_destIpAddr, fireRec.m_destMaskIpAddr,
-                     dport, fireRec.m_action, log, enable, del]);
+                    [thisObj.f_createSimpleDiv(fireRec.m_direction, 'center'),
+                     thisObj.f_createSimpleDiv(fireRec.m_appService, 'center'),
+                     thisObj.f_createSimpleDiv(fireRec.m_protocol, 'center'),
+                     thisObj.f_createSimpleDiv(fireRec.m_srcIpAddr, 'center'),
+                     thisObj.f_createSimpleDiv(fireRec.m_srcMaskIpAddr, 'center'),
+                     thisObj.f_createSimpleDiv(fireRec.m_srcPort, 'center'),
+                     thisObj.f_createSimpleDiv(fireRec.m_destIpAddr, 'center'),
+                     thisObj.f_createSimpleDiv(fireRec.m_destMaskIpAddr, 'center'),
+                     thisObj.f_createSimpleDiv(dport, 'center'),
+                     thisObj.f_createSimpleDiv(fireRec.m_action, 'center'),
+                     log, enable, del]);
         thisObj.m_gridBody.appendChild(div);
     }
 
@@ -366,6 +392,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         thisObj.m_fireRecs.push(fireRec);
         thisObj.f_addRecordIntoTable(fireRec);
         thisObj.f_setRuleDefaultValues(fireRec);
+        thisObj.f_adjustGridHeight();
     };
 
     this.f_init = function()
@@ -391,6 +418,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
         window.setTimeout(function()
         {
+            thisObj.f_adjustGridHeight();
             thisObj.f_enabledActionButtons(false);
         }, 100);
 
@@ -529,7 +557,9 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             cidr = g_utils.f_convertNetmaskToCIDR(tf.value);
         else
         {
-            alert('netmask invalidate');
+            g_utils.f_popupMessage(g_lang.m_invalidIpAddr + " : " + ip, "error",
+                          g_lang.m_ipaddrTitle, true);
+            tf.focus();
             return;
         }
 
@@ -552,15 +582,13 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         // log column
         if(chkid.indexOf(thisObj.m_fieldIds[11]) >= 0)
         {
-            thisObj.f_sendSetCommand(fireRec, "log",
-                    chk.checked ? "Yes":"No");
+            thisObj.f_sendSetCommand(fireRec, "log", chk.checked ? "Yes":"No");
         }
         ////////////////////////
         // enabled column
         else if(chkid.indexOf(thisObj.m_fieldIds[12]) >= 0)
         {
-            thisObj.f_sendSetCommand(fireRec, "enable",
-                    chk.checked ? "Yes":"No");
+            thisObj.f_sendSetCommand(fireRec, "enable", chk.checked ? "Yes":"No");
         }
         /////////////////////////
         // enabled all enable columns

@@ -1,3 +1,18 @@
+vyatta-webgui (0.2.14+fxdU+77) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Fixed per FT latest UTM document updated:
+  * * forgot to include this file from previous checked in.
+
+  [ Loi Vo ]
+  * 1. Fix the secondary navigation menu layout issue on Safari, which
+    show the menu item in the middle of the page instead of left.
+
+  [ Mohit Mehta ]
+  * reorder rules when namespace for rulenumbers gets exhausted
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Mon, 06 Jul 2009 15:03:07 -0700
+
 vyatta-webgui (0.2.14+fxdU+76) unstable; urgency=low
 
   [ Loi Vo ]

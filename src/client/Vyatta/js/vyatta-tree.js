@@ -163,7 +163,7 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         ///////////////////////////////////////////
         // parse error will redirect to login page
         // if user not login or login timeout
-        var isSuccess = f_parseServerCallback(xmlRoot);
+        var isSuccess = f_parseServerCallback(xmlRoot, this.g_loadMode);
 
         //////////////////////////////////////////////
         // conf mode is not allow. force to oper mode

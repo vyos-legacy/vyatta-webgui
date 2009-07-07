@@ -15,7 +15,7 @@ function f_sendSpecialCliCommand(cmd, segmentId, cb)
             return;
 
         var xmlRoot = response.responseXML.documentElement;
-        var isSuccess = f_parseServerCallback(xmlRoot);
+        var isSuccess = f_parseServerCallback(xmlRoot, V_TREE_ID_oper);
         var localSegmentId = (isSuccess[2] != undefined)?isSuccess[2]:null;
 
         // segment is not end, continue to send
@@ -151,7 +151,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         if(g_cliCmdObj.m_segmentId == 'segment_end') return;
 
         var xmlRoot = response.responseXML.documentElement;
-        var isSuccess = f_parseServerCallback(xmlRoot);
+        var isSuccess = f_parseServerCallback(xmlRoot, V_TREE_ID_oper);
         var sId = (isSuccess[2] != undefined)?isSuccess[2]:null;
         g_cliCmdObj.m_segmentId = sId;
 
@@ -241,7 +241,7 @@ function f_saveConfFormCommandSentError(treeObj, response)
             return;
 
     var xmlRoot = response.responseXML.documentElement;
-    var isSuccess = f_parseServerCallback(xmlRoot);
+    var isSuccess = f_parseServerCallback(xmlRoot, V_TREE_ID_config);
     if(!isSuccess[0])
     {
         var err = [f_replace(isSuccess[1], "\r\n", "")+"<br>", treeObj.m_fdIndexSent-1];
@@ -478,7 +478,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             return;
 
         var xmlRoot = response.responseXML.documentElement;
-        var isSuccess = f_parseServerCallback(xmlRoot);
+        var isSuccess = f_parseServerCallback(xmlRoot, V_TREE_ID_config);
         if(!isSuccess[0])
         {
             var err = f_replace(isSuccess[1], "\r\n", "<br>");
@@ -835,7 +835,7 @@ function f_handlePropagateParentNodes(node)
     }
 }
 
-function f_parseServerCallback(xmlRoot)
+function f_parseServerCallback(xmlRoot, treeMode /* conf, operator */)
 {
     var success = true;
     var q = Ext.DomQuery;
@@ -882,7 +882,7 @@ function f_parseServerCallback(xmlRoot)
                 break;
             case "0":
                 success = true;
-                if(msg.length > 7)
+                if(msg.length > 7 && treeMode == V_TREE_ID_config)
                     f_promptInfoMessage("Warning", msg);
                 break;
             case "3":

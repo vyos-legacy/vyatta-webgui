@@ -111,7 +111,7 @@ function UTM_businessLayer()
 
                 return response;
             } else if (r.status == 404) { //assuming  timeout on dom0. dom0 stop proxy the request.
-                thisObj.f_userTimeout();            			
+                thisObj.f_userTimeout();
 			}
         }
 
@@ -222,7 +222,7 @@ function UTM_businessLayer()
     {
         thisObj.m_userObj.f_logout(guiCb);
     }
-	
+
     this.f_userTimeout = function(guiCb)
     {
         thisObj.m_userObj.f_timeout(guiCb);
@@ -230,8 +230,8 @@ function UTM_businessLayer()
 			if (window.parent.f_timeout != undefined) {
 				window.parent.f_timeout();
 			}
-		}			
-    }	
+		}
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
@@ -291,6 +291,11 @@ function UTM_businessLayer()
     this.f_getFirewallSecurityCustomize = function(zone, guicb)
     {
         thisObj.f_getFWObject().f_getFirewallSecurityCustomize(zone, guicb);
+    }
+
+    this.f_setFirewallCustomizeOrder = function(fireRec, order, guicb)
+    {
+        thisObj.f_getFWObject().f_setFirewallCustomizeOrder(fireRec, order, guicb);
     }
 
     this.f_setFirewallCustomize = function(fireRec, name, value, guicb)
@@ -451,7 +456,7 @@ function UTM_businessLayer()
     {
         thisObj.f_getNwObject().f_getNwRoutingList(guicb);
     }
-	
+
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // Port config section
@@ -472,7 +477,7 @@ function UTM_businessLayer()
     {
         thisObj.f_getPortConfigObj().f_setPortConfig(portConfigList, guicb);
     }
-	
+
 }
 
 ///////////////////////////////////////////////

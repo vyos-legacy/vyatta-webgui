@@ -763,10 +763,10 @@ function UTM_confBaseObj(name, callback, busLayer)
         switch (text)
         {
             case 'ArrowUp':
-                imgSrc = enable ? 'arrow_up.jpg' : 'arrow_up_disabled.jpg';
+                imgSrc = enable ? 'fleche_up.gif' : 'fleche_up_disabled.gif';
                 break;
             case 'ArrowDown':
-                imgSrc = enable ? 'arrow_down.jpg' : 'arrow_down_disabled.jpg';
+                imgSrc = enable ? 'fleche_down.gif' : 'fleche_down_disabled.gif';
                 break;
             case 'Stop':
                 imgSrc = enable ? 'bt_stop.gif' : 'bt_stop_disabled.gif';
@@ -842,11 +842,11 @@ function UTM_confBaseObj(name, callback, busLayer)
     {
         if (evt.f_isError()) {
             if (evt.m_errCode == 3) {// timeout error
-                g_busObj.f_userTimeout();				
+                g_busObj.f_userTimeout();
 				//g_utils.f_popupMessage('timeout', 'timeout', null, true, 'f_confHandleSessionTimeoutConfirm()');
 			} else {
 				g_utils.f_popupMessage(evt.m_errMsg, 'ok', errTitle, true);
-			}  
+			}
             return true;
         } else
             return false;

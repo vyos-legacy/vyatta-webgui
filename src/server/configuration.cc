@@ -514,7 +514,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
   }
 
   //now let's process the allowed statement here
-  if (allowed.empty() == false) {
+  if (allowed.empty() == false && params._enum.empty() == true) {
     string stdout;
     string cmd;
 

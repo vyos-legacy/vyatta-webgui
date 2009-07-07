@@ -93,8 +93,8 @@ function FT_confRestart(name, callback, busLayer)
                         'Restart', enabled, "f_vmRestart('" +
                         v[0] + "', '" + v[2] + "')",
                         'Restart ' + v[2]);
-            var stop = thisObj.f_renderButton(
-                        'Stop', v[0] == "utm" ? false : enabled, "f_vmStop('" +
+            var stop = v[0] == "utm" ? "" : thisObj.f_renderButton(
+                        'Stop', enabled, "f_vmStop('" +
                         v[0] + "', '" + v[2] + "')",
                         'Stop ' + v[2]);
             var start = thisObj.f_renderButton(

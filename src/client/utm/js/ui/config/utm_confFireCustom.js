@@ -14,6 +14,13 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
     this.m_fwObj = busLayer.f_getFWObject();
     this.m_levelRec = levelRec;
     this.m_isDirty = false;
+    this.m_getNextRuleNo = false;              // auto get next rule number.
+                                            // to be used for case get next rule num is
+                                            // exceed the limit. when limitation is
+                                            // reach, backend re-order all rule numbers.
+                                            // Frontend needs to reload and
+                                            // get next rule number again.
+                                            // -1 : do not
     this.m_headercbbId = "fwCustomHeaderCombo_id";
     this.m_enabledchkId = "firewallCustomEnableId";
     this.m_btnAddId = "wfCustomizeAddId";
@@ -26,7 +33,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
     this.thisObjName = 'UTM_confFireCustom';
     this.m_fieldIds = ["rulenoId-", "dirId-", "appId-", "proId-", "sipId-", "smipId-",
                         "sportId-", "dipId-", "dmipId-", "dportId-",
-                        "actId-", "logId-", "enableId-"];
+                        "actId-", "logId-", "orderId-", "enableId-"];
     this.m_protocol = ["Any", "tcp", "udp", "both", "icmp", "ip", " "];
 
     /**
@@ -42,6 +49,9 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
     this.f_getConfigurationPage = function()
     {
+        this.m_getNextRuleNo = false;
+
+        this.f_handleCancelAction(true);
         return this.f_getPanelDiv(this.f_init());
     }
 
@@ -50,25 +60,25 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         var cols = [];
         this.f_colorGridBackgroundRow(true);
 
-        var chkbox = 'Enabled<br>Yes/No<br><br>' + thisObj.f_renderCheckbox("no",
+        var chkbox = 'enabled<br>yes/no<br><br>' + thisObj.f_renderCheckbox("no",
                       thisObj.m_enabledchkId, "f_fwCustomizeOnChkBlur('" +
                       thisObj.m_enabledchkId+"')", 'Click here to enable/disable all');
 
-        //cols[0] = this.f_createColumn("Rule<br>Number", 65, 'combo', '3', false, 'center');
-        cols[0] = this.f_createColumn(g_lang.m_fireCustDirection, 100, 'text', '6', false, 'center');
-        cols[1] = this.f_createColumn(g_lang.m_fireCustAppService, 100, 'combo', '3', false, 'center');
-        cols[2] = this.f_createColumn(g_lang.m_fireCustProtocol, 70, 'combo', '3', false, 'center');
-        cols[3] = this.f_createColumn(g_lang.m_fireCustSrcIpAddr, 115, 'textField', '3', false, 'center');
-        cols[4] = this.f_createColumn(g_lang.m_fireCustSrcMaskIpAddr, 115, 'textField', '3', false, 'center');
-        cols[5] = this.f_createColumn(g_lang.m_fireCustSrcPort, 90, 'textField', '3', false, 'center');
-        cols[6] = this.f_createColumn(g_lang.m_fireCustDestIpAddr, 115, 'textField', '3', false, 'center');
-        cols[7] = this.f_createColumn(g_lang.m_fireCustDestMaskIpAddr, 115, 'textField', '3', false, 'center');
-        cols[8] = this.f_createColumn(g_lang.m_fireCustDestPort, 90, 'textField', '3', false, 'center');
-        cols[9] = this.f_createColumn(g_lang.m_fireCustAction, 90, 'combo', '3', false, 'center');
-        cols[10] = this.f_createColumn("Log", 55, 'checkbox', '3', false, 'center');
-        //cols[11] = this.f_createColumn(g_lang.m_fireCustOrder, 80, 'combo', '3', false, 'center');
-        cols[11] = this.f_createColumn(chkbox, 55, 'checkbox', '3', false, 'center');
-        cols[12] = this.f_createColumn(g_lang.m_fireCustDelete, 55, 'combo', '3', false, 'center');
+        cols[0] = this.f_createColumn("Rule<br>Number", 60, 'combo', '6', false, 'center');
+        cols[1] = this.f_createColumn(g_lang.m_fireCustDirection, 100, 'text', '6', false, 'center');
+        cols[2] = this.f_createColumn(g_lang.m_fireCustAppService, 100, 'combo', '3', false, 'center');
+        cols[3] = this.f_createColumn(g_lang.m_fireCustProtocol, 70, 'combo', '3', false, 'center');
+        cols[4] = this.f_createColumn(g_lang.m_fireCustSrcIpAddr, 115, 'textField', '3', false, 'center');
+        cols[5] = this.f_createColumn(g_lang.m_fireCustSrcMaskIpAddr, 115, 'textField', '3', false, 'center');
+        cols[6] = this.f_createColumn(g_lang.m_fireCustSrcPort, 90, 'textField', '3', false, 'center');
+        cols[7] = this.f_createColumn(g_lang.m_fireCustDestIpAddr, 115, 'textField', '3', false, 'center');
+        cols[8] = this.f_createColumn(g_lang.m_fireCustDestMaskIpAddr, 115, 'textField', '3', false, 'center');
+        cols[9] = this.f_createColumn(g_lang.m_fireCustDestPort, 90, 'textField', '3', false, 'center');
+        cols[10] = this.f_createColumn(g_lang.m_fireCustAction, 90, 'combo', '3', false, 'center');
+        cols[11] = this.f_createColumn("log", 55, 'checkbox', '3', false, 'center');
+        cols[12] = this.f_createColumn(g_lang.m_fireCustOrder, 80, 'combo', '3', false, 'center');
+        cols[13] = this.f_createColumn(chkbox, 55, 'checkbox', '3', false, 'center');
+        cols[14] = this.f_createColumn(g_lang.m_fireCustDelete, 55, 'combo', '3', false, 'center');
 
         return cols;
     }
@@ -117,7 +127,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         for(var i=0; i<thisObj.m_fireRecs.length; i++)
         {
             var fr = thisObj.m_fireRecs[i];
-            var elid = thisObj.m_fieldIds[12] + fr.m_zonePair + "-" + fr.m_ruleNo;
+            var elid = thisObj.m_fieldIds[13] + fr.m_zonePair + "-" + fr.m_ruleNo;
             var chk = document.getElementById(elid);
 
             if(chk != null)
@@ -200,6 +210,9 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
             if(fireRec.m_zonePair != "Any")
                 thisObj.f_adjustGridHeight();
+
+            if(thisObj.m_getNextRuleNo)
+                thisObj.f_handleAddAction();
         };
 
         thisObj.m_zpIndex = 1;  // start from the show rules combo index 1
@@ -271,7 +284,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         for(var i=0; i<records.length; i++)
         {
             if(zonePair != "Any")
-                thisObj.f_addRecordIntoTable(records[i]);
+                thisObj.f_addRecordIntoTable(records[i], false);
             else
                 thisObj.f_addReadOnlyRecIntoTable(records[i]);
         }
@@ -292,10 +305,13 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         var dport = fireRec.m_destPort;
         dport = dport.length > 15 ? dport.substring(0, 15) : dport;
 
+        var order = thisObj.f_createOrderDiv(fireRec, true);
+
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [thisObj.f_createSimpleDiv(fireRec.m_direction, 'center'),
+                    [thisObj.f_createSimpleDiv(fireRec.m_ruleNo, 'center'),
+                     thisObj.f_createSimpleDiv(fireRec.m_direction, 'center'),
                      thisObj.f_createSimpleDiv(fireRec.m_appService, 'center'),
                      thisObj.f_createSimpleDiv(fireRec.m_protocol, 'center'),
                      thisObj.f_createSimpleDiv(fireRec.m_srcIpAddr, 'center'),
@@ -305,11 +321,11 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                      thisObj.f_createSimpleDiv(fireRec.m_destMaskIpAddr, 'center'),
                      thisObj.f_createSimpleDiv(dport, 'center'),
                      thisObj.f_createSimpleDiv(fireRec.m_action, 'center'),
-                     log, enable, del]);
+                     log, order, enable, del]);
         thisObj.m_gridBody.appendChild(div);
     }
 
-    this.f_addRecordIntoTable = function(fireRec)
+    this.f_addRecordIntoTable = function(fireRec, orderReadonly)
     {
         var c = "<div align=center>";
         var zpRule = fireRec.m_zonePair + "-" + fireRec.m_ruleNo;
@@ -357,25 +373,21 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                   "f_fwCustomizeOnChkBlur('"+thisObj.m_fieldIds[11]+zpRule+"')",
                   "") + "</div>";
         var enable = c + thisObj.f_renderCheckbox(
-                  fireRec.m_enabled, thisObj.m_fieldIds[12]+zpRule,
-                  "f_fwCustomizeOnChkBlur('"+thisObj.m_fieldIds[12]+zpRule+"')",
+                  fireRec.m_enabled, thisObj.m_fieldIds[13]+zpRule,
+                  "f_fwCustomizeOnChkBlur('"+thisObj.m_fieldIds[13]+zpRule+"')",
                   "") + "</div>";
 
-        //var up = thisObj.f_renderButton("ArrowUp",
-          //        ruleNo == 10 ? false:true, "f_fireCustomArrowUpHandler('"+
-            //      ruleNo + "')", '');
-        //var dn = thisObj.f_renderButton("ArrowDown", true,
-          //        "f_fireCustomArrowDownHandler('" + ruleNo + "')", '');
-        //var order = "<div align=center>" + up + "&nbsp;&nbsp;&nbsp;" + dn + "</div>";
         var del = "<div align=center>" + thisObj.f_renderButton(
                   "delete", true, "f_fireCustomDeleteHandler(" + fireRec.m_ruleNo +
-                  ")", "") + "</div";
+                  ")", g_lang.m_tooltip_delete) + "</div";
+
+        var order = thisObj.f_createOrderDiv(fireRec, orderReadonly);
 
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [fireRec.m_direction, app, pro, sip, smip, sport, dip, dmip, dport,
-                    act, log, enable, del]);
+                    [fireRec.m_ruleNo, fireRec.m_direction, app, pro, sip, smip,
+                     sport, dip, dmip, dport, act, log, order, enable, del]);
         thisObj.m_gridBody.appendChild(div);
 
         if(fireRec.m_appService.indexOf("Others") < 0)
@@ -385,14 +397,62 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         }
     };
 
-
-    this.f_handleAddFirewallCustomRow = function(ruleNo)
+    this.f_createOrderDiv = function(rec, readonly)
     {
-        var fireRec = thisObj.f_createFireRecord(ruleNo);
-        thisObj.m_fireRecs.push(fireRec);
-        thisObj.f_addRecordIntoTable(fireRec);
-        thisObj.f_setRuleDefaultValues(fireRec);
-        thisObj.f_adjustGridHeight();
+        var upDis = !readonly ? !rec.m_first : !readonly;
+        var dnDis = !readonly ? !rec.m_last : !readonly;
+        var up = thisObj.f_renderButton("ArrowUp", upDis,
+                  "f_fireCustomArrowUpHandler('"+rec.m_ruleNo+"')",
+                  g_lang.m_fireCustOrderUpTip);
+        var dn = thisObj.f_renderButton("ArrowDown", dnDis,
+                  "f_fireCustomArrowDownHandler('" + rec.m_ruleNo + "')",
+                  g_lang.m_fireCustOrderDnTip);
+
+        return "<div align=center>" + dn + "&nbsp;&nbsp;&nbsp;" + up + "</div>";
+    }
+
+    this.f_handleOrderCustomRow = function(ruleNo, order)
+    {
+        var cb = function(evt)
+        {
+            if(evt != null && evt.m_errCode == 0)
+            {
+                thisObj.f_loadVMData();
+                thisObj.f_enabledActionButtons(true);
+            }
+        }
+
+        var recs = thisObj.m_fireRecs;
+        var rec = null;
+        for(var i=0; i<recs.length; i++)
+        {
+            rec = recs[i];
+
+            if(rec.m_ruleNo == ruleNo)
+                break;
+
+            rec = null;
+        }
+
+        if(rec != null)
+            thisObj.m_busLayer.f_setFirewallCustomizeOrder(rec, order, cb);
+    }
+
+    this.f_handleAddNewFirewallCustomRow = function(ruleNo)
+    {
+        if(ruleNo != "resync")
+        {
+            var fireRec = thisObj.f_createFireRecord(ruleNo);
+            thisObj.m_fireRecs.push(fireRec);
+            thisObj.f_addRecordIntoTable(fireRec, true);
+            thisObj.f_setRuleDefaultValues(fireRec);
+            thisObj.f_adjustGridHeight();
+        }
+        else
+        {
+            thisObj.m_getNextRuleNo = true;
+            thisObj.f_loadVMData();
+        }
     };
 
     this.f_init = function()
@@ -459,15 +519,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         };
 
         window.setTimeout(sendEnabled, 500);
-    };
-
-    this.f_getTheNextRuleNo = function(zonePair)
-    {
-        var fireRec = thisObj.m_fireRecs[thisObj.m_fireRecs.length-1];
-        if(fireRec == null)
-            return 1;
-        else
-            return Number(fireRec.m_ruleNo) + 1;
     };
 
     this.f_headerText = function()
@@ -586,7 +637,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         }
         ////////////////////////
         // enabled column
-        else if(chkid.indexOf(thisObj.m_fieldIds[12]) >= 0)
+        else if(chkid.indexOf(thisObj.m_fieldIds[13]) >= 0)
         {
             thisObj.f_sendSetCommand(fireRec, "enable", chk.checked ? "Yes":"No");
         }
@@ -612,7 +663,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             for(var i=0; i<thisObj.m_fireRecs.length; i++)
             {
                 var fr = thisObj.m_fireRecs[i];
-                var elid = thisObj.m_fieldIds[12] + fr.m_zonePair + "-" + fr.m_ruleNo;
+                var elid = thisObj.m_fieldIds[13] + fr.m_zonePair + "-" + fr.m_ruleNo;
                 var c = document.getElementById(elid);
 
                 if(chk.checked != c.checked)
@@ -786,17 +837,23 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
                 if(evt.m_value != null)
-                {
-                    //thisObj.f_handleAddFirewallCustomRow(thisObj.f_getTheNextRuleNo(null));
-                    thisObj.f_handleAddFirewallCustomRow(evt.m_value.m_ruleNo);
-                }
+                    thisObj.f_handleAddNewFirewallCustomRow(evt.m_value.m_ruleNo);
             }
         }
 
-        ////////////////////////////////////////////
-        // get the next rule num from server.
-        var rc = thisObj.f_createFireRecord(null);
-        thisObj.m_busLayer.f_getFirewallZoneMgmtNextRuleNo(rc.m_zonePair, cb);
+        if(thisObj.m_fireRecs.length >= 9)
+        {
+            g_utils.f_popupMessage(g_lang.m_fireCustLimitation,
+                                  'ok', g_lang.m_fireCustTitle);
+        }
+        else
+        {
+            ////////////////////////////////////////////
+            // get the next rule num from server.
+            var rc = thisObj.f_createFireRecord(null);
+            thisObj.m_getNextRuleNo = false;
+            thisObj.m_busLayer.f_getFirewallZoneMgmtNextRuleNo(rc.m_zonePair, cb);
+        }
     }
 
     this.f_handleSaveAction = function()
@@ -824,11 +881,12 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         thisObj.m_busLayer.f_resetFirewallCustomizeRule(thisObj.f_createFireRecord("all"),cb);
     };
 
-    this.f_handleCancelAction = function()
+    this.f_handleCancelAction = function(doNotReload)
     {
         var cb = function(evt)
         {
-            thisObj.f_loadVMData();
+            if(doNotReload == null || !doNotReload)
+                thisObj.f_loadVMData();
         };
 
         g_utils.f_cursorWait();
@@ -910,12 +968,12 @@ function f_fireCustomBackHandler()
 
 function f_fireCustomArrowUpHandler(ruleNo)
 {
-    alert('arrow up ' + ruleNo);
+    g_configPanelObj.m_activeObj.f_handleOrderCustomRow(ruleNo, "up");
 }
 
 function f_fireCustomArrowDownHandler(ruleNo)
 {
-    alert('arrow down ' + ruleNo);
+g_configPanelObj.m_activeObj.f_handleOrderCustomRow(ruleNo, "down");
 }
 
 function f_fwCustomOnTFBlur(tfeid)

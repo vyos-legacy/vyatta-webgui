@@ -50,6 +50,8 @@ function UTM_fireRecord(ruleNo, zonePair)
     this.m_log = "No";
     this.m_order = null;
     this.m_enabled = 'Yes';
+    this.m_first = false;
+    this.m_last = false;
 }
 
 /**
@@ -330,7 +332,9 @@ function UTM_firewallBusObj(busObj)
                         fws[x].m_log = this.f_getValueFromNameValuePair("log", vals[j]);
                         fws[x].m_enabled = this.f_getValueFromNameValuePair("enable", vals[j]);
                         fws[x].m_appService = this.f_getValueFromNameValuePair("application", vals[j]);
-                        //this.f_mapAppServiceFromPort(fws[x]);
+
+                        if(j == 1) fws[x].m_first = true;
+                        if(j == vals.length-2) fws[x].m_last = true;
                     }
                 }
             }
@@ -338,97 +342,7 @@ function UTM_firewallBusObj(busObj)
 
         return fws;
     };
-/*/
-    this.f_mapAppServiceFromPort = function(fireRec)
-    {
-        fireRec.m_appService = "Others";
-        var port = fireRec.m_destPort; //.split(",");
-        var proto = fireRec.m_protocol;
-        var s = thisObj.m_services;
-        var p = thisObj.m_ports;
 
-        if(proto == "udp")
-        {
-            switch(port)
-            {
-                case p[0]:
-                    fireRec.m_appService = s[0];
-                case p[24]:
-                    fireRec.m_appService = s[24];
-                    break;
-                case p[26]:
-                    fireRec.m_appService = s[26];
-                    break;
-                case p[12]:
-                    fireRec.m_appService = s[12];
-                    break;
-                case "161":
-                case "162":
-                case p[14]:
-                    fireRec.m_appService = s[14];
-                    break;
-                case "500":
-                case "4500":
-                    fireRec.m_appService = s[20];
-                    break;
-                case p[17]:
-                    fireRec.m_appService = s[17];
-                    break;
-                case "1718":
-                case "1719":
-                    fireRec.m_appService = s[22];
-                    break;
-                case "32769-65535":
-                    fireRec.m_appService = s[18];
-                    break;
-                default:
-                    if(parseInt(p[0]) != NaN)
-                    {
-                        var udp = Number(p[0]);
-                        if(udp >= 32769 && udp <= 65535)
-                            fireRec.m_appService = s[18];
-                    }
-            }
-        }
-        else if(proto == "tcp")
-        {
-            switch(port)
-            {
-                case p[1]:
-                    fireRec.m_appService = s[1];
-                    break;
-                case p[13]:
-                    fireRec.m_appService = s[13];
-                    break;
-                case "500":
-                case "4500":
-                    fireRec.m_appService = s[19];
-                    break;
-                case "5060":
-                    fireRec.m_appService = s[23];
-                    break;
-                case "1949":
-                    fireRec.m_appService = s[25];
-                    break;
-                default:
-                {
-                    for(var i=0; i<p.length; i++)
-                    {
-                        if(port == p[i])
-                        {
-                            fireRec.m_appService = s[i];
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        else if(proto.indexOf("ip") >= 0)
-        {
-            fireRec.m_appService = s[19];
-        }
-    };
-*/
     this.f_setSrouceAddress = function(fireRec, addr)
     {
         if(addr.length > 0)
@@ -595,6 +509,20 @@ function UTM_firewallBusObj(busObj)
                       " set</handler><data>zonepair=[" + fireRec.m_zonePair +
                       "], rulenum=[" + fireRec.m_ruleNo + "]," + name +
                       "=[" + value + "]</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_setFirewallCustomizeOrder = function(fireRec, order, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>customize-firewall" +
+                      " move-rule-"+order+"</handler><data>zonepair=[" +
+                      fireRec.m_zonePair + "], rulenum=[" + fireRec.m_ruleNo + "]" +
+                      "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

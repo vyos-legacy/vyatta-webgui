@@ -145,6 +145,7 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Customize Level
+    m_fireCustTitle : "Customized firewall",
     m_fireDeleteConfirm : "Are you sure you want to delete this rule?",
     m_fireCustDeleteConfirmHeader : "Delete Customize Rule",
     m_discardConfirm : "This action will discard all your changes. Are you sure you still want to cancel?",
@@ -177,6 +178,9 @@ var g_lang =
     m_fireCustLogEnabled : "log is enabled",
     m_fireCustEnableEnabled : "enable field is enabled",
     m_fireCustDeleteNotAllow : "delete is not allowed",
+    m_fireCustLimitation : "you have reached the limit for the number of rules you can create.",
+    m_fireCustOrderUpTip : "move up by one",
+    m_fireCustOrderDnTip : "move down by one",
 
     ////////////////////////////////////////////////////////////////////
     // network configuration NAT/PAT

@@ -138,8 +138,9 @@ var g_lang =
     m_fireZMMemError : "le champ membre(s) ne peut pas rester vide. Veuillez au moins en sélectionner un.", 
     m_fireZMNameError : "le champ nom de la zone ne peut rester vide.",
 
-    ///////////////////////////////////////////////////////////////////;;
+    ///////////////////////////////////////////////////////////////////
     // Firewall Security Customize Level;;
+    m_fireCustTitle : "Customized firewall",
     m_fireDeleteConfirm : "Etes-vous sûr de vouloir supprimer cette règle ?",
     m_fireCustDeleteConfirmHeader : "supprimer",
     m_discardConfirm : "Vous aller effacer toutes les modifications effectuées. Etes vous sûr de vouloir annuler ?", 
@@ -172,6 +173,9 @@ var g_lang =
     m_fireCustLogEnabled : "Log is enabled",
     m_fireCustEnableEnabled : "Enable field is enabled",
     m_fireCustDeleteNotAllow : "Delete is not allowed",	
+    m_fireCustLimitation : "You have reached the limit for the number of rules you can create.",
+    m_fireCustOrderUpTip : "move up by one",
+    m_fireCustOrderDnTip : "move down by one",
 
     ////////////////////////////////////////////////////////////////////;;
     // network configuration NAT/PAT;;

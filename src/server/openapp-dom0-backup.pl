@@ -6,11 +6,17 @@ use File::Temp qw(mkdtemp);
 use File::Path qw(rmtree);
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::LdapUser;
+use OpenApp::Conf;
 
 my $OA_CFG_DIR = '/opt/vyatta/etc/config';
 my $OA_CFG_FILE = 'config.boot';
 my $OA_CFG_PATH = "$OA_CFG_DIR/$OA_CFG_FILE";
 my $OA_LDAP_DUMP_FILE = 'ldap.ldif';
+
+my $SLAPD_INIT = '/etc/init.d/slapd';
+my $LDAP_DB_DIR = '/var/lib/ldap';
+my $LDAP_DB_OWNER = 'openldap';
+my $LDAP_GROUP = 'openldap';
 
 # authenticated user
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
@@ -58,9 +64,27 @@ sub cp_p {
   return (($? >> 8) ? 0 : 1);
 }
 
+sub stop_ldap {
+  system("$SLAPD_INIT stop >&/dev/null");
+  return (($? >> 8) ? 0 : 1);
+}
+
+sub start_ldap {
+  system("$SLAPD_INIT start >&/dev/null");
+  return (($? >> 8) ? 0 : 1);
+}
+
 sub save_ldap {
   my ($file) = @_;
   system("slapcat >'$file'");
+  return (($? >> 8) ? 0 : 1);
+}
+
+sub load_ldap {
+  my ($file) = @_;
+  return 0 if (! -d "$LDAP_DB_DIR");
+  system("rm -rf $LDAP_DB_DIR/* "
+         . "&& sudo -u $LDAP_DB_OWNER slapadd -l \"$file\"");
   return (($? >> 8) ? 0 : 1);
 }
 
@@ -85,12 +109,19 @@ sub do_backup {
         $err = 'Cannot backup OA config file';
         last;
       }
+      if (!stop_ldap()) {
+        $err = 'Failed to stop OA LDAP database';
+        last;
+      }
       if (!save_ldap("$tdir/files/$OA_LDAP_DUMP_FILE")) {
         $err = 'Cannot backup OA LDAP database';
         last;
       }
-      my $bfiles = "$OA_CFG_FILE $OA_LDAP_DUMP_FILE";
-      system("tar -cf \"$file\" -C \"$tdir/files\" $bfiles");
+      if (!start_ldap()) {
+        $err = 'Failed to start OA LDAP database';
+        last;
+      }
+      system("tar -cf \"$file\" -C \"$tdir\" files/");
       if ($? >> 8) {
         $err = 'Cannot create OA backup';
         last;
@@ -107,9 +138,62 @@ sub do_backup {
 
 sub do_restore {
   my ($what, $file) = @_;
+  if (! -r "$file") {
+    print "Cannot find $file\n";
+    exit 1;
+  }
   if (!($what =~ m/config=true/)) {
     # nothing to restore
     return;
+  }
+  my $tdir = mkdtemp('/tmp/dom0-restore.XXXXXX');
+  if (! -d "$tdir" || !mkdir("$tdir/files")) {
+    print "Cannot create temp dir\n";
+    exit 1;
+  }
+  my $ol_gid = getgrnam($LDAP_GROUP);
+  chown -1, $ol_gid, $tdir;
+  chmod 0750, $tdir;
+  my $err = undef;
+  while (1) {
+    if (!cp_p("$file", "$tdir/$file")) {
+      $err = "Cannot copy $file";
+      last;
+    }
+    system("tar -xf \"$tdir/$file\" -C \"$tdir/\"");
+    if ($? >> 8) {
+      $err = 'Cannot extract OA backup';
+      last;
+    }
+    if (! -r "$tdir/files/$OA_CFG_FILE"
+        || ! -r "$tdir/files/$OA_LDAP_DUMP_FILE") {
+      $err = 'Incomplete OA backup';
+      last;
+    }
+    if (!cp_p("$tdir/files/$OA_CFG_FILE", "$OA_CFG_PATH")) {
+      $err = "Cannot copy OA config file";
+      last;
+    }
+    my @cmds = ( 'load' );
+    last if (defined(($err = OpenApp::Conf::execute_session(@cmds))));
+    if (!stop_ldap()) {
+      $err = 'Failed to stop OA LDAP database';
+      last;
+    }
+    if (!load_ldap("$tdir/files/$OA_LDAP_DUMP_FILE")) {
+      $err = 'Cannot restore OA LDAP database';
+      last;
+    }
+    if (!start_ldap()) {
+      $err = 'Failed to start OA LDAP database';
+      last;
+    }
+    last;
+  }
+  rmtree($tdir);
+  if (defined($err)) {
+    print "$err\n";
+    exit 1;
   }
 }
 

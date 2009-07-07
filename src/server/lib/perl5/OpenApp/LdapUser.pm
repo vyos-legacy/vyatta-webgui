@@ -198,6 +198,34 @@ sub getRole {
   return $self->{_urole};
 }
 
+sub passwordExists {
+  my ($self) = @_;
+ 
+  # special case for installer
+  return 1 if ($self->{_uname} eq 'installer');
+
+  # set up LDAP (with root bind)
+  my $ldap = Net::LDAP->new("$OA_LDAP_SERVER");
+  my $ret = 0;
+  while (defined($ldap)) {
+    my $res;
+    $res = $ldap->bind("$OA_LDAP_ROOTDN",
+                       password => "$OA_LDAP_ROOT_PASSWORD");
+    last if ($res->is_error());
+
+    $res = $ldap->search(base => "$OA_LDAP_USER_SUFFIX",
+                         filter => "$OA_LDAP_ATTR_UID=$self->{_uname}",
+                         attrs => [ "$OA_LDAP_ATTR_PASSWORD" ]);
+    last if ($res->is_error());
+    last if ($res->count() != 1);
+    my $entry = $res->entry(0);
+    $ret = (defined($entry->get_value($OA_LDAP_ATTR_PASSWORD)) ? 1 : 0);
+    last;
+  }
+  $ldap->disconnect() if (defined($ldap));
+  return $ret;
+}
+
 ### setters for user attributes
 sub deletePassword {
   my ($self) = @_;

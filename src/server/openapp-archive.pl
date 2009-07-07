@@ -253,11 +253,14 @@ sub backup {
 
 	    if ($key =~ /openapp/) {
 		#run dom0 backup script
-		my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
-		`sudo /opt/vyatta/sbin/openapp-dom0-backup.pl --backup=config=true --filename=$bufile`;
-		my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
-		`rm -f $bufile`;  #now remove source file
-		#and remove from poll collection
+		my $value = $hash_coll{$key};
+		if ($value != 1) {
+		    my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
+		    `sudo /opt/vyatta/sbin/openapp-dom0-backup.pl --backup=config=true --filename=$bufile`;
+		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+		    `rm -f $bufile`;  #now remove source file
+		    #and remove from poll collection
+		}
 		delete $new_hash_coll{$key};
 	    }
 	    else {
@@ -531,10 +534,13 @@ sub restore_archive {
 	next if (!defined($vm));
 
 	if ($key =~ /openapp/) {
-	    my $restorefile = "/tmp/$key";
-	    #call dom0 backup script here
-	    my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$key.enc -out $restorefile`;
-	    `sudo /opt/vyatta/sbin/openapp-dom0-backup.pl --restore=config=true --filename=$restorefile`;
+	    my $value = $hash_coll{$key};
+	    if ($value != 1) {
+		my $restorefile = "/tmp/$key";
+		#call dom0 backup script here
+		my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$key.enc -out $restorefile`;
+		`sudo /opt/vyatta/sbin/openapp-dom0-backup.pl --restore=config=true --filename=$restorefile`;
+	    }
 	}
 	else {
 	    my $ip = '';

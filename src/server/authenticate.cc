@@ -179,6 +179,88 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
     return false;
   }
 
+#define BLB_UTIL "/opt/vyatta/sbin/openapp-blb-utils.pl"
+  while (username == "admin") {
+    int ret = 0, tf = -1;
+    char buf[256], fname[128], blb_token[32];
+    snprintf(buf, 256, "%s --pass-exists --user '%s'",
+             BLB_UTIL, username.c_str());
+    ret = system(buf);
+    if (WEXITSTATUS(ret) == 0) {
+      /* admin has LDAP password. no special handling. */
+      break;
+    }
+    snprintf(buf, 256, "%s --is-standalone", BLB_UTIL);
+    ret = system(buf);
+    if (WEXITSTATUS(ret) == 0) {
+      /* standalone mode. should not happen. */
+      break;
+    }
+
+    /* no LDAP password. do BLB assoc. */
+    snprintf(fname, 128, "/tmp/cgi-blb.XXXXXX");
+    tf = mkstemp(fname);
+    if (tf == -1) {
+      break;
+    }
+    fchown(tf, getuid(), -1);
+    ret = 1;
+    do {
+      /* put user/pass in a temp file */
+      FILE *auth = NULL;
+      char *r = NULL;
+      int e = 0;
+      int slen = snprintf(buf, 256, "%s\n%s\n", username.c_str(),
+                          password.c_str());
+      if (slen >= 256) {
+        ret = 0;
+        break;
+      }
+      if (write(tf, buf, slen) != slen) {
+        ret = 0;
+        break;
+      }
+      close(tf);
+      tf = 0;
+
+      /* try blb auth */
+      snprintf(buf, 256, "%s --auth-blb '%s'", BLB_UTIL, fname);
+      if (!(auth = popen(buf, "r"))) {
+        break;
+      }
+      r = fgets(blb_token, 32, auth);
+      e = pclose(auth);
+      if (r != blb_token || e == -1 || !WIFEXITED(e) || WEXITSTATUS(e) != 0) {
+        break;
+      }
+      /* auth succeeded. blb token in blb_token. */
+      /* not saving blb token here. do that in reverse proxy when user tries
+       * to access blb. */
+
+      /* now save password in LDAP */
+      snprintf(buf, 256, "%s --set-pass --user '%s'", BLB_UTIL,
+               username.c_str());
+      if (!(auth = popen(buf, "w"))) {
+        break;
+      }
+      slen = fprintf(auth, "%s", password.c_str());
+      e = pclose(auth);
+      if (slen != ((int) password.length()) || e == -1 || !WIFEXITED(e)
+          || WEXITSTATUS(e) != 0) {
+        break;
+      }
+    } while (0);
+    if (tf) {
+      close(tf);
+    }
+    unlink(fname);
+    if (!ret) {
+      break;
+    }
+
+    break;
+  }
+
   ////////////////////////////////////////////////////
   /*
   //without support for op cmds fail any non vyattacfg group member

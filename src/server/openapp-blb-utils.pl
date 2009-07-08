@@ -41,7 +41,10 @@ if (defined($authb)) {
 }
 
 if (defined($issa)) {
-  exit 0 if (OpenApp::BLB::isStandalone());
+  # NOTE cannot use BLB::isStandalone() since we don't have a session
+  my $cfg = new Vyatta::Config;
+  $cfg->{_active_dir_base} = '/opt/vyatta/config/active';
+  exit 0 if (!$cfg->existsOrig("$OpenApp::BLB::OA_BLB_CONF_ROOT"));
   exit 1;
 }
 

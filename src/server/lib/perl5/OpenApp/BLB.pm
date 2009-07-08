@@ -7,7 +7,8 @@ use Vyatta::Config;
 
 my $OA_BLB_INTERFACE = 'br0';
 my $OA_BLB_LEASE_FILE = "/var/lib/dhcp3/dhclient_${OA_BLB_INTERFACE}_lease";
-my $OA_BLB_CONF_ROOT = 'system open-app blb-association';
+
+our $OA_BLB_CONF_ROOT = 'system open-app blb-association';
 
 ### "static" functions
 
@@ -32,6 +33,7 @@ sub authBLB {
   my ($blb_ip, $err) = getBLBIP();
   return (undef, $err) if (defined($err));
   my ($fh, $fname) = mkstemp('/tmp/blb-pm.XXXXXX');
+  chown($<, -1, $fname);
   chmod(0600, $fname);
   print $fh "$user\n$pass\n$blb_ip\n";
   close($fh);
@@ -42,6 +44,7 @@ sub authBLB {
   return ($blb_token, undef);
 }
 
+# NOTE this function requires a "configuration session"
 sub isStandalone {
   my $cfg = new Vyatta::Config;
   return (!$cfg->existsOrig("$OA_BLB_CONF_ROOT"));

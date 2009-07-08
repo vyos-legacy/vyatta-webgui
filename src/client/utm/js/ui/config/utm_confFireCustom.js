@@ -510,17 +510,17 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
     this.f_setRuleDefaultValues = function(fireRec)
     {
-        thisObj.f_sendSetCommand(fireRec, "log", "Yes");
+        //thisObj.f_sendSetCommand(fireRec, "log", "Yes");
 
-        var sendAction = function()
-        {
-            thisObj.f_sendSetCommand(fireRec, "action", "accept");
-        }
+        //var sendAction = function()
+        //{
+        thisObj.f_sendSetCommand(fireRec, "action", "accept");
+        //}
 
         var sendEnabled = function()
         {
             thisObj.f_sendSetCommand(fireRec, "enable", "Yes");
-            window.setTimeout(sendAction, 500);
+            //window.setTimeout(sendAction, 500);
         };
 
         window.setTimeout(sendEnabled, 500);

@@ -278,6 +278,8 @@ WebGUI::discard_session(string &id)
   cmd += ";sudo mount -t "+WebGUI::unionfs()+" -o dirs=" + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "=rw:" + WebGUI::VYATTA_ACTIVE_CONFIGURATION_DIR + "=ro "+WebGUI::unionfs()+" " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
   execute(cmd,stdout,dummy,true,true);
   
+  string cookie_file = VYATTA_MODIFY_FILE + id;
+  unlink(cookie_file.c_str());
 
   //now clean out web archive location
   cmd = "rm -fr /var/www/archive/" + id + "/*";

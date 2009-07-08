@@ -498,10 +498,13 @@ sub get_next_rulenum {
       }
       $rule_cnt++;
     }
-    $return_string = "<customize-firewall>zonepair=[$zonepair]:rulenum=[resync]:</customize-firewall>";
+    @rules = $config->listNodes();
+    @reverse_sort_rules = reverse sort numerically @rules;
+    $rulenum = $reverse_sort_rules[0] + 1;
+    $return_string = "<customize-firewall>zonepair=[$zonepair]:rulenum=[resync-$rulenum]:</customize-firewall>";
     print "$return_string";
     return;
-  }
+ }
 
   $return_string = "<customize-firewall>zonepair=[$zonepair]:rulenum=[$rulenum]:</customize-firewall>";
   print "$return_string";

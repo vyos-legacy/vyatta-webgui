@@ -13,6 +13,10 @@ function UTM_htmlBuilder()
 		thisObj.f_buildSm();
 		thisObj.f_buildDynSm();		
 		thisObj.f_initDebugTray();		
+	}		
+	
+	this.f_configMenu = function() {
+		thisObj.f_configLanMenu();
 	}
 		
     var nav2menu = [ 
@@ -88,6 +92,41 @@ function UTM_htmlBuilder()
 		}		
 	}	
 	
+	this.f_configLanMenu = function() {
+        var cb = function(evt)
+        {        
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                if (evt.f_isError()) {                
+                    g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);  
+                    return;                    
+                }                
+                var portConfig = evt.m_value;    
+		        var portList = portConfig.m_portList;
+		        for (var i = 0; i < portList.length; i++) {					
+					var grp = portList[i].m_group.toLowerCase();
+                    if (grp != 'wan') {
+						//now we need to show/hide the corresponding menu.
+						if ((grp == 'lan') || (grp == 'lan2')) {
+							var menuId = grp + '_l2';
+							var menu = document.getElementById(menuId);
+							if (menu != null) {
+								if (portList[i].m_enable=='true') {
+								    menu.style.display = '';	
+								} else {
+									menu.style.display = 'none';
+								}
+							}
+						} 
+                    }					
+				}
+            }   
+			g_utmMainPanel.f_init();
+		    g_utmMainPanel.f_show();
+		    //g_utmMainPanel.f_selectMenuItem(g_defaultMenuItem);
+		    g_utmMainPanel.f_selectDefaultPage();	
+        };      
+        g_busObj.f_getPortConfig(cb);		
+	}
 	
 	this.f_buildSm= function() {
 	    for (var i=0; i < smArray.length; i++) {

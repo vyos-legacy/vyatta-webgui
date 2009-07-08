@@ -54,7 +54,8 @@ function UTM_confUrlEz(name, callback, busLayer)
                 v_type: 'label',
                 text: g_lang.m_url_ezFilterPolicy,
                 v_new_row: 'true',
-                v_end_row: 'true'
+                v_end_row: 'true',
+				font_weight: 'bold'
             }, EMPTY_ROW, {
                 v_type: 'html',
                 id: 'conf_url_ez_blacklist',
@@ -115,7 +116,8 @@ function UTM_confUrlEz(name, callback, busLayer)
                 v_type: 'label',
                 text: g_lang.m_url_ezFilterPolicyImp,
                 v_new_row: 'true',
-                v_end_row: 'true'
+                v_end_row: 'true',
+				font_weight: 'bold'
             }, EMPTY_ROW, {
                 v_type: 'html',
                 text: '<div><table id="conf_url_ez_time_table" cellpadding= "0" cellspacing="0"><tbody id="conf_url_ez_time_table_body"><tr>' +

@@ -1,3 +1,17 @@
+vyatta-webgui (0.2+fxd0+80) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * BLB integration phase 2
+
+  [ Michael Larson ]
+  * brought over session discard code to dom0. Now "discard" statement
+    will discard session--at this point the user must re-log in, and
+    they will get a different session id.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 08 Jul 2009 15:53:28 -0700
+
 vyatta-webgui (0.2+fxd0+79) unstable; urgency=low
 
   [ Loi Vo ]

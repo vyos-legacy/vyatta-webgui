@@ -72,12 +72,14 @@ sbin_SCRIPTS += src/server/openapp-vm-upgrade.pl
 sbin_SCRIPTS += src/server/openapp-vimg-newinst.pl
 sbin_SCRIPTS += scripts/blb-login
 sbin_SCRIPTS += src/server/openapp-dom0-backup.pl
+sbin_SCRIPTS += src/server/openapp-blb-utils.pl
 
 oaperl_DATA = src/server/lib/perl5/OpenApp/VMMgmt.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/VMDeploy.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/LdapUser.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/Conf.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/Rest.pm
+oaperl_DATA += src/server/lib/perl5/OpenApp/BLB.pm
 
 guiconf_DATA = src/server/misc/slapd.conf
 guiconf_DATA += src/server/misc/openapp.conf

@@ -7,6 +7,7 @@ use IPC::Open2;
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::LdapUser;
 use OpenApp::Conf;
+use OpenApp::BLB;
 use Vyatta::Config;
 
 # authenticated user
@@ -18,14 +19,15 @@ if ($auth_user_role ne 'installer') {
   exit 1;
 }
 
+# TODO move BLB-related conf into BLB.pm
 my $BLB_CONF_ROOT = 'system open-app blb-association';
 
 my ($status, $standalone, $user, $pass) = (undef, undef, undef, undef);
 GetOptions(
   'status' => \$status,
   'standalone' => \$standalone,
-  'user:s' => \$user,
-  'pass:s' => \$pass
+  'user=s' => \$user,
+  'pass=s' => \$pass
 );
 
 if (defined($status)) {
@@ -71,6 +73,16 @@ sub do_standalone {
     exit 1;
   }
   
+  # if admin has no LDAP password, restore default password
+  my $adm = new OpenApp::LdapUser('admin');
+  if (!$adm->passwordExists()) {
+    my $err = $adm->setPassword('admin');
+    if (defined($err)) {
+      print "Failed to restore default admin password: $err\n";
+      exit 1;
+    }
+  }
+  
   my @cmds = (
     "delete $BLB_CONF_ROOT",
     'commit',
@@ -86,11 +98,39 @@ sub do_standalone {
 sub do_blb {
   my ($user, $pass) = @_;
   
-  # TODO do BLB association. check credential.
+  # do BLB association
+  ## check credential
+  my ($blb_token, $err) = OpenApp::BLB::authBLB($user, $pass);
+  if (defined($err)) {
+    print "$err\n";
+    exit 1;
+  } 
  
-  # TODO login succeeded. change installer password.
+  ## login succeeded. change installer password.
+  my ($rfd, $wfd) = (undef, undef);
+  my $pid = open2($rfd, $wfd, '/usr/bin/mkpasswd', '-m', 'md5', '-s');
+  print $wfd "$pass";
+  close($wfd);
+  my $epass = <$rfd>;
+  waitpid($pid, 0);
+  chomp($epass);
+  if (!($epass =~ /^\$1\$/)) {
+    print "Failed to encrypt BLB password\n";
+    exit 1;
+  }
+  system("sudo /usr/sbin/usermod -p '$epass' installer");
+  if ($? >> 8) {
+    print "Failed to change installer password to match BLB\n";
+    exit 1;
+  }
 
-  # TODO reset "admin" account
+  ## reset "admin" account
+  my $adm = new OpenApp::LdapUser('admin');
+  my $err = $adm->deletePassword();
+  if (defined($err)) {
+    print "Failed to reset admin account: $err\n";
+    exit 1;
+  }
   
   # finally, save the configuration. 
   my @cmds = (

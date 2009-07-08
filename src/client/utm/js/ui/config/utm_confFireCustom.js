@@ -14,13 +14,14 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
     this.m_fwObj = busLayer.f_getFWObject();
     this.m_levelRec = levelRec;
     this.m_isDirty = false;
-    this.m_getNextRuleNo = false;              // auto get next rule number.
+    this.m_resyncNextRuleNo = -1;           // auto get next rule number.
                                             // to be used for case get next rule num is
                                             // exceed the limit. when limitation is
                                             // reach, backend re-order all rule numbers.
                                             // Frontend needs to reload and
                                             // get next rule number again.
-                                            // -1 : do not
+                                            // -1 : no resync required
+                                            // > 0 : resynce is required.
     this.m_headercbbId = "fwCustomHeaderCombo_id";
     this.m_enabledchkId = "firewallCustomEnableId";
     this.m_btnAddId = "wfCustomizeAddId";
@@ -49,7 +50,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
     this.f_getConfigurationPage = function()
     {
-        this.m_getNextRuleNo = false;
+        this.m_resyncNextRuleNo = -1;
 
         this.f_handleCancelAction(true);
         return this.f_getPanelDiv(this.f_init());
@@ -211,8 +212,11 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             if(fireRec.m_zonePair != "Any")
                 thisObj.f_adjustGridHeight();
 
-            if(thisObj.m_getNextRuleNo)
-                thisObj.f_handleAddAction();
+            if(thisObj.m_resyncNextRuleNo > 0)
+            {
+                thisObj.f_handleAddNewFirewallCustomRow(thisObj.m_resyncNextRuleNo+"");
+                thisObj.m_resyncNextRuleNo = -1;
+            }
         };
 
         thisObj.m_zpIndex = 1;  // start from the show rules combo index 1
@@ -284,13 +288,13 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         for(var i=0; i<records.length; i++)
         {
             if(zonePair != "Any")
-                thisObj.f_addRecordIntoTable(records[i], false);
+                thisObj.f_addRecordIntoTable(records[i], i+1, false);
             else
-                thisObj.f_addReadOnlyRecIntoTable(records[i]);
+                thisObj.f_addReadOnlyRecIntoTable(records[i], i+1);
         }
     }
 
-    this.f_addReadOnlyRecIntoTable = function(fireRec)
+    this.f_addReadOnlyRecIntoTable = function(fireRec, rowNo)
     {
         var c = "<div align=center>";
         var chkImg = fireRec.m_log == 'Yes' ? "images/check.gif" : "images/uncheck.gif";
@@ -310,7 +314,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [thisObj.f_createSimpleDiv(fireRec.m_ruleNo, 'center'),
+                    [thisObj.f_createSimpleDiv(rowNo, 'center'),
                      thisObj.f_createSimpleDiv(fireRec.m_direction, 'center'),
                      thisObj.f_createSimpleDiv(fireRec.m_appService, 'center'),
                      thisObj.f_createSimpleDiv(fireRec.m_protocol, 'center'),
@@ -325,7 +329,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         thisObj.m_gridBody.appendChild(div);
     }
 
-    this.f_addRecordIntoTable = function(fireRec, orderReadonly)
+    this.f_addRecordIntoTable = function(fireRec, rowNo, orderReadonly)
     {
         var c = "<div align=center>";
         var zpRule = fireRec.m_zonePair + "-" + fireRec.m_ruleNo;
@@ -386,7 +390,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [fireRec.m_ruleNo, fireRec.m_direction, app, pro, sip, smip,
+                    [rowNo, fireRec.m_direction, app, pro, sip, smip,
                      sport, dip, dmip, dport, act, log, order, enable, del]);
         thisObj.m_gridBody.appendChild(div);
 
@@ -440,18 +444,19 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
     this.f_handleAddNewFirewallCustomRow = function(ruleNo)
     {
-        if(ruleNo != "resync")
+        if(ruleNo.indexOf("resync") >= 0)
         {
-            var fireRec = thisObj.f_createFireRecord(ruleNo);
-            thisObj.m_fireRecs.push(fireRec);
-            thisObj.f_addRecordIntoTable(fireRec, true);
-            thisObj.f_setRuleDefaultValues(fireRec);
-            thisObj.f_adjustGridHeight();
+            var resync = ruleNo.split("-");
+            thisObj.m_resyncNextRuleNo = Number(resync[1]);
+            thisObj.f_loadVMData();
         }
         else
         {
-            thisObj.m_getNextRuleNo = true;
-            thisObj.f_loadVMData();
+            var fireRec = thisObj.f_createFireRecord(ruleNo);
+            thisObj.m_fireRecs.push(fireRec);
+            thisObj.f_addRecordIntoTable(fireRec, thisObj.m_fireRecs.length, true);
+            thisObj.f_setRuleDefaultValues(fireRec);
+            thisObj.f_adjustGridHeight();
         }
     };
 
@@ -841,17 +846,17 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             }
         }
 
-        if(thisObj.m_fireRecs.length >= 9)
+        if(thisObj.m_fireRecs.length >= 999) // over the limit of 999 rules per zone-pair
         {
             g_utils.f_popupMessage(g_lang.m_fireCustLimitation,
-                                  'ok', g_lang.m_fireCustTitle);
+                                  'ok', g_lang.m_fireCustTitle, true);
         }
         else
         {
             ////////////////////////////////////////////
             // get the next rule num from server.
             var rc = thisObj.f_createFireRecord(null);
-            thisObj.m_getNextRuleNo = false;
+            thisObj.m_resyncNextRuleNo = -1;
             thisObj.m_busLayer.f_getFirewallZoneMgmtNextRuleNo(rc.m_zonePair, cb);
         }
     }

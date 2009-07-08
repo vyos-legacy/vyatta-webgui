@@ -153,10 +153,12 @@ sub modify_user {
 	if (defined($oldpassword) && $oldpassword ne NULL) {
 	    if ($modify eq 'installer') {
 		#go through system cmds
-		`PASS=\`mkpasswd $password\`; usermod -p \$PASS installer`;
+                my $epass = `mkpasswd -m md5 '$password'`;
+                chomp($epass);
+                system("usermod -p '$epass' installer");
 	    }
 	    else {
-		my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -a $oldpassword -s $password -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");
+		my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -a '$oldpassword' -s '$password' -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");
 		close FILE;
 		unlink($conf_file);
 		if ($err != 0) {
@@ -169,10 +171,12 @@ sub modify_user {
 	    #this is a reset operation then
 	    if ($modify eq 'installer') {
 		#go through system cmds
-		`PASS=\`mkpasswd installer\`; usermod -p \$PASS installer`;
+                my $epass = `mkpasswd -m md5 installer`;
+                chomp($epass);
+                system("usermod -p '$epass' installer");
 	    }
 	    else {
-		my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -s $password -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");
+		my $err = system(" ldappasswd -x -w admin -D \"cn=admin,dc=localhost,dc=localdomain\" -s '$password' -S \"uid=$modify,ou=People,dc=localhost,dc=localdomain\"");
 		close FILE;
 		unlink($conf_file);
 		if ($err != 0) {

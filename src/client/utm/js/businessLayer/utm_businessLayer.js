@@ -173,6 +173,16 @@ function UTM_businessLayer()
         return new UTM_eventObj(errCode, '', errmsg);
     }
 
+    this.f_discardConfiguration = function(cb)
+    {
+        this.f_cancelFirewallCustomizeRule("customize-firewall", cb);
+    }
+
+    this.f_saveConfiguration = function(cb)
+    {
+        this.f_saveFirewallCustomizeRule("customize-firewall", cb);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // user management

@@ -153,6 +153,7 @@ var g_lang =
     m_fireResetConfirm : "This action will reload rules from default profile. Are you sure you still want to reset?",
     m_fireCustResetConfirmHeader : "Reset Customize Rules",
     m_fireCustSubHeader : "specific rules",
+    m_fireCustRuleNo : "rule<br>number",
     m_fireCustDirection : "direction",
     m_fireCustAppService : "application<br>/service",
     m_fireCustProtocol : "protocol",

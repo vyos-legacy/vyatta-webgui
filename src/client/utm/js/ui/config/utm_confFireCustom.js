@@ -65,7 +65,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                       thisObj.m_enabledchkId, "f_fwCustomizeOnChkBlur('" +
                       thisObj.m_enabledchkId+"')", 'Click here to enable/disable all');
 
-        cols[0] = this.f_createColumn("Rule<br>Number", 60, 'combo', '6', false, 'center');
+        cols[0] = this.f_createColumn(g_lang.m_fireCustRuleNo, 60, 'combo', '6', false, 'center');
         cols[1] = this.f_createColumn(g_lang.m_fireCustDirection, 100, 'text', '6', false, 'center');
         cols[2] = this.f_createColumn(g_lang.m_fireCustAppService, 100, 'combo', '3', false, 'center');
         cols[3] = this.f_createColumn(g_lang.m_fireCustProtocol, 70, 'combo', '3', false, 'center');

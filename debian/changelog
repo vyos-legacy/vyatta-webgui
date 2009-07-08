@@ -1,3 +1,11 @@
+vyatta-webgui (0.2.14+fxdU+79) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * customize firewall screen : set log value to 'no' as default when
+    adding new rule.
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Wed, 08 Jul 2009 15:48:06 -0700
+
 vyatta-webgui (0.2.14+fxdU+78) unstable; urgency=low
 
   [ Kevin Choi ]

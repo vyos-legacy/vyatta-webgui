@@ -311,6 +311,7 @@ var g_lang =
     m_portconf_WAN : "WAN",
 	m_portconf_attach: "Affectation des ports",
 	m_portconf_interface: "interface",
+	m_portconf_lan_lan2_no_disabled: "Port E1 (LAN) and Port E3 (LAN2) cannot be simultaneously disabled",
 	
     ///////////////////////////////////////////////////////////////////;;
     // Buttons and Images;;

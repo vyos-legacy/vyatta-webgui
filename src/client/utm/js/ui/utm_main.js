@@ -4,16 +4,12 @@
 g_xbObj.f_xbOnDomReady(function(){
     g_utmMainPanel = new UTM_mainPanel();
 	g_utmHtmlBuilder = new UTM_htmlBuilder();
-	
-	g_utmHtmlBuilder.f_prepare();
-	
+	g_utmHtmlBuilder.f_prepare();		
+		
     if (!g_busObj.f_isLogin()) {
 		g_utmMainPanel.f_login();
 	} else {	
-		g_utmMainPanel.f_init();
-		g_utmMainPanel.f_show();
-		//g_utmMainPanel.f_selectMenuItem(g_defaultMenuItem);
-		g_utmMainPanel.f_selectDefaultPage();			
+	    g_utmHtmlBuilder.f_configMenu();		
 	}
 });
 

@@ -28,13 +28,8 @@ function UTM_mainPanel()
 				alert('error: ' + event.m_errMsg);
             } else {
 				var f = function() {
-		            g_utmMainPanel.f_init();
-		            g_utmMainPanel.f_show();
-                    g_utmMainPanel.f_selectMenuItem(g_defaultMenuItem);			
-				    /*
-                     g_utils.f_saveUserLoginId(event.m_value.m_sid);
-                     g_utils.f_saveUserName(un);
-                    */					
+	                g_utmHtmlBuilder.f_prepare();							
+	                g_utmHtmlBuilder.f_configMenu();										
 				};
                 window.setTimeout(f,10);			
             }
@@ -109,7 +104,7 @@ function UTM_mainPanel()
 	    var id = g_cookie.f_get(g_myVmId + '_' + g_consObj.V_COOKIES_NAV_3_PATH, g_consObj.V_NOT_FOUND);
 		if (id==g_consObj.V_NOT_FOUND) {
 			id = thisObj.f_getDefaultSelection(nav2Id);
-		} 	
+		} 
 		return id;			
 	}
 
@@ -123,14 +118,13 @@ function UTM_mainPanel()
 	}
     */
 	
-    this.f_selectDefaultPage = function() {
-		var id = thisObj.f_getNav2SelectionPath();
-		var subId = thisObj.f_getNav3SelectionPath(id);
-		
+    this.f_selectDefaultPage = function() {	
+	    var id = thisObj.f_getNav2SelectionPath();
+		var subId = thisObj.f_getNav3SelectionPath(id);		
 		var f = function() { 
 		    thisObj.f_selectPage(id, subId);			
 		}
-		window.setTimeout(f, 100);		
+		window.setTimeout(f, 10);		
 	}	
 	
 	
@@ -169,6 +163,19 @@ function UTM_mainPanel()
         thisObj.m_3navMenu.f_selectItem(thisObj.f_getDefaultSelection(id));
     }
 	
+	this.f_getVisibleSubId = function(id, subId) {
+		var el = document.getElementById(subId);
+		if (el == null) {
+            return thisObj.f_getDefaultSelection(id);			
+		} else {
+			if (el.style.display == 'none') {
+				return thisObj.f_getDefaultSelection(id);
+			} else {
+				return subId;
+			}
+		}
+	}
+	
     this.f_2navSelectNav3ItemCb	= function(id, subId) {
 		if (thisObj.m_3navSelectedItem != undefined) {
 			thisObj.m_3navMenu.f_hide(thisObj.m_3navSelectedItem);
@@ -177,7 +184,7 @@ function UTM_mainPanel()
         thisObj.m_3navSelectedItem = id;
         thisObj.m_3navMenu.f_show(id);
 		//alert('mp.f_selectItem: id' + id + 'defaultSelection: ' + thisObj.f_getDefaultSelection(id));
-        thisObj.m_3navMenu.f_selectItem(subId);		
+        thisObj.m_3navMenu.f_selectItem(thisObj.f_getVisibleSubId(id,subId));		
 	} 
     
     this.f_3navSelectItemCb = function(id, desc)

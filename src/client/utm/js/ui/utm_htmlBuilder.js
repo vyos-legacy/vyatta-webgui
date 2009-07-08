@@ -14,6 +14,13 @@ function UTM_htmlBuilder()
 		thisObj.f_buildDynSm();
 		thisObj.f_initDebugTray();
 	}
+
+	this.f_configMenu = function() {
+		g_utmMainPanel.f_init();
+		g_utmMainPanel.f_show();
+		//g_utmMainPanel.f_selectMenuItem(g_defaultMenuItem);
+		g_utmMainPanel.f_selectDefaultPage();	
+	}
 		
     var nav2menu = [ 
 		{ 'key': 'dashboard_l1', 'value': g_lang.m_menu_dashboard },

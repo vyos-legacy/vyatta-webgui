@@ -210,6 +210,7 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 			//alert('row:' + bodyDiv.innerHTML);
 			thisObj.m_body.appendChild(bodyDiv);					
 		}
+		thisObj.f_showLanMenu(portList);
     }	
 	
     this.f_stopLoadVMData = function()
@@ -260,8 +261,61 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 		}
     }	
 	
+	this.f_validate = function() 
+	{
+		var portList = thisObj.m_portConfig.m_portList;
+		var lanId = '';
+		var lan2Id = '';
+		
+		for (var i=0; i < portList.length; i++) {
+			var grp = portList[i].m_group.toLowerCase();
+			if (grp == 'lan') {
+				lanId = thisObj.m_prefix + 'cb_' + portList[i].m_num;				
+			} else if (grp == 'lan2') {
+				lan2Id = thisObj.m_prefix + 'cb_' + portList[i].m_num;
+			}
+		}
+		var cbLan = document.getElementById(lanId);
+		var cbLan2 = document.getElementById(lan2Id);
+		if ((cbLan != null) && (cbLan2 != null)) {
+			if ((!cbLan.checked) && (!cbLan2.checked)) {				
+		        var error = g_lang.m_portconf_lan_lan2_no_disabled;
+			    g_utils.f_popupMessage(error, 'error', g_lang.m_error,true);								
+				return false;
+			} 
+		}
+		return true;
+	}
+	
+	this.f_showLanMenu = function(portList)
+	{
+        for (var i = 0; i < portList.length; i++) {
+		    var grp = portList[i].m_group.toLowerCase();
+
+            if (grp != 'wan') {
+                var id = thisObj.m_prefix + 'cb_' + portList[i].m_num;
+                var cb = document.getElementById(id);
+			    //now we need to show/hide the corresponding menu.
+			    if ((grp == 'lan') || (grp == 'lan2')) {
+			        var menuId = grp + '_l2';
+				    var menu = document.getElementById(menuId);
+				    if ((cb != null) && (menu != null)) {
+					    if (cb.checked) {
+						    menu.style.display = '';	
+						} else {
+							menu.style.display = 'none';
+						}
+					}
+				} 
+            }
+        }		
+	}
+	
 	this.f_apply = function()
 	{
+		if (!thisObj.f_validate()) {
+			return;
+		}
 		g_utils.f_startWait();
 		var pl = new Array();
 		var portList = thisObj.m_portConfig.m_portList;
@@ -291,16 +345,20 @@ function UTM_confNwPortConfig(name, callback, busLayer)
                     return;                    
                 }        
 				var portList = thisObj.m_portConfig.m_portList;
+				
                 for (var i = 0; i < portList.length; i++) {
-                    if (portList[i].m_group.toLowerCase() != 'wan') {
+					var grp = portList[i].m_group.toLowerCase();
+
+                    if (grp != 'wan') {
                         var id = thisObj.m_prefix + 'cb_' + portList[i].m_num;
                         var cb = document.getElementById(id);
                         var cbHidden = document.getElementById(id + '_hidden');
                         if ((cb != null) && (cbHidden != null)) {
                             cbHidden.checked = cb.checked;
-                        }
+                        } 
                     }
                 }
+				thisObj.f_showLanMenu(portList);
                 thisObj.f_enableAllButton(false);	
             }                                 
         };      

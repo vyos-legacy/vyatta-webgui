@@ -1,3 +1,12 @@
+vyatta-webgui (0.2+fxd0+81) unstable; urgency=low
+
+  * use md5 password, command line quoting, etc.
+  * handle admin auth with BLB association
+  * handle file descriptor 0
+  * add local accounts to dom0 backup/restore
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 08 Jul 2009 18:28:15 -0700
+
 vyatta-webgui (0.2+fxd0+80) unstable; urgency=low
 
   [ An-Cheng Huang ]

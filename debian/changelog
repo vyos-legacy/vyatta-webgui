@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+82) unstable; urgency=low
+
+  * * added url to launch BLB from main tab
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 09 Jul 2009 18:53:07 +0000
+
 vyatta-webgui (0.2+fxd0+81) unstable; urgency=low
 
   * use md5 password, command line quoting, etc.

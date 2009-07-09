@@ -39,8 +39,14 @@ function UTM_confFireLevel(name, callback, busLayer)
 
     this.f_getConfigurationPage = function()
     {
+        var cb = function()
+        {
+
+        }
+
         this.m_selLvlRec = null;
         UTM_confFireLevel.superclass.m_sortCol = 1;
+        this.m_busLayer.f_discardConfiguration(cb);
         return this.f_getPanelDiv(this.f_init());
     }
 
@@ -79,9 +85,6 @@ function UTM_confFireLevel(name, callback, busLayer)
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
                 thisObj.m_levelRecs = evt.m_value;
-                if(thisObj.m_selLvlRec == null)
-                    thisObj.m_selLvlRec = thisObj.m_levelRecs[0];
-
                 thisObj.f_populateActiveTable(thisObj.m_levelRecs, thisObj.m_selLvlRec);
 
                 if(thisObj.m_selLvlRec != null)
@@ -103,9 +106,26 @@ function UTM_confFireLevel(name, callback, busLayer)
         var sorted = this.f_createActiveTableSortingArray(
                       UTM_confFireLevel.superclass.m_sortCol, recs, selRec);
 
+        var selDir = "";
         for(var i=0; i<sorted.length; i++)
         {
             var rec = sorted[i].split('|');
+
+            // if selRec is null, set the first row as selected zone-pair
+            if(selRec == null)
+            {
+                // mark the first row as selected zone
+                if(i == 0)
+                {
+                    rec[0] = 'yes';
+                    selDir = rec[4];
+                }
+
+                // set selected zone-pair
+                if(recs[i].m_direction == selDir)
+                    thisObj.m_selLvlRec = recs[i];
+            }
+
             var radio = "<div align=center>" + this.f_renderRadio(rec[0],
                         rec[4]+"-id",
                         "f_fireActiveRadioHandler('"+rec[4]+"')",
@@ -125,7 +145,7 @@ function UTM_confFireLevel(name, callback, busLayer)
         for(var i=0; i<zRecs.length; i++)
         {
             var rec = zRecs[i];
-            var check = rec.m_direction == selRec.m_direction ? 'yes' : 'no';
+            var check = selRec != null && rec.m_direction == selRec.m_direction ? 'yes' : 'no';
             var dirs = this.f_getDirection(rec.m_direction);
 
             // NOTE: the order of this partition same as the order

@@ -593,13 +593,13 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             if(g_utils.f_validateNetmask(snm.value))
             {
                 newCidr = g_utils.f_convertNetmaskToCIDR(snm.value);
-                var fireRec = thisObj.f_createFireRecord(profixId);
+                var fireRec = thisObj.f_createFireRecord([fIds[2]]);
                 thisObj.f_sendSetCommand(fireRec, fName, ip+"/"+newCidr);
             }
         }
         else
         {
-            var fireRec = thisObj.f_createFireRecord(profixId);
+            var fireRec = thisObj.f_createFireRecord(fIds[2]);
             thisObj.f_sendSetCommand(fireRec, fName, ip+"/"+newCidr);
         }
     }
@@ -627,6 +627,21 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
         return;
     };
+
+    this.f_handleTFOnBlur = function(tfeid)
+    {
+        var tf = document.getElementById(tfeid);
+        var val = tf.value;
+        var fName = tfeid.split("Id-");
+
+        if(fName[0] != null)
+        {
+            var rNo = tfeid.split("-");
+            var rec = thisObj.f_createFireRecord(rNo[2])
+            thisObj.f_sendSetCommand(rec, fName[0], val);
+            thisObj.f_enabledActionButtons(true);
+        }
+    }
 
     this.f_chkOnSelected = function(chkid)
     {
@@ -730,7 +745,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                         thisObj.f_sendSetCommand(fr, "protocol", val);
                 }
 
-                window.setTimeout(function(){sendproto(fireRec, proVal)}, 100);
+                window.setTimeout(function(){sendproto(fireRec, proVal)}, 800);
 
                 thisObj.f_enableTextField(dport, false);
                 thisObj.f_enableComboboxSelection(proId, [fireRec.m_protocol], true);
@@ -739,7 +754,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                 thisObj.f_enableComboboxSelection(proId, [], false);
         }
 
-        window.setTimeout(function(){sendDPort(fireRec)}, 100);
+        window.setTimeout(function(){sendDPort(fireRec)}, 800);
     }
 
     this.f_handleShowRuleChanged = function()
@@ -993,6 +1008,8 @@ function f_fwCustomOnTFBlur(tfeid)
     else if(tfeid.indexOf(aObj.m_fieldIds[5]) >= 0 ||
         tfeid.indexOf(aObj.m_fieldIds[8]) >= 0)
         aObj.f_handleNetMaskOnBlur(tfeid);
+    else
+        aObj.f_handleTFOnBlur(tfeid);
 }
 
 function f_fireCustomShowRuleConfirm(e)

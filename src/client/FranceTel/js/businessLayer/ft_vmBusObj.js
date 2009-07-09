@@ -206,7 +206,10 @@ function FT_vmBusObj(busObj)
         {
             // let check if BLB associated
             if(g_utils.f_getIsBLB() == g_consObj.V_BLB_YES)
+            {
                 vm = vm == null ? new FT_vmRecObj('blb', g_lang.m_tnBLB):vm;
+                vm.m_guiUri = "/webconf/openappliance_index.html";
+            }
         }
         if(vm != null)
             finalVmsList.push(vm);

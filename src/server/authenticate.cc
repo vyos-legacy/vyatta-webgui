@@ -221,7 +221,7 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
         break;
       }
       close(tf);
-      tf = 0;
+      tf = -1;
 
       /* try blb auth */
       snprintf(buf, 256, "%s --auth-blb '%s'", BLB_UTIL, fname);
@@ -250,7 +250,7 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
         break;
       }
     } while (0);
-    if (tf) {
+    if (tf >= 0) {
       close(tf);
     }
     unlink(fname);

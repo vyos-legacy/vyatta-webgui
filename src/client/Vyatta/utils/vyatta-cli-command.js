@@ -478,7 +478,9 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             return;
 
         var xmlRoot = response.responseXML.documentElement;
-        var isSuccess = f_parseServerCallback(xmlRoot, V_TREE_ID_config);
+        var isSuccess = cmds[0] == 'show session' ?
+                f_parseServerCallback(xmlRoot, V_TREE_ID_oper):
+                f_parseServerCallback(xmlRoot, V_TREE_ID_config);
         if(!isSuccess[0])
         {
             var err = f_replace(isSuccess[1], "\r\n", "<br>");
@@ -849,7 +851,7 @@ function f_parseServerCallback(xmlRoot, treeMode /* conf, operator */)
 
         //////////////////////////////////////////////
         // selectValue only can return up to 4096 char
-        if(msg.length >= 4096 && xmlRoot.textContent != undefined)
+        if(Ext.isGecko3 && msg.length >= 3096 && xmlRoot.textContent != undefined)
         {
             //////////////////////////
             // somehow the textContent some returns addition chars.

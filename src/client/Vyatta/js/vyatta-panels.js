@@ -914,7 +914,7 @@ function f_showFileChooserDialog(command, values, treeObj)
         var j=0;
         for(var i=0; i<l.length; i++)
         {
-            if(l[i].indexOf('rw') >= 0)
+            if(l[i].indexOf('-r') >= 0)
             {
                 var w = l[i].split(' ');
                 val[j++] = w[w.length-1];

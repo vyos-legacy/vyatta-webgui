@@ -270,7 +270,11 @@ function FT_3rdNavigation()
         //console.log('3rd: f_selectItem: ' + id);
         thisObj.m_selectedItem = id;
         if (id != undefined) {
-	        g_cookie.f_set(g_consObj.V_COOKIES_NAV_3_PATH, id, g_cookie.m_userNameExpire);										
+	        g_cookie.f_set(g_consObj.V_COOKIES_NAV_3_PATH, id, g_cookie.m_userNameExpire);	
+			var subMenu = document.getElementById(id);
+			if (subMenu == null) { //this should not happen-
+				return;
+			}									
             var menu = document.getElementById(id).parentNode; //This is @ UL node
             var desc = undefined;
             for (var i = 0; menu.childNodes[i]; i++) { //This is @ LI node

@@ -1,3 +1,43 @@
+vyatta-webgui (0.2+fxd0+81) unstable; urgency=low
+
+  * use md5 password, command line quoting, etc.
+  * handle admin auth with BLB association
+  * handle file descriptor 0
+  * add local accounts to dom0 backup/restore
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 08 Jul 2009 18:28:15 -0700
+
+vyatta-webgui (0.2+fxd0+80) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * BLB integration phase 2
+
+  [ Michael Larson ]
+  * brought over session discard code to dom0. Now "discard" statement
+    will discard session--at this point the user must re-log in, and
+    they will get a different session id.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 08 Jul 2009 15:53:28 -0700
+
+vyatta-webgui (0.2+fxd0+79) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Fix secondary menu layout issue on Safari, which aligns the menu
+    item in the center instead of left.
+
+  [ An-Cheng Huang ]
+  * add function for password existence check
+
+  [ Kevin Choi ]
+  * * removed 'stop' button image from vm utm
+
+  [ Loi Vo ]
+  * 1. Fix cookies removal issue reported by AnCheng
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 08 Jul 2009 01:42:15 +0000
+
 vyatta-webgui (0.2+fxd0+78) unstable; urgency=low
 
   [ Michael Larson ]

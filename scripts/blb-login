@@ -1,11 +1,18 @@
 #!/bin/bash
 
-USER=$1
-PASS=$2
-pass=$(echo -n $PASS | md5sum | cut -d ' ' -f 1)
+FILE=$1
+[ -r "$FILE" ] || exit 1
 
-BLB_TOKEN=/opt/vyatta/etc/blb-token
-BLB_IP=10.1.18.17
+arr=()
+for (( i = 0; i < 3; i++ )); do
+  read a
+  arr[${#arr[@]}]=$a
+done <"$FILE"
+
+USER=${arr[0]}
+PASS=${arr[1]}
+BLB_IP=${arr[2]}
+pass=$(echo -n "$PASS" | md5sum | cut -d ' ' -f 1)
 
 try_login () {
   local nonce=$1
@@ -16,7 +23,7 @@ try_login () {
   # order of cookies matters!
   local cookies="language=fr; auth=$nonce; connected=true"
   local failed="\* File Name   : logon.htm"
-  if curl -d "$pstr" -b "$cookies" $submit 2>/dev/null \
+  if curl -d "$pstr" -b "$cookies" "$submit" 2>/dev/null \
       | grep -q "$failed"; then
     return 1
   else
@@ -26,19 +33,14 @@ try_login () {
 
 get_nonce () {
   local home="http://$BLB_IP/webconf/openappliance_index.html"
-  curl $home 2>/dev/null | grep 'input.*name="nonce"' \
+  curl "$home" 2>/dev/null | grep 'input.*name="nonce"' \
     | sed 's/.*value="\([^"]\+\)".*/\1/'
 }
-
-# make sure token file exists, is empty, and readable only by root
-sudo sh -c "echo -n >$BLB_TOKEN"
-sudo chmod 600 $BLB_TOKEN
-sudo chown root:root $BLB_TOKEN
 
 nonce=$(get_nonce)
 if try_login "$nonce"; then
   # login succeeded
-  sudo sh -c "echo -n \"$nonce\" >>$BLB_TOKEN"
+  echo -n "$nonce"
   exit 0
 fi
 

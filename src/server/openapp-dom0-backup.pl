@@ -109,6 +109,11 @@ sub do_backup {
         $err = 'Cannot backup OA config file';
         last;
       }
+      if (!cp_p('/etc/passwd', "$tdir/files/passwd")
+          || !cp_p('/etc/shadow', "$tdir/files/shadow")) {
+        $err = 'Cannot backup OA local accounts';
+        last;
+      }
       if (!stop_ldap()) {
         $err = 'Failed to stop OA LDAP database';
         last;
@@ -156,22 +161,24 @@ sub do_restore {
   chmod 0750, $tdir;
   my $err = undef;
   while (1) {
-    if (!cp_p("$file", "$tdir/$file")) {
-      $err = "Cannot copy $file";
-      last;
-    }
-    system("tar -xf \"$tdir/$file\" -C \"$tdir/\"");
+    system("tar -xf \"$file\" -C \"$tdir/\"");
     if ($? >> 8) {
       $err = 'Cannot extract OA backup';
       last;
     }
     if (! -r "$tdir/files/$OA_CFG_FILE"
-        || ! -r "$tdir/files/$OA_LDAP_DUMP_FILE") {
+        || ! -r "$tdir/files/$OA_LDAP_DUMP_FILE"
+        || ! -r "$tdir/files/passwd" || ! -r "$tdir/files/shadow") {
       $err = 'Incomplete OA backup';
       last;
     }
     if (!cp_p("$tdir/files/$OA_CFG_FILE", "$OA_CFG_PATH")) {
       $err = "Cannot copy OA config file";
+      last;
+    }
+    if (!cp_p("$tdir/files/passwd", '/etc/passwd')
+        || !cp_p("$tdir/files/shadow", '/etc/shadow')) {
+      $err = 'Cannot restore OA local accounts';
       last;
     }
     my @cmds = ( 'load' );

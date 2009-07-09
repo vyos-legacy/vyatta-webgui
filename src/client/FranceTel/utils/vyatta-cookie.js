@@ -92,15 +92,22 @@ var g_cookie =
       var keys = str.split(';');
       for (var i = 0; i < keys.length; i++) 
       {
+        var avp = keys[i].match(new RegExp('^\\s*([^\\s]+)=([^\\s]*)\\s*$'));	 
+		/* 	
         if(keys[i].indexOf(g_consObj.V_COOKIES_LANG) >= 0)
             continue;
 			
         if(keys[i].indexOf(g_consObj.V_COOKIES_BLB) >= 0)
             continue;			
-
-        var avp = keys[i].match(new RegExp('^\\s*([^\\s]+)=([^\\s]*)\\s*$'));
+        */         
         if (avp != undefined && avp[1] != undefined)
         {
+			if (avp[1].indexOf(g_consObj.V_COOKIES_LANG) >= 0) {
+				continue;
+			}
+            if (avp[1].indexOf(g_consObj.V_COOKIES_BLB) >= 0) {
+				continue;
+			}
             this.f_set_raw(avp[1], '', -1);
         }
       }
@@ -111,8 +118,11 @@ var g_cookie =
 		var a = [g_consObj.V_COOKIES_USER_NAME, g_consObj.V_COOKIES_USER_ID,
 		         g_consObj.V_COOKIES_ISLOGIN];		
 		for (var i =0; i < a.length; i++) {
-			if (key.indexOf(a[i]) >= 0) {
-				return true;
+            var avp = keys[i].match(new RegExp('^\\s*([^\\s]+)=([^\\s]*)\\s*$'));	 
+			if (avp != undefined && avp[1] != undefined) {
+				if (avp[1].indexOf(a[i]) >= 0) {
+					return true;
+				}
 			}
 		}
 		return false;		 

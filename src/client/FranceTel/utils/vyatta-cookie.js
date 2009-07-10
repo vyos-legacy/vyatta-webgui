@@ -32,7 +32,7 @@ var g_cookie =
     {
 //        opera.postError('f_set_raw cookie: name=' + pName + ' value=' + pValue);
 				
-        var expires = g_consObj.V_NOT_FOUND;
+        var expires = '';
 
         if(pExpires != undefined)
         {
@@ -118,7 +118,7 @@ var g_cookie =
 		var a = [g_consObj.V_COOKIES_USER_NAME, g_consObj.V_COOKIES_USER_ID,
 		         g_consObj.V_COOKIES_ISLOGIN];		
 		for (var i =0; i < a.length; i++) {
-            var avp = keys[i].match(new RegExp('^\\s*([^\\s]+)=([^\\s]*)\\s*$'));	 
+            var avp = key.match(new RegExp('^\\s*([^\\s]+)=([^\\s]*)\\s*$'));	 
 			if (avp != undefined && avp[1] != undefined) {
 				if (avp[1].indexOf(a[i]) >= 0) {
 					return true;

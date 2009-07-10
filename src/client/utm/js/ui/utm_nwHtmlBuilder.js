@@ -43,9 +43,9 @@ function UTM_htmlBuilder()
 	
 	var smLanMenu = [
 	    { 'key': 'portconf_l2', 'desc': g_lang.m_menu_des_port_config, 'value': g_lang.m_menu_port_config},
-	    { 'key': 'lan_l2', 'desc': g_lang.m_menu_lan + ' ' + g_lang.m_portconf_interface, 
+	    { 'key': 'lan_l2', 'desc': g_lang.m_menu_des_lan + ' ' + g_lang.m_portconf_interface, 
 		                   'value': g_lang.m_menu_lan + ' ' + g_lang.m_portconf_interface},
-	    { 'key': 'lan2_l2', 'desc': g_lang.m_menu_lan2 + ' ' + g_lang.m_portconf_interface, 
+	    { 'key': 'lan2_l2', 'desc': g_lang.m_menu_des_lan2 + ' ' + g_lang.m_portconf_interface, 
 		                    'value': g_lang.m_menu_lan2 + ' ' + g_lang.m_portconf_interface},
 	    { 'key': 'dmz_l2', 'desc': g_lang.m_menu_dmz + ' ' + g_lang.m_portconf_interface, 
 		                   'value': g_lang.m_menu_dmz + ' ' + g_lang.m_portconf_interface}	

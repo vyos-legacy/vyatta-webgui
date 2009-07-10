@@ -118,9 +118,9 @@ function UTM_confUrlEzByList(name, callback, busLayer)
         this.m_rowIdArray.push(rowId);
 								
         var addr = this.f_renderTextField(prefix + 'addr_' + this.m_cnt, '', '', this.m_textWidth, events);
+		var a = [{id: prefix + 'cb_hidden_' + this.m_cnt, value: 'checked'}];			
         var cb = this.f_renderSmartCheckbox('yes', prefix + 'cb_' + this.m_cnt, 
-		                                    thisObj.m_eventCbFunction + "('" + this.m_cbGroupId +"')" , '',
-		                                    prefix + 'cb_hidden_' + this.m_cnt, 'yes');
+		                                    thisObj.m_eventCbFunction + "('" + this.m_cbGroupId +"')" , '', false, a);
         var del = this.f_renderButton('delete', true, thisObj.m_eventCbFunction + "('" +
             this.m_btnDeleteId + "','" + rowId +
         "')", 'delete row');
@@ -374,17 +374,18 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 				if (!a[i].m_status) {
 					enable = 'no';
 				}
-				var hiddenEnable = 'yes';
+				var hiddenEnable = 'checked';
 				if (!a[i].m_cbHidden) {
-					hiddenEnable = 'no';
+					hiddenEnable = '';
 				}
 
                 var events = ["","f_confUrlEzByListKeydown('" + prefix+ 'addr_' + this.m_cnt + "')"];
 
 				var addr = this.f_renderTextField(prefix + 'addr_' + this.m_cnt, a[i].m_value, '', this.m_textWidth, events, a[i].m_readonly);
+		        var cbHiddenArray = [{id: prefix + 'cb_hidden_' + this.m_cnt, value: hiddenEnable}];			
+				
 				var cb = this.f_renderSmartCheckbox(enable, prefix + 'cb_' + this.m_cnt,  
-				                                    thisObj.m_eventCbFunction + "('" + this.m_cbGroupId +"')", '',
-				                                    prefix + 'cb_hidden_' + this.m_cnt, hiddenEnable);
+				                                    thisObj.m_eventCbFunction + "('" + this.m_cbGroupId +"')", '', false, cbHiddenArray);
 				var del = this.f_renderButton('delete', true, this.m_eventCbFunction + "('" +
 				this.m_btnDeleteId +
 				"','" +

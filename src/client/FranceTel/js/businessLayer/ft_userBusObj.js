@@ -139,10 +139,22 @@ function FT_userBusObj(busObj)
      */
     this.f_logout = function(cb)
     {
-        thisObj.m_sid = undefined;
         // need to remove all cookies
-        g_cookie.f_remove_all();
-        g_utils.f_gotoHomePage();
+		/*
+        thisObj.m_sid = undefined;		
+        g_cookie.f_remove_all();			
+		g_utils.f_gotoHomePage();
+        */
+				
+		thisObj.m_busObj.f_discard();
+        thisObj.m_sid = undefined;		
+		var f = function()
+		{
+            g_cookie.f_remove_all();			
+			g_utils.f_gotoHomePage();
+		};
+		window.setTimeout(f,500);
+		
     }
 
     /**
@@ -152,10 +164,10 @@ function FT_userBusObj(busObj)
      */
     this.f_timeout = function(cb)
     {
-        thisObj.m_sid = undefined;
         // need to remove all cookies
-        g_cookie.f_remove_session();
-        g_utils.f_gotoHomePage();
+        thisObj.m_sid = undefined;	
+        g_cookie.f_remove_session();			
+		g_utils.f_gotoHomePage();		
     }
 
     /**

@@ -149,13 +149,16 @@ function UTM_confBaseObjExt(name, callback, busLayer)
      * @param elId - this element id
      * @param cb = callback
      * @param tooltip - tooltip for this checkbox
+     * @param cbHiddenArray: an array of objects having the value, and id properties.
+     *            value: has either 'checked' or ''
+     *            id: the id to be assigned to the hidden checkbox.
      */
-    this.f_renderSmartCheckbox = function(val, elId, cb, tooltip, hiddenElId, hiddenElVal, readonly)
+    //this.f_renderSmartCheckbox = function(val, elId, cb, tooltip, hiddenElId, hiddenElVal, readonly)
+    this.f_renderSmartCheckbox = function(val, elId, cb, tooltip, readonly, cbHiddenArray)
     {
 		var ro = '';
         var checked = val == 'yes' ? 'checked' : '';
         tooltip = tooltip == undefined ? "" : tooltip;
-        var checkedHidden = hiddenElVal == 'yes' ? 'checked' : '';
 		
 		if (readonly != null) {
 			if (readonly==true) {
@@ -163,13 +166,44 @@ function UTM_confBaseObjExt(name, callback, busLayer)
 			}
 		} 		
 		
-        return '<input id="' + elId + '" type="checkbox" ' + checked +
+        var html = '<input id="' + elId + '" type="checkbox" ' + checked +
         ' title="' +
         tooltip +
         '" onclick="' +
         cb +
-        '"' + ro +'/><input style="display:none" id="' + hiddenElId + '" type="checkbox" ' + checkedHidden + '/>';
+        '"' + ro +'/>';
+		for (var i=0; i < cbHiddenArray.length; i++) {
+			html += '<input style="display:none" id="' + cbHiddenArray[i].id + '" type="checkbox" ' + cbHiddenArray[i].value + '/>';
+		}
+		
+		return html;
     }
+	
+    /**
+     * @param cbArray: an array of object, that has value, and id properties.
+     *      value: has either checked or ''.
+     *      id: the id to be assigned to checkbox.
+     *      hidden: true or false
+     *      cb: callback
+     *      tooltip: tooltip
+     *      readonly: true or false
+     */
+    this.f_renderCheckboxArray = function(cbArray)
+    {
+		var html = '';
+		for (var i=0; i < cbArray.length; i++) {
+			if (cbArray[i].hidden) {
+				html += '<input style="display:none" id="' + cbArray[i].id + '" type="checkbox" ' + cbArray[i].value + '/>';
+			} else {
+				var tooltip = (cbArray[i].tooltip==undefined)? "" : cbArray[i].tooltip;
+				var readonly = (cbArray[i].readonly!=undefined) && (cbArray[i].readonly!=null) && (cbArray[i].readonly==true);
+				var ro = (readonly==true)? ' disabled style="color:#CCC;"' : '';
+				html += '<input id="' + cbArray[i].id + '" type="checkbox" ' + cbArray[i].value + ' title="' + tooltip + 
+				        '" onclick="' + cbArray[i].cb + '" ' + ro + '/>';
+			}
+		}
+        return html;
+    }	
 	
 	this.f_createHtmlDiv = function(html, width)
     {

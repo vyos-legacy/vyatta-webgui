@@ -1,3 +1,24 @@
+vyatta-webgui (0.2.14+fxdU+81) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Make the id cookie to be session only cookie
+  * 1. Revert previous checkin, making the cookie session only.  It
+    doesn't work well on IE.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 10 Jul 2009 14:38:02 -0700
+
+vyatta-webgui (0.2.14+fxdU+80) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * customize firewall screen :
+
+  [ Loi Vo ]
+  * 1. Add premiliary screen layout for LAN interface screen.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 10 Jul 2009 00:47:56 +0000
+
 vyatta-webgui (0.2.14+fxdU+79) unstable; urgency=low
 
   [ Kevin Choi ]

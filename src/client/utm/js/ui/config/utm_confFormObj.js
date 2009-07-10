@@ -372,7 +372,7 @@ function UTM_confFormObj(name, callback, busLayer)
         }
         var html = '<form id="' + this.m_config.id + '_form" onsubmit="return false;" class="v_form" border="0" style="width:' +
         this.m_config.width +
-        'px;"><br/><br/>';
+        'px;">';
 		
 		if (!this.f_checkCondition(this.m_config.nofieldset)) {
 			if (g_xbObj.m_isIE == true) {
@@ -380,10 +380,10 @@ function UTM_confFormObj(name, callback, busLayer)
 			} else {
 				html += '<div style="width:' + this.m_config.width + 'px; border: 1px solid #CCC; -moz-border-radius: 5px; -webkit-border-radius: 5px;">';
 			}
-			html += '<div style="padding:10px 5px 10px 5px;">';
+			html += '<div style="padding:0px 5px 5px 5px;">';
 		}
 		
-        html += '<table border="0" style="width:' + (this.m_config.width-10) + 'px; padding: 10px 5px 10px 5px;">';
+        html += '<table border="0" style="width:' + (this.m_config.width-10) + 'px; padding: 5px 5px 5px 5px;">';
         
         for (var i = 0; i < this.m_config.items.length; i++) {
 			if (this.m_config.items[i].v_type == 'string') {
@@ -420,7 +420,7 @@ function UTM_confFormObj(name, callback, busLayer)
         }
         html += this.f_createButtons();
         html += '</form>';
-        html = html + '<br/><br/>';
+        html = html + '</br>';
         
         return html;
     }

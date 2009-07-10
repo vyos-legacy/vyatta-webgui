@@ -259,6 +259,9 @@ function UTM_configPanel()
               thisObj.m_selectObj.f_init();
               return thisObj.m_selectObj.f_getConfigurationPage();		  
 		  case VYA.UTM_CONST.DOM_3_NAV_SUB_LAN_ID:
+              thisObj.m_selectObj = new UTM_confNwLAN('UTM_confNwLAN', cb, g_busObj);
+              thisObj.m_selectObj.f_setId(id);
+              return thisObj.m_selectObj.f_getConfigurationPage();			  
 		  case VYA.UTM_CONST.DOM_3_NAV_SUB_LAN2_ID:
           case VYA.UTM_CONST.DOM_3_NAV_SUB_DMZ_ID:		  
               thisObj.m_selectObj = new UTM_confEmptyComponent();

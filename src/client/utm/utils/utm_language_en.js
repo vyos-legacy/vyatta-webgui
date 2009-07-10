@@ -53,7 +53,9 @@ var g_lang =
     // Network configuration menu
     m_menu_lan_multi : "LAN / multi LAN",
 	m_menu_lan : "LAN",
+	m_menu_des_lan : "LAN/IP parameters",
 	m_menu_lan2: "LAN2",
+	m_menu_des_lan2 : "LAN2/IP parameters",
 	m_menu_dmz : "DMZ",
 	m_menu_nat_pat: "NAT/PAT",
 	m_menu_csc_router: "cascaded router",
@@ -75,6 +77,7 @@ var g_lang =
     m_username : 'user name',
     m_status : 'status',
     m_ipAddr : 'IP address',
+	m_macAddr: 'MAC address',
     m_invalidIpAddr : "Invalid IP address",
     m_ipaddrTitle : "IP address validation",
     m_underConstruction : 'Under Construction',
@@ -319,7 +322,25 @@ var g_lang =
 	m_portconf_attach: "port attachment",
 	m_portconf_interface: "interface",
 	m_portconf_lan_lan2_no_disabled: "Port E1 (LAN) and Port E3 (LAN2) cannot be simultaneously disabled",
+	
+    ///////////////////////////////////////////////////////////////////
+    // LAN config
+    m_lanitf_title : "LAN/IP parameters",	
+	m_lanitf_ip : "LAN IP address",
+	m_lanitf_mask: "IP subnet mask",
+	m_landhcp_title: "DHCP parameters",
+	m_landhcp_enable : "Enable DHCP server",
+	m_landhcp_range_start : "DHCP range start",
+	m_landhcp_range_end : "DHCP range end",
+	m_landhcp_dns_mode : "DNS mode",
+	m_landhcp_dns_pri : "Primary DNS server",
+	m_landhcp_dns_sec : "Secondary DNS server",
+	m_landhcp_dns_static : "Static",
+	m_landhcp_dns_dynamic : "Dynamic",
+	m_landhcp_dns_none : "No DNS",
+	m_lanip_reserved_ip : "Reserved IP addresses",
 
+	
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images
     m_imageDir : 'images/en/',

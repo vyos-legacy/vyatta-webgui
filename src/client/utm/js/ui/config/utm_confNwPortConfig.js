@@ -195,15 +195,16 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 						  '', rId, '', true					  
 			          );
 			var en = (portList[i].m_enable=='true')? 'yes' : 'no';
+			var enHidden = (portList[i].m_enable=='true')? 'checked' : '';
 			var cbId = thisObj.m_prefix + 'cb_' + portList[i].m_num;
 			var ro = false;
 			if (portList[i].m_group.toLowerCase() == 'wan') {
 				ro = true;
 			}
+			var cbHiddenArray = [ {id: cbId + '_hidden', value: enHidden} ];
 			var enable = thisObj.f_renderSmartCheckbox(en, 
 						  cbId,
-						  "f_confPortConfigEventCallback('" + cbId + "')" , '', 
-						  cbId + '_hidden', en, ro						  
+						  "f_confPortConfigEventCallback('" + cbId + "')" , '', ro, cbHiddenArray						  
 			          );				
 		    var data = [pnum, pname, lan, lan2, dmz, wan, enable];
 			var bodyDiv = thisObj.f_createGridRow(thisObj.m_hdcolumns, data, 28);

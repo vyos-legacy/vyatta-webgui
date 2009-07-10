@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+85) unstable; urgency=low
+
+  * reset hash
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 10 Jul 2009 16:32:31 -0700
+
 vyatta-webgui (0.2+fxd0+84) unstable; urgency=low
 
   [ Loi Vo ]

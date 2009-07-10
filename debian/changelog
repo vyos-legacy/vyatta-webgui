@@ -1,3 +1,20 @@
+vyatta-webgui (0.2+fxd0+87) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * login in screen : added a waiting cursor indicator.
+
+  [ Loi Vo ]
+  * 1. Rework on session only cookies to fix on an IE issue seen
+    previously
+  * 1. Calling mainFrame f_show function
+
+  [ An-Cheng Huang ]
+  * rework blb association configuration
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 10 Jul 2009 13:01:53 +0000
+
 vyatta-webgui (0.2+fxd0+86) unstable; urgency=low
 
   * improve login failure detection

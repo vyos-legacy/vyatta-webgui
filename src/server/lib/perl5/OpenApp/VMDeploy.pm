@@ -390,7 +390,7 @@ EOF
 }
 
 # notify lighttpd to reconfigure reverse proxy
-sub _notifyWuiProcess {
+sub notifyWuiProcess {
   my $LIGHTTPD_PID_FILE = '/var/run/lighttpd.pid';
   return if (! -r "$LIGHTTPD_PID_FILE");
   my $fd = undef;
@@ -398,13 +398,13 @@ sub _notifyWuiProcess {
   my $pid = <$fd>;
   close($fd);
   chomp($pid);
-  kill('USR2', $pid);
+  system("sudo kill -USR2 '$pid'");
 }
 
 # WUI-related postinst tasks
 sub _postinstWui {
   # notify lighttpd to reconfigure reverse proxy
-  _notifyWuiProcess();
+  notifyWuiProcess();
 
 #  _configureDomUAccess();
  

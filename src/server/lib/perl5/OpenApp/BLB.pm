@@ -29,7 +29,7 @@ sub getBLBIP {
 
 # return (blb_token, err)
 sub authBLB {
-  my ($user, $pass) = (@_);
+  my ($user, $pass, $md5) = (@_);
   my ($blb_ip, $err) = getBLBIP();
   return (undef, $err) if (defined($err));
   my ($fh, $fname) = mkstemp('/tmp/blb-pm.XXXXXX');
@@ -37,7 +37,7 @@ sub authBLB {
   chmod(0600, $fname);
   print $fh "$user\n$pass\n$blb_ip\n";
   close($fh);
-  my $blb_token = `/opt/vyatta/sbin/blb-login '$fname'`;
+  my $blb_token = `/opt/vyatta/sbin/blb-login $md5 '$fname'`;
   my $ret = ($? >> 8);
   unlink($fname);
   return (undef, 'BLB login failed') if ($ret != 0);

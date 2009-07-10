@@ -9,6 +9,7 @@ use OpenApp::LdapUser;
 use OpenApp::Conf;
 use OpenApp::BLB;
 use Vyatta::Config;
+use OpenApp::VMDeploy;
 
 # authenticated user
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
@@ -93,6 +94,9 @@ sub do_standalone {
     print "BLB configuration failed: $err\n";
     exit 1;
   }
+
+  # notify lighttpd to reconfigure reverse proxy
+  OpenApp::VMDeploy::notifyWuiProcess();
 }
   
 sub do_blb {
@@ -143,6 +147,9 @@ sub do_blb {
     print "Failed to save BLB configuration: $err\n";
     exit 1;
   }
+
+  # notify lighttpd to reconfigure reverse proxy
+  OpenApp::VMDeploy::notifyWuiProcess();
 }
 
 exit 1;

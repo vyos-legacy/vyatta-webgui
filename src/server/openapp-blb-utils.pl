@@ -6,15 +6,16 @@ use lib '/opt/vyatta/share/perl5';
 use OpenApp::LdapUser;
 use OpenApp::BLB;
 
-my ($pexists, $user, $setp, $authb, $issa, $bset)
-  = (undef, undef, undef, undef, undef, undef);
+my ($pexists, $user, $setp, $authb, $issa, $bset, $authbmd5)
+  = (undef, undef, undef, undef, undef, undef, undef);
 GetOptions(
   'pass-exists' => \$pexists,
   'user=s' => \$user,
   'set-pass' => \$setp,
   'auth-blb=s' => \$authb,
   'is-standalone' => \$issa,
-  'blb-setting' => \$bset
+  'blb-setting' => \$bset,
+  'auth-blb-md5=s' => \$authbmd5
 );
 
 if (defined($pexists)) {
@@ -39,6 +40,15 @@ if (defined($authb)) {
     exit 1;
   }
   do_auth_blb($authb);
+}
+
+if (defined($authbmd5)) {
+  my $mfile = "/opt/vyatta/config/tmp/.vyattamodify_$authbmd5";
+  if (! -r "$mfile") {
+    print "Must specify a valid ID for auth-blb-md5\n";
+    exit 1;
+  }
+  do_auth_blb_md5($mfile);
 }
 
 if (defined($issa)) {
@@ -97,7 +107,22 @@ sub do_auth_blb {
   close($fd);
   chomp($user);
   chomp($pass);
-  my ($blb_token, $err) = OpenApp::BLB::authBLB($user, $pass);
+  my ($blb_token, $err) = OpenApp::BLB::authBLB($user, $pass, '');
+  exit 1 if (defined($err));
+  print "$blb_token";
+  exit 0;
+}
+
+sub do_auth_blb_md5 {
+  my ($file) = @_;
+  my $fd;
+  exit 1 if (!open($fd, '<', "$file"));
+  my $line = <$fd>;
+  close($fd);
+  chomp($line);
+  exit 1 if (!($line =~ /^([^,]+),\d,([^,]+)$/));
+  my ($user, $pass) = ($1, $2);
+  my ($blb_token, $err) = OpenApp::BLB::authBLB($user, $pass, '--md5');
   exit 1 if (defined($err));
   print "$blb_token";
   exit 0;

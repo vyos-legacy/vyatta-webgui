@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+84) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Sending discard command when user logout
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 10 Jul 2009 15:06:10 -0700
+
 vyatta-webgui (0.2+fxd0+83) unstable; urgency=low
 
   [ An-Cheng Huang ]

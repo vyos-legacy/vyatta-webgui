@@ -1,3 +1,39 @@
+vyatta-webgui (0.2+fxd0+86) unstable; urgency=low
+
+  * improve login failure detection
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 10 Jul 2009 16:58:04 -0700
+
+vyatta-webgui (0.2+fxd0+85) unstable; urgency=low
+
+  * reset hash
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 10 Jul 2009 16:32:31 -0700
+
+vyatta-webgui (0.2+fxd0+84) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Sending discard command when user logout
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 10 Jul 2009 15:06:10 -0700
+
+vyatta-webgui (0.2+fxd0+83) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * add more blb utils
+  * allow blb auth with password md5
+  * reconfigure reverse proxy when blb setting changes
+  * add util functions for md5 blb auth
+
+  [ Loi Vo ]
+  * 1. Make id cookie to be session only cookie
+  * 1. Revert previous checkin for session only cookie.  It doesn't work
+    well on IE.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 09 Jul 2009 19:50:32 -0700
+
 vyatta-webgui (0.2+fxd0+82) unstable; urgency=low
 
   * * added url to launch BLB from main tab

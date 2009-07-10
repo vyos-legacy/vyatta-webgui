@@ -129,7 +129,7 @@ function FT_mainPanel(){
         thisObj.m_3navSelectedItem = id;
         thisObj.m_3navMenu.f_show(id);
 		//alert('mp.f_selectItem: id' + id + 'defaultSelection: ' + thisObj.f_getDefaultSelection(id));
-        thisObj.m_3navMenu.f_selectItem(subId);		
+        thisObj.m_3navMenu.f_selectItem(subId);	
 	} 
 	
     this.f_3navSelectItemCb = function(id, desc) {

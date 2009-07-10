@@ -233,7 +233,41 @@ function FT_businessLayer()
 
         return this.f_sendRequest(xmlstr, this.m_userObj.f_respondRequestCallback);
     }
+	
+	
+	this.f_discard = function()
+	{
+        var sid = g_utils.f_getUserLoginedID();		
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                     "<statement mode='conf'>discard" + "</statement></command>";
+        var f = function(resp, cmdSent, noUICallback) {
+            var response = thisObj.f_getRequestResponse(thisObj.m_request);
 
+            if (response == null) {
+				return;
+			}
+
+            if(response.f_isError != null)
+            {
+                return;
+            }
+            else
+            {
+                var sid = response.getElementsByTagName('id');
+                if(sid != undefined && sid[0] != undefined)
+                    thisObj.m_sid = sid[0].firstChild.nodeValue;
+
+                var err = response.getElementsByTagName('error');
+                if(err != null && err[0] != null)
+                {
+                    return;
+                }
+            }			
+		}; 
+        return this.f_sendRequest(xmlstr, f);		
+	}
+    
+	 
     /**
      *
      */

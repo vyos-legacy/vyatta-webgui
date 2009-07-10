@@ -153,6 +153,7 @@ sub _setupMeta {
   my @dnames = <$fd>;
   close($fd);
   chomp($data);
+  $self->{_vmDnameLang} = {};
   foreach (@dnames) {
     next if (!/^displayName\.([^:]+): +(.+)$/);
     $self->{_vmDnameLang}->{$1} = $2;

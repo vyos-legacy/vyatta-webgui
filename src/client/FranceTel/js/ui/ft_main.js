@@ -20,15 +20,7 @@ g_xbObj.f_xbOnDomReady(function(){
         g_mainFrameObj.f_setBannerImage();
         g_mainFrameObj.f_login(loginDiv);
     } else {
-        g_mainFrameObj.f_hideHeader(false);
-        g_mainFrameObj.f_hideLogin(true);
-        g_busObj.f_getVMSummaryDataFromServer(function(evt){
-            if (evt.f_isError()) {
-                alert('Error: ' + evt.m_errMsg);
-            } else {
-                g_mainFrameObj.f_initComponent(evt.m_value);
-            }
-        });
+        g_mainFrameObj.f_show();
     }
 });
 

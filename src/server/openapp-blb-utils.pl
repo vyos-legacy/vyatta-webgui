@@ -6,14 +6,16 @@ use lib '/opt/vyatta/share/perl5';
 use OpenApp::LdapUser;
 use OpenApp::BLB;
 
-my ($pexists, $user, $setp, $authb, $issa)
-  = (undef, undef, undef, undef, undef);
+my ($pexists, $user, $setp, $authb, $issa, $bset, $authbmd5)
+  = (undef, undef, undef, undef, undef, undef, undef);
 GetOptions(
   'pass-exists' => \$pexists,
   'user=s' => \$user,
   'set-pass' => \$setp,
   'auth-blb=s' => \$authb,
-  'is-standalone' => \$issa
+  'is-standalone' => \$issa,
+  'blb-setting' => \$bset,
+  'auth-blb-md5=s' => \$authbmd5
 );
 
 if (defined($pexists)) {
@@ -40,15 +42,38 @@ if (defined($authb)) {
   do_auth_blb($authb);
 }
 
+if (defined($authbmd5)) {
+  my $mfile = "/opt/vyatta/config/tmp/.vyattamodify_$authbmd5";
+  if (! -r "$mfile") {
+    print "Must specify a valid ID for auth-blb-md5\n";
+    exit 1;
+  }
+  do_auth_blb_md5($mfile);
+}
+
 if (defined($issa)) {
-  # NOTE cannot use BLB::isStandalone() since we don't have a session
-  my $cfg = new Vyatta::Config;
-  $cfg->{_active_dir_base} = '/opt/vyatta/config/active';
-  exit 0 if (!$cfg->existsOrig("$OpenApp::BLB::OA_BLB_CONF_ROOT"));
-  exit 1;
+  exit (isStandalone() ? 0 : 1);
+}
+
+if (defined($bset)) {
+  if (isStandalone()) {
+    print "sa  ";
+    exit 0;
+  }
+  my ($blb_ip, $err) = OpenApp::BLB::getBLBIP();
+  exit 1 if (defined($err));
+  print "blb $blb_ip";
+  exit 0;
 }
 
 exit 1;
+
+sub isStandalone {
+  # NOTE cannot use BLB::isStandalone() since we don't have a session
+  my $cfg = new Vyatta::Config;
+  $cfg->{_active_dir_base} = '/opt/vyatta/config/active';
+  return (!$cfg->existsOrig("$OpenApp::BLB::OA_BLB_CONF_ROOT"));
+}
 
 sub checkPasswordExists {
   my ($user) = @_;
@@ -82,7 +107,22 @@ sub do_auth_blb {
   close($fd);
   chomp($user);
   chomp($pass);
-  my ($blb_token, $err) = OpenApp::BLB::authBLB($user, $pass);
+  my ($blb_token, $err) = OpenApp::BLB::authBLB($user, $pass, '');
+  exit 1 if (defined($err));
+  print "$blb_token";
+  exit 0;
+}
+
+sub do_auth_blb_md5 {
+  my ($file) = @_;
+  my $fd;
+  exit 1 if (!open($fd, '<', "$file"));
+  my $line = <$fd>;
+  close($fd);
+  chomp($line);
+  exit 1 if (!($line =~ /^([^,]+),\d,([^,]+)$/));
+  my ($user, $pass) = ($1, $2);
+  my ($blb_token, $err) = OpenApp::BLB::authBLB($user, $pass, '--md5');
   exit 1 if (defined($err));
   print "$blb_token";
   exit 0;

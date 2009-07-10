@@ -93,6 +93,7 @@ function f_submit()
 
     var cb = function(event)
     {
+        g_utils.f_cursorDefault();
         if(event.f_isError()) {
 			if (event.m_errCode == 8) {
 				//this is the case which requires the user to change his/her password at login.
@@ -114,5 +115,6 @@ function f_submit()
         }
     }
 
+    g_utils.f_cursorWait();
     g_busObj.f_userLoginRequest(un, pw, cb);
 }

@@ -87,7 +87,7 @@ var g_utils =
 
     f_saveUserLoginId: function(id)
     {
-        g_cookie.f_set(g_consObj.V_COOKIES_USER_ID, id, '' /*, g_cookie.m_sessionExpire*/);
+        g_cookie.f_set(g_consObj.V_COOKIES_USER_ID, id, g_cookie.m_sessionExpire);
     },
 
     f_saveLanguage: function(lang)

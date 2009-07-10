@@ -32,13 +32,15 @@ try_login () {
   local submit="http://$BLB_IP/webconf/WCFContainer.html?encoded=$USER"
   # order of cookies matters!
   local cookies="language=fr; auth=$nonce; connected=true"
-  local failed="\* File Name   : logon.htm"
-  if curl -d "$pstr" -b "$cookies" "$submit" 2>/dev/null \
-      | grep -q "$failed"; then
-    return 1
-  else
-    return 0
+  local succeeded='No configuration specified '
+  local tfile=/tmp/blb-tmp.$$
+  curl -d "$pstr" -b "$cookies" "$submit" 2>/dev/null >$tfile
+  local ret=1
+  if grep -q "$succeeded" $tfile; then
+    ret=0
   fi
+  rm -f $tfile
+  return $ret
 }
 
 get_nonce () {

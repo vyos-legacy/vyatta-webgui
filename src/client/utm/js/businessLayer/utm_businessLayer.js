@@ -459,6 +459,26 @@ function UTM_businessLayer()
         return m_nwObj;
     }
 
+    this.f_getNatPatConfigurations = function(rec, guicb)
+    {
+        this.f_getNwObject.f_getNatPath(rec, guicb);
+    }
+
+    this.f_setNatPatNamePairValue = function(rec, name, value, guicb)
+    {
+        this.f_setNatPatNamePairValue(rec, name, value, guicb);
+    }
+
+    this.f_saveNatPatConfiguration = function(guicb)
+    {
+        this.f_getNwObject.f_saveNatPat(guicb);
+    }
+
+    this.f_cancelNatPatConfiguration = function(guicb)
+    {
+        this.f_getNwObject.f_cancelNatPat(guicb);
+    }
+
     /**
      *
      */

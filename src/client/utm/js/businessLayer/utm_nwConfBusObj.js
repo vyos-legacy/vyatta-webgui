@@ -9,12 +9,10 @@
 /**
  * nat/pat data record
  */
-function UTM_nwNatPatRecord(ruleNo, zonePair)
+function UTM_nwNatPatRecord(ruleNo)
 {
     var thisObj = this;
     this.m_ruleNo = ruleNo;   // data type int
-    this.m_zonePair = zonePair;
-    this.m_direction = zonePair;
     this.m_appService = " ";
     this.m_protocol = " ";
     this.m_internIpAddr = "0.0.0.0";
@@ -42,11 +40,9 @@ function UTM_nwDNSRecord(mode, primary, secondary)
 /**
  * routin data record
  */
-function UTM_nwRoutingRecord(ruleNo, zonePair)
+function UTM_nwRoutingRecord()
 {
     var thisObj = this;
-    this.m_ruleNo = ruleNo;   // data type int
-    this.m_zonePair = zonePair;
     this.m_destIpAddr = "";
     this.m_destIpMask = "";
     this.m_gwOrInterface = "";
@@ -116,6 +112,7 @@ function UTM_nwConfigBusObj(busObj)
                         "69", "995", "143", "119", "199", "161-162", "23", "22",
                         "1701", "32769-65535", "500, 4500", "500, 4500",
                         "1720", "1718, 1719", "5060", "5060", "1494", "1494", " ", " "];
+    this.m_protocols = ["tcp", "udp", "both"];
 
     /**
      * A callback function for request.
@@ -139,9 +136,9 @@ function UTM_nwConfigBusObj(busObj)
             if(err != null && err[0] != null)
             {
                 if(thisObj.m_lastCmdSent.indexOf(
-                    '<handler>firewall-security-level get') > 0)
+                    'static-route get') > 0)
                 {
-                    var fr = thisObj.f_parseFirewallSecurityLevel(err);
+                    var fr = thisObj.f_parseRouteList(err);
                     evt = new UTM_eventObj(0, fr, '');
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
@@ -165,141 +162,49 @@ function UTM_nwConfigBusObj(busObj)
 
     /**
      */
-    this.f_parseFirewallSecurityCustomize = function(response)
+    this.f_parseRouteList = function(response)
     {
         var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
-        var fws = new Array();
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'static-route');
+        var recs = new Array();
 
-        if(nodes != null)
+        for(var i=0; nodes != null && i<nodes.length; i++)
         {
-            for(var i=0; i<nodes.length; i++)
-            {
-                var n = nodes[i];
-                if(n.nodeName == "customize-firewall")
-                {
-                    var vals = n.firstChild.nodeValue.split(":");
-                    var zp = this.f_getValueFromNameValuePair("zonepair", vals[0]);
-                    for(var j=1; j<vals.length; j++)
-                    {
-                        var rNo = this.f_getValueFromNameValuePair("rulenum", vals[j]);
+            var n = nodes[i];
 
-                        if(rNo.length == 0) break;
-
-                        var x = j-1;
-                        fws[x] = new UTM_fireRecord();
-
-                        fws[x].m_zonePair = zp;
-                        fws[x].m_direction = zp;
-                        fws[x].m_ruleNo = rNo;
-                        fws[x].m_protocol = this.f_getValueFromNameValuePair("protocol", vals[j]);
-                        this.f_setInternAddress(fws[x],
-                            this.f_getValueFromNameValuePair("saddr", vals[j]));
-                        fws[x].m_srcPort = this.f_getValueFromNameValuePair("sport", vals[j]);
-                        this.f_setDestinationAddress(fws[x],
-                            this.f_getValueFromNameValuePair("daddr", vals[j]));
-                        fws[x].m_destPort = this.f_getValueFromNameValuePair("dport", vals[j]);
-                        fws[x].m_action = this.f_getValueFromNameValuePair("action", vals[j]);
-                        fws[x].m_log = this.f_getValueFromNameValuePair("log", vals[j]);
-                        fws[x].m_enabled = this.f_getValueFromNameValuePair("enable", vals[j]);
-
-                        this.f_mapAppServiceFromPort(fws[x]);
-                    }
-                }
-            }
+            if(n.nodeName == "route" && n.firstChild != null)
+                recs.push(this.f_parseRouteNode(n));
         }
 
-        return fws;
+        return recs;
     };
 
-    this.f_mapAppServiceFromPort = function(fireRec)
+    /**
+     * @param node = element node
+     * @return UTM_nwRoutingRecord object
+     */
+    this.f_parseRouteNode = function(node)
     {
-        fireRec.m_appService = "Others";
-        var port = fireRec.m_destPort.split(",");
-        var proto = fireRec.m_protocol;
-        var s = thisObj.m_services;
-        var p = thisObj.m_ports;
+        var rec = new UTM_nwRoutingRecord();
 
-        if(proto == "udp")
+        for(var i=0; i<node.childNodes.length; i++)
         {
-            switch(port[0])
-            {
-                case p[0]:
-                    fireRec.m_appService = s[0];
-                case p[24]:
-                    fireRec.m_appService = s[24];
-                    break;
-                case p[26]:
-                    fireRec.m_appService = s[26];
-                    break;
-                case p[12]:
-                    fireRec.m_appService = s[12];
-                    break;
-                case "161":
-                case "162":
-                case p[14]:
-                    fireRec.m_appService = s[14];
-                    break;
-                case "500":
-                case "4500":
-                    fireRec.m_appService = s[20];
-                    break;
-                case p[17]:
-                    fireRec.m_appService = s[17];
-                    break;
-                case "1718":
-                case "1719":
-                    fireRec.m_appService = s[22];
-                    break;
-                case "32769-65535":
-                    fireRec.m_appService = s[18];
-                    break;
-                default:
-                    if(parseInt(p[0]) != NaN)
-                    {
-                        var udp = Number(p[0]);
-                        if(udp >= 32769 && udp <= 65535)
-                            fireRec.m_appService = s[18];
-                    }
-            }
+            var n = node.childNodes[i];
+
+            if(n.nodeName == "dest-network")
+                rec.m_destIpAddr = n.nodeValue;
+            else if(n.nodeName == "dest-mask")
+                rec.m_destIpMask = n.nodeValue;
+            else if(node.nodeName == "gateway")
+                rec.m_gateway = n.nodeValue;
+            else if(node.nodeName == "interface")
+                rec.m_interface = n.nodeValue;
+            else if(node.nodeName == "metric")
+                rec.m_metric = n.nodeValue;
         }
-        else if(proto == "tcp")
-        {
-            switch(port[0])
-            {
-                case p[1]:
-                    fireRec.m_appService = s[1];
-                    break;
-                case p[13]:
-                    fireRec.m_appService = s[13];
-                    break;
-                case "500":
-                case "4500":
-                    fireRec.m_appService = s[19];
-                    break;
-                case "5060":
-                    fireRec.m_appService = s[23];
-                    break;
-                case "1949":
-                    fireRec.m_appService = s[25];
-                    break;
-                default:
-                {
-                    for(var i=0; i<p.length; i++)
-                    {
-                        if(port[0] == p[i])
-                        {
-                            fireRec.m_appService = s[i];
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        else if(proto.indexOf("ip") >= 0)
-        {
-            fireRec.m_appService = s[19];
-        }
-    };
+
+        return rec;
+    }
 
     this.f_setInternAddress = function(fireRec, addr)
     {
@@ -353,8 +258,8 @@ function UTM_nwConfigBusObj(busObj)
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
-                      "<handler>zone-mgmt get-zone-info" +
-                      "</handler><data>ALL</data></statement></command>";
+                      "<handler>static-route get" +
+                      "</handler><data></data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -429,156 +334,69 @@ function UTM_nwConfigBusObj(busObj)
                               thisObj.f_respondRequestCallback);
     }
 
-    this.f_getFirewallSecurityCustomize = function(fireRec, guicb)
+    this.f_getNatPat = function(rec, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
+        var ruleName = rec != null ? rec.m_ruleNo : 'all';
+
         var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
-                      "<handler>customize-firewall get" +
-                      "</handler><data>zonepair=[" + fireRec.m_zonePair +
-                      "], rulename=[all]</data></statement></command>";
+                      "<handler>network-nat-path get" +
+                      "</handler><data>rulename=[" + ruleName +
+                      "]</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
 
-    this.f_setFirewallCustomize = function(fireRec, name, value, guicb)
+    this.f_setNatPatNamePairValue = function(rec, name, value, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
-                      " set</handler><data>zonepair=[" + fireRec.m_zonePair +
-                      "], rulenum=[" + fireRec.m_ruleNo + "]," + name +
+                      "<statement mode='proc'><handler>network-nat-pat" +
+                      " set</handler><data>rulenum=[" + rec.m_ruleNo + "]," + name +
                       "=[" + value + "]</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
 
-    this.f_deleteFirewallCustomizeRule = function(fireRec, guicb)
+    this.f_saveNatPat = function(guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
-                      " delete-rule</handler><data>zonepair=[" + fireRec.m_zonePair +
-                      "], rulenum=[" + fireRec.m_ruleNo +
-                      "]</data></statement></command>";
-
-        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-    }
-
-    this.f_saveFirewallCustomizeRule = function(guicb)
-    {
-        thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
+                      "<statement mode='proc'><handler>network-nat-pat" +
                       " save</handler><data></data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
 
-    this.f_cancelFirewallCustomizeRule = function(guicb)
+    this.f_cancelNatPat = function(guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
+                      "<statement mode='proc'><handler>network-nat-pat" +
                       " cancel</handler><data></data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
 
-    this.f_resetFirewallCustomizeRule = function(fireRec, guicb)
+    this.f_deleteNatPath = function(rec, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>customize-firewall" +
-                      " reset</handler><data>zonepair=[" + fireRec.m_zonePair +
-                      "],rulenum=[all]</data></statement></command>";
-
-        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-    }
-
-    this.f_deleteFirewallCustomizeRule = function(fireRec, guicb)
-    {
-        thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
-                      " delete-rule</handler><data>zonepair=[" + fireRec.m_zonePair +
-                      "], rulenum=[" + fireRec.m_ruleNo +
+                      " delete-rule</handler><data>rulenum=[" + rec.m_ruleNo +
                       "]</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
-    }
-
-    /**
-     * @param type - 'cancel' to cancel already setted customize rules
-     *               'save' to save all the setted customize rules
-     * @param guicb - gui callbackk function
-     */
-    this.f_sendFirewallCustomizeRuleCmd = function(type, guicb)
-    {
-        thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall " +
-                      type + "</handler><data></data></statement></command>";
-
-        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-    }
-
-    this.f_getPortNumber = function(fireRec)
-    {
-        if(fireRec.m_protocol != null && fireRec.m_appService != null)
-        {
-            var s = thisObj.m_services;
-            var p = thisObj.m_ports;
-            if(fireRec.m_protocol == "tcp" || fireRec.m_protocol == "udp")
-            {
-                for(var i=0; i<s.length; i++)
-                {
-                    if(fireRec.m_appService == s[i])
-                        return p[i];
-                }
-            }
-            else if(fireRec.m_protocol.indexOf("ip") >= 0)
-            {
-                if(fireRec.m_appService == s[20])
-                    return p[20];
-            }
-            else if(fireRec.m_protocol.indexOf("icmp") >= 0)
-            {
-
-            }
-        }
-
-        return "";
-    }
-
-    this.f_getProtocol = function(fireRec)
-    {
-        var s = thisObj.m_services;
-        var a = fireRec.m_appService;
-
-        if(a == s[19] || a == s[20] || a == s[27] || a == s[28])
-            return " ";
-
-        var udp = thisObj.m_udpServices.indexOf(a);
-        if(udp > -1)
-            return "udp";
-        else
-            return "tcp";
     }
 }
 

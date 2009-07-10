@@ -555,20 +555,6 @@ function UTM_firewallBusObj(busObj)
                               thisObj.f_respondRequestCallback);
     }
 
-    this.f_deleteFirewallCustomizeRule = function(fireRec, guicb)
-    {
-        thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
-                      " delete-rule</handler><data>zonepair=[" + fireRec.m_zonePair +
-                      "], rulenum=[" + fireRec.m_ruleNo +
-                      "]</data></statement></command>";
-
-        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-    }
-
     /**
      * @param type - 'cancel' to cancel already setted customize rules
      *               'save' to save all the setted customize rules

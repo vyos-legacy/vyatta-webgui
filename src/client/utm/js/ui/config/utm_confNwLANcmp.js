@@ -662,9 +662,10 @@ function UTM_confNwLANip(name, callback, busLayer)
 	this.m_deletedRow = null;
 	this.m_addedRow = null;
 	this.m_updatedRow = null;
-	this.m_eventCbFunction = 'f_confNwLANipEventCallback';	
-		
-	this.m_prefix = 'conf_lan_ip_';			
+	this.m_handleClickCbFunction = 'f_confNwLANipHandleClickCb';	
+	this.m_handleKeyEventCbFunction = 'f_confNwLANipHandleKeyEventCb';	
+	this.m_prefix = 'conf_lan_ip_';		
+	this.m_objectId = 'conf_lan_ip';	
     this.m_btnCancelId = this.m_prefix + 'btn_cancel';
     this.m_btnApplyId = this.m_prefix + 'btn_apply';
     this.m_btnAddId = this.m_prefix + 'btn_add';
@@ -696,9 +697,9 @@ function UTM_confNwLANip(name, callback, busLayer)
 		this.f_createTableHeader();
         this.m_body = this.f_createGridView(this.m_hdcolumns, true);
 		
-        var btns = [['Add', this.m_eventCbFunction + "('" + this.m_btnAddId + "')", g_lang.m_tooltip_add, this.m_btnAddId, g_lang.m_imageDir + 'bt_add.gif', 'left'],
-		            ['Cancel', this.m_eventCbFunction + "('" + this.m_btnCancelId + "')", g_lang.m_tooltip_cancel, this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif', 'right'], 
-		            ['Apply', this.m_eventCbFunction + "('" + this.m_btnApplyId + "')", g_lang.m_tooltip_apply, this.m_btnApplyId, g_lang.m_imageDir + 'bt_apply.gif', 'right']]; 
+        var btns = [['Add', this.m_handleClickCbFunction + "('" + this.m_objectId + "," + this.m_btnAddId + "')", g_lang.m_tooltip_add, this.m_btnAddId, g_lang.m_imageDir + 'bt_add.gif', 'left'],
+		            ['Cancel', this.m_handleClickCbFunction + "('" + this.m_objectId + "," + this.m_btnCancelId + "')", g_lang.m_tooltip_cancel, this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif', 'right'], 
+		            ['Apply', this.m_handleClickCbFunction + "('" + this.m_objectId + "," + this.m_btnApplyId + "')", g_lang.m_tooltip_apply, this.m_btnApplyId, g_lang.m_imageDir + 'bt_apply.gif', 'right']]; 
         this.m_buttons = this.f_createLRButtons(btns, '550px');
         
         return [this.m_headerText, this.m_header, this.m_body, this.m_buttons];
@@ -719,7 +720,7 @@ function UTM_confNwLANip(name, callback, busLayer)
         this.f_colorGridBackgroundRow(true);
         var cols = [];
         var chkbox = g_lang.m_enabled + '<br>' +
-        thisObj.f_renderCheckbox('no', thisObj.m_prefix + 'enable_cb', this.m_eventCbFunction + "('" + thisObj.m_prefix + "enable_cb')", 'tooltip');
+        thisObj.f_renderCheckbox('no', thisObj.m_prefix + 'enable_cb', this.m_handleClickCbFunction + "('" + thisObj.m_objectId + "," + thisObj.m_prefix + "enable_cb')", 'tooltip');
         
         cols[0] = this.f_createColumn(g_lang.m_ipAddr, this.m_textWidth, 'textField', '10', false, 'center');
         cols[1] = this.f_createColumn(g_lang.m_macAddr, this.m_textWidth, 'textField', '10', false, 'center');		
@@ -774,21 +775,19 @@ function UTM_confNwLANip(name, callback, busLayer)
     {
         var prefix = this.m_prefix;
 		var rowId = prefix + 'row_' + this.m_cnt;
-		var eventIp = ["","f_confNwLANipKeydown('" + prefix+ 'ip_' + this.m_cnt + "')"];
-		var eventMac = ["","f_confNwLANipKeydown('" + prefix+ 'mac_' + this.m_cnt + "')"];
-		
+		var eventIp = ["", this.m_handleKeyEventCbFunction + "('" + this.m_objectId + "," + prefix+ 'ip_' + this.m_cnt + "," + "keyDown')"];
+		var eventMac = ["",this.m_handleKeyEventCbFunction + "('" + this.m_objectId + "," + prefix+ 'mac_' + this.m_cnt + "," + "keyDown')"];
         this.m_rowIdArray.push(rowId);
-								
         var ip = this.f_renderTextField(prefix + 'ip_' + this.m_cnt, '', '', this.m_textWidth-20, eventIp);
-        var mac = this.f_renderTextField(prefix + 'mac_' + this.m_cnt, '', '', this.m_textWidth-20, eventMac);		
+        var mac = this.f_renderTextField(prefix + 'mac_' + this.m_cnt, '', '', this.m_textWidth-20, eventMac);
 		var a = [
                     {id: prefix + 'cb_add_' + this.m_cnt, value: 'checked', hidden: true}, 
-                    {id: prefix + 'cb_' + this.m_cnt, value: 'checked', hidden: false, cb: thisObj.m_eventCbFunction + "('" + this.m_cbGroupId +"')", tooltip: '', readonly: false}, 					
+                    {id: prefix + 'cb_' + this.m_cnt, value: 'checked', hidden: false, cb: thisObj.m_handleClickCbFunction + "('" + this.m_objectId + "," + this.m_cbGroupId +"')", tooltip: '', readonly: false}, 					
 		            {id: prefix + 'cb_change_' + this.m_cnt, value: 'checked', hidden: true}
 				];		
         var cb = this.f_renderCheckboxArray(a);
-        var del = this.f_renderButton('delete', true, thisObj.m_eventCbFunction + "('" +
-            this.m_btnDeleteId + "','" + rowId +
+        var del = this.f_renderButton('delete', true, thisObj.m_handleClickCbFunction + "('" +
+            this.m_objectId + "," + this.m_btnDeleteId + "," + rowId +
         "')", 'delete row');
 		//var ctrlCb = this.f_renderHiddenCheckbox(a);		
         //var data = [ip, mac, cb, del, ctrlCb];
@@ -898,25 +897,24 @@ function UTM_confNwLANip(name, callback, busLayer)
 		this.f_enabledDisableButton(this.m_btnCancelId, state);
 	}
 
-    this.f_handleClick = function(id, obj)
+    this.f_handleClick = function(sourceId, userData)
     {
-        if (id == this.m_btnCancelId) {
+        if (sourceId == this.m_btnCancelId) {
             this.f_reset();
-        } else if (id == this.m_btnApplyId) {
+        } else if (sourceId == this.m_btnApplyId) {
             this.f_apply();
-        } else if (id == this.m_btnAddId) {
+        } else if (sourceId == this.m_btnAddId) {
 			this.f_enableAllButton(true);
             this.f_addRow();
-        } else if (id == this.m_prefix + 'enable_cb') {
+        } else if (sourceId == this.m_prefix + 'enable_cb') {
 		    this.f_enableAll();	
 			this.f_enableAllButton(true);
-		} else if (id == this.m_btnDeleteId) {			
+		} else if (sourceId == this.m_btnDeleteId) {			
             g_utils.f_popupMessage(g_lang.m_url_ezDeleteConfirm, 'confirm', g_lang.m_info, true, 
-			    this.m_eventCbFunction + "('" + this.m_btnDeleteConfirmId + ","  + obj + "')"); 
-		} else if (id.indexOf(this.m_btnDeleteConfirmId) != -1) {
-			var args = id.split(",");
-			this.f_deleteRow(args[1]);
-		} else if (id ==  this.m_cbGroupId) {
+			    this.m_handleClickCbFunction + "('" + this.m_objectId + "," + this.m_btnDeleteConfirmId + ","  + userData + "')"); 
+		} else if (sourceId.indexOf(this.m_btnDeleteConfirmId) != -1) {
+			this.f_deleteRow(userData);
+		} else if (sourceId ==  this.m_cbGroupId) {
 			this.f_enableAllButton(true);
 		}
     }	
@@ -965,10 +963,10 @@ function UTM_confNwLANip(name, callback, busLayer)
 
 				var addr = this.f_renderTextField(prefix + 'addr_' + this.m_cnt, a[i].m_value, '', this.m_textWidth, events, a[i].m_readonly);
 				var cb = this.f_renderSmartCheckbox(enable, prefix + 'cb_' + this.m_cnt,  
-				                                    thisObj.m_eventCbFunction + "('" + this.m_cbGroupId +"')", '',
+				                                    thisObj.m_handleClickCbFunction + "('" + this.m_objectId + "," + this.m_cbGroupId +"')", '',
 				                                    prefix + 'cb_hidden_' + this.m_cnt, hiddenEnable);
-				var del = this.f_renderButton('delete', true, this.m_eventCbFunction + "('" +
-				this.m_btnDeleteId +
+				var del = this.f_renderButton('delete', true, this.m_handleClickCbFunction + "('" +
+				this.m_objectId + "," + this.m_btnDeleteId +
 				"','" +
 				rowId +
 				"')", 'delete row');
@@ -981,14 +979,16 @@ function UTM_confNwLANip(name, callback, busLayer)
         */
     }
 
-    this.f_handleCheckboxClick = function(chkbox)
-    {
-    
-    }
-
-	this.f_handleKeydown = function(id)
+	this.f_handleKeyEvent = function(sourceId, eventType, userData) 
 	{
-		var el = document.getElementById(id);
+		if (eventType=='keyDown') {
+			thisObj.f_handleKeydown(sourceId, userData);
+		}
+	}
+
+	this.f_handleKeydown = function(sourceId, userData)
+	{
+		var el = document.getElementById(sourceId);
 		if (!el.disabled) {
 			this.f_enableAllButton(true);
 		}
@@ -1090,16 +1090,29 @@ function UTM_confNwLANip(name, callback, busLayer)
 }
 UTM_extend(UTM_confNwLANip, UTM_confBaseObjExt);
 
-function f_confNwLANipEventCallback(id, obj)
+function f_confNwLANipHandleClickCb(arg)
 {
-    g_configPanelObj.m_activeObj.f_handleClickLanIp(id, obj);
+	if (arg) {
+		var a = arg.split(",");
+		var childId = a[0];
+		var sourceId = (a.length > 1) ? a[1] : null;
+		var userData = (a.length > 2) ? a[2] : null;
+        g_configPanelObj.m_activeObj.f_handleClick(childId, sourceId, userData);
+	}
 }
 
 function f_confNwLANipGridHeaderOnclick(col)
 {
 }
 
-function f_confNwLANipKeydown(id)
+function f_confNwLANipHandleKeyEventCb(arg)
 {
-	g_configPanelObj.m_activeObj.f_handleKeydownLanIp(id);
+	if (arg) {
+		var a = arg.split(",");
+		var childId = a[0];
+		var sourceId = (a.length > 1) ? a[1] : null;
+		var eventType = (a.length > 2) ? a[2] : null;
+		var userData = (a.length > 3) ? a[3] : null;
+		g_configPanelObj.m_activeObj.f_handleKeyEvent(childId, sourceId, eventType, userData);
+	}
 }

@@ -44,15 +44,19 @@ function UTM_confNwLAN(name, callback, busLayer)
 		
 		return thisObj.f_getPage();
 	}
-	
-	this.f_handleClickLanIp = function(id, obj)
+
+	this.f_handleClick = function(childId, sourceId, userData)
 	{
-		thisObj.m_lanIp.f_handleClick(id, obj);
-	}
-	
-	this.f_handleKeydownLanIp = function(id)
+		if (childId == 'conf_lan_ip') {
+			thisObj.m_lanIp.f_handleClick(sourceId, userData);
+		}
+	}    
+
+	this.f_handleKeyEvent = function(childId, sourceId, eventType, userData) 
 	{
-		thisObj.m_lanIp.f_handleKeydown(id);
+		if (childId == 'conf_lan_ip') {
+			thisObj.m_lanIp.f_handleKeyEvent(sourceId, eventType, userData);
+		}
 	}
 }
 UTM_extend(UTM_confNwLAN, UTM_confContainerObj);

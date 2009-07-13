@@ -127,4 +127,7 @@ function UTM_confContainerObj(name, callback, busLayer)
 			this.m_children[i].f_stopLoadVMData();
 		}
 	}
+	 
+	this.f_handleClick = function(childId, sourceId, userData) {}
+	this.f_handleKeyEvent = function(childId, sourceId, eventType, userData) {}
 }

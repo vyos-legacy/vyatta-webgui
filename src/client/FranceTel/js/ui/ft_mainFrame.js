@@ -61,6 +61,18 @@ function FT_mainFrame(){
 		  g_lang.m_mainFrmSignIn;	
 	}
 	
+	this.f_show = function() {
+        thisObj.f_hideHeader(false);
+        thisObj.f_hideLogin(true);
+        g_busObj.f_getVMSummaryDataFromServer(function(evt){
+            if (evt.f_isError()) {
+                alert('Error: ' + evt.m_errMsg);
+            } else {
+                thisObj.f_initComponent(evt.m_value);
+            }
+        });		
+	}
+	
 	this.f_hideHeader = function(hide) {
 		var header = document.getElementById(VYA.FT_CONST.DOM_HEADER_ID);
 		if (hide) {

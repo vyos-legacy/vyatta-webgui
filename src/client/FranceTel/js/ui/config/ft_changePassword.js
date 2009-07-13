@@ -328,7 +328,6 @@ function FT_changePassword(name, callback, busLayer)
             if (event.f_isError()) {
                 g_utils.f_popupMessage(g_lang.m_loginUnableToLogin + event.m_errMsg, g_lang.m_ok, g_lang.m_loginError);
             } else {
-                g_utils.f_saveUserLoginId(event.m_value.m_sid);
                 g_utils.f_saveUserName(un);
                 g_utils.f_gotoHomePage();
             }
@@ -341,9 +340,11 @@ function FT_changePassword(name, callback, busLayer)
 
 FT_extend(FT_changePassword, FT_confFormObj);
 
+/*
 function f_changePasswordDialogOkCb()
 {
     //document.getElementById('password').focus();	
     //g_busObj.f_userLogout();	    
     g_utils.f_gotoHomePage();
 }
+*/

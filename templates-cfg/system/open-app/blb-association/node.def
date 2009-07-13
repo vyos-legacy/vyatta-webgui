@@ -1,8 +1,16 @@
 help: Configure BLB association parameters
 end: if [ "${COMMIT_ACTION}" = 'DELETE' ]; then
-       exit 0
+       /opt/vyatta/sbin/openapp-conf-blb.pl --standalone
+       exit $?
      fi
-     if [ -z "$VAR(username/@)" ]; then
-       echo "BLB association requires username"
+     if [ -z '$VAR(username/@)' ] || [ -z '$VAR(password/@)' ]; then
+       echo "BLB association requires username and password"
        exit 1
      fi
+     TFILE=$(mktemp /tmp/blb-conf.XXXXXX) || exit 1
+     chmod 600 $TFILE
+     echo -en '$VAR(username/@)\n$VAR(password/@)\n' >$TFILE
+     /opt/vyatta/sbin/openapp-conf-blb.pl --blb $TFILE
+     ret=$?
+     rm -f $TFILE
+     exit $ret

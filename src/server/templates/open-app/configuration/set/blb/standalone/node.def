@@ -1,3 +1,7 @@
 help: Set OpenAppliance to standalone mode
 access:installer
-run: /opt/vyatta/sbin/openapp-conf-blb.pl --standalone
+run: if /opt/vyatta/sbin/openapp-conf-blb.pl --conf-standalone; then
+       return 0
+     else
+       return 1
+     fi

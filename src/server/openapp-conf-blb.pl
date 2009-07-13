@@ -23,12 +23,14 @@ if ($auth_user_role ne 'installer') {
 # TODO move BLB-related conf into BLB.pm
 my $BLB_CONF_ROOT = 'system open-app blb-association';
 
-my ($status, $standalone, $user, $pass) = (undef, undef, undef, undef);
+my ($status, $standalone, $blb, $confsa, $confblb)
+  = (undef, undef, undef, undef, undef);
 GetOptions(
   'status' => \$status,
   'standalone' => \$standalone,
-  'user=s' => \$user,
-  'pass=s' => \$pass
+  'blb=s' => \$blb,
+  'conf-standalone' => \$confsa,
+  'conf-blb=s' => \$confblb
 );
 
 if (defined($status)) {
@@ -41,12 +43,21 @@ if (defined($standalone)) {
   exit 0;
 }
 
-if (defined($user) && defined($pass)) {
-  do_blb($user, $pass);
+if (defined($confsa)) {
+  do_conf_standalone();
   exit 0;
-} else {
-  print "BLB association requires username and password\n";
-  exit 1;
+}
+
+if (defined($confblb)) {
+  exit 1 if (! -r "$confblb");
+  do_conf_blb($confblb);
+  exit 0;
+}
+
+if (defined($blb)) {
+  exit 1 if (! -r "$blb");
+  do_blb($blb);
+  exit 0;
 }
 
 sub do_status {
@@ -67,6 +78,25 @@ EOF
   }
 }
 
+sub do_conf_standalone {
+  my $cfg = new Vyatta::Config;
+  if (!$cfg->existsOrig("$BLB_CONF_ROOT")) {
+    print "Standalone mode is already configued\n";
+    exit 1;
+  }
+  
+  my @cmds = (
+    "delete $BLB_CONF_ROOT",
+    'commit',
+    'save'
+  );
+  my $err = OpenApp::Conf::execute_session(@cmds);
+  if (defined($err)) {
+    print "BLB configuration failed: $err\n";
+    exit 1;
+  }
+}
+  
 sub do_standalone {
   my $cfg = new Vyatta::Config;
   if (!$cfg->existsOrig("$BLB_CONF_ROOT")) {
@@ -84,24 +114,54 @@ sub do_standalone {
     }
   }
   
+  # notify lighttpd to reconfigure reverse proxy
+  OpenApp::VMDeploy::notifyWuiProcess();
+}
+  
+sub do_conf_blb {
+  my ($file) = @_;
+  my $fd = undef;
+ 
+  # read user/pass from file
+  if (!open($fd, '<', $file)) {
+    print "Failed to open user/pass file\n";
+    exit 1;
+  }
+  my $user = <$fd>;
+  my $pass = <$fd>;
+  close($fd);
+  chomp($user);
+  chomp($pass);
+
+  # change/save the configuration. 
   my @cmds = (
-    "delete $BLB_CONF_ROOT",
+    "set $BLB_CONF_ROOT username '$user'",
+    "set $BLB_CONF_ROOT password '$pass'",
     'commit',
     'save'
   );
   my $err = OpenApp::Conf::execute_session(@cmds);
   if (defined($err)) {
-    print "BLB configuration failed: $err\n";
+    print "Failed to save BLB configuration: $err\n";
     exit 1;
   }
-
-  # notify lighttpd to reconfigure reverse proxy
-  OpenApp::VMDeploy::notifyWuiProcess();
 }
-  
+
 sub do_blb {
-  my ($user, $pass) = @_;
+  my ($file) = @_;
+  my $fd = undef;
   
+  # read user/pass from file
+  if (!open($fd, '<', $file)) {
+    print "Failed to open user/pass file\n";
+    exit 1;
+  }
+  my $user = <$fd>;
+  my $pass = <$fd>;
+  close($fd);
+  chomp($user);
+  chomp($pass);
+
   # do BLB association
   ## check credential
   my ($blb_token, $err) = OpenApp::BLB::authBLB($user, $pass);
@@ -136,18 +196,6 @@ sub do_blb {
     exit 1;
   }
   
-  # finally, save the configuration. 
-  my @cmds = (
-    "set $BLB_CONF_ROOT username '$user'",
-    'commit',
-    'save'
-  );
-  my $err = OpenApp::Conf::execute_session(@cmds);
-  if (defined($err)) {
-    print "Failed to save BLB configuration: $err\n";
-    exit 1;
-  }
-
   # notify lighttpd to reconfigure reverse proxy
   OpenApp::VMDeploy::notifyWuiProcess();
 }

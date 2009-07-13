@@ -1,7 +1,9 @@
 help: Password for BLB association
 access:installer
-run: if /opt/vyatta/sbin/openapp-conf-blb.pl --user "$6" --pass "$8"; then
-       return 0
-     else
-       return 1
-     fi
+run: TFILE=$(mktemp /tmp/blb-conf.XXXXXX) || return 1
+     chmod 600 $TFILE
+     echo -en "$6\n$8\n" >$TFILE
+     /opt/vyatta/sbin/openapp-conf-blb.pl --conf-blb $TFILE
+     ret=$?
+     rm -f $TFILE
+     return $ret

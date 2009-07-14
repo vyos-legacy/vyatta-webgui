@@ -1,3 +1,17 @@
+vyatta-webgui (0.2.14+fxdU+82) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * initial version check in of network nat/pat business logic layers
+
+  [ Loi Vo ]
+  * Fix an issue in IE (object is undefined exception) when adding a new
+    row to the dhcp ip pool.
+
+  [ Mohit Mehta ]
+  * add backend support for dhcp static-mapping
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 14 Jul 2009 12:33:59 -0700
+
 vyatta-webgui (0.2.14+fxdU+81) unstable; urgency=low
 
   [ Loi Vo ]

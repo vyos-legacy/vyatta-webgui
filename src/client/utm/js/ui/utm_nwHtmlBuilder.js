@@ -106,7 +106,7 @@ function UTM_htmlBuilder()
 					var grp = portList[i].m_group.toLowerCase();
                     if (grp != 'wan') {
 						//now we need to show/hide the corresponding menu.
-						if ((grp == 'lan') || (grp == 'lan2')) {
+						if ((grp == 'lan') || (grp == 'lan2') || (grp == 'dmz')) {
 							var menuId = grp + '_l2';
 							var menu = document.getElementById(menuId);
 							if (menu != null) {

@@ -297,7 +297,7 @@ function UTM_confNwPortConfig(name, callback, busLayer)
                 var id = thisObj.m_prefix + 'cb_' + portList[i].m_num;
                 var cb = document.getElementById(id);
 			    //now we need to show/hide the corresponding menu.
-			    if ((grp == 'lan') || (grp == 'lan2')) {
+			    if ((grp == 'lan') || (grp == 'lan2') || (grp == 'dmz')) {
 			        var menuId = grp + '_l2';
 				    var menu = document.getElementById(menuId);
 				    if ((cb != null) && (menu != null)) {

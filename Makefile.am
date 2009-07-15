@@ -62,6 +62,7 @@ sbin_SCRIPTS += scripts/customize-firewall.pl
 sbin_SCRIPTS += scripts/bl_urlfiltering.pl
 sbin_SCRIPTS += scripts/zone-mgmt.pl
 sbin_SCRIPTS += scripts/oa-utm-port-cfg.pl
+sbin_SCRIPTS += scripts/bl_subnet_config.pl
 
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 

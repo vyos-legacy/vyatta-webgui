@@ -14,6 +14,7 @@ function UTM_confNwLAN(name, callback, busLayer)
 	this.m_lanItf = undefined;
 	this.m_lanDhcp = undefined;
 	this.m_lanIp = undefined;
+	this.m_ifName = undefined;
 		
 	/**
 	 * @param name - name of configuration screens.
@@ -31,15 +32,25 @@ function UTM_confNwLAN(name, callback, busLayer)
 	}
 	this.privateConstructor(name, callback, busLayer);
 	
+	this.f_setIfName = function(ifName)
+	{
+		this.m_ifName = ifName;
+	}
+	
 	this.f_getConfigurationPage = function() 
 	{
-		this.m_lanItf = new UTM_confNwLANitf('UTM_confNwLANitf', thisObj.m_containerCb, thisObj.m_busLayer);
-		this.m_lanDhcp = new UTM_confNwLANdhcp('UTM_confNwLANdhcp', thisObj.m_containerCb, thisObj.m_busLayer);
-		this.m_lanIp = new UTM_confNwLANip('UTM_confNwLANip', thisObj.m_containerCb, thisObj.m_busLayer);
-		var c = new Array();
+		var c = new Array();		
+		this.m_lanItf = new UTM_confNwLANitf('UTM_confNwLANitf', thisObj.m_containerCb, thisObj.m_busLayer);		
 		c.push(this.m_lanItf);
-		c.push(this.m_lanDhcp);
-		c.push(this.m_lanIp);
+		
+		if ((thisObj.m_ifName == 'LAN') || (thisObj.m_ifName == 'LAN2')) {
+			this.m_lanDhcp = new UTM_confNwLANdhcp('UTM_confNwLANdhcp', thisObj.m_containerCb, thisObj.m_busLayer);
+			this.m_lanIp = new UTM_confNwLANip('UTM_confNwLANip', thisObj.m_containerCb, thisObj.m_busLayer);
+			this.m_lanIp.f_setIfName(this.m_ifName);
+			c.push(this.m_lanDhcp);
+			c.push(this.m_lanIp);
+		}
+		
 		thisObj.f_setChildren(c);
 		
 		return thisObj.f_getPage();

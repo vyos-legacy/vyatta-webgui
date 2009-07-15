@@ -489,38 +489,17 @@ function UTM_nwDNSBusObj(busObj)
 
     this.f_getFormErrMsg = function(form)
 	{
-		var errmsgNode = g_utils.f_xmlGetChildNode(form, 'errmsg');
-		if (errmsgNode == null) return null;
-
-		return g_utils.f_xmlGetNodeValue(errmsgNode);
+		return this.m_busObj.f_getFormErrMsg(form);
 	}
 
     this.f_getFormNode = function(response)
 	{
-		var msgNode = g_utils.f_xmlGetChildNode(response[0], 'msg');
-		return g_utils.f_xmlGetChildNode(msgNode, 'form');
+		return this.m_busObj.f_getFormErrMsg(response);
 	}
 
     this.f_getFormError = function(response)
 	{
-		var cn = response[0].childNodes;
-		for (var i=0; i< cn.length; i++) {
-			if (cn[i].nodeName == 'msg') {
-				var node = cn[i].childNodes;
-				for (var j=0; j < node.length; j++) {
-					if (node != undefined && node[j] != undefined && node[j].nodeName == 'form') {
-						var errCode = node[j].getAttribute('code');
-						if (errCode==0) { //success case
-						    return null;
-						} else {
-                            var errMsg = thisObj.f_getFormErrMsg(node[j]);
-                            return (new UTM_eventObj(errCode, null, errMsg));
-						}
-					}
-				}
-			}
-		}
-		return null;
+		return this.m_busObj.f_getFormError(response);
 	}
 
     this.f_parseDNS = function(response)
@@ -754,38 +733,17 @@ function UTM_nwPortConfigBusObj(busObj)
 
     this.f_getFormErrMsg = function(form)
 	{
-		var errmsgNode = g_utils.f_xmlGetChildNode(form, 'errmsg');
-		if (errmsgNode == null) return null;
-
-		return g_utils.f_xmlGetNodeValue(errmsgNode);
+		return this.m_busObj.f_getFormErrMsg(form);
 	}
 
     this.f_getFormNode = function(response)
 	{
-		var msgNode = g_utils.f_xmlGetChildNode(response[0], 'msg');
-		return g_utils.f_xmlGetChildNode(msgNode, 'form');
+		return this.m_busObj.f_getFormNode(response);
 	}
 
     this.f_getFormError = function(response)
 	{
-		var cn = response[0].childNodes;
-		for (var i=0; i< cn.length; i++) {
-			if (cn[i].nodeName == 'msg') {
-				var node = cn[i].childNodes;
-				for (var j=0; j < node.length; j++) {
-					if (node != undefined && node[j] != undefined && node[j].nodeName == 'form') {
-						var errCode = node[j].getAttribute('code');
-						if (errCode==0) { //success case
-						    return null;
-						} else {
-                            var errMsg = thisObj.f_getFormErrMsg(node[j]);
-                            return (new UTM_eventObj(errCode, null, errMsg));
-						}
-					}
-				}
-			}
-		}
-		return null;
+        return this.m_busObj.f_getFormError(response);
 	}
 
     this.f_parsePortConfig = function(response)
@@ -977,5 +935,592 @@ function UTM_nwPortConfigBusObj(busObj)
                   '</openappliance>');
         thisObj.f_respondRequestCallback(resp, guicb);
     }
+}
+
+function UTM_nwDHCPmapRecord(name, ip, mac, enable)
+{
+	var thisObj = this;
+	this.m_name = name;
+	this.m_ip = ip;
+	this.m_mac = mac; 
+	this.m_enable = enable;
+	this.m_action = '';
+	
+	this.f_setAction = function(action) {
+		thisObj.m_action = action;
+	}
+
+	this.f_toXml = function() {
+		var xml = '<mapping><action>' + thisObj.m_action + '</action><tagname>' + thisObj.m_name + '</tagname>';
+		xml += '<ip>' + thisObj.m_ip + '</ip><mac>' + thisObj.m_mac + '</mac>';
+		xml += '<enable>' +  thisObj.m_enable + '</enable></mapping>';
+		return xml;
+	}
+	
+}
+
+function UTM_nwDHCPmap(ifName, dhcpMapList)
+{
+	var thisObj = this;
+	this.m_ifName = ifName;
+	this.m_dhcpMapList = dhcpMapList;
+	
+	this.f_toXml = function() {
+		var xml = '<mapping-config>';
+		xml += '<interface>' + thisObj.m_ifName.toUpperCase() + '</interface>';
+		for (var i=0; i < thisObj.m_dhcpMapList.length; i++) {
+			xml += thisObj.m_dhcpMapList[i].f_toXml(); 
+		}
+		xml += '</mapping-config>';
+		return xml;
+	}
+}
+
+function UTM_nwIfConfigObj(name, ip, mask)
+{
+	var thisObj = this;
+	this.m_name = name;
+	this.m_ip = ip;
+	this.m_mask = mask; 
+
+	this.f_toXml = function() {
+		var xml = '<interface-config><interface>' + thisObj.m_name + '</interface>';
+		xml += '<ip>' + thisObj.m_ip + '</ip><mask>' + thisObj.m_mask + '</mask></interface-config>';
+		return xml;
+	}
+	
+}		
+
+function UTM_nwDhcpConfigObj(name, enable, start, end, dnsMode, dnsPrimary, dnsSecondary)
+{
+	var thisObj = this;
+	this.m_name = name;
+	this.m_enable = enable;
+	this.m_start = start;
+	this.m_end = end;
+	this.m_dnsMode = dnsMode;
+	this.m_dnsPrimary = dnsPrimary;
+	this.m_dnsSecondary = dnsSecondary; 
+
+	this.f_toXml = function() {
+		var xml = '<dhcp-config><interface>' + thisObj.m_name.toUpperCase() + '</interface>';
+		xml += '<enable>' + thisObj.m_enable + '</enable>';
+		if (thisObj.m_enable=='true') {
+			xml += '<start>' + thisObj.m_start + '</start>';
+			xml += '<end>' + thisObj.m_end + '</end>';
+			xml += '<dns-mode>' + thisObj.m_dnsMode + '</dns-mode>';
+			xml += '<primary-dns>' + thisObj.m_dnsPrimary + '</primary-dns>';
+			xml += '<secondary-dns>' + thisObj.m_dnsSecondary + '</secondary-dns>';			
+		}
+		xml += '</dhcp-config>';
+		return xml;
+	}
+	
+}
+
+function UTM_nwIfBusObj(busObj)
+{
+	/////////////////////////////////////
+	// properties
+	var thisObj = this;
+	this.m_busObj = busObj;
+	this.m_lastCmdSent = null;
+	this.m_ifConfigObj = null;
+	this.m_dhcpConfigObj = null;
+	this.m_dhcpMap = null;
+	this.m_GET_IF_CMD = 'interface-config get';
+	this.m_SET_IF_CMD = 'interface-config set';
+	this.m_GET_DHCP_CMD = 'dhcp-config get';
+	this.m_SET_DHCP_CMD = 'dhcp-config set';
+	this.m_GET_DHCP_MAP_CMD = 'dhcp-static-mapping get';
+	this.m_SET_DHCP_MAP_CMD = 'dhcp-static-mapping set';
+	
+    /**
+     * A callback function for all url filtering requests.
+     */
+    this.f_respondRequestCallback = function(resp, cmdSent, noUICallback)
+    {
+        var response = thisObj.m_busObj.f_getRequestResponse(
+                        thisObj.m_busObj.m_request);
+
+        if (g_devConfig.m_isLocalMode) {
+			response = resp;
+		}
+
+        if(response == null) return;
+
+        if(response.f_isError != null) { //This is server error case.
+            //alert('response.f_isError is not null');
+            if (noUICallback == undefined || !noUICallback) {
+				thisObj.m_guiCb(response);
+			}
+        } else {
+            var evt = new UTM_eventObj(0, thisObj, '');
+
+            var err = response.getElementsByTagName('error');
+			//alert('err: ' + err);
+            if(err != null && err[0] != null) { //The return value is inside the <error> tag.
+                var tmp = thisObj.m_busObj.f_getFormError(err);
+				if (tmp != null) { //form has error
+					if (thisObj.m_guiCb != undefined) {
+						return thisObj.m_guiCb(tmp);
+					}
+				}
+                if (thisObj.m_lastCmdSent.indexOf(thisObj.m_GET_IF_CMD) > 0) {
+                    thisObj.m_ifConfigObj = thisObj.f_parseIfConfig(err);
+                    evt = new UTM_eventObj(0, thisObj.m_ifConfigObj, '');
+				} else if (thisObj.m_lastCmdSent.indexOf(thisObj.m_GET_DHCP_CMD) > 0) {
+                    thisObj.m_dhcpConfigObj = thisObj.f_parseDhcpConfig(err);
+                    evt = new UTM_eventObj(0, thisObj.m_dhcpConfigObj, '');
+				} else if (thisObj.m_lastCmdSent.indexOf(thisObj.m_GET_DHCP_MAP_CMD) > 0) {
+                    thisObj.m_dhcpMap = thisObj.f_parseDhcpMap(err);
+                    evt = new UTM_eventObj(0, thisObj.m_dhcpMap, '');
+				} 
+            }
+
+            if(thisObj.m_guiCb != undefined)
+                thisObj.m_guiCb(evt);
+        }
+    }
+	
+    /////////////////////////////////////////
+    /**
+     * A callback function for all user management requests.
+     */
+    this.f_respondRequestCallbackSetCmd = function(resp, cmdSent, noUICallback)
+    {
+        var response = thisObj.m_busObj.f_getRequestResponse(
+                        thisObj.m_busObj.m_request);
+
+        if(response == null) return;
+
+        if(response.f_isError != null) { //This is server error case.
+            //alert('response.f_isError is not null');
+            if(noUICallback == undefined || !noUICallback)
+                thisObj.m_guiCb(response);
+        } else {
+            var evt = new UTM_eventObj(0, thisObj, '');
+
+
+            var err = response.getElementsByTagName('error');
+            if (err != null && err[0] != null) { //The return value is inside the <error> tag.
+				var tmp = thisObj.m_busObj.f_getFormError(err);
+				if (tmp != null) { //form has error
+					if (thisObj.m_guiCb != undefined) {
+						return thisObj.m_guiCb(tmp);
+					}
+				}
+			}
+
+            if(thisObj.m_guiCb != undefined)
+                thisObj.m_guiCb(evt);
+        }
+    }	
+	
+	this.f_parseIfName = function(form) 
+	{
+		var ifNode = g_utils.f_xmlGetChildNode(form, 'interface');
+		if (ifNode == null) {
+			return '';
+		}
+        return g_utils.f_xmlGetNodeValue(ifNode);
+	}
+	
+	this.f_getNodeValue = function(node)
+	{
+		var nodeValue = g_utils.f_xmlGetNodeValue(node);
+		if (nodeValue == null) {
+			nodeValue = '';
+		}
+		return nodeValue;
+	}
+	
+	this.f_parseDhcpMapList = function(mapConfigNode)
+	{
+		var a = new Array();
+		var nodeArray = ['tagname', 'ip', 'mac', 'enable'];
+		var nodeValue = [];
+        var mapNodeArray = g_utils.f_xmlGetChildNodeArray(mapConfigNode, 'mapping');
+		
+		for (var j=0; j < mapNodeArray.length; j++) {
+			var mapNode = mapNodeArray[j];
+			for (var i=0; i < nodeArray.length; i++) {
+			    var cnode = g_utils.f_xmlGetChildNode(mapNode, nodeArray[i]);
+			    if (cnode != null) {
+					var value = g_utils.f_xmlGetNodeValue(cnode);
+					if (value != null) {
+						nodeValue[nodeArray[i]] = value;
+					}
+				}		
+			}
+		    var name = (nodeValue['tagname'] == undefined)? '' : nodeValue['tagname'];
+		    var ip = (nodeValue['ip'] == undefined)? '' : nodeValue['ip'];
+		    var mac = (nodeValue['mac'] == undefined)? '' : nodeValue['mac'];
+		    var enable = (nodeValue['enable'] == undefined)? 'false' : nodeValue['enable'];
+		
+		    a.push(new UTM_nwDHCPmapRecord(name, ip, mac, enable));			
+		}
+        return a;		
+	}
+	
+    this.f_parseDhcpMap= function(response)
+	{
+		var a = new Array();
+		var nodeArray = ['num', 'name', 'group', 'enable'];
+		var nodeValue = [];
+
+		var form = thisObj.m_busObj.f_getFormNode(response);
+		var mapConfigNode = g_utils.f_xmlGetChildNode(form, 'mapping-config');
+		var ifName = thisObj.f_parseIfName(mapConfigNode);
+		var dhcpMapList =  thisObj.f_parseDhcpMapList(mapConfigNode);
+		
+		return new UTM_nwDHCPmap(ifName, dhcpMapList);
+	}	
+
+    this.f_parseIfConfig= function(response)
+	{
+		var form = thisObj.m_busObj.f_getFormNode(response);
+		var ifNode = g_utils.f_xmlGetChildNode(form,'interface-config');
+		var ifName = thisObj.f_parseIfName(ifNode);
+		var ip = thisObj.f_getNodeValue(ifNode);
+		var mask = thisObj.f_getNodeValue(ifNode);
+		
+		return new UTM_nwIfConfigObj(ifName, ip, mask);
+	}	
+
+    this.f_parseDhcpConfig= function(response)
+	{
+		var form = thisObj.m_busObj.f_getFormNode(response);
+		var ifName = thisObj.f_parseIfName(form);
+		var dhcpNode = g_utisl.f_xmlGetChildNode(form, 'dhcp-config');
+		var enable = g_utils.f_xmlGetNodeValue(dhcpNode);
+        if (enable==null) enable='false';
+		var start = thisObj.f_getNodeValue(dhcpNode);
+		var end = thisObj.f_getNodeValue(dhcpNode);
+		var dnsMode = thisObj.f_getNodeValue(dhcpNode);
+		var dnsPrimary = thisObj.f_getNodeValue(dhcpNode);
+		var dnsSecondary = thisObj.f_getNodeValue(dhcpNode);
+		
+		return new UTM_nwDhcpConfigObj(ifName, enable, start, end, dnsMode, dnsPrimary, dnsSecondary);
+	}	
+	
+	this.f_getIfConfig = function(ifName, guicb)
+	{
+		(g_devConfig.m_isLocalMode) ? thisObj.f_getIfConfigLocal(ifName, guicb) : thisObj.f_getIfConfigServer(ifName, guicb);
+	}	
+
+	this.f_getDhcpConfig = function(ifName, guicb)
+	{
+		(g_devConfig.m_isLocalMode) ? thisObj.f_getDhcpConfigLocal(ifName, guicb) : thisObj.f_getDhcpConfigServer(ifName, guicb);
+	}
+	
+	this.f_getDhcpMap = function(ifName, guicb)
+	{
+		(g_devConfig.m_isLocalMode) ? thisObj.f_getDhcpMapLocal(ifName, guicb) : thisObj.f_getDhcpMapServer(ifName, guicb);
+	}	
+
+    this.f_getIfConfigServer = function(ifName, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>interface-config get" +
+                      "</handler><data>" + ifName.toUpperCase() + "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_getDhcpConfigServer = function(ifName, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>dhcp-config get" +
+                      "</handler><data>" + ifName.toUpperCase() + "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }	
+	
+    this.f_getDhcpMapServer = function(ifName, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>dhcp-static-mapping get" +
+                      "</handler><data>" + ifName.toUpperCase() + "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }	
+	
+    this.f_setIfConfig = function(ifConfigObj, guicb)
+	{
+	    (g_devConfig.m_isLocalMode) ? thisObj.f_setIfConfigLocal(ifConfigObj, guicb) : thisObj.f_getIfConfigServer(ifConfigObj, guicb);
+	}
+
+    this.f_setDhcpConfig = function(dhcpConfigObj, guicb)
+	{
+	    (g_devConfig.m_isLocalMode) ? thisObj.f_setDhcpConfigLocal(dhcpConfigObj, guicb) : thisObj.f_getDhcpConfigServer(dhcpConfigObj, guicb);
+	}
+	
+    this.f_setDhcpMap = function(dhcpMap, guicb)
+	{
+	    (g_devConfig.m_isLocalMode) ? thisObj.f_setDhcpMapLocal(dhcpMap, guicb) : thisObj.f_getDhcpMapServer(dhcpMap, guicb);
+	}	
+
+    this.f_setIfConfigServer = function(ifConfigObj, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>interface-config" +
+                      " set</handler><data>";
+	    xmlstr += ifConfigObj.f_toXml();			  					
+        xmlstr +=  "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallbackSetCmd);
+    }	
+	
+	this.f_setDhcpConfigServer = function(dhcpConfigObj, guicb)
+	{
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>dhcp-config set</handler><data>";
+	    xmlstr += dhcpConfigObj.f_toXml();			  					
+        xmlstr +=  "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallbackSetCmd);		
+	}
+	
+    this.f_setDhcpMapServer = function(dhcpMap, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>dhcp-static-mapping set</handler><data>";
+	    xmlstr += dhcpMap.f_toXml();			  					
+        xmlstr +=  "</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallbackSetCmd);
+    }	
+	
+	///////////////////////////////////////////////////////////////////////////////////////
+	/////// begining simulation
+	///////////////////////////////////////////////////////////////////////////////////////
+    this.f_getIfConfigLocal = function(ifName, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>interface-config get" +
+                      "</handler><data>" + ifName.toUpperCase() + "</data></statement></command>";
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+
+        thisObj.m_lastCmdSent = cmdSend;
+
+		var resp = g_utils.f_parseXmlFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' +
+                            '<code>0</code>' +
+                               '<msg>' +
+                                   '<form name=\'interface-config\' code=\'0\'>' +
+								       '<interface-config>' +
+								           '<interface>' + ifName.toUppderCase() + '</interface>' +
+									       '<ip>192.168.1.1</ip>' +
+									       '<mask>21</mask>' +
+									   '</interface-config>' +								
+                                    '</form>' +
+                                '</msg>' +
+                          '</error>' +
+                  '</openappliance>');
+
+        thisObj.f_respondRequestCallback(resp, guicb);
+    }	
+	
+    this.f_getDhcpConfigLocal = function(ifName, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+		
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>dhcp-config get</handler><data>";
+	    xmlstr += ifName.toUpperCase(); 		  					
+        xmlstr +=  "</data></statement></command>";		
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+
+        thisObj.m_lastCmdSent = cmdSend;
+
+		var resp = g_utils.f_parseXmlFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' +
+                            '<code>0</code>' +
+                               '<msg>' +
+                                   '<form name=\'dhcp-config\' code=\'0\'>' +
+									   '<dhcp-config>' +
+								           '<interface>' + ifName.toUppderCase() + '</interface>' +									   
+									       '<enable>true</enable>' +
+									       '<start>192.168.1.2</start>' +
+										   '<end>192.168.1.254</end>' + 
+										   '<dns-mode>static</dns-mode>' +
+										   '<primary-dns>192.168.1.51</primary-dns>' +
+										   '<secondary-dns>192.168.1.53</secondary-dns>' +
+									   '</dhcp-config>' +								
+                                    '</form>' +
+                                '</msg>' +
+                          '</error>' +
+                  '</openappliance>');
+
+        thisObj.f_respondRequestCallback(resp, guicb);
+    }	
+	
+    this.f_getDhcpMapLocal = function(ifName, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+		
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>dhcp-static-mapping get</handler><data>";
+	    xmlstr += ifName.toUpperCase();			  					
+        xmlstr +=  "</data></statement></command>";		
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+
+        thisObj.m_lastCmdSent = cmdSend;
+
+		var resp = g_utils.f_parseXmlFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' +
+                            '<code>0</code>' +
+                               '<msg>' +
+                                   '<form name=\'dhcp-static-mapping\' code=\'0\'>' +
+									   '<mapping-config>' +
+								           '<interface>' + ifName.toUpperCase() + '</interface>' +									   
+									       '<mapping>' + 
+									           '<tagname>one</tagname>' +
+									           '<ip>192.168.1.2</ip>' +
+										       '<mac>24:ef:03:04:dd:10</mac>' + 
+										       '<enable>true</enable>' +
+                                           '</mapping>' +  
+									       '<mapping>' + 
+									           '<tagname>two</tagname>' +
+									           '<ip>192.168.1.3</ip>' +
+										       '<mac>24:ef:03:04:dd:20</mac>' + 
+										       '<enable>false</enable>' +
+                                           '</mapping>' +  										   
+									   '</mapping-config>' +								
+                                    '</form>' +
+                                '</msg>' +
+                          '</error>' +
+                  '</openappliance>');
+
+        thisObj.f_respondRequestCallback(resp, guicb);
+    }	
+	
+    this.f_setIfConfigLocal = function(ifConfigObj, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+		
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>interface-config set</handler><data>";
+	    xmlstr += ifConfigObj.f_toXml(); 		  					
+        xmlstr +=  "</data></statement></command>";		
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+
+        thisObj.m_lastCmdSent = cmdSend;
+
+		alert ('cmdSend: ' + cmdSend);
+
+		var resp = g_utils.f_parseXmlFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' +
+                            '<code>0</code>' +
+                               '<msg>' +
+                                   '<form name=\'interface-config\' code=\'0\'>' +
+                                    '</form>' +
+                                '</msg>' +
+                          '</error>' +
+                  '</openappliance>');
+        thisObj.f_respondRequestCallbackSetCmd(resp, guicb);
+    }	
+	
+    this.f_setDhcpConfigLocal = function(dhcpConfigObj, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+		
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>dhcp-config set</handler><data>";
+	    xmlstr += dhcpConfigObj.f_toXml(); 		  					
+        xmlstr +=  "</data></statement></command>";		
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+
+        thisObj.m_lastCmdSent = cmdSend;
+
+		alert ('cmdSend: ' + cmdSend);
+
+		var resp = g_utils.f_parseXmlFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' +
+                            '<code>0</code>' +
+                               '<msg>' +
+                                   '<form name=\'dhcp-config\' code=\'0\'>' +
+                                    '</form>' +
+                                '</msg>' +
+                          '</error>' +
+                  '</openappliance>');
+        thisObj.f_respondRequestCallbackSetCmd(resp, guicb);
+    }	
+	
+    this.f_setDhcpMapLocal = function(dhcpMap, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+		
+        var xmlstr = "<command><id>" + sid + "</id>" +
+                      "<statement mode='proc'><handler>dhcp-static-mapping set</handler><data>";
+	    xmlstr += dhcpMap.f_toXml(); 		  					
+        xmlstr +=  "</data></statement></command>";		
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+
+        thisObj.m_lastCmdSent = cmdSend;
+
+		alert ('cmdSend: ' + cmdSend);
+
+		var resp = g_utils.f_parseXmlFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' +
+                            '<code>0</code>' +
+                               '<msg>' +
+                                   '<form name=\'dhcp-static-mapping\' code=\'0\'>' +
+                                    '</form>' +
+                                '</msg>' +
+                          '</error>' +
+                  '</openappliance>');
+        thisObj.f_respondRequestCallbackSetCmd(resp, guicb);
+    }	
 }
 

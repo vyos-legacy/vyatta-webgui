@@ -261,11 +261,18 @@ function UTM_configPanel()
 		  case VYA.UTM_CONST.DOM_3_NAV_SUB_LAN_ID:
               thisObj.m_selectObj = new UTM_confNwLAN('UTM_confNwLAN', cb, g_busObj);
               thisObj.m_selectObj.f_setId(id);
+			  thisObj.m_selectObj.f_setIfName('LAN');
               return thisObj.m_selectObj.f_getConfigurationPage();			  
 		  case VYA.UTM_CONST.DOM_3_NAV_SUB_LAN2_ID:
+              thisObj.m_selectObj = new UTM_confNwLAN('UTM_confNwLAN', cb, g_busObj);
+              thisObj.m_selectObj.f_setId(id);
+			  thisObj.m_selectObj.f_setIfName('LAN2');
+              return thisObj.m_selectObj.f_getConfigurationPage();				  
           case VYA.UTM_CONST.DOM_3_NAV_SUB_DMZ_ID:		  
-              thisObj.m_selectObj = new UTM_confEmptyComponent();
-              return thisObj.m_selectObj.f_getConfigurationPage();
+              thisObj.m_selectObj = new UTM_confNwLAN('UTM_confNwLAN', cb, g_busObj);
+              thisObj.m_selectObj.f_setId(id);
+			  thisObj.m_selectObj.f_setIfName('DMZ');
+              return thisObj.m_selectObj.f_getConfigurationPage();		
           case VYA.UTM_CONST.DOM_3_NAV_SUB_NAT_ID:
               thisObj.m_selectObj = new UTM_confNwNatPat('NWConfNATPAT', cb, g_busObj);
 	      thisObj.m_selectObj.f_setId(id);

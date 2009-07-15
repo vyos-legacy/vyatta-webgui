@@ -62,6 +62,7 @@ function UTM_businessLayer()
 	var m_urlObj = null;
 	var m_nwDNSObj = null;
 	var m_nwPortConfigObj = null;
+	var m_nwIfObj = null;   //interface config biz obj 	
     this.m_userObj = new UTM_userBusObj(this);
 	thisObj.m_request = createXMLHttpRequest();
 
@@ -117,6 +118,51 @@ function UTM_businessLayer()
 
         return null;
     }
+
+	/*
+    this.f_send302Request = function(content)
+    {
+        var r = this.m_request;
+
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + content + "</openappliance>\n";
+
+        var requestCB = function(resp)
+        {
+            //innerCB(resp, cmdSend);
+            if(r.readyState == 4)
+            {
+                if(r.status == 200)
+                {
+				    alert('200');
+					if (r.responseXML) {
+						alert('response is XML');
+					} else {
+						alert(r.responseText);
+					}
+                } else if (r.status == 404) { //assuming  timeout on dom0. dom0 stop proxy the request.
+                    alert('404');          			
+			    } else if (r.status == 201) {
+				    alert('4.201');
+			    } else if (r.status == 302) {
+				    alert('4.302');
+			    }
+            } 	
+        }
+
+        r.open('GET', '/utm/cgi-bin/302.pl', true);
+        r.onreadystatechange = requestCB;
+        r.send(cmdSend);
+
+        return cmdSend;
+    }	
+	
+    this.f_respond302RequestCallback = function(resp, cmdSent, noUICallback)
+    {
+        var response = this.f_getRequestResponse(this.m_request);
+        return null;
+    }	
+    */
 
     /**
      * get child nodes of 'node' from 'response'
@@ -183,6 +229,42 @@ function UTM_businessLayer()
         this.f_saveFirewallCustomizeRule("customize-firewall", cb);
     }
 
+    this.f_getFormErrMsg = function(form)
+	{
+		var errmsgNode = g_utils.f_xmlGetChildNode(form, 'errmsg');
+		if (errmsgNode == null) return null;
+
+		return g_utils.f_xmlGetNodeValue(errmsgNode);
+	}
+
+    this.f_getFormNode = function(response)
+	{
+		var msgNode = g_utils.f_xmlGetChildNode(response[0], 'msg');
+		return g_utils.f_xmlGetChildNode(msgNode, 'form');
+	}
+
+    this.f_getFormError = function(response)
+	{
+		var cn = response[0].childNodes;
+		for (var i=0; i< cn.length; i++) {
+			if (cn[i].nodeName == 'msg') {
+				var node = cn[i].childNodes;
+				for (var j=0; j < node.length; j++) {
+					if (node != undefined && node[j] != undefined && node[j].nodeName == 'form') {
+						var errCode = node[j].getAttribute('code');
+						if (errCode==0) { //success case
+						    return null;
+						} else {
+                            var errMsg = thisObj.f_getFormErrMsg(node[j]);
+                            return (new UTM_eventObj(errCode, null, errMsg));
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // user management
@@ -508,6 +590,46 @@ function UTM_businessLayer()
         thisObj.f_getPortConfigObj().f_setPortConfig(portConfigList, guicb);
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    // Interface config section
+	this.f_getNwIfObj = function()
+    {
+        if(m_nwIfObj == null)
+            m_nwIfObj = new UTM_nwIfBusObj(thisObj);
+
+        return m_nwIfObj;
+    }
+
+    this.f_getIfConfig = function(ifName, guicb)
+    {
+        thisObj.f_getNwIfObj().f_getIfConfig(ifName, guicb);
+    }
+
+    this.f_getDhcpConfig = function(ifName, guicb)
+    {
+        thisObj.f_getNwIfObj().f_getDhcpConfig(ifName, guicb);
+    }
+	
+    this.f_getDhcpMap = function(ifName, guicb)
+    {
+        thisObj.f_getNwIfObj().f_getDhcpMap(ifName, guicb);
+    }	
+
+    this.f_setIfConfig = function(ifConfigObj, guicb)
+    {
+        thisObj.f_getNwIfObj().f_setIfConfig(ifConfigObj, guicb);
+    }
+
+    this.f_setDhcpConfig = function(dhcpConfigObj, guicb)
+	{
+        thisObj.f_getNwIfObj().f_setDhcpConfig(dhcpConfigObj, guicb);		
+	}
+
+    this.f_setDhcpMap = function(dhcpMap, guicb)
+	{
+        thisObj.f_getNwIfObj().f_setDhcpMap(dhcpMap, guicb);				
+	}
 }
 
 ///////////////////////////////////////////////

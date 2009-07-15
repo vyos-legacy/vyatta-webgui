@@ -479,6 +479,10 @@ function UTM_businessLayer()
         this.f_getNwObject.f_cancelNatPat(guicb);
     }
 
+    this.f_deleteNatPatConfiguration = function(rec, guicb)
+    {
+        this.f_getNwObject.f_deleteNatPat(rec, guicb);
+    }
     /**
      *
      */

@@ -13,6 +13,7 @@ function UTM_nwNatPatRecord(ruleNo)
 {
     var thisObj = this;
     this.m_ruleNo = ruleNo;   // data type int
+    this.m_enabled = false;
     this.m_appService = " ";
     this.m_protocol = " ";
     this.m_internIpAddr = "0.0.0.0";
@@ -99,20 +100,12 @@ function UTM_nwConfigBusObj(busObj)
     this.m_lastCmdSent = null;
     this.m_nwRec = null;
 
-    this.m_udpServices = ["DNS-UDP", "TFTP", "NTP", "SNMP", "L2TP", "Traceroute",
-                        "IPSec", "UNIK", "H323 host call - UDP", "SIP-UDP",
-                        "ICA-UDP"];
     this.m_services = ["DNS-UDP", "DNS-TCP", "HTTP", "HTTPS", "FTP_DATA",
                         "FTP", "POP3", "SMTP", "SMTP-Auth", "TFTP", "POP3S",
                         "IMAP", "NTP", "NNTP", "SNMP", "Telnet", "SSH",
                         "L2TP", "Traceroute", "IPSec", "UNIK", "H323 host call - TCP",
                         "H323 host call - UDP", "SIP-TCP", "SIP-UDP",
                         "ICA-TCP", "ICA-UDP", "Others", " "];
-    this.m_ports = ["53", "53", "80", "443", "20", "21", "110", "25", "587",
-                        "69", "995", "143", "119", "199", "161-162", "23", "22",
-                        "1701", "32769-65535", "500, 4500", "500, 4500",
-                        "1720", "1718, 1719", "5060", "5060", "1494", "1494", " ", " "];
-    this.m_protocols = ["tcp", "udp", "both"];
 
     /**
      * A callback function for request.
@@ -142,13 +135,7 @@ function UTM_nwConfigBusObj(busObj)
                     evt = new UTM_eventObj(0, fr, '');
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
-                    "customize-firewall next-rulenum") > 0)
-                {
-                    var fr = thisObj.f_parseFirewallNextRuleNo(err);
-                    evt = new UTM_eventObj(0, fr, '');
-                }
-                else if(thisObj.m_lastCmdSent.indexOf(
-                    '<handler>customize-firewall get') > 0)
+                    'network-nat-pat get') > 0)
                 {
                     thisObj.m_fireRec = thisObj.f_parseFirewallSecurityCustomize(err);
                     evt = new UTM_eventObj(0, thisObj.m_fireRec, '');
@@ -391,8 +378,8 @@ function UTM_nwConfigBusObj(busObj)
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
-                      " delete-rule</handler><data>rulenum=[" + rec.m_ruleNo +
+                      "<statement mode='proc'><handler>network-nat-pat" +
+                      " delete</handler><data>rulenum=[" + rec.m_ruleNo +
                       "]</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,

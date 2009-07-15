@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+83) unstable; urgency=low
+
+  * 1. Biz logic layer for LAN/ LAN2/ DMZ screens
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 15 Jul 2009 01:25:01 +0000
+
 vyatta-webgui (0.2.14+fxdU+82) unstable; urgency=low
 
   [ Kevin Choi ]

@@ -69,6 +69,13 @@ function UTM_confNwLAN(name, callback, busLayer)
 			thisObj.m_lanIp.f_handleKeyEvent(sourceId, eventType, userData);
 		}
 	}
+	
+	this.f_handleColumnSorting = function(childId, column) 
+	{
+		if (childId == 'conf_lan_ip') {
+			thisObj.m_lanIp.f_handleColumnSorting(column);
+		}		
+	}	
 }
 UTM_extend(UTM_confNwLAN, UTM_confContainerObj);
 	

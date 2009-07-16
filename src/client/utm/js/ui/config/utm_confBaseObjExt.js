@@ -194,6 +194,7 @@ function UTM_confBaseObjExt(name, callback, busLayer)
 		for (var i=0; i < cbArray.length; i++) {
 			if (cbArray[i].hidden) {
 				html += '<input style="display:none" id="' + cbArray[i].id + '" type="checkbox" ' + cbArray[i].value + '/>';
+				//html += '<input id="' + cbArray[i].id + '" type="checkbox" ' + cbArray[i].value + '/>';				
 			} else {
 				var tooltip = (cbArray[i].tooltip==undefined)? "" : cbArray[i].tooltip;
 				var readonly = (cbArray[i].readonly!=undefined) && (cbArray[i].readonly!=null) && (cbArray[i].readonly==true);

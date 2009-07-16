@@ -932,9 +932,16 @@ function UTM_nwDHCPmapRecord(name, ip, mac, enable)
 	this.m_mac = mac;
 	this.m_enable = enable;
 	this.m_action = '';
+	this.m_guiAdd = '';
+	this.m_guiChange = '';
 
 	this.f_setAction = function(action) {
 		thisObj.m_action = action;
+	}
+
+    this.f_setGuiParams = function(add, change) {
+		thisObj.m_guiAdd = add;
+		thisObj.m_guiChange = change;
 	}
 
 	this.f_toXml = function() {

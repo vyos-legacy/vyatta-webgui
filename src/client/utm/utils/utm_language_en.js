@@ -345,6 +345,8 @@ var g_lang =
 	m_landhcp_dns_dynamic : "Dynamic",
 	m_landhcp_dns_none : "No DNS",
 	m_lanip_reserved_ip : "Reserved IP addresses",
+	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",	
+	m_lanip_reserved_ip_entry: "entries",
 	
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images

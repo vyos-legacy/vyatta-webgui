@@ -977,8 +977,8 @@ function UTM_confNwLANip(name, callback, busLayer)
         var chkbox = g_lang.m_enabled + '<br>' +
         thisObj.f_renderCheckbox('no', thisObj.m_prefix + 'enable_cb', this.m_handleClickCbFunction + "('" + thisObj.m_objectId + "," + thisObj.m_prefix + "enable_cb')", 'tooltip');
         
-        cols[0] = this.f_createColumn(g_lang.m_ipAddr, this.m_textWidth, 'textField', '10', false, 'center');
-        cols[1] = this.f_createColumn(g_lang.m_macAddr, this.m_textWidth, 'textField', '10', false, 'center');
+        cols[0] = this.f_createColumn(g_lang.m_ipAddr, this.m_textWidth, 'textField', '10',true, 'center');
+        cols[1] = this.f_createColumn(g_lang.m_macAddr, this.m_textWidth, 'textField', '10',true, 'center');
         cols[2] = this.f_createColumn(chkbox, 70, 'checkbox', '28');
         cols[3] = this.f_createColumn(g_lang.m_delete + '<br>', 70, 'image', '28');
         //cols[4] = this.f_createColumn('',0,'hidden','28');
@@ -1032,7 +1032,6 @@ function UTM_confNwLANip(name, callback, busLayer)
         var eventIp = ["", this.m_handleKeyEventCbFunction + "('" + this.m_objectId + "," + prefix + 'ip_' + this.m_cnt + "," + "keyDown," + rowId + "')"];
         var eventMac = ["", this.m_handleKeyEventCbFunction + "('" + this.m_objectId + "," + prefix + 'mac_' + this.m_cnt + "," + "keyDown," + rowId + "')"];
         this.m_rowIdArray.push(rowId);
-        this.m_tagNameArray[this.m_cnt] = '';
         var ip = this.f_renderTextField(prefix + 'ip_' + this.m_cnt, '', '', this.m_textWidth - 20, eventIp);
         var mac = this.f_renderTextField(prefix + 'mac_' + this.m_cnt, '', '', this.m_textWidth - 20, eventMac);
         var a = [{
@@ -1073,6 +1072,10 @@ function UTM_confNwLANip(name, callback, busLayer)
 		var ap = a.m_ip.trim();
 		var bp = b.m_ip.trim();
 
+        if (thisObj.m_sortCol == 1) {
+			ap = a.m_mac.trim();
+			bp = b.m_mac.trim();
+		}
 		(ap.trim().length <= 0) ? (ap = '1' + ap) : (ap = '0' + ap);
 		(bp.trim().length <= 0) ? (bp = '1' + bp) : (bp = '0' + bp);
 
@@ -1082,7 +1085,38 @@ function UTM_confNwLANip(name, callback, busLayer)
 			return bp.cmp(ap);
 		}
 	}		
+
+	this.f_handleColumnSorting = function(column) 
+	{
+        if(this.f_isSortEnabled(this.m_hdcolumns, column)) {	//f_isSortEnabled assign the m_sortOrder, m_sortCol		
+			var a = new Array();
+			for (var i=0; i < this.m_rowIdArray.length; i++) {
+				var seedId = this.f_getSeedIdByRowId(this.m_rowIdArray[i]);
+                var cb = document.getElementById(this.m_prefix + 'cb_' + seedId);
+                var cbAdd = document.getElementById(this.m_prefix + 'cb_add_' + seedId);
+                var cbChange = document.getElementById(this.m_prefix + 'cb_change_' + seedId);							
+                var ip = document.getElementById(this.m_prefix + 'ip_' + seedId);	
+				var mac = document.getElementById(this.m_prefix + 'mac_' + seedId);
+				var cbValue = (cb.checked) ? 'true' : 'false';
+				var cbAddValue = (cbAdd.checked) ? 'checked' : '';
+				var cbChangeValue = (cbChange.checked) ? 'checked' : '';
+				var tagName = this.m_tagNameArray[seedId];
+				if ((tagName == undefined) || (tagName == null)) {
+					tagName = '';
+				}
+                var o = new UTM_nwDHCPmapRecord(tagName, ip.value, mac.value, cbValue);
+				o.f_setGuiParams(cbAddValue, cbChangeValue);	
+				a.push(o);
+			}
+			var dhcpMap = new UTM_nwDHCPmap(thisObj.m_ifName, a);
+			this.f_cleanup();
+            thisObj.m_sortCol = column;
+			this.f_populateTable(dhcpMap);			
+			this.f_setSortOnColPerformed(column, column);		
+		}
 		
+	}
+			
     this.f_populateTable = function(dhcpMap)
     {           
 	    var a = dhcpMap.m_dhcpMapList;
@@ -1098,7 +1132,9 @@ function UTM_confNwLANip(name, callback, busLayer)
             var eventIp = ["", this.m_handleKeyEventCbFunction + "('" + this.m_objectId + "," + prefix + 'ip_' + this.m_cnt + "," + "keyDown," + rowId + "')"];
             var eventMac = ["", this.m_handleKeyEventCbFunction + "('" + this.m_objectId + "," + prefix + 'mac_' + this.m_cnt + "," + "keyDown," + rowId + "')"];			
             this.m_rowIdArray.push(rowId);
-            this.m_tagNameArray[this.m_cnt] = a[i].m_name;
+			if (a[i].m_name.trim().length > 0) {
+				this.m_tagNameArray[this.m_cnt] = a[i].m_name;
+			}
             var ip = this.f_renderTextField(prefix + 'ip_' + this.m_cnt, a[i].m_ip, '', this.m_textWidth - 20, eventIp);
             var mac = this.f_renderTextField(prefix + 'mac_' + this.m_cnt, a[i].m_mac, '', this.m_textWidth - 20, eventMac);			
 			var enable = 'checked';
@@ -1108,7 +1144,7 @@ function UTM_confNwLANip(name, callback, busLayer)
 			
             var cbArr = [{
                 id: prefix + 'cb_add_' + this.m_cnt,
-                value: '',
+                value: a[i].m_guiAdd,
                 hidden: true
             }, {
                 id: prefix + 'cb_' + this.m_cnt,
@@ -1119,7 +1155,7 @@ function UTM_confNwLANip(name, callback, busLayer)
                 readonly: false
             }, {
                 id: prefix + 'cb_change_' + this.m_cnt,
-                value: '',
+                value: a[i].m_guiChange,
                 hidden: true
             }];			
 			
@@ -1184,7 +1220,7 @@ function UTM_confNwLANip(name, callback, busLayer)
                  return;
             } else {
                 row.parentNode.removeChild(row);
-                this.f_tagNameArrayRemoveRow(seedId);
+                //this.f_tagNameArrayRemoveRow(seedId);
                 this.f_rowIdArrayRemoveRow(prefix + seedId);
             }
         }
@@ -1192,14 +1228,24 @@ function UTM_confNwLANip(name, callback, busLayer)
     
 	this.f_generateTagName = function(ip)
 	{
-		var item = thisObj.m_tagNameArray[ip];
-		if ((item == undefined) || (item == null)) 
-		    return ip;
-		var i = 0;
-	    while (thisObj.m_tagNameArray[ip+'_'+i]) {
-			i++;			
+		var i = thisObj.m_tagNameArray.indexOf(ip);
+		if (i < 0) {
+			return ip;
 		}
-		return (ip + '_' + i);
+        var j = 0;
+	    while (i >= 0) {
+			j++;
+			i = thisObj.m_tagNameArray.indexOf(ip + '_' + j + '_');		
+		}
+		return (ip + '_' + j + '_');
+	}
+	
+	this.f_canAdd = function()
+	{
+		if (this.m_rowIdArray.length < g_nwConfig.m_nwMaxDHCPresevedIP) {
+			return true;
+		}
+		return false;
 	}
 	
 	this.f_validate = function()
@@ -1291,8 +1337,10 @@ function UTM_confNwLANip(name, callback, busLayer)
                     if ((ip.value.trim().length <= 0) || (mac.value.trim().length <= 0)) {
                         continue;
                     }
-                    this.m_addedRow.push(seedId);
-                    var mapObj = new UTM_nwDHCPmapRecord(thisObj.f_generateTagName(ip.value), ip.value, mac.value, enable);
+                    this.m_addedRow.push(seedId);					
+					var tagName = thisObj.f_generateTagName(ip.value);								
+                    this.m_tagNameArray[seedId] = tagName;										
+                    var mapObj = new UTM_nwDHCPmapRecord(tagName, ip.value, mac.value, enable);					
 					mapObj.f_setAction('add');
                     dhcpMapList.push(mapObj);
                 } else {
@@ -1326,6 +1374,8 @@ function UTM_confNwLANip(name, callback, busLayer)
         this.f_enabledDisableButton(this.m_btnCancelId, state);
     }
     
+	
+	
     this.f_handleClick = function(sourceId, userData)
     {
         if (sourceId == this.m_btnCancelId) {
@@ -1333,8 +1383,13 @@ function UTM_confNwLANip(name, callback, busLayer)
         } else if (sourceId == this.m_btnApplyId) {
             this.f_apply();
         } else if (sourceId == this.m_btnAddId) {
-            this.f_enableAllButton(true);
-            this.f_addRow();
+			if (this.f_canAdd()) {
+				this.f_enableAllButton(true);
+				this.f_addRow();
+			} else {
+                g_utils.f_popupMessage(g_lang.m_lanip_reserved_ip_limit + ' ' 
+				    + g_nwConfig.m_nwMaxDHCPresevedIP + ' ' + g_lang.m_lanip_reserved_ip_entry, 'ok', g_lang.m_info, true);				
+			}
         } else if (sourceId == this.m_prefix + 'enable_cb') {
             this.f_enableAll();
 			this.f_setDirtyAll();
@@ -1384,7 +1439,7 @@ function UTM_confNwLANip(name, callback, busLayer)
         this.f_enableAllButton(true);
 		this.f_setDirty(thisObj.f_getSeedIdByRowId(userData));
     }
-	
+		
 	this.f_setDirty = function(seedId)
 	{
 		var cbChange = document.getElementById(thisObj.m_prefix + 'cb_change_' + seedId);
@@ -1424,10 +1479,10 @@ function UTM_confNwLANip(name, callback, busLayer)
                 }
                 thisObj.m_dhcpMap = evt.m_value;
                 thisObj.f_populateTable(thisObj.m_dhcpMap);
-                //thisObj.m_sortCol = 0;
-                //thisObj.m_sortColPrev = 0;					
-                thisObj.f_addRow();
-                //window.setTimeout(function(){thisObj.f_adjust();}, 10);										
+				thisObj.f_setSortOnColPerformed(0, 0);						
+				if (thisObj.f_canAdd()) {
+					thisObj.f_addRow();
+				}
             }
         };
         this.f_getDhcpMap(cb);
@@ -1495,8 +1550,9 @@ function f_confNwLANipHandleClickCb(arg)
     }
 }
 
-function f_confNwLANipGridHeaderOnclick(col)
+function f_confNwLANipGridHeaderOnclick(column)
 {
+	g_configPanelObj.m_activeObj.f_handleColumnSorting('conf_lan_ip', column);	
 }
 
 function f_confNwLANipHandleKeyEventCb(arg)

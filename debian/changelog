@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-9+jenner15) unstable; urgency=low
+
+  * * fixed bug#4437 : re-words user message
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 16 Jul 2009 00:26:30 +0000
+
 vyatta-webgui (0.2.13-9+jenner14) unstable; urgency=low
 
   * fix for bug 4690. special characters are now escaped for config

@@ -230,6 +230,11 @@ function UTM_confBaseObjExt(name, callback, busLayer)
         return div;
     }
 	
+    this.f_createListItem = function(item)
+    {
+        return ('<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">' + item + '</li>');
+    }	
+	
 }
 
 UTM_extend(UTM_confBaseObjExt, UTM_confBaseObj);

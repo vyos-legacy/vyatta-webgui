@@ -76,6 +76,7 @@ var g_lang =
     m_group : "groupe",
     m_username : "utilisateur",
     m_status : "statut",
+	m_duplicate :'Duplicate',	
     m_ipAddr : "adresse IP",
 	m_macAddr: 'MAC address',	
     m_invalidIpAddr : "Invalid IP adresse",
@@ -85,6 +86,11 @@ var g_lang =
     m_cancelTip : "annuler les modifications", 
     m_confModify : "les modifications effectuées n'ont pas été sauvegardées. Voulez-vous continuer ?",
 
+    m_formNotAValidIP: " is not a valid IP address",
+	m_formNotAValidMac: " is not a valid MAC address",
+	m_formFixError: "Please fix the following errors:",
+    m_formNoEmpty : "cannot be empty",	
+	
     ///////////////////////////////////////////////////////////////////;;
     // VPN Overview;;
     m_vpnOVSource : 'source',

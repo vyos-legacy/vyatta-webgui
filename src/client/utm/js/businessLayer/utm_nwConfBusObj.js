@@ -1244,17 +1244,17 @@ function UTM_nwIfBusObj(busObj)
 
     this.f_setIfConfig = function(ifConfigObj, guicb)
 	{
-	    (g_devConfig.m_isLocalMode) ? thisObj.f_setIfConfigLocal(ifConfigObj, guicb) : thisObj.f_getIfConfigServer(ifConfigObj, guicb);
+	    (g_devConfig.m_isLocalMode) ? thisObj.f_setIfConfigLocal(ifConfigObj, guicb) : thisObj.f_setIfConfigServer(ifConfigObj, guicb);
 	}
 
     this.f_setDhcpConfig = function(dhcpConfigObj, guicb)
 	{
-	    (g_devConfig.m_isLocalMode) ? thisObj.f_setDhcpConfigLocal(dhcpConfigObj, guicb) : thisObj.f_getDhcpConfigServer(dhcpConfigObj, guicb);
+	    (g_devConfig.m_isLocalMode) ? thisObj.f_setDhcpConfigLocal(dhcpConfigObj, guicb) : thisObj.f_setDhcpConfigServer(dhcpConfigObj, guicb);
 	}
 
     this.f_setDhcpMap = function(dhcpMap, guicb)
 	{
-	    (g_devConfig.m_isLocalMode) ? thisObj.f_setDhcpMapLocal(dhcpMap, guicb) : thisObj.f_getDhcpMapServer(dhcpMap, guicb);
+	    (g_devConfig.m_isLocalMode) ? thisObj.f_setDhcpMapLocal(dhcpMap, guicb) : thisObj.f_setDhcpMapServer(dhcpMap, guicb);
 	}
 
     this.f_setIfConfigServer = function(ifConfigObj, guicb)

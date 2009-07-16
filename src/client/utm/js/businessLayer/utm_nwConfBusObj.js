@@ -69,11 +69,11 @@ function UTM_nwPortConfigRecord(num, name, group, enable)
 		xml += '<enable>' +  thisObj.m_enable + '</enable></port-config>';
 		return xml;
 	}
-	
+
 	this.f_toXmlForSet = function() {
 		var xml = '<port><num>' + thisObj.m_num + '</num>';;
 		xml += '<enable>' +  thisObj.m_enable + '</enable></port>';
-		return xml;		
+		return xml;
 	}
 }
 
@@ -152,7 +152,7 @@ function UTM_nwConfigBusObj(busObj)
     this.f_parseRouteList = function(response)
     {
         var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
-        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'static-route');
+        nodes = thisObj.m_busObj.f_getResponseChildNodes(nodes, 'static-route');
         var recs = new Array();
 
         for(var i=0; nodes != null && i<nodes.length; i++)
@@ -742,7 +742,7 @@ function UTM_nwPortConfigBusObj(busObj)
 		var form = thisObj.f_getFormNode(response);
 		var groupList = thisObj.f_parseGroupList(form);
 		var portList =  thisObj.f_parsePortList(form);
-		
+
 		return new UTM_nwPortConfigObj(groupList, portList);
 	}
 
@@ -753,7 +753,7 @@ function UTM_nwPortConfigBusObj(busObj)
 		var nodeValue = [];
 		var portConfigNode = g_utils.f_xmlGetChildNode(form, 'port-config');
         var portNodeArray = g_utils.f_xmlGetChildNodeArray(portConfigNode, 'port');
-		
+
 		for (var j=0; j < portNodeArray.length; j++) {
 			var portNode = portNodeArray[j];
 			for (var i=0; i < nodeArray.length; i++) {
@@ -763,31 +763,31 @@ function UTM_nwPortConfigBusObj(busObj)
 					if (value != null) {
 						nodeValue[nodeArray[i]] = value;
 					}
-				}		
+				}
 			}
 		    var num = (nodeValue['num'] == undefined)? '' : nodeValue['num'];
 		    var name = (nodeValue['name'] == undefined)? '' : nodeValue['name'];
 		    var group = (nodeValue['group'] == undefined)? '' : nodeValue['group'];
 		    var enable = (nodeValue['enable'] == undefined)? 'false' : nodeValue['enable'];
-		
-		    a.push(new UTM_nwPortConfigRecord(num, name, group, enable));			
+
+		    a.push(new UTM_nwPortConfigRecord(num, name, group, enable));
 		}
-        return a;		
+        return a;
 	}
-	
+
 	this.f_parseGroupList = function(form)
 	{
 		var groupListNode = g_utils.f_xmlGetChildNode(form, 'port-group');
 		var groupArray = g_utils.f_xmlGetChildNodeArray(groupListNode, 'group');
 		var a = new Array();
-		
+
 		for (var i=0; i < groupArray.length; i++) {
 			var value = g_utils.f_xmlGetNodeValue(groupArray[i]);
 			if (value != null) {
 			     a.push(value);
-			}			
+			}
 		}
-		
+
 		return a;
 	}
 
@@ -834,7 +834,7 @@ function UTM_nwPortConfigBusObj(busObj)
 	    xmlstr += '<port-config>';
 		for (var i=0; i < portConfigList.length; i++) {
 			xmlstr += portConfigList[i].f_toXmlForSet();
-		}			  					
+		}
         xmlstr +=  "</port-config></data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -879,7 +879,7 @@ function UTM_nwPortConfigBusObj(busObj)
 										   '</port><port>' +
                                                 '<num>3</num><name>Port E1</name><group>LAN</group><enable>true</enable>' +
                                            '</port>' +
-                                        '</port-config>' +									
+                                        '</port-config>' +
                                     '</form>' +
                                 '</msg>' +
                           '</error>' +
@@ -898,7 +898,7 @@ function UTM_nwPortConfigBusObj(busObj)
 		xmlstr += '<port-config>';
 		for (var i=0; i < portConfigList.length; i++) {
 			xmlstr += portConfigList[i].f_toXmlForSet();
-		}			  					
+		}
         xmlstr +=  "</port-config></data></statement></command>";
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -929,10 +929,10 @@ function UTM_nwDHCPmapRecord(name, ip, mac, enable)
 	var thisObj = this;
 	this.m_name = name;
 	this.m_ip = ip;
-	this.m_mac = mac; 
+	this.m_mac = mac;
 	this.m_enable = enable;
 	this.m_action = '';
-	
+
 	this.f_setAction = function(action) {
 		thisObj.m_action = action;
 	}
@@ -943,7 +943,7 @@ function UTM_nwDHCPmapRecord(name, ip, mac, enable)
 		xml += '<enable>' +  thisObj.m_enable + '</enable></mapping>';
 		return xml;
 	}
-	
+
 }
 
 function UTM_nwDHCPmap(ifName, dhcpMapList)
@@ -951,12 +951,12 @@ function UTM_nwDHCPmap(ifName, dhcpMapList)
 	var thisObj = this;
 	this.m_ifName = ifName;
 	this.m_dhcpMapList = dhcpMapList;
-	
+
 	this.f_toXml = function() {
 		var xml = '<mapping-config>';
 		xml += '<interface>' + thisObj.m_ifName.toUpperCase() + '</interface>';
 		for (var i=0; i < thisObj.m_dhcpMapList.length; i++) {
-			xml += thisObj.m_dhcpMapList[i].f_toXml(); 
+			xml += thisObj.m_dhcpMapList[i].f_toXml();
 		}
 		xml += '</mapping-config>';
 		return xml;
@@ -968,15 +968,15 @@ function UTM_nwIfConfigObj(name, ip, mask)
 	var thisObj = this;
 	this.m_name = name;
 	this.m_ip = ip;
-	this.m_mask = mask; 
+	this.m_mask = mask;
 
 	this.f_toXml = function() {
 		var xml = '<interface-config><interface>' + thisObj.m_name + '</interface>';
 		xml += '<ip>' + thisObj.m_ip + '</ip><mask>' + thisObj.m_mask + '</mask></interface-config>';
 		return xml;
 	}
-	
-}		
+
+}
 
 function UTM_nwDhcpConfigObj(name, enable, start, end, dnsMode, dnsPrimary, dnsSecondary)
 {
@@ -987,7 +987,7 @@ function UTM_nwDhcpConfigObj(name, enable, start, end, dnsMode, dnsPrimary, dnsS
 	this.m_end = end;
 	this.m_dnsMode = dnsMode;
 	this.m_dnsPrimary = dnsPrimary;
-	this.m_dnsSecondary = dnsSecondary; 
+	this.m_dnsSecondary = dnsSecondary;
 
 	this.f_toXml = function() {
 		var xml = '<dhcp-config><interface>' + thisObj.m_name.toUpperCase() + '</interface>';
@@ -997,12 +997,12 @@ function UTM_nwDhcpConfigObj(name, enable, start, end, dnsMode, dnsPrimary, dnsS
 			xml += '<end>' + thisObj.m_end + '</end>';
 			xml += '<dns-mode>' + thisObj.m_dnsMode + '</dns-mode>';
 			xml += '<primary-dns>' + thisObj.m_dnsPrimary + '</primary-dns>';
-			xml += '<secondary-dns>' + thisObj.m_dnsSecondary + '</secondary-dns>';			
+			xml += '<secondary-dns>' + thisObj.m_dnsSecondary + '</secondary-dns>';
 		}
 		xml += '</dhcp-config>';
 		return xml;
 	}
-	
+
 }
 
 function UTM_nwIfBusObj(busObj)
@@ -1021,7 +1021,7 @@ function UTM_nwIfBusObj(busObj)
 	this.m_SET_DHCP_CMD = 'dhcp-config set';
 	this.m_GET_DHCP_MAP_CMD = 'dhcp-static-mapping get';
 	this.m_SET_DHCP_MAP_CMD = 'dhcp-static-mapping set';
-	
+
     /**
      * A callback function for all url filtering requests.
      */
@@ -1062,14 +1062,14 @@ function UTM_nwIfBusObj(busObj)
 				} else if (thisObj.m_lastCmdSent.indexOf(thisObj.m_GET_DHCP_MAP_CMD) > 0) {
                     thisObj.m_dhcpMap = thisObj.f_parseDhcpMap(err);
                     evt = new UTM_eventObj(0, thisObj.m_dhcpMap, '');
-				} 
+				}
             }
 
             if(thisObj.m_guiCb != undefined)
                 thisObj.m_guiCb(evt);
         }
     }
-	
+
     /////////////////////////////////////////
     /**
      * A callback function for all user management requests.
@@ -1102,9 +1102,9 @@ function UTM_nwIfBusObj(busObj)
             if(thisObj.m_guiCb != undefined)
                 thisObj.m_guiCb(evt);
         }
-    }	
-	
-	this.f_parseIfName = function(form) 
+    }
+
+	this.f_parseIfName = function(form)
 	{
 		var ifNode = g_utils.f_xmlGetChildNode(form, 'interface');
 		if (ifNode == null) {
@@ -1112,7 +1112,7 @@ function UTM_nwIfBusObj(busObj)
 		}
         return g_utils.f_xmlGetNodeValue(ifNode);
 	}
-	
+
 	this.f_getNodeValue = function(node)
 	{
 		var nodeValue = g_utils.f_xmlGetNodeValue(node);
@@ -1121,14 +1121,14 @@ function UTM_nwIfBusObj(busObj)
 		}
 		return nodeValue;
 	}
-	
+
 	this.f_parseDhcpMapList = function(mapConfigNode)
 	{
 		var a = new Array();
 		var nodeArray = ['tagname', 'ip', 'mac', 'enable'];
 		var nodeValue = [];
         var mapNodeArray = g_utils.f_xmlGetChildNodeArray(mapConfigNode, 'mapping');
-		
+
 		for (var j=0; j < mapNodeArray.length; j++) {
 			var mapNode = mapNodeArray[j];
 			for (var i=0; i < nodeArray.length; i++) {
@@ -1138,18 +1138,18 @@ function UTM_nwIfBusObj(busObj)
 					if (value != null) {
 						nodeValue[nodeArray[i]] = value;
 					}
-				}		
+				}
 			}
 		    var name = (nodeValue['tagname'] == undefined)? '' : nodeValue['tagname'];
 		    var ip = (nodeValue['ip'] == undefined)? '' : nodeValue['ip'];
 		    var mac = (nodeValue['mac'] == undefined)? '' : nodeValue['mac'];
 		    var enable = (nodeValue['enable'] == undefined)? 'false' : nodeValue['enable'];
-		
-		    a.push(new UTM_nwDHCPmapRecord(name, ip, mac, enable));			
+
+		    a.push(new UTM_nwDHCPmapRecord(name, ip, mac, enable));
 		}
-        return a;		
+        return a;
 	}
-	
+
     this.f_parseDhcpMap= function(response)
 	{
 		var a = new Array();
@@ -1160,9 +1160,9 @@ function UTM_nwIfBusObj(busObj)
 		var mapConfigNode = g_utils.f_xmlGetChildNode(form, 'mapping-config');
 		var ifName = thisObj.f_parseIfName(mapConfigNode);
 		var dhcpMapList =  thisObj.f_parseDhcpMapList(mapConfigNode);
-		
+
 		return new UTM_nwDHCPmap(ifName, dhcpMapList);
-	}	
+	}
 
     this.f_parseIfConfig= function(response)
 	{
@@ -1171,9 +1171,9 @@ function UTM_nwIfBusObj(busObj)
 		var ifName = thisObj.f_parseIfName(ifNode);
 		var ip = thisObj.f_getNodeValue(ifNode);
 		var mask = thisObj.f_getNodeValue(ifNode);
-		
+
 		return new UTM_nwIfConfigObj(ifName, ip, mask);
-	}	
+	}
 
     this.f_parseDhcpConfig= function(response)
 	{
@@ -1187,24 +1187,24 @@ function UTM_nwIfBusObj(busObj)
 		var dnsMode = thisObj.f_getNodeValue(dhcpNode);
 		var dnsPrimary = thisObj.f_getNodeValue(dhcpNode);
 		var dnsSecondary = thisObj.f_getNodeValue(dhcpNode);
-		
+
 		return new UTM_nwDhcpConfigObj(ifName, enable, start, end, dnsMode, dnsPrimary, dnsSecondary);
-	}	
-	
+	}
+
 	this.f_getIfConfig = function(ifName, guicb)
 	{
 		(g_devConfig.m_isLocalMode) ? thisObj.f_getIfConfigLocal(ifName, guicb) : thisObj.f_getIfConfigServer(ifName, guicb);
-	}	
+	}
 
 	this.f_getDhcpConfig = function(ifName, guicb)
 	{
 		(g_devConfig.m_isLocalMode) ? thisObj.f_getDhcpConfigLocal(ifName, guicb) : thisObj.f_getDhcpConfigServer(ifName, guicb);
 	}
-	
+
 	this.f_getDhcpMap = function(ifName, guicb)
 	{
 		(g_devConfig.m_isLocalMode) ? thisObj.f_getDhcpMapLocal(ifName, guicb) : thisObj.f_getDhcpMapServer(ifName, guicb);
-	}	
+	}
 
     this.f_getIfConfigServer = function(ifName, guicb)
     {
@@ -1228,8 +1228,8 @@ function UTM_nwIfBusObj(busObj)
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
-    }	
-	
+    }
+
     this.f_getDhcpMapServer = function(ifName, guicb)
     {
         thisObj.m_guiCb = guicb;
@@ -1240,8 +1240,8 @@ function UTM_nwIfBusObj(busObj)
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
-    }	
-	
+    }
+
     this.f_setIfConfig = function(ifConfigObj, guicb)
 	{
 	    (g_devConfig.m_isLocalMode) ? thisObj.f_setIfConfigLocal(ifConfigObj, guicb) : thisObj.f_getIfConfigServer(ifConfigObj, guicb);
@@ -1251,11 +1251,11 @@ function UTM_nwIfBusObj(busObj)
 	{
 	    (g_devConfig.m_isLocalMode) ? thisObj.f_setDhcpConfigLocal(dhcpConfigObj, guicb) : thisObj.f_getDhcpConfigServer(dhcpConfigObj, guicb);
 	}
-	
+
     this.f_setDhcpMap = function(dhcpMap, guicb)
 	{
 	    (g_devConfig.m_isLocalMode) ? thisObj.f_setDhcpMapLocal(dhcpMap, guicb) : thisObj.f_getDhcpMapServer(dhcpMap, guicb);
-	}	
+	}
 
     this.f_setIfConfigServer = function(ifConfigObj, guicb)
     {
@@ -1264,39 +1264,39 @@ function UTM_nwIfBusObj(busObj)
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>interface-config" +
                       " set</handler><data>";
-	    xmlstr += ifConfigObj.f_toXml();			  					
+	    xmlstr += ifConfigObj.f_toXml();
         xmlstr +=  "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
-    }	
-	
+    }
+
 	this.f_setDhcpConfigServer = function(dhcpConfigObj, guicb)
 	{
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>dhcp-config set</handler><data>";
-	    xmlstr += dhcpConfigObj.f_toXml();			  					
+	    xmlstr += dhcpConfigObj.f_toXml();
         xmlstr +=  "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallbackSetCmd);		
+                              thisObj.f_respondRequestCallbackSetCmd);
 	}
-	
+
     this.f_setDhcpMapServer = function(dhcpMap, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>dhcp-static-mapping set</handler><data>";
-	    xmlstr += dhcpMap.f_toXml();			  					
+	    xmlstr += dhcpMap.f_toXml();
         xmlstr +=  "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
-    }	
-	
+    }
+
 	///////////////////////////////////////////////////////////////////////////////////////
 	/////// begining simulation
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -1324,24 +1324,24 @@ function UTM_nwIfBusObj(busObj)
 								           '<interface>' + ifName.toUppderCase() + '</interface>' +
 									       '<ip>192.168.1.1</ip>' +
 									       '<mask>21</mask>' +
-									   '</interface-config>' +								
+									   '</interface-config>' +
                                     '</form>' +
                                 '</msg>' +
                           '</error>' +
                   '</openappliance>');
 
         thisObj.f_respondRequestCallback(resp, guicb);
-    }	
-	
+    }
+
     this.f_getDhcpConfigLocal = function(ifName, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
-		
+
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>dhcp-config get</handler><data>";
-	    xmlstr += ifName.toUpperCase(); 		  					
-        xmlstr +=  "</data></statement></command>";		
+	    xmlstr += ifName.toUpperCase();
+        xmlstr +=  "</data></statement></command>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -1356,31 +1356,31 @@ function UTM_nwIfBusObj(busObj)
                                '<msg>' +
                                    '<form name=\'dhcp-config\' code=\'0\'>' +
 									   '<dhcp-config>' +
-								           '<interface>' + ifName.toUppderCase() + '</interface>' +									   
+								           '<interface>' + ifName.toUppderCase() + '</interface>' +
 									       '<enable>true</enable>' +
 									       '<start>192.168.1.2</start>' +
-										   '<end>192.168.1.254</end>' + 
+										   '<end>192.168.1.254</end>' +
 										   '<dns-mode>static</dns-mode>' +
 										   '<primary-dns>192.168.1.51</primary-dns>' +
 										   '<secondary-dns>192.168.1.53</secondary-dns>' +
-									   '</dhcp-config>' +								
+									   '</dhcp-config>' +
                                     '</form>' +
                                 '</msg>' +
                           '</error>' +
                   '</openappliance>');
 
         thisObj.f_respondRequestCallback(resp, guicb);
-    }	
-	
+    }
+
     this.f_getDhcpMapLocal = function(ifName, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
-		
+
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>dhcp-static-mapping get</handler><data>";
-	    xmlstr += ifName.toUpperCase();			  					
-        xmlstr +=  "</data></statement></command>";		
+	    xmlstr += ifName.toUpperCase();
+        xmlstr +=  "</data></statement></command>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -1395,37 +1395,37 @@ function UTM_nwIfBusObj(busObj)
                                '<msg>' +
                                    '<form name=\'dhcp-static-mapping\' code=\'0\'>' +
 									   '<mapping-config>' +
-								           '<interface>' + ifName.toUpperCase() + '</interface>' +									   
-									       '<mapping>' + 
+								           '<interface>' + ifName.toUpperCase() + '</interface>' +
+									       '<mapping>' +
 									           '<tagname>one</tagname>' +
 									           '<ip>192.168.1.2</ip>' +
-										       '<mac>24:ef:03:04:dd:10</mac>' + 
+										       '<mac>24:ef:03:04:dd:10</mac>' +
 										       '<enable>true</enable>' +
-                                           '</mapping>' +  
-									       '<mapping>' + 
+                                           '</mapping>' +
+									       '<mapping>' +
 									           '<tagname>two</tagname>' +
 									           '<ip>192.168.1.3</ip>' +
-										       '<mac>24:ef:03:04:dd:20</mac>' + 
+										       '<mac>24:ef:03:04:dd:20</mac>' +
 										       '<enable>false</enable>' +
-                                           '</mapping>' +  										   
-									   '</mapping-config>' +								
+                                           '</mapping>' +
+									   '</mapping-config>' +
                                     '</form>' +
                                 '</msg>' +
                           '</error>' +
                   '</openappliance>');
 
         thisObj.f_respondRequestCallback(resp, guicb);
-    }	
-	
+    }
+
     this.f_setIfConfigLocal = function(ifConfigObj, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
-		
+
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>interface-config set</handler><data>";
-	    xmlstr += ifConfigObj.f_toXml(); 		  					
-        xmlstr +=  "</data></statement></command>";		
+	    xmlstr += ifConfigObj.f_toXml();
+        xmlstr +=  "</data></statement></command>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -1446,17 +1446,17 @@ function UTM_nwIfBusObj(busObj)
                           '</error>' +
                   '</openappliance>');
         thisObj.f_respondRequestCallbackSetCmd(resp, guicb);
-    }	
-	
+    }
+
     this.f_setDhcpConfigLocal = function(dhcpConfigObj, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
-		
+
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>dhcp-config set</handler><data>";
-	    xmlstr += dhcpConfigObj.f_toXml(); 		  					
-        xmlstr +=  "</data></statement></command>";		
+	    xmlstr += dhcpConfigObj.f_toXml();
+        xmlstr +=  "</data></statement></command>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -1477,17 +1477,17 @@ function UTM_nwIfBusObj(busObj)
                           '</error>' +
                   '</openappliance>');
         thisObj.f_respondRequestCallbackSetCmd(resp, guicb);
-    }	
-	
+    }
+
     this.f_setDhcpMapLocal = function(dhcpMap, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
-		
+
         var xmlstr = "<command><id>" + sid + "</id>" +
                       "<statement mode='proc'><handler>dhcp-static-mapping set</handler><data>";
-	    xmlstr += dhcpMap.f_toXml(); 		  					
-        xmlstr +=  "</data></statement></command>";		
+	    xmlstr += dhcpMap.f_toXml();
+        xmlstr +=  "</data></statement></command>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -1508,6 +1508,6 @@ function UTM_nwIfBusObj(busObj)
                           '</error>' +
                   '</openappliance>');
         thisObj.f_respondRequestCallbackSetCmd(resp, guicb);
-    }	
+    }
 }
 

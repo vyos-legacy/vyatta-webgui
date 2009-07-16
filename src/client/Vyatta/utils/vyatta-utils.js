@@ -380,7 +380,7 @@ function f_promptUserNotLoginMessage(callbackFn)
 {
     alert('Session Time Out \n\n' +
         'For security reasons, your session is no longer active.' +
-        '\nPlease re-login again.');
+        '\nPlease log in again.');
 }
 
 

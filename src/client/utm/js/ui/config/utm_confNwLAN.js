@@ -40,11 +40,13 @@ function UTM_confNwLAN(name, callback, busLayer)
 	this.f_getConfigurationPage = function() 
 	{
 		var c = new Array();		
-		this.m_lanItf = new UTM_confNwLANitf('UTM_confNwLANitf', thisObj.m_containerCb, thisObj.m_busLayer);		
+		this.m_lanItf = new UTM_confNwLANitf('UTM_confNwLANitf', thisObj.m_containerCb, thisObj.m_busLayer);	
+		this.m_lanItf.f_setIfName(this.m_ifName);	
 		c.push(this.m_lanItf);
 		
 		if ((thisObj.m_ifName == 'LAN') || (thisObj.m_ifName == 'LAN2')) {
 			this.m_lanDhcp = new UTM_confNwLANdhcp('UTM_confNwLANdhcp', thisObj.m_containerCb, thisObj.m_busLayer);
+			this.m_lanDhcp.f_setIfName(this.m_ifName);
 			this.m_lanIp = new UTM_confNwLANip('UTM_confNwLANip', thisObj.m_containerCb, thisObj.m_busLayer);
 			this.m_lanIp.f_setIfName(this.m_ifName);
 			c.push(this.m_lanDhcp);

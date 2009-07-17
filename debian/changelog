@@ -1,3 +1,19 @@
+vyatta-webgui (0.2.14+fxdU+85) unstable; urgency=low
+
+  [ Mohit Mehta ]
+  * * add single quotes to form return code
+
+  [ Loi Vo ]
+  * 1. Add more validation.
+  * 1. Add sorting functionality
+
+  [ Kevin Choi ]
+  * * network nat/pat : integrated with backend api
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 17 Jul 2009 15:41:51 -0700
+
 vyatta-webgui (0.2.14+fxdU+84) unstable; urgency=low
 
   [ Kevin Choi ]

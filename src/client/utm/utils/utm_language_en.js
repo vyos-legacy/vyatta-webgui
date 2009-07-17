@@ -76,6 +76,7 @@ var g_lang =
     m_group : 'group',
     m_username : 'user name',
     m_status : 'status',
+	m_duplicate :'Duplicate',
     m_ipAddr : 'IP address',
 	m_macAddr: 'MAC address',
     m_invalidIpAddr : "Invalid IP address",
@@ -84,6 +85,11 @@ var g_lang =
     m_applyTip : "save changes",
     m_cancelTip : "cancel changes",
     m_confModify : "Configuration has been modified and not saved. Do you want to continue?",
+
+    m_formNotAValidIP: " is not a valid IP address",
+	m_formNotAValidMac: " is not a valid MAC address",
+	m_formFixError: "Please fix the following errors:",
+    m_formNoEmpty : "cannot be empty",	
 
     ///////////////////////////////////////////////////////////////////
     // VPN Overview
@@ -339,7 +345,8 @@ var g_lang =
 	m_landhcp_dns_dynamic : "Dynamic",
 	m_landhcp_dns_none : "No DNS",
 	m_lanip_reserved_ip : "Reserved IP addresses",
-
+	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",	
+	m_lanip_reserved_ip_entry: "entries",
 	
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images

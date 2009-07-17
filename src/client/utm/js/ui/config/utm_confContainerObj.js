@@ -130,4 +130,5 @@ function UTM_confContainerObj(name, callback, busLayer)
 	 
 	this.f_handleClick = function(childId, sourceId, userData) {}
 	this.f_handleKeyEvent = function(childId, sourceId, eventType, userData) {}
+	this.f_handleColumnSorting = function(childId, column) {}
 }

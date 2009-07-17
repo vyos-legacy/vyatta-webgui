@@ -59,7 +59,7 @@ sub get_dhcp_static_mapping {
     my ($data) = @_;
     my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$data});
     my $msg;
-    $msg  = "<form name='dhcp-static-mapping' code=0>";
+    $msg  = "<form name='dhcp-static-mapping' code='0'>";
     $msg  .= "<mapping-config>";
     $msg  .= "<interface>$data</interface>";
     my $config = new Vyatta::Config;
@@ -130,14 +130,14 @@ sub set_dhcp_static_mapping {
     push @cmds, "commit", "save";
     $err = OpenApp::Conf::execute_session(@cmds);
     if (defined $err) {
-       $msg = "<form name='dhcp-static-mapping' code=1>";
+       $msg = "<form name='dhcp-static-mapping' code='1'>";
        $msg .= "<dhcp-static-mapping>" . "</dhcp-static-mapping>";
        $msg .= "<errmsg>" . "Set DHCP reserved IP pool error" . "</errmsg>";
        $msg = "</form>";
        print $msg;
        exit 1;
     }
-    $msg = "<form name='dhcp-static-mapping' code=0></form>";
+    $msg = "<form name='dhcp-static-mapping' code='0'></form>";
     print $msg;
 }
 

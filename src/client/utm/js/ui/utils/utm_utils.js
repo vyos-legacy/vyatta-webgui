@@ -195,6 +195,7 @@ function f_validateMac(mac)
     return true;
 }
 
+//checking for network address, and broadcast address
 function f_isForbidenAddr(ip, mask)
 {
     var iIP = f_inetAddr(ip);

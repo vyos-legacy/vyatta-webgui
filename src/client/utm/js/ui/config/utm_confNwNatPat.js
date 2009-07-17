@@ -214,7 +214,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
     {
         var ids = thisObj.m_fieldIds;
         var rNo = tfeid.split("-");
-        var rec = new UTM_nwNatPatRecord(rNo[2]);
+        var rec = new UTM_nwNatPatRecord(rNo[1]);
         var el = document.getElementById(tfeid);
         var val = el.value;
         var fName = null;
@@ -223,10 +223,10 @@ function UTM_confNwNatPat(name, callback, busLayer)
         if(tfeid.indexOf(ids[5]) >= 0 && thisObj.f_isIPAddressValidated(val))
             fName = "internaddr";
         // destination port
-        else if(tfeid.indexOf(ids[2] >= 0))
+        else if(tfeid.indexOf(ids[2]) >= 0)
             fName = "dport";
         // internal port
-        else if(tfeid.indexOf(ids[3]))
+        else if(tfeid.indexOf(ids[3]) >= 0)
             fName = "internport";
 
         thisObj.f_sendSetCommand(rec, fName, val);
@@ -251,20 +251,31 @@ function UTM_confNwNatPat(name, callback, busLayer)
         var val = cbb.value;
         var name = null;
         var rNo = cbeid.split("-");
-        var rec = new UTM_nwNatPatRecord(rNo[2]);
+        var rec = new UTM_nwNatPatRecord(rNo[1]);
 
         if(cbeid.indexOf(thisObj.m_fieldIds[1]) >= 0)
             name = 'application';
         else if(cbeid.indexOf(thisObj.m_fieldIds[4]) >= 0)
             name = 'protocol';
 
-        thisObj.m_busLayer.f_sendSetCommand(rec, name, val);
+        thisObj.f_sendSetCommand(rec, name, val);
     };
 
     this.f_handleAddAction = function()
     {
-        thisObj.f_handleAddNewNatRow();
-        thisObj.f_enabledActionButtons(true);
+        var cb = function(evt)
+        {
+            g_utils.f_cursorDefault();
+            
+            if(evt.m_value != null)
+            {
+                thisObj.f_handleAddNewNatRow(evt.m_value.m_ruleNo);
+                thisObj.f_enabledActionButtons(true);
+            }
+        }
+
+        g_utils.f_cursorWait();
+        thisObj.m_busLayer.f_getNatPatNextRuleNo(cb);
     }
 
     this.f_handleSaveAction = function()

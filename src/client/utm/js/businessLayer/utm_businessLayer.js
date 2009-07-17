@@ -62,7 +62,7 @@ function UTM_businessLayer()
 	var m_urlObj = null;
 	var m_nwDNSObj = null;
 	var m_nwPortConfigObj = null;
-	var m_nwIfObj = null;   //interface config biz obj 	
+	var m_nwIfObj = null;   //interface config biz obj
     this.m_userObj = new UTM_userBusObj(this);
 	thisObj.m_request = createXMLHttpRequest();
 
@@ -141,13 +141,13 @@ function UTM_businessLayer()
 						alert(r.responseText);
 					}
                 } else if (r.status == 404) { //assuming  timeout on dom0. dom0 stop proxy the request.
-                    alert('404');          			
+                    alert('404');
 			    } else if (r.status == 201) {
 				    alert('4.201');
 			    } else if (r.status == 302) {
 				    alert('4.302');
 			    }
-            } 	
+            }
         }
 
         r.open('GET', '/utm/cgi-bin/302.pl', true);
@@ -155,13 +155,13 @@ function UTM_businessLayer()
         r.send(cmdSend);
 
         return cmdSend;
-    }	
-	
+    }
+
     this.f_respond302RequestCallback = function(resp, cmdSent, noUICallback)
     {
         var response = this.f_getRequestResponse(this.m_request);
         return null;
-    }	
+    }
     */
 
     /**
@@ -264,7 +264,7 @@ function UTM_businessLayer()
 		}
 		return null;
 	}
-	
+
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // user management
@@ -541,29 +541,34 @@ function UTM_businessLayer()
         return m_nwObj;
     }
 
+    this.f_getNatPatNextRuleNo = function(guicb)
+    {
+        thisObj.f_getNwObject().f_getNatPatNextRuleNo(guicb);
+    }
+
     this.f_getNatPatConfigurations = function(rec, guicb)
     {
-        this.f_getNwObject.f_getNatPath(rec, guicb);
+        this.f_getNwObject().f_getNatPath(rec, guicb);
     }
 
     this.f_setNatPatNamePairValue = function(rec, name, value, guicb)
     {
-        this.f_setNatPatNamePairValue(rec, name, value, guicb);
+        this.f_getNwObject().f_setNatPatNamePairValue(rec, name, value, guicb);
     }
 
     this.f_saveNatPatConfiguration = function(guicb)
     {
-        this.f_getNwObject.f_saveNatPat(guicb);
+        this.f_getNwObject().f_saveNatPat(guicb);
     }
 
     this.f_cancelNatPatConfiguration = function(guicb)
     {
-        this.f_getNwObject.f_cancelNatPat(guicb);
+        this.f_getNwObject().f_cancelNatPat(guicb);
     }
 
     this.f_deleteNatPatConfiguration = function(rec, guicb)
     {
-        this.f_getNwObject.f_deleteNatPat(rec, guicb);
+        this.f_getNwObject().f_deleteNatPat(rec, guicb);
     }
     /**
      *
@@ -614,11 +619,11 @@ function UTM_businessLayer()
     {
         thisObj.f_getNwIfObj().f_getDhcpConfig(ifName, guicb);
     }
-	
+
     this.f_getDhcpMap = function(ifName, guicb)
     {
         thisObj.f_getNwIfObj().f_getDhcpMap(ifName, guicb);
-    }	
+    }
 
     this.f_setIfConfig = function(ifConfigObj, guicb)
     {
@@ -627,12 +632,12 @@ function UTM_businessLayer()
 
     this.f_setDhcpConfig = function(dhcpConfigObj, guicb)
 	{
-        thisObj.f_getNwIfObj().f_setDhcpConfig(dhcpConfigObj, guicb);		
+        thisObj.f_getNwIfObj().f_setDhcpConfig(dhcpConfigObj, guicb);
 	}
 
     this.f_setDhcpMap = function(dhcpMap, guicb)
 	{
-        thisObj.f_getNwIfObj().f_setDhcpMap(dhcpMap, guicb);				
+        thisObj.f_getNwIfObj().f_setDhcpMap(dhcpMap, guicb);
 	}
 }
 

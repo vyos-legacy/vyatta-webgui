@@ -137,8 +137,14 @@ function UTM_nwConfigBusObj(busObj)
                 else if(thisObj.m_lastCmdSent.indexOf(
                     'network-nat-pat get') > 0)
                 {
-                    thisObj.m_fireRec = thisObj.f_parseFirewallSecurityCustomize(err);
-                    evt = new UTM_eventObj(0, thisObj.m_fireRec, '');
+                    thisObj.m_nwRec = thisObj.f_parseNatPatList(err);
+                    evt = new UTM_eventObj(0, thisObj.m_nwRec, '');
+                }
+                else if(thisObj.m_lastCmdSent.indexOf(
+                        'network-nat-pat next-rulenum') > 0)
+                {
+                    thisObj.m_nwRec = thisObj.f_parseNatPatNextRuleNo(err);
+                    evt = new UTM_eventObj(0, thisObj.m_nwRec, '');
                 }
             }
 
@@ -149,6 +155,34 @@ function UTM_nwConfigBusObj(busObj)
 
     /**
      */
+    this.f_parseNatPatNextRuleNo = function(response)
+    {
+        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
+
+        if(nodes != null)
+        {
+            for(var i=0; i<nodes.length; i++)
+            {
+                var n = nodes[i];
+                if(n.nodeName == "network-nat-pat")
+                {
+                    var vals = n.firstChild.nodeValue;
+                    var rec = new UTM_nwNatPatRecord();
+
+                    rec.m_ruleNo = this.f_getValueFromNameValuePair("rulenum", vals);
+                    return rec;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    this.f_parseNatPatList = function(response)
+    {
+
+    }
+
     this.f_parseRouteList = function(response)
     {
         var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
@@ -231,7 +265,6 @@ function UTM_nwConfigBusObj(busObj)
                 if(v[1].length > 1)
                 {
                     v = v[1].replace("[", "");
-                    //v = v.replace(/;/g, ",");
                     return v;
                 }
             }
@@ -295,32 +328,6 @@ function UTM_nwConfigBusObj(busObj)
      * @param fireRec - firewall record object
      * @param guicb - gui callback function
      */
-    this.f_setFirewallSecurityLevel = function(fireRec, guicb)
-    {
-        thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>firewall-security-level" +
-                      " set</handler><data>" + fireRec.m_level +
-                      "</data></statement></command>";
-
-        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-    }
-
-    this.f_getFirewallZoneMgmtNextRuleNo = function(zonepair, guicb)
-    {
-        thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
-                      "<handler>customize-firewall next-rulenum" +
-                      "</handler><data>zonepair=[" + zonepair +
-                      "], rulename=[next]</data></statement></command>";
-
-        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-    }
-
     this.f_getNatPat = function(rec, guicb)
     {
         thisObj.m_guiCb = guicb;
@@ -331,6 +338,30 @@ function UTM_nwConfigBusObj(busObj)
                       "<handler>network-nat-path get" +
                       "</handler><data>rulename=[" + ruleName +
                       "]</data></statement></command>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+g_next = 0;
+    this.f_getNatPatNextRuleNo = function(guicb)
+    {
+        var cb = function()
+        {
+            g_next++;
+            var rec = new UTM_nwNatPatRecord(g_next+"");
+            var evt = new UTM_eventObj(0, rec, '');
+            guicb(evt);
+        }
+
+        window.setTimeout(cb, 500);
+        return;
+
+        thisObj.m_guiCb = guicb;
+        var sid = g_utils.f_getUserLoginedID();
+        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+                      "<handler>network-nat-pat next-rulenum" +
+                      "</handler><data>rulename=[next]</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -373,7 +404,7 @@ function UTM_nwConfigBusObj(busObj)
                               thisObj.f_respondRequestCallback);
     }
 
-    this.f_deleteNatPath = function(rec, guicb)
+    this.f_deleteNatPat = function(rec, guicb)
     {
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();

@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+88) unstable; urgency=low
+
+  [ Michael Larson ]
+  * fix to allow admin to access discard command
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 17 Jul 2009 16:01:44 -0700
+
 vyatta-webgui (0.2+fxd0+87) unstable; urgency=low
 
   [ Kevin Choi ]

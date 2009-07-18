@@ -38,6 +38,8 @@ use POSIX;
 my %func = (
     'get_dhcp_static_mapping'     => \&get_dhcp_static_mapping,
     'set_dhcp_static_mapping'     => \&set_dhcp_static_mapping,
+    'get_dhcp_server_config'	  => \&get_dhcp_server_config,
+    'set_dhcp_server_config'	  => \&set_dhcp_server_config,
 );
 
 # mapping for interface names to dom-U interfaces
@@ -53,6 +55,80 @@ sub sc_log {
         or die "Can't open $sc_log: $!";
     print $fh "$timestamp: ", @_ , "\n";
     close $fh;
+}
+
+sub get_dhcp_server_config {
+    my ($data) = @_;
+    my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$data});
+    my $msg;
+    $msg  = "<form name='dhcp-server-config' code='0'>" . "<dhcp-server-config>" .
+            "<interface>$data</interface>";
+    my $config = new Vyatta::Config;
+    my $path = "service dhcp-server shared-network-name $data subnet $ip[0]";
+    my @start_ip = $config->listNodes("$path start"); # should only be one start
+    my $stop_ip = $config->returnValue("$path start $start_ip[0] stop");
+    my $description = $config->returnValue("service dhcp-server shared-network-name $data description");
+    # description format - 'dns-mode primary-dns-server secondary-dns-server'
+    my @dns_values = split(' ', $description);
+    my $enabled = '';
+    my $disabled_val = $config->exists("service dhcp-server shared-network-name $data disable");
+    if (defined($disabled_val)) {
+       $enabled = 'false';
+    } else {
+       $enabled = 'true';
+    }
+    $msg .= "<enable>$enabled</enable>" . "<start>$start_ip[0]</start>" .
+            "<end>$stop_ip</end>" . "<dns_mode>$dns_values[0]</dns_mode>" .
+            "<primary_dns>$dns_values[1]</primary_dns>";
+    $msg .= "<secondary_dns>$dns_values[2]</secondary_dns>" if defined $dns_values[2];
+    $msg .= "</dhcp-server-config></form>";
+    print $msg;
+}
+
+sub set_dhcp_server_config {
+    my ($data) = @_;
+    my $xs  = XML::Simple->new();
+    my $xml = $xs->XMLin($data);
+    my ($msg, $err);
+    my @cmds = ();
+    my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$xml->{interface}});
+    my $path = "service dhcp-server shared-network-name $xml->{interface}";
+
+    push @cmds,
+"delete $path subnet $ip[0] start",
+"delete $path subnet $ip[0] dns-server",
+"delete $path description",
+"delete $path disable",
+"set $path subnet $ip[0] start $xml->{start} stop $xml->{end}",
+"set $path description \"$xml->{dns_mode} $xml->{primary_dns} $xml->{secondary_dns}\"";
+
+    if ($xml->{dns_mode} eq 'static') {
+        push @cmds,
+"set $path subnet $ip[0] dns-server $xml->{primary_dns}",
+"set $path subnet $ip[0] dns-server $xml->{secondary_dns}";
+    } elsif ($xml->{dns_mode} eq 'dynamic') {
+        my @values = split('/', $ip[0]);
+        push @cmds,
+"set $path subnet $ip[0] dns-server $values[0]";
+    }
+
+    if ($xml->{enable} eq 'false') {
+        push @cmds,
+"set $path disable";
+    }
+
+    push @cmds, "commit", "save";
+    $err = OpenApp::Conf::execute_session(@cmds);
+    if (defined $err) {
+       $msg = "<form name='dhcp-static-mapping' code='2'>";
+       $msg .= "<dhcp-server-config>" . "</dhcp-server-config>";
+       $msg .= "<errmsg>" . "Set DHCP server config error" . "</errmsg>";
+       $msg = "</form>";
+       print $msg;
+       exit 1;
+    }
+    $msg = "<form name='dhcp-server-config' code='0'></form>";
+    print $msg;
 }
 
 sub get_dhcp_static_mapping {

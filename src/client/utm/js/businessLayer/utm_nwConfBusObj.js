@@ -1183,9 +1183,9 @@ function UTM_nwIfBusObj(busObj)
 	{
 		var form = thisObj.m_busObj.f_getFormNode(response);
 		var ifNode = g_utils.f_xmlGetChildNode(form,'interface-config');
-		var ifName = thisObj.f_parseIfName(ifNode);
-		var ip = thisObj.f_getNodeValue(ifNode);
-		var mask = thisObj.f_getNodeValue(ifNode);
+		var ifName = thisObj.f_parseIfName(ifNode);		
+		var ip = g_utils.f_xmlGetChildNodeValue(ifNode, 'ip');
+		var mask = g_utils.f_xmlGetChildNodeValue(ifNode, 'mask');
 
 		return new UTM_nwIfConfigObj(ifName, ip, mask);
 	}
@@ -1193,15 +1193,15 @@ function UTM_nwIfBusObj(busObj)
     this.f_parseDhcpConfig= function(response)
 	{
 		var form = thisObj.m_busObj.f_getFormNode(response);
-		var ifName = thisObj.f_parseIfName(form);
-		var dhcpNode = g_utisl.f_xmlGetChildNode(form, 'dhcp-config');
-		var enable = g_utils.f_xmlGetNodeValue(dhcpNode);
+		var dhcpNode = g_utils.f_xmlGetChildNode(form, 'dhcp-config');
+		var ifName = thisObj.f_parseIfName(dhcpNode);		
+		var enable = g_utils.f_xmlGetChildNodeValue(dhcpNode, 'enable');
         if (enable==null) enable='false';
-		var start = thisObj.f_getNodeValue(dhcpNode);
-		var end = thisObj.f_getNodeValue(dhcpNode);
-		var dnsMode = thisObj.f_getNodeValue(dhcpNode);
-		var dnsPrimary = thisObj.f_getNodeValue(dhcpNode);
-		var dnsSecondary = thisObj.f_getNodeValue(dhcpNode);
+		var start = g_utils.f_xmlGetChildNodeValue(dhcpNode, 'start');
+		var end = g_utils.f_xmlGetChildNodeValue(dhcpNode, 'end');
+		var dnsMode = g_utils.f_xmlGetChildNodeValue(dhcpNode, 'dns-mode');
+		var dnsPrimary =  g_utils.f_xmlGetChildNodeValue(dhcpNode, 'primary-dns');
+		var dnsSecondary =  g_utils.f_xmlGetChildNodeValue(dhcpNode, 'secondary-dns');
 
 		return new UTM_nwDhcpConfigObj(ifName, enable, start, end, dnsMode, dnsPrimary, dnsSecondary);
 	}
@@ -1326,7 +1326,7 @@ function UTM_nwIfBusObj(busObj)
                                '<msg>' +
                                    '<form name=\'interface-config\' code=\'0\'>' +
 								       '<interface-config>' +
-								           '<interface>' + ifName.toUppderCase() + '</interface>' +
+								           '<interface>' + ifName.toUpperCase() + '</interface>' +
 									       '<ip>192.168.1.1</ip>' +
 									       '<mask>21</mask>' +
 									   '</interface-config>' +
@@ -1359,7 +1359,7 @@ function UTM_nwIfBusObj(busObj)
                                '<msg>' +
                                    '<form name=\'dhcp-config\' code=\'0\'>' +
 									   '<dhcp-config>' +
-								           '<interface>' + ifName.toUppderCase() + '</interface>' +
+								           '<interface>' + ifName.toUpperCase() + '</interface>' +
 									       '<enable>true</enable>' +
 									       '<start>192.168.1.2</start>' +
 										   '<end>192.168.1.254</end>' +

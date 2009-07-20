@@ -946,6 +946,15 @@ var g_utils =
 		return null;
 	},
 
+	f_xmlGetChildNodeValue : function(parentNode, childName)
+	{
+		var childNode = g_utils.f_xmlGetChildNode(parentNode, childName);
+		if (childNode == null) {
+			return '';
+		}
+        return g_utils.f_xmlGetNodeValue(childNode);
+	},
+
 	f_xmlGetNodeAttribute : function(node, attr)
 	{
 		if (node==null) return null;

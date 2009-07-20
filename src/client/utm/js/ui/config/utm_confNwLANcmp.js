@@ -11,6 +11,9 @@ function UTM_confNwLANitf(name, callback, busLayer)
 {
     var thisObjName = 'UTM_confNwLANitf';
     var thisObj = this;
+	this.m_objectId = 'conf_lan_itf';
+	this.m_ifObj = undefined;
+	this.m_ifName = undefined;
     this.m_form = undefined;
     this.m_div = undefined;
     
@@ -80,6 +83,11 @@ function UTM_confNwLANitf(name, callback, busLayer)
             }]
         })
     }
+	
+	this.f_setIfName = function(ifName)
+	{
+		thisObj.m_ifName = ifName;
+	}
     
     this.f_enableAllButton = function(state)
     {
@@ -120,137 +128,42 @@ function UTM_confNwLANitf(name, callback, busLayer)
         return thisObj.f_getForm();
     }
     
-    this.f_reload = function()
+    this.f_reload = function(parentReference)
     {
+		var p = parentReference;
         thisObj.f_enableAllButton(false);
-        /*
-        
-         
-        
-         var cb = function(evt)
-        
-         
-        
-         {
-        
-         
-        
-         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
-        
-         
-        
-         if (evt.f_isError()) {
-        
-         
-        
-         g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
-        
-         
-        
-         return;
-        
-         
-        
-         }
-        
-         
-        
-         thisObj.m_dnsObj = evt.m_value;
-        
-         
-        
-         thisObj.f_setValue();
-        
-         
-        
-         }
-        
-         
-        
+     
+         var cb = function(evt) {
+             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {   
+                 if (evt.f_isError()) {
+                     g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+                     return; 
+                 }
+                 thisObj.m_ifObj = evt.m_value;
+                 thisObj.f_setValue();                       
+             }        
+			 if ((p != undefined) && (p != null)) {
+			    p.f_loadVMDataCb();
+		     }	
          };
-        
-         
-        
-         
-        
-         
-        
-         g_busObj.f_getDNSConfig(cb);
-        
-         
-        
-         */
-        
+         g_busObj.f_getIfConfig(thisObj.m_ifName, cb);        
     }
     
     this.f_setValue = function()
     {
-        /*
-        
-         
-        
-         if (thisObj.m_dnsObj.m_mode == 'auto') {
-        
-         
-        
-         thisObj.f_setMode('conf_dns_auto', true);
-        
-         
-        
-         thisObj.f_setMode('conf_dns_manual', false);
-        
-         
-        
-         thisObj.f_enableManual(false);
-        
-         
-        
-         thisObj.m_form.conf_dns_primary.value = '';
-        
-         
-        
-         thisObj.m_form.conf_dns_secondary.value = '';
-        
-         
-        
-         } else {
-        
-         
-        
-         thisObj.f_setMode('conf_dns_auto', false);
-        
-         
-        
-         thisObj.f_setMode('conf_dns_manual', true);
-        
-         
-        
-         thisObj.f_enableManual(true);
-        
-         
-        
-         thisObj.m_form.conf_dns_primary.value = thisObj.m_dnsObj.m_pri;
-        
-         
-        
-         thisObj.m_form.conf_dns_secondary.value = thisObj.m_dnsObj.m_sec;
-        
-         
-        
-         }
-        
-         
-        
-         */
-        
+		if ((thisObj.m_ifObj != undefined) && (thisObj.m_ifObj != null)) {
+			thisObj.m_form.conf_lan_itf_ip.value = thisObj.m_ifObj.m_ip;
+			thisObj.m_form.conf_lan_itf_mask.value = g_utils.f_convertCIDRToNetmask(thisObj.m_ifObj.m_mask);
+		}
+        thisObj.f_enableAllButton(false);
     }
     
-    this.f_loadVMData = function(element)
+    this.f_loadVMData = function(divElement, parentReference)
     {
         thisObj.m_form = document.getElementById('conf_lan_itf_form');
         thisObj.f_setFocus();
         thisObj.f_attachListener();
-        thisObj.f_reload();
+        thisObj.f_reload(parentReference);	
     }
     
     this.f_attachListener = function()
@@ -292,7 +205,7 @@ function UTM_confNwLANitf(name, callback, busLayer)
         if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_itf_ip.value)) {
             errorInner += thisObj.f_createListItem(g_lang.m_lanitf_ip + ' ' + g_lang.m_formInvalid);
         }
-        if (!g_utils.f_validateNetmask(thisObj.m_form.conf_lan_itf_ip.value)) {
+        if (!g_utils.f_validateNetmask(thisObj.m_form.conf_lan_itf_mask.value)) {
             errorInner += thisObj.f_createListItem(g_lang.m_lanitf_mask + ' ' + g_lang.m_formInvalid);
         }
         
@@ -308,60 +221,21 @@ function UTM_confNwLANitf(name, callback, busLayer)
     
     this.f_apply = function()
     {
-        /*      
-        
-         
-        
-         var cb = function(evt)
-        
-         
-        
-         {
-        
-         
-        
-         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
-        
-         
-        
-         if (evt.f_isError()) {
-        
-         
-        
-         g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
-        
-         
-        
-         return;
-        
-         
-        
-         } else {
-        
-         
-        
-         thisObj.f_enableAllButton(false);
-        
-         
-        
-         }
-        
-         
-        
-         }
-        
-         
-        
-         };
-        
-         
-        
-         g_busObj.f_setDNSConfig(thisObj.m_dnsObj, cb);
-        
-         
-        
-         */
-        
+        var cb = function(evt)
+        {
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
+                if (evt.f_isError()) {
+                    g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
+                    return;
+                } else {
+                    thisObj.f_enableAllButton(false);
+                }
+            }
+        };
+        thisObj.m_ifObj.m_ip = thisObj.m_form.conf_lan_itf_ip.value.trim();
+		thisObj.m_ifObj.m_mask = g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim());
+		
+        g_busObj.f_setDNSConfig(thisObj.m_ifObj, cb);
     }
     
     this.f_reset = function()
@@ -406,6 +280,9 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
 {
     var thisObjName = 'UTM_confNwLANdhcp';
     var thisObj = this;
+	this.m_objectId = 'conf_lan_dhcp';
+	this.m_ifName = undefined;
+	this.m_dhcpObj = undefined;
     this.m_form = undefined;
     this.m_div = undefined;
     
@@ -523,6 +400,11 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
         })
     }
     
+	this.f_setIfName = function(ifName)
+	{
+		thisObj.m_ifName = ifName;
+	}
+	
     this.f_enableAllButton = function(state)
     {
         thisObj.f_enableButton('apply', state);
@@ -570,63 +452,27 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
         return thisObj.f_getForm();
     }
     
-    this.f_reload = function()
+    this.f_reload = function(parentElement)
     {
+		var p = parentElement;
         thisObj.f_enableAllButton(false);
-        /*
         
-         
+        var cb = function(evt)
+        {
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
+                if (evt.f_isError()) {
+                    g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+                    return;
+                }
+                thisObj.m_dhcpObj = evt.m_value;
+                thisObj.f_setValue();
+            }
+			 if ((p != undefined) && (p != null)) {
+			    p.f_loadVMDataCb();
+		     }			
+        };
         
-         var cb = function(evt)
-        
-         
-        
-         {
-        
-         
-        
-         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
-        
-         
-        
-         if (evt.f_isError()) {
-        
-         
-        
-         g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
-        
-         
-        
-         return;
-        
-         
-        
-         }
-        
-         
-        
-         thisObj.m_dnsObj = evt.m_value;
-        
-         
-        
-         thisObj.f_setValue();
-        
-         
-        
-         }
-        
-         
-        
-         };
-        
-         
-        
-         g_busObj.f_getDNSConfig(cb);
-        
-         
-        
-         */
-        
+        g_busObj.f_getDhcpConfig(thisObj.m_ifName, cb);
     }
     
     this.f_setMode = function(id, state)
@@ -641,72 +487,27 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
     
     this.f_setValue = function()
     {
-        /*
-        
-         
-        
-         if (thisObj.m_dnsObj.m_mode == 'auto') {
-        
-         
-        
-         thisObj.f_setMode('conf_dns_auto', true);
-        
-         
-        
-         thisObj.f_setMode('conf_dns_manual', false);
-        
-         
-        
-         thisObj.f_enableManual(false);
-        
-         
-        
-         thisObj.m_form.conf_dns_primary.value = '';
-        
-         
-        
-         thisObj.m_form.conf_dns_secondary.value = '';
-        
-         
-        
-         } else {
-        
-         
-        
-         thisObj.f_setMode('conf_dns_auto', false);
-        
-         
-        
-         thisObj.f_setMode('conf_dns_manual', true);
-        
-         
-        
-         thisObj.f_enableManual(true);
-        
-         
-        
-         thisObj.m_form.conf_dns_primary.value = thisObj.m_dnsObj.m_pri;
-        
-         
-        
-         thisObj.m_form.conf_dns_secondary.value = thisObj.m_dnsObj.m_sec;
-        
-         
-        
-         }
-        
-         
-        
-         */
-        
+		thisObj.m_form.conf_lan_dhcp_range_start.value = thisObj.m_dhcpObj.m_start;
+		thisObj.m_form.conf_lan_dhcp_range_end.value = thisObj.m_dhcpObj.m_end;
+		thisObj.m_form.conf_lan_dhcp_dns_pri.value = thisObj.m_dhcpObj.m_dnsPrimary;
+		thisObj.m_form.conf_lan_dhcp_dns_sec.value = thisObj.m_dhcpObj.m_dnsSecondary;
+		thisObj.f_setComboBoxSelectionByName(thisObj.m_form.conf_lan_dhcp_dns_mode, thisObj.m_dhcpObj.m_dnsMode);
+		
+		if (thisObj.m_dhcpObj.m_enable == 'true') {
+			thisObj.m_form.conf_lan_dhcp_enable.checked = 'checked';
+			thisObj.f_enableDHCP(true);
+		} else {
+			thisObj.m_form.conf_lan_dhcp_enable.checked = '';			
+			thisObj.f_enableDHCP(false);
+		}                
     }
     
-    this.f_loadVMData = function(element)
+    this.f_loadVMData = function(divElement, parentReference)
     {
         thisObj.m_form = document.getElementById('conf_lan_dhcp_form');
         thisObj.f_setFocus();
         thisObj.f_attachListener();
-        thisObj.f_reload();
+        thisObj.f_reload(parentReference);
     }
     
     this.f_attachListener = function()
@@ -787,64 +588,31 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
     
     this.f_apply = function()
     {
-        /*        
-        
-         
-        
-         var cb = function(evt)
-        
-         
-        
-         {
-        
-         
-        
-         g_utils.f_stopWait();
-        
-         
-        
-         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
-        
-         
-        
-         if (evt.f_isError()) {
-        
-         
-        
-         g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
-        
-         
-        
-         return;
-        
-         
-        
-         } else {
-        
-         
-        
-         thisObj.f_enableAllButton(false);
-        
-         
-        
-         }
-        
-         
-        
-         }
-        
-         
-        
-         };
-        
-         
-        
-         g_busObj.f_setDNSConfig(thisObj.m_dnsObj, cb);
-        
-         
-        
-         */
-        
+        var cb = function(evt)
+        {
+            g_utils.f_stopWait();
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
+                if (evt.f_isError()) {
+                    g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
+                    return;
+                } else {
+                    thisObj.f_enableAllButton(false);
+                }
+            }
+        };
+		
+		thisObj.m_dhcpObj.m_start = thisObj.m_form.conf_lan_dhcp_range_start.value;
+		thisObj.m_dhcpObj.m_end = thisObj.m_form.conf_lan_dhcp_range_end.value;
+		thisObj.m_dhcpObj.m_dnsPrimary = thisObj.m_form.conf_lan_dhcp_dns_pri.value;
+		thisObj.m_dhcpObj.m_dnsSecondary = thisObj.m_form.conf_lan_dhcp_dns_sec.value;
+		thisObj.m_dhcpObj.m_dnsMode = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_lan_dhcp_dns_mode);
+		
+		if (thisObj.m_form.conf_lan_dhcp_enable.checked) {
+			 thisObj.m_dhcpObj.m_enable = 'true';
+		} else {
+             thisObj.m_dhcpObj.m_enable = 'false';
+		} 		
+        g_busObj.f_setDhcpConfig(thisObj.m_dhcpObj, cb);
     }
     
     this.f_reset = function()
@@ -1466,10 +1234,11 @@ function UTM_confNwLANip(name, callback, busLayer)
         g_busObj.f_getDhcpMap(thisObj.m_ifName, cb);
     }
     
-    this.f_loadVMData = function()
+    this.f_loadVMData = function(divElement, parentReference)
     {
+        var p = parentReference;
         thisObj.f_cleanup();
-        
+		
         var cb = function(evt)
         {
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
@@ -1484,6 +1253,8 @@ function UTM_confNwLANip(name, callback, busLayer)
 					thisObj.f_addRow();
 				}
             }
+			if ((p != undefined) && (p != null)) 
+			    p.f_loadVMDataCb();
         };
         this.f_getDhcpMap(cb);
         this.f_enableAllButton(false);

@@ -1244,7 +1244,7 @@ function UTM_nwIfBusObj(busObj)
     {
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
-                      "<handler>dhcp-config get" +
+                      "<handler>dhcp-server-config get" +
                       "</handler><data>" + ifName.toUpperCase() + "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -1292,8 +1292,8 @@ function UTM_nwIfBusObj(busObj)
 	this.f_setDhcpConfigServer = function(dhcpConfigObj, guicb)
 	{
         thisObj.m_guiCb = guicb;
-        var xmlstr = "<statement mode='proc'><handler>dhcp-config set</handler><data>";
-	 xmlstr += dhcpConfigObj.f_toXml();
+        var xmlstr = "<statement mode='proc'><handler>dhcp-server-config set</handler><data>";
+	    xmlstr += dhcpConfigObj.f_toXml();
         xmlstr +=  "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -1350,8 +1350,8 @@ function UTM_nwIfBusObj(busObj)
     {
         thisObj.m_guiCb = guicb;
 
-        var xmlstr = "<statement mode='proc'><handler>dhcp-config get</handler><data>";
-	 xmlstr += ifName.toUpperCase();
+        var xmlstr = "<statement mode='proc'><handler>dhcp-server-config get</handler><data>";
+	    xmlstr += ifName.toUpperCase();
         xmlstr +=  "</data></statement>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
@@ -1459,8 +1459,8 @@ function UTM_nwIfBusObj(busObj)
     {
         thisObj.m_guiCb = guicb;
 
-        var xmlstr = "<statement mode='proc'><handler>dhcp-config set</handler><data>";
-	 xmlstr += dhcpConfigObj.f_toXml();
+        var xmlstr = "<statement mode='proc'><handler>dhcp-server-config set</handler><data>";
+	    xmlstr += dhcpConfigObj.f_toXml();
         xmlstr +=  "</data></statement>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";

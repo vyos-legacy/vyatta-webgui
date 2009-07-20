@@ -276,10 +276,9 @@ function UTM_nwConfigBusObj(busObj)
     this.f_getNwRoutingList = function(guicb)
     {/*
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>static-route get" +
-                      "</handler><data></data></statement></command>";
+                      "</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -331,13 +330,12 @@ function UTM_nwConfigBusObj(busObj)
     this.f_getNatPat = function(rec, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
         var ruleName = rec != null ? rec.m_ruleNo : 'all';
 
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>network-nat-path get" +
                       "</handler><data>rulename=[" + ruleName +
-                      "]</data></statement></command>";
+                      "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -358,10 +356,9 @@ g_next = 0;
         return;
 
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>network-nat-pat next-rulenum" +
-                      "</handler><data>rulename=[next]</data></statement></command>";
+                      "</handler><data>rulename=[next]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -370,11 +367,9 @@ g_next = 0;
     this.f_setNatPatNamePairValue = function(rec, name, value, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>network-nat-pat" +
+        var xmlstr = "<statement mode='proc'><handler>network-nat-pat" +
                       " set</handler><data>rulenum=[" + rec.m_ruleNo + "]," + name +
-                      "=[" + value + "]</data></statement></command>";
+                      "=[" + value + "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -383,10 +378,8 @@ g_next = 0;
     this.f_saveNatPat = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>network-nat-pat" +
-                      " save</handler><data></data></statement></command>";
+        var xmlstr = "<statement mode='proc'><handler>network-nat-pat" +
+                      " save</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -395,10 +388,8 @@ g_next = 0;
     this.f_cancelNatPat = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>network-nat-pat" +
-                      " cancel</handler><data></data></statement></command>";
+        var xmlstr = "<statement mode='proc'><handler>network-nat-pat" +
+                      " cancel</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -407,11 +398,9 @@ g_next = 0;
     this.f_deleteNatPat = function(rec, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>network-nat-pat" +
+        var xmlstr = "<statement mode='proc'><handler>network-nat-pat" +
                       " delete</handler><data>rulenum=[" + rec.m_ruleNo +
-                      "]</data></statement></command>";
+                      "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -561,10 +550,9 @@ function UTM_nwDNSBusObj(busObj)
     this.f_getDNSConfigServer = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>dns-config get" +
-                      "</handler><data></data></statement></command>";
+                      "</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -587,11 +575,9 @@ function UTM_nwDNSBusObj(busObj)
     this.f_setDNSConfigServer = function(dnsRecObj, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>dns-config" +
+        var xmlstr = "<statement mode='proc'><handler>dns-config" +
                       " set</handler><data>" + dnsRecObj.f_toXml() +
-                      "</data></statement></command>";
+                      "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
@@ -602,10 +588,9 @@ function UTM_nwDNSBusObj(busObj)
     this.f_getDNSConfigLocal = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>dns-config get" +
-                      "</handler><data></data></statement></command>";
+                      "</handler><data></data></statement>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -633,11 +618,9 @@ function UTM_nwDNSBusObj(busObj)
     this.f_setDNSConfigLocal = function(dnsRecObj, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>dns-config" +
+        var xmlstr = "<statement mode='proc'><handler>dns-config" +
                       " set</handler><data>" + dnsRecObj.f_toXml() +
-                      "</data></statement></command>";
+                      "</data></statement>";
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
@@ -832,10 +815,9 @@ function UTM_nwPortConfigBusObj(busObj)
     this.f_getPortConfigServer = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>port-config get" +
-                      "</handler><data></data></statement></command>";
+                      "</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -858,15 +840,13 @@ function UTM_nwPortConfigBusObj(busObj)
     this.f_setPortConfigServer = function(portConfigList, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>port-config" +
+        var xmlstr = "<statement mode='proc'><handler>port-config" +
                       " set</handler><data>";
 	    xmlstr += '<port-config>';
 		for (var i=0; i < portConfigList.length; i++) {
 			xmlstr += portConfigList[i].f_toXmlForSet();
 		}
-        xmlstr +=  "</port-config></data></statement></command>";
+        xmlstr +=  "</port-config></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
@@ -877,10 +857,9 @@ function UTM_nwPortConfigBusObj(busObj)
     this.f_getPortConfigLocal = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>port-config get" +
-                      "</handler><data></data></statement></command>";
+                      "</handler><data></data></statement>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -922,15 +901,13 @@ function UTM_nwPortConfigBusObj(busObj)
     this.f_setPortConfigLocal = function(portConfigList, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>port-config" +
+        var xmlstr = "<statement mode='proc'><handler>port-config" +
                       " set</handler><data>";
 		xmlstr += '<port-config>';
 		for (var i=0; i < portConfigList.length; i++) {
 			xmlstr += portConfigList[i].f_toXmlForSet();
 		}
-        xmlstr +=  "</port-config></data></statement></command>";
+        xmlstr +=  "</port-config></data></statement>";
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
@@ -1247,10 +1224,9 @@ function UTM_nwIfBusObj(busObj)
     this.f_getIfConfigServer = function(ifName, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>interface-config get" +
-                      "</handler><data>" + ifName.toUpperCase() + "</data></statement></command>";
+                      "</handler><data>" + ifName.toUpperCase() + "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -1259,10 +1235,9 @@ function UTM_nwIfBusObj(busObj)
     this.f_getDhcpConfigServer = function(ifName, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>dhcp-config get" +
-                      "</handler><data>" + ifName.toUpperCase() + "</data></statement></command>";
+                      "</handler><data>" + ifName.toUpperCase() + "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -1271,10 +1246,9 @@ function UTM_nwIfBusObj(busObj)
     this.f_getDhcpMapServer = function(ifName, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>dhcp-static-mapping get" +
-                      "</handler><data>" + ifName.toUpperCase() + "</data></statement></command>";
+                      "</handler><data>" + ifName.toUpperCase() + "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -1298,12 +1272,10 @@ function UTM_nwIfBusObj(busObj)
     this.f_setIfConfigServer = function(ifConfigObj, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>interface-config" +
+        var xmlstr = "<statement mode='proc'><handler>interface-config" +
                       " set</handler><data>";
 	    xmlstr += ifConfigObj.f_toXml();
-        xmlstr +=  "</data></statement></command>";
+        xmlstr +=  "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
@@ -1312,11 +1284,9 @@ function UTM_nwIfBusObj(busObj)
 	this.f_setDhcpConfigServer = function(dhcpConfigObj, guicb)
 	{
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>dhcp-config set</handler><data>";
+        var xmlstr = "<statement mode='proc'><handler>dhcp-config set</handler><data>";
 	    xmlstr += dhcpConfigObj.f_toXml();
-        xmlstr +=  "</data></statement></command>";
+        xmlstr +=  "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
@@ -1325,11 +1295,9 @@ function UTM_nwIfBusObj(busObj)
     this.f_setDhcpMapServer = function(dhcpMap, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>dhcp-static-mapping set</handler><data>";
+        var xmlstr = "<statement mode='proc'><handler>dhcp-static-mapping set</handler><data>";
 	    xmlstr += dhcpMap.f_toXml();
-        xmlstr +=  "</data></statement></command>";
+        xmlstr +=  "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
@@ -1341,10 +1309,9 @@ function UTM_nwIfBusObj(busObj)
     this.f_getIfConfigLocal = function(ifName, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>interface-config get" +
-                      "</handler><data>" + ifName.toUpperCase() + "</data></statement></command>";
+                      "</handler><data>" + ifName.toUpperCase() + "</data></statement>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -1374,12 +1341,10 @@ function UTM_nwIfBusObj(busObj)
     this.f_getDhcpConfigLocal = function(ifName, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
 
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>dhcp-config get</handler><data>";
+        var xmlstr = "<statement mode='proc'><handler>dhcp-config get</handler><data>";
 	    xmlstr += ifName.toUpperCase();
-        xmlstr +=  "</data></statement></command>";
+        xmlstr +=  "</data></statement>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -1413,12 +1378,10 @@ function UTM_nwIfBusObj(busObj)
     this.f_getDhcpMapLocal = function(ifName, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
 
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>dhcp-static-mapping get</handler><data>";
+        var xmlstr = "<statement mode='proc'><handler>dhcp-static-mapping get</handler><data>";
 	    xmlstr += ifName.toUpperCase();
-        xmlstr +=  "</data></statement></command>";
+        xmlstr +=  "</data></statement>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -1458,12 +1421,10 @@ function UTM_nwIfBusObj(busObj)
     this.f_setIfConfigLocal = function(ifConfigObj, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
 
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>interface-config set</handler><data>";
+        var xmlstr = "<statement mode='proc'><handler>interface-config set</handler><data>";
 	    xmlstr += ifConfigObj.f_toXml();
-        xmlstr +=  "</data></statement></command>";
+        xmlstr +=  "</data></statement>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -1489,12 +1450,10 @@ function UTM_nwIfBusObj(busObj)
     this.f_setDhcpConfigLocal = function(dhcpConfigObj, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
 
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>dhcp-config set</handler><data>";
+        var xmlstr = "<statement mode='proc'><handler>dhcp-config set</handler><data>";
 	    xmlstr += dhcpConfigObj.f_toXml();
-        xmlstr +=  "</data></statement></command>";
+        xmlstr +=  "</data></statement>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 
@@ -1520,12 +1479,10 @@ function UTM_nwIfBusObj(busObj)
     this.f_setDhcpMapLocal = function(dhcpMap, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
 
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>dhcp-static-mapping set</handler><data>";
+        var xmlstr = "<statement mode='proc'><handler>dhcp-static-mapping set</handler><data>";
 	    xmlstr += dhcpMap.f_toXml();
-        xmlstr +=  "</data></statement></command>";
+        xmlstr +=  "</data></statement>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 

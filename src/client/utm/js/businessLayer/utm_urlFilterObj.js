@@ -569,10 +569,9 @@ function UTM_urlFilterBusObj(busObj)
 		*/
 		
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>url-filtering-easy-config get" +
-                      "</handler><data></data></statement></command>";
+                      "</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -595,11 +594,9 @@ function UTM_urlFilterBusObj(busObj)
     this.f_setUrlFilterConfigServer = function(ufcObj, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>url-filtering-easy-config" +
+        var xmlstr = "<statement mode='proc'><handler>url-filtering-easy-config" +
                       " set</handler><data>" + ufcObj.f_toXml() +
-                      "</data></statement></command>";
+                      "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
@@ -625,10 +622,9 @@ function UTM_urlFilterBusObj(busObj)
 		*/
 		
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>white-list-easy-config get" +
-                      "</handler><data></data></statement></command>";
+                      "</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -677,11 +673,9 @@ function UTM_urlFilterBusObj(busObj)
     this.f_setUrlListServer= function(urlList, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>white-list-easy-config" +
+        var xmlstr = "<statement mode='proc'><handler>white-list-easy-config" +
                       " set</handler><data>" + thisObj.f_urlList2xml(urlList) +
-                      "</data></statement></command>";
+                      "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
@@ -707,10 +701,9 @@ function UTM_urlFilterBusObj(busObj)
 		*/
 		
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>banned-list-easy-config get" +
-                      "</handler><data></data></statement></command>";
+                      "</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -752,11 +745,9 @@ function UTM_urlFilterBusObj(busObj)
     this.f_setKeywordListServer= function(kwList, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>banned-list-easy-config" +
+        var xmlstr = "<statement mode='proc'><handler>banned-list-easy-config" +
                       " set</handler><data>" + thisObj.f_kwList2xml(kwList) +
-                      "</data></statement></command>";
+                      "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
@@ -768,10 +759,9 @@ function UTM_urlFilterBusObj(busObj)
     this.f_getUrlFilterConfigLocal = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>url-filtering-easy-config get" +
-                      "</handler><data></data></statement></command>";
+                      "</handler><data></data></statement>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
 					   
@@ -814,11 +804,9 @@ function UTM_urlFilterBusObj(busObj)
     this.f_setUrlFilterConfigLocal = function(ufcObj, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>url-filtering-easy-config" +
+        var xmlstr = "<statement mode='proc'><handler>url-filtering-easy-config" +
                       " set</handler><data>" + ufcObj.f_toXml() +
-                      "</data></statement></command>";
+                      "</data></statement>";
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
@@ -863,10 +851,9 @@ function UTM_urlFilterBusObj(busObj)
     this.f_getUrlListLocal = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>white-list-easy-config get" +
-                      "</handler><data></data></statement></command>";
+                      "</handler><data></data></statement>";
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
@@ -897,11 +884,9 @@ function UTM_urlFilterBusObj(busObj)
     this.f_setUrlListLocal = function(urlList, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>white-list-easy-config" +
+        var xmlstr = "<statement mode='proc'><handler>white-list-easy-config" +
                       " set</handler><data>" + thisObj.f_urlList2xml(urlList) +
-                      "</data></statement></command>";
+                      "</data></statement>";
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
@@ -931,10 +916,9 @@ function UTM_urlFilterBusObj(busObj)
     this.f_getKeywordListLocal = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>banned-list-easy-config get" +
-                      "</handler><data></data></statement></command>";
+                      "</handler><data></data></statement>";
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
@@ -965,11 +949,9 @@ function UTM_urlFilterBusObj(busObj)
     this.f_setKeywordListLocal = function(kwList, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>banned-list-easy-config" +
+        var xmlstr = "<statement mode='proc'><handler>banned-list-easy-config" +
                       " set</handler><data>" + thisObj.f_kwList2xml(kwList) +
-                      "</data></statement></command>";
+                      "</data></statement>";
 
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";

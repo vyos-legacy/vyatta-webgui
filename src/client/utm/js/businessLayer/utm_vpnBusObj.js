@@ -264,9 +264,9 @@ function UTM_vpnBusObj(busObj)
     this.f_parseEasyModeData = function(response)
     {
         var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
-        nodes = thisObj.m_busObj.f_getResponseChildNodes(nodes, 'vpn');
-        nodes = thisObj.m_busObj.f_getResponseChildNodes(nodes, 'site-to-site');
-        nodes = thisObj.m_busObj.f_getResponseChildNodes(nodes, 'easy');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'vpn');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'site-to-site');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'easy');
 
         if(nodes != null)
         {
@@ -280,16 +280,24 @@ function UTM_vpnBusObj(busObj)
      */
     this.f_parseExpertModeData = function(response)
     {
-        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
-        nodes = thisObj.m_busObj.f_getResponseChildNodes(nodes, 'vpn');
-        nodes = thisObj.m_busObj.f_getResponseChildNodes(nodes, 'site-to-site');
-        nodes = thisObj.m_busObj.f_getResponseChildNodes(nodes, 'expert');
+        var nodes = thisObj..m_busObj.f_getResponseChildNodes(response, 'msg');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'vpn');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'site-to-site');
+        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'expert');
 
         if(nodes != null)
         {
             thisObj.m_vpnRec = thisObj.f_setVpnRecordData(nodes);
             thisObj.m_configMode = 'expert';
         }
+    }
+
+    /**
+     * get all site to site configurations
+     */
+    this.f_getSite2SiteData = function(guicb)
+    {
+
     }
 
     /**
@@ -300,10 +308,9 @@ function UTM_vpnBusObj(busObj)
     this.f_getSite2SiteConfig = function(mode, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+        var xmlstr = "<statement>" +
                       "utm configuration get vpn site-to-site " + mode +
-                      "</statement></command>";
+                      "</statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -317,11 +324,9 @@ function UTM_vpnBusObj(busObj)
     this.f_setSite2SiteConfig = function(vpnRec, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      thisObj.f_constructKeyValueString(vpnRec) +
+        var xmlstr = thisObj.f_constructKeyValueString(vpnRec) +
                       "<statement>utm configuration set vpn site-to-site " +
-                      vpnRec.m_mode + " submit</statement></command>";
+                      vpnRec.m_mode + " submit</statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

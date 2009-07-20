@@ -1028,16 +1028,16 @@ function UTM_nwDhcpConfigObj(name, enable, start, end, dnsMode, dnsPrimary, dnsS
 	this.m_dnsSecondary = dnsSecondary;
 
 	this.f_toXml = function() {
-		var xml = '<dhcp-config><interface>' + thisObj.m_name.toUpperCase() + '</interface>';
+		var xml = '<dhcp-server-config><interface>' + thisObj.m_name.toUpperCase() + '</interface>';
 		xml += '<enable>' + thisObj.m_enable + '</enable>';
-		if (thisObj.m_enable=='true') {
+		//if (thisObj.m_enable=='true') {
 			xml += '<start>' + thisObj.m_start + '</start>';
 			xml += '<end>' + thisObj.m_end + '</end>';
-			xml += '<dns-mode>' + thisObj.m_dnsMode + '</dns-mode>';
-			xml += '<primary-dns>' + thisObj.m_dnsPrimary + '</primary-dns>';
-			xml += '<secondary-dns>' + thisObj.m_dnsSecondary + '</secondary-dns>';
-		}
-		xml += '</dhcp-config>';
+			xml += '<dns_mode>' + thisObj.m_dnsMode + '</dns_mode>';
+			xml += '<primary_dns>' + thisObj.m_dnsPrimary + '</primary_dns>';
+			xml += '<secondary_dns>' + thisObj.m_dnsSecondary + '</secondary_dns>';
+		//}
+		xml += '</dhcp-server-config>';
 		return xml;
 	}
 
@@ -1055,8 +1055,8 @@ function UTM_nwIfBusObj(busObj)
 	this.m_dhcpMap = null;
 	this.m_GET_IF_CMD = 'interface-config get';
 	this.m_SET_IF_CMD = 'interface-config set';
-	this.m_GET_DHCP_CMD = 'dhcp-config get';
-	this.m_SET_DHCP_CMD = 'dhcp-config set';
+	this.m_GET_DHCP_CMD = 'dhcp-server-config get';
+	this.m_SET_DHCP_CMD = 'dhcp-server-config set';
 	this.m_GET_DHCP_MAP_CMD = 'dhcp-static-mapping get';
 	this.m_SET_DHCP_MAP_CMD = 'dhcp-static-mapping set';
 
@@ -1159,6 +1159,15 @@ function UTM_nwIfBusObj(busObj)
 		}
 		return nodeValue;
 	}
+	
+	this.f_getChildNodeValue = function(node, childNodeTag, defaultValue)
+	{
+		var v = g_utils.f_xmlGetChildNodeValue(node, childNodeTag);
+		if (v == null) {
+			return defaultValue;
+		}
+		return v;
+	}
 
 	this.f_parseDhcpMapList = function(mapConfigNode)
 	{
@@ -1216,15 +1225,14 @@ function UTM_nwIfBusObj(busObj)
     this.f_parseDhcpConfig= function(response)
 	{
 		var form = thisObj.m_busObj.f_getFormNode(response);
-		var dhcpNode = g_utils.f_xmlGetChildNode(form, 'dhcp-config');
+		var dhcpNode = g_utils.f_xmlGetChildNode(form, 'dhcp-server-config');
 		var ifName = thisObj.f_parseIfName(dhcpNode);		
-		var enable = g_utils.f_xmlGetChildNodeValue(dhcpNode, 'enable');
-        if (enable==null) enable='false';
-		var start = g_utils.f_xmlGetChildNodeValue(dhcpNode, 'start');
-		var end = g_utils.f_xmlGetChildNodeValue(dhcpNode, 'end');
-		var dnsMode = g_utils.f_xmlGetChildNodeValue(dhcpNode, 'dns-mode');
-		var dnsPrimary =  g_utils.f_xmlGetChildNodeValue(dhcpNode, 'primary-dns');
-		var dnsSecondary =  g_utils.f_xmlGetChildNodeValue(dhcpNode, 'secondary-dns');
+		var enable = thisObj.f_getChildNodeValue(dhcpNode, 'enable', 'false');
+		var start = thisObj.f_getChildNodeValue(dhcpNode, 'start', '');
+		var end = thisObj.f_getChildNodeValue(dhcpNode, 'end', '');
+		var dnsMode = thisObj.f_getChildNodeValue(dhcpNode, 'dns_mode', 'none');
+		var dnsPrimary = thisObj.f_getChildNodeValue(dhcpNode, 'primary_dns','');
+		var dnsSecondary =  thisObj.f_getChildNodeValue(dhcpNode, 'secondary_dns','');
 
 		return new UTM_nwDhcpConfigObj(ifName, enable, start, end, dnsMode, dnsPrimary, dnsSecondary);
 	}
@@ -1261,7 +1269,7 @@ function UTM_nwIfBusObj(busObj)
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
-                      "<handler>dhcp-config get" +
+                      "<handler>dhcp-server-config get" +
                       "</handler><data>" + ifName.toUpperCase() + "</data></statement></command>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -1314,7 +1322,7 @@ function UTM_nwIfBusObj(busObj)
         thisObj.m_guiCb = guicb;
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>dhcp-config set</handler><data>";
+                      "<statement mode='proc'><handler>dhcp-server-config set</handler><data>";
 	    xmlstr += dhcpConfigObj.f_toXml();
         xmlstr +=  "</data></statement></command>";
 
@@ -1377,7 +1385,7 @@ function UTM_nwIfBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
 
         var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>dhcp-config get</handler><data>";
+                      "<statement mode='proc'><handler>dhcp-server-config get</handler><data>";
 	    xmlstr += ifName.toUpperCase();
         xmlstr +=  "</data></statement></command>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -1392,16 +1400,16 @@ function UTM_nwIfBusObj(busObj)
                         '<error>' +
                             '<code>0</code>' +
                                '<msg>' +
-                                   '<form name=\'dhcp-config\' code=\'0\'>' +
-									   '<dhcp-config>' +
+                                   '<form name=\'dhcp-server-config\' code=\'0\'>' +
+									   '<dhcp-server-config>' +
 								           '<interface>' + ifName.toUpperCase() + '</interface>' +
 									       '<enable>true</enable>' +
 									       '<start>192.168.1.2</start>' +
 										   '<end>192.168.1.254</end>' +
-										   '<dns-mode>static</dns-mode>' +
-										   '<primary-dns>192.168.1.51</primary-dns>' +
-										   '<secondary-dns>192.168.1.53</secondary-dns>' +
-									   '</dhcp-config>' +
+										   '<dns_mode>static</dns_mode>' +
+										   '<primary_dns>192.168.1.51</primary_dns>' +
+										   '<secondary_dns>192.168.1.53</secondary_dns>' +
+									   '</dhcp-server-config>' +
                                     '</form>' +
                                 '</msg>' +
                           '</error>' +
@@ -1492,7 +1500,7 @@ function UTM_nwIfBusObj(busObj)
         var sid = g_utils.f_getUserLoginedID();
 
         var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>dhcp-config set</handler><data>";
+                      "<statement mode='proc'><handler>dhcp-server-config set</handler><data>";
 	    xmlstr += dhcpConfigObj.f_toXml();
         xmlstr +=  "</data></statement></command>";
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -1509,7 +1517,7 @@ function UTM_nwIfBusObj(busObj)
                         '<error>' +
                             '<code>0</code>' +
                                '<msg>' +
-                                   '<form name=\'dhcp-config\' code=\'0\'>' +
+                                   '<form name=\'dhcp-server-config\' code=\'0\'>' +
                                     '</form>' +
                                 '</msg>' +
                           '</error>' +

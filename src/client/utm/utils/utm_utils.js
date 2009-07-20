@@ -950,7 +950,7 @@ var g_utils =
 	{
 		var childNode = g_utils.f_xmlGetChildNode(parentNode, childName);
 		if (childNode == null) {
-			return '';
+			return null;
 		}
         return g_utils.f_xmlGetNodeValue(childNode);
 	},

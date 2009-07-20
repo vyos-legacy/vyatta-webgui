@@ -137,6 +137,9 @@ function UTM_confNwLANitf(name, callback, busLayer)
              if (evt != undefined && evt.m_objName == 'UTM_eventObj') {   
                  if (evt.f_isError()) {
                      g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+			         if ((p != undefined) && (p != null)) {
+			             p.f_loadVMDataCb();
+		             }						 
                      return; 
                  }
                  thisObj.m_ifObj = evt.m_value;
@@ -440,11 +443,29 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
     
     this.f_enableDHCP = function(state)
     {
-        var a = ['conf_lan_dhcp_range_start', 'conf_lan_dhcp_range_end', 'conf_lan_dhcp_dns_mode', 'conf_lan_dhcp_dns_pri', 'conf_lan_dhcp_dns_sec'];
+        var a = ['conf_lan_dhcp_range_start', 'conf_lan_dhcp_range_end', 'conf_lan_dhcp_dns_mode'];
         for (var i = 0; i < a.length; i++) {
             thisObj.f_enableTextField(state, a[i]);
         }
+        var dnsMode = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_lan_dhcp_dns_mode);
+		var en = state;		
+		if (state) {
+			if (dnsMode == 'static') {
+				en = true;
+			} else {
+				en = false;
+			}
+		} 
+		thisObj.f_enableDNS(en);		
     }
+	
+	this.f_enableDNS = function(state)
+	{	
+        var a = ['conf_lan_dhcp_dns_pri', 'conf_lan_dhcp_dns_sec'];
+        for (var i = 0; i < a.length; i++) {
+            thisObj.f_enableTextField(state, a[i]);
+        }		
+	}
     
     this.f_getContentPane = function()
     {
@@ -491,7 +512,11 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
 		thisObj.m_form.conf_lan_dhcp_range_end.value = thisObj.m_dhcpObj.m_end;
 		thisObj.m_form.conf_lan_dhcp_dns_pri.value = thisObj.m_dhcpObj.m_dnsPrimary;
 		thisObj.m_form.conf_lan_dhcp_dns_sec.value = thisObj.m_dhcpObj.m_dnsSecondary;
-		thisObj.f_setComboBoxSelectionByName(thisObj.m_form.conf_lan_dhcp_dns_mode, thisObj.m_dhcpObj.m_dnsMode);
+		
+		if ((thisObj.m_dhcpObj.m_dnsMode==null) || (thisObj.m_dhcpObj.m_dnsMode.trim().length <= 0)) {
+			thisObj.m_dhcpObj.m_dnsMode = 'none';
+		}		
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_lan_dhcp_dns_mode, thisObj.m_dhcpObj.m_dnsMode);
 		
 		if (thisObj.m_dhcpObj.m_enable == 'true') {
 			thisObj.m_form.conf_lan_dhcp_enable.checked = 'checked';
@@ -512,7 +537,7 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
     
     this.f_attachListener = function()
     {
-        var a1 = ['conf_lan_dhcp_enable', 'conf_lan_dhcp_dns_mode'];
+        var a1 = ['conf_lan_dhcp_enable'];
         var a2 = ['conf_lan_dhcp_range_start', 'conf_lan_dhcp_range_end', 'conf_lan_dhcp_dns_pri', 'conf_lan_dhcp_dns_sec'];
         
         for (var i = 0; i < a1.length; i++) {
@@ -523,11 +548,13 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
             var el = document.getElementById(a2[i]);
             g_xbObj.f_xbAttachEventListener(el, 'keydown', thisObj.f_handleClick, false);
         }
+		el = document.getElementById('conf_lan_dhcp_dns_mode');
+        g_xbObj.f_xbAttachEventListener(el, 'change', thisObj.f_handleChange, false);		
     }
     
     this.f_detachListener = function()
     {
-        var a1 = ['conf_lan_dhcp_enable', 'conf_lan_dhcp_dns_mode'];
+        var a1 = ['conf_lan_dhcp_enable'];
         var a2 = ['conf_lan_dhcp_range_start', 'conf_lan_dhcp_range_end', 'conf_lan_dhcp_dns_pri', 'conf_lan_dhcp_dns_sec'];
         
         for (var i = 0; i < a1.length; i++) {
@@ -538,6 +565,8 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
             var el = document.getElementById(a2[i]);
             g_xbObj.f_xbDetachEventListener(el, 'keydown', thisObj.f_handleClick, false);
         }
+		el = document.getElementById('conf_lan_dhcp_dns_mode');
+        g_xbObj.f_xbDetachEventListener(el, 'change', thisObj.f_handleChange, false);			
     }
     
     
@@ -551,6 +580,22 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
         thisObj.f_detachListener();
     }
     
+	this.f_validateDHCPrange = function()
+	{
+		var error = '';
+		var start = thisObj.m_form.conf_lan_dhcp_range_start.value;
+		var end = thisObj.m_form.conf_lan_dhcp_range_end.value;
+		if ((start.trim().length > 0) && (end.trim().length >0)) {
+			var startNum = f_inetAddr(start);
+			var endNum = f_inetAddr(end);
+			if (endNum < startNum) {
+				error += thisObj.f_createListItem(g_lang.m_landdhcp_range_invalid + ' [' + 
+				    start + ' - ' + end + ']');
+			}
+		}
+		return error;
+	}
+	
     this.f_validate = function()
     {
         var error = g_lang.m_formFixError + '<br>';
@@ -561,21 +606,25 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
         }
         
         if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_dhcp_range_start.value)) {
-            errorInner += thisObj.f_createListItem(m_landhcp_range_start + ' ' + g_lang.m_formInvalid);
+            errorInner += thisObj.f_createListItem(g_lang.m_landhcp_range_start + ' ' + g_lang.m_formInvalid);
         }
         if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_dhcp_range_end.value)) {
-            errorInner += thisObj.f_createListItem(m_landhcp_range_end + ' ' + g_lang.m_formInvalid);
+            errorInner += thisObj.f_createListItem(g_lang.m_landhcp_range_end + ' ' + g_lang.m_formInvalid);
         }
-        if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_dhcp_dns_pri.value)) {
-            if (!thisObj.f_checkHostname(thisObj.m_form.conf_lan_dhcp_dns_pri.value)) {
-                errorInner += thisObj.f_createListItem(g_lang.m_landhcp_dns_pri + ' ' + g_lang.m_formInvalid);
-            }
-        }
-        if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_dhcp_dns_sec.value)) {
-            if (!thisObj.f_checkHostname(thisObj.m_form.conf_lan_dhcp_dns_sec.value)) {
-                errorInner += thisObj.f_createListItem(g_lang.m_landhcp_dns_sec + ' ' + g_lang.m_formInvalid);
-            }
-        }
+		errorInner += thisObj.f_validateDHCPrange();
+		var dnsMode = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_lan_dhcp_dns_mode);
+        if (dnsMode == 'static') {
+			if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_dhcp_dns_pri.value)) {
+				if (!thisObj.f_checkHostname(thisObj.m_form.conf_lan_dhcp_dns_pri.value)) {
+					errorInner += thisObj.f_createListItem(g_lang.m_landhcp_dns_pri + ' ' + g_lang.m_formInvalid);
+				}
+			}
+			if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_dhcp_dns_sec.value)) {
+				if (!thisObj.f_checkHostname(thisObj.m_form.conf_lan_dhcp_dns_sec.value)) {
+					errorInner += thisObj.f_createListItem(g_lang.m_landhcp_dns_sec + ' ' + g_lang.m_formInvalid);
+				}
+			}
+		}
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
@@ -607,6 +656,11 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
 		thisObj.m_dhcpObj.m_dnsSecondary = thisObj.m_form.conf_lan_dhcp_dns_sec.value;
 		thisObj.m_dhcpObj.m_dnsMode = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_lan_dhcp_dns_mode);
 		
+		if (thisObj.m_dhcpObj.m_dnsMode != 'static') {
+			thisObj.m_dhcpObj.m_dnsPrimary = '';
+			thisObj.m_dhcpObj.m_dnsSecondary = '';
+		}
+		
 		if (thisObj.m_form.conf_lan_dhcp_enable.checked) {
 			 thisObj.m_dhcpObj.m_enable = 'true';
 		} else {
@@ -628,6 +682,23 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
         }
     }
     
+	this.f_handleChange = function()
+	{
+		thisObj.f_enableAllButton(true);
+        var dnsMode = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_lan_dhcp_dns_mode);
+        if (thisObj.m_form.conf_lan_dhcp_enable.checked) {
+            if (dnsMode == 'static') {
+			    thisObj.f_enableDNS(true);
+				thisObj.m_form.conf_lan_dhcp_dns_pri.value = thisObj.m_dhcpObj.m_dnsPrimary;
+				thisObj.m_form.conf_lan_dhcp_dns_sec.value = thisObj.m_dhcpObj.m_dnsSecondary;								
+			} else {
+				thisObj.f_enableDNS(false);
+				thisObj.m_form.conf_lan_dhcp_dns_pri.value = '';
+				thisObj.m_form.conf_lan_dhcp_dns_sec.value = '';				
+			}					
+		}		
+	}
+	
     this.f_handleClickById = function(id)
     {
         switch (id) {
@@ -638,10 +709,9 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
                     thisObj.f_enableDHCP(false);
                 }
                 thisObj.f_enableAllButton(true);
-                break;
+                break;				
             case 'conf_lan_dhcp_range_start':
             case 'conf_lan_dhcp_range_end':
-            case 'conf_lan_dhcp_dns_mode':
             case 'conf_lan_dhcp_dns_pri':
             case 'conf_lan_dhcp_dns_sec':
                 thisObj.f_enableAllButton(true);

@@ -332,6 +332,7 @@ var g_lang =
 	m_landhcp_enable : "Enable DHCP server",
 	m_landhcp_range_start : "DHCP range start",
 	m_landhcp_range_end : "DHCP range end",
+	m_landdhcp_range_invalid: "Invalid DHCP range: ",	
 	m_landhcp_dns_mode : "DNS mode",
 	m_landhcp_dns_pri : "Primary DNS server",
 	m_landhcp_dns_sec : "Secondary DNS server",	

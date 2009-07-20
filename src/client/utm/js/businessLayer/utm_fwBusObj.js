@@ -393,10 +393,9 @@ function UTM_firewallBusObj(busObj)
     this.f_getFirewallZoneMgmtList = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>zone-mgmt get-zone-info" +
-                      "</handler><data>ALL</data></statement></command>";
+                      "</handler><data>ALL</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -405,10 +404,9 @@ function UTM_firewallBusObj(busObj)
     this.f_getFirewallZoneMemberAvailable = function(zoneRec, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>zone-mgmt get-available-interfaces" +
-                      "</handler></statement></command>";
+                      "</handler></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -416,12 +414,10 @@ function UTM_firewallBusObj(busObj)
     this.f_setFirewallZoneMgmtDescription = function(rec, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>zone-mgmt " +
+        var xmlstr = "<statement mode='proc'><handler>zone-mgmt " +
                       "set-zone-description</handler><data>zone=[" + rec.m_name +
                       "], description=['" + rec.m_description + "']" +
-                      "</data></statement></command>";
+                      "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -429,12 +425,10 @@ function UTM_firewallBusObj(busObj)
     this.f_setFirewallZoneMgmtInterface = function(rec, cmd, interf, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>zone-mgmt " + cmd +
+        var xmlstr = "<statement mode='proc'><handler>zone-mgmt " + cmd +
                       "</handler><data>zone=[" + rec.m_name +
                       "], interface=[" + interf + "]" +
-                      "</data></statement></command>";
+                      "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -445,11 +439,10 @@ function UTM_firewallBusObj(busObj)
     this.f_getFirewallSecurityLevel = function(zonePair, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>firewall-security-level get" +
                       "</handler><data>zonepair=[" + zonePair +
-                      "]</data></statement></command>";
+                      "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -463,12 +456,10 @@ function UTM_firewallBusObj(busObj)
     this.f_setFirewallSecurityLevel = function(fireRec, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>firewall-security-level" +
+        var xmlstr = "<statement mode='proc'><handler>firewall-security-level" +
                       " set</handler><data>zonepair=[" + fireRec.m_direction +
                       "], security-level=[" + fireRec.m_level +
-                      "]</data></statement></command>";
+                      "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -477,11 +468,10 @@ function UTM_firewallBusObj(busObj)
     this.f_getFirewallZoneMgmtNextRuleNo = function(zonepair, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>customize-firewall next-rulenum" +
                       "</handler><data>zonepair=[" + zonepair +
-                      "], rulename=[next]</data></statement></command>";
+                      "], rulename=[next]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -490,11 +480,10 @@ function UTM_firewallBusObj(busObj)
     this.f_getFirewallSecurityCustomize = function(fireRec, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement mode='proc'>" +
+        var xmlstr = "<statement mode='proc'>" +
                       "<handler>customize-firewall get" +
                       "</handler><data>zonepair=[" + fireRec.m_zonePair +
-                      "], rulename=[all]</data></statement></command>";
+                      "], rulename=[all]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -503,12 +492,10 @@ function UTM_firewallBusObj(busObj)
     this.f_setFirewallCustomize = function(fireRec, name, value, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
+        var xmlstr = "<statement mode='proc'><handler>customize-firewall" +
                       " set</handler><data>zonepair=[" + fireRec.m_zonePair +
                       "], rulenum=[" + fireRec.m_ruleNo + "]," + name +
-                      "=[" + value + "]</data></statement></command>";
+                      "=[" + value + "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -517,12 +504,10 @@ function UTM_firewallBusObj(busObj)
     this.f_setFirewallCustomizeOrder = function(fireRec, order, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
+        var xmlstr = "<statement mode='proc'><handler>customize-firewall" +
                       " move-rule-"+order+"</handler><data>zonepair=[" +
                       fireRec.m_zonePair + "], rulenum=[" + fireRec.m_ruleNo + "]" +
-                      "</data></statement></command>";
+                      "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -531,12 +516,10 @@ function UTM_firewallBusObj(busObj)
     this.f_deleteFirewallCustomizeRule = function(fireRec, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
+        var xmlstr = "<statement mode='proc'><handler>customize-firewall" +
                       " delete-rule</handler><data>zonepair=[" + fireRec.m_zonePair +
                       "], rulenum=[" + fireRec.m_ruleNo +
-                      "]</data></statement></command>";
+                      "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -545,11 +528,9 @@ function UTM_firewallBusObj(busObj)
     this.f_resetFirewallCustomizeRule = function(fireRec, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall" +
+        var xmlstr = "<statement mode='proc'><handler>customize-firewall" +
                       " reset</handler><data>zonepair=[" + fireRec.m_zonePair +
-                      "],rulenum=[all]</data></statement></command>";
+                      "],rulenum=[all]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -563,10 +544,8 @@ function UTM_firewallBusObj(busObj)
     this.f_sendFirewallCustomizeRuleCmd = function(type, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>customize-firewall " +
-                      type + "</handler><data></data></statement></command>";
+        var xmlstr = "<statement mode='proc'><handler>customize-firewall " +
+                      type + "</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -618,10 +597,8 @@ function UTM_firewallBusObj(busObj)
     this.f_saveFirewallInput = function(handler, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>" + handler +
-                      " save</handler><data></data></statement></command>";
+        var xmlstr = "<statement mode='proc'><handler>" + handler +
+                      " save</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -630,10 +607,8 @@ function UTM_firewallBusObj(busObj)
     this.f_cancelFirewallInput = function(handler, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id>" +
-                      "<statement mode='proc'><handler>" + handler +
-                      " cancel</handler><data></data></statement></command>";
+        var xmlstr = "<statement mode='proc'><handler>" + handler +
+                      " cancel</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

@@ -75,8 +75,10 @@ function UTM_businessLayer()
     {
         var r = this.m_request;
 
-        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                       + "<openappliance>" + content + "</openappliance>\n";
+        var sid = g_utils.f_getUserLoginedID();
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                       "<openappliance><command><id>" + sid + "</id>" +
+                        content + "</command></openappliance>\n";
         var innerCB = callback;
         var requestCB = function(resp)
         {

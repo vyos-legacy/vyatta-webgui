@@ -110,7 +110,7 @@ sub get_dhcp_server_config {
     my $config = new Vyatta::Config;
     my $path = "service dhcp-server shared-network-name $data subnet $ip[0]";
     my @start_ip = $config->listNodes("$path start"); # should only be one start
-    my $stop_ip = $config->returnValue("$path start $start_ip[0] stop");
+    my $stop_ip = $config->returnValue("$path start $start_ip[0] stop") if scalar(@start_ip) > 0;
     my $description = $config->returnValue("service dhcp-server shared-network-name $data description");
     # description format - 'dns-mode primary-dns-server secondary-dns-server'
     my @dns_values = split(' ', $description);
@@ -121,8 +121,15 @@ sub get_dhcp_server_config {
     } else {
        $enabled = 'true';
     }
-    $msg .= "<enable>$enabled</enable>" . "<start>$start_ip[0]</start>" .
-            "<end>$stop_ip</end>" . "<dns_mode>$dns_values[0]</dns_mode>";
+
+    $msg .= "<enable>$enabled</enable>";
+    if (scalar(@start_ip) > 0) {
+      $msg .= "<start>$start_ip[0]</start>" . "<end>$stop_ip</end>";
+    } else {
+      $msg .= "<start></start>" . "<end></end>";
+    }
+
+    $msg .= "<dns_mode>$dns_values[0]</dns_mode>";
     if (defined $dns_values[1]) {
       $msg .= "<primary_dns>$dns_values[1]</primary_dns>";
     } else {
@@ -155,8 +162,12 @@ sub set_dhcp_server_config {
 "delete $path disable",
 "set $path authoritative enable",
 "set $path subnet $ip[0] default-router $ip_without_mask[0]",
-"set $path subnet $ip[0] start $xml->{start} stop $xml->{end}",
 "set $path description \"$xml->{dns_mode}\"";
+
+    if ($xml->{start} =~ m/\w/) {
+      push @cmds,
+"set $path subnet $ip[0] start $xml->{start} stop $xml->{end}";
+    }
 
     if (!($xml->{primary_dns} eq '')) {
       push @cmds, 

@@ -19,6 +19,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
      */
     this.constructor = function(name, callback, busLayer)
     {
+        this.m_threadId = null;
         UTM_confVPNOverview.superclass.constructor(name, callback, busLayer);
     }
     this.constructor(name, callback, busLayer);
@@ -79,9 +80,16 @@ function UTM_confVPNOverview(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
+        var wait = true;
+
         var cb = function(evt)
         {
-            g_utils.f_cursorDefault();
+            if(wait)
+            {
+                g_utils.f_cursorDefault();
+                wait = false;
+            }
+
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
                 thisObj.m_s2sRecs = evt.m_value;
@@ -90,7 +98,12 @@ function UTM_confVPNOverview(name, callback, busLayer)
         }
 
         g_utils.f_cursorWait();
-        this.m_busLayer.f_vpnGetSite2SiteConfigData(cb);
+        this.m_threadId = this.m_busLayer.f_startVPNRequestThread(cb);
+    }
+
+    this.f_stopLoadVMData = function()
+    {
+        this.m_busLayer.f_stopVPNRequestThread(this.m_threadId);
     }
 
     this.f_reappendChildren = function()
@@ -122,7 +135,9 @@ function UTM_confVPNOverview(name, callback, busLayer)
             var rec = recs[i];
             var c = "<div align=center>";
 
-            if(rec.m_tunnel == null) break;
+            var tname = thisObj.f_renderAnchor(rec.m_tunnel,
+                    "f_s2sUpdateHandler('" +
+                    rec.m_tunnel + "')", 'Click on name for update');
 
             var enable = c + thisObj.f_renderCheckbox(
                   rec.m_enable, 'enabledId-'+rec.m_tunnel,
@@ -133,14 +148,16 @@ function UTM_confVPNOverview(name, callback, busLayer)
                   "delete", true, "f_fireCustomDeleteHandler(" + rec.m_tunnel +
                   ")", g_lang.m_tooltip_delete) + "</div>";
 
-            var color = rec.m_status == 'disconnected' ? "red" : "black";
-            var status = "<font color=" + color + ">" +
-                          rec.m_status + "</div>";
+            var status = rec.m_status == 'disconnected' ?
+                          thisObj.f_createSimpleDiv("<b>" + rec.m_status +
+                          "</b>", 'center', 'red') :
+                          thisObj.f_createSimpleDiv(rec.m_status, 'center');
+
 
             ///////////////////////////////////
             // add fields into grid view
             var div = thisObj.f_createGridRow(thisObj.m_hds2s,
-                  [thisObj.f_createSimpleDiv(rec.m_tunnel, 'center'),
+                  [thisObj.f_createSimpleDiv(tname, 'center'),
                   thisObj.f_createSimpleDiv(rec.m_localNetwork, 'center'),
                   thisObj.f_createSimpleDiv(rec.m_remoteNetwork, 'center'),
                   thisObj.f_createSimpleDiv(rec.m_peerIp, 'center'),
@@ -189,6 +206,31 @@ function UTM_confVPNOverview(name, callback, busLayer)
             thisObj.f_populateS2STable(thisObj.m_s2sRecs);
     }
 
+    this.f_getS2SRecByName = function(name)
+    {
+        if(thisObj.m_s2sRecs != null)
+        {
+            for(var i=0; i<thisObj.m_s2sRecs.length; i++)
+            {
+                if(thisObj.m_s2sRecs[i].m_tunnel == name)
+                    return thisObj.m_s2sRecs[i];
+            }
+        }
+
+        return null;
+    }
+
+    this.f_handleS2SUpdate = function(name)
+    {
+        var rec = this.f_getS2SRecByName(name);
+
+        if(rec != null)
+        {
+            alert('update ' + rec.m_tunnel);
+            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID, rec);
+        }
+    }
+
     this.f_handleRemoteGridSort = function(col)
     {
         if(thisObj.f_isSortEnabled(thisObj.m_hdremote, col))
@@ -198,10 +240,6 @@ function UTM_confVPNOverview(name, callback, busLayer)
     this.f_handleCheckboxClick = function(chkbox)
     {
         
-    }
-
-    this.f_stopLoadVMData = function()
-    {
     }
 
     this.f_init = function()
@@ -253,4 +291,9 @@ function f_vpnS2SGridHeaderOnclick(col)
 function f_vpnRemoteGridHeaderOnclick(col)
 {
     g_configPanelObj.m_activeObj.f_handleRemoteGridSort(col);
+}
+
+function f_s2sUpdateHandler(name)
+{
+    g_configPanelObj.m_activeObj.f_handleS2SUpdate(name);
 }

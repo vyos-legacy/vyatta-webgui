@@ -183,6 +183,7 @@ function UTM_vpnBusObj(busObj)
     /**
      * get all site to site configurations
      */
+    test1 = 0;
     this.f_getSite2SiteData = function(guicb)
     {
         thisObj.m_guiCb = guicb;
@@ -201,7 +202,7 @@ function UTM_vpnBusObj(busObj)
                 var dis = i == 2 || i==4 ? "disconnected" : "connected";
 
                 if(i == 4) sep = "";
-                resp += "name=[tunnel name" + i + "],source=[10.1.3." + i +
+                resp += "name=[tunnel name" + (i+test1++) + "],source=[10.1.3." + i +
                         "],destination=[10.1.2." + i + "],peer=[192.168.1." + i +
                         "],status=[" + dis + "],configmode=[expert],enable=[no]" +
                         sep;
@@ -214,7 +215,7 @@ function UTM_vpnBusObj(busObj)
             thisObj.m_lastCmdSent = xmlstr;
             thisObj.f_respondRequestCallback(resp, xmlstr, guicb);
         }
-        window.setTimeout(cb, 1000);
+        window.setTimeout(cb, 500);
 
         return;
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,

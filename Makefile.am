@@ -38,6 +38,7 @@ src_server_webgui_SOURCES += src/server/multirespcmd.cc
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
 src_server_webgui_LDADD += -lssl
+src_server_webgui_LDADD += -lldap
 
 cgi_PROGRAMS = src/server/webgui
 cgi_PROGRAMS += src/server/chunker

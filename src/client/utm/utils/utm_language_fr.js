@@ -96,7 +96,7 @@ var g_lang =
     m_vpnOVSource : 'source',
     m_vpnOVDest : 'destination',
     m_vpnOVPeerDomainName : "adresse du site distant / nom de domaine",
-    m_vpnOVConfNode : 'mode de configuration',
+    m_vpnOVConfMode : 'mode de configuration',
     m_vpnOVLocal : 'local',
     m_vpnOVS2S : "connexions site à site",
     m_vpnOVRemote : "utilisateurs nomades",

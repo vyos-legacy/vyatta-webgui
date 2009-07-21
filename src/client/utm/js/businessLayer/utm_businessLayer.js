@@ -441,34 +441,11 @@ function UTM_businessLayer()
     /**
      * get vpn site2site easy mode configurations
      */
-    this.f_vpnGetSite2SiteEasyConfig = function(guicb)
+    this.f_vpnGetSite2SiteConfigData = function(guicb)
     {
-        thisObj.f_getVPNObject().f_getSite2SiteConfig('easy', guicb);
+        thisObj.f_getVPNObject().f_getSite2SiteData(guicb);
     }
 
-    /**
-     * set vpn site2site easy mode configuration fields
-     */
-    this.f_vpnSetSite2SiteEasyConfig = function(vpnRec, guicb)
-    {
-        thisObj.f_getVPNObject().f_setSite2SiteConfig(vpnRec, 'easy', guicb);
-    }
-
-    /**
-     * get vpn site2site export mode configurations
-     */
-    this.f_vpnGetSite2SiteExportConfig = function(guicb)
-    {
-        thisObj.f_getVPNObject().f_getSite2SiteConfig('expert', guicb);
-    }
-
-    /**
-     * set vpn site2site export mode configuration fields
-     */
-    this.f_vpnSetSite2SiteExportConfig = function(vpnRec, guicb)
-    {
-        thisObj.f_getVPNObject().f_setSite2SiteConfig(vpnRec, 'expert', guicb);
-    }
 
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////

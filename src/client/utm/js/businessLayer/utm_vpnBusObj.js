@@ -9,16 +9,16 @@
 /**
  * VPN data record
  */
-function UTM_vpnRecord()
+function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
 {
     var thisObj = this;
-    this.m_mode = null; // easy or export
-    this.m_tunnel = null;
-    this.m_peerIp = null;
+    this.m_mode = mode; // easy or export
+    this.m_tunnel = tunnel;
+    this.m_peerIp = peer;
     this.m_remoteVpnDevice = null;
     this.m_presharedKey = null;
-    this.m_localNetwork = null;
-    this.m_remoteNetwork = null;
+    this.m_localNetwork = src;
+    this.m_remoteNetwork = dest;
     this.m_type = null;
     this.m_exchange = null;
     this.m_encryption1 = null;
@@ -29,6 +29,8 @@ function UTM_vpnRecord()
     this.m_lifeTime2 = null;
     this.m_encryption2 = null;
     this.m_auth2 = null;
+    this.m_status = status;
+    this.m_enable = enable;
 
     this.f_setLocalNetwork = function(ip, prefix)
     {
@@ -77,6 +79,7 @@ function UTM_vpnBusObj(busObj)
     /////////////////////////////////////
     // properteis
     var thisObj = this;
+    this.m_simulationMode = false;
     this.m_busObj = busObj;
     this.m_lastCmdSent = null;
     this.m_configMode = null; // easy or expert
@@ -85,10 +88,16 @@ function UTM_vpnBusObj(busObj)
     /**
      * A callback function for request.
      */
-    this.f_respondRequestCallback = function()
+    this.f_respondRequestCallback = function(resp, cmdSent, callback)
     {
         var response = thisObj.m_busObj.f_getRequestResponse(
                         thisObj.m_busObj.m_request);
+
+        if(thisObj.m_simulationMode)
+        {
+            response = resp;
+            thisObj.m_simulationMode = false;
+        }
 
         if(response == null) return;
 
@@ -104,15 +113,9 @@ function UTM_vpnBusObj(busObj)
             if(err != null && err[0] != null)
             {
                 if(thisObj.m_lastCmdSent.indexOf(
-                    'get vpn site-to-site easy</statement>') > 0)
+                    "<handler>vpn-site2site get") > 0)
                 {
-                    thisObj.f_parseEasyModeData(err);
-                    evt = new UTM_eventObj(0, thisObj.m_vpnRec, '');
-                }
-                else if(thisObj.m_lastCmdSent.indexOf(
-                    'get vpn site-to-site expert</statement>') > 0)
-                {
-                    thisObj.f_parseExpertModeData(err);
+                    thisObj.m_vpnRec = thisObj.f_parseSite2SiteGet(err);
                     evt = new UTM_eventObj(0, thisObj.m_vpnRec, '');
                 }
             }
@@ -122,174 +125,59 @@ function UTM_vpnBusObj(busObj)
         }
     }
 
-    this.f_constructKeyValueString = function(vpnRec)
+
+    this.f_parseSite2SiteGet = function(resp)
     {
-        var kvstr = '';
-        var statement = "<statement>" +
-                      "utm configuration set vpn site-to-site " +
-                      vpnRec.m_mode + " key name ";
+        var nodes = thisObj.m_busObj.f_getResponseChildNodes(resp, 'msg');
+        var vpn = new Array();
 
-        if(vpnRec.m_tunnel != null)
-            kvstr += statement + "'tunnel' '" + vpnRec.m_tunnel + "'</statement> ";
-
-        if(vpnRec.m_peerIp != null)
-            kvstr += statement + "'peerip' '" + vpnRec.m_peerIp + "'</statement> ";
-
-        if(vpnRec.m_remoteVpnDevice != null)
-            kvstr += statement + "'remotedevice' '" + vpnRec.m_remoteVpnDevice +
-                       "'</statement> ";
-
-        if(vpnRec.m_presharedKey != null)
-            kvstr += statement + "'presharedkey' '" + vpnRec.m_presharedKey +
-                       "'</statement> ";
-
-        if(vpnRec.m_localNetwork != null)
-            kvstr += statement + "'localnetwork' '" + vpnRec.m_localNetwork +
-                         "'</statement> ";
-
-        if(vpnRec.m_remoteNetwork != null)
-            kvstr += statement + "'remotenetwork' '" + vpnRec.m_remoteNetwork +
-                         "'</statement> ";
-
-        if(vpnRec.m_type != null)
-            kvstr += statement + "'type' '" + vpnRec.m_type +
-                         "'</statement> ";
-
-        if(vpnRec.m_exchange != null)
-            kvstr += statement + "'exchange' '" + vpnRec.m_exchange +
-                         "'</statement> ";
-
-        if(vpnRec.m_encryption1 != null)
-            kvstr += statement + "'encryption1' '" + vpnRec.m_encryption1 +
-                         "'</statement> ";
-
-        if(vpnRec.m_auth1 != null)
-            kvstr += statement + "'auth1' '" + vpnRec.m_auth1 +
-                         "'</statement> ";
-
-        if(vpnRec.m_diffieHellmann != null)
-            kvstr += statement + "'diffiehellmann' '" + vpnRec.m_diffieHellmann +
-                         "'</statement> ";
-
-        if(vpnRec.m_lifeTime1 != null)
-            kvstr += statement + "'lifetime1' '" + vpnRec.m_lifeTime1 +
-                         "'</statement> ";
-
-        if(vpnRec.m_pfsGroup != null)
-            kvstr += statement + "'pfsgroup' '" + vpnRec.m_pfsGroup +
-                         "'</statement> ";
-
-        if(vpnRec.m_lifeTime2 != null)
-            kvstr += statement + "'lifetime2' '" + vpnRec.m_lifeTime2 +
-                         "'</statement> ";
-
-        if(vpnRec.m_encryption2 != null)
-            kvstr += statement + "'encryption2' '" + vpnRec.m_encryption2 +
-                         "'</statement> ";
-
-        if(vpnRec.m_auth2 != null)
-            kvstr += statement + "'auth2' '" + vpnRec.m_auth2 +
-                         "'</statement> ";
-
-        return kvstr;
-    }
-
-    this.f_setVpnRecordData = function(nodes)
-    {
-        var vpn = new UTM_vpnRecord();
-
-        for(var i=0; i<nodes.length; i++)
+        if(nodes != null)
         {
-            var val = nodes[i];
-
-            switch(val.nodeName)
+            for(var i=0; i<nodes.length; i++)
             {
-                case 'tunnel':
-                    vpn.m_tunnel = val.firstChild.nodeValue;
-                    break;
-                case 'peerip':
-                    vpn.m_peerIp = val.firstChild.nodeValue;
-                    break;
-                case 'remotedevice':
-                    vpn.m_remoteDevice = val.firstChild.nodeValue;
-                    break;
-                case 'presharedkey':
-                    vpn.m_presharedKey = val.firstChild.nodeValue;
-                    break;
-                case 'localnetwork':
-                    vpn.m_localNetwork = val.firstChild.nodeValue;
-                    break;
-                case 'remotenetwork':
-                    vpn.m_remoteNetwork = val.firstChild.nodeValue;
-                    break;
-                case 'type':
-                    vpn.m_type = val.firstChild.nodeValue;
-                    break;
-                case 'exchange':
-                    vpn.m_exchange = val.firstChild.nodeValue;
-                    break;
-                case 'encryption1':
-                    vpn.m_encryption1 = val.firstChild.nodeValue;
-                    break;
-                case 'auth1':
-                    vpn.m_auth1 = val.firstChild.nodeValue;
-                    break;
-                case 'diffiehellmann':
-                    vpn.m_diffieHellmann = val.firstChild.nodeValue;
-                    break;
-                case 'lifetime1':
-                    vpn.m_lifeTime1 = val.firstChild.nodeValue;
-                    break;
-                case 'pfsgroup':
-                    vpn.m_pfsGroup = val.firstChild.nodeValue;
-                    break;
-                case 'lifeTime2':
-                    vpn.m_lifeTime2 = val.firstChild.nodeValue;
-                    break;
-                case 'encryption2':
-                    vpn.m_encryption2 = val.firstChild.nodeValue;
-                    break;
-                case 'auth2':
-                    vpn.m_auth2 = val.firstChild.nodeValue;
-                    break;
+                var n = nodes[i];
+                if(n.nodeName == "vpn-site2site")
+                {
+                    var vals = n.firstChild.nodeValue.split(":");
+
+                    for(var j=0; j<vals.length; j++)
+                    {
+                        vpn[j] = new UTM_vpnRecord();
+
+                        vpn[j].m_tunnel = this.f_getValueFromNameValuePair("name", vals[j]);
+                        vpn[j].m_localNetwork = this.f_getValueFromNameValuePair("source", vals[j]);
+                        vpn[j].m_remoteNetwork = this.f_getValueFromNameValuePair("destination", vals[j]);
+                        vpn[j].m_peerIp = this.f_getValueFromNameValuePair("peer", vals[j]);
+                        vpn[j].m_status = this.f_getValueFromNameValuePair("status", vals[j]);
+                        vpn[j].m_enable = this.f_getValueFromNameValuePair("enable", vals[j]);
+                        vpn[j].m_mode = this.f_getValueFromNameValuePair("configmode", vals[j]);
+                    }
+                }
             }
         }
 
         return vpn;
     }
 
-    /**
-     * parse easy mode response data from server into vpnRec form.
-     */
-    this.f_parseEasyModeData = function(response)
+    this.f_getValueFromNameValuePair = function(name, nv)
     {
-        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
-        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'vpn');
-        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'site-to-site');
-        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'easy');
+        var nvs = nv.split("]");
 
-        if(nodes != null)
+        for(var i=0; i<nvs.length; i++)
         {
-            thisObj.m_vpnRec = thisObj.f_setVpnRecordData(nodes);
-            thisObj.m_configMode = 'easy';
+            if(nvs[i].indexOf(name+"=") >= 0)
+            {
+                var v = nvs[i].split("=");
+                if(v[1].length > 1)
+                {
+                    v = v[1].replace("[", "");
+                    //v = v.replace(/;/g, ",");
+                    return v;
+                }
+            }
         }
-    }
 
-    /**
-     * parse expert mode response data from server into vpnRec form.
-     */
-    this.f_parseExpertModeData = function(response)
-    {
-        var nodes = thisObj..m_busObj.f_getResponseChildNodes(response, 'msg');
-        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'vpn');
-        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'site-to-site');
-        nodes = thisObj..m_busObj.f_getResponseChildNodes(nodes, 'expert');
-
-        if(nodes != null)
-        {
-            thisObj.m_vpnRec = thisObj.f_setVpnRecordData(nodes);
-            thisObj.m_configMode = 'expert';
-        }
+        return "";
     }
 
     /**
@@ -297,38 +185,40 @@ function UTM_vpnBusObj(busObj)
      */
     this.f_getSite2SiteData = function(guicb)
     {
-
-    }
-
-    /**
-     * perform a get vpn site2site configurations request from server.
-     * @param mode - configuration mode 'easy' or 'expert'
-     * @param guicb - gui callback function
-     */
-    this.f_getSite2SiteConfig = function(mode, guicb)
-    {
         thisObj.m_guiCb = guicb;
-        var xmlstr = "<statement>" +
-                      "utm configuration get vpn site-to-site " + mode +
-                      "</statement>";
+        var xmlstr = "<statement mode='proc'>" +
+                      "<handler>vpn-site2site get" +
+                      "</handler><data></data></statement>";
 
+        var cb = function()
+        {
+            var resp = '<?xml version="1.0" encoding="utf-8"?>' +
+                        '<openappliance><token></token><error><code>0</code><msg><vpn-site2site>';
+            var sep = ":";
+
+            for(var i=0; i<5; i++)
+            {
+                var dis = i == 2 || i==4 ? "disconnected" : "connected";
+
+                if(i == 4) sep = "";
+                resp += "name=[tunnel name" + i + "],source=[10.1.3." + i +
+                        "],destination=[10.1.2." + i + "],peer=[192.168.1." + i +
+                        "],status=[" + dis + "],configmode=[expert],enable=[no]" +
+                        sep;
+            }
+
+            resp += "</vpn-site2site></msg></error></openappliance>";
+
+            resp = g_utils.f_parseXmlFromString(resp);
+            thisObj.m_simulationMode = true;
+            thisObj.m_lastCmdSent = xmlstr;
+            thisObj.f_respondRequestCallback(resp, xmlstr, guicb);
+        }
+        window.setTimeout(cb, 1000);
+
+        return;
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
 
-    /**
-     * perform a set vpn site2site configurations request to server.
-     * @param vpnRec - vpn record object
-     * @param guicb - gui callback function
-     */
-    this.f_setSite2SiteConfig = function(vpnRec, guicb)
-    {
-        thisObj.m_guiCb = guicb;
-        var xmlstr = thisObj.f_constructKeyValueString(vpnRec) +
-                      "<statement>utm configuration set vpn site-to-site " +
-                      vpnRec.m_mode + " submit</statement>";
-
-        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-    }
 }

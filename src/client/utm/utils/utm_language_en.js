@@ -89,14 +89,14 @@ var g_lang =
     m_formNotAValidIP: " is not a valid IP address",
 	m_formNotAValidMac: " is not a valid MAC address",
 	m_formFixError: "Please fix the following errors:",
-    m_formNoEmpty : "cannot be empty",	
+    m_formNoEmpty : "cannot be empty",
 
     ///////////////////////////////////////////////////////////////////
     // VPN Overview
     m_vpnOVSource : 'source',
     m_vpnOVDest : 'destination',
     m_vpnOVPeerDomainName : 'peer address /domain name',
-    m_vpnOVConfNode : 'configuration node',
+    m_vpnOVConfMode : 'configuration mode',
     m_vpnOVLocal : 'local',
     m_vpnOVS2S : 'site to site connections',
     m_vpnOVRemote : 'remote users',
@@ -328,10 +328,10 @@ var g_lang =
 	m_portconf_attach: "port attachment",
 	m_portconf_interface: "interface",
 	m_portconf_lan_lan2_no_disabled: "Port E1 (LAN) and Port E3 (LAN2) cannot be simultaneously disabled",
-	
+
     ///////////////////////////////////////////////////////////////////
     // LAN config
-    m_lanitf_title : "LAN/IP parameters",	
+    m_lanitf_title : "LAN/IP parameters",
 	m_lanitf_ip : "LAN IP address",
 	m_lanitf_mask: "IP subnet mask",
 	m_landhcp_title: "DHCP parameters",
@@ -345,9 +345,9 @@ var g_lang =
 	m_landhcp_dns_dynamic : "Dynamic",
 	m_landhcp_dns_none : "No DNS",
 	m_lanip_reserved_ip : "Reserved IP addresses",
-	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",	
+	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",
 	m_lanip_reserved_ip_entry: "entries",
-	
+
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images
     m_imageDir : 'images/en/',

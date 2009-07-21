@@ -78,9 +78,17 @@ sub get_dhcp_server_config {
        $enabled = 'true';
     }
     $msg .= "<enable>$enabled</enable>" . "<start>$start_ip[0]</start>" .
-            "<end>$stop_ip</end>" . "<dns_mode>$dns_values[0]</dns_mode>" .
-            "<primary_dns>$dns_values[1]</primary_dns>";
-    $msg .= "<secondary_dns>$dns_values[2]</secondary_dns>" if defined $dns_values[2];
+            "<end>$stop_ip</end>" . "<dns_mode>$dns_values[0]</dns_mode>";
+    if (defined $dns_values[1]) {
+      $msg .= "<primary_dns>$dns_values[1]</primary_dns>";
+    } else {
+      $msg .= "<primary_dns></primary_dns>";
+    }
+    if (defined $dns_values[2]) {
+      $msg .= "<secondary_dns>$dns_values[2]</secondary_dns>";
+    } else {
+      $msg .= "<secondary_dns></secondary_dns>";
+    }
     $msg .= "</dhcp-server-config></form>";
     print $msg;
 }
@@ -92,24 +100,36 @@ sub set_dhcp_server_config {
     my ($msg, $err);
     my @cmds = ();
     my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$xml->{interface}});
+    my @ip_without_mask = split('/', $ip[0]);
     my $path = "service dhcp-server shared-network-name $xml->{interface}";
+    my $scnd_dns_exists = 1;
 
     push @cmds,
 "delete $path subnet $ip[0] start",
 "delete $path subnet $ip[0] dns-server",
 "delete $path description",
 "delete $path disable",
+"set $path authoritative enable",
+"set $path subnet $ip[0] default-router $ip_without_mask[0]",
 "set $path subnet $ip[0] start $xml->{start} stop $xml->{end}",
-"set $path description \"$xml->{dns_mode} $xml->{primary_dns} $xml->{secondary_dns}\"";
+"set $path description \"$xml->{dns_mode}\"";
+
+    if (!($xml->{primary_dns} eq '')) {
+      push @cmds, "set $path description \"$xml->{dns_mode} $xml->{primary_dns}\"";
+    }
+    if (!($xml->{secondary_dns} eq '')) {
+      push @cmds, "set $path description \"$xml->{dns_mode} $xml->{primary_dns} $xml->{secondary_dns}\"";
+      $scnd_dns_exists = 0;
+    }
 
     if ($xml->{dns_mode} eq 'static') {
         push @cmds,
-"set $path subnet $ip[0] dns-server $xml->{primary_dns}",
-"set $path subnet $ip[0] dns-server $xml->{secondary_dns}";
+"set $path subnet $ip[0] dns-server $xml->{primary_dns}";
+	push @cmds,
+"set $path subnet $ip[0] dns-server $xml->{secondary_dns}" if $scnd_dns_exists == 1;
     } elsif ($xml->{dns_mode} eq 'dynamic') {
-        my @values = split('/', $ip[0]);
         push @cmds,
-"set $path subnet $ip[0] dns-server $values[0]";
+"set $path subnet $ip[0] dns-server $ip_without_mask[0]";
     }
 
     if ($xml->{enable} eq 'false') {
@@ -120,10 +140,10 @@ sub set_dhcp_server_config {
     push @cmds, "commit", "save";
     $err = OpenApp::Conf::execute_session(@cmds);
     if (defined $err) {
-       $msg = "<form name='dhcp-static-mapping' code='2'>";
+       $msg = "<form name='dhcp-server-config' code='2'>";
        $msg .= "<dhcp-server-config>" . "</dhcp-server-config>";
        $msg .= "<errmsg>" . "Set DHCP server config error" . "</errmsg>";
-       $msg = "</form>";
+       $msg .= "</form>";
        print $msg;
        exit 1;
     }
@@ -168,6 +188,7 @@ sub set_dhcp_static_mapping {
     my ($msg, $err);
     my @cmds = ();
     my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$xml->{interface}});
+    my @ip_without_mask = split('/', $ip[0]);    
     my $path = "service dhcp-server shared-network-name $xml->{interface} subnet $ip[0]";
     foreach my $mapping (@{$xml->{mapping}}) {
        switch ($mapping->{action}) {
@@ -203,13 +224,18 @@ sub set_dhcp_static_mapping {
 
        }
     }
-    push @cmds, "commit", "save";
+
+    push @cmds, 
+"set service dhcp-server shared-network-name $xml->{interface} authoritative enable",
+"set $path default-router $ip_without_mask[0]",
+"commit", 
+"save";
     $err = OpenApp::Conf::execute_session(@cmds);
     if (defined $err) {
        $msg = "<form name='dhcp-static-mapping' code='1'>";
        $msg .= "<dhcp-static-mapping>" . "</dhcp-static-mapping>";
        $msg .= "<errmsg>" . "Set DHCP reserved IP pool error" . "</errmsg>";
-       $msg = "</form>";
+       $msg .= "</form>";
        print $msg;
        exit 1;
     }

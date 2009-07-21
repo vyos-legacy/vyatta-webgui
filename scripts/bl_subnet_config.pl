@@ -57,6 +57,50 @@ sub sc_log {
     close $fh;
 }
 
+sub shared_ntwrk_range_or_mapping_exist {
+    my $interface_name = shift;
+    my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$interface_name});
+    my $config = new Vyatta::Config;
+    my $path = "service dhcp-server shared-network-name $interface_name subnet $ip[0]";
+    my @start_ip = $config->listNodes("$path start");
+    my @static_mappings = $config->listNodes("$path static-mapping");
+    if ((scalar(@start_ip) > 0) || (scalar(@static_mappings) > 0)) {
+      return 0; # true
+    } else {
+      return 1; # false
+    }
+}
+
+sub more_than1_shared_ntwrks {
+    my $config = new Vyatta::Config;
+    my $path = "service dhcp-server";
+    my @shared_ntwrks = $config->listNodes("$path shared-network-name");
+    if (scalar(@shared_ntwrks) > 1) {
+      return 0; # true
+    } else {
+      return 1; # false
+    }
+}
+
+sub delete_sharedntwrk_or_dhcpserver {
+    my $interface = shift;
+    my @cmds = ();
+
+    # if no dhcp ranges or mapping exist, delete shared-network-name
+    my $delete_dhcp = shared_ntwrk_range_or_mapping_exist($interface);
+    if ($delete_dhcp == 1) {
+       # if no other shared-network-names, delete dhcp-server config
+       my $any_shared_ntwrks = more_than1_shared_ntwrks();
+       if ($any_shared_ntwrks == 1) {
+           push @cmds, "delete service dhcp-server";
+       } else {
+           push @cmds, "delete service dhcp-server shared-network-name $interface";
+       }
+    }
+
+    return @cmds;
+}
+
 sub get_dhcp_server_config {
     my ($data) = @_;
     my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$data});
@@ -115,10 +159,12 @@ sub set_dhcp_server_config {
 "set $path description \"$xml->{dns_mode}\"";
 
     if (!($xml->{primary_dns} eq '')) {
-      push @cmds, "set $path description \"$xml->{dns_mode} $xml->{primary_dns}\"";
+      push @cmds, 
+"set $path description \"$xml->{dns_mode} $xml->{primary_dns}\"";
     }
     if (!($xml->{secondary_dns} eq '')) {
-      push @cmds, "set $path description \"$xml->{dns_mode} $xml->{primary_dns} $xml->{secondary_dns}\"";
+      push @cmds, 
+"set $path description \"$xml->{dns_mode} $xml->{primary_dns} $xml->{secondary_dns}\"";
       $scnd_dns_exists = 0;
     }
 
@@ -137,10 +183,21 @@ sub set_dhcp_server_config {
 "set $path disable";
     }
 
-    push @cmds, "commit", "save";
-    $err = OpenApp::Conf::execute_session(@cmds);
+    $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {
-       $msg = "<form name='dhcp-server-config' code='2'>";
+       $msg = "<form name='dhcp-server-config' code='3'>";
+       $msg .= "<dhcp-server-config>" . "</dhcp-server-config>";
+       $msg .= "<errmsg>" . "Set DHCP server config error" . "</errmsg>";
+       $msg .= "</form>";
+       print $msg;
+       exit 1;
+    }
+
+    @cmds = delete_sharedntwrk_or_dhcpserver($xml->{interface});
+    push @cmds, "commit", "save";
+    $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+    if (defined $err) {
+       $msg = "<form name='dhcp-server-config' code='4'>";
        $msg .= "<dhcp-server-config>" . "</dhcp-server-config>";
        $msg .= "<errmsg>" . "Set DHCP server config error" . "</errmsg>";
        $msg .= "</form>";
@@ -227,14 +284,25 @@ sub set_dhcp_static_mapping {
 
     push @cmds, 
 "set service dhcp-server shared-network-name $xml->{interface} authoritative enable",
-"set $path default-router $ip_without_mask[0]",
-"commit", 
-"save";
-    $err = OpenApp::Conf::execute_session(@cmds);
+"set $path default-router $ip_without_mask[0]";
+
+    $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {
        $msg = "<form name='dhcp-static-mapping' code='1'>";
        $msg .= "<dhcp-static-mapping>" . "</dhcp-static-mapping>";
-       $msg .= "<errmsg>" . "Set DHCP reserved IP pool error" . "</errmsg>";
+       $msg .= "<errmsg>" . "Set DHCP static mapping error" . "</errmsg>";
+       $msg .= "</form>";
+       print $msg;
+       exit 1;
+    }
+
+    @cmds = delete_sharedntwrk_or_dhcpserver($xml->{interface});;
+    push @cmds, "commit", "save";
+    $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+    if (defined $err) {
+       $msg = "<form name='dhcp-static-mapping' code='2'>";
+       $msg .= "<dhcp-static-mapping>" . "</dhcp-static-mapping>";
+       $msg .= "<errmsg>" . "Set DHCP static mapping error" . "</errmsg>";
        $msg .= "</form>";
        print $msg;
        exit 1;

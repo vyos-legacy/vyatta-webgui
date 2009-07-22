@@ -60,7 +60,10 @@ sub sendRest {
   my $err = $rest->send($method, $url);
   if ($err->{_success} != 0) {
     my $msg = "REST notification error in response from $ip "
-              . "($method $user) status=$err->{_http_code}";
+	. "($method $user)";
+    if (defined $err->{_http_code}) {
+	$msg .= "status=$err->{_http_code}";
+    }
     system("logger '$msg' >&/dev/null");
   }
 }

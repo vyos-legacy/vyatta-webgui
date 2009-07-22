@@ -87,7 +87,6 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_createGridHeader = function(header, onclick)
     {
         var div = document.createElement('div');
-        //div.style.position = 'relative';
         div.style.border = '1px solid #CCC';
         div.style.backgroundColor = '#EFEFEF';
         div.style.color = '#000';
@@ -257,11 +256,13 @@ function UTM_confBaseObj(name, callback, busLayer)
         */
     }
 
-    this.f_createSimpleDiv = function(text, align)
+    this.f_createSimpleDiv = function(text, align, color)
     {
         var al = align == null ? 'left' : align;
+        var col = color == null ? 'black' : color;
 
-        return "<div align=" + al + ">" + text + "</div>";
+        return "<div align=" + al + "><font color=" + color + ">" + text +
+                "</color></div>";
     }
 
     this.f_createGeneralDiv = function(text)
@@ -288,7 +289,6 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_createAnchorDiv = function(refText, tooltip, ref)
     {
         var div = document.createElement('div');
-        //div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.height = '25px';
@@ -317,10 +317,10 @@ function UTM_confBaseObj(name, callback, busLayer)
      *                  [btn2, btn2Callback, tooltipString, element id, enable],
      *                  []...]
      */
-    this.f_createButtons = function(buttons)
+    this.f_createButtons = function(buttons, align)
     {
         var div = document.createElement('div');
-        div.setAttribute('align', 'center');
+        div.setAttribute('align', align == null ? 'center':align);
         //div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';

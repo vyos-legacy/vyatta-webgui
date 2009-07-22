@@ -167,6 +167,41 @@ function UTM_businessLayer()
     */
 
     /**
+     * start a thread run in background to pull vpn overview requests. call this function
+     * if you wish to continue getting vpn overview request.
+     * NOTE: must call f_stopVPNRequestThread to stop this thread.
+     *       is not recommand to call from outside of business layer.
+     * @param cb - gui callback function. Thread will call this function
+     *              for response data.
+     * @return thread unique id. use this id to stop the thread
+     */
+    this.f_startVPNRequestThread = function(cb)
+    {
+        // create a new thread object
+        thisObj.m_reqThread = new UTM_thread(g_nwConfig.m_domURefreshTime);
+
+        var guiCb = cb;
+        var callback = function()
+        {
+            thisObj.f_vpnGetSite2SiteConfigData(guiCb);
+        }
+
+        // start to run
+        var threadId = thisObj.m_reqThread.f_start(callback);
+
+        thisObj.f_vpnGetSite2SiteConfigData(guiCb);
+        return threadId;
+    }
+    /**
+     * stop VM request thread run in background and destroy the thread
+     */
+    this.f_stopVPNRequestThread = function(threadId)
+    {
+        if(threadId != null)
+            thisObj.m_reqThread.f_stop(threadId);
+    }
+
+    /**
      * get child nodes of 'node' from 'response'
      * @param response - a response data from server
      * @param node - a node name of the child nodes to be returned
@@ -441,34 +476,11 @@ function UTM_businessLayer()
     /**
      * get vpn site2site easy mode configurations
      */
-    this.f_vpnGetSite2SiteEasyConfig = function(guicb)
+    this.f_vpnGetSite2SiteConfigData = function(guicb)
     {
-        thisObj.f_getVPNObject().f_getSite2SiteConfig('easy', guicb);
+        thisObj.f_getVPNObject().f_getSite2SiteData(guicb);
     }
 
-    /**
-     * set vpn site2site easy mode configuration fields
-     */
-    this.f_vpnSetSite2SiteEasyConfig = function(vpnRec, guicb)
-    {
-        thisObj.f_getVPNObject().f_setSite2SiteConfig(vpnRec, 'easy', guicb);
-    }
-
-    /**
-     * get vpn site2site export mode configurations
-     */
-    this.f_vpnGetSite2SiteExportConfig = function(guicb)
-    {
-        thisObj.f_getVPNObject().f_getSite2SiteConfig('expert', guicb);
-    }
-
-    /**
-     * set vpn site2site export mode configuration fields
-     */
-    this.f_vpnSetSite2SiteExportConfig = function(vpnRec, guicb)
-    {
-        thisObj.f_getVPNObject().f_setSite2SiteConfig(vpnRec, 'expert', guicb);
-    }
 
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////

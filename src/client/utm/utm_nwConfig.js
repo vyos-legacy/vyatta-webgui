@@ -7,6 +7,10 @@
 
 var g_nwConfig =
 {
+    ////////////////////////////////////////
+    // UTM WUI Dashboard/VPN overview screens refresh time.
+    m_domURefreshTime : 15000,     // 15 seconds
+    //
     ///////////////////////////////////////
     // Number of rows per paging.
     m_nwMaxDHCPresevedIP : 20,     // maximum of 20 per reserved IP for DHCP

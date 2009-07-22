@@ -89,14 +89,14 @@ var g_lang =
     m_formNotAValidIP: " is not a valid IP address",
 	m_formNotAValidMac: " is not a valid MAC address",
 	m_formFixError: "Please fix the following errors:",
-    m_formNoEmpty : "cannot be empty",	
+    m_formNoEmpty : "cannot be empty",
 
     ///////////////////////////////////////////////////////////////////
     // VPN Overview
     m_vpnOVSource : 'source',
     m_vpnOVDest : 'destination',
     m_vpnOVPeerDomainName : 'peer address /domain name',
-    m_vpnOVConfNode : 'configuration node',
+    m_vpnOVConfMode : 'configuration mode',
     m_vpnOVLocal : 'local',
     m_vpnOVS2S : 'site to site connections',
     m_vpnOVRemote : 'remote users',
@@ -328,10 +328,10 @@ var g_lang =
 	m_portconf_attach: "port attachment",
 	m_portconf_interface: "interface",
 	m_portconf_lan_lan2_no_disabled: "Port E1 (LAN) and Port E3 (LAN2) cannot be simultaneously disabled",
-	
+
     ///////////////////////////////////////////////////////////////////
     // LAN config
-    m_lanitf_title : "LAN/IP parameters",	
+    m_lanitf_title : "LAN/IP parameters",
 	m_lanitf_ip : "LAN IP address",
 	m_lanitf_mask: "IP subnet mask",
 	m_lanitf_pls_config: "Please configure LAN IP and mask",	
@@ -352,7 +352,7 @@ var g_lang =
 	m_lanip_reserved_ip_lower: "reserved IP address",
 	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",	
 	m_lanip_reserved_ip_entry: "entries",
-    m_lanip_reserved_diff_lan : "Reserved IP address must be different from LAN IP address!",	
+       m_lanip_reserved_diff_lan : "Reserved IP address must be different from LAN IP address!",	
 	m_lanitf_forbidden_ip: "Network & broadcast addresses are forbidden for",
 	m_landhcp_range_or_map_required : "When the DNS mode is static mode, it is required to configure either a DHCP range, or to have at least on reserved IP address.",
 	

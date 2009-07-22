@@ -1,1 +1,1 @@
-run: sudo /opt/vyatta/sbin/bl_subnet_config.pl --action='get_dhcp_server_config' --data="$3"
+run: /opt/vyatta/sbin/bl_subnet_config.pl --action='get_dhcp_server_config' --data="$3"

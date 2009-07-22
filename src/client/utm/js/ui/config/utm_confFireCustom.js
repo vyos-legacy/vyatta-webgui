@@ -203,7 +203,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                         thisObj.f_getZoneAny(thisObj.m_cb);
                     }
 
-                    thisObj.populateTable(evt.m_value, fireRec.m_zonePair);
+                    thisObj.f_populateTable(evt.m_value, fireRec.m_zonePair);
                 }
 
                 thisObj.f_onOffEnabledAllChkBox();
@@ -283,7 +283,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         window.setTimeout(function(){thisObj.f_resize();}, 20);
     }
 
-    this.populateTable = function(records, zonePair)
+    this.f_populateTable = function(records, zonePair)
     {
         for(var i=0; i<records.length; i++)
         {

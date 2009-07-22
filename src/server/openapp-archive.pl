@@ -643,18 +643,28 @@ sub restore_archive {
 ##########################################################################
 sub list_archive {
     #get a directory listing of /backup/.
-    print "VERBATIM_OUTPUT\n";
+    my $cmdline = $ENV{OA_CMD_LINE};
+    
+    if (!defined $cmdline) {
+	print "VERBATIM_OUTPUT\n";
+    }
     my $file;
+    my $cmd;
     my @files = <$ARCHIVE_ROOT_DIR/*.tar>;
     foreach $file (@files) {
 	my @name = split('/',$file);
 	#just open up meta data file and squirt out contents...
 	#now chop off the last period
 	my @name2 = split('\.',$name[4]);
-
+	
 	my $output;
 	my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
-	print $output[0];
+	if (defined $cmdline) {
+	    $cmd .= $output[0];
+	}
+	else {
+	    print $output[0];
+	}
     } 
     
 #if installer than also return admin archives
@@ -668,20 +678,52 @@ sub list_archive {
 	    
 	    my $output;
 	    my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
-	    print $output[0];
+	    if (defined $output[0]) {
+		$cmd .= $output[0];
+	    }
+	    else {
+		print $output[0];
+	    }
 	} 
     }
 
-    if ($auth_user_role eq 'installer' && $#files+1 >= $INSTALLER_BU_LIMIT) {
-	print "<limit>true</limit>";
-    }
-    elsif ($auth_user_role eq 'admin' && $#files+1 >= $ADMIN_BU_LIMIT) {
-	print "<limit>true</limit>";
+    if (!defined $cmdline) {
+	if ($auth_user_role eq 'installer' && $#files+1 >= $INSTALLER_BU_LIMIT) {
+	    print "<limit>true</limit>";
+	}
+	elsif ($auth_user_role eq 'admin' && $#files+1 >= $ADMIN_BU_LIMIT) {
+	    print "<limit>true</limit>";
+	}
+	else {
+	    print "<limit>false</limit>";
+	}
     }
     else {
-	print "<limit>false</limit>";
-    }
 
+	$cmd = "<foo>" . $cmd . "</foo>";
+	print $cmd;
+
+	#now process the output here
+        my $xs = new XML::Simple(forcearray=>1);
+        my $opt = $xs->XMLin($cmd);
+        #now parse the rest code
+
+
+	my $archiveref = $opt->{archive};
+	for (my $i = 0; $i < @$archiveref; $i++) {
+
+	    my $arrayref = $opt->{archive}->[$i]->{contents}->[0]->{entry};
+	    
+	    print "owner:\t" . $opt->{archive}->[$i]->{owner}->[0] . "\n";
+	    print "file:\t" . $opt->{archive}->[$i]->{file}->[0] . ".tar\n";
+	    print "date:\t" . $opt->{archive}->[$i]->{file}->[0] . "\n";
+	    print "contents:\t\n";
+	    for (my $j = 0; $j < @$arrayref; $j++) {
+		print "\t" . $opt->{archive}->[$i]->{contents}->[0]->{entry}->[$j]->{vm}->[0] . ":" . $opt->{archive}->[$i]->{contents}->[0]->{entry}->[$j]->{type}->[0] . "\n";
+	    }
+	    print "\n";
+	}
+    }
     #done
 }
 

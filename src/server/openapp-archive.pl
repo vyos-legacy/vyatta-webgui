@@ -714,7 +714,7 @@ sub list_archive {
 	    
 	    print "owner:\t" . $opt->{archive}->[$i]->{owner}->[0] . "\n";
 	    print "file:\t" . $opt->{archive}->[$i]->{file}->[0] . ".tar\n";
-	    print "date:\t" . $opt->{archive}->[$i]->{file}->[0] . "\n";
+	    print "date:\t" . $opt->{archive}->[$i]->{date}->[0] . "\n";
 	    print "contents:\t\n";
 	    for (my $j = 0; $j < @$arrayref; $j++) {
 		print "\t" . $opt->{archive}->[$i]->{contents}->[0]->{entry}->[$j]->{vm}->[0] . ":" . $opt->{archive}->[$i]->{contents}->[0]->{entry}->[$j]->{type}->[0] . "\n";

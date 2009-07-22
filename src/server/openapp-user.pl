@@ -200,37 +200,49 @@ sub del_user {
 }
 
 sub list_user {
-  # if $list is empty then list all
-  no warnings qw(uninitialized);
-  my @users = ( $list );
-  if ("$list" eq '') {
-    my $uref = OpenApp::LdapUser::listAllUsers();
-    @users = @{$uref};
-  }
-  print "VERBATIM_OUTPUT\n";
-  for my $u (@users) {
-    my $user = new OpenApp::LdapUser($u);
-    next if (!$user->isExisting());
-    my $first = $user->getFirst();
-    my $last = $user->getLast();
-    my $mail = $user->getMail();
-    my $role = $user->getRole();
-    my $rights = '';
-    for my $r (keys %{$user->getRights()}) {
-      $rights .= "  <rights>$r</rights>\n";
+    my $cmdline = $ENV{OA_CMD_LINE};
+    
+    # if $list is empty then list all
+    no warnings qw(uninitialized);
+    my @users = ( $list );
+    if ("$list" eq '') {
+	my $uref = OpenApp::LdapUser::listAllUsers();
+	@users = @{$uref};
     }
-    print <<EOF;
-<user name='$u'>
-  <name>
-    <first>$first</first>
-    <last>$last</last>
-  </name>
-  <email>$mail</email>
-$rights  <role>$role</role>
-</user>
-EOF
-  }
-  exit 0;
+    if (!defined $cmdline) {
+	print "VERBATIM_OUTPUT\n";
+    }
+    for my $u (@users) {
+	my $user = new OpenApp::LdapUser($u);
+	next if (!$user->isExisting());
+	my $first = $user->getFirst();
+	my $last = $user->getLast();
+	my $mail = $user->getMail();
+	my $role = $user->getRole();
+	my $rights = '';
+	for my $r (keys %{$user->getRights()}) {
+	    $rights .= "  <rights>$r</rights>\n";
+	}
+    if (!defined $cmdline) {
+	print "<user name='$u'>
+	    <name>
+	    <first>$first</first>
+	    <last>$last</last>
+	    </name>
+	    <email>$mail</email>
+	    $rights  <role>$role</role>
+	    </user>";
+        }
+	else {
+	    print "username:\t$u\n";
+	    print "\tfirst:\t$first\n";
+	    print "\tlast:\t$last\n";
+	    print "\temail:\t$mail\n";
+	    print "\trights:\t$rights\n";
+	    print "\trole:\t$role\n\n";
+	}
+    }
+    exit 0;
 }
 
 ####main

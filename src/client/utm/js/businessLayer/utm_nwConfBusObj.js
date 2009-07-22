@@ -1004,16 +1004,27 @@ function UTM_nwDhcpConfigObj(name, enable, start, end, dnsMode, dnsPrimary, dnsS
 	this.m_dnsPrimary = dnsPrimary;
 	this.m_dnsSecondary = dnsSecondary;
 
+	this.f_cdataWrap = function(s)
+	{
+		return "<![CDATA[" + s + "]]>";
+	}
+
+    this.f_escapeQuote = function(s) {
+		if (s.trim().length > 0) {
+			return s;
+		} else {
+			return '&quot;&quot;';
+		}
+	}
+
 	this.f_toXml = function() {
 		var xml = '<dhcp-server-config><interface>' + thisObj.m_name.toUpperCase() + '</interface>';
 		xml += '<enable>' + thisObj.m_enable + '</enable>';
-		//if (thisObj.m_enable=='true') {
-			xml += '<start>' + thisObj.m_start + '</start>';
-			xml += '<end>' + thisObj.m_end + '</end>';
-			xml += '<dns_mode>' + thisObj.m_dnsMode + '</dns_mode>';
-			xml += '<primary_dns>' + thisObj.m_dnsPrimary + '</primary_dns>';
-			xml += '<secondary_dns>' + thisObj.m_dnsSecondary + '</secondary_dns>';
-		//}
+		xml += '<start>' + thisObj.f_escapeQuote(thisObj.m_start) + '</start>';
+		xml += '<end>' + thisObj.f_escapeQuote(thisObj.m_end) + '</end>';
+		xml += '<dns_mode>' + thisObj.m_dnsMode + '</dns_mode>';
+		xml += '<primary_dns>' + thisObj.f_escapeQuote(thisObj.m_dnsPrimary) + '</primary_dns>';
+		xml += '<secondary_dns>' + thisObj.f_escapeQuote(thisObj.m_dnsSecondary) + '</secondary_dns>';
 		xml += '</dhcp-server-config>';
 		return xml;
 	}

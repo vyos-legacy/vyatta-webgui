@@ -42,13 +42,16 @@ function UTM_confNwLAN(name, callback, busLayer)
 		var c = new Array();		
 		this.m_lanItf = new UTM_confNwLANitf('UTM_confNwLANitf', thisObj.m_containerCb, thisObj.m_busLayer);	
 		this.m_lanItf.f_setIfName(this.m_ifName);	
+		this.m_lanItf.f_setParent(thisObj);
 		c.push(this.m_lanItf);
 		
 		if ((thisObj.m_ifName == 'LAN') || (thisObj.m_ifName == 'LAN2')) {
 			this.m_lanDhcp = new UTM_confNwLANdhcp('UTM_confNwLANdhcp', thisObj.m_containerCb, thisObj.m_busLayer);
 			this.m_lanDhcp.f_setIfName(this.m_ifName);
+			this.m_lanDhcp.f_setParent(thisObj);
 			this.m_lanIp = new UTM_confNwLANip('UTM_confNwLANip', thisObj.m_containerCb, thisObj.m_busLayer);
 			this.m_lanIp.f_setIfName(this.m_ifName);
+			this.m_lanIp.f_setParent(thisObj);
 			c.push(this.m_lanDhcp);
 			c.push(this.m_lanIp);
 		}
@@ -57,7 +60,49 @@ function UTM_confNwLAN(name, callback, busLayer)
 		
 		return thisObj.f_getPage();
 	}
+	
+	this.f_isLanIPconfigured = function()
+	{
+		var lanIp = this.f_getLanIp().trim();
+		var lanMask = this.f_getLanNetmask() + ' ';
+		return ( (lanIp.length > 0) && (lanMask.trim().length > 0) );		
+	}	
+	
+	this.f_validateLanCompatible = function()
+	{
+		var error = '';
+		if ((this.m_lanDhcp != undefined) && (this.m_lanDhcp != null)) {
+			error += this.m_lanDhcp.f_validateLanCompatible();
+		}
+		if ((this.m_lanIp != undefined) && (this.m_lanIp != null)) {
+			error += this.m_lanIp.f_validateLanCompatible();
+		}
+		return error;
+	}
+	
+	this.f_alertUser = function() 
+	{
+		if ((this.m_lanDhcp != undefined) && (this.m_lanDhcp != null) &&
+		(this.m_lanIp != undefined) &&
+		(this.m_lanIp != null)) {
+			if ((this.m_lanDhcp.f_alertCheckRequired()) && (this.m_lanIp.f_alertCheckRequired())) {
+				return true;
+			}
+		}
+		return false;
+	}	
+	
+	this.f_getLanIp = function()
+	{
+	    return thisObj.m_lanItf.f_getLanIp();	
+	}
 
+    this.f_getLanNetmask = function()
+	{
+		var mask =  thisObj.m_lanItf.f_getLanNetmask() + ' ';
+		return mask.trim();
+	}
+	
 	this.f_handleClick = function(childId, sourceId, userData)
 	{
 		if (childId == 'conf_lan_ip') {

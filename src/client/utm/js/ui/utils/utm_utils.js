@@ -202,7 +202,7 @@ function f_isForbidenAddr(ip, mask)
     var iMask = f_inetAddr(mask);
     if (f_and(iIP, iMask) == iIP) 
         return true;
-    if (f_or(iIP, not(iMask)) == iIP) 
+    if (f_or(iIP, f_not(iMask)) == iIP) 
         return true;
     return false;
 }
@@ -210,7 +210,7 @@ function f_isForbidenAddr(ip, mask)
 /**
  * Check if the ip address is compatible with LAN IP
  */
-function f_checkIPForLan(ip)
+function f_checkIPForLan(ip, originalLanIP, originalLanMask)
 {
     var iLanMask = f_inetAddr(originalLanMask);
     if (f_and(f_inetAddr(ip), iLanMask) == f_and(f_inetAddr(originalLanIP), iLanMask)) 

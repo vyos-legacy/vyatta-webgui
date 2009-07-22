@@ -136,6 +136,7 @@ function UTM_confContainerObj(name, callback, busLayer)
 	
 	this.f_stopLoadVMData = function() 
 	{
+		this.m_loadVmDataQueue.splice(0);
 		for (var i=0; i < this.m_children.length; i++) {
 			this.m_children[i].f_stopLoadVMData();
 		}

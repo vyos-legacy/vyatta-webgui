@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-9+jenner16) unstable; urgency=low
+
+  * * additional fixed to bug#4690 : text message does not care for char
+    return
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 22 Jul 2009 00:50:46 +0000
+
 vyatta-webgui (0.2.13-9+jenner15) unstable; urgency=low
 
   * * fixed bug#4437 : re-words user message

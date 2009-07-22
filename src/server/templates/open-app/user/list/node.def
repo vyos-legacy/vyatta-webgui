@@ -1,4 +1,5 @@
 access:admin
+help: List users
 run: if sudo perl /opt/vyatta/sbin/openapp-user.pl --list; then
       return 0
     else

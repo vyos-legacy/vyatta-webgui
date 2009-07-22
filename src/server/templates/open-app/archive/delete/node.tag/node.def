@@ -1,2 +1,3 @@
 access:admin
+help: Archive delete [name]
 run: sudo perl /opt/vyatta/sbin/openapp-archive.pl --delete "$4"

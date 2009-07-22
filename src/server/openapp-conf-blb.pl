@@ -3,7 +3,6 @@
 use strict;
 use Getopt::Long;
 use FileHandle;
-use IPC::Open2;
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::LdapUser;
 use OpenApp::Conf;
@@ -107,7 +106,7 @@ sub do_standalone {
   # if admin has no LDAP password, restore default password
   my $adm = new OpenApp::LdapUser('admin');
   if (!$adm->passwordExists()) {
-    my $err = $adm->setPassword('admin');
+    my $err = $adm->resetPassword();
     if (defined($err)) {
       print "Failed to restore default admin password: $err\n";
       exit 1;
@@ -171,26 +170,16 @@ sub do_blb {
   } 
  
   ## login succeeded. change installer password.
-  my ($rfd, $wfd) = (undef, undef);
-  my $pid = open2($rfd, $wfd, '/usr/bin/mkpasswd', '-m', 'md5', '-s');
-  print $wfd "$pass";
-  close($wfd);
-  my $epass = <$rfd>;
-  waitpid($pid, 0);
-  chomp($epass);
-  if (!($epass =~ /^\$1\$/)) {
-    print "Failed to encrypt BLB password\n";
-    exit 1;
-  }
-  system("sudo /usr/sbin/usermod -p '$epass' installer");
-  if ($? >> 8) {
-    print "Failed to change installer password to match BLB\n";
+  my $inst = new OpenApp::LdapUser('installer');
+  $err = $inst->setPassword($pass);
+  if (defined($err)) {
+    print "Failed to update installer password: $err\n";
     exit 1;
   }
 
   ## reset "admin" account
   my $adm = new OpenApp::LdapUser('admin');
-  my $err = $adm->deletePassword();
+  $err = $adm->deletePassword();
   if (defined($err)) {
     print "Failed to reset admin account: $err\n";
     exit 1;

@@ -201,6 +201,7 @@ sub del_user {
 
 sub list_user {
   # if $list is empty then list all
+  no warnings qw(uninitialized);
   my @users = ( $list );
   if ("$list" eq '') {
     my $uref = OpenApp::LdapUser::listAllUsers();

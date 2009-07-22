@@ -881,6 +881,7 @@ function f_parseServerCallback(xmlRoot, treeMode /* conf, operator */)
             default:
             case "6": // input error
                 success = false;
+                msg = f_replace(msg, "\r\n", "<br>");
                 break;
             case "0":
                 success = true;

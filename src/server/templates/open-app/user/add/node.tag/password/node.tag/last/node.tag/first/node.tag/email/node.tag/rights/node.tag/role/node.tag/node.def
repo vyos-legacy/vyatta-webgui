@@ -1,6 +1,6 @@
 access:admin
 help: Set user role
-run: if sudo perl /opt/vyatta/sbin/openapp-user.pl --add "$4" --password "$6" --lastname "$8" --firstname "${10}" --email "${12}" --rights "${14}" --role "${16}"; then
+run: if /opt/vyatta/sbin/openapp-user.pl --add "$4" --password "$6" --lastname "$8" --firstname "${10}" --email "${12}" --rights "${14}" --role "${16}"; then
      	return 0
      else
 	return 1

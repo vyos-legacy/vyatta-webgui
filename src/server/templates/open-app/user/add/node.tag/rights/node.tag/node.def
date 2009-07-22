@@ -1,6 +1,6 @@
 access:admin
 help: Configuration user rights
-run: if sudo perl /opt/vyatta/sbin/openapp-user.pl -add "$4" --rights "$6"; then
+run: if /opt/vyatta/sbin/openapp-user.pl -add "$4" --rights "$6"; then
        return 0
      else
        return 1

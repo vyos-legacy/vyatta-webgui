@@ -16,6 +16,7 @@ function UTM_confNwLANitf(name, callback, busLayer)
 	this.m_ifName = undefined;
     this.m_form = undefined;
     this.m_div = undefined;
+	this.m_parent = undefined;
     
     /**
      * @param name - name of configuration screens.
@@ -88,6 +89,11 @@ function UTM_confNwLANitf(name, callback, busLayer)
 	{
 		thisObj.m_ifName = ifName;
 	}
+	
+	this.f_setParent = function(p)
+	{
+		thisObj.m_parent = p;
+	}
     
     this.f_enableAllButton = function(state)
     {
@@ -136,13 +142,19 @@ function UTM_confNwLANitf(name, callback, busLayer)
          var cb = function(evt) {
              if (evt != undefined && evt.m_objName == 'UTM_eventObj') {   
                  if (evt.f_isError()) {
-                     g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+				     if ((thisObj.m_ifObj == undefined) || (thisObj.m_ifObj == 'null')) {
+				 	    thisObj.m_ifObj = new UTM_nwIfConfigObj(thisObj.m_ifName, '', '');
+				     }					 	
+                     g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);				 
 			         if ((p != undefined) && (p != null)) {
 			             p.f_loadVMDataCb();
 		             }						 
                      return; 
                  }
                  thisObj.m_ifObj = evt.m_value;
+				 if ((thisObj.m_ifObj == 'undefined') || (thisObj.m_ifObj == 'null')) {
+				 	thisObj.m_ifObj = new UTM_nwIfConfigObj(thisObj.m_ifName, '', '');
+				 }
                  thisObj.f_setValue();                       
              }        
 			 if ((p != undefined) && (p != null)) {
@@ -200,18 +212,42 @@ function UTM_confNwLANitf(name, callback, busLayer)
         thisObj.f_detachListener();
     }
     
+	this.f_getLanIp = function()
+	{
+		return thisObj.m_ifObj.m_ip;
+		//return thisObj.m_form.conf_lan_itf_ip.value;
+	}
+	
+	this.f_getLanNetmask = function()
+	{
+		return thisObj.m_ifObj.m_mask;
+		//return thisObj.m_form.conf_lan_itf_mask.value;
+	}
+	
     this.f_validate = function()
     {
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
-        
-        if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_itf_ip.value)) {
+        var ip = thisObj.m_form.conf_lan_itf_ip.value;
+		var mask = thisObj.m_form.conf_lan_itf_mask.value;
+		var validIpNmask = true;
+		
+        if (!thisObj.f_checkIP(ip)) {
             errorInner += thisObj.f_createListItem(g_lang.m_lanitf_ip + ' ' + g_lang.m_formInvalid);
+			validIpNmask = false;
         }
-        if (!g_utils.f_validateNetmask(thisObj.m_form.conf_lan_itf_mask.value)) {
+        if (!g_utils.f_validateNetmask(mask)) {
             errorInner += thisObj.f_createListItem(g_lang.m_lanitf_mask + ' ' + g_lang.m_formInvalid);
+			validIpNmask = false;
         }
         
+		if (validIpNmask) {
+            if (f_isForbidenAddr(ip, mask)) {
+				errorInner += thisObj.f_createListItem(g_lang.m_lanitf_forbidden_ip + ' ' + g_lang.m_lanitf_ip);
+			}
+			errorInner += thisObj.m_parent.f_validateLanCompatible();		
+		}
+		
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
@@ -232,13 +268,16 @@ function UTM_confNwLANitf(name, callback, busLayer)
                     return;
                 } else {
                     thisObj.f_enableAllButton(false);
+                    thisObj.m_ifObj.m_ip = thisObj.m_form.conf_lan_itf_ip.value.trim();
+		            thisObj.m_ifObj.m_mask = g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim());					
                 }
             }
         };
-        thisObj.m_ifObj.m_ip = thisObj.m_form.conf_lan_itf_ip.value.trim();
-		thisObj.m_ifObj.m_mask = g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim());
 		
-        g_busObj.f_setDNSConfig(thisObj.m_ifObj, cb);
+		var ifObj =  new UTM_nwIfConfigObj(thisObj.m_ifName, thisObj.m_form.conf_lan_itf_ip.value.trim(), 
+		    g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim()));
+		
+        g_busObj.f_setDNSConfig(ifObj, cb);
     }
     
     this.f_reset = function()
@@ -285,6 +324,7 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
     var thisObj = this;
 	this.m_objectId = 'conf_lan_dhcp';
 	this.m_ifName = undefined;
+	this.m_parent = undefined;
 	this.m_dhcpObj = undefined;
     this.m_form = undefined;
     this.m_div = undefined;
@@ -407,6 +447,11 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
 	{
 		thisObj.m_ifName = ifName;
 	}
+	
+	this.f_setParent = function(p)
+	{
+		thisObj.m_parent = p;
+	}	
 	
     this.f_enableAllButton = function(state)
     {
@@ -595,38 +640,132 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
 			var startNum = f_inetAddr(start);
 			var endNum = f_inetAddr(end);
 			if (endNum < startNum) {
-				error += thisObj.f_createListItem(g_lang.m_landdhcp_range_invalid + ' [' + 
+				error += thisObj.f_createListItem(g_lang.m_landhcp_range_invalid + ' [' + 
 				    start + ' - ' + end + ']');
 			}
 		}
 		return error;
 	}
 	
+	this.f_validateLanCompatible = function()
+	{
+		var error = '';
+		var start = thisObj.m_form.conf_lan_dhcp_range_start.value;
+		var end = thisObj.m_form.conf_lan_dhcp_range_end.value;
+		var lanIp = thisObj.m_parent.f_getLanIp().trim();
+		var lanMask = thisObj.m_parent.f_getLanNetmask().trim();	
+				
+		if ((start.trim().length > 0) && (end.trim().length >0)) {
+			if (!f_checkIPForLan(start, lanIp, lanMask)) {
+				error += thisObj.f_createListItem(g_lang.m_landhcp_range_start + ' ' + 
+					    g_lang.m_landhcp_incompatible + ' ' + g_lang.m_lanitf_ip + ' : ' +
+						lanIp);	
+		    }
+			if (!f_checkIPForLan(end, lanIp, lanMask)) {
+				error += thisObj.f_createListItem(g_lang.m_landhcp_range_end + ' ' + 
+					    g_lang.m_landhcp_incompatible + ' ' + g_lang.m_lanitf_ip + ' : ' +
+						lanIp);					
+			}
+		}
+		return error;
+	}	
+	
+	this.f_alertCheckRequired = function()
+	{
+		var dnsMode = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_lan_dhcp_dns_mode);
+		if (dnsMode == 'static') {
+			var start = thisObj.m_form.conf_lan_dhcp_range_start.value.trim();
+			var end = thisObj.m_form.conf_lan_dhcp_range_start.value.trim();
+			if ((start.length <= 0) && (end.length <= 0)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	this.f_alertUser = function() 
+	{
+		return thisObj.m_parent.f_alertUser();
+	}
+			
+	this.f_validateRangeIPs = function()
+	{
+		var validIp = true;
+		var error = '';
+		var start = thisObj.m_form.conf_lan_dhcp_range_start.value.trim();
+		var end = thisObj.m_form.conf_lan_dhcp_range_start.value.trim();
+		var lanIp = thisObj.m_parent.f_getLanIp().trim();
+		var lanMask = thisObj.m_parent.f_getLanNetmask().trim();
+
+        if ((start.length > 0) || (end.length > 0)) {
+			if (!thisObj.f_checkIP(start)) {
+				error += thisObj.f_createListItem(g_lang.m_landhcp_range_start + ' ' + g_lang.m_formInvalid);
+				validIp = false;
+			}
+			if (!thisObj.f_checkIP(end)) {
+				error += thisObj.f_createListItem(g_lang.m_landhcp_range_end + ' ' + g_lang.m_formInvalid);
+				validIp = false;
+			}
+			
+			if (!validIp) {
+				return error;
+			}
+		}
+		
+		error += thisObj.f_validateDHCPrange();
+		
+		if ((start.length > 0) && (end.length > 0)) {
+			if ((lanIp.length >0) && (lanMask.length > 0)) {
+				if (!f_checkIPForLan(start, lanIp, lanMask)) {
+				    error += thisObj.f_createListItem(g_lang.m_landhcp_range_start + ' ' + 
+					    g_lang.m_landhcp_incompatible + ' ' + g_lang.m_lanitf_ip);	
+				}
+				if (!f_checkIPForLan(end, lanIp, lanMask)) {
+				    error += thisObj.f_createListItem(g_lang.m_landhcp_range_end + ' ' + 
+					    g_lang.m_landhcp_incompatible + ' ' + g_lang.m_lanitf_ip);					
+				}
+				if (f_isForbidenAddr(start, lanMask)) {
+				    error += thisObj.f_createListItem(g_lang.m_lanitf_forbidden_ip + ' ' +
+					    g_lang.m_landhcp_range_start);						
+				}
+				if (f_isForbidenAddr(end, lanMask)) {
+				    error += thisObj.f_createListItem(g_lang.m_lanitf_forbidden_ip + ' ' +
+					    g_lang.m_landhcp_range_end);						
+				}				
+			}
+		}
+		return error;
+	}
+	
     this.f_validate = function()
-    {
+    {		
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
         
+		if (!thisObj.m_parent.f_isLanIPconfigured()) {
+			g_utils.f_popupMessage(g_lang.m_lanitf_pls_config, 'error', g_lang.m_error, true); 
+			return false;
+		}
+		
         if (!thisObj.m_form.conf_lan_dhcp_enable.checked) {
             return true;
         }
         
-        if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_dhcp_range_start.value)) {
-            errorInner += thisObj.f_createListItem(g_lang.m_landhcp_range_start + ' ' + g_lang.m_formInvalid);
-        }
-        if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_dhcp_range_end.value)) {
-            errorInner += thisObj.f_createListItem(g_lang.m_landhcp_range_end + ' ' + g_lang.m_formInvalid);
-        }
-		errorInner += thisObj.f_validateDHCPrange();
+		errorInner += thisObj.f_validateRangeIPs();
+
 		var dnsMode = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_lan_dhcp_dns_mode);
         if (dnsMode == 'static') {
-			if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_dhcp_dns_pri.value)) {
-				if (!thisObj.f_checkHostname(thisObj.m_form.conf_lan_dhcp_dns_pri.value)) {
+			var priDns = thisObj.m_form.conf_lan_dhcp_dns_pri.value.trim();
+			var secDns = thisObj.m_form.conf_lan_dhcp_dns_sec.value.trim();
+			
+			if ((priDns.length <= 0) && (secDns.length <= 0)) {
+				errorInner += thisObj.f_createListItem(g_lang.m_landhcp_1_dns_server_required);
+			} else if (priDns.length > 0) {
+				if (!f_validateIP(thisObj.m_form.conf_lan_dhcp_dns_pri.value)) {
 					errorInner += thisObj.f_createListItem(g_lang.m_landhcp_dns_pri + ' ' + g_lang.m_formInvalid);
 				}
-			}
-			if (!thisObj.f_checkIP(thisObj.m_form.conf_lan_dhcp_dns_sec.value)) {
-				if (!thisObj.f_checkHostname(thisObj.m_form.conf_lan_dhcp_dns_sec.value)) {
+			} else if (secDns.length > 0) {
+				if (!f_validateIP(thisObj.m_form.conf_lan_dhcp_dns_sec.value)) {
 					errorInner += thisObj.f_createListItem(g_lang.m_landhcp_dns_sec + ' ' + g_lang.m_formInvalid);
 				}
 			}
@@ -728,6 +867,10 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
                 if (!thisObj.f_validate()) {
                     return false;
                 }
+			    if (thisObj.f_alertUser()) {
+				    g_utils.f_popupMessage(g_lang.m_landhcp_range_or_map_required, 'ok', g_lang.m_error, true);
+				    return false;
+			    }				
                 thisObj.f_apply();
                 break;
             case 'conf_lan_dhcp_cancel_button': //cancel clicked
@@ -746,6 +889,7 @@ function UTM_confNwLANip(name, callback, busLayer)
 {
     var thisObj = this;
     this.m_ifName = undefined;
+	this.m_parent = undefined;
     this.thisObjName = 'UTM_confNwLANip';
     this.m_hdcolumns = undefined;
     this.m_headerText = undefined;
@@ -792,6 +936,11 @@ function UTM_confNwLANip(name, callback, busLayer)
     {
         this.m_ifName = ifName;
     }
+
+	this.f_setParent = function(p)
+	{
+		thisObj.m_parent = p;
+	}
     
     this.f_init = function()
     {
@@ -1094,8 +1243,78 @@ function UTM_confNwLANip(name, callback, busLayer)
 		return false;
 	}
 	
-	this.f_validate = function()
+	this.f_validateLanCompatible = function()
 	{
+		var error = '';
+		var lanIp = thisObj.m_parent.f_getLanIp().trim();
+		var lanMask = thisObj.m_parent.f_getLanNetmask().trim();		
+
+		for (var i=0; i < this.m_rowIdArray.length; i++) {
+            var seedId = this.f_getSeedIdByRowId(this.m_rowIdArray[i]);
+            var ip = document.getElementById(this.m_prefix + 'ip_' + seedId).value;
+			
+		    if (ip.trim().length > 0) {
+				if (!f_checkIPForLan(ip, lanIp, lanMask)) {
+					error += thisObj.f_createListItem(g_lang.m_landhcp_range_start + ' ' +
+					g_lang.m_landhcp_incompatible +
+					' ' +
+					g_lang.m_lanitf_ip);
+				}
+			}
+		}
+		return error;
+	}		
+	
+	this.f_alertCheckRequired = function()
+	{
+		var rowCnt = 0;
+		for (var i = 0; i < this.m_rowIdArray.length; i++) {
+			var seedId = this.f_getSeedIdByRowId(this.m_rowIdArray[i]);
+			var cbAdd = document.getElementById(this.m_prefix + 'cb_add_' + seedId);
+			if (!cbAdd.checked) {
+				rowCnt++;
+			}
+		}
+		return (rowCnt <= 0);		
+	}
+	
+	this.f_alertUser = function() 
+	{
+		return thisObj.m_parent.f_alertUser();		
+	}	
+	
+	this.f_validateReserveIP = function(ip)
+	{
+		var error = '';
+		var lanIp = thisObj.m_parent.f_getLanIp().trim();
+		var lanMask = thisObj.m_parent.f_getLanNetmask().trim();
+
+		if (!f_validateIP(ip)) {
+			error += thisObj.f_createListItem(ip + ' ' + g_lang.m_formNotAValidIP);
+			return error;
+		}
+
+		if ((lanIp.length >0) && (lanMask.length > 0)) {
+		    if (!f_checkIPForLan(ip, lanIp, lanMask)) {
+				error += thisObj.f_createListItem(ip + ' ' + 
+					    g_lang.m_landhcp_incompatible + ' ' + g_lang.m_lanitf_ip);	
+		    }
+
+			if (f_isForbidenAddr(start, lanMask)) {
+				error += thisObj.f_createListItem(g_lang.m_lanitf_forbidden_ip + ' ' +
+					    g_lang.m_lanip_reserved_ip_lower);						
+			}
+			
+			if (ip == lanIp) {
+				error += thisObj.f_createListItem(g_lang.m_lanip_reserved_diff_lan);
+			}
+		}
+
+		return error;		
+	}
+	
+	this.f_validate = function()
+	{		
 		var ipArray = new Array();
 		var macArray = new Array();
 		
@@ -1104,6 +1323,11 @@ function UTM_confNwLANip(name, callback, busLayer)
 		var ipEmptyError = false;
 		var macEmptyError = false;
       		
+		if (!thisObj.m_parent.f_isLanIPconfigured()) {
+			g_utils.f_popupMessage(g_lang.m_lanitf_pls_config, 'error', g_lang.m_error, true); 
+			return false;
+		}			
+			
 		for (var i=0; i < this.m_rowIdArray.length; i++) {
             var seedId = this.f_getSeedIdByRowId(this.m_rowIdArray[i]);
             var ip = document.getElementById(this.m_prefix + 'ip_' + seedId).value;
@@ -1125,9 +1349,7 @@ function UTM_confNwLANip(name, callback, busLayer)
 				macEmptyError = true;
 			}
 			if (ip.length > 0) {
-				if (!f_validateIP(ip)) {
-					errorInner += thisObj.f_createListItem(ip + ' ' + g_lang.m_formNotAValidIP);
-				}
+				errorInner += thisObj.f_validateReserveIP(ip);
 			    if (ipArray.indexOf(ip) >= 0) {
 				    errorInner += thisObj.f_createListItem(g_lang.m_duplicate + ' ' + g_lang.m_ipAddr + ': ' + ip);
 			    }
@@ -1241,6 +1463,10 @@ function UTM_confNwLANip(name, callback, busLayer)
 			this.f_setDirtyAll();
             this.f_enableAllButton(true);
         } else if (sourceId == this.m_btnDeleteId) {
+			if (this.f_alertUser()) {
+				g_utils.f_popupMessage(g_lang.m_landhcp_range_or_map_required, 'ok', g_lang.m_error, true);
+				return;
+			}
             g_utils.f_popupMessage(g_lang.m_url_ezDeleteConfirm, 'confirm', g_lang.m_info, true, this.m_handleClickCbFunction + "('" + this.m_objectId + "," + this.m_btnDeleteConfirmId + "," + userData + "')");
         } else if (sourceId.indexOf(this.m_btnDeleteConfirmId) != -1) {
             this.f_deleteRow(userData);

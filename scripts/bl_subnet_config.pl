@@ -57,9 +57,20 @@ sub sc_log {
     close $fh;
 }
 
+sub get_interface_ip {
+    my ($interface, $type) = @_;
+    my @ip = ();
+    if (defined $type) {
+      @ip = Vyatta::Misc::getIP($interface, $type);
+    } else {
+      @ip = Vyatta::Misc::getIP($interface);
+    }
+    return @ip;
+}
+
 sub shared_ntwrk_range_or_mapping_exist {
     my $interface_name = shift;
-    my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$interface_name});
+    my @ip = get_interface_ip($name_to_domU_intfhash{$interface_name}, '4');
     my $config = new Vyatta::Config;
     my $path = "service dhcp-server shared-network-name $interface_name subnet $ip[0]";
     my @start_ip = $config->listNodes("$path start");
@@ -103,23 +114,37 @@ sub delete_sharedntwrk_or_dhcpserver {
 
 sub get_dhcp_server_config {
     my ($data) = @_;
-    my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$data});
+    my @ip = get_interface_ip($name_to_domU_intfhash{$data}, '4');
     my $msg;
     $msg  = "<form name='dhcp-server-config' code='0'>" . "<dhcp-server-config>" .
             "<interface>$data</interface>";
+
+    if (scalar(@ip) == 0) {
+      # no IP on interface
+      $msg  .=  "<enable>false</enable>" . "<start></start>" . "<end></end>" .
+		"<dns_mode>none</dns_mode>" . "<primary_dns></primary_dns>". 
+		"<secondary_dns></secondary_dns>" . "</dhcp-server-config></form>";
+      print $msg;
+      return;
+    }
+
     my $config = new Vyatta::Config;
     my $path = "service dhcp-server shared-network-name $data subnet $ip[0]";
     my @start_ip = $config->listNodes("$path start"); # should only be one start
     my $stop_ip = $config->returnValue("$path start $start_ip[0] stop") if scalar(@start_ip) > 0;
     my $description = $config->returnValue("service dhcp-server shared-network-name $data description");
     # description format - 'dns-mode primary-dns-server secondary-dns-server'
-    my @dns_values = split(' ', $description);
+    my @dns_values = split(' ', $description) if defined $description;
     my $enabled = '';
     my $disabled_val = $config->exists("service dhcp-server shared-network-name $data disable");
     if (defined($disabled_val)) {
        $enabled = 'false';
     } else {
-       $enabled = 'true';
+       if (defined $config->exists("service dhcp-server shared-network-name $data")) {
+         $enabled = 'true';
+       } else {
+         $enabled = 'false';
+       }
     }
 
     $msg .= "<enable>$enabled</enable>";
@@ -129,7 +154,11 @@ sub get_dhcp_server_config {
       $msg .= "<start></start>" . "<end></end>";
     }
 
-    $msg .= "<dns_mode>$dns_values[0]</dns_mode>";
+    if (defined $dns_values[0]) {
+      $msg .= "<dns_mode>$dns_values[0]</dns_mode>";
+    } else {
+      $msg .= "<dns_mode>none</dns_mode>";
+    }
     if (defined $dns_values[1]) {
       $msg .= "<primary_dns>$dns_values[1]</primary_dns>";
     } else {
@@ -150,7 +179,7 @@ sub set_dhcp_server_config {
     my $xml = $xs->XMLin($data);
     my ($msg, $err);
     my @cmds = ();
-    my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$xml->{interface}});
+    my @ip = get_interface_ip($name_to_domU_intfhash{$xml->{interface}}, '4');
     my @ip_without_mask = split('/', $ip[0]);
     my $path = "service dhcp-server shared-network-name $xml->{interface}";
     my $scnd_dns_exists = 1;
@@ -221,11 +250,19 @@ sub set_dhcp_server_config {
 
 sub get_dhcp_static_mapping {
     my ($data) = @_;
-    my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$data});
+    my @ip = get_interface_ip($name_to_domU_intfhash{$data}, '4');
     my $msg;
     $msg  = "<form name='dhcp-static-mapping' code='0'>";
     $msg  .= "<mapping-config>";
     $msg  .= "<interface>$data</interface>";
+
+    if (scalar(@ip) == 0) {
+      # no IP on interface
+      $msg  .=  "</mapping-config>" . "</form>";
+      print $msg;
+      return;
+    }
+
     my $config = new Vyatta::Config;
     my $path = "service dhcp-server shared-network-name $data subnet $ip[0]";
     my @static_mappings = $config->listNodes("$path static-mapping");
@@ -255,7 +292,7 @@ sub set_dhcp_static_mapping {
     my $xml = $xs->XMLin($data);
     my ($msg, $err);
     my @cmds = ();
-    my @ip = Vyatta::Misc::getIP($name_to_domU_intfhash{$xml->{interface}});
+    my @ip = get_interface_ip($name_to_domU_intfhash{$xml->{interface}}, '4');
     my @ip_without_mask = split('/', $ip[0]);    
     my $path = "service dhcp-server shared-network-name $xml->{interface} subnet $ip[0]";
     foreach my $mapping (@{$xml->{mapping}}) {

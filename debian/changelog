@@ -1,3 +1,38 @@
+vyatta-webgui (0.2.14+fxdU+87) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * moved get uset session id to businessLayer.js from bus sub
+    classes. This help to optimize
+
+  [ Loi Vo ]
+  * 1. More validation for DHCP parameters.
+  * 1. Fix a merge problem from previous checkin
+  * 1. send previous in static configuration even the user select
+    dynamic, or no-dns for primary dns, secondary dns parameters.
+
+  [ Mohit Mehta ]
+  * handle gets and sets for empty dns values
+  * delete dhcp-server or shared-network if no mapping or ranges under
+    network
+
+  [ Kevin Choi ]
+  * * vpn overview screen : added get site-to-site config data for bus
+    layer and UI. currently
+
+  [ Mohit Mehta ]
+  * handle set/get for no dhcp start-end range
+
+  [ Kevin Choi ]
+  * * vpn site 2 site :
+
+  [ Loi Vo ]
+  * 1. Add more validation.
+
+  [ Mohit Mehta ]
+  * * only get ipv4 address for interface
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 21 Jul 2009 18:38:37 -0700
+
 vyatta-webgui (0.2.14+fxdU+86) unstable; urgency=low
 
   [ Loi Vo ]

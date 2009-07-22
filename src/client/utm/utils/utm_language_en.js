@@ -336,21 +336,36 @@ var g_lang =
     m_lanitf_title : "LAN/IP parameters",
 	m_lanitf_ip : "LAN IP address",
 	m_lanitf_mask: "IP subnet mask",
+	m_lanitf_pls_config: "Please configure LAN IP and mask",	
 	m_landhcp_title: "DHCP parameters",
 	m_landhcp_enable : "Enable DHCP server",
 	m_landhcp_range_start : "DHCP range start",
 	m_landhcp_range_end : "DHCP range end",
-	m_landdhcp_range_invalid: "Invalid DHCP range: ",
+	m_landhcp_range_invalid: "Invalid DHCP range: ",
+	m_landhcp_incompatible: "is incompatible with",
 	m_landhcp_dns_mode : "DNS mode",
 	m_landhcp_dns_pri : "Primary DNS server",
 	m_landhcp_dns_sec : "Secondary DNS server",
+	m_landhcp_1_dns_server_required : "At least one DNS server is required",	
 	m_landhcp_dns_static : "Static",
 	m_landhcp_dns_dynamic : "Dynamic",
 	m_landhcp_dns_none : "No DNS",
 	m_lanip_reserved_ip : "Reserved IP addresses",
-	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",
+	m_lanip_reserved_ip_lower: "reserved IP address",
+	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",	
 	m_lanip_reserved_ip_entry: "entries",
-
+       m_lanip_reserved_diff_lan : "Reserved IP address must be different from LAN IP address!",	
+	m_lanitf_forbidden_ip: "Network & broadcast addresses are forbidden for",
+	m_landhcp_range_or_map_required : "When the DNS mode is static mode, it is required to configure either a DHCP range, or to have at least on reserved IP address.",
+	
+    ///////////////////////////////////////////////////////////////////
+    // My Form
+	m_formNoEmpty : "cannot be empty",
+	m_formFixError: "Please fix the following errors:",
+	m_formTooLong : "cannot have more than",
+	m_formChar: "characters",
+	m_formInvalid: "is invalid",
+	
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images
     m_imageDir : 'images/en/',

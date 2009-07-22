@@ -701,8 +701,6 @@ sub list_archive {
     else {
 
 	$cmd = "<foo>" . $cmd . "</foo>";
-	print $cmd;
-
 	#now process the output here
         my $xs = new XML::Simple(forcearray=>1);
         my $opt = $xs->XMLin($cmd);

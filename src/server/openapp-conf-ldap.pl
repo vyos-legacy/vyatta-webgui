@@ -158,7 +158,11 @@ sub set_ldap_target() {
 #
 ##########################################################################
 sub list_ldap() {
-    print "VERBATIM_OUTPUT\n";
+    my $cmdline = $ENV{OA_CMD_LINE};
+
+    if (!defined $cmdline) {
+	print "VERBATIM_OUTPUT\n";
+    }
     my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app ldap`;
     
     my @address = split(" ",$out[0]);
@@ -169,29 +173,66 @@ sub list_ldap() {
     my @rw_username = split(" ",$out[5]);
 
     my $o;
-    print "<ldap>";
+    if (!defined $cmdline) {
+	print "<ldap>";
+    }
     for $o (@out) {
+	if (defined $cmdline) {
+	    print "entry:\n";
+	}
 	my @vals = split(" ",$o);
 	if ($vals[0] eq "address") {
-	    print "<address>$vals[1]</address>";
+	    if (!defined $cmdline) {
+		print "<address>$vals[1]</address>";
+	    }
+	    else {
+		print "\taddress:\t$vals[1]\n";
+	    }
 	}
 	elsif ($vals[0] eq "local") {
-	    print "<local>$vals[1]</local>";
+	    if (!defined $cmdline) {
+		print "<local>$vals[1]</local>";
+	    }
+	    else {
+		print "\tlocal:\t$vals[1]\n";
+	    }
 	}
 	elsif ($vals[0] eq "r-password") {
-	    print "<r-password>$vals[1]</r-password>";
+	    if (!defined $cmdline) {
+		print "<r-password>$vals[1]</r-password>";
+	    }
+	    else {
+		print "\tread password:\t$vals[1]\n";
+	    }
 	}
 	elsif ($vals[0] eq "r-username") {
-	    print "<r-username>$vals[1]</r-username>";
+	    if (!defined $cmdline) {
+		print "<r-username>$vals[1]</r-username>";
+	    }
+	    else {
+		print "\tread username:\t$vals[1]\n";
+	    }
 	}
 	elsif ($vals[0] eq "rw-password") {
-	    print "<rw-password>$vals[1]</rw-password>";
+	    if (!defined $cmdline) {
+		print "<rw-password>$vals[1]</rw-password>";
+	    }
+	    else {
+		print "\tread/write password:\t$vals[1]\n";
+	    }
 	}
 	elsif ($vals[0] eq "rw-username") {
-	    print "<rw-username>$vals[1]</rw-username>";
+	    if (!defined $cmdline) {
+		print "<rw-username>$vals[1]</rw-username>";
+	    }
+	    else {
+		print "\tread/write username:\t$vals[1]\n";
+	    }
 	}
     }
-    print "</ldap>";
+    if (!defined $cmdline) {
+	print "</ldap>";
+    }
 }
 
 ##########################################################################

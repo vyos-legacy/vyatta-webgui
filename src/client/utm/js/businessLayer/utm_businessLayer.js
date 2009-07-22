@@ -481,6 +481,10 @@ function UTM_businessLayer()
         thisObj.f_getVPNObject().f_getSite2SiteData(guicb);
     }
 
+    this.f_vpnDeleteSite2SiteConfig = function(tunnelName, guicb)
+    {
+        thisObj.f_getVPNObject().f_deleteSite2SiteConfig(tunnelName, guicb);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////

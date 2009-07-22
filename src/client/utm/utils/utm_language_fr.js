@@ -100,6 +100,8 @@ var g_lang =
     m_vpnOVLocal : 'local',
     m_vpnOVS2S : "connexions site à site",
     m_vpnOVRemote : "utilisateurs nomades",
+    m_vpnDeleteConfirm : "Are you sure you want to delete VPN",
+    m_vpnDeleteTitle : "Delete VPN",
 
     ///////////////////////////////////////////////////////////////////;;
     // VPN RemoteUser View;;

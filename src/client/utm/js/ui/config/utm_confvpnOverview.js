@@ -9,8 +9,13 @@ function UTM_confVPNOverview(name, callback, busLayer)
 {
     var thisObj = this;
     this.thisObjName = 'UTM_confVPNOverview';
+    this.m_btnS2SAddId = "vpnS2SAddId";
+    this.m_btnS2SApplyId = "vpnS2SApplyId";
+    this.m_btnS2SCancelId = "vpnS2SCancelId";
     this.m_s2sRecs = null;
+    this.m_s2sGridChkboxId = "s2sGridChkboxId";
     this.m_remoteRecs = null;
+    this.m_remoteGridChkboxId = "remoteGridChkboxId";
 
     /**
      * @param name - name of configuration screens.
@@ -33,8 +38,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
     {
         var cols = [];
         var chkbox = g_lang.m_enabled + '<br>' + thisObj.f_renderCheckbox('no',
-                      'vpns2sOverView', 'f_vpns2sOverViewChkboxCb',
-                      'tooltip');
+                      this.m_s2sGridChkboxId, "f_vpnS2SChkboxHandler('" +
+                      this.m_s2sGridChkboxId + "')", 'tooltip');
 
         cols[0] = this.f_createColumn(g_lang.m_name, 120, 'text', '6', true);
         cols[1] = this.f_createColumn(g_lang.m_vpnOVSource, 100, 'text', '6', true);
@@ -52,8 +57,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
     {
         var cols = [];
         var chkbox = g_lang.m_enabled + '<br>' + thisObj.f_renderCheckbox('no',
-                      'vpnRemoteOverView', 'f_vpnRemoteOverViewChkboxCb',
-                      'tooltip');
+                      this.m_remoteGridChkboxId, "f_vpnRemoteChkboxCb('" +
+                      this.m_remoteGridChkboxId + "')", 'tooltip');
 
         cols[0] = this.f_createColumn(g_lang.m_username, 120, 'text', '6', true);
         cols[1] = this.f_createColumn(g_lang.m_group, 100, 'text', '6', true);
@@ -68,26 +73,16 @@ function UTM_confVPNOverview(name, callback, busLayer)
         return cols;
     }
 
-    this.f_s2sChkboxCb = function()
-    {
-
-    }
-
-    this.f_remoteChkboxCb = function()
-    {
-
-    }
-
     this.f_loadVMData = function()
     {
-        var wait = true;
+        //var wait = true;
 
         var cb = function(evt)
         {
-            if(wait)
+            //if(wait)
             {
                 g_utils.f_cursorDefault();
-                wait = false;
+            //    wait = false;
             }
 
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
@@ -98,7 +93,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
         }
 
         g_utils.f_cursorWait();
-        this.m_threadId = this.m_busLayer.f_startVPNRequestThread(cb);
+        //this.m_threadId = this.m_busLayer.f_startVPNRequestThread(cb);
+        this.m_busLayer.f_vpnGetSite2SiteConfigData(cb);
     }
 
     this.f_stopLoadVMData = function()
@@ -134,19 +130,18 @@ function UTM_confVPNOverview(name, callback, busLayer)
         {
             var rec = recs[i];
             var c = "<div align=center>";
+            var eId = "s2s_enabledId-" + rec.m_tunnel;
 
             var tname = thisObj.f_renderAnchor(rec.m_tunnel,
                     "f_s2sUpdateHandler('" +
                     rec.m_tunnel + "')", 'Click on name for update');
 
-            var enable = c + thisObj.f_renderCheckbox(
-                  rec.m_enable, 'enabledId-'+rec.m_tunnel,
-                  "f_fwCustomizeOnChkBlur('"+'enabledId-'+rec.m_tunnel+"')",
-                  "") + "</div>";
+            var enable = c + thisObj.f_renderCheckbox(rec.m_enable, eId,
+                          "f_vpnS2SChkboxHandler('"+ eId +"')", "") + "</div>";
 
-            var del = c + thisObj.f_renderButton(
-                  "delete", true, "f_fireCustomDeleteHandler(" + rec.m_tunnel +
-                  ")", g_lang.m_tooltip_delete) + "</div>";
+            var del = c + thisObj.f_renderButton("delete", true,
+                          "f_s2sDeleteHandler('" + rec.m_tunnel +
+                          "')", g_lang.m_tooltip_delete) + "</div>";
 
             var status = rec.m_status == 'disconnected' ?
                           thisObj.f_createSimpleDiv("<b>" + rec.m_status +
@@ -220,15 +215,88 @@ function UTM_confVPNOverview(name, callback, busLayer)
         return null;
     }
 
+    this.f_enabledActionButtons = function(enabled)
+    {
+        thisObj.f_enabledDisableButton(thisObj.m_btnS2SApplyId, enabled);
+        thisObj.f_enabledDisableButton(thisObj.m_btnS2SCancelId, enabled);
+    };
+
+    this.f_updateS2SChkbox = function()
+    {
+        var checked = true;
+
+        for(var i=0; i<this.m_s2sRecs.length; i++)
+        {
+            var rec = this.m_s2sRecs[i];
+            var el = document.getElementById("s2s_enabledId-"+rec.m_tunnel);
+
+            if(el != null)
+            {
+                if(!el.checked)
+                {
+                    checked = false;
+                    break;
+                }
+            }
+        }
+
+        var el = document.getElementById(this.m_s2sGridChkboxId);
+        el.checked = checked;
+    }
+
+    this.f_s2sChkboxCb = function(eid)
+    {
+        if(eid == this.m_s2sGridChkboxId)
+        {
+            var el = document.getElementById(eid);
+            for(var i=0; i<this.m_s2sRecs.length; i++)
+            {
+                var rec = this.m_s2sRecs[i];
+                var eel = document.getElementById("s2s_enabledId-" + rec.m_tunnel);
+                if(eel != null)
+                    eel.checked = el.checked;
+            }
+        }
+        else if(eid.indexOf("s2s_enabledId-") >= 0)
+        {
+            this.f_updateS2SChkbox();
+        }
+
+        this.f_enabledActionButtons(true);
+    }
+
+    this.f_remoteChkboxCb = function()
+    {
+
+    }
+
     this.f_handleS2SUpdate = function(name)
     {
         var rec = this.f_getS2SRecByName(name);
 
         if(rec != null)
-        {
-            alert('update ' + rec.m_tunnel);
             g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID, rec);
+    }
+
+    this.f_handleS2SApply = function()
+    {
+        var cb = function(evt)
+        {
+
         }
+
+        //this.m_busLayer
+    }
+
+    this.f_handleS2SDelete = function(name)
+    {
+        var cb = function(evt)
+        {
+            thisObj.f_stopLoadVMData();
+            thisObj.f_loadVMData();
+        }
+
+        this.m_busLayer.f_vpnDeleteSite2SiteConfig(name, cb);
     }
 
     this.f_handleRemoteGridSort = function(col)
@@ -256,8 +324,12 @@ function UTM_confVPNOverview(name, callback, busLayer)
         this.m_bodyRemotes = this.f_createGridView(this.m_hdremote);
 
         var btns = [['Add', "f_site2siteAddHandler()",
-                    g_lang.m_fireCustAddTip, this.m_btnAddId]];
-        this.m_buttons = this.f_createButtons(btns, 'left');
+                    g_lang.m_fireCustAddTip, this.m_btnS2SAddId],
+                    ['Apply', "f_site2siteApplyHandler()",
+                    g_lang.m_fireLevelApplyTip, this.m_btnS2SApplyId, false],
+                    ['Cancel', "f_site2siteCancelHandler()",
+                    g_lang.m_fireLevelCancelTip, this.m_btnS2SCancelId, false]];
+        this.m_buttons = this.f_createButtons(btns, 'center');
 
         this.f_loadVMData();
 
@@ -273,12 +345,12 @@ function f_site2siteAddHandler(e)
     g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID);
 }
 
-function f_vpns2sOverViewChkboxCb(e)
+function f_vpnS2SChkboxHandler(eid)
 {
-    g_configPanelObj.m_activeObj.f_s2sChkboxCb();
+    g_configPanelObj.m_activeObj.f_s2sChkboxCb(eid);
 }
 
-function f_vpnRemoteOverViewChkboxCb(e)
+function f_vpnRemoteChkboxCb(eid)
 {
     g_configPanelObj.m_activeObj.f_remoteChkboxCb();
 }
@@ -296,4 +368,24 @@ function f_vpnRemoteGridHeaderOnclick(col)
 function f_s2sUpdateHandler(name)
 {
     g_configPanelObj.m_activeObj.f_handleS2SUpdate(name);
+}
+
+function f_s2sDeleteConfirmation(e, name)
+{
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+    {
+        g_configPanelObj.m_activeObj.f_handleS2SDelete(name);
+    }
+}
+
+function f_s2sDeleteHandler(name)
+{
+    g_utils.f_popupMessage(g_lang.m_vpnDeleteConfirm + " " + name,
+                'confirm', g_lang.m_vpnDeleteTitle, true,
+                "f_s2sDeleteConfirmation(this, '"+name+"')");
+}
+
+function f_site2siteApplyHandler()
+{
+    g_configPanelObj.m_activeObj.f_handleS2SApply();
 }

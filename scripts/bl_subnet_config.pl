@@ -40,6 +40,8 @@ my %func = (
     'set_dhcp_static_mapping'     => \&set_dhcp_static_mapping,
     'get_dhcp_server_config'	  => \&get_dhcp_server_config,
     'set_dhcp_server_config'	  => \&set_dhcp_server_config,
+    'get_interface_config'        => \&get_interface_config,
+    'set_interface_config'        => \&set_interface_config,
 );
 
 # mapping for interface names to dom-U interfaces
@@ -110,6 +112,52 @@ sub delete_sharedntwrk_or_dhcpserver {
     }
 
     return @cmds;
+}
+
+sub get_interface_config {
+    my ($data) = @_;
+    my @ip = get_interface_ip($name_to_domU_intfhash{$data}, '4');
+    my $msg;
+    $msg .= "<form name='interface-config' code=0><interface-config>" .
+            "<interface>$data</interface>";
+
+    if (scalar(@ip) == 0) {
+      $msg  .= "<ip></ip><mask></mask>";
+    } else {
+      my @ip_and_mask = split('/', $ip[0]);
+      $msg  .= "<ip>$ip_and_mask[0]</ip><mask>$ip_and_mask[1]</mask>";
+
+    }
+    $msg .= "</interface-config></form>";
+    print $msg;
+}
+
+sub set_interface_config {
+    my ($data) = @_;
+    my $xs  = XML::Simple->new();
+    my $xml = $xs->XMLin($data);
+    my ($msg, $err);
+    my @cmds = ();
+    my $config = new Vyatta::Config;
+    my $path = "interfaces ethernet $name_to_domU_intfhash{$xml->{interface}} address";
+    my $ip = $xml->{ip} . '/' . $xml->{mask};
+    push @cmds, "delete $path", "set $path $ip";
+
+    # if LAN interface then we need to change default NAT rule (rule 2) for https
+    push @cmds, "set service nat rule 2 destination address $xml->{ip}"
+        if $xml->{interface} eq 'LAN';
+    push @cmds, "commit", "save";
+    $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+    if (defined $err) {
+      $msg = "<form name='interface-config' code='5'>";
+      $msg .= "<ip>$xml->{ip}</ip>";
+      $msg .= "<errmsg>" . "Error setting IP for $xml->{interface} - $err" . "</errmsg>";
+      $msg .= "</form>";
+      print $msg;
+      exit 1;
+    }
+    $msg = "<form name='interface-config' code='0'></form>";
+    print $msg;
 }
 
 sub get_dhcp_server_config {

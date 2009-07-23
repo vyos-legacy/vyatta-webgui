@@ -40,6 +40,7 @@ function FT_confBLBcheck(name, callback, busLayer)
                 v_type: 'text',
                 id: 'conf_blb_check_login',
                 size: '64',
+				readonly: 'true',
                 v_end_row: 'true'
             }, {
                 v_type: 'label',

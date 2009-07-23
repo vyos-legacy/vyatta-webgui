@@ -229,6 +229,10 @@ function UTM_confNwLANitf(name, callback, busLayer)
 	
 	this.f_confirmOverwrite = function()
 	{
+		if (thisObj.m_ifName == "DMZ") {
+			return false;
+		}
+		
 		var oldIp = thisObj.m_parent.f_getLanIp();
 		var oldMask = thisObj.m_parent.f_getLanNetmask();
 		
@@ -259,7 +263,9 @@ function UTM_confNwLANitf(name, callback, busLayer)
             if (f_isForbidenAddr(ip, mask)) {
 				errorInner += thisObj.f_createListItem(g_lang.m_lanitf_forbidden_ip + ' ' + g_lang.m_lanitf_ip);
 			}
-			errorInner += thisObj.m_parent.f_validateLanCompatible();		
+			if (thisObj.m_ifName != 'DMZ') {
+				errorInner += thisObj.m_parent.f_validateLanCompatible();
+			}		
 		}
 		
         if (errorInner.trim().length > 0) {

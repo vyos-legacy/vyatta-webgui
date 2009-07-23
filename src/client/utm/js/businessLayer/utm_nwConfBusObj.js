@@ -1014,6 +1014,7 @@ function UTM_nwDhcpConfigObj(name, enable, start, end, dnsMode, dnsPrimary, dnsS
 			return s;
 		} else {
 			return '&quot;&quot;';
+			//return '<![CDATA[""]]>';
 		}
 	}
 

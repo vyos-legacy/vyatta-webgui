@@ -17,6 +17,10 @@ function UTM_confNwLANitf(name, callback, busLayer)
     this.m_form = undefined;
     this.m_div = undefined;
 	this.m_parent = undefined;
+    this.m_btnConfirmOverwriteCbId = 'btn_confirm_cb';
+    this.m_eventCbFunction = 'f_confLanItfHandleEventCb';	
+	this.m_reloadPeer = false;
+	this.m_lanip_label = g_lang.m_lanitf_ip;
     
     /**
      * @param name - name of configuration screens.
@@ -37,18 +41,28 @@ function UTM_confNwLANitf(name, callback, busLayer)
     
     this.f_init = function()
     {
+		var formTitle = g_lang.m_lanitf_title;
+		
+		if (this.m_ifName == 'LAN2') {
+			formTitle = g_lang.m_lanitf2_title;
+			this.m_lanip_label = g_lang.m_lanitf2_ip;		
+		} else if (this.m_ifName == 'DMZ') {
+			formTitle = g_lang.m_dmzitf_title;
+			this.m_lanip_label = g_lang.m_dmzitf_ip;
+		}
+		
         this.f_setConfig({
             id: 'conf_lan_itf',
             width: '550',
             items: [{
                 v_type: 'label',
-                text: g_lang.m_lanitf_title,
+                text: formTitle,
                 v_new_row: 'true',
                 v_end_row: 'true',
                 font_weight: 'bold'
             }, {
                 v_type: 'label',
-                text: g_lang.m_lanitf_ip,
+                text: this.m_lanip_label,
                 v_new_row: 'true',
                 padding: '60px'
             }, {
@@ -168,7 +182,11 @@ function UTM_confNwLANitf(name, callback, busLayer)
     {
 		if ((thisObj.m_ifObj != undefined) && (thisObj.m_ifObj != null)) {
 			thisObj.m_form.conf_lan_itf_ip.value = thisObj.m_ifObj.m_ip;
-			thisObj.m_form.conf_lan_itf_mask.value = g_utils.f_convertCIDRToNetmask(thisObj.m_ifObj.m_mask);
+			if (thisObj.m_ifObj.m_ip != null) {
+				thisObj.m_form.conf_lan_itf_mask.value = g_utils.f_convertCIDRToNetmask(thisObj.m_ifObj.m_mask);
+			} else {
+				thisObj.m_form.conf_lan_itf_mask.value = '';
+			}
 		}
         thisObj.f_enableAllButton(false);
     }
@@ -214,14 +232,37 @@ function UTM_confNwLANitf(name, callback, busLayer)
     
 	this.f_getLanIp = function()
 	{
+		if (thisObj.m_ifObj.m_ip == null) {
+			return '';
+		}
 		return thisObj.m_ifObj.m_ip;
 		//return thisObj.m_form.conf_lan_itf_ip.value;
 	}
 	
 	this.f_getLanNetmask = function()
 	{
+		if (thisObj.m_ifObj.m_mask == null) {
+			return '';
+		}
 		return thisObj.m_ifObj.m_mask;
 		//return thisObj.m_form.conf_lan_itf_mask.value;
+	}
+	
+	this.f_confirmOverwrite = function()
+	{
+		if (thisObj.m_ifName == "DMZ") {
+			return false;
+		}
+		
+		var oldIp = thisObj.m_parent.f_getLanIp();
+		var oldMask = thisObj.m_parent.f_getLanNetmask();
+		if ((oldIp == undefined) || (oldIp == null) || (oldMask == undefined) || (oldMask == null)) {
+			return false;
+		}
+		if ((oldIp.trim().length <= 0) || (oldMask.trim().length <= 0)) {
+			return false;
+		}
+		return true;		
 	}
 	
     this.f_validate = function()
@@ -233,7 +274,7 @@ function UTM_confNwLANitf(name, callback, busLayer)
 		var validIpNmask = true;
 		
         if (!thisObj.f_checkIP(ip)) {
-            errorInner += thisObj.f_createListItem(g_lang.m_lanitf_ip + ' ' + g_lang.m_formInvalid);
+            errorInner += thisObj.f_createListItem(thisObj.m_lanip_label + ' ' + g_lang.m_formInvalid);
 			validIpNmask = false;
         }
         if (!g_utils.f_validateNetmask(mask)) {
@@ -243,9 +284,13 @@ function UTM_confNwLANitf(name, callback, busLayer)
         
 		if (validIpNmask) {
             if (f_isForbidenAddr(ip, mask)) {
-				errorInner += thisObj.f_createListItem(g_lang.m_lanitf_forbidden_ip + ' ' + g_lang.m_lanitf_ip);
+				errorInner += thisObj.f_createListItem(g_lang.m_lanitf_forbidden_ip + ' ' + thisObj.m_lanip_label);
 			}
-			errorInner += thisObj.m_parent.f_validateLanCompatible();		
+			/* comment this out since changing the LAN IP will overwrite the DHCP paremeters, and DHCP mapping anyway.
+			if (thisObj.m_ifName != 'DMZ') {
+				errorInner += thisObj.m_parent.f_validateLanCompatible();
+			}
+			*/		
 		}
 		
         if (errorInner.trim().length > 0) {
@@ -265,11 +310,20 @@ function UTM_confNwLANitf(name, callback, busLayer)
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
                 if (evt.f_isError()) {
                     g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
+					if (thisObj.m_reloadPeer) {
+						thisObj.m_reloadPeer = false;
+					}
                     return;
                 } else {
-                    thisObj.f_enableAllButton(false);
-                    thisObj.m_ifObj.m_ip = thisObj.m_form.conf_lan_itf_ip.value.trim();
-		            thisObj.m_ifObj.m_mask = g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim());					
+					if (thisObj.m_reloadPeer) {
+						thisObj.m_reloadPeer = false;
+						var children = [/*'conf_lan_itf',*/ 'conf_lan_dhcp','conf_lan_ip'];
+						thisObj.m_parent.f_reloadChildren(children);						
+					} else {
+                        thisObj.f_enableAllButton(false);
+                        thisObj.m_ifObj.m_ip = thisObj.m_form.conf_lan_itf_ip.value.trim();
+		                thisObj.m_ifObj.m_mask = g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim());						
+					}					
                 }
             }
         };
@@ -277,13 +331,26 @@ function UTM_confNwLANitf(name, callback, busLayer)
 		var ifObj =  new UTM_nwIfConfigObj(thisObj.m_ifName, thisObj.m_form.conf_lan_itf_ip.value.trim(), 
 		    g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim()));
 		
-        g_busObj.f_setDNSConfig(ifObj, cb);
+        g_busObj.f_setIfConfig(ifObj, cb);
     }
     
     this.f_reset = function()
     {
     }
     
+	this.f_handleApply = function()
+	{
+        if (!thisObj.f_validate()) {
+            return false;
+        }
+		if (thisObj.f_confirmOverwrite()) {
+			g_utils.f_popupMessage(g_lang.m_lanitf_change + " " +
+			    thisObj.m_lanip_label + " " + g_lang.m_lanitf_confirm_overwrite, 'confirm', g_lang.m_info, true, thisObj.m_eventCbFunction + "('" + thisObj.m_objectId + "," + thisObj.m_btnConfirmOverwriteCbId + "')");
+		} else {
+			thisObj.f_apply();
+		}		
+	}
+	
     this.f_handleClick = function(e)
     {
         var target = g_xbObj.f_xbGetEventTarget(e);
@@ -301,21 +368,32 @@ function UTM_confNwLANitf(name, callback, busLayer)
                 thisObj.f_enableAllButton(true);
                 break;
             case 'conf_lan_itf_apply_button': //apply clicked
-                if (!thisObj.f_validate()) {
-                    return false;
-                }
-                thisObj.f_apply();
+                thisObj.f_handleApply(); 
                 break;
             case 'conf_lan_itf_cancel_button': //cancel clicked
                 thisObj.f_reload();
                 break;
-                
+            case thisObj.m_btnConfirmOverwriteCbId:
+			    thisObj.m_reloadPeer = true;
+			    thisObj.f_apply();
+				break;  
         }
         return false;
     }
 }
 
 UTM_extend(UTM_confNwLANitf, UTM_confFormObj);
+
+function f_confLanItfHandleEventCb(arg)
+{
+    if (arg) {
+        var a = arg.split(",");
+        var childId = a[0];
+        var sourceId = (a.length > 1) ? a[1] : null;
+        var userData = (a.length > 2) ? a[2] : null;
+        g_configPanelObj.m_activeObj.f_handleClick(childId, sourceId, userData);
+    }
+}
 
 
 function UTM_confNwLANdhcp(name, callback, busLayer)
@@ -693,9 +771,14 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
 		var validIp = true;
 		var error = '';
 		var start = thisObj.m_form.conf_lan_dhcp_range_start.value.trim();
-		var end = thisObj.m_form.conf_lan_dhcp_range_start.value.trim();
+		var end = thisObj.m_form.conf_lan_dhcp_range_end.value.trim();
 		var lanIp = thisObj.m_parent.f_getLanIp().trim();
 		var lanMask = thisObj.m_parent.f_getLanNetmask().trim();
+        var lanIpLabel = g_lang.m_lanitf_ip;
+		
+		if (this.m_ifName == 'LAN2') {
+			lanIpLabel = g_lang.m_lanitf2_ip;
+		}
 
         if ((start.length > 0) || (end.length > 0)) {
 			if (!thisObj.f_checkIP(start)) {
@@ -718,11 +801,11 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
 			if ((lanIp.length >0) && (lanMask.length > 0)) {
 				if (!f_checkIPForLan(start, lanIp, lanMask)) {
 				    error += thisObj.f_createListItem(g_lang.m_landhcp_range_start + ' ' + 
-					    g_lang.m_landhcp_incompatible + ' ' + g_lang.m_lanitf_ip);	
+					    g_lang.m_landhcp_incompatible + ' ' + lanIpLabel);	
 				}
 				if (!f_checkIPForLan(end, lanIp, lanMask)) {
 				    error += thisObj.f_createListItem(g_lang.m_landhcp_range_end + ' ' + 
-					    g_lang.m_landhcp_incompatible + ' ' + g_lang.m_lanitf_ip);					
+					    g_lang.m_landhcp_incompatible + ' ' + lanIpLabel);					
 				}
 				if (f_isForbidenAddr(start, lanMask)) {
 				    error += thisObj.f_createListItem(g_lang.m_lanitf_forbidden_ip + ' ' +
@@ -741,16 +824,24 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
     {		
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
-        
+		var lanIpLabel = g_lang.m_lanitf_ip;
+		
+		if (thisObj.m_ifName == 'LAN2') {
+			lanIpLabel = g_lang.m_lanitf2_ip;
+		}
+        	
 		if (!thisObj.m_parent.f_isLanIPconfigured()) {
-			g_utils.f_popupMessage(g_lang.m_lanitf_pls_config, 'error', g_lang.m_error, true); 
+			g_utils.f_popupMessage(g_lang.m_lanitf_pls_config + " " + lanIpLabel + 
+			    " " + g_lang.m_lanitf_mask, 'error', g_lang.m_error, true); 
 			return false;
 		}
 		
+		/*
         if (!thisObj.m_form.conf_lan_dhcp_enable.checked) {
             return true;
         }
-        
+        */
+		
 		errorInner += thisObj.f_validateRangeIPs();
 
 		var dnsMode = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_lan_dhcp_dns_mode);
@@ -1248,6 +1339,11 @@ function UTM_confNwLANip(name, callback, busLayer)
 		var error = '';
 		var lanIp = thisObj.m_parent.f_getLanIp().trim();
 		var lanMask = thisObj.m_parent.f_getLanNetmask().trim();		
+        var lanIpLabel = g_lang.m_lanitf_ip;
+		
+		if (this.m_ifName == 'LAN2') {
+			lanIpLabel = g_lang.m_lanitf2_ip;
+		}
 
 		for (var i=0; i < this.m_rowIdArray.length; i++) {
             var seedId = this.f_getSeedIdByRowId(this.m_rowIdArray[i]);
@@ -1255,10 +1351,10 @@ function UTM_confNwLANip(name, callback, busLayer)
 			
 		    if (ip.trim().length > 0) {
 				if (!f_checkIPForLan(ip, lanIp, lanMask)) {
-					error += thisObj.f_createListItem(g_lang.m_landhcp_range_start + ' ' +
+					error += thisObj.f_createListItem(g_lang.m_lanip_reserved_ip + ' [ ' + ip  + ' ] ' +
 					g_lang.m_landhcp_incompatible +
 					' ' +
-					g_lang.m_lanitf_ip);
+					lanIpLabel);
 				}
 			}
 		}
@@ -1288,25 +1384,29 @@ function UTM_confNwLANip(name, callback, busLayer)
 		var error = '';
 		var lanIp = thisObj.m_parent.f_getLanIp().trim();
 		var lanMask = thisObj.m_parent.f_getLanNetmask().trim();
-
+        var lanIpLabel = g_lang.m_lanitf_ip;
+		
+		if (this.m_ifName == 'LAN2') {
+			lanIpLabel = g_lang.m_lanitf2_ip;
+		}
 		if (!f_validateIP(ip)) {
 			error += thisObj.f_createListItem(ip + ' ' + g_lang.m_formNotAValidIP);
 			return error;
 		}
-
+       
 		if ((lanIp.length >0) && (lanMask.length > 0)) {
 		    if (!f_checkIPForLan(ip, lanIp, lanMask)) {
 				error += thisObj.f_createListItem(ip + ' ' + 
 					    g_lang.m_landhcp_incompatible + ' ' + g_lang.m_lanitf_ip);	
 		    }
 
-			if (f_isForbidenAddr(start, lanMask)) {
+			if (f_isForbidenAddr(ip, lanMask)) {
 				error += thisObj.f_createListItem(g_lang.m_lanitf_forbidden_ip + ' ' +
 					    g_lang.m_lanip_reserved_ip_lower);						
 			}
 			
 			if (ip == lanIp) {
-				error += thisObj.f_createListItem(g_lang.m_lanip_reserved_diff_lan);
+				error += thisObj.f_createListItem(g_lang.m_lanip_reserved_diff_lan + ' ' + lanIpLabel);
 			}
 		}
 
@@ -1538,8 +1638,8 @@ function UTM_confNwLANip(name, callback, busLayer)
         g_busObj.f_getDhcpMap(thisObj.m_ifName, cb);
     }
     
-    this.f_loadVMData = function(divElement, parentReference)
-    {
+	this.f_reload = function(parentReference)
+	{
         var p = parentReference;
         thisObj.f_cleanup();
 		
@@ -1561,7 +1661,12 @@ function UTM_confNwLANip(name, callback, busLayer)
 			    p.f_loadVMDataCb();
         };
         this.f_getDhcpMap(cb);
-        this.f_enableAllButton(false);
+        this.f_enableAllButton(false);		
+	}
+	
+    this.f_loadVMData = function(divElement, parentReference)
+    {
+        thisObj.f_reload(parentReference);
     }
     
     this.f_deleteRowCb = function(evt)
@@ -1639,7 +1744,7 @@ function f_confNwLANipHandleKeyEventCb(arg)
         var eventType = (a.length > 2) ? a[2] : null;
         var userData = (a.length > 3) ? a[3] : null;
         g_configPanelObj.m_activeObj.f_handleKeyEvent(childId, sourceId, eventType, userData);
-    }
+    }	
 }
 
 

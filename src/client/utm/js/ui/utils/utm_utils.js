@@ -212,6 +212,9 @@ function f_isForbidenAddr(ip, mask)
  */
 function f_checkIPForLan(ip, originalLanIP, originalLanMask)
 {
+	if (originalLanMask.indexOf('.') < 0) {
+		originalLanMask = g_utils.f_convertCIDRToNetmask(originalLanMask);
+	}
     var iLanMask = f_inetAddr(originalLanMask);
     if (f_and(f_inetAddr(ip), iLanMask) == f_and(f_inetAddr(originalLanIP), iLanMask)) 
         return true;
@@ -221,6 +224,9 @@ function f_checkIPForLan(ip, originalLanIP, originalLanMask)
 
 function f_checkIPForLanbitewiseAnd(ip, LanIP, LanMask)
 {
+	if (LanMask.indexOf('.') < 0) {
+		LanMask = g_utils.f_convertCIDRToNetmask(LanMask);
+	}	
     var iLanMask = f_inetAddr(LanMask);
     if (f_and(f_inetAddr(ip), iLanMask) == f_and(f_inetAddr(LanIP), iLanMask)) 
         return true;
@@ -230,6 +236,9 @@ function f_checkIPForLanbitewiseAnd(ip, LanIP, LanMask)
 
 function f_checkNetworkOverlap(localeIp, localeMask)
 {
+	if (localeMask.indexOf('.') < 0) {
+		localeMask = g_utils.f_convertCIDRToNetmask(localeMask);
+	}	
     var iLocaleIpAdd = f_inetAddr(localeIp);
     var iLocaleMaskAdd = f_inetAddr(localeMask);
     for (var i = 0; i <= originalNetworkIpMacAddr.length - 1; i++) {
@@ -291,6 +300,12 @@ function f_validateMask(mask)
 
 function f_isOverlapAddress(ip1, ip2, mask1, mask2)
 {
+	if (mask1.indexOf('.') < 0) {
+		mask1 = g_utils.f_convertCIDRToNetmask(mask1);
+	}	
+	if (mask2.indexOf('.') < 0) {
+		mask2 = g_utils.f_convertCIDRToNetmask(mask2);
+	}	
     var iIP1 = f_inetAddr(ip1);
     var iIP2 = f_inetAddr(ip2);
     var iMask1 = f_inetAddr(mask1);

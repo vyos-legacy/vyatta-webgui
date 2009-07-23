@@ -1,3 +1,28 @@
+vyatta-webgui (0.2.14+fxdU+89) unstable; urgency=low
+
+  [ Loi Vo ]
+  * Fix a handler name error for LAN ip.
+
+  [ Mohit Mehta ]
+  * * add IP address validation
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Thu, 23 Jul 2009 15:38:41 -0700
+
+vyatta-webgui (0.2.14+fxdU+88) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * vpn site2site screen:
+
+  [ Mohit Mehta ]
+  * backend support to get/set IP on user-controllable interfaces
+
+  [ Loi Vo ]
+  * 1. Remove height restriction for confirmation dialog.
+  * Adding checking for 'DMZ'.  'DMZ' case: we don't have to validate
+    against DHCP parameters, and Reserved IP addresses
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 23 Jul 2009 01:03:08 +0000
+
 vyatta-webgui (0.2.14+fxdU+87) unstable; urgency=low
 
   [ Kevin Choi ]

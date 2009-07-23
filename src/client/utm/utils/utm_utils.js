@@ -701,7 +701,7 @@ var g_utils =
             case 'confirm': // yes/no or apply/cancel
                 if(title != undefined)
                 {
-                    div.style.height = '100px';
+                    //div.style.height = '100px';
                     message = '<b>' + title + '</b><br><br>' + message;
                 }
                 var cancelCb = ccb == undefined ? cancelHandler : cancelHandler + ";" + ccb;

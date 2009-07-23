@@ -18,6 +18,7 @@ function UTM_confContainerObj(name, callback, busLayer)
 	this.m_containerCb = undefined;
 	this.m_children = undefined;
 	this.m_loadVmDataQueue = new Array();	
+	this.m_reload = false;
 	var thisObj = this;
 	
 	
@@ -120,6 +121,7 @@ function UTM_confContainerObj(name, callback, busLayer)
 			//this.m_children[i].f_loadVMData(div);
 		}
 				
+		this.m_reload = false;
 		this.f_loadVMDataCb();
 				
         return this.m_div;			
@@ -129,7 +131,14 @@ function UTM_confContainerObj(name, callback, busLayer)
 	{
 		if (this.m_loadVmDataQueue.length > 0) {
 			var child = this.m_loadVmDataQueue.shift();
-			child.f_loadVMData(this.m_div, this);
+			var rthis = this;
+			if (!this.m_reload) {
+			    var f = function() { child.f_loadVMData(rthis.m_div, rthis) };
+			    window.setTimeout(f,100);				
+			} else {
+				var rf = function() { child.f_reload(rthis) };
+				window.setTimeout(rf, 100);
+			}
 		}
 		
 	}

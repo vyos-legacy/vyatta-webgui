@@ -1,0 +1,1 @@
+run: /opt/vyatta/sbin/bl_subnet_config.pl --action='set_interface_config' --data="$3"

@@ -61,6 +61,24 @@ function UTM_confNwLAN(name, callback, busLayer)
 		return thisObj.f_getPage();
 	}
 	
+	this.f_reloadChildren = function(children)
+	{
+		if ((children == undefined) || (children == null)) {
+			return;
+		}
+		
+		for (var i = 0; i < this.m_children.length; i++) {
+			for (var j = 0; j < children.length; j++) {
+				if ((children[j].indexOf(this.m_children[i].m_objectId)) >= 0) {
+					this.m_loadVmDataQueue.push(this.m_children[i]);
+					break;
+				}
+			}
+		}	
+		this.m_reload = true;			
+		this.f_loadVMDataCb();
+	}
+		
 	this.f_isLanIPconfigured = function()
 	{
 		var lanIp = this.f_getLanIp().trim();
@@ -107,6 +125,8 @@ function UTM_confNwLAN(name, callback, busLayer)
 	{
 		if (childId == 'conf_lan_ip') {
 			thisObj.m_lanIp.f_handleClick(sourceId, userData);
+		} else if (childId == 'conf_lan_itf') {
+			thisObj.m_lanItf.f_handleClickById(sourceId, userData);
 		}
 	}    
 

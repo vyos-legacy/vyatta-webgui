@@ -263,9 +263,11 @@ function UTM_confNwLANitf(name, callback, busLayer)
             if (f_isForbidenAddr(ip, mask)) {
 				errorInner += thisObj.f_createListItem(g_lang.m_lanitf_forbidden_ip + ' ' + g_lang.m_lanitf_ip);
 			}
+			/* comment this out since changing the LAN IP will overwrite the DHCP paremeters, and DHCP mapping anyway.
 			if (thisObj.m_ifName != 'DMZ') {
 				errorInner += thisObj.m_parent.f_validateLanCompatible();
-			}		
+			}
+			*/		
 		}
 		
         if (errorInner.trim().length > 0) {
@@ -290,13 +292,14 @@ function UTM_confNwLANitf(name, callback, busLayer)
 					}
                     return;
                 } else {
-                    thisObj.f_enableAllButton(false);
-                    thisObj.m_ifObj.m_ip = thisObj.m_form.conf_lan_itf_ip.value.trim();
-		            thisObj.m_ifObj.m_mask = g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim());
 					if (thisObj.m_reloadPeer) {
 						thisObj.m_reloadPeer = false;
-						var children = ['conf_lan_dhcp','conf_lan_ip'];
+						var children = ['conf_lan_itf', 'conf_lan_dhcp','conf_lan_ip'];
 						thisObj.m_parent.f_reloadChildren(children);
+					} else {
+                        thisObj.f_enableAllButton(false);
+                        thisObj.m_ifObj.m_ip = thisObj.m_form.conf_lan_itf_ip.value.trim();
+		                thisObj.m_ifObj.m_mask = g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim());						
 					}					
                 }
             }
@@ -305,7 +308,7 @@ function UTM_confNwLANitf(name, callback, busLayer)
 		var ifObj =  new UTM_nwIfConfigObj(thisObj.m_ifName, thisObj.m_form.conf_lan_itf_ip.value.trim(), 
 		    g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim()));
 		
-        g_busObj.f_setDNSConfig(ifObj, cb);
+        g_busObj.f_setIfConfig(ifObj, cb);
     }
     
     this.f_reset = function()
@@ -744,7 +747,7 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
 		var validIp = true;
 		var error = '';
 		var start = thisObj.m_form.conf_lan_dhcp_range_start.value.trim();
-		var end = thisObj.m_form.conf_lan_dhcp_range_start.value.trim();
+		var end = thisObj.m_form.conf_lan_dhcp_range_end.value.trim();
 		var lanIp = thisObj.m_parent.f_getLanIp().trim();
 		var lanMask = thisObj.m_parent.f_getLanNetmask().trim();
 
@@ -792,13 +795,11 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
     {		
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
-        
-		/*
+        	
 		if (!thisObj.m_parent.f_isLanIPconfigured()) {
 			g_utils.f_popupMessage(g_lang.m_lanitf_pls_config, 'error', g_lang.m_error, true); 
 			return false;
 		}
-		*/
 		
 		/*
         if (!thisObj.m_form.conf_lan_dhcp_enable.checked) {
@@ -1348,15 +1349,14 @@ function UTM_confNwLANip(name, callback, busLayer)
 			error += thisObj.f_createListItem(ip + ' ' + g_lang.m_formNotAValidIP);
 			return error;
 		}
-
-        /*
+       
 		if ((lanIp.length >0) && (lanMask.length > 0)) {
 		    if (!f_checkIPForLan(ip, lanIp, lanMask)) {
 				error += thisObj.f_createListItem(ip + ' ' + 
 					    g_lang.m_landhcp_incompatible + ' ' + g_lang.m_lanitf_ip);	
 		    }
 
-			if (f_isForbidenAddr(start, lanMask)) {
+			if (f_isForbidenAddr(ip, lanMask)) {
 				error += thisObj.f_createListItem(g_lang.m_lanitf_forbidden_ip + ' ' +
 					    g_lang.m_lanip_reserved_ip_lower);						
 			}
@@ -1365,7 +1365,7 @@ function UTM_confNwLANip(name, callback, busLayer)
 				error += thisObj.f_createListItem(g_lang.m_lanip_reserved_diff_lan);
 			}
 		}
-        */
+
 		return error;		
 	}
 	
@@ -1378,13 +1378,11 @@ function UTM_confNwLANip(name, callback, busLayer)
         var errorInner = '';
 		var ipEmptyError = false;
 		var macEmptyError = false;
-      	
-		/*	
+      		
 		if (!thisObj.m_parent.f_isLanIPconfigured()) {
 			g_utils.f_popupMessage(g_lang.m_lanitf_pls_config, 'error', g_lang.m_error, true); 
 			return false;
 		}			
-		*/
 			
 		for (var i=0; i < this.m_rowIdArray.length; i++) {
             var seedId = this.f_getSeedIdByRowId(this.m_rowIdArray[i]);

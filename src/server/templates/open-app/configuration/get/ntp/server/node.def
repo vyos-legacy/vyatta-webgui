@@ -1,3 +1,4 @@
+help: Get current OpenAppliance NTP configuration settings
 access:installer
 run: if perl /opt/vyatta/sbin/openapp-conf-ntp.pl --list; then
        return 0

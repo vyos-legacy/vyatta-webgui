@@ -1,3 +1,4 @@
+help: Get current OpenAppliance password-policy configuration settings
 access:admin
 run: if perl /opt/vyatta/sbin/openapp-conf-password-policy.pl --list; then
        return 0

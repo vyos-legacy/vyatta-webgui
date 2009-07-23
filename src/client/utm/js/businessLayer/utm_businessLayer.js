@@ -183,13 +183,13 @@ function UTM_businessLayer()
         var guiCb = cb;
         var callback = function()
         {
-            thisObj.f_vpnGetSite2SiteConfigData(guiCb);
+            thisObj.f_vpnGetSite2SiteOverviewConfigData(guiCb);
         }
 
         // start to run
         var threadId = thisObj.m_reqThread.f_start(callback);
 
-        thisObj.f_vpnGetSite2SiteConfigData(guiCb);
+        thisObj.f_vpnGetSite2SiteOverviewConfigData(guiCb);
         return threadId;
     }
     /**
@@ -474,16 +474,26 @@ function UTM_businessLayer()
     }
 
     /**
-     * get vpn site2site easy mode configurations
+     * get vpn site2site overview configurations
      */
-    this.f_vpnGetSite2SiteConfigData = function(guicb)
+    this.f_vpnGetSite2SiteOverviewConfigData = function(guicb)
     {
-        thisObj.f_getVPNObject().f_getSite2SiteData(guicb);
+        thisObj.f_getVPNObject().f_getSite2SiteOverviewData(guicb);
     }
 
-    this.f_vpnDeleteSite2SiteConfig = function(tunnelName, guicb)
+    this.f_vpnDeleteSite2SiteOverviewConfig = function(tunnelName, guicb)
     {
-        thisObj.f_getVPNObject().f_deleteSite2SiteConfig(tunnelName, guicb);
+        thisObj.f_getVPNObject().f_deleteSite2SiteOverviewConfig(tunnelName, guicb);
+    }
+
+    this.f_vpnGetRemoteOverviewConfigData = function(guicb)
+    {
+        thisObj.f_getVPNObject().f_getRemoteOverviewData(guicb);
+    }
+
+    this.f_vpnDeleteRemoteOverviewConfig = function(userName, guicb)
+    {
+        thisObj.f_getVPNObject().f_deleteRemoteOverviewConfig(userName, guicb);
     }
 
     ////////////////////////////////////////////////////////////////////////////

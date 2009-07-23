@@ -9,6 +9,20 @@
 /**
  * VPN data record
  */
+function UTM_vpnRemoteRec(name, group, ipaddr, localaddr, status, mode, enable)
+{
+    this.m_userName = name;
+    this.m_groupName = group;
+    this.m_vpnSoftware = null;
+    this.m_auth = null;
+    this.m_ipAllocation = localaddr;
+    this.m_internetAccess = ipaddr;
+    this.m_mode = mode;   // easy/expert
+    this.m_presharedKey = null;
+    this.m_enabled = enable;
+    this.m_status = status;
+}
+
 function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
 {
     var thisObj = this;
@@ -83,7 +97,6 @@ function UTM_vpnBusObj(busObj)
     this.m_busObj = busObj;
     this.m_lastCmdSent = null;
     this.m_configMode = null; // easy or expert
-    this.m_vpnRec = null;
 
     /**
      * A callback function for request.
@@ -113,10 +126,16 @@ function UTM_vpnBusObj(busObj)
             if(err != null && err[0] != null)
             {
                 if(thisObj.m_lastCmdSent.indexOf(
-                    "<handler>vpn-site2site get") > 0)
+                    "<handler>vpn-site2site get-overview") > 0)
                 {
-                    thisObj.m_vpnRec = thisObj.f_parseSite2SiteGet(err);
-                    evt = new UTM_eventObj(0, thisObj.m_vpnRec, '');
+                    var vpnRec = thisObj.f_parseSite2SiteOverviewGet(err);
+                    evt = new UTM_eventObj(0, vpnRec, '');
+                }
+                else if(thisObj.m_lastCmdSent.indexOf(
+                    "<handler>vpn-remote get-overview") > 0)
+                {
+                    var vpnRec = thisObj.f_parseRemoteOverviewGet(err);
+                    evt = new UTM_eventObj(0, vpnRec, '');
                 }
             }
 
@@ -126,7 +145,7 @@ function UTM_vpnBusObj(busObj)
     }
 
 
-    this.f_parseSite2SiteGet = function(resp)
+    this.f_parseSite2SiteOverviewGet = function(resp)
     {
         var nodes = thisObj.m_busObj.f_getResponseChildNodes(resp, 'msg');
         var vpn = new Array();
@@ -148,6 +167,39 @@ function UTM_vpnBusObj(busObj)
                         vpn[j].m_localNetwork = this.f_getValueFromNameValuePair("source", vals[j]);
                         vpn[j].m_remoteNetwork = this.f_getValueFromNameValuePair("destination", vals[j]);
                         vpn[j].m_peerIp = this.f_getValueFromNameValuePair("peer", vals[j]);
+                        vpn[j].m_status = this.f_getValueFromNameValuePair("status", vals[j]);
+                        vpn[j].m_enable = this.f_getValueFromNameValuePair("enable", vals[j]);
+                        vpn[j].m_mode = this.f_getValueFromNameValuePair("configmode", vals[j]);
+                    }
+                }
+            }
+        }
+
+        return vpn;
+    }
+
+    this.f_parseRemoteOverviewGet = function(resp)
+    {
+        var nodes = thisObj.m_busObj.f_getResponseChildNodes(resp, 'msg');
+        var vpn = new Array();
+
+        if(nodes != null)
+        {
+            for(var i=0; i<nodes.length; i++)
+            {
+                var n = nodes[i];
+                if(n.nodeName == "vpn-remote")
+                {
+                    var vals = n.firstChild.nodeValue.split(":");
+
+                    for(var j=0; j<vals.length; j++)
+                    {
+                        vpn[j] = new UTM_vpnRemoteRec();
+
+                        vpn[j].m_userName = this.f_getValueFromNameValuePair("name", vals[j]);
+                        vpn[j].m_groupName = this.f_getValueFromNameValuePair("group", vals[j]);
+                        vpn[j].m_ipAllocation = this.f_getValueFromNameValuePair("localaddress", vals[j]);
+                        vpn[j].m_internetAccess = this.f_getValueFromNameValuePair("ipaddress", vals[j]);
                         vpn[j].m_status = this.f_getValueFromNameValuePair("status", vals[j]);
                         vpn[j].m_enable = this.f_getValueFromNameValuePair("enable", vals[j]);
                         vpn[j].m_mode = this.f_getValueFromNameValuePair("configmode", vals[j]);
@@ -183,11 +235,11 @@ function UTM_vpnBusObj(busObj)
     /**
      * get all site to site configurations
      */
-    this.f_getSite2SiteData = function(guicb)
+    this.f_getSite2SiteOverviewData = function(guicb)
     {
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
-                      "<handler>vpn-site2site get" +
+                      "<handler>vpn-site2site get-overview" +
                       "</handler><data></data></statement>";
 
         var cb = function()
@@ -221,12 +273,61 @@ function UTM_vpnBusObj(busObj)
                               thisObj.f_respondRequestCallback);
     }
 
-    this.f_deleteSite2SiteConfig = function(tunnelName, cb)
+    this.f_deleteSite2SiteOverviewConfig = function(tunnelName, cb)
     {
         thisObj.m_guiCb = cb;
         var xmlstr = "<statement mode='proc'>" +
-                      "<handler>vpn-site2site delete" +
+                      "<handler>vpn-site2site delete-overview" +
                       "</handler><data>name=["+tunnelName+"]</data></statement>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_getRemoteOverviewData = function(guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var xmlstr = "<statement mode='proc'>" +
+                      "<handler>vpn-remote get-overview" +
+                      "</handler><data></data></statement>";
+
+        var cb = function()
+        {
+            var resp = '<?xml version="1.0" encoding="utf-8"?>' +
+                        '<openappliance><token></token><error><code>0</code><msg><vpn-remote>';
+            var sep = ":";
+
+            for(var i=0; i<5; i++)
+            {
+                var dis = i == 2 || i==4 ? "disconnected" : "connected";
+
+                if(i == 4) sep = "";
+                resp += "name=[user_" + i + "],group=[group_" + i +
+                        "],ipaddress=[10.1.2." + i + "],localaddress=[192.168.1." + i +
+                        "],status=[" + dis + "],configmode=[expert],enable=[no]" +
+                        sep;
+            }
+
+            resp += "</vpn-remote></msg></error></openappliance>";
+
+            resp = g_utils.f_parseXmlFromString(resp);
+            thisObj.m_simulationMode = true;
+            thisObj.m_lastCmdSent = xmlstr;
+            thisObj.f_respondRequestCallback(resp, xmlstr, guicb);
+        }
+        window.setTimeout(cb, 500);
+
+        return;
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_deleteRemoteOverviewConfig = function(userName, cb)
+    {
+        thisObj.m_guiCb = cb;
+        var xmlstr = "<statement mode='proc'>" +
+                      "<handler>vpn-remote delete-overview" +
+                      "</handler><data>name=["+userName+"]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

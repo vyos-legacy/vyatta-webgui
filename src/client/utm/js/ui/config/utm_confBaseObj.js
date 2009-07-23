@@ -256,6 +256,26 @@ function UTM_confBaseObj(name, callback, busLayer)
         */
     }
 
+    /**
+     * @param children : an array of child div. if not null, add children into div.
+     */
+    this.f_createEmptyDiv = function(children)
+    {
+        var div = document.createElement('div');
+        div.style.height = 'auto';
+        div.style.display = 'block';
+        div.style.backgroundColor = 'white';
+        div.style.overflow = 'visible'
+
+        if(children != null && children.length != null)
+        {
+            for(var i=0; i<children.length; i++)
+                div.appendChild(children[i]);
+        }
+
+        return div;
+    }
+
     this.f_createSimpleDiv = function(text, align, color)
     {
         var al = align == null ? 'left' : align;

@@ -165,7 +165,7 @@ sub set_interface_config {
     $not_valid_ip = check_if_valid_ip($ip) if ! defined $intf_ip[0];   
 
     if ($not_valid_ip == 1) {
-      $msg = "<form name='interface-config' code='6'>";
+      $msg = "<form name='interface-config' code='4'>";
       $msg .= "<ip>$xml->{ip}</ip>";
       $msg .= "<errmsg>" . "Network address is already used by the Open appliance" . "</errmsg>";
       $msg .= "</form>";
@@ -180,7 +180,7 @@ sub set_interface_config {
       push @cmds, "set $path $intf_ip[0]" if scalar(@intf_ip) > 0;
       push @cmds, "commit", "save";
       OpenApp::Conf::execute_session(@cmds);
-      $msg = "<form name='interface-config' code='5'>";
+      $msg = "<form name='interface-config' code='3'>";
       $msg .= "<ip>$xml->{ip}</ip>";
       $msg .= "<errmsg>" . "Error setting IP for $xml->{interface}" . "</errmsg>";
       $msg .= "</form>";
@@ -204,7 +204,7 @@ sub set_interface_config {
       }     
       push @cmds, "commit", "save";
       OpenApp::Conf::execute_session(@cmds);
-      $msg = "<form name='interface-config' code='5'>";
+      $msg = "<form name='interface-config' code='3'>";
       $msg .= "<ip>$xml->{ip}</ip>";
       $msg .= "<errmsg>" . "Error setting IP for $xml->{interface}" . "</errmsg>";
       $msg .= "</form>";
@@ -227,7 +227,7 @@ sub set_interface_config {
       }
       push @cmds, "commit", "save";
       OpenApp::Conf::execute_session(@cmds);
-      $msg = "<form name='interface-config' code='5'>";
+      $msg = "<form name='interface-config' code='3'>";
       $msg .= "<ip>$xml->{ip}</ip>";
       $msg .= "<errmsg>" . "Error setting IP for $xml->{interface}" . "</errmsg>";
       $msg .= "</form>";
@@ -353,7 +353,7 @@ sub set_dhcp_server_config {
     $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {
        OpenApp::Conf::run_cmd_def_session('discard');
-       $msg = "<form name='dhcp-server-config' code='3'>";
+       $msg = "<form name='dhcp-server-config' code='2'>";
        $msg .= "<dhcp-server-config>" . "</dhcp-server-config>";
        $msg .= "<errmsg>" . "Set DHCP server config error" . "</errmsg>";
        $msg .= "</form>";
@@ -366,7 +366,7 @@ sub set_dhcp_server_config {
     $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {
        OpenApp::Conf::run_cmd_def_session('discard');
-       $msg = "<form name='dhcp-server-config' code='4'>";
+       $msg = "<form name='dhcp-server-config' code='2'>";
        $msg .= "<dhcp-server-config>" . "</dhcp-server-config>";
        $msg .= "<errmsg>" . "Set DHCP server config error" . "</errmsg>";
        $msg .= "</form>";
@@ -479,7 +479,7 @@ sub set_dhcp_static_mapping {
     $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {
        OpenApp::Conf::run_cmd_def_session('discard');
-       $msg = "<form name='dhcp-static-mapping' code='2'>";
+       $msg = "<form name='dhcp-static-mapping' code='1'>";
        $msg .= "<dhcp-static-mapping>" . "</dhcp-static-mapping>";
        $msg .= "<errmsg>" . "Set DHCP static mapping error" . "</errmsg>";
        $msg .= "</form>";

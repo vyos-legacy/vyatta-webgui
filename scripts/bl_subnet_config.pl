@@ -114,11 +114,27 @@ sub delete_sharedntwrk_or_dhcpserver {
     return @cmds;
 }
 
+sub check_if_valid_ip {
+    my ($ip, $own_ip) = @_;
+    my $ip_object = new NetAddr::IP($ip);
+    my @intf_ips = Vyatta::Misc::getInterfacesIPadresses('all');
+    foreach my $intf_ip (@intf_ips) {
+      if (defined $own_ip) {
+        next if $intf_ip eq $own_ip;
+      }
+      my $intf_ip_object = new NetAddr::IP($intf_ip);
+      if ($ip_object->contains($intf_ip_object) ||
+                $ip_object->within($intf_ip_object)) {
+        return 1;
+      }
+    }
+}
+
 sub get_interface_config {
     my ($data) = @_;
     my @ip = get_interface_ip($name_to_domU_intfhash{$data}, '4');
     my $msg;
-    $msg .= "<form name='interface-config' code=0><interface-config>" .
+    $msg .= "<form name='interface-config' code='0'><interface-config>" .
             "<interface>$data</interface>";
 
     if (scalar(@ip) == 0) {
@@ -141,21 +157,84 @@ sub set_interface_config {
     my $config = new Vyatta::Config;
     my $path = "interfaces ethernet $name_to_domU_intfhash{$xml->{interface}} address";
     my $ip = $xml->{ip} . '/' . $xml->{mask};
-    push @cmds, "delete $path", "set $path $ip";
+    my @intf_ip = get_interface_ip($name_to_domU_intfhash{$xml->{interface}}, '4');
+    my $not_valid_ip = 0;
 
-    # if LAN interface then we need to change default NAT rule (rule 2) for https
-    push @cmds, "set service nat rule 2 destination address $xml->{ip}"
-        if $xml->{interface} eq 'LAN';
-    push @cmds, "commit", "save";
-    $err = OpenApp::Conf::run_cmd_def_session(@cmds);
-    if (defined $err) {
-      $msg = "<form name='interface-config' code='5'>";
+    # check to make sure this ip/mask does not conflict with other subnets on system
+    $not_valid_ip = check_if_valid_ip($ip, $intf_ip[0]) if defined $intf_ip[0];
+    $not_valid_ip = check_if_valid_ip($ip) if ! defined $intf_ip[0];   
+
+    if ($not_valid_ip == 1) {
+      $msg = "<form name='interface-config' code='6'>";
       $msg .= "<ip>$xml->{ip}</ip>";
-      $msg .= "<errmsg>" . "Error setting IP for $xml->{interface} - $err" . "</errmsg>";
+      $msg .= "<errmsg>" . "Network address is already used by the Open appliance" . "</errmsg>";
       $msg .= "</form>";
       print $msg;
       exit 1;
     }
+  
+    $err = OpenApp::Conf::execute_session("delete $path",  "set $path $ip", "commit");
+    if (defined $err) {
+      # revert interface IP to original IP and error out
+      @cmds = ("delete $path");
+      push @cmds, "set $path $intf_ip[0]" if scalar(@intf_ip) > 0;
+      push @cmds, "commit", "save";
+      OpenApp::Conf::execute_session(@cmds);
+      $msg = "<form name='interface-config' code='5'>";
+      $msg .= "<ip>$xml->{ip}</ip>";
+      $msg .= "<errmsg>" . "Error setting IP for $xml->{interface}" . "</errmsg>";
+      $msg .= "</form>";
+      print $msg;
+      exit 1;
+    }
+    
+    # if LAN interface then we need to change default NAT rule (rule 2) for https
+    $err = OpenApp::Conf::execute_session(
+            "set service nat rule 2 destination address $xml->{ip}", 
+            "commit") if $xml->{interface} eq 'LAN';
+
+    if (defined $err) {
+      # revert back to original IP and NAT rule
+      @cmds = ("delete $path");
+      if (scalar(@intf_ip) > 0){
+        push @cmds, "set $path $intf_ip[0]";
+        my @just_ip = split('/', $intf_ip[0]);
+        push @cmds, "set service nat rule 2 destination address $just_ip[0]" 
+                if  $xml->{interface} eq 'LAN';
+      }     
+      push @cmds, "commit", "save";
+      OpenApp::Conf::execute_session(@cmds);
+      $msg = "<form name='interface-config' code='5'>";
+      $msg .= "<ip>$xml->{ip}</ip>";
+      $msg .= "<errmsg>" . "Error setting IP for $xml->{interface}" . "</errmsg>";
+      $msg .= "</form>";
+      print $msg;
+      exit 1;
+    }
+
+    # delete dhcp-server subnet if defined for this interface
+    @cmds = delete_sharedntwrk_or_dhcpserver($xml->{interface});
+    push @cmds, "commit";
+    $err = OpenApp::Conf::execute_session(@cmds);
+    if (defined $err) {
+      # revert back to original IP and NAT rule
+      @cmds = ("delete $path");
+      if (scalar(@intf_ip) > 0){
+        push @cmds, "set $path $intf_ip[0]";
+        my @just_ip = split('/', $intf_ip[0]);
+        push @cmds, "set service nat rule 2 destination address $just_ip[0]"
+                if  $xml->{interface} eq 'LAN';
+      }
+      push @cmds, "commit", "save";
+      OpenApp::Conf::execute_session(@cmds);
+      $msg = "<form name='interface-config' code='5'>";
+      $msg .= "<ip>$xml->{ip}</ip>";
+      $msg .= "<errmsg>" . "Error setting IP for $xml->{interface}" . "</errmsg>";
+      $msg .= "</form>";
+      print $msg;
+      exit 1;      
+    }
+    OpenApp::Conf::execute_session('save');
     $msg = "<form name='interface-config' code='0'></form>";
     print $msg;
 }
@@ -273,6 +352,7 @@ sub set_dhcp_server_config {
 
     $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {
+       OpenApp::Conf::run_cmd_def_session('discard');
        $msg = "<form name='dhcp-server-config' code='3'>";
        $msg .= "<dhcp-server-config>" . "</dhcp-server-config>";
        $msg .= "<errmsg>" . "Set DHCP server config error" . "</errmsg>";
@@ -285,6 +365,7 @@ sub set_dhcp_server_config {
     push @cmds, "commit", "save";
     $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {
+       OpenApp::Conf::run_cmd_def_session('discard');
        $msg = "<form name='dhcp-server-config' code='4'>";
        $msg .= "<dhcp-server-config>" . "</dhcp-server-config>";
        $msg .= "<errmsg>" . "Set DHCP server config error" . "</errmsg>";
@@ -384,6 +465,7 @@ sub set_dhcp_static_mapping {
 
     $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {
+       OpenApp::Conf::run_cmd_def_session('discard');
        $msg = "<form name='dhcp-static-mapping' code='1'>";
        $msg .= "<dhcp-static-mapping>" . "</dhcp-static-mapping>";
        $msg .= "<errmsg>" . "Set DHCP static mapping error" . "</errmsg>";
@@ -396,6 +478,7 @@ sub set_dhcp_static_mapping {
     push @cmds, "commit", "save";
     $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {
+       OpenApp::Conf::run_cmd_def_session('discard');
        $msg = "<form name='dhcp-static-mapping' code='2'>";
        $msg .= "<dhcp-static-mapping>" . "</dhcp-static-mapping>";
        $msg .= "<errmsg>" . "Set DHCP static mapping error" . "</errmsg>";

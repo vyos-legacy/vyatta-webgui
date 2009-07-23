@@ -68,22 +68,17 @@ function UTM_confNwLAN(name, callback, busLayer)
 		}
 		
 		for (var i = 0; i < this.m_children.length; i++) {
-			if (children.indexOf(this.m_children[i].m_objecId)) {
-				this.m_loadVmDataQueue.push(this.m_children[i]);
+			for (var j = 0; j < children.length; j++) {
+				if ((children[j].indexOf(this.m_children[i].m_objectId)) >= 0) {
+					this.m_loadVmDataQueue.push(this.m_children[i]);
+					break;
+				}
 			}
-		}
-				
-		this.f_reloadCb();				
+		}	
+		this.m_reload = true;			
+		this.f_loadVMDataCb();
 	}
-	
-	this.f_reloadCb = function()
-	{
-		if (this.m_loadVmDataQueue.length > 0) {
-			var child = this.m_loadVmDataQueue.shift();
-			child.f_reload(this);
-		}		
-	}	
-	
+		
 	this.f_isLanIPconfigured = function()
 	{
 		var lanIp = this.f_getLanIp().trim();

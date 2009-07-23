@@ -327,10 +327,15 @@ var g_lang =
 		
     ///////////////////////////////////////////////////////////////////
     // LAN config
-    m_lanitf_title : "LAN/IP parameters",	
+    m_lanitf_title : "LAN interface parameters",
 	m_lanitf_ip : "LAN IP address",
+    m_lanitf2_title : "LAN2 interface parameters",
+	m_lanitf2_ip : "LAN2 IP address",
+	m_dmzitf_title : "DMZ interface parameters",
+	m_dmzitf_ip : "LAN DMZ IP address",
 	m_lanitf_mask: "IP subnet mask",
-	m_lanitf_pls_config: "Please configure LAN IP and subnet mask",	
+	m_lanitf_pls_config: "Please configure",	
+	m_lanitf_change: "Changing",	
 	m_lanitf_confirm_overwrite: "Changing LAN IP and subnet mask will reset DHCP paremeters and Reserved IP addresses settings.  Do you want to continue?",
 	m_landhcp_title: "DHCP parameters",
 	m_landhcp_enable : "Enable DHCP server",
@@ -349,7 +354,7 @@ var g_lang =
 	m_lanip_reserved_ip_lower: "reserved IP address",	
 	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",	
 	m_lanip_reserved_ip_entry: "entries",
-    m_lanip_reserved_diff_lan : "Reserved IP address must be different from LAN IP address!",		
+    m_lanip_reserved_diff_lan : "Reserved IP address must be different from",		
 	m_lanitf_forbidden_ip: "Network & broadcast addresses are forbidden for",
 	m_landhcp_range_or_map_required : "When the DNS mode is static mode, it is required to configure either a DHCP range, or to have at least on reserved IP address.",
 	

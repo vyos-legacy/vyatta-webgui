@@ -1,1 +1,2 @@
+help: restore archive (config)
 run: sudo perl /opt/vyatta/sbin/openapp-backup-restore.pl --restore "$4" --config

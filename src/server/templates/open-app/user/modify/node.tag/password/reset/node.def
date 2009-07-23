@@ -1,3 +1,4 @@
+help: reset user password
 access:user
 run: if /opt/vyatta/sbin/openapp-user.pl --modify "$4" --password "$4"; then
        return 0

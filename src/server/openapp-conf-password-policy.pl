@@ -94,6 +94,8 @@ sub delete_password_policy {
 }
 
 sub list_password_policy {
+    my $cmdline = $ENV{OA_CMD_LINE};
+
     my $admin = "false";
     my $user = "false";
     if (-e "/opt/vyatta/config/active/system/open-app/password-policy/user/node.val") {
@@ -103,14 +105,20 @@ sub list_password_policy {
 	$admin = "true";
     }
 
-    print "VERBATIM_OUTPUT\n";
-    print "<password-policy>";
-    print "<user>$user</user>";
-    #don't let the admin see the installer settings.
-    if ($auth_user_role eq 'installer') {
-	print "<admin>$admin</admin>";
+    if (!defined $cmdline) {
+	print "VERBATIM_OUTPUT\n";
+	print "<password-policy>";
+	print "<user>$user</user>";
+	#don't let the admin see the installer settings.
+	if ($auth_user_role eq 'installer') {
+	    print "<admin>$admin</admin>";
+	}
+	print "</password-policy>";
     }
-    print "</password-policy>";
+    else {
+	print "password policy for admin:\t$admin\n";
+	print "password policy for user:\t$user\n";
+    }
 }
 
 ##########################################################################

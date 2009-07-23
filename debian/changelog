@@ -1,3 +1,19 @@
+vyatta-webgui (0.2+fxd0+89) unstable; urgency=low
+
+  * convert command-line tool usage to Net::LDAP calls
+  * convert command-line tool usage to libldap calls
+  * clean up and rework OA user management script
+  * use new LdapUser API
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 21 Jul 2009 19:10:43 -0700
+
+vyatta-webgui (0.2+fxd0+88) unstable; urgency=low
+
+  [ Michael Larson ]
+  * fix to allow admin to access discard command
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 17 Jul 2009 16:01:44 -0700
+
 vyatta-webgui (0.2+fxd0+87) unstable; urgency=low
 
   [ Kevin Choi ]

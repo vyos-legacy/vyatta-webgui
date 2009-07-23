@@ -4,6 +4,7 @@ Priority: extra
 Maintainer: Vyatta Package Maintainers <maintainers@vyatta.com>
 Build-Depends: debhelper (>= 5), autotools-dev, autoconf, automake, libtool,
  wget, unzip, fakeroot,
+ libldap2-dev,
  libexpat1-dev (>= 1.95.8-4),
  libpam0g-dev
 Standards-Version: 3.7.2
@@ -21,6 +22,7 @@ Depends: libexpat1 (>= 1.95.8-4),
  adduser,
  libnet-snmp-perl,
  libnet-ldap-perl,
+ libldap-2.4-2,
  vyatta-cfg,
  vyatta-op
 Description: Vyatta WebGUI

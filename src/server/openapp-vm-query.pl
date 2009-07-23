@@ -44,14 +44,18 @@ if ($hwmon) {
 }
 
 sub do_list {
-  print "VERBATIM_OUTPUT\n";
-  my ($id, $lang) = @_;
-  my @VMs = ();
-  if ($id ne '') {
-    @VMs = ( $id );
-  } else {
-    @VMs = OpenApp::VMMgmt::getVMList();
-  }
+    
+    my $cmdline = $ENV{OA_CMD_LINE};
+    if (!defined $cmdline) {
+	print "VERBATIM_OUTPUT\n";
+    }
+    my ($id, $lang) = @_;
+    my @VMs = ();
+    if ($id ne '') {
+	@VMs = ( $id );
+    } else {
+	@VMs = OpenApp::VMMgmt::getVMList();
+    }
 
   for my $vid (@VMs) {
     next if (($auth_user_role ne 'installer')
@@ -64,6 +68,7 @@ sub do_list {
     my $uri = $vm->getWuiUri();
     my $ver = $vm->getImgVer();
     my $dname = $vm->getDisplayNameLang($lang);
+    if (!defined $cmdline) {
     print <<EOF;
       <vm id='$vid'>
         <ip>$ip</ip>
@@ -73,11 +78,22 @@ sub do_list {
         <displayName>$dname</displayName>
       </vm>
 EOF
+    }
+    else {
+	print "\nvm id:\t$vid\n";
+	print "\tip address:\t$ip\n";
+	print "\turi:\t\t$uri\n";
+	print "\tversion:\t$ver\n";
+	print "\tdisplay name:\t$dname\n";
+    }
   }
 }
 
 sub do_status {
-  print "VERBATIM_OUTPUT\n";
+  my $cmdline = $ENV{OA_CMD_LINE};
+  if (!defined $cmdline) {
+      print "VERBATIM_OUTPUT\n";
+  }
   my $id = shift;
   my @VMs = ();
   if ($id ne '') {
@@ -100,6 +116,7 @@ sub do_status {
     if ("$crit" ne '') {
       $crit = " critical='$crit'";
     }
+    if (!defined $cmdline) {
     print <<EOF;
       <vmstatus id='$vid'>
         <state>$st</state>
@@ -111,12 +128,26 @@ sub do_status {
         <updAvail$crit>$upd</updAvail>
       </vmstatus>
 EOF
+    }
+    else {
+	print "\nvm status:\t$vid\n";
+	print "\tstate:\t$st\n";
+	print "\tcpu:\t$cpu\n";
+	print "\tdisk all:\t$dall\n";
+	print "\tdisk free:\t$dfree\n";
+	print "\tmem free:\t$mfree\n";
+	print "\tupdate avail:\t$upd\n";
+    }
   }
 }
 
 sub do_hwmon {
-  print "VERBATIM_OUTPUT\n";
+  my $cmdline = $ENV{OA_CMD_LINE};
+  if (!defined $cmdline) {
+      print "VERBATIM_OUTPUT\n";
+  }
   my ($nic, $disk, $cpu, $fan) = OpenApp::VMMgmt::getHwMonData();
+  if (!defined $cmdline) {
   print <<EOF;
       <hwmon>
         <nic>$nic</nic>
@@ -125,5 +156,13 @@ sub do_hwmon {
         <fan>$fan</fan>
       </hwmon>
 EOF
+  }
+  else {
+      print "\nhardware monitor\n";
+      print "\tnic:\t$nic\n";
+      print "\tdisk:\t$disk\n";
+      print "\tcpu:\t$cpu\n";
+      print "\tfan:\t$fan\n";
+  }
 }
 

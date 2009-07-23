@@ -5,7 +5,7 @@ initddir = /etc/init.d
 opdir = $(datadir)/vyatta-op/templates
 cfgdir = $(datadir)/vyatta-cfg/templates
 oaperldir = $(datadir)/perl5/OpenApp
-guiconfdir = $(sysconfdir)/gui
+ldapconfdir = $(sysconfdir)/ldap
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
@@ -38,6 +38,7 @@ src_server_webgui_SOURCES += src/server/multirespcmd.cc
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
 src_server_webgui_LDADD += -lssl
+src_server_webgui_LDADD += -lldap
 
 cgi_PROGRAMS = src/server/webgui
 cgi_PROGRAMS += src/server/chunker
@@ -48,14 +49,7 @@ cgi_SCRIPTS += src/server/openapp-uploader.pl
 
 sbin_PROGRAMS = src/server/test
 
-sbin_SCRIPTS = src/server/vyatta-vmstatus.pl
-sbin_SCRIPTS += src/server/vyatta-vmop.pl
-sbin_SCRIPTS += src/server/vyatta-vmuser.pl
-sbin_SCRIPTS += src/server/vyatta-vmbackup.pl
-sbin_SCRIPTS += src/server/vyatta-vmdeploy
-sbin_SCRIPTS += src/server/vyatta-vmdeploy-op
-sbin_SCRIPTS += src/server/vyatta-vmbackup-all
-sbin_SCRIPTS += src/server/openapp-user.pl
+sbin_SCRIPTS = src/server/openapp-user.pl
 sbin_SCRIPTS += src/server/openapp-archive.pl
 sbin_SCRIPTS += src/server/openapp-conf-ntp.pl
 sbin_SCRIPTS += src/server/openapp-conf-smtp.pl
@@ -81,8 +75,8 @@ oaperl_DATA += src/server/lib/perl5/OpenApp/Conf.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/Rest.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/BLB.pm
 
-guiconf_DATA = src/server/misc/slapd.conf
-guiconf_DATA += src/server/misc/openapp.conf
+ldapconf_DATA = src/server/misc/slapd.conf
+ldapconf_DATA += src/server/misc/openapp-internal.conf
 
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 initd_SCRIPTS += scripts/oa-autostart

@@ -17,6 +17,9 @@ function UTM_confNwLANitf(name, callback, busLayer)
     this.m_form = undefined;
     this.m_div = undefined;
 	this.m_parent = undefined;
+    this.m_btnConfirmOverwriteCbId = 'btn_confirm_cb';
+    this.m_eventCbFunction = 'f_confLanItfHandleEventCb';	
+	this.m_reloadPeer = false;
     
     /**
      * @param name - name of configuration screens.
@@ -224,6 +227,17 @@ function UTM_confNwLANitf(name, callback, busLayer)
 		//return thisObj.m_form.conf_lan_itf_mask.value;
 	}
 	
+	this.f_confirmOverwrite = function()
+	{
+		var oldIp = thisObj.m_parent.f_getLanIp();
+		var oldMask = thisObj.m_parent.f_getLanNetmask();
+		
+		if ((oldIp.trim().length <= 0) || (oldMask.trim().length <= 0)) {
+			return false;
+		}
+		return true;		
+	}
+	
     this.f_validate = function()
     {
         var error = g_lang.m_formFixError + '<br>';
@@ -265,11 +279,19 @@ function UTM_confNwLANitf(name, callback, busLayer)
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
                 if (evt.f_isError()) {
                     g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
+					if (thisObj.m_reloadPeer) {
+						thisObj.m_reloadPeer = false;
+					}
                     return;
                 } else {
                     thisObj.f_enableAllButton(false);
                     thisObj.m_ifObj.m_ip = thisObj.m_form.conf_lan_itf_ip.value.trim();
-		            thisObj.m_ifObj.m_mask = g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim());					
+		            thisObj.m_ifObj.m_mask = g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim());
+					if (thisObj.m_reloadPeer) {
+						thisObj.m_reloadPeer = false;
+						var children = ['conf_lan_dhcp','conf_lan_ip'];
+						thisObj.m_parent.f_reloadChildren(children);
+					}					
                 }
             }
         };
@@ -284,6 +306,18 @@ function UTM_confNwLANitf(name, callback, busLayer)
     {
     }
     
+	this.f_handleApply = function()
+	{
+        if (!thisObj.f_validate()) {
+            return false;
+        }
+		if (thisObj.f_confirmOverwrite()) {
+			g_utils.f_popupMessage(g_lang.m_lanitf_confirm_overwrite, 'confirm', g_lang.m_info, true, thisObj.m_eventCbFunction + "('" + thisObj.m_objectId + "," + thisObj.m_btnConfirmOverwriteCbId + "')");
+		} else {
+			thisObj.f_apply();
+		}		
+	}
+	
     this.f_handleClick = function(e)
     {
         var target = g_xbObj.f_xbGetEventTarget(e);
@@ -301,21 +335,32 @@ function UTM_confNwLANitf(name, callback, busLayer)
                 thisObj.f_enableAllButton(true);
                 break;
             case 'conf_lan_itf_apply_button': //apply clicked
-                if (!thisObj.f_validate()) {
-                    return false;
-                }
-                thisObj.f_apply();
+                thisObj.f_handleApply(); 
                 break;
             case 'conf_lan_itf_cancel_button': //cancel clicked
                 thisObj.f_reload();
                 break;
-                
+            case thisObj.m_btnConfirmOverwriteCbId:
+			    thisObj.m_reloadPeer = true;
+			    thisObj.f_apply();
+				break;  
         }
         return false;
     }
 }
 
 UTM_extend(UTM_confNwLANitf, UTM_confFormObj);
+
+function f_confLanItfHandleEventCb(arg)
+{
+    if (arg) {
+        var a = arg.split(",");
+        var childId = a[0];
+        var sourceId = (a.length > 1) ? a[1] : null;
+        var userData = (a.length > 2) ? a[2] : null;
+        g_configPanelObj.m_activeObj.f_handleClick(childId, sourceId, userData);
+    }
+}
 
 
 function UTM_confNwLANdhcp(name, callback, busLayer)
@@ -742,15 +787,19 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
         
+		/*
 		if (!thisObj.m_parent.f_isLanIPconfigured()) {
 			g_utils.f_popupMessage(g_lang.m_lanitf_pls_config, 'error', g_lang.m_error, true); 
 			return false;
 		}
+		*/
 		
+		/*
         if (!thisObj.m_form.conf_lan_dhcp_enable.checked) {
             return true;
         }
-        
+        */
+		
 		errorInner += thisObj.f_validateRangeIPs();
 
 		var dnsMode = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_lan_dhcp_dns_mode);
@@ -1294,6 +1343,7 @@ function UTM_confNwLANip(name, callback, busLayer)
 			return error;
 		}
 
+        /*
 		if ((lanIp.length >0) && (lanMask.length > 0)) {
 		    if (!f_checkIPForLan(ip, lanIp, lanMask)) {
 				error += thisObj.f_createListItem(ip + ' ' + 
@@ -1309,7 +1359,7 @@ function UTM_confNwLANip(name, callback, busLayer)
 				error += thisObj.f_createListItem(g_lang.m_lanip_reserved_diff_lan);
 			}
 		}
-
+        */
 		return error;		
 	}
 	
@@ -1322,11 +1372,13 @@ function UTM_confNwLANip(name, callback, busLayer)
         var errorInner = '';
 		var ipEmptyError = false;
 		var macEmptyError = false;
-      		
+      	
+		/*	
 		if (!thisObj.m_parent.f_isLanIPconfigured()) {
 			g_utils.f_popupMessage(g_lang.m_lanitf_pls_config, 'error', g_lang.m_error, true); 
 			return false;
 		}			
+		*/
 			
 		for (var i=0; i < this.m_rowIdArray.length; i++) {
             var seedId = this.f_getSeedIdByRowId(this.m_rowIdArray[i]);
@@ -1538,8 +1590,8 @@ function UTM_confNwLANip(name, callback, busLayer)
         g_busObj.f_getDhcpMap(thisObj.m_ifName, cb);
     }
     
-    this.f_loadVMData = function(divElement, parentReference)
-    {
+	this.f_reload = function(parentReference)
+	{
         var p = parentReference;
         thisObj.f_cleanup();
 		
@@ -1561,7 +1613,12 @@ function UTM_confNwLANip(name, callback, busLayer)
 			    p.f_loadVMDataCb();
         };
         this.f_getDhcpMap(cb);
-        this.f_enableAllButton(false);
+        this.f_enableAllButton(false);		
+	}
+	
+    this.f_loadVMData = function(divElement, parentReference)
+    {
+        thisObj.f_reload(parentReference);
     }
     
     this.f_deleteRowCb = function(evt)
@@ -1639,7 +1696,7 @@ function f_confNwLANipHandleKeyEventCb(arg)
         var eventType = (a.length > 2) ? a[2] : null;
         var userData = (a.length > 3) ? a[3] : null;
         g_configPanelObj.m_activeObj.f_handleKeyEvent(childId, sourceId, eventType, userData);
-    }
+    }	
 }
 
 

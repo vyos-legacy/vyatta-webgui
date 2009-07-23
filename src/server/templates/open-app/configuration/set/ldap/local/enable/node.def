@@ -1,6 +1,0 @@
-access:admin
-run: if perl /opt/vyatta/sbin/openapp-conf-ldap.pl --local true; then
-       return 0
-     else
-       return 1
-     fi

@@ -1,0 +1,9 @@
+help: DN suffix of the external LDAP server
+access:admin
+run: TFILE=$(mktemp /tmp/ldap-conf.XXXXXX) || return 1
+     chmod 600 $TFILE
+     echo -en "$6\n${16}\n${12}\n${14}\n${8}\n${10}\n" >$TFILE
+     /opt/vyatta/sbin/openapp-conf-ldap.pl --conf-external $TFILE
+     ret=$?
+     rm -f $TFILE
+     return $ret 

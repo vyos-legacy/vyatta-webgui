@@ -1,3 +1,4 @@
+help: enable local ldap mode
 access:admin
 run: if perl /opt/vyatta/sbin/openapp-conf-ldap.pl --local true; then
        return 0

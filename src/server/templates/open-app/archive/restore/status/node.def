@@ -1,2 +1,3 @@
+help: return restore status
 access:admin
 run: sudo perl /opt/vyatta/sbin/openapp-archive.pl --restore-status 

@@ -1,3 +1,4 @@
+help: delete user rights
 access:admin
 run: if /opt/vyatta/sbin/openapp-user.pl --delete "$4" --rights "$6"; then
        return 0

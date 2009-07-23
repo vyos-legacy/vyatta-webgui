@@ -1,3 +1,4 @@
+help: set user password policy
 access:admin
 run: if perl /opt/vyatta/sbin/openapp-conf-password-policy.pl --set user; then
        return 0

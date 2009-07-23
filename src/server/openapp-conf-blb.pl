@@ -60,20 +60,33 @@ if (defined($blb)) {
 }
 
 sub do_status {
-  print "VERBATIM_OUTPUT\n";
+  my $cmdline = $ENV{OA_CMD_LINE};
+  if (!defined $cmdline) {
+      print "VERBATIM_OUTPUT\n";
+  }
   my $cfg = new Vyatta::Config;
   if ($cfg->existsOrig("$BLB_CONF_ROOT")) {
     my $u = $cfg->returnOrigValue("$BLB_CONF_ROOT username");
+    if (!defined $cmdline) { 
     print <<EOF;
 <blbconf mode='association'>
   <username>$u</username>
 </blbconf>
 EOF
+    }
+    else {
+	print "mode:\tassociation\tuser:\t$u\n";
+    }
   } else {
+      if (!defined $cmdline) {
     print <<EOF;
 <blbconf mode='standalone'>
 </blbconf>
 EOF
+      }
+      else {
+	print "mode:\tstandalone\n";
+      }
   }
 }
 

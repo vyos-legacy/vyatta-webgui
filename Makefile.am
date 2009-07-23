@@ -49,14 +49,7 @@ cgi_SCRIPTS += src/server/openapp-uploader.pl
 
 sbin_PROGRAMS = src/server/test
 
-sbin_SCRIPTS = src/server/vyatta-vmstatus.pl
-sbin_SCRIPTS += src/server/vyatta-vmop.pl
-sbin_SCRIPTS += src/server/vyatta-vmuser.pl
-sbin_SCRIPTS += src/server/vyatta-vmbackup.pl
-sbin_SCRIPTS += src/server/vyatta-vmdeploy
-sbin_SCRIPTS += src/server/vyatta-vmdeploy-op
-sbin_SCRIPTS += src/server/vyatta-vmbackup-all
-sbin_SCRIPTS += src/server/openapp-user.pl
+sbin_SCRIPTS = src/server/openapp-user.pl
 sbin_SCRIPTS += src/server/openapp-archive.pl
 sbin_SCRIPTS += src/server/openapp-conf-ntp.pl
 sbin_SCRIPTS += src/server/openapp-conf-smtp.pl

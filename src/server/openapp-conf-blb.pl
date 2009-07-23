@@ -145,6 +145,11 @@ sub do_conf_blb {
   chomp($user);
   chomp($pass);
 
+  if ("$user" ne 'installer') {
+    print "BLB association login must be \"installer\"\n";
+    exit 1;
+  }
+
   # change/save the configuration. 
   my @cmds = (
     "set $BLB_CONF_ROOT username '$user'",
@@ -173,6 +178,11 @@ sub do_blb {
   close($fd);
   chomp($user);
   chomp($pass);
+
+  if ("$user" ne 'installer') {
+    print "BLB association login must be \"installer\"\n";
+    exit 1;
+  }
 
   # do BLB association
   ## check credential

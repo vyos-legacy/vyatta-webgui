@@ -5,7 +5,7 @@ initddir = /etc/init.d
 opdir = $(datadir)/vyatta-op/templates
 cfgdir = $(datadir)/vyatta-cfg/templates
 oaperldir = $(datadir)/perl5/OpenApp
-guiconfdir = $(sysconfdir)/gui
+ldapconfdir = $(sysconfdir)/ldap
 
 AM_CPPFLAGS = -I src/server -Wall -DDEBUG -g
 
@@ -82,8 +82,8 @@ oaperl_DATA += src/server/lib/perl5/OpenApp/Conf.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/Rest.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/BLB.pm
 
-guiconf_DATA = src/server/misc/slapd.conf
-guiconf_DATA += src/server/misc/openapp.conf
+ldapconf_DATA = src/server/misc/slapd.conf
+ldapconf_DATA += src/server/misc/openapp-internal.conf
 
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 initd_SCRIPTS += scripts/oa-autostart

@@ -10,10 +10,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ldap.h>
 #include <grp.h>
 #include "rl_str_proc.hh"
 #include "authenticate.hh"
+
+/* "simple bind" is deprecated */
+#define LDAP_DEPRECATED 1
+#include <ldap.h>
 
 using namespace std;
 
@@ -401,6 +404,10 @@ Authenticate::get_access_level(const std::string &username)
       }
       if ((ret = ldap_set_option(lh, LDAP_OPT_PROTOCOL_VERSION,
                                  (const void *) &ver)) != LDAP_OPT_SUCCESS) {
+        break;
+      }
+      if ((ret = ldap_simple_bind_s(lh, "cn=readonly,dc=readonly", "readonly"))
+          != LDAP_SUCCESS) {
         break;
       }
       flen = 4 + username.length() + 1; /* "uid=<name>" */

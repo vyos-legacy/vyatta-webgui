@@ -9,12 +9,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
 {
     var thisObj = this;
     this.thisObjName = 'UTM_confVPNOverview';
-    this.m_btnS2SAddId = "vpnS2SAddId";
-    this.m_btnS2SApplyId = "vpnS2SApplyId";
-    this.m_btnS2SCancelId = "vpnS2SCancelId";
-    this.m_btnRemoteAddId = "vpnRemoteAddId";
-    this.m_btnRemoteApplyId = "vpnRemoteApplyId";
-    this.m_btnRemoteCancelId = "vpnRemoteCancelId";
+    this.m_btnVpnCancelId = "vpnCancelId";
+    this.m_btnVpnApplyId = "vpnApplyId";
     this.m_s2sRecs = null;
     this.m_s2sGridChkboxId = "s2sGridChkboxId";
     this.m_remoteRecs = null;
@@ -218,7 +214,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
                                     'f_vpnRemoteGridHeaderOnclick');
         thisObj.f_reappendChildren(thisObj.m_remoteDiv, [thisObj.m_anchorRemote,
                   thisObj.m_headerRemotes, thisObj.m_bodyRemotes,
-                  thisObj.m_remoteButtons]);
+                  thisObj.m_remoteButtons, thisObj.m_combButtons]);
 
         //////////////////////////////////
         // perform sorting
@@ -318,18 +314,10 @@ function UTM_confVPNOverview(name, callback, busLayer)
         return null;
     }
 
-    this.f_enabledActionButtons = function(gridName, enabled)
+    this.f_enabledActionButtons = function(enabled)
     {
-        if(gridName == 's2s')
-        {
-            thisObj.f_enabledDisableButton(thisObj.m_btnS2SApplyId, enabled);
-            thisObj.f_enabledDisableButton(thisObj.m_btnS2SCancelId, enabled);
-        }
-        else
-        {
-            thisObj.f_enabledDisableButton(thisObj.m_btnRemoteApplyId, enabled);
-            thisObj.f_enabledDisableButton(thisObj.m_btnRemoteCancelId, enabled);
-        }
+        thisObj.f_enabledDisableButton(thisObj.m_btnVpnApplyId, enabled);
+        thisObj.f_enabledDisableButton(thisObj.m_btnVpnCancelId, enabled);
     };
 
     this.f_updateGridHeaderChkbox = function(gridRecs, gridChkboxId, rowChkboxId)
@@ -391,7 +379,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         }
 
         this.f_setEnableValue2Server();
-        this.f_enabledActionButtons("s2s", true);
+        this.f_enabledActionButtons(true);
     }
 
     this.f_remoteChkboxCb = function(eid)
@@ -423,7 +411,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         }
 
         this.f_setEnableValue2Server();
-        this.f_enabledActionButtons("remote", true);
+        this.f_enabledActionButtons(true);
     }
 
     this.f_setEnableValue2Server = function()
@@ -490,8 +478,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         };
 
         g_utils.f_cursorWait();
-        thisObj.f_enabledActionButtons("remote", false);
-        thisObj.f_enabledActionButtons("s2s", false);
+        thisObj.f_enabledActionButtons(false);
         thisObj.m_busLayer.f_discardUncommitChanged(cb);
     };
 
@@ -501,7 +488,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         {
             thisObj.f_stopLoadVMData();
             thisObj.f_loadVMData();
-            thisObj.f_enabledActionButtons("s2s", true);
+            thisObj.f_enabledActionButtons(true);
         }
 
         this.m_busLayer.f_vpnDeleteSite2SiteOverviewConfig(name, cb);
@@ -515,7 +502,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
             {
                 thisObj.f_stopLoadVMData();
                 thisObj.f_loadRemoteVMData();
-                thisObj.f_enabledActionButtons("remote", true);
+                thisObj.f_enabledActionButtons(true);
             }
             else
                 alert('error ' + evt.m_errMsg);
@@ -537,13 +524,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
         this.m_anchorS2s = this.f_createAnchorDiv('<b>' + g_lang.m_vpnOVS2S + '</b>', 's2s');
         this.m_headerS2s = this.f_createGridHeader(this.m_hds2s, 'f_vpnS2SGridHeaderOnclick');
         this.m_bodyS2s = this.f_createGridView(this.m_hds2s, false);
-        var btns = [['Add', "f_vpnAddHandler('s2s')",
-                    g_lang.m_fireCustAddTip, this.m_btnS2SAddId],
-                    ['Apply', "f_vpnApplyHandler('s2s')",
-                    g_lang.m_fireLevelApplyTip, this.m_btnS2SApplyId, false],
-                    ['Cancel', "f_vpnCancelHandler('s2s')",
-                    g_lang.m_fireLevelCancelTip, this.m_btnS2SCancelId, false]];
-        this.m_s2sButtons = this.f_createButtons(btns, 'center');
+        var btns = [['Add', "f_vpnAddHandler('s2s')"]];
+        this.m_s2sButtons = this.f_createButtons(btns, 'left');
         this.m_s2sDiv = this.f_createEmptyDiv([this.m_anchorS2s,
                       this.m_headerS2s, this.m_bodyS2s, this.m_s2sButtons]);
 
@@ -553,15 +535,17 @@ function UTM_confVPNOverview(name, callback, busLayer)
         this.m_anchorRemote.style.marginTop = "35px";
         this.m_headerRemotes = this.f_createGridHeader(this.m_hdremote, 'f_vpnRemoteGridHeaderOnclick');
         this.m_bodyRemotes = this.f_createGridView(this.m_hdremote, false);
-        btns = [['Add', "f_vpnAddHandler('remote')",
-                    g_lang.m_fireCustAddTip, this.m_btnRemoteAddId],
-                    ['Apply', "f_vpnApplyHandler('remote')",
-                    g_lang.m_fireLevelApplyTip, this.m_btnRemoteApplyId, false],
+        btns = [['Add', "f_vpnAddHandler('remote')"]];
+        this.m_remoteButtons = this.f_createButtons(btns, 'left');
+
+        btns = [['Apply', "f_vpnApplyHandler('remote')",
+                    g_lang.m_fireLevelApplyTip, this.m_btnVpnApplyId, false],
                     ['Cancel', "f_vpnCancelHandler('remote')",
-                    g_lang.m_fireLevelCancelTip, this.m_btnRemoteCancelId, false]];
-        this.m_remoteButtons = this.f_createButtons(btns, 'center');
+                    g_lang.m_fireLevelCancelTip, this.m_btnVpnCancelId, false]];
+        this.m_combButtons = this.f_createButtons(btns, 'center');
         this.m_remoteDiv = this.f_createEmptyDiv([this.m_anchorRemote,
-                  this.m_headerRemotes, this.m_bodyRemotes, this.m_remoteButtons]);
+                  this.m_headerRemotes, this.m_bodyRemotes, this.m_remoteButtons,
+                  this.m_combButtons]);
         this.m_remoteDiv = this.f_createEmptyDiv();
 
         this.f_loadVMData();
@@ -572,7 +556,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
 UTM_extend(UTM_confVPNOverview, UTM_confBaseObj);
 ////////////////////////////////////////////////////////////////////////////////
 
-function f_site2siteAddHandler(grid)
+function f_vpnAddHandler(grid)
 {
     if(grid == 's2s')
         g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID);

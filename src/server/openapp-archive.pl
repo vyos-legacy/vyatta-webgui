@@ -94,7 +94,7 @@ if (defined $option) {
     $BACKUP_TIMEOUT = $option;
 }
 
-my ($backup,$backup_get,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$put_archive,$delete);
+my ($backup,$backup_get,$backup_auto,$filename,$file,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$put_archive,$delete);
 
 sub backup_archive {
     ##########################################################################
@@ -439,6 +439,32 @@ sub backup_and_get_archive {
 #    `mv /var/www/archive/$OA_SESSION_ID/$get_archive.tar /var/www/archive/$OA_SESSION_ID/bu/.`;
     #now let's remove this archive from the archive location
     `rm -f $ARCHIVE_ROOT_DIR/$get_archive.tar`;
+}
+
+
+##########################################################################
+#
+# Same as a separate backup and get except archive doesn't reside on dom0
+#
+##########################################################################
+sub backup_auto {
+# The behavior is:
+# 1) client requests backup-and-get archive
+# 2) server spins off request as background process (chunker)
+# 3) server performs backup and sets status flag to false
+# 4) upon completion of backup archive is copied to location
+# 5) status flag is set to true
+# 6) no provision is enabled to remove file.
+#
+    #then a get accessor
+    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
+    #now remove archive
+   #first perform backup w/o normal limit
+    $backup = $backup_auto; #backup list is expected
+    backup();
+
+    #now relocate and rename the archive
+    `mv $ARCHIVE_ROOT_DIR/$filename.tar $file`;
 }
 
 
@@ -882,7 +908,9 @@ sub usage() {
 #pull commands and call command
 GetOptions(
     "backup:s"              => \$backup,
+    "backup-auto:s"         => \$backup_auto,
     "backup-get:s"          => \$backup_get,
+    "file=s"                => \$file,
     "filename:s"            => \$filename,
     "restore=s"             => \$restore,
     "restore-target:s"      => \$restore_target,
@@ -900,6 +928,11 @@ if ( defined $backup ) {
 }
 elsif ( defined $backup_get ) {
     backup_and_get_archive();
+}
+elsif ( defined $backup_auto ) {
+    #backup-auto has list
+    #filename has path and filename
+    backup_auto();
 }
 elsif ( defined $restore ) {
     restore_archive();

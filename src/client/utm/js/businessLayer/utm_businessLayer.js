@@ -496,6 +496,15 @@ function UTM_businessLayer()
         thisObj.f_getVPNObject().f_deleteRemoteOverviewConfig(userName, guicb);
     }
 
+    /**
+     * perform server call to set both site2site and remote user enable value
+     */
+    this.f_vpnSetOverviewEnableValue = function(rec, guicb)
+    {
+        thisObj.f_getVPNObject().f_setOverviewEnableValue(rec, guicb);
+    }
+
+
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // url filtering section

@@ -19,7 +19,7 @@ function UTM_vpnRemoteRec(name, group, ipaddr, localaddr, status, mode, enable)
     this.m_internetAccess = ipaddr;
     this.m_mode = mode;   // easy/expert
     this.m_presharedKey = null;
-    this.m_enabled = enable;
+    this.m_enable = enable;  // yes/no
     this.m_status = status;
 }
 
@@ -43,7 +43,7 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
     this.m_lifeTime2 = null;
     this.m_encryption2 = null;
     this.m_auth2 = null;
-    this.m_status = status;
+    this.m_status = status;   // yes/no
     this.m_enable = enable;
 
     this.f_setLocalNetwork = function(ip, prefix)
@@ -266,7 +266,7 @@ function UTM_vpnBusObj(busObj)
             thisObj.m_lastCmdSent = xmlstr;
             thisObj.f_respondRequestCallback(resp, xmlstr, guicb);
         }
-        window.setTimeout(cb, 500);
+        window.setTimeout(cb, 200);
 
         return;
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -315,7 +315,7 @@ function UTM_vpnBusObj(busObj)
             thisObj.m_lastCmdSent = xmlstr;
             thisObj.f_respondRequestCallback(resp, xmlstr, guicb);
         }
-        window.setTimeout(cb, 500);
+        window.setTimeout(cb, 200);
 
         return;
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -332,4 +332,25 @@ function UTM_vpnBusObj(busObj)
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
+
+    this.f_setOverviewEnableValue = function(rec, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var xmlstr = "";
+
+        if(rec.m_tunnel != null)
+            xmlstr = "<statement mode='proc'>" +
+                      "<handler>vpn-site2site set-overview-enable" +
+                      "</handler><data>name=["+rec.m_tunnel+"],enable=[" +
+                      rec.m_enable + "]</data></statement>";
+        else
+            xmlstr = "<statement mode='proc'>" +
+                      "<handler>vpn-remote set-overview-enable" +
+                      "</handler><data>name=["+rec.m_userName+"],enable=[" +
+                      rec.m_enable + "]</data></statement>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
 }

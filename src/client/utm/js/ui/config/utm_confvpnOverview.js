@@ -362,46 +362,95 @@ function UTM_confVPNOverview(name, callback, busLayer)
 
     this.f_s2sChkboxCb = function(eid)
     {
+        if(this.m_sendList == null) this.m_sendList = [];
+
         if(eid == this.m_s2sGridChkboxId)
         {
             var el = document.getElementById(eid);
+
             for(var i=0; i<this.m_s2sRecs.length; i++)
             {
                 var rec = this.m_s2sRecs[i];
-                var eel = document.getElementById("s2s_enabledId-" + rec.m_tunnel);
+                var eeid = "s2s_enabledId-" + rec.m_tunnel;
+                var eel = document.getElementById(eeid);
+
                 if(eel != null)
+                {
+                    if(eel.checked != el.checked)
+                        this.m_sendList.push(eeid);
+
                     eel.checked = el.checked;
+                }
             }
         }
         else if(eid.indexOf("s2s_enabledId-") >= 0)
         {
             this.f_updateGridHeaderChkbox(this.m_s2sRecs, this.m_s2sGridChkboxId,
                                           "s2s_enabledId-");
+            this.m_sendList.push(eid);
         }
 
+        this.f_setEnableValue2Server();
         this.f_enabledActionButtons("s2s", true);
     }
 
     this.f_remoteChkboxCb = function(eid)
     {
+        if(this.m_sendList == null) this.m_sendList = [];
+
         if(eid == this.m_remoteGridChkboxId)
         {
             var el = document.getElementById(eid);
             for(var i=0; i<this.m_remoteRecs.length; i++)
             {
                 var rec = this.m_remoteRecs[i];
-                var eel = document.getElementById("remote_enabledId-" + rec.m_userName);
+                var eeid = "remote_enabledId-" + rec.m_userName;
+                var eel = document.getElementById(eeid);
                 if(eel != null)
+                {
+                    if(eel.checked != el.checked)
+                        this.m_sendList.push(eeid);
+
                     eel.checked = el.checked;
+                }
             }
         }
         else if(eid.indexOf("remote_enabledId-") >= 0)
         {
             this.f_updateGridHeaderChkbox(this.m_remoteRecs,
                       this.m_remoteGridChkboxId, "remote_enabledId-");
+            this.m_sendList.push(eid);
         }
 
+        this.f_setEnableValue2Server();
         this.f_enabledActionButtons("remote", true);
+    }
+
+    this.f_setEnableValue2Server = function()
+    {
+        var cb = function(evt)
+        {
+            if(evt.m_errCode != 0)
+                alert("set enable error: " + evt.m_errMsg + " for " + eid);
+
+            if(thisObj.m_sendList.length > 0)
+                thisObj.f_setEnableValue2Server();
+        }
+
+        var eid = this.m_sendList.pop();
+        if(eid != null)
+        {
+            ///////////////////////////////////////////
+            // submit set to server.
+            var el = document.getElementById(eid);
+            var ids = eid.split("-");
+            var rec = eid.indexOf("s2s_enabledId-") >= 0 ?
+                      this.f_getS2SRecByName(ids[1]) :
+                      this.f_getRemoteRecByName(ids[1]);
+
+            rec.m_enable = el.checked ? 'yes' : 'no';
+            this.m_busLayer.f_vpnSetOverviewEnableValue(rec, cb);
+        }
     }
 
     this.f_handleS2SUpdate = function(name)
@@ -465,17 +514,13 @@ function UTM_confVPNOverview(name, callback, busLayer)
             thisObj.f_populateRemoteTable(thisObj.m_remoteRecs);
     }
 
-    this.f_handleCheckboxClick = function(chkbox)
-    {
-    }
-
     this.f_init = function()
     {
         // init s2s grid table
         this.m_hds2s = this.f_createS2SColumns();
         this.m_anchorS2s = this.f_createAnchorDiv('<b>' + g_lang.m_vpnOVS2S + '</b>', 's2s');
         this.m_headerS2s = this.f_createGridHeader(this.m_hds2s, 'f_vpnS2SGridHeaderOnclick');
-        this.m_bodyS2s = this.f_createGridView(this.m_hds2s);
+        this.m_bodyS2s = this.f_createGridView(this.m_hds2s, false);
         var btns = [['Add', "f_vpnAddHandler('s2s')",
                     g_lang.m_fireCustAddTip, this.m_btnS2SAddId],
                     ['Apply', "f_vpnApplyHandler('s2s')",
@@ -491,7 +536,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         this.m_anchorRemote = this.f_createAnchorDiv('<b>' + g_lang.m_vpnOVRemote + '</b>', 'remote');
         this.m_anchorRemote.style.marginTop = "35px";
         this.m_headerRemotes = this.f_createGridHeader(this.m_hdremote, 'f_vpnRemoteGridHeaderOnclick');
-        this.m_bodyRemotes = this.f_createGridView(this.m_hdremote);
+        this.m_bodyRemotes = this.f_createGridView(this.m_hdremote, false);
         btns = [['Add', "f_vpnAddHandler('remote')",
                     g_lang.m_fireCustAddTip, this.m_btnRemoteAddId],
                     ['Apply', "f_vpnApplyHandler('remote')",

@@ -266,6 +266,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.overflow = 'visible'
+        div.style.border = '0px solid white';
 
         if(children != null && children.length != null)
         {
@@ -292,7 +293,7 @@ function UTM_confBaseObj(name, callback, busLayer)
 		div.style.height = 'auto';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-        div.style.overflow = 'visible'
+        div.style.overflow = 'visible';
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr><td>' +

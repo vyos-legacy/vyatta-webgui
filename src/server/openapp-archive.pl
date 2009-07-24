@@ -485,13 +485,19 @@ sub restore_archive {
     `mkdir -p $WEB_RESTORE_ROOT/`;
     `mkdir -p $RESTORE_WORKSPACE_DIR/`;
     #test for failure here
-    my $err = `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $RESTORE_WORKSPACE_DIR/.`;
-    if ($err =~ /No such file/) {
-	my $err = `tar xf $ARCHIVE_BASE_DIR/admin/$restore.tar -C $RESTORE_WORKSPACE_DIR/.`;
-	if ($err =~ /No such file/) {
-	    return;
-	}
+    my $tfile = '';
+    if (defined($file) && -f "$file") {
+      $tfile = "$file";
+    } elsif (-f "$ARCHIVE_ROOT_DIR/$restore.tar") {
+      $tfile = "$ARCHIVE_ROOT_DIR/$restore.tar";
+    } elsif (-f "$ARCHIVE_BASE_DIR/admin/$restore.tar") {
+      $tfile = "$ARCHIVE_BASE_DIR/admin/$restore.tar";
+    } else {
+      return;
     }
+    my $err = `tar xf $tfile -C $RESTORE_WORKSPACE_DIR/. 2>&1`;
+    return if ($? >> 8);
+
     ##########################################################################
     #
     # Now build out an archive list as provided in the argument list, or if
@@ -931,10 +937,11 @@ elsif ( defined $backup_get ) {
 }
 elsif ( defined $backup_auto ) {
     #backup-auto has list
-    #filename has path and filename
+    #file has path and filename
     backup_auto();
 }
 elsif ( defined $restore ) {
+    # if file is specified, it's for "auto restore"
     restore_archive();
 }
 elsif ( defined $restore_status ) {

@@ -67,6 +67,7 @@ sbin_SCRIPTS += src/server/openapp-vimg-newinst.pl
 sbin_SCRIPTS += scripts/blb-login
 sbin_SCRIPTS += src/server/openapp-dom0-backup.pl
 sbin_SCRIPTS += src/server/openapp-blb-utils.pl
+sbin_SCRIPTS += scripts/oa-nightly-backup
 
 oaperl_DATA = src/server/lib/perl5/OpenApp/VMMgmt.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/VMDeploy.pm

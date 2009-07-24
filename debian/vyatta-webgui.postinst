@@ -111,5 +111,9 @@ EOF
 # set up oa-autostart init
 update-rc.d oa-autostart defaults 91
 
+# set up OA params
+mkdir -p /opt/vyatta/etc/oa/params
+echo 7 >/opt/vyatta/etc/oa/params/nightly_limit
+
 exit 0
 

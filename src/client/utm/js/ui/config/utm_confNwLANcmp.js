@@ -1397,7 +1397,12 @@ function UTM_confNwLANip(name, callback, busLayer)
 		if ((lanIp.length >0) && (lanMask.length > 0)) {
 		    if (!f_checkIPForLan(ip, lanIp, lanMask)) {
 				error += thisObj.f_createListItem(ip + ' ' + 
-					    g_lang.m_landhcp_incompatible + ' ' + g_lang.m_lanitf_ip);	
+					    g_lang.m_landhcp_incompatible + ' ' + lanIpLabel);	
+		    }
+
+		    if (f_checkIpEndByZero(ip)) {
+				error += thisObj.f_createListItem(ip + ' : ' + 
+					    g_lang.m_lanip_zero);	
 		    }
 
 			if (f_isForbidenAddr(ip, lanMask)) {

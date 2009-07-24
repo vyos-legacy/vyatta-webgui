@@ -1,3 +1,19 @@
+vyatta-webgui (0.2.14+fxdU+90) unstable; urgency=low
+
+  [ Mohit Mehta ]
+  * use more appropriate error codes
+
+  [ Loi Vo ]
+  * Fix LAN2/ DMZ label
+
+  [ Kevin Choi ]
+  * * vpn screen:
+
+  [ Loi Vo ]
+  * Add checking for reserved ip ending by zero
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 24 Jul 2009 00:06:12 +0000
+
 vyatta-webgui (0.2.14+fxdU+89) unstable; urgency=low
 
   [ Loi Vo ]

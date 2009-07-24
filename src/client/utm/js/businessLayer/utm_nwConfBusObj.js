@@ -1120,6 +1120,15 @@ function UTM_nwIfBusObj(busObj)
             if (err != null && err[0] != null) { //The return value is inside the <error> tag.
 				var tmp = thisObj.m_busObj.f_getFormError(err);
 				if (tmp != null) { //form has error
+				    //possible error code are:
+					//  1: set dhcp-static-mapping: generic error
+					//  2: set dhcp-server-config: generic error
+					//  3: set interface-config: generic error
+					//  4: set interface-config: the network address is already used by the open appliance
+					//     overlapping subnets: 
+				    if (tmp.m_errCode == 4) {
+						tmp.m_errMsg = g_lang.m_lanitf_already_used;
+					}
 					if (thisObj.m_guiCb != undefined) {
 						return thisObj.m_guiCb(tmp);
 					}

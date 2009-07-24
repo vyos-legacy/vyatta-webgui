@@ -479,6 +479,22 @@ function UTM_confVPNOverview(name, callback, busLayer)
         //this.m_busLayer
     }
 
+    this.f_handleCancelAction = function(doNotReload)
+    {
+        var cb = function(evt)
+        {
+            if(doNotReload == null || !doNotReload)
+            {
+                thisObj.f_loadVMData();
+            }
+        };
+
+        g_utils.f_cursorWait();
+        thisObj.f_enabledActionButtons("remote", false);
+        thisObj.f_enabledActionButtons("s2s", false);
+        thisObj.m_busLayer.f_discardUncommitChanged(cb);
+    };
+
     this.f_handleS2SDelete = function(name)
     {
         var cb = function(evt)
@@ -541,7 +557,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
                     g_lang.m_fireCustAddTip, this.m_btnRemoteAddId],
                     ['Apply', "f_vpnApplyHandler('remote')",
                     g_lang.m_fireLevelApplyTip, this.m_btnRemoteApplyId, false],
-                    ['Cancel', "f_vpnCancelHandler('remote)",
+                    ['Cancel', "f_vpnCancelHandler('remote')",
                     g_lang.m_fireLevelCancelTip, this.m_btnRemoteCancelId, false]];
         this.m_remoteButtons = this.f_createButtons(btns, 'center');
         this.m_remoteDiv = this.f_createEmptyDiv([this.m_anchorRemote,
@@ -614,7 +630,7 @@ function f_vpnApplyHandler(grid)
         g_configPanelObj.m_activeObj.f_handleRemoteApply();
 }
 
-function f_vpnCancelHandler()
+function f_vpnCancelHandler(grid)
 {
-
+    g_configPanelObj.m_activeObj.f_handleCancelAction(false);
 }

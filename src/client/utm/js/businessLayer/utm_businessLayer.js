@@ -362,6 +362,56 @@ function UTM_businessLayer()
 		}
     }
 
+    this.f_respondRequestCallback = function()
+    {
+        var response = thisObj.f_getRequestResponse(thisObj.m_request);
+
+        if(response == null) return;
+
+        if(response.f_isError != undefined)
+        {
+            if(thisObj.m_guiCb != null)
+                thisObj.m_guiCb(response);
+            else
+            {
+                g_utils.f_popupMessage("Connection failed! Please refresh page and  try again",
+                    'error', "Connection Error", true);
+            }
+        }
+        else
+        {
+            var evt = new UTM_eventObj(0, thisObj, '');
+
+            var err = response.getElementsByTagName('error');
+            if(err != null && err[0] != null)
+            {
+            }
+
+            if(thisObj.m_guiCb != undefined)
+                thisObj.m_guiCb(evt);
+        }
+    }
+
+    this.f_discardUncommitChanged = function(guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var xmlstr = "<statement mode='proc'><handler>customize-firewall cancel" +
+                      "</handler><data></data></statement>";
+
+        thisObj.m_lastCmdSent = thisObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_saveUncommitChanged = function(guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var xmlstr = "<statement mode='proc'><handler>customize-firewall save" +
+                      "</handler><data></data></statement>";
+
+        thisObj.m_lastCmdSent = thisObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // firewall security level section

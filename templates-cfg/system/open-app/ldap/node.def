@@ -1,1 +1,41 @@
 help: Configure external LDAP server parameters
+end: if [ "${COMMIT_ACTION}" = 'DELETE' ]; then
+       /opt/vyatta/sbin/openapp-conf-ldap.pl --internal
+       exit $?
+     fi
+     if [ -z '$VAR(address/@)' ]; then
+       echo 'LDAP server address is required'
+       exit 1
+     fi
+     if [ -z '$VAR(suffix/@)' ]; then
+       echo 'LDAP server DN suffix is required'
+       exit 1
+     fi
+     if [ -z '$VAR(rw-username/@)' ]; then
+       echo 'LDAP server read/write user is required'
+       exit 1
+     fi
+     if [ -z '$VAR(rw-password/@)' ]; then
+       echo 'LDAP server read/write password is required'
+       exit 1
+     fi
+     if [ -z '$VAR(r-username/@)' ]; then
+       echo 'LDAP server readonly user is required'
+       exit 1
+     fi
+     if [ -z '$VAR(r-password/@)' ]; then
+       echo 'LDAP server readonly password is required'
+       exit 1
+     fi
+     TFILE=$(mktemp /tmp/ldap-conf.XXXXXX) || exit 1
+     chmod 600 $TFILE
+     echo '$VAR(address/@)' >$TFILE
+     echo '$VAR(suffix/@)' >>$TFILE
+     echo '$VAR(rw-username/@)' >>$TFILE
+     echo '$VAR(rw-password/@)' >>$TFILE
+     echo '$VAR(r-username/@)' >>$TFILE
+     echo '$VAR(r-password/@)' >>$TFILE
+     /opt/vyatta/sbin/openapp-conf-ldap.pl --external $TFILE
+     ret=$?
+     rm -f $TFILE
+     exit $ret

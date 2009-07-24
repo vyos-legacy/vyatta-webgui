@@ -268,6 +268,16 @@ function f_validateIP(ipAddress)
     return true;
 }
 
+function f_checkIpEndByZero(ipAddress)
+{
+    if ((ipAddress != null) && (ipAddress != "")) {
+        b = ipAddress.split(".");
+        if (parseInt(b[3], 10) == 0) 
+            return true
+    }
+    return false	
+}
+
 function f_checkPrivateIp(ipAddress)
 {
     if (ipAddress != "") {
@@ -279,7 +289,7 @@ function f_checkPrivateIp(ipAddress)
                 return true
         }
         if (parseInt(b[0], 10) == 192) {
-            if (parseInt(b[1], 0) == 168) 
+            if (parseInt(b[1], 10) == 168) 
                 return true
         }
     }

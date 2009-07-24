@@ -362,7 +362,9 @@ var g_lang =
 	m_lanip_reserved_ip_entry: "entries",
     m_lanip_reserved_diff_lan : "Reserved IP address must be different from",	
 	m_lanitf_forbidden_ip: "Network & broadcast addresses are forbidden for",
+    m_lanip_zero: "this reserved IP address is forbidden!",	
 	m_landhcp_range_or_map_required : "When the DNS mode is static mode, it is required to configure either a DHCP range, or to have at least on reserved IP address.",
+	m_lanitf_already_used: "This network address is already used by the Open appliance.  Please enter other parameters",
 	
     ///////////////////////////////////////////////////////////////////
     // My Form

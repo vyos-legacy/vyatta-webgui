@@ -191,6 +191,11 @@ function UTM_mainPanel()
     {
         thisObj.m_configPanel.f_show(id, desc);
     }
+	
+	this.f_3navHighlightItem  = function(id)
+	{
+		thisObj.m_3navMenu.f_highlightItem(id);
+	}
     
     this.f_getDefaultSelection = function(id)
     {

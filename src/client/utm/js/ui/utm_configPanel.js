@@ -89,7 +89,7 @@ function UTM_configPanel()
 		return h;
 	}
 
-    this.f_showPage = function(id, obj)
+    this.f_showPage = function(id, obj, highlight)
     {
         //Lookup the id2desc in the hidden link first
         var desc = thisObj.m_dynSubMenu.f_get(id);
@@ -98,6 +98,9 @@ function UTM_configPanel()
             desc = thisObj.m_parent.m_3navMenu.f_getDescById(id);
         }
         if (desc != undefined) {
+			if ((highlight != undefined) && (highlight != null) && (highlight == true)) {
+				thisObj.m_parent.f_3navHighlightItem(id);
+			}
             thisObj.f_show(id, desc, obj);
         } else {
             alert('cannot find description for id: ' + id);
@@ -227,13 +230,13 @@ function UTM_configPanel()
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID:
                 thisObj.m_selectObj = new UTM_confVpnS2SE('VPNS2S', cb, g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				
-                thisObj.m_selectObj.f_init();
+                thisObj.m_selectObj.f_init(obj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
 	        case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID:
                 thisObj.m_selectObj = new UTM_confVpnRemoteUsrGrp('VPNRemoteUserGrp', cb, g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				
-                thisObj.m_selectObj.f_init();
+                thisObj.m_selectObj.f_init(obj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
 		    case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID:

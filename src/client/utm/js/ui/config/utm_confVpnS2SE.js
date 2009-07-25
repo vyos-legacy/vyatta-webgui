@@ -58,8 +58,9 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     }			
     this.privateConstructor(name, callback, busLayer);			
 		
-    this.f_init = function()
+    this.f_init = function(obj)
     {
+		/*
 		var o = new UTM_vpnRecord();
         o.m_tunnel = 'Nice';
         o.m_peerIp = '11.0.0.127';
@@ -67,8 +68,14 @@ function UTM_confVpnS2SE(name, callback, busLayer)
         o.m_presharedKey = 'preshare';
         o.m_localNetwork = '192.168.1.0/24';
         o.m_remoteNetwork = '192.168.3.0/24';	
-		o.m_mode = 'easy';	
-		thisObj.m_vpn = o;		
+		o.m_mode = 'easy';
+		*/	
+		if (obj != undefined) {
+			thisObj.m_vpn = obj;
+		} else {
+			thisObj.m_vpn = new UTM_vpnRecord();
+			thisObj.m_vpn.f_setDefault();
+		}		
 		
 		var defObj = new UTM_confFormDefObj('conf_vpn_s2se', '500', new Array(), 
 		    [{
@@ -159,7 +166,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
             '<select name="ike_p1_diffle" id="ike_p1_diffle" class="v_form_input"><option value="Group 5" selected>Group 5</option></select>',
 			g_lang.m_vpn_Diffle		
 		);			
-		defObj.f_addPassword('conf_vpn_s2sexp_ike_p1_lifetime','25',g_lang.m_vpn_LifeTime);
+		defObj.f_addInput('conf_vpn_s2sexp_ike_p1_lifetime','25',g_lang.m_vpn_LifeTime);
 		defObj.f_addEmptySpace('conf_vpn_s2se_basic_spacer4','2');
         defObj.f_addDivider('conf_vpn_s2se_divider3','2');
 		defObj.f_addEmptySpace('conf_vpn_s2se_basic_spacer5','2');
@@ -181,7 +188,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
             '<select name="ike_p2_dfs" id="ike_p2_dfs" class="v_form_input"><option value="Group 5" selected>Group 5</option></select>',
 			g_lang.m_vpn_DFS	
 		);							
-		defObj.f_addPassword('conf_vpn_s2sexp_ike_p2_lifetime','25',g_lang.m_vpn_LifeTime);
+		defObj.f_addInput('conf_vpn_s2sexp_ike_p2_lifetime','25',g_lang.m_vpn_LifeTime);
 		defObj.f_addHtml(
 		    'conf_vpn_s2sexp_ike_p2_encrypt',
             '<select name="ike_p2_encrypt" id="ike_p2_encrypt" class="v_form_input"><option value="AES128" selected>AES128</option></select>',
@@ -239,12 +246,31 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		thisObj.m_form.conf_vpn_s2se_local_network_ip.value = thisObj.m_vpn.f_getLocalNetworkIp();
 		thisObj.m_form.conf_vpn_s2se_local_network_mask.value = thisObj.m_vpn.f_getLocalNetworkPrefix();
         thisObj.m_form.conf_vpn_s2se_remote_network_ip.value = thisObj.m_vpn.f_getRemoteNetworkIp();
-		thisObj.m_form.conf_vpn_s2se_remote_network_mask.value = thisObj.m_vpn.f_getRemoteNetworkPrefix();			
+		thisObj.m_form.conf_vpn_s2se_remote_network_mask.value = thisObj.m_vpn.f_getRemoteNetworkPrefix();
+		thisObj.f_showExpert(false);
 	}	
 	
 	this.f_loadVMDataExpert = function()
 	{
-		
+		thisObj.f_showExpert(true);
+        //phase 1
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.ike_p1_proto, thisObj.m_vpn.m_type);
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.ike_p1_ex_mode, thisObj.m_vpn.m_exchange);
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.ike_p1_encrypt, thisObj.m_vpn.m_encryption1);
+		thisObj.m_form.conf_vpn_s2sexp_ike_p1_preshare.value = thisObj.m_vpn.m_presharedKey;
+		thisObj.m_form.conf_vpn_s2sexp_ike_p1_confirm_preshare.value = thisObj.m_vpn.m_presharedKey;
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.ike_p1_auth, thisObj.m_vpn.m_auth1);
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.ike_p1_diffle, thisObj.m_vpn.m_diffieHellmann);
+		thisObj.m_form.conf_vpn_s2sexp_ike_p1_lifetime.value = thisObj.m_vpn.m_lifeTime1;
+		//phase 2
+		thisObj.m_form.conf_vpn_s2se_ike_p2_local_network_ip.value = thisObj.m_vpn.f_getLocalNetworkIp();
+		thisObj.m_form.conf_vpn_s2se_ike_p2_local_network_mask.value = thisObj.m_vpn.f_getLocalNetworkPrefix();
+        thisObj.m_form.conf_vpn_s2se_ike_p2_remote_network_ip.value = thisObj.m_vpn.f_getRemoteNetworkIp();
+		thisObj.m_form.conf_vpn_s2se_ike_p2_remote_network_mask.value = thisObj.m_vpn.f_getRemoteNetworkPrefix();
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.ike_p2_dfs, thisObj.m_vpn.m_pfsGroup);
+		thisObj.m_form.conf_vpn_s2sexp_ike_p2_lifetime.value = thisObj.m_vpn.m_lifeTime2;
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.ike_p2_encrypt, thisObj.m_vpn.m_encryption2);
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.ike_p2_auth, thisObj.m_vpn.m_auth2);		
 	}
 		
     this.f_loadVMData = function(element)
@@ -266,7 +292,6 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		}		
         thisObj.m_form = document.getElementById('conf_vpn_s2se' + "_form");
 		thisObj.f_setFocus();
-		this.f_showExpert(false);
 		this.f_attachListener();	
     }
 	
@@ -288,7 +313,6 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 			}		
 		}
 		var ft = document.getElementById('ft_container');
-		//alert('div height: ' + thisObj.f_getHeight() + ' ft.height: ' + ft.style.height);		
 		thisObj.f_resize();
 	}
     
@@ -338,12 +362,12 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     
     this.f_reset = function()
     {
-        alert('reset');
+        thisObj.f_loadVMData();
     }
 	
 	this.f_back = function()
 	{
-		alert('back');
+		g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID, null, true);
 	}
     
     this.f_handleClick = function(e)

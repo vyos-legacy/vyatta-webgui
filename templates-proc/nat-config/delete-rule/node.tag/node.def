@@ -1,0 +1,1 @@
+run: /opt/vyatta/sbin/nat-config.pl --action='delete-rule' --args="$3"

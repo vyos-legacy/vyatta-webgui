@@ -1,3 +1,26 @@
+vyatta-webgui (0.2.14+fxdU+92) unstable; urgency=low
+
+  * add support for setting and deleting NAT rule
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Mon, 27 Jul 2009 18:38:20 -0700
+
+vyatta-webgui (0.2.14+fxdU+91) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * set site2site and remote enable values to server.
+  * * added cancel handler to discard uncommit config changed to both
+    vpn site2site and remote
+  * * combined 'apply' and 'cancel' buttons. So now when click on apply
+    or cancel will affect
+
+  [ An-Cheng Huang ]
+  * fix UTM backup restore problem
+
+  [ Mohit Mehta ]
+  * add backend script and templates for nat configuration
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Fri, 24 Jul 2009 19:16:23 -0700
+
 vyatta-webgui (0.2.14+fxdU+90) unstable; urgency=low
 
   [ Mohit Mehta ]

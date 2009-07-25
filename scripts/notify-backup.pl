@@ -59,9 +59,9 @@ elsif ($cgi->request_method() eq 'PUT') { #restore request
 	`sudo wget --no-check-certificate $file -O $bufile >&/dev/null`;
 	
 	if (-e $bufile) {
-	    `sudo tar xf $bufile`;
+	    `sudo tar xf $bufile -C /tmp/restore/`;
 	
-	    `sudo cp /tmp/build/config.boot /opt/vyatta/etc/config/config.boot`;
+	    `sudo cp /tmp/restore/tmp/build/config.boot /opt/vyatta/etc/config/config.boot`;
 	    
 	    `sudo chgrp vyattacfg /opt/vyatta/etc/config/config.boot`;
 	    

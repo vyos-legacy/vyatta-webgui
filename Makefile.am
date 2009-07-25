@@ -59,6 +59,7 @@ sbin_SCRIPTS = scripts/enterprise-mib.pl
 sbin_SCRIPTS += scripts/site-to-site-easy.pl
 sbin_SCRIPTS += scripts/firewall-security-level.pl
 sbin_SCRIPTS += scripts/customize-firewall.pl
+sbin_SCRIPTS += scripts/nat-config.pl
 sbin_SCRIPTS += scripts/bl_urlfiltering.pl
 sbin_SCRIPTS += scripts/zone-mgmt.pl
 sbin_SCRIPTS += scripts/oa-utm-port-cfg.pl

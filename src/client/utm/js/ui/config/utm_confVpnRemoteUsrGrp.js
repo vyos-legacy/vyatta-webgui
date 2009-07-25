@@ -9,6 +9,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     var thisObjName = 'UTM_confVpnRemoteUsrGrp';
     var thisObj = this;
     this.m_form = undefined;
+	this.m_usrGrp = undefined;
 	
 	this.m_ezItems = [
 	    'conf_vpn_rug_preshared_key_label',
@@ -56,8 +57,11 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     this.privateConstructor(name, callback, busLayer);	
     
     	
-    this.f_init = function()
+    this.f_init = function(obj)
     {
+		if (obj != undefined) {
+			thisObj.m_usrGrp = obj;
+		}
 		var defObj = new UTM_confFormDefObj('conf_vpn_rug', '500', new Array(), 
 		    [{
                 id: 'conf_vpn_rug_update_button',

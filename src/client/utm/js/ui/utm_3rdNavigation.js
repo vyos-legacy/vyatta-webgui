@@ -303,14 +303,14 @@ function UTM_3rdNavigation()
         thisObj.m_selectedItem = undefined;
     }
     
-    this.f_selectItem = function(id)
-    {
-        //console.log('3rd: f_selectItem: ' + id);
+	this.f_highlightItem = function(id)
+	{
+        var desc = undefined;
         thisObj.m_selectedItem = id;
+		
         if (id != undefined) {
 	        g_cookie.f_set(g_myVmId + '_' + g_consObj.V_COOKIES_NAV_3_PATH, id, g_cookie.m_userNameExpire);													
             var menu = document.getElementById(id).parentNode; //This is @ UL node
-            var desc = undefined;
             for (var i = 0; menu.childNodes[i]; i++) { //This is @ LI node
                 var sid = f_elemGetAttribute(menu.childNodes[i], 'id');
                 if ((sid != undefined) && (sid != null)) {
@@ -334,8 +334,16 @@ function UTM_3rdNavigation()
                     }
                 }
             }
-            thisObj.m_parent.f_3navSelectItemCb(id, desc);
         }
+		return desc;		
+	}
+	
+    this.f_selectItem = function(id)
+    {
+		var desc = thisObj.f_highlightItem(id);
+		if (id != undefined) {
+            thisObj.m_parent.f_3navSelectItemCb(id, desc);			
+		}
     }
     
 }

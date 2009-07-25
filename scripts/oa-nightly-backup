@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# this script is invoked by a nightly cron job to do an automatic backup
+
+failure_exit () {
+  logger -t 'oa-nightly-backup' "$*"
+  exit 1
+}
+
+OA_NIGHTLY_LIMIT_FILE=/opt/vyatta/etc/oa/params/nightly_limit
+get_nightly_limit () {
+  cat $OA_NIGHTLY_LIMIT_FILE
+}
+
+NIGHTLY_DIR=/var/oa/nightly
+curtime=$(date +'%d%m%y_%Hh%M')
+backup_name=automatic_${curtime}.tar
+backup_file=${NIGHTLY_DIR}/${backup_name}
+mkdir -p $NIGHTLY_DIR
+if [ -f "$backup_file" ]; then
+  failure_exit 'Nightly backup already exists'
+fi
+
+# create new backup file
+touch $backup_file
+vmarr=($(ls /var/oa/gui/VM))
+bstr='openapp:config'
+for b in "${vmarr[@]}"; do
+  bstr="$bstr,$b:config"
+done
+export OA_AUTH_USER=installer
+export OA_SESSION_ID=nightly$$
+# note: the openapp-archive script has 1-hour timeout if any target does not
+# respond. i.e., this may block for 1 hour.
+out=$(/opt/vyatta/sbin/openapp-archive.pl --backup-auto "$bstr" \
+        --file "$backup_file" 2>&1)
+if [ "$?" != 0 ]; then
+  failure_exit "Backup failed: $out"
+fi
+
+# rotate backup files if necessary
+count=$(find $NIGHTLY_DIR -name "automatic_*.tar" 2>/dev/null | wc -l)
+limit=$(get_nightly_limit)
+if (( count > limit )); then
+  # do rotation
+  (( count -= limit ))
+  dfiles=($(find $NIGHTLY_DIR -name "automatic_*.tar" 2>/dev/null \
+            | xargs ls -t | tail -$count))
+  rm -f "${dfiles[@]}"
+fi
+
+# done
+exit 0
+

@@ -94,7 +94,7 @@ if (defined $option) {
     $BACKUP_TIMEOUT = $option;
 }
 
-my ($backup,$backup_get,$filename,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$put_archive,$delete);
+my ($backup,$backup_get,$backup_auto,$filename,$file,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$put_archive,$delete);
 
 sub backup_archive {
     ##########################################################################
@@ -444,6 +444,32 @@ sub backup_and_get_archive {
 
 ##########################################################################
 #
+# Same as a separate backup and get except archive doesn't reside on dom0
+#
+##########################################################################
+sub backup_auto {
+# The behavior is:
+# 1) client requests backup-and-get archive
+# 2) server spins off request as background process (chunker)
+# 3) server performs backup and sets status flag to false
+# 4) upon completion of backup archive is copied to location
+# 5) status flag is set to true
+# 6) no provision is enabled to remove file.
+#
+    #then a get accessor
+    my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
+    #now remove archive
+   #first perform backup w/o normal limit
+    $backup = $backup_auto; #backup list is expected
+    backup();
+
+    #now relocate and rename the archive
+    `mv $ARCHIVE_ROOT_DIR/$filename.tar $file`;
+}
+
+
+##########################################################################
+#
 #
 #
 ##########################################################################
@@ -459,13 +485,19 @@ sub restore_archive {
     `mkdir -p $WEB_RESTORE_ROOT/`;
     `mkdir -p $RESTORE_WORKSPACE_DIR/`;
     #test for failure here
-    my $err = `tar xf $ARCHIVE_ROOT_DIR/$restore.tar -C $RESTORE_WORKSPACE_DIR/.`;
-    if ($err =~ /No such file/) {
-	my $err = `tar xf $ARCHIVE_BASE_DIR/admin/$restore.tar -C $RESTORE_WORKSPACE_DIR/.`;
-	if ($err =~ /No such file/) {
-	    return;
-	}
+    my $tfile = '';
+    if (defined($file) && -f "$file") {
+      $tfile = "$file";
+    } elsif (-f "$ARCHIVE_ROOT_DIR/$restore.tar") {
+      $tfile = "$ARCHIVE_ROOT_DIR/$restore.tar";
+    } elsif (-f "$ARCHIVE_BASE_DIR/admin/$restore.tar") {
+      $tfile = "$ARCHIVE_BASE_DIR/admin/$restore.tar";
+    } else {
+      return;
     }
+    my $err = `tar xf $tfile -C $RESTORE_WORKSPACE_DIR/. 2>&1`;
+    return if ($? >> 8);
+
     ##########################################################################
     #
     # Now build out an archive list as provided in the argument list, or if
@@ -643,18 +675,28 @@ sub restore_archive {
 ##########################################################################
 sub list_archive {
     #get a directory listing of /backup/.
-    print "VERBATIM_OUTPUT\n";
+    my $cmdline = $ENV{OA_CMD_LINE};
+    
+    if (!defined $cmdline) {
+	print "VERBATIM_OUTPUT\n";
+    }
     my $file;
+    my $cmd;
     my @files = <$ARCHIVE_ROOT_DIR/*.tar>;
     foreach $file (@files) {
 	my @name = split('/',$file);
 	#just open up meta data file and squirt out contents...
 	#now chop off the last period
 	my @name2 = split('\.',$name[4]);
-
+	
 	my $output;
 	my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
-	print $output[0];
+	if (defined $cmdline) {
+	    $cmd .= $output[0];
+	}
+	else {
+	    print $output[0];
+	}
     } 
     
 #if installer than also return admin archives
@@ -668,20 +710,50 @@ sub list_archive {
 	    
 	    my $output;
 	    my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
-	    print $output[0];
+	    if (defined $output[0]) {
+		$cmd .= $output[0];
+	    }
+	    else {
+		print $output[0];
+	    }
 	} 
     }
 
-    if ($auth_user_role eq 'installer' && $#files+1 >= $INSTALLER_BU_LIMIT) {
-	print "<limit>true</limit>";
-    }
-    elsif ($auth_user_role eq 'admin' && $#files+1 >= $ADMIN_BU_LIMIT) {
-	print "<limit>true</limit>";
+    if (!defined $cmdline) {
+	if ($auth_user_role eq 'installer' && $#files+1 >= $INSTALLER_BU_LIMIT) {
+	    print "<limit>true</limit>";
+	}
+	elsif ($auth_user_role eq 'admin' && $#files+1 >= $ADMIN_BU_LIMIT) {
+	    print "<limit>true</limit>";
+	}
+	else {
+	    print "<limit>false</limit>";
+	}
     }
     else {
-	print "<limit>false</limit>";
-    }
 
+	$cmd = "<foo>" . $cmd . "</foo>";
+	#now process the output here
+        my $xs = new XML::Simple(forcearray=>1);
+        my $opt = $xs->XMLin($cmd);
+        #now parse the rest code
+
+
+	my $archiveref = $opt->{archive};
+	for (my $i = 0; $i < @$archiveref; $i++) {
+
+	    my $arrayref = $opt->{archive}->[$i]->{contents}->[0]->{entry};
+	    
+	    print "owner:\t" . $opt->{archive}->[$i]->{owner}->[0] . "\n";
+	    print "file:\t" . $opt->{archive}->[$i]->{file}->[0] . ".tar\n";
+	    print "date:\t" . $opt->{archive}->[$i]->{date}->[0] . "\n";
+	    print "contents:\t\n";
+	    for (my $j = 0; $j < @$arrayref; $j++) {
+		print "\t" . $opt->{archive}->[$i]->{contents}->[0]->{entry}->[$j]->{vm}->[0] . ":" . $opt->{archive}->[$i]->{contents}->[0]->{entry}->[$j]->{type}->[0] . "\n";
+	    }
+	    print "\n";
+	}
+    }
     #done
 }
 
@@ -842,7 +914,9 @@ sub usage() {
 #pull commands and call command
 GetOptions(
     "backup:s"              => \$backup,
+    "backup-auto:s"         => \$backup_auto,
     "backup-get:s"          => \$backup_get,
+    "file=s"                => \$file,
     "filename:s"            => \$filename,
     "restore=s"             => \$restore,
     "restore-target:s"      => \$restore_target,
@@ -861,7 +935,13 @@ if ( defined $backup ) {
 elsif ( defined $backup_get ) {
     backup_and_get_archive();
 }
+elsif ( defined $backup_auto ) {
+    #backup-auto has list
+    #file has path and filename
+    backup_auto();
+}
 elsif ( defined $restore ) {
+    # if file is specified, it's for "auto restore"
     restore_archive();
 }
 elsif ( defined $restore_status ) {

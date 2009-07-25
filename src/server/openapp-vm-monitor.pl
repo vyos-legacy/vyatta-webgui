@@ -54,9 +54,14 @@ sub updateOAStatus {
   $disk_total = int($disk_total / 1024);
   $disk_free = int($disk_free / 1024);
 
-  # XXX hardwired state, updateAvail, and updCritTime
+  # check update availability
+  my ($upd_avail, $upd_crit)
+    = OpenApp::VMDeploy::vmCheckUpdate($OpenApp::VMMgmt::OPENAPP_ID);
+
+  # XXX hardwired state
   OpenApp::VMMgmt::updateStatus($OA_ID, 'up', $cpu_util, $disk_total,
-                                $disk_free, $mem_total, $mem_free, '', '');
+                                $disk_free, $mem_total, $mem_free, 
+                                $upd_avail, $upd_crit);
 }
 
 sub vmStatus {

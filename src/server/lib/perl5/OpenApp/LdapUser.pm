@@ -2,16 +2,17 @@ package OpenApp::LdapUser;
 
 use strict;
 use File::Temp qw(mkstemp);
-use Net::LDAP;
+use Net::LDAP qw(LDAP_NO_SUCH_ATTRIBUTE);
+use IPC::Open2;
 
 ### constants
 my $OA_LDAP_SERVER = 'ldap://localhost';
 my $OA_LDAP_SUFFIX = 'dc=localhost,dc=localdomain';
 my $OA_LDAP_USER_SUFFIX = "ou=People,$OA_LDAP_SUFFIX";
 my $OA_LDAP_ROOTDN = "cn=admin,$OA_LDAP_SUFFIX";
-my $OA_LDAP_ROOT_PASSWORD = 'admin';
-my $OA_LDAP_READDN = undef;
-my $OA_LDAP_READ_PASSWORD = undef;
+my $OA_LDAP_ROOT_PASSWORD_FILE = '/etc/ldap.secret';
+my $OA_LDAP_READDN = 'cn=readonly,dc=readonly';
+my $OA_LDAP_READ_PASSWORD = 'readonly';
 my $OA_LDAP_ATTR_UID = 'uid';
 my $OA_LDAP_ATTR_MAIL = 'mail';
 my $OA_LDAP_ATTR_LAST = 'sn';
@@ -58,44 +59,128 @@ sub listAllUsers {
   return \@ret;
 }
 
+sub _setupRootBind {
+  # set up LDAP (with root bind)
+  my $ldap = Net::LDAP->new("$OA_LDAP_SERVER");
+  return undef if (!defined($ldap));
+  my $rpw = `sudo cat $OA_LDAP_ROOT_PASSWORD_FILE 2>/dev/null`;
+  if ($? >> 8) {
+    $ldap->disconnect();
+    return undef;
+  }
+  chomp($rpw);
+  my $res = $ldap->bind("$OA_LDAP_ROOTDN", password => "$rpw");
+  if ($res->is_error()) {
+    $ldap->disconnect();
+    return undef;
+  }
+  return $ldap;
+}
+
 sub _deleteUserAttr {
   my ($user, $attr) = @_;
-  my $ldif =<<EOF;
-dn: $OA_LDAP_ATTR_UID=$user,$OA_LDAP_USER_SUFFIX
-changetype: modify
-delete: $attr
-EOF
-  my ($status, $err) = _modLdap($ldif);
-  # 16: No such attribute
-  return (!defined($status) || $status == 16) ? undef : $err;
+  my $ldap = _setupRootBind();
+  return 'Failed to bind to LDAP database' if (!defined($ldap));
+  my $res = $ldap->modify("$OA_LDAP_ATTR_UID=$user,$OA_LDAP_USER_SUFFIX",
+                          delete => [ $attr ]);
+  $ldap->disconnect();
+  return undef if (!$res->is_error()
+                   || $res->code() == LDAP_NO_SUCH_ATTRIBUTE());
+  return 'Failed to delete user attribute';
 }
 
 sub _replaceUserAttr {
   my ($user, $attr, $value) = @_;
-  my $ldif =<<EOF;
-dn: $OA_LDAP_ATTR_UID=$user,$OA_LDAP_USER_SUFFIX
-changetype: modify
-replace: $attr
-$attr: $value
-EOF
-  my ($status, $err) = _modLdap($ldif);
-  return $err;
+  my $ldap = _setupRootBind();
+  return 'Failed to bind to LDAP database' if (!defined($ldap));
+  my $res = $ldap->modify("$OA_LDAP_ATTR_UID=$user,$OA_LDAP_USER_SUFFIX",
+                          replace => { "$attr" => "$value" });
+  $ldap->disconnect();
+  return 'Failed to replace user attribute' if ($res->is_error());
+  return undef;
 }
 
-sub _modLdap {
-  my ($ldif) = @_;
-  my ($fh, $fname) = mkstemp('/tmp/oaldapuser.XXXXXX');
-  chmod(0600, $fname);
-  print $fh "$ldif";
-  close($fh);
-  my @ret = (undef, undef);
-  system("/usr/bin/ldapmodify -x -w '$OA_LDAP_ROOT_PASSWORD'"
-         . " -D '$OA_LDAP_ROOTDN' -f '$fname' >/dev/null");
-  if ($? >> 8) {
-    @ret = (($? >> 8), 'Failed to modify LDAP database');
-  }
-  unlink($fname);
-  return @ret;
+# add one value to an attribute
+sub _addUserAttrVal {
+  my ($user, $attr, $value) = @_;
+  my $ldap = _setupRootBind();
+  return 'Failed to bind to LDAP database' if (!defined($ldap));
+  my $res = $ldap->modify("$OA_LDAP_ATTR_UID=$user,$OA_LDAP_USER_SUFFIX",
+                          add => { "$attr" => [ "$value" ] });
+  $ldap->disconnect();
+  return 'Failed to add user attribute value' if ($res->is_error());
+  return undef;
+}
+
+# delete one value from an attribute
+sub _delUserAttrVal {
+  my ($user, $attr, $value) = @_;
+  my $ldap = _setupRootBind();
+  return 'Failed to bind to LDAP database' if (!defined($ldap));
+  my $res = $ldap->modify("$OA_LDAP_ATTR_UID=$user,$OA_LDAP_USER_SUFFIX",
+                          delete => { "$attr" => [ "$value" ] });
+  $ldap->disconnect();
+  return 'Failed to delete user attribute value' if ($res->is_error());
+  return undef;
+}
+
+# set installer password
+sub _setPasswordInstaller {
+  my ($newpass) = @_;
+  my ($rfd, $wfd) = (undef, undef);
+  my $pid = open2($rfd, $wfd, '/usr/bin/mkpasswd', '-m', 'md5', '-s');
+  print $wfd "$newpass";
+  close($wfd);
+  my $epass = <$rfd>;
+  waitpid($pid, 0);
+  chomp($epass);
+  return 'Failed to encrypt installer password' if (!($epass =~ /^\$1\$/));
+  system("sudo /usr/sbin/usermod -p '$epass' installer");
+  return 'Failed to change installer password' if ($? >> 8);
+  return undef;
+}
+
+# create a new user from scratch. return error message or undef on success.
+sub createUser {
+  my ($user, $pass, $mail, $last, $first) = @_;
+
+  # check if user already exists
+  my $u = new OpenApp::LdapUser($user);
+  return 'User already exists' if ($u->isExisting());
+
+  # create the user
+  my $err = `sudo ldapadduser '$user' operator 2>&1`;
+  return "Failed to create user: $err" if ($? >> 8);
+
+  # set the attributes
+  return "$err" if (defined($err = $u->setPassword($pass)));
+  return "$err" if (defined($err = $u->setMail($mail)));
+  return "$err" if (defined($err = $u->setLast($last)));
+  return "$err" if (defined($err = $u->setFirst($first)));
+  ## always 'user' role
+  return "$err" if (defined($err = $u->setRole('user')));
+
+  # done
+  return undef;
+}
+
+# delete an existing user. return error message or undef on success.
+sub deleteUser {
+  my ($user) = @_;
+  
+  # check if user exists
+  my $u = new OpenApp::LdapUser($user);
+  return 'User does not exists' if (!$u->isExisting());
+
+  # check user name
+  return 'Cannot delete system accounts'
+    if ($user eq 'admin' || $user eq 'installer');
+
+  # delete the user
+  my $err = `sudo ldapdeleteuser '$user' 2>&1`;
+  return "Failed to delete user: $err" if ($? >> 8);
+
+  return undef;
 }
 
 ### data
@@ -167,6 +252,11 @@ sub new {
 }
 
 ### getters for user attributes
+sub isExisting {
+  my ($self) = @_;
+  return (defined($self->{_urole}));
+}
+
 sub getName {
   my ($self) = @_;
   return $self->{_uname};
@@ -204,15 +294,10 @@ sub passwordExists {
   # special case for installer
   return 1 if ($self->{_uname} eq 'installer');
 
-  # set up LDAP (with root bind)
-  my $ldap = Net::LDAP->new("$OA_LDAP_SERVER");
+  my $ldap = _setupRootBind();
   my $ret = 0;
   while (defined($ldap)) {
     my $res;
-    $res = $ldap->bind("$OA_LDAP_ROOTDN",
-                       password => "$OA_LDAP_ROOT_PASSWORD");
-    last if ($res->is_error());
-
     $res = $ldap->search(base => "$OA_LDAP_USER_SUFFIX",
                          filter => "$OA_LDAP_ATTR_UID=$self->{_uname}",
                          attrs => [ "$OA_LDAP_ATTR_PASSWORD" ]);
@@ -227,13 +312,54 @@ sub passwordExists {
 }
 
 ### setters for user attributes
+sub setMail {
+  my ($self, $mail) = @_;
+  return _replaceUserAttr($self->{_uname}, $OA_LDAP_ATTR_MAIL, $mail);
+}
+
+sub setLast {
+  my ($self, $last) = @_;
+  return _replaceUserAttr($self->{_uname}, $OA_LDAP_ATTR_LAST, $last);
+}
+
+sub setFirst {
+  my ($self, $first) = @_;
+  return _replaceUserAttr($self->{_uname}, $OA_LDAP_ATTR_FIRST, $first);
+}
+
+# add one right for the user
+sub addRight {
+  my ($self, $right) = @_;
+  return _addUserAttrVal($self->{_uname}, $OA_LDAP_ATTR_RIGHT, $right);
+}
+
+# remove one right for the user
+sub delRight {
+  my ($self, $right) = @_;
+  return _delUserAttrVal($self->{_uname}, $OA_LDAP_ATTR_RIGHT, $right);
+}
+
+sub setRole {
+  my ($self, $role) = @_;
+  return _replaceUserAttr($self->{_uname}, $OA_LDAP_ATTR_ROLE, $role);
+}
+
 sub deletePassword {
   my ($self) = @_;
   return _deleteUserAttr($self->{_uname}, $OA_LDAP_ATTR_PASSWORD);
 }
 
+sub resetPassword {
+  my ($self) = @_;
+  return $self->setPassword($self->{_uname});
+}
+
 sub setPassword {
   my ($self, $newpass) = @_;
+ 
+  # special case for installer 
+  return _setPasswordInstaller($newpass) if ($self->{_uname} eq 'installer');
+  
   my ($fh, $fname) = mkstemp('/tmp/oaldapuser.XXXXXX');
   chmod(0600, $fname);
   print $fh "$newpass";

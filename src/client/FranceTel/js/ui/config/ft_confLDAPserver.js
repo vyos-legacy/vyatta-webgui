@@ -7,7 +7,8 @@
 function FT_confLDAPserver (name, callback, busLayer) {
     var thisObjName = 'FT_confLDAPserver';
 	var thisObj = this;
-    this.m_form = undefined;		
+    this.m_form = undefined;
+	this.m_ldap = undefined;		
     
     /**
      * @param name - name of configuration screens.
@@ -149,6 +150,43 @@ function FT_confLDAPserver (name, callback, busLayer) {
 		}		
 	}
 	
+	this.f_setLdapValue = function()
+	{
+	    if ((thisObj.m_ldap != undefined) && (thisObj.m_ldap != null)) {
+			thisObj.m_form.conf_ldap_srv_server_addr.value = thisObj.m_ldap.m_ldap;	
+            thisObj.m_form.conf_ldap_srv_user_update.value = thisObj.m_ldap.m_update_username;
+		    thisObj.m_form.conf_ldap_srv_user_update_passwd.value = thisObj.m_ldap.m_update_userpasswd;		
+			thisObj.m_form.conf_ldap_srv_user_read.value = thisObj.m_ldap.m_read_username;
+			thisObj.m_form.conf_ldap_srv_user_read_passwd.value = thisObj.m_ldap.m_read_userpasswd;
+			thisObj.m_form.conf_ldap_srv_suffix.value = thisObj.m_ldap.m_suffix;			
+		} else {
+			thisObj.f_setBlank();
+		}	
+	}
+	
+	this.f_saveLdapValue = function()
+	{
+		if ((thisObj.m_ldap != undefined) && (thisObj.m_ldap != null)) {
+			thisObj.m_ldap = new FT_ldapServer('oa', '', '', '', '', '','');
+		}
+		thisObj.m_ldap.m_ldap = thisObj.m_form.conf_ldap_srv_server_addr.value;
+		thisObj.m_ldap.m_update_username = thisObj.m_form.conf_ldap_srv_user_update.value;
+		thisObj.m_ldap.m_update_userpasswd = thisObj.m_form.conf_ldap_srv_user_update_passwd.value;
+		thisObj.m_ldap.m_read_username = thisObj.m_form.conf_ldap_srv_user_read.value;
+		thisObj.m_ldap.m_read_userpasswd = thisObj.m_form.conf_ldap_srv_user_read_passwd.value;
+		thisObj.m_ldap.m_suffix = thisObj.m_form.conf_ldap_srv_suffix.value;
+	}
+	
+	this.f_setBlank = function()
+	{
+		thisObj.m_form.conf_ldap_srv_server_addr.value = '';	
+        thisObj.m_form.conf_ldap_srv_user_update.value = '';
+		thisObj.m_form.conf_ldap_srv_user_update_passwd.value = '';		
+	    thisObj.m_form.conf_ldap_srv_user_read.value = '';
+		thisObj.m_form.conf_ldap_srv_user_read_passwd.value = '';
+		thisObj.m_form.conf_ldap_srv_suffix.value = '';				
+	}
+	
 	this.f_enable = function(b)
 	{
 		thisObj.f_enableTextField(b,'conf_ldap_srv_server_addr');		
@@ -157,6 +195,12 @@ function FT_confLDAPserver (name, callback, busLayer) {
         thisObj.f_enableTextField(b, 'conf_ldap_srv_user_update_passwd');
 		thisObj.f_enableTextField(b, 'conf_ldap_srv_user_read');
 		thisObj.f_enableTextField(b, 'conf_ldap_srv_user_read_passwd');		
+		if (b) {
+			thisObj.f_setLdapValue();			
+		} else {
+			thisObj.f_saveLdapValue();
+			thisObj.f_setBlank();
+		}
 	}
 	
     this.f_attachListener = function()
@@ -189,15 +233,16 @@ function FT_confLDAPserver (name, callback, busLayer) {
 					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
 					return;
 				}				
-                var ldap = evt.m_value;
-                if(ldap == undefined)  
+				thisObj.m_ldap = evt.m_value;
+                if(thisObj.m_ldap == undefined)  
 				    return;
-				thisObj.m_form.conf_ldap_srv_server_addr.value = ldap.m_ldap;	
-                thisObj.m_form.conf_ldap_srv_user_update.value = ldap.m_update_username;
-				thisObj.m_form.conf_ldap_srv_user_update_passwd.value = ldap.m_update_userpasswd;		
-				thisObj.m_form.conf_ldap_srv_user_read.value = ldap.m_read_username;
-				thisObj.m_form.conf_ldap_srv_user_read_passwd.value = ldap.m_read_userpasswd;
-				if (ldap.m_type == 'oa') {
+				thisObj.m_form.conf_ldap_srv_server_addr.value = thisObj.m_ldap.m_ldap;	
+                thisObj.m_form.conf_ldap_srv_user_update.value = thisObj.m_ldap.m_update_username;
+				thisObj.m_form.conf_ldap_srv_user_update_passwd.value = thisObj.m_ldap.m_update_userpasswd;		
+				thisObj.m_form.conf_ldap_srv_user_read.value = thisObj.m_ldap.m_read_username;
+				thisObj.m_form.conf_ldap_srv_user_read_passwd.value = thisObj.m_ldap.m_read_userpasswd;
+				thisObj.m_form.conf_ldap_srv_suffix.value = thisObj.m_ldap.m_suffix;
+				if (thisObj.m_ldap.m_type == 'oa') {
 		            thisObj.m_form.conf_ldap_srv_in_oa.checked = true;
 					thisObj.m_form.conf_ldap_srv_in_lan.checked = false;
 					thisObj.f_enable(false);
@@ -227,8 +272,9 @@ function FT_confLDAPserver (name, callback, busLayer) {
             if (!thisObj.f_checkHostname(thisObj.m_form.conf_ldap_srv_server_addr.value)) {
                 errorInner += thisObj.f_createListItem(g_lang.m_ldapSrvAddr + ' ' + g_lang.m_formInvalid);
             }
-        }	
-						
+        }
+			
+		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_suffix, g_lang.m_ldapSuffix + ' ' + g_lang.m_formNoEmpty, errorInner);
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_user_update, g_lang.m_ldapUsrUpdateRt + ' ' + g_lang.m_formNoEmpty, errorInner);
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_user_update_passwd, g_lang.m_ldapPasswdUpdateRt + ' ' + g_lang.m_formNoEmpty, errorInner);
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_user_read, g_lang.m_ldapUsrReadRt + ' ' + g_lang.m_formNoEmpty, errorInner);
@@ -245,6 +291,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
 		
 	}
 	
+	/*
 	this.f_setLdapLocation = function()
 	{
 		var type = 'lan';
@@ -267,6 +314,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
 		}
 		thisObj.m_busLayer.f_setLDAPlocation(cb, type);
 	}
+	*/
 	
 	this.f_setLdapConfig = function()
 	{
@@ -283,7 +331,9 @@ function FT_confLDAPserver (name, callback, busLayer) {
 									 thisObj.m_form.conf_ldap_srv_user_update.value, 
 									 thisObj.m_form.conf_ldap_srv_user_update_passwd.value, 
 									 thisObj.m_form.conf_ldap_srv_user_read.value, 
-									 thisObj.m_form.conf_ldap_srv_user_read_passwd.value);
+									 thisObj.m_form.conf_ldap_srv_user_read_passwd.value,
+									 thisObj.m_form.conf_ldap_srv_suffix.value);
+		thisObj.m_ldap = ldap;	
 			
         var cb = function(evt) {
 		    if (evt.f_isError()) {
@@ -297,8 +347,8 @@ function FT_confLDAPserver (name, callback, busLayer) {
 	
 	this.f_apply = function()
 	{
-        thisObj.f_setLdapLocation();
-		//thisObj.f_setLdapConfig();
+        //thisObj.f_setLdapLocation();
+		thisObj.f_setLdapConfig();
 		return false;			
 	}
 	

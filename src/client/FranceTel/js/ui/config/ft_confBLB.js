@@ -112,7 +112,7 @@ function FT_confBLB(name, callback, busLayer)
 	this.f_applyStandAlone = function()
 	{
         thisObj.m_blb.m_type = 'standalone';
-		thisObj.m_blb.m_username = '';
+		thisObj.m_blb.m_username = 'installer';
 		thisObj.m_blb.m_passwd = '';
 			
         var cb = function(evt) {
@@ -129,6 +129,7 @@ function FT_confBLB(name, callback, busLayer)
 	this.f_applyAssociation = function()
 	{
 		thisObj.m_blb.m_type = 'association';
+		thisObj.m_blb.m_username = 'installer';
         g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_BLB_CHECK_ID, thisObj.m_blb);			
 	}
     

@@ -1,5 +1,6 @@
 access:user
-run: if sudo perl /opt/vyatta/sbin/openapp-user.pl --modify "$4" --email "$6"; then
+help: Modify user email address
+run: if /opt/vyatta/sbin/openapp-user.pl --modify "$4" --email "$6"; then
        return 0
      else
        return 1

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 prefix=/opt/vyatta
-guiconfdir=$prefix/etc/gui
+ldapconfdir=$prefix/etc/ldap
 CHUNKER_DIR=/usr/lib/cgi-bin/tmp/webgui
 CHUNKER_INIT_DIR=/usr/lib/cgi-bin/etc/init.d
 CHUNKER_PID_DIR=/usr/lib/cgi-bin/var/run
@@ -94,8 +94,8 @@ Defaults env_keep+=OA_*
 EOF
 
 # set up ldap conf files
-cp $guiconfdir/{slapd,openapp}.conf /etc/ldap/
-chmod a+w /etc/ldap/openapp.conf
+cp -p ${ldapconfdir}/{slapd,openapp-internal}.conf /etc/ldap/
+chgrp openldap /etc/ldap/{slapd,openapp-internal}.conf
 
 # set up ldapscripts config
 lsconf=/etc/ldapscripts/ldapscripts.conf
@@ -110,6 +110,10 @@ EOF
 
 # set up oa-autostart init
 update-rc.d oa-autostart defaults 91
+
+# set up OA params
+mkdir -p /opt/vyatta/etc/oa/params
+echo 7 >/opt/vyatta/etc/oa/params/nightly_limit
 
 exit 0
 

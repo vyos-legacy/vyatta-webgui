@@ -111,8 +111,13 @@ sub do_restore {
 }
 
 sub do_list {
-  print "VERBATIM_OUTPUT\n";
+  my $cmdline = $ENV{OA_CMD_LINE};
+
+  if (!defined $cmdline) {
+    print "VERBATIM_OUTPUT\n";
+  }
   my @VMs = OpenApp::VMMgmt::getVMList();
+  push @VMs, $OpenApp::VMMgmt::OPENAPP_ID; # include dom0 itself
   for my $vid (@VMs) {
     my $vm = new OpenApp::VMDeploy($vid);
     next if (!defined($vm));
@@ -125,16 +130,28 @@ sub do_list {
       my $msg = $href->{_msg};
       my $old = (defined($href->{_old})) ? " old='true'" : '';
       my $prev = OpenApp::VMDeploy::vmCheckPrev($vid);
-      print <<EOF;
-      <record$old>
-        <time>$time</time>
-        <id>$id</id>
-        <ver>$ver</ver>
-        <prevVer>$prev</prevVer>
-        <status>$status</status>
-        <msg>$msg</msg>
-      </record>
+      if (!defined($cmdline)) {
+        print <<EOF;
+<record$old>
+  <time>$time</time>
+  <id>$id</id>
+  <ver>$ver</ver>
+  <prevVer>$prev</prevVer>
+  <status>$status</status>
+  <msg>$msg</msg>
+</record>
 EOF
+	    } else {
+        print <<EOF;
+entry:
+    time:     $time
+    id:       $id
+    version:  $ver
+    previous: $prev
+    status:   $status
+    message:  $msg
+EOF
+	    }
     }
   }
 }

@@ -39,9 +39,18 @@ function FT_ldapServer(type /* oa | lan */, ldap, update_username, update_userpa
 	this.m_suffix = suffix;
 	
 	this.f_setCmd = function() {
-		return "set ldap ip '" + this.m_ldap + "' r-user '" + this.m_read_username + "' r-password '" +
-		       this.m_read_userpasswd + "' rw-user '" + this.m_update_username + "' rw-password '" +
-			   this.m_update_userpasswd + "'";
+		if (this.m_type == 'oa') {
+			return "set ldap local";
+		} else {
+			return "set ldap ip '" + this.m_ldap + "' r-user '" + this.m_read_username + "' r-password '" +
+			this.m_read_userpasswd +
+			"' rw-user '" +
+			this.m_update_username +
+			"' rw-password '" +
+			this.m_update_userpasswd +
+			"' suffix '" +
+			this.m_suffix + "'";
+		}
 	}	
 }
 
@@ -247,10 +256,13 @@ function FT_oaConfigObj (busObj)
 					break;
                 case 'local':
 				    if (cNodeValue == 'true') {
-						this.m_type = 'oa';
+						obj.m_type = 'oa';
 					} else {
-						this.m_type = 'lan';
+						obj.m_type = 'lan';
 					}
+					break;
+				case 'suffix':
+				    obj.m_suffix = cNodeValue;
 					break;
                 case 'r-password':
 				    obj.m_read_userpasswd = cNodeValue;
@@ -431,6 +443,7 @@ function FT_oaConfigObj (busObj)
                               thisObj.f_respondRequestCallbackSetCmd);
     }	
 	
+	/*
 	this.f_setLDAPlocation = function(guiCb, where)
 	{
         thisObj.m_guiCb = guiCb;
@@ -447,4 +460,5 @@ function FT_oaConfigObj (busObj)
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);		
 	}
+	*/
 }

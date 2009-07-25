@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
 #include <pwd.h>
@@ -7,10 +8,15 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <grp.h>
-#include <string>
 #include "rl_str_proc.hh"
 #include "authenticate.hh"
+
+/* "simple bind" is deprecated */
+#define LDAP_DEPRECATED 1
+#include <ldap.h>
 
 using namespace std;
 
@@ -381,41 +387,79 @@ Authenticate::get_access_level(const std::string &username)
   ////////////////////////////////////////////////////                                                                                            
   //Only allow users who are members of operator or vyattacfg groups to proceed                                                                   
   //get group membership via ldap...
-  //first execute the ldap command
-  
-  //short-circuit installer access here
   if (strcmp(username.c_str(), "installer") == 0) {
+    //short-circuit installer access here
     return WebGUI::ACCESS_INSTALLER;
-  }
+  } else {
+    int ret = 0, ver = 3, flen = 0;
+    LDAPMessage *res = NULL, *ent = NULL;
+    LDAP *lh = NULL;
+    struct berval **vals = NULL;
+    WebGUI::AccessLevel rlvl = WebGUI::ACCESS_NONE;
+    char *filter = NULL;
 
-  string cmd = "/usr/bin/ldapsearch -x -b \"dc=localhost,dc=localdomain\" \"uid=" + username + "\"";
-  string stdout;
-  bool verbatim = false;
-  int err = WebGUI::execute(cmd,stdout,verbatim,true);
-  if (err != 0) {
-    return WebGUI::ACCESS_NONE;
-  }
-  //now scan the output for the description field
-  StrProc str_proc(stdout," ");
-  vector<string> coll = str_proc.get();
-  vector<string>::iterator iter = coll.begin();
-  while (iter != coll.end()) {
-    if (*iter == "description:") {
-      ++iter;
-      unsigned long id = _proc->_msg.id_by_val();
-      if (WebGUI::is_restricted(id)) {
-	return WebGUI::ACCESS_RESTRICTED;
+    do {
+      if ((ret = ldap_initialize(&lh, "ldap://localhost")) != LDAP_SUCCESS) {
+        break;
       }
-      else if (strncmp(iter->c_str(),"user",4) == 0) {
-	return WebGUI::ACCESS_USER;
+      if ((ret = ldap_set_option(lh, LDAP_OPT_PROTOCOL_VERSION,
+                                 (const void *) &ver)) != LDAP_OPT_SUCCESS) {
+        break;
       }
-      else if (strncmp(iter->c_str(),"admin",5) == 0) {
-	return WebGUI::ACCESS_ADMIN;
+      if ((ret = ldap_simple_bind_s(lh, "cn=readonly,dc=readonly", "readonly"))
+          != LDAP_SUCCESS) {
+        break;
       }
-      return WebGUI::ACCESS_NONE;
+      flen = 4 + username.length() + 1; /* "uid=<name>" */
+      if (!(filter = (char *) malloc(flen))) {
+        break;
+      }
+      snprintf(filter, flen, "uid=%s", username.c_str());
+      ret = ldap_search_ext_s(lh, "dc=localhost,dc=localdomain",
+                              LDAP_SCOPE_SUBTREE, filter,
+                              NULL, 0, NULL, NULL, NULL, 0, &res);
+      if (ret != LDAP_SUCCESS) {
+        break;
+      }
+      if (!(ent = ldap_first_entry(lh, res))) {
+        break;
+      }
+      if (!(vals = ldap_get_values_len(lh, ent, "description"))) {
+        break;
+      }
+      {
+        int vlen = vals[0]->bv_len;
+        char buf[16];
+        unsigned long id = _proc->_msg.id_by_val();
+
+        if (vlen < 1 || vlen > 15) {
+          break;
+        }
+        memcpy(buf, vals[0]->bv_val, vlen);
+        buf[vlen] = 0;
+        if (WebGUI::is_restricted(id)) {
+          rlvl = WebGUI::ACCESS_RESTRICTED;
+        } else if (strcmp(buf, "user") == 0) {
+          rlvl = WebGUI::ACCESS_USER;
+        } else if (strcmp(buf, "admin") == 0) {
+          rlvl = WebGUI::ACCESS_ADMIN;
+        }
+        break;
+      }
+    } while (0);
+    if (vals) {
+      ldap_value_free_len(vals);
     }
-    ++iter;
+    if (filter) {
+      free(filter);
+    }
+    if (res) {
+      ldap_msgfree(res);
+    }
+    if (lh) {
+      ldap_unbind_ext(lh, NULL, NULL);
+    }
+    return rlvl;
   }
-  return WebGUI::ACCESS_NONE;
 }
 

@@ -95,8 +95,16 @@ sub set_smtp {
    
 }
 
+##########################################################################
+#
+# list_smtp
+#
+##########################################################################
 sub list_smtp() {
-    print "VERBATIM_OUTPUT\n";
+    my $cmdline = $ENV{OA_CMD_LINE};
+    if (!defined $cmdline) {
+	print "VERBATIM_OUTPUT\n";
+    }
     my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app smtp client`;
     
 #output will look something like this:
@@ -114,16 +122,28 @@ sub list_smtp() {
     if ($address[1] eq '' || 
 	$email[1] eq '' ||
 	$name[1] eq '') {
-	print "<smtp-client><address></address><email></email><name></name><password></password><username></username></smtp-client>";
+	if (!defined $cmdline) {
+	    print "<smtp-client><address></address><email></email><name></name><password></password><username></username></smtp-client>";
+	}
     }
     else {
-	print "<smtp-client>";
-	print "<address>$address[1]</address>";
-	print "<email>$email[1]</email>";
-	print "<name>$name[1]</name>";
-	print "<password>$password[1]</password>";
-	print "<username>$username[1]</username>";
-	print "</smtp-client>";
+	if (!defined $cmdline) {
+	    print "<smtp-client>";
+	    print "<address>$address[1]</address>";
+	    print "<email>$email[1]</email>";
+	    print "<name>$name[1]</name>";
+	    print "<password>$password[1]</password>";
+	    print "<username>$username[1]</username>";
+	    print "</smtp-client>";
+	}
+	else {
+	    print "SMTP:\n";
+	    print "\taddress:\t$address[1]\n";
+	    print "\temail:\t$email[1]\n";
+	    print "\tname:\t$$name[1]\n";
+	    print "\tpassword:\t$password[1]\n";
+	    print "\tusername:\t$username[1]\n";
+	}
     }
 }
 

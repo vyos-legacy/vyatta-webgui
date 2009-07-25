@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# extract the version string from an ISO
+
+ISO_FILE=$1
+
+if [ ! -f "$ISO_FILE" ] || ! (file "$ISO_FILE" | grep -q 9660); then
+  exit 1
+fi
+
+TMP_DIR=$(mktemp -d /tmp/get-iso-version.XXXXXX) || exit 1
+ISO_MOUNT=$TMP_DIR/iso-mount
+if ! mkdir $ISO_MOUNT || ! mount -o loop,ro "$ISO_FILE" $ISO_MOUNT; then
+  exit 1
+fi
+
+VER=$(grep '^ii  vyatta-version ' $ISO_MOUNT/live/packages.txt \
+      | tr -s ' ' | cut -d ' ' -f 3)
+echo -n "$VER"
+
+umount $ISO_MOUNT
+rm -rf $TMP_DIR
+exit 0
+

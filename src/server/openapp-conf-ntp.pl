@@ -76,11 +76,19 @@ sub set_ntp {
 
 sub list_ntp {
     #just need to pull the ip from the config
-    print "VERBATIM_OUTPUT\n";
+    my $cmdline = $ENV{OA_CMD_LINE};
 
+    if (!defined $cmdline) {
+	print "VERBATIM_OUTPUT\n";
+    }
     my $out = `/opt/vyatta/sbin/vyatta-output-config.pl system ntp-server`;
     my @values = split(' ', $out);
-    print "<ntp-server>$values[1]</ntp-server>";
+    if (!defined $cmdline) {
+	print "<ntp-server>$values[1]</ntp-server>";
+    }
+    else {
+	print "ntp server:\t$values[1]\n";
+    }
 }
 
 ##########################################################################

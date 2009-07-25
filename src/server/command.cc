@@ -249,6 +249,12 @@ Command::validate_op_cmd(const string &username, WebGUI::AccessLevel user_access
   path += "/node.def";
   FILE *fp = fopen(path.c_str(),"r");
   cmd_access_level = WebGUI::ACCESS_INSTALLER;
+
+  //FIX FOR DISCARD TO ALSO ALLOW ADMIN ACCESS
+  if (strncmp(cmd.c_str(),"discard",7) == 0) {
+    cmd_access_level = WebGUI::ACCESS_ADMIN;
+  }
+
   if (fp) {
     char buf[1025];
     //read value in here....

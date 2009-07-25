@@ -1,3 +1,4 @@
+help: set admin password policy
 access:installer
 run: if perl /opt/vyatta/sbin/openapp-conf-password-policy.pl --set admin; then
        return 0

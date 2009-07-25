@@ -1,5 +1,6 @@
+help: Get current OpenAppliance LDAP configuration settings
 access:admin
-run: if perl /opt/vyatta/sbin/openapp-conf-ldap.pl --list; then
+run: if /opt/vyatta/sbin/openapp-conf-ldap.pl --status; then
        return 0
      else
        return 1

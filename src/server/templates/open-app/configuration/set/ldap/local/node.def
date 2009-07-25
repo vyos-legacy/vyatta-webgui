@@ -1,0 +1,7 @@
+help: Configure OA to use local LDAP server
+access:admin
+run: if /opt/vyatta/sbin/openapp-conf-ldap.pl --conf-internal; then
+       return 0
+     else
+       return 1
+     fi

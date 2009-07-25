@@ -1,3 +1,80 @@
+vyatta-webgui (0.2+fxd0+91) unstable; urgency=low
+
+  [ slioch ]
+  * added backup_auto option for cron job or update use:
+
+  [ An-Cheng Huang ]
+  * add script for automatic nightly backup
+  * add mechanism to restore specific archive
+  * add backup/restore before/after domU upgrade
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 24 Jul 2009 19:51:19 -0700
+
+vyatta-webgui (0.2+fxd0+90) unstable; urgency=low
+
+  [ Michael Larson ]
+  * rudimentary help messages in op mode cmds
+
+  [ An-Cheng Huang ]
+  * user management script no longer needs sudo
+
+  [ Michael Larson ]
+  * cli command support.
+  * remove debug output
+  * more cli show cmd support
+  * fix error when no http status code is returned
+  * more op mode sh cmds blah
+  * blb op mde cmd
+  * updated node.def to support op mode cmds
+  * more cli cmd support
+
+  [ An-Cheng Huang ]
+  * rework LDAP user db infrastructure
+  * remove unused scripts
+
+  [ Michael Larson ]
+  * more op mode cmd lne sprt
+
+  [ An-Cheng Huang ]
+  * limit BLB association to installer login
+
+  [ Loi Vo ]
+  * Make login field readonly, and the value is hardcoded to 'installer'
+    in BLB credentials check screen per AnCheng
+
+  [ Michael Larson ]
+  * more help fields for cli cmd us
+
+  [ An-Cheng Huang ]
+  * rework LDAP configuration and operational commands
+
+  [ Loi Vo ]
+  * Change LDAP configuration screens to reflect the new API from
+    AnCheng.
+
+  [ An-Cheng Huang ]
+  * add support for external LDAP server and rework LDAP configuration
+    script.
+  * add user validation
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 23 Jul 2009 19:18:29 -0700
+
+vyatta-webgui (0.2+fxd0+89) unstable; urgency=low
+
+  * convert command-line tool usage to Net::LDAP calls
+  * convert command-line tool usage to libldap calls
+  * clean up and rework OA user management script
+  * use new LdapUser API
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 21 Jul 2009 19:10:43 -0700
+
+vyatta-webgui (0.2+fxd0+88) unstable; urgency=low
+
+  [ Michael Larson ]
+  * fix to allow admin to access discard command
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 17 Jul 2009 16:01:44 -0700
+
 vyatta-webgui (0.2+fxd0+87) unstable; urgency=low
 
   [ Kevin Choi ]

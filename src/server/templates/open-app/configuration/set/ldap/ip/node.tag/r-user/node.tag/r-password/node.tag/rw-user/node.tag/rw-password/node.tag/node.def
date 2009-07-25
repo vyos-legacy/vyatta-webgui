@@ -1,6 +1,1 @@
-access:admin
-run: if perl /opt/vyatta/sbin/openapp-conf-ldap.pl --address "$6" --ruser "$8" --rpswd "${10}" --rwuser "${12}" --rwpswd "${14}"; then
-       return 0
-     else
-       return 1
-     fi
+help: Read/write password of the external LDAP server

@@ -23,19 +23,15 @@
 # **** End License ****
 #
 
-use lib "/opt/vyatta/share/perl5";
-#use warnings;
 use strict;
-use POSIX;
-use File::Copy;
+use lib '/opt/vyatta/share/perl5';
+use File::Temp qw(mkstemp);
 use Getopt::Long;
-use OpenApp::VMMgmt;
+use Vyatta::Config;
 use OpenApp::LdapUser;
+use OpenApp::Conf;
 
-my $slap_file = "/etc/ldap/openapp.conf";
-
-my ($address,$rpswd,$ruser,$rwpswd,$rwuser,$local_db,$list);
-
+# authenticated user
 my $OA_AUTH_USER = $ENV{OA_AUTH_USER};
 my $auth_user = new OpenApp::LdapUser($OA_AUTH_USER);
 my $auth_user_role = $auth_user->getRole();
@@ -44,189 +40,270 @@ if ($auth_user_role ne 'installer' && $auth_user_role ne 'admin') {
   exit 1;
 }
 
-sub set_ldap {
-    # set up config session
-    my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-    # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap address $address");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-    # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap r-password $rpswd");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-    # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap r-username $ruser");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-    # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap rw-password $rwpswd");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-    # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap rw-username $rwuser");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-    # commit
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-
-    #this shouldn't be set w/o being active according to wireframe
-    #NEED to pull this from the configuration tree and insert....
-    my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app ldap address`;
-    my @address = split(" ",$out[0]);
-    `sudo echo -e "overlay transluscent\nuri ldap://$address[1]:389\n" > $slap_file`;
-}
-
-
-##########################################################################
-#
-# change ldap target (true or false) for local
-#
-##########################################################################
-sub set_ldap_target() {
-    if ($local_db ne 'true' && $local_db ne 'false') {
-	exit 1;
-    }
-
-    # set up config session
-    my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-    # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app ldap local $local_db");
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-    # commit
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
-    if ($err != 0) {
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-
-    #now create the file.
-    if ($local_db eq 'true') {
-	#should clear file that is included by slapd.conf
-	`sudo echo '' > $slap_file`;
-    }
-    else {
-	#should write into file that is include by slapd.conf
-	#will write into file the following:
-	my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app ldap address`;
-    	my @address = split(" ",$out[0]);
-	`sudo echo -e "overlay transluscent\nuri ldap://$address[1]:389\n" > $slap_file`;
-
-#haven't figured out password access yet....
-
-    }
-}
-
-##########################################################################
-#
-# return ldap configuration values
-#
-##########################################################################
-sub list_ldap() {
-    print "VERBATIM_OUTPUT\n";
-    my @out = `/opt/vyatta/sbin/vyatta-output-config.pl system open-app ldap`;
-    
-    my @address = split(" ",$out[0]);
-    my @local_db = split(" ",$out[1]);
-    my @r_password = split(" ",$out[2]);
-    my @r_username = split(" ",$out[3]);
-    my @rw_password = split(" ",$out[4]);
-    my @rw_username = split(" ",$out[5]);
-
-    my $o;
-    print "<ldap>";
-    for $o (@out) {
-	my @vals = split(" ",$o);
-	if ($vals[0] eq "address") {
-	    print "<address>$vals[1]</address>";
-	}
-	elsif ($vals[0] eq "local") {
-	    print "<local>$vals[1]</local>";
-	}
-	elsif ($vals[0] eq "r-password") {
-	    print "<r-password>$vals[1]</r-password>";
-	}
-	elsif ($vals[0] eq "r-username") {
-	    print "<r-username>$vals[1]</r-username>";
-	}
-	elsif ($vals[0] eq "rw-password") {
-	    print "<rw-password>$vals[1]</rw-password>";
-	}
-	elsif ($vals[0] eq "rw-username") {
-	    print "<rw-username>$vals[1]</rw-username>";
-	}
-    }
-    print "</ldap>";
-}
-
-##########################################################################
-#
-# start of main
-#
-##########################################################################
-sub usage() {
-    print "       $0 --address=<address>\n";
-    print "       $0 --rpswd=<read-pswd>\n";
-    print "       $0 --ruser=<read-user>\n";
-    print "       $0 --rwpswd=<readwrite-pswd>\n";
-    print "       $0 --rwuser=<readwrite-user>\n";
-    print "       $0 --list\n";
-    exit 0;
-}
-
-#pull commands and call command
+my ($confext, $confint, $external, $internal, $status)
+  = (undef, undef, undef, undef, undef);
 GetOptions(
-    "address=s"               => \$address,
-    "rpswd=s"                => \$rpswd,
-    "ruser=s"                => \$ruser,
-    "rwpswd=s"               => \$rwpswd,
-    "rwuser=s"               => \$rwuser,
-    "local=s"                 => \$local_db,
-    "list:s"                  => \$list,
-    ) or usage();
+  'conf-external=s' => \$confext,
+  'conf-internal' => \$confint,
+  'external=s' => \$external,
+  'internal' => \$internal,
+  'status' => \$status
+);
 
-if (defined $address && defined $rpswd && defined $ruser && defined $rwpswd && defined $rwuser ) {
-    set_ldap();
+my $cli_mode = 0;
+if ("$ENV{OA_CMD_LINE}" eq 'yes') {
+  $cli_mode = 1;
 }
-elsif (defined $local_db) {
-    set_ldap_target();
+my $LDAP_CONF_ROOT = 'system open-app ldap';
+my $SLAPD_INIT = '/etc/init.d/slapd';
+my $SLAPD_CONF_DIR = '/etc/ldap';
+my $SLAPD_OA_CONF = "$SLAPD_CONF_DIR/openapp.conf";
+my $SLAPD_OA_INTERNAL_CONF = "$SLAPD_CONF_DIR/openapp-internal.conf";
+
+my $PAM_SECRET_FILE = '/etc/pam_ldap.secret';
+my $NSS_SECRET_FILE = '/etc/libnss-ldap.secret';
+
+if (defined($status)) {
+  do_status();
+  exit 0;
 }
-else {
-    list_ldap();
+if (defined($confint)) {
+  do_conf_internal();
+  exit 0;
 }
-exit 0;
+if (defined($internal)) {
+  do_internal();
+  exit 0;
+}
+if (defined($confext)) {
+  # check if the parameter file exists
+  exit 1 if (! -r "$confext");
+  do_conf_external($confext);
+  exit 0;
+}
+if (defined($external)) {
+  # check if the parameter file exists
+  exit 1 if (! -r "$external");
+  do_external($external);
+  exit 0;
+}
+
+exit 1;
+
+sub restart_ldap {
+  system("sudo sh -c '$SLAPD_INIT stop && $SLAPD_INIT start' >&/dev/null");
+  return (($? >> 8) ? 0 : 1);
+}
+
+sub do_status {
+  my $cfg = new Vyatta::Config;
+  if (!$cfg->existsOrig("$LDAP_CONF_ROOT")) {
+    # internal LDAP is used
+    if ($cli_mode) {
+      print "Internal OA LDAP server is used\n";
+    } else {
+      print <<EOF;
+VERBATIM_OUTPUT
+<ldap><local>true</local></ldap>
+EOF
+    }
+    exit 0;
+  }
+  # external LDAP is used
+  my $addr = $cfg->returnOrigValue("$LDAP_CONF_ROOT address");
+  my $sfx = $cfg->returnOrigValue("$LDAP_CONF_ROOT suffix");
+  my $rwuser = $cfg->returnOrigValue("$LDAP_CONF_ROOT rw-username");
+  my $rwpass = $cfg->returnOrigValue("$LDAP_CONF_ROOT rw-password");
+  my $ruser = $cfg->returnOrigValue("$LDAP_CONF_ROOT r-username");
+  my $rpass = $cfg->returnOrigValue("$LDAP_CONF_ROOT r-password");
+  if ($cli_mode) {
+    print <<EOF;
+External LDAP server is configured (passwords are not displayed):
+  Address:         $addr
+  Suffix:          $sfx
+  Read/write user: $rwuser
+  Readonly user:   $ruser
+EOF
+  } else {
+    print <<EOF;
+VERBATIM_OUTPUT
+<ldap>
+  <local>false</local>
+  <address>$addr</address>
+  <suffix>$sfx</suffix>
+  <rw-username>$rwuser</rw-username>
+  <rw-password>$rwpass</rw-password>
+  <r-username>$ruser</r-username>
+  <r-password>$rpass</r-password>
+</ldap>
+EOF
+  }
+  exit 0;
+}
+
+sub do_conf_internal {
+  my $cfg = new Vyatta::Config;
+  if (!$cfg->existsOrig("$LDAP_CONF_ROOT")) {
+    print "Already configured to use Internal LDAP server\n";
+    exit 1;
+  }
+  my @cmds = ("delete $LDAP_CONF_ROOT", 'commit', 'save');
+  my $err = OpenApp::Conf::execute_session(@cmds);
+  if (defined($err)) {
+    print "LDAP configuration failed: $err\n";
+    exit 1;
+  }
+  exit 0;
+}
+
+sub update_secret {
+  my ($secret) = @_;
+
+  # currently the CLI does not allow "'" in values anyway
+  return "Secret cannot include single-quote (') character"
+    if ($secret =~ /'/);
+
+  system("sudo sh -c \"echo -n '$secret' >$PAM_SECRET_FILE\"");
+  return "Failed to update PAM secret" if ($? >> 8);
+  system("sudo sh -c \"echo -n '$secret' >$NSS_SECRET_FILE\"");
+  return "Failed to update NSS secret" if ($? >> 8);
+
+  return undef;
+}
+
+sub do_internal {
+  # restore openapp.conf from openapp-internal.conf
+  system("sudo cp $SLAPD_OA_INTERNAL_CONF $SLAPD_OA_CONF");
+  if ($? >> 8) {
+    print "Failed to update LDAP configuration file\n";
+    exit 1;
+  }
+  
+  # restart slapd
+  if (!restart_ldap()) {
+    print "Failed to restart LDAP server\n";
+    exit 1;
+  }
+
+  # restore PAM and NSS secrets
+  my $err = update_secret('admin');
+  if (defined($err)) {
+    print "$err\n";
+    exit 1;
+  }
+  exit 0;
+}
+
+sub do_conf_external {
+  my ($param_file) = @_;
+  my $fd = undef;
+
+  # read params from file
+  if (!open($fd, '<', $param_file)) {
+    print "Failed to open param file\n";
+    exit 1;
+  }
+  my $addr = <$fd>;
+  my $sfx = <$fd>;
+  my $rwuser = <$fd>;
+  my $rwpass = <$fd>;
+  my $ruser = <$fd>;
+  my $rpass = <$fd>;
+  close($fd);
+  chomp($addr);
+  chomp($sfx);
+  chomp($rwuser);
+  chomp($rwpass);
+  chomp($ruser);
+  chomp($rpass);
+
+  # change/save the configuration
+  my @cmds = (
+    "set $LDAP_CONF_ROOT address '$addr'",
+    "set $LDAP_CONF_ROOT suffix '$sfx'",
+    "set $LDAP_CONF_ROOT rw-username '$rwuser'",
+    "set $LDAP_CONF_ROOT rw-password '$rwpass'",
+    "set $LDAP_CONF_ROOT r-username '$ruser'",
+    "set $LDAP_CONF_ROOT r-password '$rpass'",
+    'commit',
+    'save'
+  );
+  my $err = OpenApp::Conf::execute_session(@cmds);
+  if (defined($err)) {
+    print "Failed to configure external LDAP server: $err\n";
+    exit 1;
+  }
+  exit 0;
+}
+
+sub do_external {
+  my ($param_file) = @_;
+  my $fd = undef;
+
+  # read params from file
+  if (!open($fd, '<', $param_file)) {
+    print "Failed to open param file\n";
+    exit 1;
+  }
+  my $addr = <$fd>;
+  my $sfx = <$fd>;
+  my $rwuser = <$fd>;
+  my $rwpass = <$fd>;
+  my $ruser = <$fd>;
+  my $rpass = <$fd>;
+  close($fd);
+  chomp($addr);
+  chomp($sfx);
+  chomp($rwuser);
+  chomp($rwpass);
+  chomp($ruser);
+  chomp($rpass);
+
+  # generate new openapp.conf based on external LDAP server params
+  my ($fh, $fname) = mkstemp('/tmp/ldap-conf.XXXXXX');
+  chmod(0600, $fname);
+  if (! -f "$fname") {
+    print "Failed to create LDAP configuration file\n";
+    exit 1;
+  }
+  print $fh <<EOF;
+# main database (external)
+database        meta
+suffix          "dc=localhost,dc=localdomain"
+uri             "ldap://$addr/dc=localhost,dc=localdomain"
+suffixmassage   "dc=localhost,dc=localdomain" "$sfx"
+idassert-bind   bindmethod=simple
+                binddn="$ruser"
+                credentials=$rpass
+                mode=none
+rewriteEngine on
+rewriteContext bindDN
+rewriteRule "^cn=admin,dc=localhost,dc=localdomain\$"
+            "$rwuser" ":"
+rewriteRule "^(.*),dc=localhost,dc=localdomain\$"
+            "%1,$sfx" ":"
+EOF
+  close($fh);
+  system("sudo cp $fname $SLAPD_OA_CONF");
+  my $ret = ($? >> 8);
+  unlink($fname);
+  if ($ret) {
+    print "Failed to update LDAP configuration file\n";
+    exit 1;
+  }
+
+  # restart slapd
+  if (!restart_ldap()) {
+    print "Failed to restart LDAP server\n";
+    exit 1;
+  }
+
+  # update PAM and NSS secrets
+  my $err = update_secret($rwpass);
+  if (defined($err)) {
+    print "$err\n";
+    exit 1;
+  }
+  exit 0;
+}
+

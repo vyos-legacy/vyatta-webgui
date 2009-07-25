@@ -1,1 +1,2 @@
+help: Set the IP address (and optionally port) of the external LDAP server
 type: txt

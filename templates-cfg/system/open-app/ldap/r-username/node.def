@@ -1,1 +1,2 @@
+help: Set the username (DN) for readonly access to external LDAP server
 type: txt

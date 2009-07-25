@@ -1,3 +1,15 @@
+vyatta-webgui (0.2+fxd0+91) unstable; urgency=low
+
+  [ slioch ]
+  * added backup_auto option for cron job or update use:
+
+  [ An-Cheng Huang ]
+  * add script for automatic nightly backup
+  * add mechanism to restore specific archive
+  * add backup/restore before/after domU upgrade
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 24 Jul 2009 19:51:19 -0700
+
 vyatta-webgui (0.2+fxd0+90) unstable; urgency=low
 
   [ Michael Larson ]

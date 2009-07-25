@@ -1,3 +1,15 @@
+vyatta-webgui (0.2+fxd0+92) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * updated dashboard screen to display OA critical message.
+
+  [ An-Cheng Huang ]
+  * add backend dom0 upgrade/restore support for GUI
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sat, 25 Jul 2009 04:04:42 +0000
+
 vyatta-webgui (0.2+fxd0+91) unstable; urgency=low
 
   [ slioch ]

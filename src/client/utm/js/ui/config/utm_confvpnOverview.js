@@ -227,7 +227,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
             var eId = "remote_enabledId-" + rec.m_userName;
 
             var uname = thisObj.f_renderAnchor(rec.m_userName,
-                    "f_vpnUpdateHandler('" + rec.m_userName + "', 'remote)",
+                    "f_vpnUpdateHandler('" + rec.m_userName + "', 'remote')",
                     'Click on name for update');
 
             var enable = c + thisObj.f_renderCheckbox(rec.m_enable, eId,
@@ -446,7 +446,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         var rec = this.f_getS2SRecByName(name);
 
         if(rec != null)
-            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID, rec);
+            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID, rec, true);
     }
 
     this.f_handleRemoteUpdate = function(name)

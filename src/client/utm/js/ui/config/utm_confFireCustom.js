@@ -61,7 +61,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         var cols = [];
         this.f_colorGridBackgroundRow(true);
 
-        var chkbox = 'enabled<br>yes/no<br><br>' + thisObj.f_renderCheckbox("no",
+        var chkbox = 'enabled<br><br>' + thisObj.f_renderCheckbox("no",
                       thisObj.m_enabledchkId, "f_fwCustomizeOnChkBlur('" +
                       thisObj.m_enabledchkId+"')", 'Click here to enable/disable all');
 

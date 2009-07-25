@@ -2,7 +2,7 @@ package OpenApp::VMDeploy;
 
 use strict;
 use POSIX;
-use File::Temp qw(mkdtemp);
+use File::Temp qw(mkdtemp mkstemps);
 use File::Copy 'mv';
 use OpenApp::VMMgmt;
 
@@ -15,6 +15,9 @@ my $STATUS_FILE = 'current/status';
 my $SCHED_FILE = 'current/sched';
 my $HIST_FILE = 'current/hist';
 my $RUNNING_FILE = 'current/running_meta';
+my $BACKUP_SCRIPT = '/opt/vyatta/sbin/openapp-archive.pl';
+my $BACKUP_ENV = "export OA_AUTH_USER=installer; export OA_SESSION_ID=vmd$$";
+my $BACKUP_CMD = "$BACKUP_ENV; $BACKUP_SCRIPT";
 
 my $UPD_URG_CONTROL = 'OA-Update-Urgency';
 my $CRITICAL_UPDATE_AUTO_INST_INTVL = 3600 * 24; # 24 hours
@@ -808,35 +811,52 @@ sub _preRestoreProc {
 
 # pre-install processing.
 # return error message or undef if success.
+# also return backup archive name if one was created.
 sub _preInstProc {
   my ($self, $vver) = @_;
   my $running = "$VIMG_DIR/$self->{_vmId}/$RUNNING_FILE";
 
   my $cmd = "rm -f $running";
   _system($cmd);
-  return 'Failed to remove previous state file' if ($? >> 8);
+  return ('Failed to remove previous state file', undef) if ($? >> 8);
  
   # keep the metadata
   my $meta_file = "$OpenApp::VMMgmt::META_DIR/$self->{_vmId}";
   $cmd = "cp -p $meta_file $running";
   _system($cmd);
-  return 'Failed to save current state file' if ($? >> 8);
+  return ('Failed to save current state file', undef) if ($? >> 8);
 
   # check if it is running 
   $cmd = "sudo virsh -c xen:/// domstate $self->{_vmId} >&/dev/null";
   _system($cmd);
+  return ('Cannot backup VM', undef) if ($? >> 8);
+
+  # check status
+  my $vm = new OpenApp::VMMgmt($self->{_vmId});
+  return ('Cannot backup VM', undef) if (!defined($vm)); # should not happen
+  my $st = $vm->getState();
+  return ('Cannot backup VM', undef) if ("$st" ne 'up');
+
+  # VM is up. do backup.
+  my ($fh, $fname) = mkstemps('/tmp/upd-backup.XXXXXX', '.tar');
+  close($fh);
+  my $bstr = "$self->{_vmId}:config,$self->{_vmId}:data";
+  # note: the backup script has a timeout of 1 hour in case the domU
+  # doesn't respond. i.e., this may block for 1 hour.
+  my $err = `$BACKUP_CMD --backup-auto "$bstr" --file "$fname" 2>&1`;
   if ($? >> 8) {
-    # not running. done.
-    return undef;
+    unlink($fname);
+    return ("Failed to create VM backup: $err", undef);
   }
- 
-  # TODO do backup
 
   # stop the VM
   OpenApp::VMMgmt::shutdownVM($self->{_vmId});
-  return 'Failed to stop VM' if ($? >> 8);
+  if ($? >> 8) {
+    unlink($fname);
+    return ('Failed to stop VM', undef);
+  }
     
-  return undef;
+  return (undef, $fname);
 }
 
 # install processing.
@@ -859,7 +879,7 @@ sub _installProc {
 # post-install processing.
 # return error message or undef if success.
 sub _postInstProc {
-  my ($self, $vver) = @_;
+  my ($self, $vver, $backup) = @_;
   my $running = "$VIMG_DIR/$self->{_vmId}/$RUNNING_FILE";
 
   my $err = oaVimgPostinst($self->{_vmId}, $running);
@@ -870,19 +890,40 @@ sub _postInstProc {
   return 'Failed to start VM' if ($? >> 8);
 
   # check if it was running before install
-  # TODO change this to check presence of backup
   if (! -f "$running") {
     # wasn't running. done.
     return undef;
   }
-  
-  # TODO restore backup
-  ## need to check vendor/backupFormat. don't restore if different.
-  ## need to wait until VM can respond to restore command.
-
-  # done. remove metadata of previous running VM.
   unlink($running) or return 'Failed to remove previous metadata';
   
+  # check if backup exists
+  return undef if (!defined($backup) || ! -f "$backup");
+  
+  ## need to check vendor/backupFormat. don't restore if different.
+  
+  # wait until VM can respond to restore command.
+  ## need a mechanism to determine when a domU has finished booting.
+  ## mechanism must work across all domUs. SNMP status may help, but, e.g.,
+  ## on Vyatta UTM, SNMP is up before the whole config is loaded.
+  for my $i (1 .. 10) {
+    sleep 30;
+    my $vm = new OpenApp::VMMgmt($self->{_vmId});
+    return undef if (!defined($vm)); # should not happen
+    my $st = $vm->getState();
+    last if ("$st" eq 'up');
+  }
+  # XXX sleep some more. fixed amount of time fow now.
+  sleep 180;
+  
+  # restore backup
+  my $bstr = "$self->{_vmId}:config,$self->{_vmId}:data";
+  my $args = "--restore 'dummy' --restore-target '$bstr' --file '$backup'";
+  my $err = `$BACKUP_CMD $args 2>&1`;
+  my $ret = ($? >> 8);
+  unlink($backup);
+  return "Failed to restore VM backup: $err" if ($ret);
+
+  # done.
   return undef;
 }
 
@@ -891,17 +932,19 @@ sub upgrade {
   my ($self, $vver) = @_;
 
   # remove sched entry
+  sleep 3; # in case the scheduled task gets run before the "Scheduled"
+           # is written.
   $self->_clearSched();
 
-  my $err = undef;
+  my ($err, $backup) = (undef, undef);
   while (1) {
     $err = $self->_preUpgradeProc($vver);
     last if (defined($err));
-    $err = $self->_preInstProc($vver);
+    ($err, $backup) = $self->_preInstProc($vver);
     last if (defined($err));
     $err = $self->_installProc($vver);
     last if (defined($err));
-    $err = $self->_postInstProc($vver);
+    $err = $self->_postInstProc($vver, $backup);
     last;
   }
   if (defined($err)) {
@@ -924,15 +967,15 @@ sub restore {
   # remove sched entry
   $self->_clearSched();
 
-  my $err = undef;
+  my ($err, $backup) = (undef, undef);
   while (1) {
     $err = $self->_preRestoreProc($vver);
     last if (defined($err));
-    $err = $self->_preInstProc($vver);
+    ($err, $backup) = $self->_preInstProc($vver);
     last if (defined($err));
     $err = $self->_installProc($vver);
     last if (defined($err));
-    $err = $self->_postInstProc($vver);
+    $err = $self->_postInstProc($vver, $backup);
     last;
   }
   if (defined($err)) {

@@ -292,7 +292,10 @@ function FT_vmBusObj(busObj)
 
                         var cNode = val.childNodes[j];
 
-                        if(cNode.firstChild != undefined)
+                        if(vmIndex == 0 && typeof cNode.getAttribute == "function" &&
+                                cNode.getAttribute('critical') != null)
+                            vmr.m_criticalUpdate = cNode.getAttribute('critical');
+                        else if(cNode.firstChild != null)
                         {
                             var fcnode = cNode.firstChild;
                             switch(cNode.nodeName)
@@ -316,7 +319,8 @@ function FT_vmBusObj(busObj)
                                     vmr.m_memFree = fcnode.nodeValue;
                                     break;
                                 case 'updAvail':
-                                    vmr.m_needUpdate = fcnode.nodeValue;
+                                    if(fcnode != null)
+                                        vmr.m_needUpdate = fcnode.nodeValue;
                                     if(cNode.getAttribute('critical') != null)
                                         vmr.m_criticalUpdate = cNode.getAttribute('critical');
                                     break;

@@ -91,7 +91,8 @@ function FT_confDashboard(name, callback, busLayer)
 
         var avm = thisObj.f_createSortingArray(sortCol, vm);
         var vmIndex = 0;
-        var vmCriticalUpdate = '';
+        var vmCriticalUpdate = '';  // domU critical text mssg.
+        var vmOACritical='';      // dom0 critical text msg
         for(var i=0; i<avm.length; i++)
         {
             var v = avm[i].split('|');
@@ -117,17 +118,31 @@ function FT_confDashboard(name, callback, busLayer)
 
             if(v[10] != 'null' || v[10] == null)
             {
-                if(vmCriticalUpdate.length > 0)
-                    vmCriticalUpdate += ' and ';
-                vmCriticalUpdate += "<u>" + v[0] + ' on ' + v[10] + "</u>";
+                if(v[9] == "openapp")
+                    vmOACritical = "<u>" + v[10] + "</u>";
+                else
+                {
+                    if(vmCriticalUpdate.length > 0)
+                        vmCriticalUpdate += ' and ';
+
+                    vmCriticalUpdate += "<u>" + v[0] + ' on ' + v[10] + "</u>";
+                }
             }
         }
 
+        //////////////////////////////////////////
+        // handle critical text
+        var criticalText = '';
+        if(vmOACritical != '')
+            criticalText = "* " + vmOACritical + "<br>";
         if(vmCriticalUpdate != '')
         {
-            var text = "* " + g_lang.m_dbCriticalUpdate + " " + vmCriticalUpdate;
-            thisObj.m_body.appendChild(thisObj.f_createGridMsgRow(text));
+            if(vmOACritical != '') criticalText += "<br>";
+
+            criticalText += "* " + g_lang.m_dbCriticalUpdate + " " + vmCriticalUpdate;
         }
+        thisObj.m_body.appendChild(thisObj.f_createGridMsgRow(criticalText));
+
         thisObj.f_adjustDivPosition(thisObj.m_buttons);
         thisObj.f_updateButtons();
     };

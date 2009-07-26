@@ -222,6 +222,9 @@ start_hndl(void *data, const XML_Char *el, const XML_Char **attr)
   else if (strcmp(el, "token") == 0) {
     m->_type = WebGUI::TOKEN;
   }
+  else if (strcmp(el, "static") == 0) {
+    m->_static = true;
+  }
   
   if (m->_type == WebGUI::NEWSESSION) {
     if (strcmp(el, "user") == 0) {

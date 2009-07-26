@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# this script restores a backup in the specified "installed version" that is
+# not the running version.
+
+NEW_VER=$1
+BACKUP=$2
+NEW_DIR="/live/image/boot/$NEW_VER"
+NEW_SQUASH="$NEW_DIR/$NEW_VER.squashfs"
+NEW_RW_DIR="$NEW_DIR/live-rw"
+
+rdir=''
+udir=''
+
+clean_up () {
+  if [ -n "$udir" ] && [ -d "$udir" ]; then
+    umount $udir >&/dev/null
+    rm -rf $udir
+  fi
+
+  if [ -n "$rdir" ] && [ -d "$rdir" ]; then
+    umount $rdir >&/dev/null
+    rm -rf $rdir
+  fi
+}
+
+if [ ! -f "$NEW_SQUASH" ] || [ ! -d "$NEW_RW_DIR" ]; then
+  echo "Specified version \"$NEW_VER\" is invalid"
+  exit 1
+fi
+
+if [ ! -f "$BACKUP" ] || ! (file "$BACKUP" | grep -q 'tar archive'); then
+  echo "\"$BACKUP\" is not a valid backup archive"
+  exit 1
+fi
+
+rdir=$(mktemp -d /tmp/restore-read.XXXXXX)
+if ! mount -o loop,ro $NEW_SQUASH $rdir; then
+  echo 'Failed to mount readonly filesystem'
+  clean_up
+  exit 1 
+fi
+
+udir=$(mktemp -d /tmp/restore-union.XXXXXX)
+if ! mount -t unionfs -o rw,dirs=$NEW_RW_DIR=rw:$rdir=ro unionfs $udir; then
+  echo 'Failed to mount union filesystem'
+  clean_up
+  exit 1 
+fi
+
+WORK_DIR=/root/restore-work
+rm -rf ${udir}$WORK_DIR
+mkdir -p ${udir}$WORK_DIR
+tar -xf "$BACKUP" -C ${udir}$WORK_DIR
+
+# vyatta config file
+cp -p ${udir}$WORK_DIR/files/config.boot ${udir}/opt/vyatta/etc/config/
+
+# local user
+cp -p ${udir}$WORK_DIR/files/{passwd,shadow} ${udir}/etc/
+
+# ldap
+rm -rf ${udir}/var/lib/ldap/*
+chroot $udir slapadd -b 'dc=localhost,dc=localdomain' \
+              -l $WORK_DIR/files/ldap.ldif
+chroot $udir chown -R openldap:openldap /var/lib/ldap
+
+rm -rf ${udir}$WORK_DIR
+
+clean_up
+exit 0
+

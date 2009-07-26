@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+93) unstable; urgency=low
+
+  * add backend support for dom0 upgrade message plus various fixes.
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 27 Jul 2009 19:02:27 -0700
+
 vyatta-webgui (0.2+fxd0+92) unstable; urgency=low
 
   [ Kevin Choi ]

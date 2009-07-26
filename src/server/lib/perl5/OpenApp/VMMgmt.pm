@@ -127,13 +127,13 @@ sub setDom0GrubDefVer {
       $in_entry = 1; 
     } elsif (/^}/) {
       $in_entry = 0; 
+      ++$idx;
     } elsif ($in_entry && /^\s+multiboot \/boot\/([^\/]+)\//) {
         if ("$newv" eq "$1") {
           $newdef = $idx;
           last;
         }
     }
-    ++$idx;
   }
   close($fd);
   if (defined($newdef)) {

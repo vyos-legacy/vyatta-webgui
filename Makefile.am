@@ -69,6 +69,7 @@ sbin_SCRIPTS += src/server/openapp-dom0-backup.pl
 sbin_SCRIPTS += src/server/openapp-blb-utils.pl
 sbin_SCRIPTS += scripts/oa-nightly-backup
 sbin_SCRIPTS += scripts/get-iso-version
+sbin_SCRIPTS += src/server/openapp-dom0-restore-inst
 
 oaperl_DATA = src/server/lib/perl5/OpenApp/VMMgmt.pm
 oaperl_DATA += src/server/lib/perl5/OpenApp/VMDeploy.pm

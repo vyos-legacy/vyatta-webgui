@@ -1,3 +1,17 @@
+vyatta-webgui (0.2+fxd0+94) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * Added additional option to back-end API cmd to handle client
+    timeout stamp.
+
+  [ Michael Larson ]
+  * added support for <static/> flag in command to skip update of time
+    file.
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Sun, 26 Jul 2009 04:59:42 +0000
+
 vyatta-webgui (0.2+fxd0+93) unstable; urgency=low
 
   * add backend support for dom0 upgrade message plus various fixes.

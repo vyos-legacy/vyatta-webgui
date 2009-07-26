@@ -135,15 +135,18 @@ function UTM_confBaseObj(name, callback, busLayer)
         return div;
     }
 
-    this.f_createGridView = function(header, isBorder)
+    this.f_createGridView = function(header, isBorder, enableScroll)
     {
         thisObj.m_tableRowCounter = 0;
         var div = document.createElement('div');
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-		div.style.height = 'auto';
-        //div.style.height = '50px';
-        div.style.overflow = 'visible';
+	div.style.height = 'auto';
+
+        if(enableScroll != null && enableScroll)
+            div.style.overflow = 'auto';
+        else
+            div.style.overflow = 'visible';
 
         if (isBorder == undefined || isBorder)
             div.style.border = '1px solid #CCC';
@@ -166,8 +169,24 @@ function UTM_confBaseObj(name, callback, busLayer)
         thisObj.m_colorGridRow = isColor;
     };
 
+    this.f_addRowIntoGridTable = function(tableDiv, child, enableScroll)
+    {
+        if(enableScroll)
+        {
+            tableDiv.appendChild(child);
+            if(tableDiv.childNodes.length > g_nwConfig.m_nwMaxDHCPresevedIP)
+            {
+                tableDiv.style.height = (28 * g_nwConfig.m_nwMaxDHCPresevedIP) + "px";
+                //tableDiv.style.overflow = 'auto';
+                tableDiv.style.position = 'relative';
+                child.scrollIntoView(false);
+            }
+        }
+        else
+            tableDiv.appendChild(child);
+    }
 
-    this.f_createGridRow = function(header, data, height, rowId)
+    this.f_createGridRow = function(header, data, height, rowId, enableScroll)
     {
         var div = document.createElement('div');
         //div.style.position = 'relative';
@@ -193,7 +212,8 @@ function UTM_confBaseObj(name, callback, busLayer)
         for (var i = 0; i < data.length; i++) {
             var h = header[i];
             width += h[1];
-            var fWidth = i == 0 || i == data.length - 1 ? h[1] : h[1];
+            var fWidth = i == data.length-1 && enableScroll != null &&
+                          enableScroll ? h[1] - 18 : h[1];
             var lBorder = i == -1 ? 'border-left:1px solid #CCC; ' : '';
             //var rBorder = i == data.length-1 ? ' ' :
             //                    'border-right:1px dotted #ccc; ';
@@ -226,7 +246,11 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         innerHtml += '</tr></tbody></table>';
 
-        div.style.width = (width) + 'px';
+        if(enableScroll != null && enableScroll)
+            div.style.width = (width-18) + 'px';
+        else
+            div.style.width = (width) + 'px';
+
         div.innerHTML = innerHtml;
 
         thisObj.m_tableRowCounter++;

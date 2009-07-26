@@ -96,12 +96,22 @@ function FT_vmBusObj(busObj)
 
     /**
      * get summary vm list from server: list of vmId, ip, port, uri, vm display name
+     * @param guiCb - a callback function to be called
+     *          when data is ready.
+     *          ex. callback(responseObj); where responseObj is FT_eventObj;
+     * @param updateTimeStamp : true - update client timeout time stamp,
+     *                          false - do not update client timeout tim stamp
      */
-    this.f_getVMUpdateListFromServer = function(guiCb)
+    this.f_getVMUpdateListFromServer = function(guiCb, updateTimeStamp)
     {
         thisObj.m_guiCb = guiCb;
         var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+        var xmlstr = "";
+
+        if(updateTimeStamp != null && !updateTimeStamp)
+            xmlstr = "<static></static>";
+
+        xmlstr += "<command><id>" + sid + "</id><statement>" +
                       "open-app vm deploy list </statement></command>";
 
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -122,12 +132,22 @@ function FT_vmBusObj(busObj)
 
     /**
      * call backend api to get vm status
+     * @param guiCb - a callback function to be called
+     *          when data is ready.
+     *          ex. callback(responseObj); where responseObj is FT_eventObj;
+     * @param updateTimeStamp : true - update client timeout time stamp,
+     *                          false - do not update client timeout tim stamp
      */
-    this.f_getVMStatusFromServer = function(guiCb)
+    this.f_getVMStatusFromServer = function(guiCb, updateTimeStamp)
     {
         thisObj.m_guiCb = guiCb;
         var sid = g_utils.f_getUserLoginedID();
-        var xmlstr = "<command><id>" + sid + "</id><statement>" +
+
+        var xmlstr = "";
+        if(updateTimeStamp != null && !updateTimeStamp)
+            xmlstr = "<static></static>";
+
+        xmlstr += "<command><id>" + sid + "</id><statement>" +
                       "open-app vm status </statement></command>";
 
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -194,8 +214,8 @@ function FT_vmBusObj(busObj)
         ////////////////////////////////////////////////////////////
         // server may not provide all the vm we need and the sorting
         // order we want. So we need to get some work done here....
-        var finalVmsList = []; 
-        
+        var finalVmsList = [];
+
         // prepare BLB vm
         var vm = thisObj.f_findVM('blb', vms);
         var userRec = g_busObj.f_getLoginUserObj();
@@ -509,7 +529,7 @@ function FT_vmBusObj(busObj)
 
         thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
 	}
-	
+
 	this.f_restoreVm = function(vm, ver, guiCb)
 	{
 		thisObj.m_guiCb = guiCb;
@@ -520,7 +540,7 @@ function FT_vmBusObj(busObj)
                       + "</command>";
 
         thisObj.m_busObj.f_sendRequest(xmlstr, thisObj.f_respondRequestCallback);
-	}	
+	}
 
 }
 

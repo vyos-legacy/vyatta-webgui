@@ -430,10 +430,12 @@ function FT_businessLayer()
      * @param callback - a callback function to be called
      *          when data is ready.
      *          ex. callback(responseObj); where responseObj is FT_eventObj;
+     * @param updateTimeStamp : true - update client timeout time stamp,
+     *                          false - do not update client timeout tim stamp
      */
-    this.f_getVMDataFromServer = function(callback)
+    this.f_getVMDataFromServer = function(callback, updateTimeStamp)
     {
-        thisObj.m_vm.f_getVMStatusFromServer(callback);
+        thisObj.m_vm.f_getVMStatusFromServer(callback, updateTimeStamp);
     }
 
     /**
@@ -453,13 +455,13 @@ function FT_businessLayer()
         var guiCb = cb;
         var callback = function()
         {
-            thisObj.f_getVMDataFromServer(guiCb);
+            thisObj.f_getVMDataFromServer(guiCb, false);
         }
 
         // start to run
         var threadId = thisObj.m_reqThread.f_start(callback);
 
-        thisObj.f_getVMDataFromServer(guiCb);
+        thisObj.f_getVMDataFromServer(guiCb, true);
         return threadId;
     }
     /**
@@ -519,14 +521,14 @@ function FT_businessLayer()
             var cb = guiCb;
             var callback = function()
             {
-                thisObj.m_vm.f_getVMUpdateListFromServer(cb);
+                thisObj.m_vm.f_getVMUpdateListFromServer(cb, false);
             }
 
             // start to run
             threadId = thisObj.m_reqThread.f_start(callback);
         }
 
-        thisObj.m_vm.f_getVMUpdateListFromServer(cb);
+        thisObj.m_vm.f_getVMUpdateListFromServer(cb, true);
         return threadId;
     }
 

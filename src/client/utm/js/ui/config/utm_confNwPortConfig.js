@@ -56,7 +56,8 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 		              ['Cancel', this.m_eventCbFunction + "('" + this.m_btnCancelId + "')", g_lang.m_tooltip_cancel, this.m_btnCancelId, g_lang.m_imageDir + 'bt_cancel.gif'] 
 				   ];
 		            
-        this.m_buttons = this.f_createButtons(btns, '650px');
+        //this.m_buttons = this.f_createButtons(btns, 'center');
+		this.m_buttons = this.f_createCenterButtons(btns, '650px');
         
         return [this.m_headerText, this.m_header, this.m_body,this.m_buttons];
     }

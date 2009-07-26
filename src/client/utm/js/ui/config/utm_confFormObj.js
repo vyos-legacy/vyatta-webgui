@@ -223,6 +223,14 @@ function UTM_confFormObj(name, callback, busLayer)
         }
         return false;
     }
+	
+	this.f_checkDefined = function(exp)
+	{
+		if ((exp != undefined) && (exp != null)) {
+			return true;
+		}
+		return false;
+	}
     
     this.f_checkValue = function(exp, value)
     {
@@ -370,9 +378,13 @@ function UTM_confFormObj(name, callback, busLayer)
         if (this.m_config == undefined) {
             return;
         }
+		var formPadding = '';
+		if (this.f_checkDefined(this.m_config.padding)) {
+			formPadding = 'padding: ' + this.m_config.padding + ';';
+		}
         var html = '<form id="' + this.m_config.id + '_form" onsubmit="return false;" class="v_form" border="0" style="width:' +
         this.m_config.width +
-        'px;">';
+        'px;' + formPadding + '">';
 		
 		if (!this.f_checkCondition(this.m_config.nofieldset)) {
 			if (g_xbObj.m_isIE == true) {

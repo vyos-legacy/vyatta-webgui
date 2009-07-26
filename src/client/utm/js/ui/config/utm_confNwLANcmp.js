@@ -54,6 +54,7 @@ function UTM_confNwLANitf(name, callback, busLayer)
         this.f_setConfig({
             id: 'conf_lan_itf',
             width: '550',
+			padding: '0px 0px 0px 30px',
             items: [{
                 v_type: 'label',
                 text: formTitle,
@@ -429,6 +430,7 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
         this.f_setConfig({
             id: 'conf_lan_dhcp',
             width: '550',
+			padding: '0px 0px 0px 30px',			
             items: [{
                 v_type: 'label',
                 text: g_lang.m_landhcp_title,
@@ -473,9 +475,9 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
             }, {
                 v_type: 'html',
                 id: 'conf_lan_dhcp_dns_mode',
-                text: '<select name="conf_lan_dhcp_dns_mode" id="conf_lan_dhcp_dns_mode" class="v_form_input"><option value="static" selected>' +
+                text: '<select name="conf_lan_dhcp_dns_mode" id="conf_lan_dhcp_dns_mode" class="v_form_input"><option value="static">' +
                 g_lang.m_landhcp_dns_static +
-                '</option><option value="dynamic">' +
+                '</option><option value="dynamic" selected>' +
                 g_lang.m_landhcp_dns_dynamic +
                 '</option><option value="none">' +
                 g_lang.m_landhcp_dns_none +
@@ -1075,6 +1077,7 @@ function UTM_confNwLANip(name, callback, busLayer)
     this.f_getContentPane = function()
     {
         var div = this.f_getPanelDiv(this.f_init());
+		div.style.paddingLeft = '30px';
         return div;
     }
     

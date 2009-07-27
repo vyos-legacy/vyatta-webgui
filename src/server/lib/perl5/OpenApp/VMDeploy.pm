@@ -18,6 +18,10 @@ my $RUNNING_FILE = 'current/running_meta';
 my $BACKUP_SCRIPT = '/opt/vyatta/sbin/openapp-archive.pl';
 my $BACKUP_ENV = "export OA_AUTH_USER=installer; export OA_SESSION_ID=vmd$$";
 my $BACKUP_CMD = "$BACKUP_ENV; $BACKUP_SCRIPT";
+my $OA_UPD_DIR = '/var/oa/oa-upd';
+my $OA_NEW_DIR = "$OA_UPD_DIR/new"; 
+my $OA_PREV_DIR = "$OA_UPD_DIR/prev";
+my $OA_CUR_DIR = "$OA_UPD_DIR/current";
 
 my $UPD_URG_CONTROL = 'OA-Update-Urgency';
 my $CRITICAL_UPDATE_AUTO_INST_INTVL = 3600 * 24; # 24 hours
@@ -25,12 +29,20 @@ my $CRITICAL_UPDATE_AUTO_INST_INTVL = 3600 * 24; # 24 hours
 ### "static" functions
 sub isValidNewVer {
   my ($id, $ver) = @_;
+  if (OpenApp::VMMgmt::isDom0Id($id)) {
+    # dom0 special case
+    return (-f "$OA_NEW_DIR/version_$ver") ? 1 : 0;
+  }
   my $file = "$NVIMG_DIR/oa-vimg-${id}_${ver}_all.deb";
   return (-r "$file") ? 1 : 0;
 }
 
 sub isValidPrevVer {
   my ($id, $ver) = @_;
+  if (OpenApp::VMMgmt::isDom0Id($id)) {
+    # dom0 special case
+    return (-f "$OA_PREV_DIR/version_$ver") ? 1 : 0;
+  }
   my $file = "$VIMG_DIR/$id/prev/oa-vimg-${id}_${ver}_all.deb";
   return (-r "$file") ? 1 : 0;
 }
@@ -38,6 +50,48 @@ sub isValidPrevVer {
 sub vmCheckUpdate {
   my $vid = shift;
   my $dd = undef;
+
+  if (OpenApp::VMMgmt::isDom0Id($vid)) {
+    # dom0 special case
+    # note: no critical update for dom0
+    # look for new ISO image
+    my @v = ();
+    if (opendir($dd, "$NVIMG_DIR")) {
+      @v = grep { /\.iso$/ && -f "$NVIMG_DIR/$_" } readdir($dd);
+      closedir($dd);
+    }
+    if (!defined($v[0])) {
+      # no new ISO image. check the oa new directory for existing update.
+      if (opendir($dd, "$OA_NEW_DIR")) {
+        @v = grep { /^version_.*$/ && -f "$OA_NEW_DIR/$_" } readdir($dd);
+        closedir($dd);
+      }
+      return ('', '') if (!defined($v[0]));
+      # found existing update
+      $v[0] =~ /^version_(.*)$/;
+      return ($1, '');
+    } else {
+      # TODO handle multiple ISO images (should not happen).
+      # for now, use the first one.
+      my $new_iso = "$v[0]";
+      # remove existing update (*.iso and version_*)
+      _system("rm -f $OA_NEW_DIR/{*.iso,version_*}");
+      # move new iso to oa new dir
+      mv("$NVIMG_DIR/$new_iso","$OA_NEW_DIR");
+      # remove any remaining iso in nvimg dir
+      _system("rm -f $NVIMG_DIR/*.iso");
+      # extract version string from iso and create version_ file
+      my $new_file = "$OA_NEW_DIR/$new_iso";
+      return ('', '') if (! -f "$new_file");
+      my $new_ver
+        = `sudo /opt/vyatta/sbin/get-iso-version "$new_file" 2>/dev/null`;
+      my $fd;
+      return ('', '') if (!open($fd, '>', "version_${new_ver}"));
+      close($fd);
+      return ($new_ver, '');
+    }
+  }
+
   opendir($dd, "$NVIMG_DIR") or return '';
   my @v = grep { /^oa-vimg-${vid}_.*\.deb$/
                  && -f "$NVIMG_DIR/$_" } readdir($dd);
@@ -60,6 +114,12 @@ sub vmCheckUpdate {
 sub _checkSched {
   my ($vid) = @_;
   my $vdir = "$VIMG_DIR/$vid";
+  
+  if (OpenApp::VMMgmt::isDom0Id($vid)) {
+    # dom0 special case
+    $vdir = "$OA_UPD_DIR";
+  }
+
   my $sched_file = "$vdir/$SCHED_FILE";
   my $fd = undef;
   open($fd, '<', "$sched_file") or return (undef, undef, undef, undef);
@@ -94,6 +154,10 @@ sub epoch2time {
 
 sub isCriticalPkg {
   my ($vid, $ver) = @_;
+  if (OpenApp::VMMgmt::isDom0Id($vid)) {
+    # no critical update for dom0
+    return 0;
+  }
   my $vimg = "$NVIMG_DIR/oa-vimg-${vid}_${ver}_all.deb";
   return 0 if (! -r "$vimg");
   my $urg = `dpkg-deb -f $vimg $UPD_URG_CONTROL`;
@@ -206,6 +270,17 @@ sub installNewVM {
 sub vmCheckPrev {
   my $vid = shift;
   my $dd = undef;
+  if (OpenApp::VMMgmt::isDom0Id($vid)) {
+    # dom0 special case
+    opendir($dd, "$OA_PREV_DIR") or return '';
+    my @v = grep { /^version_.*$/
+                   && -f "$OA_PREV_DIR/$_" } readdir($dd);
+    closedir($dd);
+    return '' if (!defined($v[0]));
+    $v[0] =~ /^version_(.*)$/;
+    return "$1";
+  }
+
   opendir($dd, "$VIMG_DIR/$vid/prev") or return '';
   my @v = grep { /^oa-vimg-${vid}_.*\.deb$/
                  && -f "$VIMG_DIR/$vid/prev/$_" } readdir($dd);
@@ -244,6 +319,7 @@ sub _stopLdapServer {
 # $2: previous metadata file ('NONE' if new install)
 sub _postinstLdap {
   my ($vid, $prev_meta) = @_;
+  return undef if (OpenApp::VMMgmt::isDom0Id($vid)); # dom0 special case
   my $cur_meta = "$OpenApp::VMMgmt::META_DIR/$vid";
   
   # default (e.g., new install) assume prev ldapFormat is NONE
@@ -470,6 +546,7 @@ sub _configureDomUAccess {
 # return error message or undef if success
 sub oaVimgPostinst {
   my ($vid, $prev_meta) = @_;
+  return undef if (OpenApp::VMMgmt::isDom0Id($vid)); # dom0 special case
   
   # remove previous image
   my $img = "$IMG_DIR/$vid.img";
@@ -527,6 +604,7 @@ sub new {
 
   bless $self, $class;
   $self->{_vmId} = $id;
+  return $self if (OpenApp::VMMgmt::isDom0Id($id)); # dom0 special case
   return ((-d "$VIMG_DIR/$id/current") ? $self : undef);
 }
 
@@ -538,6 +616,12 @@ sub checkSched {
 sub checkStatus {
   my ($self) = @_;
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
+  
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    $vdir = "$OA_UPD_DIR";
+  }
+
   my $st_file = "$vdir/$STATUS_FILE";
   my $fd = undef;
   open($fd, '<', "$st_file") or return (undef, undef, undef, undef);
@@ -551,6 +635,12 @@ sub checkStatus {
 sub _getHistEntries {
   my ($self) = @_;
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
+  
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    $vdir = "$OA_UPD_DIR";
+  }
+
   my $hist_file = "$vdir/$HIST_FILE";
   my $fd = undef;
   open($fd, '<', "$hist_file") or return;
@@ -567,6 +657,12 @@ sub _getHistEntries {
 sub _appendHist {
   my ($self, $time, $ver, $st, $msg) = @_;
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
+  
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    $vdir = "$OA_UPD_DIR";
+  }
+
   my $hist_file = "$vdir/$HIST_FILE";
   my $fd = undef;
   open($fd, '>>', "$hist_file") or return;
@@ -587,6 +683,12 @@ sub _writeSched {
   my ($self, $sched, $job, $vver, $time) = @_;
   $self->_saveSched();
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
+  
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    $vdir = "$OA_UPD_DIR";
+  }
+
   my $sched_file = "$vdir/$SCHED_FILE";
   my $fd = undef;
   open($fd, '>', "$sched_file") or return;
@@ -606,6 +708,12 @@ sub _writeStatus {
   my ($self, $st, $vver, $time, $msg) = @_;
   $self->_saveStatus();
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
+  
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    $vdir = "$OA_UPD_DIR";
+  }
+
   my $st_file = "$vdir/$STATUS_FILE";
   my $fd = undef;
   open($fd, '>', "$st_file") or return;
@@ -617,6 +725,12 @@ sub _clearSched {
   my ($self) = @_;
   $self->_saveSched();
   my $vdir = "$VIMG_DIR/$self->{_vmId}";
+  
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    $vdir = "$OA_UPD_DIR";
+  }
+
   my $sched_file = "$vdir/$SCHED_FILE";
   my $fd = undef;
   open($fd, '>', "$sched_file") or return;
@@ -628,6 +742,16 @@ sub sched {
   my ($scheduled) = $self->checkSched();
   return "'$self->{_vmId}' update already scheduled"
     if ($scheduled eq 'Scheduled');
+  
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    my $bootv = OpenApp::VMMgmt::getDom0BootVer();
+    my $grubv = OpenApp::VMMgmt::getDom0GrubDefVer();
+    return 'Cannot schedule: Unknown current version' if (!defined($bootv));
+    return 'Cannot schedule: Unknown default version' if (!defined($grubv));
+    return 'Restart OpenAppliance to complete previous update/restore'
+      if ("$bootv" ne "$grubv");
+  }
 
   if (isCriticalPkg($self->{_vmId}, $ver)) {
     # critical update. make sure scheduled time is before the deadline.
@@ -685,6 +809,16 @@ sub schedRestore {
   my ($scheduled) = $self->checkSched();
   return "'$self->{_vmId}' update already scheduled"
     if ($scheduled eq 'Scheduled');
+
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    my $bootv = OpenApp::VMMgmt::getDom0BootVer();
+    my $grubv = OpenApp::VMMgmt::getDom0GrubDefVer();
+    return 'Cannot restore: Unknown current version' if (!defined($bootv));
+    return 'Cannot restore: Unknown default version' if (!defined($grubv));
+    return 'Restart OpenAppliance to complete previous update/restore'
+      if ("$bootv" ne "$grubv");
+  }
 
   # schedule restore
   my $upg_cmd = '/opt/vyatta/sbin/openapp-vm-upgrade.pl --action=restore'
@@ -763,6 +897,30 @@ sub _preUpgradeProc {
   # write status
   my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
   $self->_writeStatus('Upgrading', $vver, $time, '');
+  
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    return "Cannot find new update \"$vver\""
+      if (! -f "$OA_NEW_DIR/version_$vver");
+
+    my $cmd = "rm -f $OA_PREV_DIR/version_*";
+    _system($cmd);
+    return 'Failed to remove previous version' if ($? >> 8);
+    
+    $cmd = "mv -f $OA_CUR_DIR/version_* $OA_PREV_DIR/";
+    _system($cmd);
+    return 'Failed to save current version' if ($? >> 8);
+
+    $cmd = "rm -f $OA_CUR_DIR/*.iso";
+    _system($cmd);
+    return 'Failed to remove current ISO' if ($? >> 8);
+
+    $cmd = "mv -f $OA_NEW_DIR/{*.iso,version_*} $OA_CUR_DIR/";
+    _system($cmd);
+    return 'Failed to move new update' if ($? >> 8);
+    
+    return undef;
+  }
 
   # arrange new/current/prev packages
   my $new_pkg = "oa-vimg-$self->{_vmId}_${vver}_all.deb";
@@ -793,6 +951,26 @@ sub _preRestoreProc {
   my $time = POSIX::strftime('%H:%M %d.%m.%y', localtime());
   $self->_writeStatus('Restoring', $vver, $time, '');
 
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    return "Cannot find previous version \"$vver\""
+      if (! -f "$OA_PREV_DIR/version_$vver");
+
+    my $cmd = "rm -f $OA_NEW_DIR/{version_*,*.iso}";
+    _system($cmd);
+    return 'Failed to clean up new upate' if ($? >> 8);
+    
+    $cmd = "mv -f $OA_CUR_DIR/version_* $OA_NEW_DIR/";
+    _system($cmd);
+    return 'Failed to save current version' if ($? >> 8);
+
+    $cmd = "mv -f $OA_PREV_DIR/version_* $OA_CUR_DIR/";
+    _system($cmd);
+    return 'Failed to move previous version' if ($? >> 8);
+    
+    return undef;
+  }
+
   # arrange current/prev packages
   my $cur_dir = "$VIMG_DIR/$self->{_vmId}/current";
   my $prev_dir = "$VIMG_DIR/$self->{_vmId}/prev";
@@ -814,6 +992,21 @@ sub _preRestoreProc {
 # also return backup archive name if one was created.
 sub _preInstProc {
   my ($self, $vver) = @_;
+
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    # do backup
+    my ($fh, $fname) = mkstemps('/tmp/upd-backup.XXXXXX', '.tar');
+    close($fh);
+    my $args = "--backup 'config=true' --filename '$fname'";
+    my $err = `/opt/vyatta/sbin/openapp-dom0-backup.pl $args 2>&1`;
+    if ($? >> 8) {
+      unlink($fname);
+      return ("Failed to create OA backup: $err", undef);
+    }
+    return (undef, $fname);
+  }
+
   my $running = "$VIMG_DIR/$self->{_vmId}/$RUNNING_FILE";
 
   my $cmd = "rm -f $running";
@@ -864,6 +1057,26 @@ sub _preInstProc {
 sub _installProc {
   my ($self, $vver) = @_;
   
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    return "Cannot find version \"$vver\" to install"
+      if (! -f "$OA_CUR_DIR/version_$vver");
+
+    my $dd = undef;
+    my @v = ();
+    if (opendir($dd, "$OA_CUR_DIR")) {
+      @v = grep { /\.iso$/ && -f "$OA_CUR_DIR/$_" } readdir($dd);
+      closedir($dd);
+    }
+    if (defined($v[0])) {
+      # found a new iso. install it.
+      my $err = `/opt/vyatta/sbin/install-image '$OA_CUR_DIR/$v[0]'`;
+      return "Failed to install image: $err" if ($? >> 8);
+    }
+
+    return undef;
+  }
+
   my $new_pkg = "oa-vimg-$self->{_vmId}_${vver}_all.deb";
   my $cur_dir = "$VIMG_DIR/$self->{_vmId}/current";
   return 'Cannot find package to install' if (! -f "$cur_dir/$new_pkg");
@@ -880,6 +1093,26 @@ sub _installProc {
 # return error message or undef if success.
 sub _postInstProc {
   my ($self, $vver, $backup) = @_;
+
+  if (OpenApp::VMMgmt::isDom0Id($self->{_vmId})) {
+    # dom0 special case
+    return "Cannot find version \"$vver\" after install"
+      if (! -f "$OA_CUR_DIR/version_$vver");
+
+    # set grub default to "current" (i.e., just installed)
+    my $newdef = OpenApp::VMMgmt::setDom0GrubDefVer($vver);
+    return 'Failed to set default boot entry' if (!defined($newdef));
+
+    # restore
+    my $args = "--restore 'config=true' --filename '$backup'";
+    my $err = `/opt/vyatta/sbin/openapp-dom0-backup.pl $args 2>&1`;
+    my $ret = ($? >> 8);
+    unlink($backup);
+    return "Failed to restore OA backup: $err" if ($ret);
+    
+    return undef;
+  }
+
   my $running = "$VIMG_DIR/$self->{_vmId}/$RUNNING_FILE";
 
   my $err = oaVimgPostinst($self->{_vmId}, $running);

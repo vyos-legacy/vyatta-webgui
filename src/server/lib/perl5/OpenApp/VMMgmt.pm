@@ -16,6 +16,9 @@ our $LIBVIRT_DIR = '/var/oa/libvirt';
 my $STATUS_DIR = '/var/run/vmstatus';
 my $HWMON_FILE = '/var/run/vmstatus.hw';
 
+my $OA_VERSION_FILE = '/opt/vyatta/etc/version';
+my $OA_GRUB_CFG = '/live/image/boot/grub/grub.cfg';
+
 ### "static" functions
 sub getVMList {
   my $dd = undef;
@@ -72,6 +75,75 @@ sub getHwMonData {
 sub isValidId {
   my ($id) = @_;
   return ($id eq $OPENAPP_ID || -r "$META_DIR/$id") ? 1 : 0;
+}
+
+sub isDom0Id {
+  my ($id) = @_;
+  return ($id eq $OPENAPP_ID);
+}
+
+sub getDom0BootVer {
+  my $fd = undef;
+  return undef if (!open($fd, '<', $OA_VERSION_FILE));
+  my $ver = undef;
+  while (<$fd>) {
+    if (/^Version +: +(.*)$/) {
+      $ver = $1;
+      last;
+    }
+  }
+  close($fd);
+  return $ver;
+}
+
+sub getDom0GrubDefVer {
+  my $fd = undef;
+  return undef if (!open($fd, '<', $OA_GRUB_CFG));
+  my $defv = undef;
+  my @entries = ();
+  my $in_entry = 0;
+  while (<$fd>) {
+    if (/^set default=(\d+)$/) {
+      $defv = $1;
+    } elsif (/^menuentry /) {
+      $in_entry = 1; 
+    } elsif (/^}/) {
+      $in_entry = 0; 
+    } elsif ($in_entry && /^\s+multiboot \/boot\/([^\/]+)\//) {
+      push @entries, $1;
+    }
+  }
+  close($fd);
+  return $entries[$defv]; # this could be undef
+}
+
+sub setDom0GrubDefVer {
+  my ($newv) = @_;
+  my $fd = undef;
+  return undef if (!open($fd, '<', $OA_GRUB_CFG));
+  my ($in_entry, $idx, $newdef) = (0, 0, undef);
+  while (<$fd>) {
+    if (/^menuentry /) {
+      $in_entry = 1; 
+    } elsif (/^}/) {
+      $in_entry = 0; 
+    } elsif ($in_entry && /^\s+multiboot \/boot\/([^\/]+)\//) {
+        if ("$newv" eq "$1") {
+          $newdef = $idx;
+          last;
+        }
+    }
+    ++$idx;
+  }
+  close($fd);
+  if (defined($newdef)) {
+    system("sudo sed -i 's/^set default=.*\$/set default=$newdef/' "
+           . "$OA_GRUB_CFG");
+    if ($? >> 8) {
+      $newdef = undef;
+    }
+  }
+  return $newdef;
 }
 
 sub _getLibvirtCfg {

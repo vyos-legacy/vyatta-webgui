@@ -111,44 +111,46 @@ sub do_restore {
 }
 
 sub do_list {
-    my $cmdline = $ENV{OA_CMD_LINE};
+  my $cmdline = $ENV{OA_CMD_LINE};
 
-    if (!defined $cmdline) {
-	print "VERBATIM_OUTPUT\n";
-    }
-    my @VMs = OpenApp::VMMgmt::getVMList();
-    for my $vid (@VMs) {
-	my $vm = new OpenApp::VMDeploy($vid);
-	next if (!defined($vm));
-	my $aref = $vm->getHist();
-	for my $href (@{$aref}) {
-	    my $time = $href->{_time};
-	    my $id = $href->{_id};
-	    my $ver = $href->{_ver};
-	    my $status = $href->{_status};
-	    my $msg = $href->{_msg};
-	    my $old = (defined($href->{_old})) ? " old='true'" : '';
-	    my $prev = OpenApp::VMDeploy::vmCheckPrev($vid);
-	    if (!defined $cmdline) {
-      print <<EOF;
-      <record$old>
-        <time>$time</time>
-        <id>$id</id>
-        <ver>$ver</ver>
-        <prevVer>$prev</prevVer>
-        <status>$status</status>
-        <msg>$msg</msg>
-      </record>
+  if (!defined $cmdline) {
+    print "VERBATIM_OUTPUT\n";
+  }
+  my @VMs = OpenApp::VMMgmt::getVMList();
+  push @VMs, $OpenApp::VMMgmt::OPENAPP_ID; # include dom0 itself
+  for my $vid (@VMs) {
+    my $vm = new OpenApp::VMDeploy($vid);
+    next if (!defined($vm));
+    my $aref = $vm->getHist();
+    for my $href (@{$aref}) {
+      my $time = $href->{_time};
+      my $id = $href->{_id};
+      my $ver = $href->{_ver};
+      my $status = $href->{_status};
+      my $msg = $href->{_msg};
+      my $old = (defined($href->{_old})) ? " old='true'" : '';
+      my $prev = OpenApp::VMDeploy::vmCheckPrev($vid);
+      if (!defined($cmdline)) {
+        print <<EOF;
+<record$old>
+  <time>$time</time>
+  <id>$id</id>
+  <ver>$ver</ver>
+  <prevVer>$prev</prevVer>
+  <status>$status</status>
+  <msg>$msg</msg>
+</record>
 EOF
-	    }
-	    else {
-		print "entry:\n";
-		print "\ttime:\t$time\n";
-		print "\tid:\t$id\n";
-		print "\tversion:\t$ver\n";
-		print "\tprevious version:\t$prev\n";
-		print "\tstatus:\t$status\n";
-		print "\tmessage:\t$msg\n";
+	    } else {
+        print <<EOF;
+entry:
+    time:     $time
+    id:       $id
+    version:  $ver
+    previous: $prev
+    status:   $status
+    message:  $msg
+EOF
 	    }
     }
   }

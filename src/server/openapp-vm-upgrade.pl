@@ -22,12 +22,6 @@ if (!defined($vmObj)) {
   exit 1;
 }
 
-# OA dom0
-if ($vmid eq $OpenApp::VMMgmt::OPENAPP_ID) {
-  # no dom0 update for now
-  exit 0;
-}
-
 my $vmDeploy = new OpenApp::VMDeploy($vmid);
 if ($action eq 'upgrade') {
   $vmDeploy->upgrade($vver);

@@ -16,6 +16,7 @@ my $OA_LDAP_DUMP_FILE = 'ldap.ldif';
 my $SLAPD_INIT = '/etc/init.d/slapd';
 my $LDAP_DB_DIR = '/var/lib/ldap';
 my $LDAP_DB_OWNER = 'openldap';
+my $LDAP_DB_SUFFIX = 'dc=localhost,dc=localdomain';
 my $LDAP_GROUP = 'openldap';
 
 # authenticated user
@@ -64,19 +65,27 @@ sub cp_p {
   return (($? >> 8) ? 0 : 1);
 }
 
+sub in_chroot {
+  return (-r '/proc/version');
+}
+
 sub stop_ldap {
+  return 1 if in_chroot();
+
   system("$SLAPD_INIT stop >&/dev/null");
   return (($? >> 8) ? 0 : 1);
 }
 
 sub start_ldap {
+  return 1 if in_chroot();
+
   system("$SLAPD_INIT start >&/dev/null");
   return (($? >> 8) ? 0 : 1);
 }
 
 sub save_ldap {
   my ($file) = @_;
-  system("slapcat >'$file'");
+  system("slapcat -b '$LDAP_DB_SUFFIX' >'$file'");
   return (($? >> 8) ? 0 : 1);
 }
 
@@ -84,7 +93,8 @@ sub load_ldap {
   my ($file) = @_;
   return 0 if (! -d "$LDAP_DB_DIR");
   system("rm -rf $LDAP_DB_DIR/* "
-         . "&& sudo -u $LDAP_DB_OWNER slapadd -l \"$file\"");
+         . "&& sudo -u $LDAP_DB_OWNER "
+         . "slapadd -b '$LDAP_DB_SUFFIX' -l \"$file\"");
   return (($? >> 8) ? 0 : 1);
 }
 

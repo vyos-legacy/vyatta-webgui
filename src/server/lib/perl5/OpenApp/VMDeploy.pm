@@ -54,6 +54,15 @@ sub vmCheckUpdate {
   if (OpenApp::VMMgmt::isDom0Id($vid)) {
     # dom0 special case
     # note: no critical update for dom0
+    # use critical status to return warning instead
+    my $bootv = OpenApp::VMMgmt::getDom0BootVer();
+    my $grubv = OpenApp::VMMgmt::getDom0GrubDefVer();
+    # cannot get version string (these should not happen)
+    return ('', '') if (!defined($bootv) || !defined($grubv));
+    my $msg = 'Restart OpenAppliance to complete previous update/restore '
+              . "(running=$bootv, installed=$grubv)";
+    return ('', $msg) if ("$bootv" ne "$grubv");
+
     # look for new ISO image
     my @v = ();
     if (opendir($dd, "$NVIMG_DIR")) {
@@ -86,7 +95,7 @@ sub vmCheckUpdate {
       my $new_ver
         = `sudo /opt/vyatta/sbin/get-iso-version "$new_file" 2>/dev/null`;
       my $fd;
-      return ('', '') if (!open($fd, '>', "version_${new_ver}"));
+      return ('', '') if (!open($fd, '>', "$OA_NEW_DIR/version_${new_ver}"));
       close($fd);
       return ($new_ver, '');
     }
@@ -958,8 +967,12 @@ sub _preRestoreProc {
 
     my $cmd = "rm -f $OA_NEW_DIR/{version_*,*.iso}";
     _system($cmd);
-    return 'Failed to clean up new upate' if ($? >> 8);
+    return 'Failed to clean up new update' if ($? >> 8);
     
+    $cmd = "rm -f $OA_CUR_DIR/*.iso";
+    _system($cmd);
+    return 'Failed to clean up current version' if ($? >> 8);
+
     $cmd = "mv -f $OA_CUR_DIR/version_* $OA_NEW_DIR/";
     _system($cmd);
     return 'Failed to save current version' if ($? >> 8);
@@ -1072,8 +1085,12 @@ sub _installProc {
       # found a new iso. install it.
       my $err = `/opt/vyatta/sbin/install-image '$OA_CUR_DIR/$v[0]'`;
       return "Failed to install image: $err" if ($? >> 8);
-    }
 
+      my $cmd = "rm -f $OA_CUR_DIR/*.iso";
+      _system($cmd);
+      return 'Failed to clean up current version' if ($? >> 8);
+    }
+    
     return undef;
   }
 
@@ -1104,8 +1121,8 @@ sub _postInstProc {
     return 'Failed to set default boot entry' if (!defined($newdef));
 
     # restore
-    my $args = "--restore 'config=true' --filename '$backup'";
-    my $err = `/opt/vyatta/sbin/openapp-dom0-backup.pl $args 2>&1`;
+    my $args = "'$vver' '$backup'";
+    my $err = `/opt/vyatta/sbin/openapp-dom0-restore-inst $args 2>&1`;
     my $ret = ($? >> 8);
     unlink($backup);
     return "Failed to restore OA backup: $err" if ($ret);

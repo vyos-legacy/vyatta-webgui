@@ -114,8 +114,8 @@ function UTM_confFireLevel(name, callback, busLayer)
             // if selRec is null, set the first row as selected zone-pair
             if(selRec == null)
             {
-                // mark the first row as selected zone
-                if(i == 0)
+                // mark the WAN to LAN as a default selected zone
+                if(rec[1] == "WAN" && rec[2] == "LAN ")
                 {
                     rec[0] = 'yes';
                     selDir = rec[4];
@@ -130,6 +130,10 @@ function UTM_confFireLevel(name, callback, busLayer)
                         rec[4]+"-id",
                         "f_fireActiveRadioHandler('"+rec[4]+"')",
                         "activeLevel", "") + "</div>";
+
+            // remore P from PDMZ
+            if(rec[1] == "PDMZ") rec[1] = "DMZ";
+            if(rec[2] == "PDMZ") rec[2] = "DMZ";
 
             this.m_gridActiveBody.appendChild(thisObj.f_createGridRow(this.m_colActiveModel,
                     [radio, rec[1]+" zone", rec[2]+" zone", rec[3]]));
@@ -147,6 +151,14 @@ function UTM_confFireLevel(name, callback, busLayer)
             var rec = zRecs[i];
             var check = selRec != null && rec.m_direction == selRec.m_direction ? 'yes' : 'no';
             var dirs = this.f_getDirection(rec.m_direction);
+
+            //////////////////////////////////
+            // adjust sorting per FT requested
+            // like... LAN, LAN2, DMZ then WAN
+            if(dirs[0] == "LAN") dirs[0] = dirs[0] + " ";
+            if(dirs[1] == "LAN") dirs[1] = dirs[1] + " ";
+            if(dirs[0] == "DMZ") dirs[0] = "P" + dirs[0];
+            if(dirs[1] == "DMZ") dirs[1] = "P" + dirs[1];
 
             // NOTE: the order of this partition same as the order
             // grid columns.
@@ -186,7 +198,7 @@ function UTM_confFireLevel(name, callback, busLayer)
         var hdBodies = [];
         var h = [];
         var dir = rec.m_direction;
-        if(dir != "LAN_to_WAN" && dir != "WAN_to_LAN")
+        if(dir != "LAN_to_WAN")
         {
             radioIds = [this.m_rdDefaultId, this.m_rdCustomId];
             rdHeaders = [g_lang.m_fireLevelHdDef, g_lang.m_fireLevelHdCustom];
@@ -194,16 +206,7 @@ function UTM_confFireLevel(name, callback, busLayer)
 
             if(dir == "LAN_to_DMZ")
             {
-                hdBodies = [g_lang.m_fireLevelBdLANtoDMZ_Def, custom];
-            }
-            else if(dir == "DMZ_to_LAN")
-            {
-                hdBodies = [g_lang.m_fireLevelBdDMZtoLAN, custom];
-            }
-            else if(dir.indexOf("DMZ_to_") >= 0 ||
-                dir.indexOf("LAN2_to_") >= 0)
-            {
-                hdBodies = [g_lang.m_fireLevelBdDef, custom];
+                hdBodies = [g_lang.m_fireLevelAllowed, custom];
             }
             
             h = [43, 53];
@@ -215,13 +218,8 @@ function UTM_confFireLevel(name, callback, busLayer)
             rdHeaders = [g_lang.m_fireLevelHdAuth, g_lang.m_fireLevelHdStand,
                         g_lang.m_fireLevelHdAdvan, g_lang.m_fireLevelHdCustom,
                         g_lang.m_fireLevelHdBlock];
-
-            if(dir == "WAN_to_LAN")
-                hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand_WtoL,
-                        g_lang.m_fireLevelBdAdvan, custom,
-                        g_lang.m_fireLevelBdBlock];
-            else
-                hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand,
+            
+            hdBodies = [g_lang.m_fireLevelBdAuth, g_lang.m_fireLevelBdStand,
                         g_lang.m_fireLevelBdAdvan, custom,
                         g_lang.m_fireLevelBdBlock];
 

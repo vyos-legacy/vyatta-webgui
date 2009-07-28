@@ -35,10 +35,27 @@ use Vyatta::IpTables::AddressFilter;
 
 
 my $max_rules = 400; # each for DNAT and SNAT
-my $dnat_start_rules = 101;
-my $snat_start_rules = 601;
+my $dnat_rules_start_at = 101;
+my $dnat_rules_end_at = 500;
+my $snat_rules_start_at = 601;
+my $snat_rules_end_at = 1000;
 
 sub numerically { $a <=> $b; }
+
+sub is_valid_direction_rulenum {
+  my ($direction, $rulenum) = @_;
+  if ($direction eq 'incoming' &&
+     ($rulenum >= $dnat_rules_start_at && $rulenum <= $dnat_rules_end_at))
+  {
+    return 0;
+  } elsif ($direction eq 'outgoing' &&
+          ($rulenum >= $snat_rules_start_at && $rulenum <= $snat_rules_end_at))
+  {
+    return 0;
+  } else {
+    return 1;
+  }
+}
 
 sub get_srcdst_address {
  my ($level, $orig_or_active) = @_;
@@ -62,6 +79,35 @@ sub get_srcdst_port {
  $port->$orig_or_active("$level");
  $portstr = $port->{_port} if defined $port->{_port};
  return $portstr;
+}
+
+sub get_addr_port_cmds {
+  my ($value, $clilevel, $addr_or_port) = @_;
+  my @cmds = ();
+  my ($func, $clival);
+
+  if ($addr_or_port eq 'address') {
+    $func="get_srcdst_address(\"$clilevel\", 'setup')";
+  } else {
+    $func="get_srcdst_port(\"$clilevel\", 'setup')";
+  }
+
+  if ($value eq '') {
+    # check if there exists a value in CLI
+    # if yes then delete it
+    $clival = $func;
+    if (!($clival eq '')) {
+      @cmds = (
+        "delete $clilevel $addr_or_port",
+      );
+    }
+  } else {
+    @cmds = (
+      "set $clilevel $addr_or_port $value",
+    );
+  }
+
+  return @cmds;
 }
 
 # get rule info for given rule
@@ -113,7 +159,7 @@ sub execute_get {
   my $return_string;
   my $rules_string='';
   my $config = new Vyatta::Config;
-
+  
   # get a list of all rulenums for the given direction
   # ask for all rules one by one and keep appending to $rules_string
   $config->setLevel("service nat rule");
@@ -123,34 +169,34 @@ sub execute_get {
     # ask for all rules one by one and keep appending to $rules_string
     foreach my $rule (sort numerically @rules) {
       if ($direction eq 'incoming') {
-        next if ($rule < 101 || $rule > 500); # dnat rules are from 101-500
+        next if (is_valid_direction_rulenum($direction, $rule) == 1);
         $rules_string .= get_dnat_rule ($rule);
       } elsif ($direction eq 'outgoing') {
-        next if ($rule < 601 || $rule > 1000); # dnat rules are from 601-1000
+        next if (is_valid_direction_rulenum($direction, $rule) == 1);
         # will add function to get snat rules if needed
       } else {
         # error invalid direction
-        print "<nat-config>Invalid direction</nat-config>";
-        return;
+        print("<form name='nat-config' code=4>Invalid NAT direction</form>");
+        exit 1;
       }
     }
   } else {
       # proceed only if rule is a valid one
       if (!scalar(grep(/^$rulenum$/, @rules)) > 0) {
-        print "<nat-config>Invalid rule number</nat-config>";
-        return;
+        print("<form name='nat-config' code=4>Invalid rule number</form>");
+        exit 1;
       }
 
-      if ($direction eq 'incoming' && ($rulenum > 100 && $rulenum < 501)) {
+      if (is_valid_direction_rulenum('incoming', $rulenum) == 0) {
         # ask for specific dnat rule and append to $rules_string
         $rules_string .= get_dnat_rule ($rulenum);
-      } elsif ($direction eq 'outgoing' &&
-                ($rulenum > 600 && $rulenum < 1001)) {
+      } elsif (is_valid_direction_rulenum('outgoing', $rulenum) == 0) {
         # ask for specific snat rule and append to $rules_string
         # will add function to get snat rules if needed
       } else {
-        print "<nat-config>Invalid direction" .
-              "and rule number combination</nat-config>";
+        print "<form name='nat-config' code=4>Invalid direction and " . 
+              "rule number combination</form>";
+        exit 1;
       }
   }
 
@@ -161,17 +207,129 @@ sub execute_get {
 }
 
 sub execute_delete_rule {
- my ($direction, $rulenum) = @_;
+  my ($direction, $rulenum) = @_;
+  my (@cmds, $err);
+  if (is_valid_direction_rulenum($direction, $rulenum) == 0) {
+    @cmds = ("delete service nat rule $rulenum");
+    $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+    if (defined $err) {
+      # print error and return
+      print("<form name='nat-config' code=5>Error deleting NAT rule</form>");
+      exit 1;
+    }
+  } else {
+    print "<form name='nat-config' code=5>Invalid direction and " .
+          "rule number combination</form>";
+    exit 1;
+  }  
 
+}
+
+sub set_dnat_rule {
+  my ($rulenum, $key, $value) = @_;
+  my $invalid_key='false';
+  my (@cmds, $err);
+  my $nat_rule_level = "service nat rule $rulenum";  
+
+  # convert any capital letters to small caps to avoid any confusion
+  $key =~ tr/A-Z/a-z/;
+  if (!($key eq 'application')) {
+    $value =~ tr/A-Z/a-z/ if defined $value;
+  }
+
+  switch ($key) 
+  {
+    case 'protocol' {
+      if ($value eq 'any') {
+        $value = 'all';
+      }
+      @cmds = (
+         "set $nat_rule_level protocol $value",
+      );
+    }
+    case 'application' {
+      if (!$value eq '') {
+        @cmds = (
+         "set $nat_rule_level description $value",
+        );
+      } else {
+        @cmds = (
+         "set $nat_rule_level description Others",
+        );
+      }
+    }
+    case 'iaddr' {
+      @cmds = get_addr_port_cmds(
+                $value, "$nat_rule_level inside-address", 'address');
+    }
+    case 'iport' {
+      @cmds = get_addr_port_cmds(
+                $value, "$nat_rule_level inside-address", 'port');
+    }
+    case 'dport' {
+      @cmds = get_addr_port_cmds(
+                $value, "$nat_rule_level destination", 'port');
+    }
+    case 'enable' {
+      if ($value eq 'yes') {
+        my $rule = new Vyatta::NatRule;
+        $rule->setup("$nat_rule_level");
+        if ($rule->is_disabled()) {
+          @cmds = (
+            "delete $nat_rule_level disable",
+          );
+        }
+      } else {
+        @cmds = (
+          "set $nat_rule_level disable",
+        );
+      }
+    }
+    else {
+      $invalid_key = 'true';
+    }  
+  }
+
+  if ($invalid_key eq 'false') {
+    push @cmds, "set $nat_rule_level inbound-interface eth0";  
+    $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+    if (defined $err) {
+      # print error and return
+      print("<form name='nat-config' code=7>Error setting $key - $value</form>");
+      exit 1;
+    }
+  } else {
+    # print error and return
+    print("<form name='nat-config' code=7>Invalid field for NAT rule - $key</form>");
+    exit 1;
+  }
+   
 }
 
 sub execute_set_value {
   my ($direction, $rulenum, $key, $value) = @_;
-  my $invalid_key='false';
-  my @cmds=();
+  if (is_valid_direction_rulenum($direction, $rulenum) == 1) {
+    print "<form name='nat-config' code=6>Invalid direction and " .
+          "rule number combination</form>";
+    exit 1;  
+  }
 
-  # convert any capital letters to small caps to avoid any confusion
-  $key =~ tr/A-Z/a-z/;
+  switch ($direction) 
+  {
+    case 'incoming' 
+    {
+      set_dnat_rule($rulenum, $key, $value);
+    }
+    case 'outgoing'
+    {
+      # will create a set_snat_rule when needed
+    }
+    else
+    {
+      print "<form name='nat-config' code=6>Invalid direction</form>";
+      exit 1;
+    }
+  }  
 }
 
 sub get_next_rulenum {
@@ -213,7 +371,7 @@ if ($action eq 'save') {
   my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
   if (defined $err) {
     # print error and return
-    print("<form name='customize-firewall' code=1></form>");
+    print("<form name='nat-config' code=1>Error applying changes</form>");
     exit 1;
   }
   exit;
@@ -226,7 +384,7 @@ if ($action eq 'cancel') {
   my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
   if (defined $err) {
     # print error and return
-    print("<form name='customize-firewall' code=2></form>");
+    print("<form name='nat-config' code=2>Error cancelling changes</form>");
     exit 1;
   }
   exit;
@@ -272,7 +430,7 @@ switch ($action) {
   else
   {
     # invalid action
-    print "Invalid Action for $0\n";
+    print("<form name='nat-config' code=3>Invalid Action for $0</form>");
     exit 1;
   }
 }

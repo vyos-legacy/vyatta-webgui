@@ -252,7 +252,7 @@ sub get_addr_port_cmds {
     $clival = $func;
     if (!($clival eq '')) {
       @cmds = (
-        "delete $clilevel",
+        "delete $clilevel $addr_or_port",
       );
     }
   } else {

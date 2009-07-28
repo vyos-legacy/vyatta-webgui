@@ -46,6 +46,29 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
     this.m_status = status;   // yes/no
     this.m_enable = enable;
 
+    this.f_setDefault = function()
+	{
+        thisObj.m_mode = 'easy'; // easy or export
+        thisObj.m_tunnel = '';
+        thisObj.m_peerIp = '0.0.0.0';
+        thisObj.m_remoteVpnDevice = 'Cisco';
+        thisObj.m_presharedKey = null;
+        thisObj.m_localNetwork = '0.0.0.0/24';
+        thisObj.m_remoteNetwork = '0.0.0.0/24';
+        thisObj.m_type = 'EXP/Tunnel';
+        thisObj.m_exchange = 'Aggresive';
+        thisObj.m_encryption1 = 'AES128';
+        thisObj.m_auth1 = 'SHA1';
+        thisObj.m_diffieHellmann = 'Group 5';
+        thisObj.m_lifeTime1 = '';
+        thisObj.m_pfsGroup = 'Group 5';
+        thisObj.m_lifeTime2 = '';
+        thisObj.m_encryption2 = 'AES128';
+        thisObj.m_auth2 = 'SHA1';
+        thisObj.m_status = 'yes';   // yes/no
+        thisObj.m_enable = false;		
+	}
+
     this.f_setLocalNetwork = function(ip, prefix)
     {
         thisObj.m_localNetwork = ip + '/' + prefix;

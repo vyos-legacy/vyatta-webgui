@@ -49,47 +49,49 @@ function UTM_confUrlEz(name, callback, busLayer)
     {
         this.f_setConfig({
             id: 'conf_url_ez',
-            width: '500',
+            width: '660',
+			padding: '0px 0px 0px 30px',
             items: [{
                 v_type: 'label',
                 text: g_lang.m_url_ezFilterPolicy,
                 v_new_row: 'true',
                 v_end_row: 'true',
+				padding: '30px',
 				font_weight: 'bold'
             }, EMPTY_ROW, {
                 v_type: 'html',
                 id: 'conf_url_ez_blacklist',
                 text: '<input id="conf_url_ez_blacklist" type="radio" name="filter_by" value="cat" checked>&nbsp;' + g_lang.m_url_ezByCat,
-                padding: '30px',
+                padding: '60px',
                 v_new_row: 'true',
                 v_end_row: 'true'
             }, {
                 v_type: 'html',
                 id: 'conf_url_ez_legal',
-                padding: '60px',
+                padding: '90px',
                 text: '<input id="conf_url_ez_legal" type="radio" name="filter_by_cat" value="legal" checked>&nbsp;' + g_lang.m_url_ezLegal,
                 v_new_row: 'true',
                 v_end_row: 'true'
             }, {
                 v_type: 'html',
                 id: 'conf_url_ez_productivity',
-                padding: '60px',
+                padding: '90px',
                 text: '<input id="conf_url_ez_productivity" type="radio" name="filter_by_cat" value="prof">&nbsp;' + g_lang.m_url_ezProf,
                 v_new_row: 'true',
                 v_end_row: 'true'
             }, {
                 v_type: 'html',
                 id: 'conf_url_ez_strict',
-                padding: '60px',
+                padding: '90px',
                 text: '<input id="conf_url_ez_strict" type="radio" name="filter_by_cat" value="strict">&nbsp;' + g_lang.m_url_ezStrict,
                 v_new_row: 'true',
                 v_end_row: 'true'
             }//,  EMPTY_ROW
-, {
+            , {
                 v_type: 'html',
                 id: 'conf_url_ez_whitelist',
                 text: '<input id="conf_url_ez_whitelist" type="radio" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByUrl,
-                padding: '30px',
+                padding: '60px',
                 v_new_row: 'true'
             }, {
                 v_type: 'html',
@@ -99,11 +101,11 @@ function UTM_confUrlEz(name, callback, busLayer)
 					  + '</div>',
                 v_end_row: 'true'
             }//,  EMPTY_ROW
-, {
+            , {
                 v_type: 'html',
                 id: 'conf_url_ez_keyword',
                 text: '<input id="conf_url_ez_keyword" type="radio" name="filter_by" value="url">&nbsp;' + g_lang.m_url_ezByWord,
-                padding: '30px',
+                padding: '60px',
                 v_new_row: 'true'
             }, {
                 v_type: 'html',
@@ -117,6 +119,7 @@ function UTM_confUrlEz(name, callback, busLayer)
                 text: g_lang.m_url_ezFilterPolicyImp,
                 v_new_row: 'true',
                 v_end_row: 'true',
+				padding: '30px',
 				font_weight: 'bold'
             }, EMPTY_ROW, {
                 v_type: 'html',
@@ -138,23 +141,24 @@ function UTM_confUrlEz(name, callback, busLayer)
                 g_lang.m_url_ezOff +
                 '</td>' +
                 '</tr></tbody></table></div>',
+				padding: '60px',
                 v_new_row: 'true',
                 v_end_row: 'true',
                 colspan: 3
             }],
-            buttons: [{
-                id: 'conf_url_ez_apply_button',
-                align: 'right',
-                text: 'Apply',
-				tooltip: g_lang.m_tooltip_apply,
-                onclick: this.f_handleClick
-            }, {
+            buttons: [ {
                 id: 'conf_url_ez_cancel_button',
                 align: 'right',
                 text: 'Cancel',
 				tooltip: g_lang.m_tooltip_cancel,				
                 onclick: this.f_handleClick
-            }]
+            }, {
+                id: 'conf_url_ez_apply_button',
+                align: 'right',
+                text: 'Apply',
+				tooltip: g_lang.m_tooltip_apply,
+                onclick: this.f_handleClick
+            } ]
         })
     }
     

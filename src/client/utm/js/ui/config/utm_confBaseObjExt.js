@@ -99,6 +99,43 @@ function UTM_confBaseObjExt(name, callback, busLayer)
         return div;		
     }	
 	
+    this.f_createCenterButtons = function(buttons, width)
+    {
+        var div = document.createElement('div');
+        //div.style.position = 'relative';
+        div.style.display = 'block';
+        div.style.backgroundColor = 'white';
+		div.style.paddingTop = '10px';
+        div.style.height = '40px';
+		div.style.width = width;
+        div.setAttribute('align', 'center');
+
+        var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
+        innerHtml += '<tbody><tr height="22">';
+
+        for (var i=0; i < buttons.length; i++) {
+			innerHtml += this.f_addButtonCenter(buttons[i]);
+		}
+
+        innerHtml += '</tr></tbody></table>';
+        div.innerHTML = innerHtml;
+
+        return div;		
+    }		
+	
+    this.f_addButtonCenter = function(bt)
+    {
+        var html = '';
+
+        html += '<td><div title="' + bt[2] + '" style="padding-left: 10px;" >';					
+        html += html + '<input type="image" id="' + bt[3] + '"' +
+		       ' src="' + bt[4] + '" name="' + bt[0] + '" value="' + bt[0] + '" onclick="' +
+			   bt[1] + '">';
+		html += '</div></td>';
+			   
+		return html;
+    }	
+	
     this.f_createInnerButtons = function(buttons, width)
 	{
         var div = this.f_createButtons(buttons);

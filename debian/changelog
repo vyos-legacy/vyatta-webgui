@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+92) unstable; urgency=low
+
+  * add support for setting and deleting NAT rule
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Mon, 27 Jul 2009 18:38:20 -0700
+
 vyatta-webgui (0.2.14+fxdU+91) unstable; urgency=low
 
   [ Kevin Choi ]

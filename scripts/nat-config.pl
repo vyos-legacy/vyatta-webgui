@@ -335,8 +335,61 @@ sub execute_set_value {
 sub get_next_rulenum {
   my $direction = shift;
   my $config = new Vyatta::Config;
-  my $max_rulenum = 1000;
   my $return_string;
+  my ($start_rulenum, $max_rulenum);
+  
+  # get a list of all NAT rules
+  $config->setLevel("service nat rule");
+  my @rules = $config->listNodes();
+  my @origrules = $config->listOrigNodes();
+  my @reverse_sort_all_rules = reverse sort numerically @rules;
+  my @reverse_sort_all_origrules = reverse sort numerically @origrules;
+  my @reverse_sort_rules = ();
+  my @reverse_sort_origrules = ();
+
+  if ($direction eq 'incoming') {
+    $start_rulenum = $dnat_rules_start_at;
+    $max_rulenum = $dnat_rules_end_at;
+    # now change exclude rules out of range 101-500 from
+    # @reverse_sort_rules and @reverse_sort_origrules
+    foreach my $rule (@reverse_sort_all_rules) {
+      next if (is_valid_direction_rulenum($direction, $rule) == 1);
+      push @reverse_sort_rules, $rule;
+    }
+    foreach my $rule (@reverse_sort_all_origrules) {
+      next if (is_valid_direction_rulenum($direction, $rule) == 1);
+      push @reverse_sort_origrules, $rule;
+    }
+  } elsif ($direction eq 'outgoing') {
+    $start_rulenum = $snat_rules_start_at;
+    $max_rulenum = $snat_rules_end_at;
+    # now change exclude rules out of range 601-1000 from
+    # @reverse_sort_rules and @reverse_sort_origrules
+  } else {
+    print("<form name='nat-config' code=8>Invalid NAT direction</form>");
+    exit 1;
+  }
+
+  my $rulenum;
+
+  if (defined $reverse_sort_rules[0] || defined $reverse_sort_origrules[0]) {
+    if (!defined $reverse_sort_rules[0]) {
+      $rulenum = $reverse_sort_origrules[0] + 1;
+    } elsif (!defined $reverse_sort_origrules[0]) {
+      $rulenum = $reverse_sort_rules[0] + 1;
+    } elsif ($reverse_sort_rules[0] >= $reverse_sort_origrules[0]) {
+      $rulenum = $reverse_sort_rules[0] + 1;
+    } else {
+      $rulenum = $reverse_sort_origrules[0] + 1;
+    }
+  } else {
+    $rulenum = $start_rulenum;
+  }
+
+  # need to reorder rules here to get back unused rule numbers
+
+  $return_string = "<nat-config>direction=[$direction]:rulenum=[$rulenum]:</nat-config>";
+  print "$return_string";
 
 }
 

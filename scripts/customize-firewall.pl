@@ -222,9 +222,9 @@ sub swap_rules {
 
   my ($swap_to_rule, $rulenum, $fw_ruleset) = @_;
   my @cmds = (
-    "firewall-rule-rename $fw_ruleset rule $swap_to_rule to rule 1024",
-    "firewall-rule-rename $fw_ruleset rule $rulenum to rule $swap_to_rule",
-    "firewall-rule-rename $fw_ruleset rule 1024 to rule $rulenum",
+    "rule-rename firewall $fw_ruleset rule $swap_to_rule to rule 1024",
+    "rule-rename firewall $fw_ruleset rule $rulenum to rule $swap_to_rule",
+    "rule-rename firewall $fw_ruleset rule 1024 to rule $rulenum",
     );
   my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
   if (defined $err) {
@@ -487,7 +487,7 @@ sub get_next_rulenum {
     foreach my $rulenumber (sort numerically @rules) {
       if ($rulenumber != $rule_cnt) {
         my @cmds = (
-          "firewall-rule-rename $fw_ruleset rule $rulenumber to rule $rule_cnt",
+          "rule-rename firewall $fw_ruleset rule $rulenumber to rule $rule_cnt",
         );
         my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
         if (defined $err) {

@@ -1,3 +1,24 @@
+vyatta-webgui (0.2.14+fxdU+93) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fixed as feedback from FT
+  * * firewall customizer screen : fixed grid table scrolling per FT
+    feedback.
+
+  [ Loi Vo ]
+  * Add more code to s2s vpn screens
+
+  [ Mohit Mehta ]
+  * add support for getting rule number for new rule
+
+  [ Loi Vo ]
+  * Fix the following per FT feedbacks:
+
+  [ Mohit Mehta ]
+  * use changed rule-rename command for renaming firewall rules
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 28 Jul 2009 17:13:42 -0700
+
 vyatta-webgui (0.2.14+fxdU+92) unstable; urgency=low
 
   * add support for setting and deleting NAT rule

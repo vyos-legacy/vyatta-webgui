@@ -350,24 +350,21 @@ sub get_next_rulenum {
   if ($direction eq 'incoming') {
     $start_rulenum = $dnat_rules_start_at;
     $max_rulenum = $dnat_rules_end_at;
-    # now change exclude rules out of range 101-500 from
-    # @reverse_sort_rules and @reverse_sort_origrules
-    foreach my $rule (@reverse_sort_all_rules) {
-      next if (is_valid_direction_rulenum($direction, $rule) == 1);
-      push @reverse_sort_rules, $rule;
-    }
-    foreach my $rule (@reverse_sort_all_origrules) {
-      next if (is_valid_direction_rulenum($direction, $rule) == 1);
-      push @reverse_sort_origrules, $rule;
-    }
   } elsif ($direction eq 'outgoing') {
     $start_rulenum = $snat_rules_start_at;
     $max_rulenum = $snat_rules_end_at;
-    # now change exclude rules out of range 601-1000 from
-    # @reverse_sort_rules and @reverse_sort_origrules
   } else {
     print("<form name='nat-config' code=8>Invalid NAT direction</form>");
     exit 1;
+  }
+
+  foreach my $rule (@reverse_sort_all_rules) {
+    next if (is_valid_direction_rulenum($direction, $rule) == 1);
+    push @reverse_sort_rules, $rule;
+  }
+  foreach my $rule (@reverse_sort_all_origrules) {
+    next if (is_valid_direction_rulenum($direction, $rule) == 1);
+    push @reverse_sort_origrules, $rule;
   }
 
   my $rulenum;
@@ -386,7 +383,36 @@ sub get_next_rulenum {
     $rulenum = $start_rulenum;
   }
 
-  # need to reorder rules here to get back unused rule numbers
+  if ($rulenum > $max_rulenum) {
+    # reorder rules to get back unused rule numbers for this direction
+    my $rule_cnt = $start_rulenum;
+    foreach my $rulenumber (sort numerically @reverse_sort_rules) {
+      if ($rulenumber != $rule_cnt) {
+        my @cmds = (
+          "rule-rename nat rule $rulenumber to rule $rule_cnt",
+        );
+        my $err = OpenApp::Conf::run_cmd_def_session(@cmds);
+        if (defined $err) {
+          # print error and return
+          print("<form name='nat-config' code=8>$err</form>");
+          exit 1;
+        }
+      }
+      $rule_cnt++;
+    }
+    @rules = $config->listNodes();
+    @reverse_sort_all_rules = reverse sort numerically @rules;
+    @reverse_sort_rules = ();
+    foreach my $rule (@reverse_sort_all_rules) {
+      next if (is_valid_direction_rulenum($direction, $rule) == 1);
+      push @reverse_sort_rules, $rule;
+    }
+
+    $rulenum = $reverse_sort_rules[0] + 1;
+    $return_string = "<nat-config>direction=[$direction]:rulenum=[resync-$rulenum]:</nat-config>";
+    print "$return_string";
+    return;
+  }
 
   $return_string = "<nat-config>direction=[$direction]:rulenum=[$rulenum]:</nat-config>";
   print "$return_string";

@@ -330,6 +330,9 @@ while (1) {
   my @VMs = OpenApp::VMMgmt::getVMList();
   for my $vm (@VMs) {
     updateVMStatus($vm);
+    if (OpenApp::VMMgmt::needRestart($vm)) {
+      OpenApp::VMMgmt::tryAutoRestart($vm);
+    }
   }
   updateHwMon();
 

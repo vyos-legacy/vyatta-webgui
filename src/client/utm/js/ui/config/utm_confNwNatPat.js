@@ -12,14 +12,16 @@ function UTM_confNwNatPat(name, callback, busLayer)
 {
     var thisObj = this;
     this.m_nwObj = busLayer.f_getNwObject();
+    this.m_sendList = [];
+    this.m_direction = "incoming";
     this.m_enabledchkId = "nwNatEnableId";
     this.m_btnAddId = "nwNatPatAddId";
     this.m_btnSaveId = "nwNatPatSaveId";
     this.m_btnCancelId = "nwNatPatCancelId";
     this.m_npRecs = [];
     this.m_fieldIds = ["nat_rulenoId-", "nat_appId-", "nat_dportId-",
-                        "nat_iportId-", "nat_proId-", "nat_nat_iipId-"];
-    this.m_protocol = ["tcp", "udp", "both"];
+                        "nat_iportId-", "nat_proId-", "nat_iipId-", "nat_enableId-"];
+    this.m_protocol = ["tcp", "udp", "both", " "];
 
     /**
      * @param name - name of configuration screens.
@@ -43,8 +45,8 @@ function UTM_confNwNatPat(name, callback, busLayer)
         UTM_confNwNatPat.superclass.m_allowSort = false;
         this.f_colorGridBackgroundRow(true);
 
-        var chkbox = 'enabled<br>yes/no<br><br>' + thisObj.f_renderCheckbox("no",
-                      thisObj.m_enabledchkId, "f_nwNatPathOnChkClick('" +
+        var chkbox = 'enabled<br><br>' + thisObj.f_renderCheckbox("no",
+                      thisObj.m_enabledchkId, "f_nwNatPatOnChkClick('" +
                       thisObj.m_enabledchkId+"')", 'Click here to enable/disable all');
 
         cols[0] = this.f_createColumn(g_lang.m_fireCustAppService, 150, 'combo', '3', false, 'center');
@@ -92,8 +94,6 @@ function UTM_confNwNatPat(name, callback, busLayer)
         thisObj.m_cb = function(evt)
         {
             g_utils.f_cursorDefault();
-            var enabled = true;
-
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
                 if(evt.m_value != null)
@@ -107,8 +107,9 @@ function UTM_confNwNatPat(name, callback, busLayer)
             }
         };
 
-        //g_utils.f_cursorWait();
-        // thisObj.m_busLayer.f_getNatPatConfigurations(null, thisObj.m_cb);
+        g_utils.f_cursorWait();
+        var rec = new UTM_nwNatPatRecord("all", "incoming");
+        thisObj.m_busLayer.f_getNatPatConfigurations(rec, thisObj.m_cb);
     };
 
     this.f_stopLoadVMData = function()
@@ -119,6 +120,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
     this.f_addDataIntoTable = function(fireRec)
     {
         var zpRule = fireRec.m_ruleNo;
+        var readonly = fireRec.m_appService.indexOf("Others") >= 0 ? false :true;
 
         var app = thisObj.f_renderCombobox(thisObj.m_nwObj.m_services, fireRec.m_appService,
                             140, thisObj.m_fieldIds[1]+zpRule,
@@ -127,9 +129,9 @@ function UTM_confNwNatPat(name, callback, busLayer)
         var dport = thisObj.f_renderTextField(thisObj.m_fieldIds[2]+zpRule,
                             fireRec.m_destPort, fireRec.m_destPort, 90,
                             ["f_nwNatPatOnTFBlur('" + thisObj.m_fieldIds[2]+
-                            zpRule + "')"], false);
+                            zpRule + "')"], readonly);
         var sport = thisObj.f_renderTextField(thisObj.m_fieldIds[3]+zpRule,
-                            fireRec.m_InternPort, fireRec.m_srcPort, 90,
+                            fireRec.m_internPort, fireRec.m_srcPort, 90,
                             ["f_nwNatPatOnTFBlur('" + thisObj.m_fieldIds[3]+
                             zpRule + "')"], false);
         var pro = thisObj.f_renderCombobox(thisObj.m_protocol, fireRec.m_protocol,
@@ -142,7 +144,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
                             zpRule + "')"], false);
         var enable = "<div align=center>" + thisObj.f_renderCheckbox(
                   fireRec.m_enabled, thisObj.m_fieldIds[6]+zpRule,
-                  "f_fwCustomizeOnChkBlur('"+thisObj.m_fieldIds[6]+zpRule+"')",
+                  "f_nwNatPatOnChkClick('"+thisObj.m_fieldIds[6]+zpRule+"')",
                   "") + "</div>";
         var del = "<div align=center>" + thisObj.f_renderButton(
                   "delete", true, "f_nwNatPatDeleteHandler(" + fireRec.m_ruleNo +
@@ -214,35 +216,102 @@ function UTM_confNwNatPat(name, callback, busLayer)
     {
         var ids = thisObj.m_fieldIds;
         var rNo = tfeid.split("-");
-        var rec = new UTM_nwNatPatRecord(rNo[1]);
+        var rec = new UTM_nwNatPatRecord(rNo[1], thisObj.m_direction);
         var el = document.getElementById(tfeid);
         var val = el.value;
         var fName = null;
 
         // ip address text fields
         if(tfeid.indexOf(ids[5]) >= 0 && thisObj.f_isIPAddressValidated(val))
-            fName = "internaddr";
+            fName = "iaddr";
         // destination port
         else if(tfeid.indexOf(ids[2]) >= 0)
             fName = "dport";
         // internal port
         else if(tfeid.indexOf(ids[3]) >= 0)
-            fName = "internport";
+            fName = "iport";
 
         thisObj.f_sendSetCommand(rec, fName, val);
     }
 
-    this.f_chkOnSelected = function(chkid)
+    this.f_setEnableValue2Server = function()
+    {
+        var cb = function(evt)
+        {
+            if(evt.m_errCode != 0)
+                alert("set enable error: " + evt.m_errMsg + " for " + eid);
+
+            if(thisObj.m_sendList.length > 0)
+                thisObj.f_setEnableValue2Server();
+        }
+
+        var eid = this.m_sendList.pop();
+        if(eid != null)
+        {
+            ///////////////////////////////////////////
+            // submit set to server.
+            var el = document.getElementById(eid);
+            var ids = eid.split("-");
+            var rec = new UTM_nwNatPatRecord(ids[1], thisObj.m_direction);
+
+            rec.m_enable = el.checked ? 'Yes' : 'No';
+            thisObj.f_sendSetCommand(rec, "enable", el.checked ? "Yes":"No", cb);
+        }
+    }
+
+    this.f_updateGridHeaderChkbox = function()
+    {
+        var checked = true;
+
+        for(var i=0; i<this.m_npRecs.length; i++)
+        {
+            var rec = this.m_npRecs[i];
+            var el = document.getElementById(this.m_fieldIds[6]+rec.m_ruleNo);
+
+            if(el != null)
+            {
+                if(!el.checked)
+                {
+                    checked = false;
+                    break;
+                }
+            }
+        }
+
+        var el = document.getElementById(this.m_enabledchkId);
+        el.checked = checked;
+    }
+
+    this.f_cbOnChkClick = function(chkid)
     {
         var chk = document.getElementById(chkid);
         var rNo = chkid.split("-");
-        var fireRec = new UTM_nwNatPatRecord(rNo[2]);
+        var fireRec = new UTM_nwNatPatRecord(rNo[1], thisObj.m_direction);
 
-        if(chkid.indexOf(thisObj.m_fieldIds[12]) >= 0)
+        if(chkid.indexOf(thisObj.m_fieldIds[6]) >= 0)
         {
-            thisObj.f_sendSetCommand(fireRec, "enable",
-                    chk.checked ? "Yes":"No");
+            this.f_updateGridHeaderChkbox();
+            this.m_sendList.push(chkid);
         }
+        else  // chkbox from grid table clicked
+        {
+            for(var i=0; i<thisObj.m_npRecs.length; i++)
+            {
+                var rec = thisObj.m_npRecs[i];
+                var eeid = thisObj.m_fieldIds[6] + rec.m_ruleNo;
+                var eel = document.getElementById(eeid);
+
+                if(eel != null)
+                {
+                    if(eel.checked != chk.checked)
+                        this.m_sendList.push(eeid);
+
+                    eel.checked = chk.checked;
+                }
+            }
+        }
+
+        thisObj.f_setEnableValue2Server();
     };
 
     this.f_cbOnSelected = function(cbeid)
@@ -251,14 +320,37 @@ function UTM_confNwNatPat(name, callback, busLayer)
         var val = cbb.value;
         var name = null;
         var rNo = cbeid.split("-");
-        var rec = new UTM_nwNatPatRecord(rNo[1]);
+        var rec = new UTM_nwNatPatRecord(rNo[1], thisObj.m_direction);
+
+        var sendDPort = function()
+        {
+            var dport = document.getElementById(thisObj.m_fieldIds[2]+rNo[1]);
+            dport.value = thisObj.m_nwObj.f_getPortNumber(rec);
+            thisObj.f_sendSetCommand(rec, "dport", dport.value);
+
+            if(rec.m_appService.indexOf("Other") >= 0)
+                thisObj.f_enableTextField(dport, true);
+            else
+                thisObj.f_enableTextField(dport, false);
+        }
 
         if(cbeid.indexOf(thisObj.m_fieldIds[1]) >= 0)
+        {
+            rec.m_appService = cbb.value;
+            cbb = document.getElementById(thisObj.m_fieldIds[4]+rNo[1]);
+            rec.m_protocol = cbb.value;
             name = 'application';
+        }
         else if(cbeid.indexOf(thisObj.m_fieldIds[4]) >= 0)
+        {
+            rec.m_protocol = cbb.value;
+            cbb = document.getElementById(thisObj.m_fieldIds[1]+rNo[1]);
+            rec.m_appService = cbb.value;
             name = 'protocol';
+        }
 
         thisObj.f_sendSetCommand(rec, name, val);
+        window.setTimeout(function(){sendDPort(rec)}, 900);
     };
 
     this.f_handleAddAction = function()
@@ -275,7 +367,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
         }
 
         g_utils.f_cursorWait();
-        thisObj.m_busLayer.f_getNatPatNextRuleNo(cb);
+        thisObj.m_busLayer.f_getNatPatNextRuleNo("incoming", cb);
     }
 
     this.f_handleSaveAction = function()
@@ -314,7 +406,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
         };
 
         g_utils.f_cursorWait();
-        var fireRec = new UTM_nwNatPatRecord(ruleNo);
+        var fireRec = new UTM_nwNatPatRecord(ruleNo, "incoming");
         thisObj.m_busLayer.f_deleteNatPatConfiguration(fireRec, cb);
     }
 }
@@ -357,9 +449,9 @@ function f_nwNatPatOnCbbBlur(cbeId)
     g_configPanelObj.m_activeObj.f_cbOnSelected(cbeId);
 }
 
-function f_nwNatPathOnChkClick(chkeId)
+function f_nwNatPatOnChkClick(chkeId)
 {
-    g_configPanelObj.m_activeObj.f_cbOnchkClick(chkeId);
+    g_configPanelObj.m_activeObj.f_cbOnChkClick(chkeId);
 }
 function f_nwNatPatNotUse()
 {

@@ -628,14 +628,14 @@ function UTM_businessLayer()
         return m_nwObj;
     }
 
-    this.f_getNatPatNextRuleNo = function(guicb)
+    this.f_getNatPatNextRuleNo = function(dir, guicb)
     {
-        thisObj.f_getNwObject().f_getNatPatNextRuleNo(guicb);
+        thisObj.f_getNwObject().f_getNatPatNextRuleNo(dir, guicb);
     }
 
     this.f_getNatPatConfigurations = function(rec, guicb)
     {
-        this.f_getNwObject().f_getNatPath(rec, guicb);
+        this.f_getNwObject().f_getNatPatConfigs(rec, guicb);
     }
 
     this.f_setNatPatNamePairValue = function(rec, name, value, guicb)

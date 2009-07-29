@@ -9,15 +9,16 @@
 /**
  * nat/pat data record
  */
-function UTM_nwNatPatRecord(ruleNo)
+function UTM_nwNatPatRecord(ruleNo, direction)
 {
     var thisObj = this;
+    this.m_direction = direction;
     this.m_ruleNo = ruleNo;   // data type int
     this.m_enabled = false;
     this.m_appService = " ";
     this.m_protocol = " ";
     this.m_internIpAddr = "0.0.0.0";
-    this.m_InternPort = "";
+    this.m_internPort = "";
     this.m_destPort = "";
 }
 
@@ -106,6 +107,10 @@ function UTM_nwConfigBusObj(busObj)
                         "L2TP", "Traceroute", "IPSec", "UNIK", "H323 host call - TCP",
                         "H323 host call - UDP", "SIP-TCP", "SIP-UDP",
                         "ICA-TCP", "ICA-UDP", "Others", " "];
+    this.m_ports = ["53", "53", "80", "443", "20", "21", "110", "25", "587",
+                        "69", "995", "143", "119", "199", "161-162", "23", "22",
+                        "1701", "32769-65535", "500, 4500", "500, 4500",
+                        "1720", "1718, 1719", "5060", "5060", "1494", "1494", " ", " "];
 
     /**
      * A callback function for request.
@@ -135,13 +140,13 @@ function UTM_nwConfigBusObj(busObj)
                     evt = new UTM_eventObj(0, fr, '');
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
-                    'network-nat-pat get') > 0)
+                    'nat-config get') > 0)
                 {
                     thisObj.m_nwRec = thisObj.f_parseNatPatList(err);
                     evt = new UTM_eventObj(0, thisObj.m_nwRec, '');
                 }
                 else if(thisObj.m_lastCmdSent.indexOf(
-                        'network-nat-pat next-rulenum') > 0)
+                        'nat-config next-rulenum') > 0)
                 {
                     thisObj.m_nwRec = thisObj.f_parseNatPatNextRuleNo(err);
                     evt = new UTM_eventObj(0, thisObj.m_nwRec, '');
@@ -164,7 +169,7 @@ function UTM_nwConfigBusObj(busObj)
             for(var i=0; i<nodes.length; i++)
             {
                 var n = nodes[i];
-                if(n.nodeName == "network-nat-pat")
+                if(n.nodeName == "nat-config")
                 {
                     var vals = n.firstChild.nodeValue;
                     var rec = new UTM_nwNatPatRecord();
@@ -180,7 +185,42 @@ function UTM_nwConfigBusObj(busObj)
 
     this.f_parseNatPatList = function(response)
     {
+        var nodes = thisObj.m_busObj.f_getResponseChildNodes(response, 'msg');
+        var natRec = new Array();
 
+        if(nodes != null)
+        {
+            for(var i=0; i<nodes.length; i++)
+            {
+                var n = nodes[i];
+                if(n.nodeName == "nat-config")
+                {
+                    var vals = n.firstChild.nodeValue.split(":");
+                    var dir = this.f_getValueFromNameValuePair("direction", vals[0]);
+
+                    for(var j=1; j<vals.length; j++)
+                    {
+                        var rNo = this.f_getValueFromNameValuePair("rulenum", vals[j]);
+
+                        if(rNo.length == 0) break;
+
+                        var x = j-1;
+                        natRec[x] = new UTM_nwNatPatRecord(rNo, dir);
+
+                        natRec[x].m_direction = dir;
+                        natRec[x].m_ruleNo = rNo;
+                        natRec[x].m_protocol = this.f_getValueFromNameValuePair("protocol", vals[j]);
+                        natRec[x].m_internAddr = this.f_getValueFromNameValuePair("iaddr", vals[j]);
+                        natRec[x].m_internPort = this.f_getValueFromNameValuePair("iport", vals[j]);
+                        natRec[x].m_destPort = this.f_getValueFromNameValuePair("dport", vals[j]);
+                        natRec[x].m_enabled = this.f_getValueFromNameValuePair("enable", vals[j]);
+                        natRec[x].m_appService = this.f_getValueFromNameValuePair("application", vals[j]);
+                    }
+                }
+            }
+        }
+
+        return natRec;
     }
 
     this.f_parseRouteList = function(response)
@@ -324,41 +364,25 @@ function UTM_nwConfigBusObj(busObj)
 
     /**
      * perform a set vpn site2site configurations request to server.
-     * @param fireRec - firewall record object
+     * @param rec - firewall record object
      * @param guicb - gui callback function
      */
-    this.f_getNatPat = function(rec, guicb)
+    this.f_getNatPatConfigs = function(rec, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var ruleName = rec != null ? rec.m_ruleNo : 'all';
-
-        var xmlstr = "<statement mode='proc'>" +
-                      "<handler>network-nat-path get" +
-                      "</handler><data>rulename=[" + ruleName +
-                      "]</data></statement>";
+        var xmlstr = "<statement mode='proc'><handler>nat-config get</handler>" +
+                      "<data>direction=[" + rec.m_direction + "],rulename=[" +
+                      rec.m_ruleNo + "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
 
-g_next = 0;
-    this.f_getNatPatNextRuleNo = function(guicb)
+    this.f_getNatPatNextRuleNo = function(dir, guicb)
     {
-        var cb = function()
-        {
-            g_next++;
-            var rec = new UTM_nwNatPatRecord(g_next+"");
-            var evt = new UTM_eventObj(0, rec, '');
-            guicb(evt);
-        }
-
-        window.setTimeout(cb, 500);
-        return;
-
         thisObj.m_guiCb = guicb;
-        var xmlstr = "<statement mode='proc'>" +
-                      "<handler>network-nat-pat next-rulenum" +
-                      "</handler><data>rulename=[next]</data></statement>";
+        var xmlstr = "<statement mode='proc'><handler>nat-config next-rulenum" +
+                      "</handler><data>direction=["+dir+"],rulename=[next]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -367,8 +391,9 @@ g_next = 0;
     this.f_setNatPatNamePairValue = function(rec, name, value, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var xmlstr = "<statement mode='proc'><handler>network-nat-pat" +
-                      " set</handler><data>rulenum=[" + rec.m_ruleNo + "]," + name +
+        var xmlstr = "<statement mode='proc'><handler>nat-config" +
+                      " set</handler><data>direction=[" + rec.m_direction +
+                      "],rulenum=[" + rec.m_ruleNo + "]," + name +
                       "=[" + value + "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -378,7 +403,7 @@ g_next = 0;
     this.f_saveNatPat = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var xmlstr = "<statement mode='proc'><handler>network-nat-pat" +
+        var xmlstr = "<statement mode='proc'><handler>nat-config" +
                       " save</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -388,7 +413,7 @@ g_next = 0;
     this.f_cancelNatPat = function(guicb)
     {
         thisObj.m_guiCb = guicb;
-        var xmlstr = "<statement mode='proc'><handler>network-nat-pat" +
+        var xmlstr = "<statement mode='proc'><handler>nat-config" +
                       " cancel</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -398,12 +423,29 @@ g_next = 0;
     this.f_deleteNatPat = function(rec, guicb)
     {
         thisObj.m_guiCb = guicb;
-        var xmlstr = "<statement mode='proc'><handler>network-nat-pat" +
-                      " delete</handler><data>rulenum=[" + rec.m_ruleNo +
-                      "]</data></statement>";
+        var xmlstr = "<statement mode='proc'><handler>nat-config" +
+                      " delete</handler><data>direction=[" + rec.m_direction +
+                      "],rulenum=[" + rec.m_ruleNo + "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
+    }
+
+    this.f_getPortNumber = function(fireRec)
+    {
+        if(fireRec.m_protocol != null && fireRec.m_appService != null)
+        {
+            var s = thisObj.m_services;
+            var p = thisObj.m_ports;
+            
+            for(var i=0; i<s.length; i++)
+            {
+                if(fireRec.m_appService == s[i])
+                    return p[i];
+            }
+        }
+
+        return "";
     }
 }
 

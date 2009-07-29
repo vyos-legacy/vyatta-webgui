@@ -386,6 +386,7 @@ function UTM_confFireLevel(name, callback, busLayer)
             thisObj.m_div.appendChild(thisObj.m_gridActiveBody);
             thisObj.m_div.appendChild(thisObj.m_gridLevelHeader);
             thisObj.m_div.appendChild(thisObj.m_gridLevelBody);
+            thisObj.m_div.appendChild(thisObj.m_buttons);
 
             thisObj.f_populateActiveTable(thisObj.m_levelRecs, thisObj.m_selLvlRec);
         }

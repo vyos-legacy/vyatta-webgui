@@ -50,41 +50,43 @@ sub execute_set {
     my ($to_zone, $from_zone) = get_zone_names($zonepair);
     my $zone_fw_level="zone-policy zone $to_zone from $from_zone firewall";
     my $invalid_arg='false';
+    $firewall_type =~ tr/A-Z/a-z/;
 
     if ($zonepair eq 'LAN_to_WAN') {
       switch ($firewall_type) {
-        case 'Authorize All'
+        case 'authorize all'
         {
          my $fw_ruleset = 'Low_' . $zonepair;
          @cmds = (
          "set $zone_fw_level name $fw_ruleset"
          );
         }
-        case 'Standard'
+        case 'standard'
         {
          my $fw_ruleset = 'Medium_' . $zonepair;
          @cmds = (
          "set $zone_fw_level name $fw_ruleset"
          );
         }
-        case 'Advanced'
+        case 'advanced'
         {
          my $fw_ruleset = 'High_' . $zonepair;
          @cmds = (
          "set $zone_fw_level name $fw_ruleset"
          );
         }
-        case 'Customized'
+        case 'customized'
         {
          my $fw_ruleset = 'Customized_' . $zonepair;
          @cmds = (
          "set $zone_fw_level name $fw_ruleset"
          );
         }
-        case 'Block All'
+        case 'block all'
         {
+         my $fw_ruleset = 'Block_' . $zonepair;
          @cmds = (
-         "delete $zone_fw_level"
+         "set $zone_fw_level name $fw_ruleset"
          );
         }
         else
@@ -95,14 +97,14 @@ sub execute_set {
    } else {
      # for all other directions
      switch ($firewall_type) {
-       case 'Customized'
+       case 'customized'
        {
         my $fw_ruleset = 'Customized_' . $zonepair;
         @cmds = (
         "set $zone_fw_level name $fw_ruleset"
         );
        }
-       case 'Default'
+       case 'default'
        {
         @cmds = (
         "set $zone_fw_level name $zonepair"
@@ -140,24 +142,24 @@ sub execute_getzonelevel {
                         "$to_zone", "$from_zone", 'name');
 
    if ($zonepair eq 'LAN_to_WAN') {
-     if (!defined $fw_ruleset) {
+     if ($fw_ruleset =~ /^Block_/) {
        # this should only happen in case direction is LAN_to_WAN
-       $firewall_type='Block All';
+       $firewall_type='block all';
      } elsif ($fw_ruleset =~ /^Low_/) {
-       $firewall_type='Authorize All';
+       $firewall_type='authorize all';
      } elsif ($fw_ruleset =~ /^Medium_/) {
-       $firewall_type='Standard';
+       $firewall_type='standard';
      } elsif ($fw_ruleset =~ /^High_/) {
-       $firewall_type='Advanced';
+       $firewall_type='advanced';
      } elsif ($fw_ruleset =~ /^Customized_/) {
-       $firewall_type='Customized';
+       $firewall_type='customized';
      }
    } else {
      # for all other directions there's jst 2 options - default or customized
      if ($fw_ruleset =~ /^Customized_/) {
-       $firewall_type='Customized';
+       $firewall_type='customized';
      } else {
-       $firewall_type='Default';
+       $firewall_type='default';
      }
    }
 

@@ -79,7 +79,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         cols[11] = this.f_createColumn("log", 55, 'checkbox', '3', false, 'center');
         cols[12] = this.f_createColumn(g_lang.m_fireCustOrder, 80, 'combo', '3', false, 'center');
         cols[13] = this.f_createColumn(chkbox, 55, 'checkbox', '3', false, 'center');
-        cols[14] = this.f_createColumn(g_lang.m_fireCustDelete, 55, 'combo', '3', false, 'center');
+        cols[14] = this.f_createColumn(g_lang.m_fireCustDelete, 60, 'combo', '3', false, 'center');
 
         return cols;
     }
@@ -209,9 +209,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                 thisObj.f_onOffEnabledAllChkBox();
             }
 
-            if(fireRec.m_zonePair != "Any")
-                thisObj.f_adjustGridHeight();
-
             if(thisObj.m_resyncNextRuleNo > 0)
             {
                 thisObj.f_handleAddNewFirewallCustomRow(thisObj.m_resyncNextRuleNo+"");
@@ -265,22 +262,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             var fr = new UTM_fireRecord(null, thisObj.m_zonePairs[thisObj.m_zpIndex++]);
             thisObj.m_busLayer.f_getFirewallSecurityCustomize(fr, cb);
         }
-        else
-            thisObj.f_adjustGridHeight();
-    }
-
-    this.f_adjustGridHeight = function()
-    {
-        var counter = thisObj.m_fireRecs != null ? thisObj.m_fireRecs.length : 0;
-        var h = counter * 30 + 105;
-
-        // the minimum height of grid is 160
-        if(counter < 2)
-            h = 168;
-
-        thisObj.m_grid.style.height = h+"px";
-        thisObj.f_resetTableRowCounter(0);
-        window.setTimeout(function(){thisObj.f_resize();}, 20);
     }
 
     this.f_populateTable = function(records, zonePair)
@@ -325,8 +306,9 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                      thisObj.f_createSimpleDiv(fireRec.m_destMaskIpAddr, 'center'),
                      thisObj.f_createSimpleDiv(dport, 'center'),
                      thisObj.f_createSimpleDiv(fireRec.m_action, 'center'),
-                     log, order, enable, del]);
-        thisObj.m_gridBody.appendChild(div);
+                     log, order, enable, del], null, null, true);
+        thisObj.f_addRowIntoGridTable(thisObj.m_gridBody, div, true);
+        //thisObj.m_gridBody.appendChild(div);
     }
 
     this.f_addRecordIntoTable = function(fireRec, rowNo, orderReadonly)
@@ -381,7 +363,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                   "f_fwCustomizeOnChkBlur('"+thisObj.m_fieldIds[13]+zpRule+"')",
                   "") + "</div>";
 
-        var del = "<div align=center>" + thisObj.f_renderButton(
+        var del = "<div align=center width=45>" + thisObj.f_renderButton(
                   "delete", true, "f_fireCustomDeleteHandler(" + fireRec.m_ruleNo +
                   ")", g_lang.m_tooltip_delete) + "</div";
 
@@ -391,8 +373,10 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
                     [rowNo, fireRec.m_direction, app, pro, sip, smip,
-                     sport, dip, dmip, dport, act, log, order, enable, del]);
-        thisObj.m_gridBody.appendChild(div);
+                     sport, dip, dmip, dport, act, log, order, enable, del],
+                    null, null, true);
+        thisObj.f_addRowIntoGridTable(thisObj.m_gridBody, div, true);
+        //thisObj.m_gridBody.appendChild(div);
 
         if(fireRec.m_appService.indexOf("Others") < 0)
         {
@@ -456,7 +440,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
             thisObj.m_fireRecs.push(fireRec);
             thisObj.f_addRecordIntoTable(fireRec, thisObj.m_fireRecs.length, true);
             thisObj.f_setRuleDefaultValues(fireRec);
-            thisObj.f_adjustGridHeight();
         }
     };
 
@@ -464,7 +447,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
     {
         this.m_colModel = this.f_createColumns();
         this.m_gridHeader = this.f_createGridHeader(this.m_colModel, "f_fwCustomNotUse");
-        this.m_gridBody = this.f_createGridView(this.m_colModel, false);
+        this.m_gridBody = this.f_createGridView(this.m_colModel, false, true);
         this.f_loadZonePairs();
 
         var btns = [['Add', "f_fireCustomAddHandler()",
@@ -483,7 +466,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
         window.setTimeout(function()
         {
-            thisObj.f_adjustGridHeight();
             thisObj.f_enabledActionButtons(false);
         }, 100);
 

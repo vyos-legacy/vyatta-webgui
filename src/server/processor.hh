@@ -59,7 +59,11 @@ public:
 class Message
 {
 public:
-  Message() : _mode(0),_id(0) {}
+  Message() : 
+    _mode(0),
+    _static(false),
+    _id(0) 
+  {}
   
   void
   set_id(unsigned long id);
@@ -90,6 +94,7 @@ public:
   std::string _vmuser_last;
   std::string _vmuser_first;
   std::string _vmuser_password;
+  bool _static;
 
 private:
   unsigned long _id;

@@ -325,6 +325,11 @@ Session::update_session()
     return false;
   }
 
+  //don't update time file if static is set
+  if (_processor->get_msg()._static == true) {
+    return true;
+  }
+
   string update_file = "sudo touch " + file;
 
   //now touch session time mark file'

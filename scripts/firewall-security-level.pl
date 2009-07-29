@@ -51,7 +51,7 @@ sub execute_set {
     my $zone_fw_level="zone-policy zone $to_zone from $from_zone firewall";
     my $invalid_arg='false';
 
-    if ($zonepair eq 'LAN_to_WAN' || $zonepair eq 'WAN_to_LAN') {
+    if ($zonepair eq 'LAN_to_WAN') {
       switch ($firewall_type) {
         case 'Authorize All'
         {
@@ -139,9 +139,9 @@ sub execute_getzonelevel {
    my $fw_ruleset=Vyatta::Zone::get_firewall_ruleset("returnValue",
                         "$to_zone", "$from_zone", 'name');
 
-   if ($zonepair eq 'LAN_to_WAN' || $zonepair eq 'WAN_to_LAN') {
+   if ($zonepair eq 'LAN_to_WAN') {
      if (!defined $fw_ruleset) {
-       # this should only happen in case direction is LAN_to_WAN or WAN_to_LAN
+       # this should only happen in case direction is LAN_to_WAN
        $firewall_type='Block All';
      } elsif ($fw_ruleset =~ /^Low_/) {
        $firewall_type='Authorize All';

@@ -1,0 +1,4 @@
+type: u32
+default: 60
+help: Set interval (seconds) between polling VM status for monitoring
+syntax:expression: $VAR(@) > 1; "\"poll-status-interval\" must be at least 2"

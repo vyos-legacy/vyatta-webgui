@@ -1,0 +1,5 @@
+type: u32
+default: 24
+help: Set timeout (hours) before critical update is auto-installed
+syntax:expression: $VAR(@) > 0; \
+                    "\"upd-critical-install-timeout\" must be at least 1"

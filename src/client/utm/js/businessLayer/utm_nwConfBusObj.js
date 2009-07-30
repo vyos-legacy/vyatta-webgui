@@ -423,7 +423,7 @@ function UTM_nwConfigBusObj(busObj)
     {
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'><handler>nat-config" +
-                      " delete</handler><data>direction=[" + rec.m_direction +
+                      " delete-rulenum</handler><data>direction=[" + rec.m_direction +
                       "],rulenum=[" + rec.m_ruleNo + "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -436,7 +436,7 @@ function UTM_nwConfigBusObj(busObj)
         {
             var s = thisObj.m_services;
             var p = thisObj.m_ports;
-            
+
             for(var i=0; i<s.length; i++)
             {
                 if(fireRec.m_appService == s[i])
@@ -1166,7 +1166,7 @@ function UTM_nwIfBusObj(busObj)
 					//  2: set dhcp-server-config: generic error
 					//  3: set interface-config: generic error
 					//  4: set interface-config: the network address is already used by the open appliance
-					//     overlapping subnets: 
+					//     overlapping subnets:
 				    if (tmp.m_errCode == 4) {
 						tmp.m_errMsg = g_lang.m_lanitf_already_used;
 					}
@@ -1198,7 +1198,7 @@ function UTM_nwIfBusObj(busObj)
 		}
 		return nodeValue;
 	}
-	
+
 	this.f_getChildNodeValue = function(node, childNodeTag, defaultValue)
 	{
 		var v = g_utils.f_xmlGetChildNodeValue(node, childNodeTag);
@@ -1254,7 +1254,7 @@ function UTM_nwIfBusObj(busObj)
 	{
 		var form = thisObj.m_busObj.f_getFormNode(response);
 		var ifNode = g_utils.f_xmlGetChildNode(form,'interface-config');
-		var ifName = thisObj.f_parseIfName(ifNode);		
+		var ifName = thisObj.f_parseIfName(ifNode);
 		var ip = g_utils.f_xmlGetChildNodeValue(ifNode, 'ip');
 		var mask = g_utils.f_xmlGetChildNodeValue(ifNode, 'mask');
 
@@ -1265,7 +1265,7 @@ function UTM_nwIfBusObj(busObj)
 	{
 		var form = thisObj.m_busObj.f_getFormNode(response);
 		var dhcpNode = g_utils.f_xmlGetChildNode(form, 'dhcp-server-config');
-		var ifName = thisObj.f_parseIfName(dhcpNode);		
+		var ifName = thisObj.f_parseIfName(dhcpNode);
 		var enable = thisObj.f_getChildNodeValue(dhcpNode, 'enable', 'false');
 		var start = thisObj.f_getChildNodeValue(dhcpNode, 'start', '');
 		var end = thisObj.f_getChildNodeValue(dhcpNode, 'end', '');

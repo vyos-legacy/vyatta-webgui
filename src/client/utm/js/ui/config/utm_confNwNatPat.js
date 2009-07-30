@@ -22,6 +22,14 @@ function UTM_confNwNatPat(name, callback, busLayer)
     this.m_fieldIds = ["nat_rulenoId-", "nat_appId-", "nat_dportId-",
                         "nat_iportId-", "nat_proId-", "nat_iipId-", "nat_enableId-"];
     this.m_protocol = ["tcp", "udp", "both", " "];
+    this.m_resyncNextRuleNo = -1;           // auto get next rule number.
+                                            // to be used for case get next rule num is
+                                            // exceed the limit. when limitation is
+                                            // reach, backend re-order all rule numbers.
+                                            // Frontend needs to reload and
+                                            // get next rule number again.
+                                            // -1 : no resync required
+                                            // > 0 : resynce is required.
 
     /**
      * @param name - name of configuration screens.

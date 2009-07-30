@@ -1,3 +1,13 @@
+vyatta-webgui (0.2+fxd0+96) unstable; urgency=low
+
+  * make LDAP "root" access localhost-only
+  * add OA configurable parameters to vyatta config
+  * fix REST response parsing
+  * treat domU 404 response as error
+  * make OA parameters configurable through vyatta config.
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 29 Jul 2009 19:19:54 -0700
+
 vyatta-webgui (0.2+fxd0+95) unstable; urgency=low
 
   * implement domU monitoring and auto-restart

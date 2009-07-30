@@ -7,9 +7,14 @@ failure_exit () {
   exit 1
 }
 
-OA_NIGHTLY_LIMIT_FILE=/opt/vyatta/etc/oa/params/nightly_limit
 get_nightly_limit () {
-  cat $OA_NIGHTLY_LIMIT_FILE
+  export VYATTA_ACTIVE_CONFIGURATION_DIR=/opt/vyatta/config/active
+  local lim=$(/opt/vyatta/sbin/vyatta-cli-expand-var.pl \
+                '$VAR(/system/open-app/parameters/backup-nightly-limit/@)')
+  if [ -z "$lim" ]; then
+    lim=7
+  fi
+  echo -n "$lim"
 }
 
 NIGHTLY_DIR=/var/oa/nightly

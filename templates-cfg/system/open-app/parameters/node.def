@@ -1,5 +1,8 @@
 help: Configure parameters for the OpenAppliance
-end: if [ -z "$VAR(poll-status-interval/@)" ]; then
+end: if [ "${COMMIT_ACTION}" = 'DELETE' ]; then
+       exit 0
+     fi
+     if [ -z "$VAR(poll-status-interval/@)" ]; then
        echo '"poll-status-interval" must be set'
        exit 1
      fi

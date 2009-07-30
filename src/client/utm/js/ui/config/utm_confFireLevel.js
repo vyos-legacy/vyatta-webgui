@@ -115,7 +115,9 @@ function UTM_confFireLevel(name, callback, busLayer)
             if(selRec == null)
             {
                 // mark the WAN to LAN as a default selected zone
-                if(rec[1] == "WAN" && rec[2] == "LAN ")
+                // or the first row as default selected if WAN to LAN
+                // zone is not available
+                if(i == 0 || (rec[1] == "WAN" && rec[2] == "LAN "))
                 {
                     rec[0] = 'yes';
                     selDir = rec[4];
@@ -247,23 +249,23 @@ function UTM_confFireLevel(name, callback, busLayer)
 
         switch(val.m_level)
         {
-            case "Default":
+            case "default":
                 rId = thisObj.m_rdDefaultId;
             break;
-            case "Authorize All":
+            case "authorize all":
                 rId = thisObj.m_rdAuthAllId;
             break;
-            case "Standard":
+            case "standard":
                 rId = thisObj.m_rdStandId;
             break;
-            case "Advanced":
+            case "advanced":
                 rId = thisObj.m_rdAdvanId;
             break;
-            case "Customized":
+            case "customized":
                 rId = thisObj.m_rdCustomId;
             break;
             default:
-            case "Block All":
+            case "block all":
                 rId = thisObj.m_rdBlockId;
             break;
         }
@@ -410,23 +412,23 @@ function UTM_confFireLevel(name, callback, busLayer)
         switch(thisObj.m_curSelLvlRadioId)
         {
             case thisObj.m_rdDefaultId:
-                fr.m_level = "Default";
+                fr.m_level = "default";
             break;
             case thisObj.m_rdAuthAllId:
-                fr.m_level = 'Authorize All';
+                fr.m_level = 'authorize all';
             break;
             case thisObj.m_rdStandId:
-                fr.m_level = 'Standard';
+                fr.m_level = 'standard';
             break;
             case thisObj.m_rdAdvanId:
-                fr.m_level = 'Advanced';
+                fr.m_level = 'advanced';
             break;
             case thisObj.m_rdCustomId:
-                fr.m_level = 'Customized';
+                fr.m_level = 'customized';
             break;
             default:
             case thisObj.m_rdBlockId:
-                fr.m_level = 'Block All';
+                fr.m_level = 'block all';
             break;
         }
 

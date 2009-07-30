@@ -1,3 +1,24 @@
+vyatta-webgui (0.2.14+fxdU+94) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fixed action buttons disappeared issue after table sorting
+    performed
+
+  [ Mohit Mehta ]
+  * WAN_to_LAN only has default and customized security level now
+  * use lower case letters for zonepair profiles
+
+  [ Kevin Choi ]
+  * * nw nat/pat : integrated with back-end API calls for:
+  * * firewall level screen :
+
+  [ Loi Vo ]
+  * 1. Change the error messages to be consistent with the spec.
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 29 Jul 2009 18:53:25 -0700
+
 vyatta-webgui (0.2.14+fxdU+93) unstable; urgency=low
 
   [ Kevin Choi ]

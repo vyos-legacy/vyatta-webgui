@@ -1070,6 +1070,12 @@ function UTM_confBaseObj(name, callback, busLayer)
 		thisObj.m_sortCol = col;
 		thisObj.m_sortColPrev = prevCol;
 	}
+	
+	//Abstract function.  Should be override by the sub class.
+	this.f_changed = function()
+	{
+		return false;
+	}
 }
 
 function f_confHandleSessionTimeoutConfirm()

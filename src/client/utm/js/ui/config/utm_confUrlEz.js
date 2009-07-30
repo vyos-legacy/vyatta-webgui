@@ -27,6 +27,7 @@ function UTM_confUrlEz(name, callback, busLayer)
 	this.m_catL1array = ['blacklist','whitelist','keyword'];
 	this.m_catL2array = ['legal','productivity','strict'];
     this.m_btnPolicyDisableConfirmId = 'conf_url_ez_policy_disable_confirm';	
+	this.m_change = false;
 	
     /**
      * @param name - name of configuration screens.
@@ -166,6 +167,11 @@ function UTM_confUrlEz(name, callback, busLayer)
 	{
 		thisObj.f_enableButton('apply',state);
 		thisObj.f_enableButton('cancel',state);
+		if (state) {
+			thisObj.m_change = true;
+		} else {
+			thisObj.m_chagne = false;
+		}
 	}
 	
 	this.f_enableButton = function(btName, state)
@@ -750,7 +756,11 @@ function UTM_confUrlEz(name, callback, busLayer)
         }
         return false;
     }
-    
+
+    this.f_changed = function()
+	{
+		return thisObj.m_change;
+	}    
 }
 
 UTM_extend(UTM_confUrlEz, UTM_confFormObj);

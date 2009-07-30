@@ -126,16 +126,64 @@ function UTM_2ndNavigation(){
         }		
 	}
 	
+	this.f_changed = function(id, subId) {
+		if (g_configPanelObj.f_changed()) {
+			var key = 'apply,' + id;
+			if (subId != null) {
+				key = key + ',' + subId;
+			}
+			g_utils.f_popupMessage(g_lang.m_remindSaveChange, 'confirm', g_lang.m_info, true, 
+			    "f_nav2eventCb('" + key + "')"); 			
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	this.f_changeHandler = function(arg) {
+        if (arg) {
+            var a = arg.split(",");
+            var btnId = a[0];
+            var id = (a.length > 1) ? a[1] : null;
+            var subId = (a.length > 2) ? a[2] : null;
+            if (btnId == 'apply') {
+				if (subId != null) {
+					thisObj.f_selectItemInner(id);
+				} else {
+					thisObj.f_selectNav3ItemInner(id, subId);
+				}
+			}
+        }		
+	}
+	
     this.f_selectItem = function(id){
 		//alert('2_nav_f_selectItem called');
-        thisObj.f_highlightItem(id);
-        thisObj.m_parent.f_2navSelectItemCb(id);
+		if (thisObj.f_changed(id)) {
+			return;
+		}
+		thisObj.f_selectItemInner(id);
     }
+	
+	this.f_selectItemInner = function(id) {
+        thisObj.f_highlightItem(id);
+        thisObj.m_parent.f_2navSelectItemCb(id);		
+	}
     
 	this.f_selectNav3Item = function(id, subId) {
-		thisObj.f_highlightItem(id);
-		thisObj.m_parent.f_2navSelectNav3ItemCb(id, subId);
+		if (thisObj.f_changed(id, subId)) {
+			return;
+		}
+		thisObj.f_selectNav3ItemInner(id, subId);
 	}
-
+	
+	this.f_selectNav3ItemInner = function(id, subId) {
+		thisObj.f_highlightItem(id);
+		thisObj.m_parent.f_2navSelectNav3ItemCb(id, subId);		
+	}
     
+}
+
+function f_nav2eventCb(arg)
+{
+	g_utmMainPanel.m_2navMenu.f_changeHandler(arg);
 }

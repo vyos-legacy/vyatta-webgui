@@ -150,6 +150,18 @@ function UTM_confContainerObj(name, callback, busLayer)
 			this.m_children[i].f_stopLoadVMData();
 		}
 	}
+	
+	this.f_changed = function()
+	{
+		var c = false;
+		for (var i=0; i < this.m_children.length; i++) {
+			c = c | this.m_children[i].f_changed();
+			if (c) {
+				return true;
+			}
+		}
+		return c;
+	}
 	 
 	this.f_handleClick = function(childId, sourceId, userData) {}
 	this.f_handleKeyEvent = function(childId, sourceId, eventType, userData) {}

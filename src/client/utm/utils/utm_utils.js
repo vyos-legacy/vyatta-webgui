@@ -810,7 +810,7 @@ var g_utils =
 
     f_validateNetmask : function(nm)
     {
-        if(this.f_validateIP(nm))
+        if (this.f_validateIP(nm))
         {
             var ns = nm.split(".");
             var bin = '';
@@ -825,7 +825,9 @@ var g_utils =
                 else if(bin[i] == '1' && flagZero)
                     return false;
             }
-        }
+        } else {
+			return false;
+		}
 
         return true;
     },

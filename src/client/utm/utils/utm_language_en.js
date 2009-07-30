@@ -344,15 +344,18 @@ var g_lang =
 	m_landhcp_enable : "Enable DHCP server",
 	m_landhcp_range_start : "DHCP range start",
 	m_landhcp_range_end : "DHCP range end",
-	m_landhcp_range_invalid: "Invalid DHCP range: ",
+	m_landhcp_range_invalid: "DHCP Range Stop must be greater than DHCP Range Start!",
 	m_landhcp_incompatible: "is incompatible with",
 	m_landhcp_dns_mode : "DNS mode",
 	m_landhcp_dns_pri : "Primary DNS server",
+	m_landhcp_dns_pri_lower: "primary DNS server",	
 	m_landhcp_dns_sec : "Secondary DNS server",
+	m_landhcp_dns_sec_lower: "secondary DNS server",	
+	m_landhcp_dns_address: "address",
 	m_landhcp_1_dns_server_required : "At least one DNS server is required",	
-	m_landhcp_dns_static : "Static",
-	m_landhcp_dns_dynamic : "Dynamic",
-	m_landhcp_dns_none : "No DNS",
+	m_landhcp_dns_static : "static",
+	m_landhcp_dns_dynamic : "dynamic",
+	m_landhcp_dns_none : "no DNS",
 	m_lanip_reserved_ip : "Reserved IP addresses",
 	m_lanip_reserved_ip_lower: "reserved IP address",
 	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",	
@@ -362,6 +365,7 @@ var g_lang =
     m_lanip_zero: "this reserved IP address is forbidden!",	
 	m_landhcp_range_or_map_required : "When the DNS mode is static mode, it is required to configure either a DHCP range, or to have at least on reserved IP address.",
 	m_lanitf_already_used: "This network address is already used by the Open appliance.  Please enter other parameters",
+	m_lanitf_invalid_mac: "Invalid MAC address! Example of valid format: 'aa:bb:cc:dd:ee:ff'",
 	
     ///////////////////////////////////////////////////////////////////
     // My Form
@@ -370,6 +374,8 @@ var g_lang =
 	m_formTooLong : "cannot have more than",
 	m_formChar: "characters",
 	m_formInvalid: "is invalid",
+	m_formInvalidCapital: "Invalid",
+	m_exclamationMark: "!",
 	
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images
@@ -383,7 +389,7 @@ var g_lang =
 	m_tooltip_add: "add a new row",
 	m_tooltip_delete: "delete a row",
 	m_tooltip_back: "go back to previous screen",
-    m_remindSaveChange : 'Your changes have not been saved.  Would you like to save it?',
+    m_remindSaveChange : 'You are about to leave this page without saving your modifications.  Are you sure you want to continue?',
 
     /////////////////////////////////////////
     // plesae do not edit beyound dummy

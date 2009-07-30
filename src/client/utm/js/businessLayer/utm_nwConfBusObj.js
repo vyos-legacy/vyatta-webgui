@@ -1270,7 +1270,7 @@ function UTM_nwIfBusObj(busObj)
 		var enable = thisObj.f_getChildNodeValue(dhcpNode, 'enable', 'false');
 		var start = thisObj.f_getChildNodeValue(dhcpNode, 'start', '');
 		var end = thisObj.f_getChildNodeValue(dhcpNode, 'end', '');
-		var dnsMode = thisObj.f_getChildNodeValue(dhcpNode, 'dns_mode', 'none');
+		var dnsMode = thisObj.f_getChildNodeValue(dhcpNode, 'dns_mode', 'dynamic');
 		var dnsPrimary = thisObj.f_getChildNodeValue(dhcpNode, 'primary_dns','');
 		var dnsSecondary =  thisObj.f_getChildNodeValue(dhcpNode, 'secondary_dns','');
 

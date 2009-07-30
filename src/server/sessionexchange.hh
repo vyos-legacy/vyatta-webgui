@@ -6,7 +6,7 @@
 class SessionExchange
 {
 public:
-  SessionExchange(bool debug);
+  SessionExchange(bool req_resp_log_file, bool debug);
   virtual ~SessionExchange();
 
   void virtual
@@ -22,6 +22,7 @@ public:
   write(Session &session) = 0;
 
 protected:
+  bool _req_resp_log_file;
   bool _debug;
 };
 

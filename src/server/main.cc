@@ -26,9 +26,10 @@ using namespace std;
 
 static void usage()
 {
-  cout << "webgui -pvidh" << endl;
+  cout << "webgui -pvlidh" << endl;
   cout << "-p port" << endl;
   cout << "-v print debug output" << endl;
+  cout << "-l create request and response log file" << endl;
   cout << "-i specify location of pid directory" << endl;
   cout << "-d run as daemon" << endl;
   cout << "-s strip error messages" << endl;
@@ -59,16 +60,20 @@ int main(int argc, char* argv[])
   bool daemon = false;
   string pid_path = "/var/run";
   string file; 
+  bool req_resp_log_file = false;
   unsigned long port = 0;
 
   //grab inputs
-  while ((ch = getopt(argc, argv, "p:vi:df:hs")) != -1) {
+  while ((ch = getopt(argc, argv, "p:vli:df:hs")) != -1) {
     switch (ch) {
     case 'p':
       port = strtoul(optarg,NULL,10);
       break;
     case 'v':
       debug = true;
+      break;
+    case 'l':
+      req_resp_log_file = true;
       break;
     case 'i':
       pid_path = optarg;
@@ -114,13 +119,13 @@ int main(int argc, char* argv[])
 
   SessionExchange *se;
   if (port > 0) {
-    se = new SessionExchangeSocket(port, debug);
+    se = new SessionExchangeSocket(port, req_resp_log_file, debug);
   }
   else if (!file.empty()) {
-    se = new SessionExchangeFile(file, debug);
+    se = new SessionExchangeFile(file, req_resp_log_file, debug);
   }
   else {
-    se = new SessionExchangeStdIO(debug);
+    se = new SessionExchangeStdIO(req_resp_log_file, debug);
   }
   se->init();
   g_manager = new Manager(se, strip_err_msg, debug);

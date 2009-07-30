@@ -8,7 +8,7 @@
 class SessionExchangeStdIO : public SessionExchange
 {
 public:
-  SessionExchangeStdIO(bool debug);
+  SessionExchangeStdIO(bool req_resp_log_file, bool debug);
   ~SessionExchangeStdIO();
 
   void

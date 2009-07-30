@@ -68,7 +68,7 @@ sub cp_p {
 }
 
 sub in_chroot {
-  return (-r '/proc/version');
+  return (! -r '/proc/version');
 }
 
 sub stop_ldap {

@@ -934,7 +934,12 @@ sub _preUpgradeProc {
     _system($cmd);
     return 'Failed to remove current ISO' if ($? >> 8);
 
-    $cmd = "mv -f $OA_NEW_DIR/{*.iso,version_*} $OA_CUR_DIR/";
+    # there may not be an ISO if this was previously installed.
+    # don't fail on error.
+    $cmd = "mv -f $OA_NEW_DIR/*.iso $OA_CUR_DIR/";
+    _system($cmd);
+
+    $cmd = "mv -f $OA_NEW_DIR/version_* $OA_CUR_DIR/";
     _system($cmd);
     return 'Failed to move new update' if ($? >> 8);
     

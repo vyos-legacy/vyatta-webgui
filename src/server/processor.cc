@@ -11,6 +11,7 @@
 #include <dirent.h>
 #include <expat.h>
 #include <assert.h>
+#include <syslog.h>
 #include "authenticate.hh"
 #include "processor.hh"
 
@@ -275,7 +276,10 @@ Processor::Processor(bool debug) :
 {
   _xml_parser = XML_ParserCreate(NULL);
   if (!_xml_parser) {
-    cerr << "error setting up xml parser()" << endl;
+    if (_debug) {
+      cerr << "error setting up xml parser()" << endl;
+    }
+    syslog(LOG_ERR,"dom0: error in setting up xml parser");
   }
 
   void *foo = (void*)&(this->_msg);

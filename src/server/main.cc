@@ -40,14 +40,14 @@ static void usage()
 static void sig_end(int signo)
 {
   cerr << "End signal: " << signo << endl;
-  syslog(LOG_ERR, "webgui, exit signal caught, exiting..");
+  syslog(LOG_ERR, "dom0: exit signal caught, exiting..");
   exit(0);
 }
 
 static void sig_user(int signo)
 {
   cerr << "User signal: " << signo << endl;
-  syslog(LOG_ERR, "webgui, user exit signal caught, exiting..");
+  syslog(LOG_ERR, "dom0: user exit signal caught, exiting..");
   exit(0);
 }
 
@@ -180,7 +180,7 @@ pid_output (const char *path)
     }
   /* XXX Why do we continue instead of exiting?  This seems incompatible
      with the behavior of the fcntl version below. */
-  syslog(LOG_ERR,"Can't fopen pid lock file %s, continuing",
+  syslog(LOG_INFO,"dom0: Can't fopen pid lock file %s, continuing",
             path);
   umask(oldumask);
   return -1;

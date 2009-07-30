@@ -45,7 +45,10 @@ ChunkerManager::init()
   struct sockaddr_un serv_addr;
   
   if ((_listen_sock = socket(AF_UNIX,SOCK_STREAM,0)) < 0) {
-    cerr << "ChunkerManager::init(): error in creating listener socket" << endl;
+    if (_debug) {
+      cerr << "ChunkerManager::init(): error in creating listener socket" << endl;
+    }
+    syslog(LOG_ERR, "dom0: err in creating listener socket");
     //    error("creating socket");
     return;
   }
@@ -56,7 +59,10 @@ ChunkerManager::init()
   strcpy(serv_addr.sun_path, WebGUI::CHUNKER_SOCKET.c_str());
   servlen=strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
   if(bind(_listen_sock,(struct sockaddr *)&serv_addr,servlen)<0) {
-    cerr << "ChunkerManager::init(): error in binding listener socket" << endl;
+    if (_debug) {
+      cerr << "ChunkerManager::init(): error in binding listener socket" << endl;
+    }
+    syslog(LOG_ERR, "dom0: err in binding listener socket");
     return;
   }
 
@@ -119,12 +125,18 @@ ChunkerManager::process(char *buf)
     size_t start_pos = command.find("<token>");
     size_t stop_pos = command.find("</token>");
     if (start_pos == string::npos || stop_pos == string::npos) {
-      cerr << "ChunkerManager::process(): received empty token message" << endl;
+      if (_debug) {
+	cerr << "ChunkerManager::process(): received empty token message" << endl;
+      }
+      syslog(LOG_DEBUG,"dom0: received empty token message");
       return;
     }
     string token = command.substr(start_pos+7,stop_pos-start_pos-7);
     if (token.empty()) {
-      cerr << "ChunkerManager::process(): received empty token message" << endl;
+      if (_debug) {
+	cerr << "ChunkerManager::process(): received empty token message" << endl;
+      }
+      syslog(LOG_DEBUG,"dom0: received empty token message");
       return;
     }
     

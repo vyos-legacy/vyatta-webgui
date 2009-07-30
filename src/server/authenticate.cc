@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <syslog.h>
 #include <grp.h>
 #include "rl_str_proc.hh"
 #include "authenticate.hh"
@@ -86,6 +87,7 @@ Authenticate::create_new_session()
     bool dummy;
     if (WebGUI::execute(cmd, stdout, dummy) != 0) {
       //syslog here
+      syslog(LOG_INFO,"dom0: authentication failure: %lu",id);
       _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
       return false;
     }
@@ -134,6 +136,7 @@ Authenticate::create_new_session()
       sprintf(buf1, "%lu", id);
       string tmpstr = "<?xml version='1.0' encoding='utf-8'?><openappliance><id>"+string(buf1)+"</id><error><code>"+string(buf)+"</code><msg>change password required</msg></error></openappliance>";
       _proc->set_response(tmpstr);
+      syslog(LOG_INFO,"dom0: restricted access: %lu",id);
       return false;
     }
 
@@ -148,6 +151,7 @@ Authenticate::create_new_session()
     _proc->_msg.set_id(id);
     return true;
   }
+  syslog(LOG_INFO,"dom0: authentication failure: %lu",id);
   _proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
   return false;
 }
@@ -181,6 +185,7 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
 {
   passwd * passwd = getpwnam(username.c_str());
   if (passwd == NULL) {
+    syslog(LOG_INFO,"dom0: failed to retreive user: %s",username.c_str());
     //    cerr << "failed to retreive user" << endl;
     return false;
   }

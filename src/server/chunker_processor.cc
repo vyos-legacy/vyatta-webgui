@@ -25,6 +25,7 @@ ChunkerProcessor::start_new(string token, const string &cmd)
   if (_debug) {
     cout << "ChunkerProcessor::start_new(): starting new processor" << endl;
   }
+  syslog(LOG_DEBUG,"dom0: starting new processor");
 
   struct sigaction sa;
   sigaction(SIGCHLD, NULL, &sa);
@@ -44,6 +45,7 @@ ChunkerProcessor::start_new(string token, const string &cmd)
   int cp[2]; /* Child to parent pipe */
 
   if( pipe(cp) < 0) {
+    syslog(LOG_ERR,"dom0: Can't create pipe, exiting...");
     perror("Can't make pipe");
     exit(1);
   }
@@ -125,7 +127,7 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   if (_debug) {
     cout << "ChunkerProcessor::writer(): finished executing cmd: " << err << endl;
   }
-  syslog(LOG_ERR, "ERROR RECEIVED FROM EXECVP(1): %d, %d",err, errno);
+  syslog(LOG_ERR, "dom0: ERROR RECEIVED FROM EXECVP(1): %d, %d",err, errno);
 }
 
 /**
@@ -171,7 +173,7 @@ ChunkerProcessor::process_chunk_end(string &str, string &token, long &chunk_ct)
     fclose(fp);
   }
   else {
-    syslog(LOG_ERR,"webgui: Failed to write out response chunk");
+    syslog(LOG_ERR,"dom0: Failed to write out response chunk");
   }
   
 
@@ -221,7 +223,7 @@ ChunkerProcessor::process_chunk(string &str, string &token, long &chunk_ct, long
       fclose(fp);
     }
     else {
-      syslog(LOG_ERR,"webgui: Failed to write out response chunk");
+      syslog(LOG_ERR,"dom0: Failed to write out response chunk");
     }
   }
   return str;
@@ -272,7 +274,7 @@ ChunkerProcessor::pid_output (const char *path)
     }
   /* XXX Why do we continue instead of exiting?  This seems incompatible
      with the behavior of the fcntl version below. */
-  syslog(LOG_ERR,"Can't fopen pid lock file %s, continuing",
+  syslog(LOG_INFO,"dom0: Can't fopen pid lock file %s, continuing",
             path);
   umask(oldumask);
   return -1;

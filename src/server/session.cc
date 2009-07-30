@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <iostream>
+#include <syslog.h>
 #include <unistd.h>
 #include <vector>
 #include <string>
@@ -219,6 +220,7 @@ Session::process_message()
       if (_debug) {
 	cerr << "Session::process_message(): message type is unknown: " << endl;
       }
+      syslog(LOG_DEBUG,"dom0: message type is unknown");
       _processor->set_response(WebGUI::MALFORMED_REQUEST);
       return false;
     }
@@ -227,6 +229,7 @@ Session::process_message()
     if (_debug) {
       cerr << "Session::process_message(): message is unknown" << endl;
     }
+    syslog(LOG_DEBUG,"dom0: message type is unknown");
     _processor->set_response(WebGUI::MALFORMED_REQUEST);
     return false;
   }

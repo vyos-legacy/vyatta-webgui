@@ -190,7 +190,7 @@ my %fields = (
   _umail => undef,
   _ulast => undef,
   _ufirst => undef,
-  _urights => undef,
+  _urights => {},
   _urole => undef
 );
 

@@ -19,6 +19,7 @@ function UTM_confNwPortConfig(name, callback, busLayer)
     this.m_btnCancelId = this.m_prefix + 'btn_cancel';
     this.m_btnApplyId = this.m_prefix + 'btn_apply';
 	this.m_eventCbFunction = 'f_confPortConfigEventCallback';
+	this.m_change = false;
 
     /**
      * @param name - name of configuration screens.
@@ -224,6 +225,11 @@ function UTM_confNwPortConfig(name, callback, busLayer)
 		thisObj.f_enabledDisableButton(thisObj.m_btnApplyId, state);
 		thisObj.f_enabledDisableButton(thisObj.m_btnCancelId, state);
 		thisObj.f_enabledDisableButton(thisObj.m_btnResetId, state);
+		if (state) {
+			thisObj.m_change = true;
+		} else {
+			thisObj.m_change = false;
+		}
 	}	
 	
 	this.f_cleanup = function()
@@ -365,6 +371,11 @@ function UTM_confNwPortConfig(name, callback, busLayer)
             }                                 
         };      
         this.f_setPortConfig(pl,cb);
+	}
+	
+	this.f_changed = function() 
+	{
+		return thisObj.m_change;
 	}
 }
 

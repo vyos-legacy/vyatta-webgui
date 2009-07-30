@@ -338,12 +338,47 @@ function UTM_3rdNavigation()
 		return desc;		
 	}
 	
+	this.f_changed = function(id) {
+		if (g_configPanelObj.f_changed()) {
+			var key = 'apply,' + id;
+			g_utils.f_popupMessage(g_lang.m_remindSaveChange, 'confirm', g_lang.m_info, true, 
+			    "f_nav3eventCb('" + key + "')"); 			
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	this.f_changeHandler = function(arg) {
+        if (arg) {
+            var a = arg.split(",");
+            var btnId = a[0];
+            var id = (a.length > 1) ? a[1] : null;
+            if (btnId == 'apply') {
+				thisObj.f_selectItemInner(id)
+			}
+        }		
+	}	
+	
     this.f_selectItem = function(id)
     {
+        if (thisObj.f_changed(id)) {
+			return;
+		}
+		thisObj.f_selectItemInner(id);
+    }
+	
+	this.f_selectItemInner = function(id) 
+	{
 		var desc = thisObj.f_highlightItem(id);
 		if (id != undefined) {
             thisObj.m_parent.f_3navSelectItemCb(id, desc);			
-		}
-    }
+		}		
+	}
     
+}
+
+function f_nav3eventCb(arg)
+{
+	g_utmMainPanel.m_3navMenu.f_changeHandler(arg);
 }

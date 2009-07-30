@@ -21,6 +21,7 @@ function UTM_confNwLANitf(name, callback, busLayer)
     this.m_eventCbFunction = 'f_confLanItfHandleEventCb';	
 	this.m_reloadPeer = false;
 	this.m_lanip_label = g_lang.m_lanitf_ip;
+	this.m_change = false;
     
     /**
      * @param name - name of configuration screens.
@@ -130,6 +131,11 @@ function UTM_confNwLANitf(name, callback, busLayer)
                 break;
         }
         thisObj.f_enabledDisableButton(id, state);
+		if (state) {
+			thisObj.m_change = true;
+		} else {
+			thisObj.m_change = false;
+		}
     }
     
     this.f_enableTextField = function(b, id)
@@ -381,6 +387,12 @@ function UTM_confNwLANitf(name, callback, busLayer)
         }
         return false;
     }
+	
+	this.f_changed = function()
+	{
+		
+		return thisObj.m_change;
+	}
 }
 
 UTM_extend(UTM_confNwLANitf, UTM_confFormObj);
@@ -407,6 +419,7 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
 	this.m_dhcpObj = undefined;
     this.m_form = undefined;
     this.m_div = undefined;
+	this.m_change = false;
     
     /**
      * @param name - name of configuration screens.
@@ -537,6 +550,11 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
     {
         thisObj.f_enableButton('apply', state);
         thisObj.f_enableButton('cancel', state);
+		if (state) {
+			thisObj.m_change = true;
+		} else {
+			thisObj.m_change = false;
+		}
     }
     
     this.f_enableButton = function(btName, state)
@@ -977,6 +995,10 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
         return false;
     }
     
+	this.f_changed = function()
+	{
+		return thisObj.m_change;
+	}
 }
 
 UTM_extend(UTM_confNwLANdhcp, UTM_confFormObj);
@@ -1011,6 +1033,7 @@ function UTM_confNwLANip(name, callback, busLayer)
     this.m_btnDeleteConfirmId = this.m_prefix + 'btn_delete_confirm';
     this.m_textWidth = 205;
     this.m_cbGroupId = this.m_prefix + 'cb_group';
+	this.m_change = false;
     
     /**
      * @param name - name of configuration screens.
@@ -1551,6 +1574,11 @@ function UTM_confNwLANip(name, callback, busLayer)
     {
         this.f_enabledDisableButton(this.m_btnApplyId, state);
         this.f_enabledDisableButton(this.m_btnCancelId, state);
+		if (state) {
+			thisObj.m_change = true;
+		} else {
+			thisObj.m_change = false;
+		}
     }
     
 	
@@ -1726,6 +1754,11 @@ function UTM_confNwLANip(name, callback, busLayer)
             }
         }
     }
+	
+	this.f_changed = function()
+	{
+		return thisObj.m_change;
+	}
 }
 
 UTM_extend(UTM_confNwLANip, UTM_confBaseObjExt);

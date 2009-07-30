@@ -160,7 +160,7 @@ function UTM_mainPanel()
         thisObj.m_3navSelectedItem = id;
         thisObj.m_3navMenu.f_show(id);
         //alert('mp.f_selectItem: id' + id + 'defaultSelection: ' + thisObj.f_getDefaultSelection(id));
-        thisObj.m_3navMenu.f_selectItem(thisObj.f_getDefaultSelection(id));
+        thisObj.m_3navMenu.f_selectItemInner(thisObj.f_getDefaultSelection(id));
     }
 	
 	this.f_getVisibleSubId = function(id, subId) {
@@ -184,7 +184,7 @@ function UTM_mainPanel()
         thisObj.m_3navSelectedItem = id;
         thisObj.m_3navMenu.f_show(id);
 		//alert('mp.f_selectItem: id' + id + 'defaultSelection: ' + thisObj.f_getDefaultSelection(id));
-        thisObj.m_3navMenu.f_selectItem(thisObj.f_getVisibleSubId(id,subId));		
+        thisObj.m_3navMenu.f_selectItemInner(thisObj.f_getVisibleSubId(id,subId));		
 	} 
     
     this.f_3navSelectItemCb = function(id, desc)

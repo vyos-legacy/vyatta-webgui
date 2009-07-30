@@ -311,6 +311,18 @@ function UTM_configPanel()
 		thisObj.m_activeObj.f_reflow();
 		g_utmMainPanel.f_requestResize();
 	}
+	
+	this.f_changed = function()
+	{
+		if ((thisObj.m_activeObj != undefined) && (thisObj.m_activeObj != null)) {
+			if (thisObj.m_activeObj.f_changed != undefined) {
+				return thisObj.m_activeObj.f_changed();
+			} else {
+				return false;
+			}		
+		}
+		return false;
+ 	}
 
 }
 

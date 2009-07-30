@@ -294,10 +294,12 @@ function UTM_confUrlEzByList(name, callback, busLayer)
 			var args = id.split(",");
 			this.f_deleteRow(args[1]);
 		} else if (id == this.m_btnSaveChangeAppyCbId) {
-		    this.m_goBack = true;			
-		    this.f_apply();				
+            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);			
+		    //this.m_goBack = true;			
+		    //this.f_apply();				
 		} else if (id == this.m_btnSaveChangeCancelCbId) {
-		    g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);								
+		    //g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_EASY_WEBF_ID);
+			return;								
 		} else if (id ==  this.m_cbGroupId) {
 			this.f_enableAllButton(true);
 		}

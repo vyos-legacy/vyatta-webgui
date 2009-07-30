@@ -353,9 +353,9 @@ var g_lang =
 	m_landhcp_dns_sec_lower: "secondary DNS server",	
 	m_landhcp_dns_address: "address",
 	m_landhcp_1_dns_server_required : "At least one DNS server is required",	
-	m_landhcp_dns_static : "Static",
-	m_landhcp_dns_dynamic : "Dynamic",
-	m_landhcp_dns_none : "No DNS",
+	m_landhcp_dns_static : "static",
+	m_landhcp_dns_dynamic : "dynamic",
+	m_landhcp_dns_none : "no DNS",
 	m_lanip_reserved_ip : "Reserved IP addresses",
 	m_lanip_reserved_ip_lower: "reserved IP address",
 	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",	
@@ -389,7 +389,7 @@ var g_lang =
 	m_tooltip_add: "add a new row",
 	m_tooltip_delete: "delete a row",
 	m_tooltip_back: "go back to previous screen",
-    m_remindSaveChange : 'Your changes have not been saved.  Would you like to save it?',
+    m_remindSaveChange : 'You are about to leave this page without saving your modifications.  Are you sure you want to continue?',
 
     /////////////////////////////////////////
     // plesae do not edit beyound dummy

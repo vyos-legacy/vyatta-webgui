@@ -310,7 +310,7 @@ sub backup {
 			#and remove from poll collection
 			delete $new_hash_coll{$key};
 		    }
-		    elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
+		    elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501 || $err->{_http_code} == 404) {
 			#log error and delete backup request
 			`logger 'error received from $key, canceling backup of this VM: $err->{_http_code}'`;
 			delete $new_hash_coll{$key};

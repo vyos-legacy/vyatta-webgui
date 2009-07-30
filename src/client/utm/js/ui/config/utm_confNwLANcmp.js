@@ -188,11 +188,12 @@ function UTM_confNwLANitf(name, callback, busLayer)
     this.f_setValue = function()
     {
 		if ((thisObj.m_ifObj != undefined) && (thisObj.m_ifObj != null)) {
-			thisObj.m_form.conf_lan_itf_ip.value = thisObj.m_ifObj.m_ip;
 			if (thisObj.m_ifObj.m_ip != null) {
 				thisObj.m_form.conf_lan_itf_mask.value = g_utils.f_convertCIDRToNetmask(thisObj.m_ifObj.m_mask);
+			    thisObj.m_form.conf_lan_itf_ip.value = thisObj.m_ifObj.m_ip;				
 			} else {
 				thisObj.m_form.conf_lan_itf_mask.value = '';
+			    thisObj.m_form.conf_lan_itf_ip.value = '';				
 			}
 		}
         thisObj.f_enableAllButton(false);

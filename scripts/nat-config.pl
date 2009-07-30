@@ -291,7 +291,8 @@ sub set_dnat_rule {
   }
 
   if ($invalid_key eq 'false') {
-    push @cmds, "set $nat_rule_level inbound-interface eth0";  
+    push @cmds, "set $nat_rule_level inbound-interface eth0", 
+                "set $nat_rule_level type destination";  
     $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {
       # print error and return

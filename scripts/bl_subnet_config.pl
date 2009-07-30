@@ -249,7 +249,7 @@ sub get_dhcp_server_config {
     if (scalar(@ip) == 0) {
       # no IP on interface
       $msg  .=  "<enable>false</enable>" . "<start></start>" . "<end></end>" .
-		"<dns_mode>none</dns_mode>" . "<primary_dns></primary_dns>". 
+		"<dns_mode></dns_mode>" . "<primary_dns></primary_dns>". 
 		"<secondary_dns></secondary_dns>" . "</dhcp-server-config></form>";
       print $msg;
       return;
@@ -284,7 +284,7 @@ sub get_dhcp_server_config {
     if (defined $dns_values[0]) {
       $msg .= "<dns_mode>$dns_values[0]</dns_mode>";
     } else {
-      $msg .= "<dns_mode>none</dns_mode>";
+      $msg .= "<dns_mode></dns_mode>";
     }
     if (defined $dns_values[1]) {
       $msg .= "<primary_dns>$dns_values[1]</primary_dns>";

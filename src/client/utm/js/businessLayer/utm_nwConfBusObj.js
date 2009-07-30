@@ -11,13 +11,12 @@
  */
 function UTM_nwNatPatRecord(ruleNo, direction)
 {
-    var thisObj = this;
     this.m_direction = direction;
     this.m_ruleNo = ruleNo;   // data type int
-    this.m_enabled = false;
+    this.m_enabled = "Yes"; // Yes/No
     this.m_appService = " ";
     this.m_protocol = " ";
-    this.m_internIpAddr = "0.0.0.0";
+    this.m_internIpAddr = "";
     this.m_internPort = "";
     this.m_destPort = "";
 }
@@ -210,7 +209,7 @@ function UTM_nwConfigBusObj(busObj)
                         natRec[x].m_direction = dir;
                         natRec[x].m_ruleNo = rNo;
                         natRec[x].m_protocol = this.f_getValueFromNameValuePair("protocol", vals[j]);
-                        natRec[x].m_internAddr = this.f_getValueFromNameValuePair("iaddr", vals[j]);
+                        natRec[x].m_internIpAddr = this.f_getValueFromNameValuePair("iaddr", vals[j]);
                         natRec[x].m_internPort = this.f_getValueFromNameValuePair("iport", vals[j]);
                         natRec[x].m_destPort = this.f_getValueFromNameValuePair("dport", vals[j]);
                         natRec[x].m_enabled = this.f_getValueFromNameValuePair("enable", vals[j]);

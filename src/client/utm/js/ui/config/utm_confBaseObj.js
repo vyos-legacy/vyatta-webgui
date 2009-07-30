@@ -173,6 +173,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     {
         if(enableScroll)
         {
+            g_nwConfig.m_nwMaxDHCPresevedIP = 3;
             tableDiv.appendChild(child);
             if(tableDiv.childNodes.length > g_nwConfig.m_nwMaxDHCPresevedIP)
             {
@@ -213,7 +214,7 @@ function UTM_confBaseObj(name, callback, busLayer)
             var h = header[i];
             width += h[1];
             var fWidth = i == data.length-1 && enableScroll != null &&
-                          enableScroll ? h[1] - 18 : h[1];
+                          enableScroll ? h[1] - 21 : h[1];
             var lBorder = i == -1 ? 'border-left:1px solid #CCC; ' : '';
             //var rBorder = i == data.length-1 ? ' ' :
             //                    'border-right:1px dotted #ccc; ';
@@ -247,7 +248,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         innerHtml += '</tr></tbody></table>';
 
         if(enableScroll != null && enableScroll)
-            div.style.width = (width-18) + 'px';
+            div.style.width = (width-21) + 'px';
         else
             div.style.width = (width) + 'px';
 

@@ -117,58 +117,60 @@ function UTM_confNwNatPat(name, callback, busLayer)
         //thisObj.m_busLayer.f_cancelFirewallCustomizeRule(null);
     }
 
-    this.f_addDataIntoTable = function(fireRec)
+    this.f_addDataIntoTable = function(rec)
     {
-        var zpRule = fireRec.m_ruleNo;
-        var readonly = fireRec.m_appService.indexOf("Others") >= 0 ? false :true;
+        var zpRule = rec.m_ruleNo;
+        var readonly = rec.m_appService.indexOf("Others") >= 0 ? false :true;
 
-        var app = thisObj.f_renderCombobox(thisObj.m_nwObj.m_services, fireRec.m_appService,
+        var app = thisObj.f_renderCombobox(thisObj.m_nwObj.m_services, rec.m_appService,
                             140, thisObj.m_fieldIds[1]+zpRule,
                             ["f_nwNatPatOnCbbBlur('" + thisObj.m_fieldIds[1]+
                             zpRule + "')", thisObj.m_nwObj.m_ports]);
         var dport = thisObj.f_renderTextField(thisObj.m_fieldIds[2]+zpRule,
-                            fireRec.m_destPort, fireRec.m_destPort, 90,
+                            rec.m_destPort, rec.m_destPort, 90,
                             ["f_nwNatPatOnTFBlur('" + thisObj.m_fieldIds[2]+
                             zpRule + "')"], readonly);
         var sport = thisObj.f_renderTextField(thisObj.m_fieldIds[3]+zpRule,
-                            fireRec.m_internPort, fireRec.m_srcPort, 90,
+                            rec.m_internPort, rec.m_srcPort, 90,
                             ["f_nwNatPatOnTFBlur('" + thisObj.m_fieldIds[3]+
                             zpRule + "')"], false);
-        var pro = thisObj.f_renderCombobox(thisObj.m_protocol, fireRec.m_protocol,
+        var pro = thisObj.f_renderCombobox(thisObj.m_protocol, rec.m_protocol,
                             80, thisObj.m_fieldIds[4]+zpRule,
                             ["f_nwNatPatOnCbbBlur('" + thisObj.m_fieldIds[4]+
                             zpRule + "')"]);
         var sip = thisObj.f_renderTextField(thisObj.m_fieldIds[5]+zpRule,
-                            fireRec.m_internIpAddr, '', 170,
+                            rec.m_internIpAddr, '', 170,
                             ["f_nwNatPatOnTFBlur('" + thisObj.m_fieldIds[5]+
                             zpRule + "')"], false);
         var enable = "<div align=center>" + thisObj.f_renderCheckbox(
-                  fireRec.m_enabled, thisObj.m_fieldIds[6]+zpRule,
+                  rec.m_enabled, thisObj.m_fieldIds[6]+zpRule,
                   "f_nwNatPatOnChkClick('"+thisObj.m_fieldIds[6]+zpRule+"')",
                   "") + "</div>";
-        var del = "<div align=center>" + thisObj.f_renderButton(
-                  "delete", true, "f_nwNatPatDeleteHandler(" + fireRec.m_ruleNo +
+        var del = "<div align=center width=45>" + thisObj.f_renderButton(
+                  "delete", true, "f_nwNatPatDeleteHandler(" + rec.m_ruleNo +
                   ")", "") + "</div>";
 
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [app, dport, sport, pro, sip, enable, del]);
-        thisObj.m_gridBody.appendChild(div);
+                    [app, dport, sport, pro, sip, enable, del], null, null, true);
+        thisObj.f_addRowIntoGridTable(thisObj.m_gridBody, div, true);
     };
 
     this.f_handleAddNewNatRow = function(ruleNo)
     {
-        var fireRec = new UTM_nwNatPatRecord(ruleNo);
-        thisObj.m_npRecs.push(fireRec);
-        thisObj.f_addDataIntoTable(fireRec);
+        var rec = new UTM_nwNatPatRecord(ruleNo);
+        thisObj.m_npRecs.push(rec);
+        thisObj.f_addDataIntoTable(rec);
     };
 
     this.f_init = function()
     {
+        this.f_handleCancelAction(true);
+
         this.m_colModel = this.f_createColumns();
         this.m_gridHeader = this.f_createGridHeader(this.m_colModel, "f_nwNatPatNotUse");
-        this.m_gridBody = this.f_createGridView(this.m_colModel, false);
+        this.m_gridBody = this.f_createGridView(this.m_colModel, false, true);
         this.f_loadVMData();
 
         var btns = [['Add', "f_nwNatPatAddHandler()",
@@ -375,6 +377,10 @@ function UTM_confNwNatPat(name, callback, busLayer)
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
+
+            if(evt.m_errCode != 0)
+                g_utils.f_popupMessage(evt.m_errMsg, "error", "Apply Error", true);
+
             thisObj.f_loadVMData();
         };
 
@@ -383,13 +389,16 @@ function UTM_confNwNatPat(name, callback, busLayer)
         thisObj.m_busLayer.f_saveNatPatConfiguration(cb);
     };
 
-    this.f_handleCancelAction = function()
+    this.f_handleCancelAction = function(noCallback)
     {
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
             thisObj.f_loadVMData();
         };
+
+        if(noCallback != null && noCallback)
+            cb = null;
 
         g_utils.f_cursorWait();
         thisObj.f_enabledActionButtons(false);

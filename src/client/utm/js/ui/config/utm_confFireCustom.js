@@ -308,7 +308,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                      thisObj.f_createSimpleDiv(fireRec.m_action, 'center'),
                      log, order, enable, del], null, null, true);
         thisObj.f_addRowIntoGridTable(thisObj.m_gridBody, div, true);
-        //thisObj.m_gridBody.appendChild(div);
     }
 
     this.f_addRecordIntoTable = function(fireRec, rowNo, orderReadonly)
@@ -376,7 +375,6 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                      sport, dip, dmip, dport, act, log, order, enable, del],
                     null, null, true);
         thisObj.f_addRowIntoGridTable(thisObj.m_gridBody, div, true);
-        //thisObj.m_gridBody.appendChild(div);
 
         if(fireRec.m_appService.indexOf("Others") < 0)
         {

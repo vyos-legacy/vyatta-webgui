@@ -40,8 +40,9 @@ GetOptions(
 
 if (defined($backup)) {
   if (!defined($filename)) {
-    print "Must specify filename for backup\n";
-    exit 1;
+      `logger -p debug 'dom0: Must specify filename for backup'`;
+      print "Must specify filename for backup\n";
+      exit 1;
   }
   do_backup($backup, $filename);
   exit 0;
@@ -49,8 +50,9 @@ if (defined($backup)) {
 
 if (defined($restore)) {
   if (!defined($filename)) {
-    print "Must specify filename for restore\n";
-    exit 1;
+      `logger -p debug 'dom0: Must specify filename for restore'`;
+      print "Must specify filename for restore\n";
+      exit 1;
   }
   do_restore($restore, $filename);
   exit 0;
@@ -110,6 +112,7 @@ sub do_backup {
     # backup config files
     my $tdir = mkdtemp('/tmp/dom0-backup.XXXXXX');
     if (! -d "$tdir" || !mkdir("$tdir/files")) {
+      `logger -p alert 'dom0: Cannot create temp dir'`;
       print "Cannot create temp dir\n";
       exit 1;
     }
@@ -145,6 +148,7 @@ sub do_backup {
     }
     rmtree($tdir);
     if (defined($err)) {
+      `logger -p alert 'dom0: $err'`;
       print "$err\n";
       exit 1;
     }
@@ -154,8 +158,9 @@ sub do_backup {
 sub do_restore {
   my ($what, $file) = @_;
   if (! -r "$file") {
-    print "Cannot find $file\n";
-    exit 1;
+      `logger -p alert 'dom0: Cannot find $file'`;
+      print "Cannot find $file\n";
+      exit 1;
   }
   if (!($what =~ m/config=true/)) {
     # nothing to restore
@@ -163,8 +168,9 @@ sub do_restore {
   }
   my $tdir = mkdtemp('/tmp/dom0-restore.XXXXXX');
   if (! -d "$tdir" || !mkdir("$tdir/files")) {
-    print "Cannot create temp dir\n";
-    exit 1;
+      `logger -p alert 'dom0: Cannot create temp dir'`;
+      print "Cannot create temp dir\n";
+      exit 1;
   }
   my $ol_gid = getgrnam($LDAP_GROUP);
   chown -1, $ol_gid, $tdir;
@@ -209,8 +215,9 @@ sub do_restore {
   }
   rmtree($tdir);
   if (defined($err)) {
-    print "$err\n";
-    exit 1;
+      `logger -p alert 'dom0: $err'`;
+      print "$err\n";
+      exit 1;
   }
 }
 

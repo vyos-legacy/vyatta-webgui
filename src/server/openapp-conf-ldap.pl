@@ -144,14 +144,16 @@ EOF
 sub do_conf_internal {
   my $cfg = new Vyatta::Config;
   if (!$cfg->existsOrig("$LDAP_CONF_ROOT")) {
-    print "Already configured to use Internal LDAP server\n";
-    exit 1;
+      `logger -p debug 'dom0: Already configured to use Internal LDAP server'`;
+      print "Already configured to use Internal LDAP server\n";
+      exit 1;
   }
   my @cmds = ("delete $LDAP_CONF_ROOT", 'commit', 'save');
   my $err = OpenApp::Conf::execute_session(@cmds);
   if (defined($err)) {
-    print "LDAP configuration failed: $err\n";
-    exit 1;
+      `logger -p debug 'dom0: LDAP configuration failed: $err'`;
+      print "LDAP configuration failed: $err\n";
+      exit 1;
   }
   exit 0;
 }
@@ -175,21 +177,24 @@ sub do_internal {
   # restore openapp.conf from openapp-internal.conf
   system("sudo cp $SLAPD_OA_INTERNAL_CONF $SLAPD_OA_CONF");
   if ($? >> 8) {
-    print "Failed to update LDAP configuration file\n";
-    exit 1;
+      `logger -p debug 'dom0: Failed to update LDAP configuration file'`;
+      print "Failed to update LDAP configuration file\n";
+      exit 1;
   }
   
   # restart slapd
   if (!restart_ldap()) {
-    print "Failed to restart LDAP server\n";
-    exit 1;
+      `logger -p error 'dom0: Failed to restart LDAP server'`;
+      print "Failed to restart LDAP server\n";
+      exit 1;
   }
 
   # restore PAM and NSS secrets
   my $err = update_secret('admin');
   if (defined($err)) {
-    print "$err\n";
-    exit 1;
+      `logger -p debug 'dom0: restore PAM and NSS secrets error: $err'`;
+      print "$err\n";
+      exit 1;
   }
   exit 0;
 }
@@ -200,8 +205,9 @@ sub do_conf_external {
 
   # read params from file
   if (!open($fd, '<', $param_file)) {
-    print "Failed to open param file\n";
-    exit 1;
+      `logger -p alert 'dom0: Failed to open param file'`;
+      print "Failed to open param file\n";
+      exit 1;
   }
   my $addr = <$fd>;
   my $sfx = <$fd>;
@@ -230,8 +236,9 @@ sub do_conf_external {
   );
   my $err = OpenApp::Conf::execute_session(@cmds);
   if (defined($err)) {
-    print "Failed to configure external LDAP server: $err\n";
-    exit 1;
+      `logger -p alert 'dom0: Failed to configure external LDAP server: $err'`;
+      print "Failed to configure external LDAP server: $err\n";
+      exit 1;
   }
   exit 0;
 }
@@ -242,8 +249,9 @@ sub do_external {
 
   # read params from file
   if (!open($fd, '<', $param_file)) {
-    print "Failed to open param file\n";
-    exit 1;
+      `logger -p alert 'dom0: Failed to open param file'`;
+      print "Failed to open param file\n";
+      exit 1;
   }
   my $addr = <$fd>;
   my $sfx = <$fd>;
@@ -263,8 +271,9 @@ sub do_external {
   my ($fh, $fname) = mkstemp('/tmp/ldap-conf.XXXXXX');
   chmod(0600, $fname);
   if (! -f "$fname") {
-    print "Failed to create LDAP configuration file\n";
-    exit 1;
+      `logger -p alert 'dom0: Failed to create LDAP configuration file'`;
+      print "Failed to create LDAP configuration file\n";
+      exit 1;
   }
   print $fh <<EOF;
 # main database (external)
@@ -288,21 +297,24 @@ EOF
   my $ret = ($? >> 8);
   unlink($fname);
   if ($ret) {
-    print "Failed to update LDAP configuration file\n";
-    exit 1;
+      `logger -p alert 'dom0: Failed to update LDAP configuration file'`;
+      print "Failed to update LDAP configuration file\n";
+      exit 1;
   }
 
   # restart slapd
   if (!restart_ldap()) {
-    print "Failed to restart LDAP server\n";
-    exit 1;
+      `logger -p error 'dom0: Failed to restart LDAP server'`;
+      print "Failed to restart LDAP server\n";
+      exit 1;
   }
 
   # update PAM and NSS secrets
   my $err = update_secret($rwpass);
   if (defined($err)) {
-    print "$err\n";
-    exit 1;
+      `logger -p debug 'dom0: restore PAM and NSS secrets error: $err'`;
+      print "$err\n";
+      exit 1;
   }
   exit 0;
 }

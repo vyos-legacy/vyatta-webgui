@@ -46,6 +46,7 @@ sub set_password_policy {
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -53,6 +54,7 @@ sub set_password_policy {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app password-policy $set true");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -60,6 +62,7 @@ sub set_password_policy {
     # commit
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -72,6 +75,7 @@ sub delete_password_policy {
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -79,6 +83,7 @@ sub delete_password_policy {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete system open-app password-policy $delete");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -86,6 +91,7 @@ sub delete_password_policy {
     # commit
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }

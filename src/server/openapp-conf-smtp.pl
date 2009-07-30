@@ -46,6 +46,7 @@ sub set_smtp {
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -53,6 +54,7 @@ sub set_smtp {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client address $server");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -60,6 +62,7 @@ sub set_smtp {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client email $email");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -67,6 +70,7 @@ sub set_smtp {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client username $username");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -74,6 +78,7 @@ sub set_smtp {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client password $pswd");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -81,6 +86,7 @@ sub set_smtp {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client name $name");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -88,6 +94,7 @@ sub set_smtp {
     # commit
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }

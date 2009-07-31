@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+98) unstable; urgency=low
+
+  * 1. When user logout, stop the polling thread.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 31 Jul 2009 01:52:29 +0000
+
 vyatta-webgui (0.2+fxd0+97) unstable; urgency=low
 
   [ Michael Larson ]

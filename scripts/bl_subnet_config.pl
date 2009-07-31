@@ -96,19 +96,32 @@ sub more_than1_shared_ntwrks {
 }
 
 sub delete_sharedntwrk_or_dhcpserver {
-    my $interface = shift;
+    my ($interface, $change_ip) = @_;
     my @cmds = ();
 
-    # if no dhcp ranges or mapping exist, delete shared-network-name
-    my $delete_dhcp = shared_ntwrk_range_or_mapping_exist($interface);
-    if ($delete_dhcp == 1) {
-       # if no other shared-network-names, delete dhcp-server config
-       my $any_shared_ntwrks = more_than1_shared_ntwrks();
-       if ($any_shared_ntwrks == 1) {
+    if (defined $change_ip) {
+      my $delete_dhcp = shared_ntwrk_range_or_mapping_exist($interface);
+      if ($delete_dhcp == 0) {
+        # if no other shared-network-names, delete dhcp-server config
+        my $any_shared_ntwrks = more_than1_shared_ntwrks();
+        if ($any_shared_ntwrks == 1) {
            push @cmds, "delete service dhcp-server";
-       } else {
+        } else {
            push @cmds, "delete service dhcp-server shared-network-name $interface";
-       }
+        }
+      }
+    } else {
+      # if no dhcp ranges or mapping exist, delete shared-network-name
+      my $delete_dhcp = shared_ntwrk_range_or_mapping_exist($interface);
+      if ($delete_dhcp == 1) {
+        # if no other shared-network-names, delete dhcp-server config
+        my $any_shared_ntwrks = more_than1_shared_ntwrks();
+        if ($any_shared_ntwrks == 1) {
+           push @cmds, "delete service dhcp-server";
+        } else {
+           push @cmds, "delete service dhcp-server shared-network-name $interface";
+        }
+      }
     }
 
     return @cmds;
@@ -193,6 +206,11 @@ sub set_interface_config {
             "set service nat rule 2 destination address $xml->{ip}", 
             "commit") if $xml->{interface} eq 'LAN';
 
+    # if LAN2 interface then we need to change default NAT rule (rule 3) for https
+    $err = OpenApp::Conf::execute_session(
+            "set service nat rule 3 destination address $xml->{ip}",
+            "commit") if $xml->{interface} eq 'LAN2';
+
     if (defined $err) {
       # revert back to original IP and NAT rule
       @cmds = ("delete $path");
@@ -201,6 +219,8 @@ sub set_interface_config {
         my @just_ip = split('/', $intf_ip[0]);
         push @cmds, "set service nat rule 2 destination address $just_ip[0]" 
                 if  $xml->{interface} eq 'LAN';
+        push @cmds, "set service nat rule 3 destination address $just_ip[0]"
+                if  $xml->{interface} eq 'LAN2';
       }     
       push @cmds, "commit", "save";
       OpenApp::Conf::execute_session(@cmds);
@@ -212,8 +232,43 @@ sub set_interface_config {
       exit 1;
     }
 
+    if ($xml->{interface} eq 'LAN' || $xml->{interface} eq 'LAN2') {
+      # set webproxy listen-address
+      my @wb_cmds = ();
+      if (scalar(@intf_ip) > 0) {
+        my @just_ip = split('/', $intf_ip[0]);
+        @wb_cmds = ("delete service webproxy listen-address $just_ip[0]");
+      }
+      push @wb_cmds, "set service webproxy listen-address $xml->{ip}", "commit";
+      $err = OpenApp::Conf::execute_session(@wb_cmds);
+    }
+
+    if (defined $err) {
+      # revert back to original IP, NAT rule and webproxy listen-address
+      @cmds = ("delete $path");
+      if (scalar(@intf_ip) > 0){
+        push @cmds, "set $path $intf_ip[0]";
+        my @just_ip = split('/', $intf_ip[0]);
+        push @cmds, "set service nat rule 2 destination address $just_ip[0]"
+                if  $xml->{interface} eq 'LAN';
+        push @cmds, "set service nat rule 3 destination address $just_ip[0]"
+                if  $xml->{interface} eq 'LAN2';
+        if ($xml->{interface} eq 'LAN' || $xml->{interface} eq 'LAN2') {
+          push @cmds, "set service webproxy listen-address $just_ip[0]";
+        }
+      }
+      push @cmds, "commit", "save";
+      OpenApp::Conf::execute_session(@cmds);
+      $msg = "<form name='interface-config' code='3'>";
+      $msg .= "<ip>$xml->{ip}</ip>";
+      $msg .= "<errmsg>" . "Error setting IP for $xml->{interface}" . "</errmsg>";
+      $msg .= "</form>";
+      print $msg;
+      exit 1;
+    }
+
     # delete dhcp-server subnet if defined for this interface
-    @cmds = delete_sharedntwrk_or_dhcpserver($xml->{interface});
+    @cmds = delete_sharedntwrk_or_dhcpserver($xml->{interface}, 'change_ip');
     push @cmds, "commit";
     $err = OpenApp::Conf::execute_session(@cmds);
     if (defined $err) {
@@ -224,6 +279,11 @@ sub set_interface_config {
         my @just_ip = split('/', $intf_ip[0]);
         push @cmds, "set service nat rule 2 destination address $just_ip[0]"
                 if  $xml->{interface} eq 'LAN';
+        push @cmds, "set service nat rule 3 destination address $just_ip[0]"
+                if  $xml->{interface} eq 'LAN2';
+        if ($xml->{interface} eq 'LAN' || $xml->{interface} eq 'LAN2') {
+          push @cmds, "set service webproxy listen-address $just_ip[0]";
+        }
       }
       push @cmds, "commit", "save";
       OpenApp::Conf::execute_session(@cmds);
@@ -234,6 +294,7 @@ sub set_interface_config {
       print $msg;
       exit 1;      
     }
+
     OpenApp::Conf::execute_session('save');
     $msg = "<form name='interface-config' code='0'></form>";
     print $msg;
@@ -361,7 +422,7 @@ sub set_dhcp_server_config {
        exit 1;
     }
 
-    @cmds = delete_sharedntwrk_or_dhcpserver($xml->{interface});
+    @cmds = delete_sharedntwrk_or_dhcpserver($xml->{interface}, undef);
     push @cmds, "commit", "save";
     $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {
@@ -474,7 +535,7 @@ sub set_dhcp_static_mapping {
        exit 1;
     }
 
-    @cmds = delete_sharedntwrk_or_dhcpserver($xml->{interface});;
+    @cmds = delete_sharedntwrk_or_dhcpserver($xml->{interface}, undef);
     push @cmds, "commit", "save";
     $err = OpenApp::Conf::run_cmd_def_session(@cmds);
     if (defined $err) {

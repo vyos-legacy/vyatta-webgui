@@ -44,6 +44,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
 
     this.f_getConfigurationPage = function()
     {
+        this.m_resyncNextRuleNo = -1;
         return this.f_getPanelDiv(this.f_init());
     }
 
@@ -387,7 +388,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
             g_utils.f_cursorDefault();
 
             if(evt.m_errCode != 0)
-                g_utils.f_popupMessage(evt.m_errMsg, "error", "Apply Error", true);
+                g_utils.f_popupMessage(evt.m_errMsg, "error", g_lang.m_applyError, true);
 
             thisObj.f_loadVMData();
         };
@@ -401,6 +402,9 @@ function UTM_confNwNatPat(name, callback, busLayer)
     {
         var cb = function(evt)
         {
+            if(evt.m_errCode != 0)
+                g_utils.f_popupMessage(evt.m_errMsg, "error", g_lang.m_cancelError, true);
+
             g_utils.f_cursorDefault();
             thisObj.f_loadVMData();
         };
@@ -418,6 +422,10 @@ function UTM_confNwNatPat(name, callback, busLayer)
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
+
+            if(evt.m_errCode != 0)
+                g_utils.f_popupMessage(evt.m_errMsg, "error", g_lang.m_deleteError, true);
+
             thisObj.f_loadVMData();
             thisObj.f_enabledActionButtons(true);
         };

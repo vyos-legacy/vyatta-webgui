@@ -83,6 +83,11 @@ var g_lang =
     m_ipaddrTitle : "IP address validation",
     m_underConstruction : 'Under Construction',
     m_applyTip : "save changes",
+    m_applyError : "apply error",
+    m_deleteError : "delete error",
+    m_resetError : "reset error",
+    m_cancelError : "cancel error",
+    m_setError : "set error",
     m_cancelTip : "cancel changes",
     m_confModify : "Configuration has been modified and not saved. Do you want to continue?",
 

@@ -423,7 +423,7 @@ function UTM_nwConfigBusObj(busObj)
     {
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'><handler>nat-config" +
-                      " delete-rulenum</handler><data>direction=[" + rec.m_direction +
+                      " delete-rule</handler><data>direction=[" + rec.m_direction +
                       "],rulenum=[" + rec.m_ruleNo + "]</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,

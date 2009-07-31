@@ -861,6 +861,10 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
+
+            if(evt.m_errCode != 0)
+                g_utils.f_popupMessage(evt.m_errMsg, "error", g_lang.m_applyError, true);
+
             thisObj.f_loadVMData();
         };
 
@@ -873,8 +877,10 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
     {
         var cb = function(evt)
         {
+            if(evt.m_errCode != 0)
+                g_utils.f_popupMessage(evt.m_errMsg, "error", g_lang.m_resetError, true);
+
             thisObj.f_loadVMData();
-            //thisObj.f_handleSaveAction();
         };
 
         g_utils.f_cursorWait();
@@ -885,6 +891,9 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
     {
         var cb = function(evt)
         {
+            if(evt.m_errCode != 0)
+                g_utils.f_popupMessage(evt.m_errMsg, "error", g_lang.m_cancelError, true);
+
             if(doNotReload == null || !doNotReload)
                 thisObj.f_loadVMData();
         };
@@ -898,6 +907,9 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
     {
         var cb = function(evt)
         {
+            if(evt.m_errCode != 0)
+                g_utils.f_popupMessage(evt.m_errMsg, "error", g_lang.m_deleteError, true);
+
             thisObj.f_loadVMData();
             thisObj.f_enabledActionButtons(true);
         };

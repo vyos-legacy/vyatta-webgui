@@ -84,6 +84,11 @@ var g_lang =
     m_underConstruction : "en construction",
     m_applyTip : "sauvegarder les modifications",
     m_cancelTip : "annuler les modifications", 
+    m_applyError : "apply error",
+    m_deleteError : "delete error",
+    m_resetError : "reset error",
+    m_cancelError : "cancel error",
+    m_setError : "set error",
     m_confModify : "les modifications effectuées n'ont pas été sauvegardées. Voulez-vous continuer ?",
 
     m_formNotAValidIP: " is not a valid IP address",

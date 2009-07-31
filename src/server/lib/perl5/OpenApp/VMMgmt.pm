@@ -18,8 +18,10 @@ my $STATUS_DIR = '/var/run/vmstatus';
 my $HWMON_FILE = '/var/run/vmstatus.hw';
 my $STATUS_LOCK = "$STATUS_DIR/.lock";
 
+my $OA_IMAGE_ROOT = '/live/image/boot';
 my $OA_VERSION_FILE = '/opt/vyatta/etc/version';
 my $OA_GRUB_CFG = '/live/image/boot/grub/grub.cfg';
+my $OA_GRUB_CFG_LIMIT = 5;
 
 my $CFG_VM_START_TIMEOUT = 'system open-app parameters vm-start-timeout';
 my $CFG_VM_RESP_TIMEOUT = 'system open-app parameters vm-response-timeout';
@@ -268,6 +270,37 @@ sub setDom0GrubDefVer {
     }
   }
   return $newdef;
+}
+
+sub cleanupDom0Ver {
+  my ($ver) = @_;
+  # clean up the image directory for the version
+  ## if directory doesn't exist, do nothing (not treating as error).
+  return undef if ("$ver" eq '' || $ver =~ /\// || ! -d "$OA_IMAGE_ROOT/$ver");
+  system("sudo rm -rf $OA_IMAGE_ROOT/$ver");
+  return 'Failed to remove image directory' if ($? >> 8);
+
+  # clean up the grub config.
+  # sufficient to just limit the number of entries.
+  my $fd = undef;
+  return undef if (!open($fd, '<', $OA_GRUB_CFG));
+  my ($count, $line) = (0, 0);
+  while (<$fd>) {
+    ++$line;
+    if (/^menuentry /) {
+      ++$count;
+      last if ($count > $OA_GRUB_CFG_LIMIT);
+    }
+  }
+  close($fd);
+  if ($count > $OA_GRUB_CFG_LIMIT) {
+    # remove the extra entries
+    my $start = $line - 1;
+    system("sudo sed -i '$start,\${d}' $OA_GRUB_CFG");
+    return 'Failed to update boot configuration' if ($? >> 8);
+  }
+
+  return undef;
 }
 
 sub _getLibvirtCfg {

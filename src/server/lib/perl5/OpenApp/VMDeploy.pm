@@ -922,6 +922,20 @@ sub _preUpgradeProc {
     return "Cannot find new update \"$vver\""
       if (! -f "$OA_NEW_DIR/version_$vver");
 
+    # get the prev version
+    my $dd = undef;
+    my @v = ();
+    if (opendir($dd, "$OA_PREV_DIR")) {
+      @v = grep { /^version_.*$/ && -f "$OA_PREV_DIR/$_" } readdir($dd);
+      closedir($dd);
+    }
+    if (defined($v[0])) {
+      # found prev version. clean it up.
+      $v[0] =~ /^version_(.*)$/;
+      my $err = OpenApp::VMMgmt::cleanupDom0Ver($1);
+      return "Failed to clean up previous version: $err" if (defined($err));
+    }
+
     my $cmd = "rm -f $OA_PREV_DIR/version_*";
     _system($cmd);
     return 'Failed to remove previous version' if ($? >> 8);

@@ -330,17 +330,12 @@ function UTM_confNwNatPat(name, callback, busLayer)
         var val = cbb.value;
         var rNo = cbeid.split("-");
         var rec = new UTM_nwNatPatRecord(rNo[1], thisObj.m_direction);
+        var dport = document.getElementById(thisObj.m_fieldIds[2]+rNo[1]);
 
         var sendDPort = function()
         {
-            var dport = document.getElementById(thisObj.m_fieldIds[2]+rNo[1]);
             dport.value = thisObj.m_nwObj.f_getPortNumber(rec);
             thisObj.f_sendSetCommand(rec, "dport", dport.value);
-
-            if(rec.m_appService.indexOf("Other") >= 0)
-                thisObj.f_enableTextField(dport, true);
-            else
-                thisObj.f_enableTextField(dport, false);
         }
 
         var sendProtocol = function()
@@ -367,6 +362,11 @@ function UTM_confNwNatPat(name, callback, busLayer)
 
                 thisObj.f_sendSetCommand(rec, 'protocol', proVal, sendDPort);
             }
+
+            if(rec.m_appService.indexOf("Other") >= 0)
+                thisObj.f_enableTextField(dport, true);
+            else
+                thisObj.f_enableTextField(dport, false);
         }
 
         //////////////////////////////////////////////////////
@@ -388,9 +388,48 @@ function UTM_confNwNatPat(name, callback, busLayer)
         }
     };
 
-    this.f_validateInternalIPAddrs = function()
+    this.f_validation = function()
     {
-        //f_isIPAddressValidated
+        var ok = true;
+
+        for(var i=0; i<this.m_npRecs.length; i++)
+        {
+            var rec = this.m_npRecs[i];
+
+            var el = document.getElementById(this.m_fieldIds[1]+rec.m_ruleNo);
+            if(el != null && (el.value == null || el.value == " "))
+            {
+                g_utils.f_popupMessage(g_lang.m_nwAppServiceErr, "error", g_lang.m_applyError, true);
+                ok = false;
+                break;
+            }
+
+            el = document.getElementById(this.m_fieldIds[2]+rec.m_ruleNo);
+            if(el != null && (el.value == null || el.value.length == 0))
+            {
+                g_utils.f_popupMessage(g_lang.m_nwDestPortErr, "error", g_lang.m_applyError, true);
+                ok = false;
+                break;
+            }
+
+            el = document.getElementById(this.m_fieldIds[4]+rec.m_ruleNo);
+            if(el != null && (el.value == null || el.value == " "))
+            {
+                g_utils.f_popupMessage(g_lang.m_nwProtocolErr, "error", g_lang.m_applyError, true);
+                ok = false;
+                break;
+            }
+
+            el = document.getElementById(this.m_fieldIds[5]+rec.m_ruleNo);
+            if(el != null && (el.value == null || el.value.length == 0))
+            {
+                g_utils.f_popupMessage(g_lang.m_nwInternalAddrErr, "error", g_lang.m_applyError, true);
+                ok = false;
+                break;
+            }
+        }
+
+        return ok;
     }
 
     this.f_handleAddAction = function()
@@ -422,9 +461,12 @@ function UTM_confNwNatPat(name, callback, busLayer)
             thisObj.f_loadVMData();
         };
 
-        thisObj.f_enabledActionButtons(false);
-        g_utils.f_cursorWait();
-        thisObj.m_busLayer.f_saveNatPatConfiguration(cb);
+        if(thisObj.f_validation())
+        {
+            thisObj.f_enabledActionButtons(false);
+            g_utils.f_cursorWait();
+            thisObj.m_busLayer.f_saveNatPatConfiguration(cb);
+        }
     };
 
     this.f_handleCancelAction = function(noCallback)

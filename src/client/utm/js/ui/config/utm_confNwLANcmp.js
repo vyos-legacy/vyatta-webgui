@@ -328,10 +328,11 @@ function UTM_confNwLANitf(name, callback, busLayer)
 						var children = [/*'conf_lan_itf',*/ 'conf_lan_dhcp','conf_lan_ip'];
 						thisObj.m_parent.f_reloadChildren(children);						
 					} else {
-                        thisObj.f_enableAllButton(false);
+                        //thisObj.f_enableAllButton(false);
                         thisObj.m_ifObj.m_ip = thisObj.m_form.conf_lan_itf_ip.value.trim();
 		                thisObj.m_ifObj.m_mask = g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim());						
-					}					
+					}
+                                        thisObj.f_enableAllButton(false);
                 }
             }
         };

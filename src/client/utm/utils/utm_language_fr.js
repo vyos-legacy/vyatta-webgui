@@ -196,6 +196,11 @@ var g_lang =
     m_nwNatPatHeader :  "Cette page vous permet de paramétrer des règles de NAT/PAT."  + 
                         "Saisir un numéro de port unique ou une plage de ports (ex: 200-300)" + 
                         "Assurez-vous de ne pas avoir filtré ces ports dans le pare-feu.",
+    m_nwTitle : "NAT/PAT",
+    m_nwDestPortErr : "Invalid destination port.",
+    m_nwProtocolErr : "Invalid protocol.",
+    m_nwInternalAddrErr : "Invalid internal IP address.",
+    m_nwAppServiceErr : "Invalid application service.",
 
     ////////////////////////////////////////////////////////////////////;;
     // network configuration Routing;;

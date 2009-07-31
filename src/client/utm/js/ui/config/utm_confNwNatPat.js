@@ -114,6 +114,12 @@ function UTM_confNwNatPat(name, callback, busLayer)
                         thisObj.f_addDataIntoTable(evt.m_value[i]);
                 }
             }
+
+            if(thisObj.m_resyncNextRuleNo > 0)
+            {
+                thisObj.f_handleAddNewNatRow(thisObj.m_resyncNextRuleNo+"");
+                thisObj.m_resyncNextRuleNo = -1;
+            }
         };
 
         g_utils.f_cursorWait();
@@ -168,9 +174,18 @@ function UTM_confNwNatPat(name, callback, busLayer)
 
     this.f_handleAddNewNatRow = function(ruleNo)
     {
-        var rec = new UTM_nwNatPatRecord(ruleNo);
-        thisObj.m_npRecs.push(rec);
-        thisObj.f_addDataIntoTable(rec);
+        if(ruleNo.indexOf("resync") >= 0)
+        {
+            var resync = ruleNo.split("-");
+            thisObj.m_resyncNextRuleNo = Number(resync[1]);
+            thisObj.f_loadVMData();
+        }
+        else
+        {
+            var rec = new UTM_nwNatPatRecord(ruleNo);
+            thisObj.m_npRecs.push(rec);
+            thisObj.f_addDataIntoTable(rec);
+        }
     };
 
     this.f_init = function()
@@ -445,8 +460,19 @@ function UTM_confNwNatPat(name, callback, busLayer)
             }
         }
 
-        g_utils.f_cursorWait();
-        thisObj.m_busLayer.f_getNatPatNextRuleNo("incoming", cb);
+        if(thisObj.m_npRecs.length >= 399) // over the limit of 999 rules per zone-pair
+        {
+            g_utils.f_popupMessage(g_lang.m_fireCustLimitation,
+                                  'ok', g_lang.m_nwTitle, true);
+        }
+        else
+        {
+            ////////////////////////////////////////////
+            // get the next rule num from server.
+            thisObj.m_resyncNextRuleNo = -1;
+            g_utils.f_cursorWait();
+            thisObj.m_busLayer.f_getNatPatNextRuleNo("incoming", cb);
+        }
     }
 
     this.f_handleSaveAction = function()

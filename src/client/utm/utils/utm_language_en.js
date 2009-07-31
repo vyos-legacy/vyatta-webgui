@@ -202,6 +202,11 @@ var g_lang =
                 "create NAT/PAT rules or select existing rules to translate " +
                 "single port or port ranges.<br><font color=#ff6600>Warning:</font> " +
                 "Ensure that you have not filtered these ports in the firewall.",
+    m_nwTitle : "NAT/PAT",
+    m_nwDestPortErr : "Invalid destination port.",
+    m_nwProtocolErr : "Invalid protocol.",
+    m_nwInternalAddrErr : "Invalid internal IP address.",
+    m_nwAppServiceErr : "Invalid application service.",
 
     ////////////////////////////////////////////////////////////////////
     // network configuration Routing

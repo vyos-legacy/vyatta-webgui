@@ -100,6 +100,9 @@ function UTM_nwConfigBusObj(busObj)
     this.m_lastCmdSent = null;
     this.m_nwRec = null;
 
+    this.m_udpServices = ["DNS-UDP", "TFTP", "NTP", "SNMP", "L2TP", "Traceroute",
+                        "IPSec", "UNIK", "H323 host call - UDP", "SIP-UDP",
+                        "ICA-UDP"];
     this.m_services = ["DNS-UDP", "DNS-TCP", "HTTP", "HTTPS", "FTP_DATA",
                         "FTP", "POP3", "SMTP", "SMTP-Auth", "TFTP", "POP3S",
                         "IMAP", "NTP", "NNTP", "SNMP", "Telnet", "SSH",
@@ -430,21 +433,42 @@ function UTM_nwConfigBusObj(busObj)
                               thisObj.f_respondRequestCallback);
     }
 
-    this.f_getPortNumber = function(fireRec)
+    /**
+     * @param rec - nat/pat record
+     */
+    this.f_getPortNumber = function(rec)
     {
-        if(fireRec.m_protocol != null && fireRec.m_appService != null)
+        if(rec.m_protocol != null && rec.m_appService != null)
         {
             var s = thisObj.m_services;
             var p = thisObj.m_ports;
 
             for(var i=0; i<s.length; i++)
             {
-                if(fireRec.m_appService == s[i])
+                if(rec.m_appService == s[i])
                     return p[i];
             }
         }
 
         return "";
+    }
+
+    /**
+     * @param rec - nat/pat record
+     */
+    this.f_getProtocol = function(rec)
+    {
+        var s = thisObj.m_services;
+        var a = rec.m_appService;
+
+        if(a == s[19] || a == s[20] || a == s[27] || a == s[28])
+            return " ";
+
+        var udp = thisObj.m_udpServices.indexOf(a);
+        if(udp > -1)
+            return "udp";
+        else
+            return "tcp";
     }
 }
 

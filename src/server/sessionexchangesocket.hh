@@ -7,7 +7,7 @@
 class SessionExchangeSocket : public SessionExchange
 {
 public:
-  SessionExchangeSocket(unsigned short port, bool debug);
+  SessionExchangeSocket(unsigned short port, bool req_resp_log_file, bool debug);
   ~SessionExchangeSocket();
 
   void

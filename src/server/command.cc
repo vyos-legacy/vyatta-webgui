@@ -3,7 +3,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
+#include <syslog.h>
 #include <string>
 #include "rl_str_proc.hh"
 #include "systembase.hh"
@@ -107,7 +107,9 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
 
     if (WebGUI::execute(opmodecmd,stdout,verbatim,true) == 0) {
       err = WebGUI::SUCCESS;
-    } else {
+    } 
+    else {
+      syslog(LOG_DEBUG,"dom0: command error: %s",cmd.c_str());
       err = WebGUI::COMMAND_ERROR;
     }
 
@@ -121,7 +123,9 @@ Command::execute_single_command(string &cmd, const string &username, WebGUI::Acc
       stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
     }
     resp = stdout;
-  } else {
+  } 
+  else {
+    syslog(LOG_DEBUG,"dom0: command error: %s",cmd.c_str());
     err = WebGUI::COMMAND_ERROR;
   }
 }

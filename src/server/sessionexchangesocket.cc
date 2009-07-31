@@ -18,8 +18,8 @@ using namespace std;
 /**
  *
  **/
-SessionExchangeSocket::SessionExchangeSocket(unsigned short port, bool debug) :
-  SessionExchange(debug),
+SessionExchangeSocket::SessionExchangeSocket(unsigned short port, bool req_resp_log_file, bool debug) :
+  SessionExchange(req_resp_log_file, debug),
   _port(port)
 {
 

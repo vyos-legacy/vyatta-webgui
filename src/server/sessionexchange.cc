@@ -15,7 +15,8 @@ using namespace std;
 /**
  *
  **/
-SessionExchange::SessionExchange(bool debug) :
+SessionExchange::SessionExchange(bool req_resp_log_file, bool debug) :
+  _req_resp_log_file(req_resp_log_file),
   _debug(debug)
 {
 

@@ -28,26 +28,30 @@ GetOptions(
   'vm=s' => \$vmid
 );
 if (!defined($action) || !defined($vmid)) {
-  print "Must specify action and VM ID\n";
-  exit 1;
+    `logger -p info 'dom0: Must specify action and VM ID'`;
+    print "Must specify action and VM ID\n";
+    exit 1;
 }
 my $vmObj = new OpenApp::VMMgmt($vmid);
 if (!defined($vmObj)) {
-  print "Invalid VM ID '$vmid'\n";
-  exit 1;
+    `logger -p info 'dom0: Invalid VM ID $vmid'`;
+    print "Invalid VM ID '$vmid'\n";
+    exit 1;
 }
 
 # OA dom0
 if ($vmid eq $OpenApp::VMMgmt::OPENAPP_ID) {
   if ($action ne 'restart') {
-    print "Invalid operation for '$vmid'\n";
-    exit 1;
+      `logger -p info 'dom0: Invalid operation for $vmid'`;
+      print "Invalid operation for '$vmid'\n";
+      exit 1;
   }
 
   my $pid = undef;
   if (!defined($pid = fork())) {
-    print "Cannot create process for operation\n";
-    exit 1;
+      `logger -p info 'dom0: Cannot create process for operation'`;
+      print "Cannot create process for operation\n";
+      exit 1;
   } elsif ($pid) {
     # parent: return success
     exit 0;
@@ -62,8 +66,9 @@ if ($vmid eq $OpenApp::VMMgmt::OPENAPP_ID) {
 
 my $lv_cfg = $vmObj->getLibvirtCfg();
 if (! -f "$lv_cfg") {
-  print "Cannot find configuration for '$vmid'";
-  exit 1;
+    `logger -p info 'dom0: Cannot find configuration for $vmid'`;
+    print "Cannot find configuration for '$vmid'";
+    exit 1;
 }
 
 # TODO: make sure start/stop/restart are disallowed during upgrade/restore

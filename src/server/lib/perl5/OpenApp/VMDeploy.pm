@@ -5,6 +5,7 @@ use POSIX;
 use File::Temp qw(mkdtemp mkstemps);
 use File::Copy 'mv';
 use OpenApp::VMMgmt;
+use Vyatta::Config;
 
 my $VIMG_DIR = '/var/oa/vimg';
 my $NVIMG_DIR = '/var/oa/vimg-new';
@@ -24,7 +25,9 @@ my $OA_PREV_DIR = "$OA_UPD_DIR/prev";
 my $OA_CUR_DIR = "$OA_UPD_DIR/current";
 
 my $UPD_URG_CONTROL = 'OA-Update-Urgency';
-my $CRITICAL_UPDATE_AUTO_INST_INTVL = 3600 * 24; # 24 hours
+
+my $CFG_CRITICAL_UPD_AUTO_INST_TIMEOUT
+  = 'system open-app parameters upd-critical-install-timeout';
 
 ### "static" functions
 sub isValidNewVer {
@@ -195,12 +198,19 @@ sub recordCriticalUpdates {
   }
 }
 
+sub _getCritUpdateInstallTimeout {
+  my $cfg = new Vyatta::Config;
+  $cfg->{_active_dir_base} = '/opt/vyatta/config/active';
+  my $to = $cfg->returnOrigValue($CFG_CRITICAL_UPD_AUTO_INST_TIMEOUT);
+  return (defined($to) ? ($to * 3600) : (24 * 3600));
+}
+
 sub getCritUpdateDeadline {
   my ($vid, $ver) = @_;
   my $ln = "$CVIMG_DIR/oa-vimg-${vid}_${ver}_all.deb";
   return undef if (! -l $ln);
   my $mtime = (lstat($ln))[9];
-  return ($mtime + $CRITICAL_UPDATE_AUTO_INST_INTVL);
+  return ($mtime + _getCritUpdateInstallTimeout());
 }
 
 sub getCritUpdateInstList {
@@ -924,7 +934,12 @@ sub _preUpgradeProc {
     _system($cmd);
     return 'Failed to remove current ISO' if ($? >> 8);
 
-    $cmd = "mv -f $OA_NEW_DIR/{*.iso,version_*} $OA_CUR_DIR/";
+    # there may not be an ISO if this was previously installed.
+    # don't fail on error.
+    $cmd = "mv -f $OA_NEW_DIR/*.iso $OA_CUR_DIR/";
+    _system($cmd);
+
+    $cmd = "mv -f $OA_NEW_DIR/version_* $OA_CUR_DIR/";
     _system($cmd);
     return 'Failed to move new update' if ($? >> 8);
     

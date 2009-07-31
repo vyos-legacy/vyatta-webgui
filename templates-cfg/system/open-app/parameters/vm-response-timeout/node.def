@@ -1,0 +1,4 @@
+type: u32
+default: 180
+help: Set timeout (seconds) before a VM is considered "down"
+syntax:expression: $VAR(@) > 3; "\"vm-response-timeout\" must be at least 4"

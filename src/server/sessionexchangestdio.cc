@@ -15,8 +15,8 @@ const unsigned long SessionExchangeStdIO::_request_limit = 8192;
 /**
  *
  **/
-SessionExchangeStdIO::SessionExchangeStdIO(bool debug) :
-  SessionExchange(debug)
+SessionExchangeStdIO::SessionExchangeStdIO(bool req_resp_log_file, bool debug) :
+  SessionExchange(req_resp_log_file, debug)
 {
 
 }
@@ -65,7 +65,10 @@ SessionExchangeStdIO::read(Session &session)
     return false;
   }
 
-  string hack = "echo \"" + req + "\" >> /tmp/foo";system(hack.c_str());
+  if (_req_resp_log_file) {
+    string hack = "echo \"" + req + "\" >> /tmp/foo";system(hack.c_str());
+  }
+  syslog(LOG_DEBUG, "dom0: request: %s",req.c_str());
 
   session.set_message(req);
   return true;
@@ -81,7 +84,10 @@ SessionExchangeStdIO::write(Session &session)
     return true;
   }
 
-  string hack = "echo \"" + msg + "\" >> /tmp/foo";system(hack.c_str());
+  if (_req_resp_log_file) {
+    string hack = "echo \"" + msg + "\" >> /tmp/foo";system(hack.c_str());
+  }
+  syslog(LOG_DEBUG, "dom0: response: %s",msg.c_str());
  
   return false;
 }

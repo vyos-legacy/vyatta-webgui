@@ -3,6 +3,7 @@ package OpenApp::VMMgmt;
 use strict;
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::VMDeploy;
+use Vyatta::Config;
 
 our $OPENAPP_ID = 'openapp';
 our $OPENAPP_DNAME = 'OpenAppliance';
@@ -19,6 +20,9 @@ my $STATUS_LOCK = "$STATUS_DIR/.lock";
 
 my $OA_VERSION_FILE = '/opt/vyatta/etc/version';
 my $OA_GRUB_CFG = '/live/image/boot/grub/grub.cfg';
+
+my $CFG_VM_START_TIMEOUT = 'system open-app parameters vm-start-timeout';
+my $CFG_VM_RESP_TIMEOUT = 'system open-app parameters vm-response-timeout';
 
 ### "static" functions
 sub _lockStatus {
@@ -89,13 +93,17 @@ sub getVMList {
 }
 
 sub _getVMStartingWait {
-  # TODO get it from config
-  return 300;
+  my $cfg = new Vyatta::Config;
+  $cfg->{_active_dir_base} = '/opt/vyatta/config/active';
+  my $to = $cfg->returnOrigValue($CFG_VM_START_TIMEOUT);
+  return (defined($to) ? $to : 300);
 }
 
 sub _getVMStatusTimeout {
-  # TODO get it from config
-  return 180;
+  my $cfg = new Vyatta::Config;
+  $cfg->{_active_dir_base} = '/opt/vyatta/config/active';
+  my $to = $cfg->returnOrigValue($CFG_VM_RESP_TIMEOUT);
+  return (defined($to) ? $to : 180);
 }
 
 sub readStatus {

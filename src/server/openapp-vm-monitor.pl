@@ -7,13 +7,28 @@ use Net::SNMP;
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::VMMgmt;
 use OpenApp::VMDeploy;
+use Vyatta::Config;
 
-my $INTERVAL_ACTIVE = 5;
-my $INTERVAL_INACTIVE = 120;
-my $INACTIVE_TIMEOUT = 60;
 my $OA_ID = $OpenApp::VMMgmt::OPENAPP_ID;
 my $OA_SNMP_COMM = $OpenApp::VMMgmt::OPENAPP_SNMP_COMM;
 my $STATE_FILE = '/var/run/vm-monitor.state';
+
+my $CFG_WUI_POLL_INTERVAL = 'system open-app parameters poll-wui-interval';
+my $CFG_ST_POLL_INTERVAL = 'system open-app parameters poll-status-interval';
+
+sub _getActiveInterval {
+  my $cfg = new Vyatta::Config;
+  $cfg->{_active_dir_base} = '/opt/vyatta/config/active';
+  my $it = $cfg->returnOrigValue($CFG_WUI_POLL_INTERVAL);
+  return (defined($it) ? $it : 5);
+}
+
+sub _getInactiveInterval {
+  my $cfg = new Vyatta::Config;
+  $cfg->{_active_dir_base} = '/opt/vyatta/config/active';
+  my $it = $cfg->returnOrigValue($CFG_ST_POLL_INTERVAL);
+  return (defined($it) ? $it : 60);
+}
 
 sub fdRedirect {
   open STDOUT, '>', '/dev/null';
@@ -336,17 +351,20 @@ while (1) {
   }
   updateHwMon();
 
+  my $it_active = _getActiveInterval();
+  my $it_inactive = _getInactiveInterval();
+
   my $cur_time = time();
-  my $to_sleep = $INTERVAL_ACTIVE;
-  if (($cur_time - get_last_act_time()) > $INACTIVE_TIMEOUT) {
+  my $to_sleep = $it_active;
+  if (($cur_time - get_last_act_time()) > $it_inactive) {
     # it's been too long since last GUI activity. use inactive interval.
-    $to_sleep = $INTERVAL_INACTIVE;
+    $to_sleep = $it_inactive;
   }
   my $slept = 0;
   # inactive interval should be multiples of active interval
   while ($slept < $to_sleep) {
-    sleep($INTERVAL_ACTIVE);
-    $slept += $INTERVAL_ACTIVE;
+    sleep($it_active);
+    $slept += $it_active;
     if ($cur_time < get_last_act_time()) {
       # something happened while we were asleep. wake up.
       last;

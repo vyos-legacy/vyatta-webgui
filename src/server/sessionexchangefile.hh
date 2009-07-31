@@ -8,7 +8,7 @@
 class SessionExchangeFile : public SessionExchange
 {
 public:
-  SessionExchangeFile(const std::string &file, bool debug);
+  SessionExchangeFile(const std::string &file, bool req_resp_log_file, bool debug);
   ~SessionExchangeFile();
 
   void

@@ -152,6 +152,7 @@ sub backup {
 	$filename = $date."_".$time."_".$datamodel;
     }
     if (-e "$ARCHIVE_ROOT_DIR/$filename.tar") {
+	`logger -p notice 'dom0: backup is in progress, exiting...'`;
 	print STDERR "Backup in progress.";
 	exit 1;
     }
@@ -223,7 +224,7 @@ sub backup {
 		#delete from hash coll
 		delete $hash_coll{$key};
 		#and log
-		`logger 'Rest notification error in response from $ip when starting backup: $err->{_http_code}'`;
+		`logger -p alert 'dom0: Rest notification error in response from $ip when starting backup: $err->{_http_code}'`;
 	    }
 	}
     }
@@ -295,7 +296,7 @@ sub backup {
 			    delete $new_hash_coll{$key};
 			}		
 			else {
-			    `logger 'error when retrieve archiving from $key: $rc'`;
+			    `logger -p alert 'dom0: error when retrieving archive from $key: $rc'`;
 			}
 		    }
 		    elsif ($err->{_http_code} == 200 && defined($err->{_body})) {
@@ -310,9 +311,9 @@ sub backup {
 			#and remove from poll collection
 			delete $new_hash_coll{$key};
 		    }
-		    elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
+		    elsif ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501 || $err->{_http_code} == 404) {
 			#log error and delete backup request
-			`logger 'error received from $key, canceling backup of this VM: $err->{_http_code}'`;
+			`logger -p notice 'dom0: error received from $key, canceling backup of this VM: $err->{_http_code}'`;
 			delete $new_hash_coll{$key};
 			
 			#also remove this from the original list so it is not included in the backup
@@ -329,13 +330,13 @@ sub backup {
 	}
 	sleep $SLEEP_POLL_INTERVAL;
 	if (time() > $end_time) {
-	    `logger 'backup was unable to retrieve all requested backups'`;
+	    `logger -p alert 'dom0: backup was unable to retrieve all requested backups'`;
 	    last;
 	}
     }
 
     if (keys (%hash_coll) == 0) {
-	`logger 'backup is empty, exiting'`;
+	`logger -p alert 'dom0: backup is empty, exiting'`;
 	exit 0;
     }
 
@@ -384,6 +385,7 @@ sub backup {
     #
     ##########################################################################
     `echo '100' > $BACKUP_WORKSPACE_DIR/status`;
+    `logger -p info 'dom0: Backup operation has successfully finished'`;
 }
 
 ##########################################################################
@@ -601,11 +603,13 @@ sub restore_archive {
 		my $obj = new OpenApp::Rest();
 		my $err = $obj->send("PUT",$cmd);
 		if ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
-		    `logger 'Rest notification error in response from $ip when starting restore: $err->{_http_code}'`;
+		    `logger -p notice 'dom0: Rest notification error in response from $ip when starting restore: $err->{_http_code}'`;
 		}
 	    }
 	}
     }
+
+    `logger -p info 'dom0: Restore operation has successfully finished'`;
 
     ##########################################################################
     #

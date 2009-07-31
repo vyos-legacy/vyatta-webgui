@@ -69,7 +69,7 @@ ChunkerReader::process_chunk()
       fclose(fp);
     }
     else {
-      syslog(LOG_ERR,"webgui: Failed to write out response chunk");
+      syslog(LOG_ERR,"dom0: Failed to write out response chunk");
     }
   }
   return str;

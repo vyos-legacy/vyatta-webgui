@@ -50,8 +50,7 @@ sub sendRest {
   my $ip = $vm->getIP();
   my $port = $vm->getWuiPort();
   if (!defined($ip)) {
-    my $msg = "Cannot send REST notification ($method $user)";
-    system("logger '$msg' >&/dev/null");
+    `logger -p alert 'dom0: Cannot send REST notification ($method $user)'`;
     return;
   }
   my $host = (("$port" eq '') ? "$ip" : "$ip:$port");
@@ -64,7 +63,7 @@ sub sendRest {
     if (defined $err->{_http_code}) {
 	$msg .= "status=$err->{_http_code}";
     }
-    system("logger '$msg' >&/dev/null");
+    `logger -p notice 'dom0: $msg'`;
   }
 }
 
@@ -80,33 +79,38 @@ sub add_user {
     my $err = OpenApp::LdapUser::createUser($add, $password, $email,
                                             $lastname, $firstname);
     if (defined($err)) {
-      print "$err\n";
-      exit 1;
+	`logger -p debug 'dom0: error adding user: $err'`;
+	print "$err\n";
+	exit 1;
     }
   } elsif (defined($rights)) {
     # add user right
     my $u = new OpenApp::LdapUser($add);
     if (!$u->isExisting()) {
-      print "User does not exist\n";
-      exit 1;
+	`logger -p debug 'dom0: user does not exist'`;
+	print "User does not exist\n";
+	exit 1;
     }
     my $vm = new OpenApp::VMMgmt($rights);
     if (!defined($vm)) {
-      print "Invalid VM ID\n";
-      exit 1;
+	`logger -p debug 'dom0: Invalid VM ID'`;
+	print "Invalid VM ID\n";
+	exit 1;
     }
     my $err = $u->addRight($rights);
     if (defined($err)) {
-      print "$err\n";
-      exit 1;
+	`logger -p debug 'dom0: Error in adding rights: $err'`;
+	print "$err\n";
+	exit 1;
     }
 
     # send REST notification
     # POST http://<domU>/notifications/users/<user>
     sendRest($vm, 'POST', $add);
   } else {
-    print "Invalid \"add\" command\n";
-    exit 1;
+      `logger -p alert 'dom0: Invalid add command'`;
+      print "Invalid \"add\" command\n";
+      exit 1;
   }
   exit 0;
 }
@@ -120,8 +124,9 @@ sub add_user {
 sub modify_user {
   my $u = new OpenApp::LdapUser($modify);
   if (!$u->isExisting()) {
-    print "User does not exist\n";
-    exit 1;
+      `logger -p debug 'dom0: user does not exist: $modify'`;
+      print "User does not exist\n";
+      exit 1;
   }
 
   my $err = undef;
@@ -129,8 +134,9 @@ sub modify_user {
     # installer can only change password
     if (defined($email) || defined($lastname) || defined($firstname)
         || !defined($password)) {
-      print "Invalid modify command for \"installer\"\n";
-      exit 1;
+	`logger -p alert 'dom0: Invalid modify command for installer'`;
+	print "Invalid modify command for \"installer\"\n";
+	exit 1;
     }
   }
 
@@ -166,16 +172,19 @@ sub del_user {
     # delete user right
     my $u = new OpenApp::LdapUser($delete);
     if (!$u->isExisting()) {
+      `logger -p debug 'dom0: user does not exist'`;
       print "User does not exist\n";
       exit 1;
     }
     my $vm = new OpenApp::VMMgmt($rights);
     if (!defined($vm)) {
+      `logger -p debug 'dom0: Invalid VM ID'`;
       print "Invalid VM ID\n";
       exit 1;
     }
     my $err = $u->delRight($rights);
     if (defined($err)) {
+      `logger -p debug 'dom0: error removing rights: $err'`;
       print "$err\n";
       exit 1;
     }
@@ -188,6 +197,7 @@ sub del_user {
     my $err = OpenApp::LdapUser::deleteUser($delete);
     if (defined($err)) {
       print "$err\n";
+      `logger -p alert 'dom0: error deleting user: $delete'`;
       exit 1;
     }
     # send REST notification

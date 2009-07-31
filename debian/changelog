@@ -1,3 +1,32 @@
+vyatta-webgui (0.2.14+fxdU+95) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Implement 'change' confirmation before leaving a page.
+
+  [ Mohit Mehta ]
+  * add 'type destination' for DNAT rule
+
+  [ Loi Vo ]
+  * 1. Fix a 'null' value is displayed in LAN2 ip, and DMZ ip for LAN
+    parameters screen.  This bug only shows up on IE.
+
+  [ Kevin Choi ]
+  * * nw nat/pat screen:
+
+  [ Mohit Mehta ]
+  * return empty tags for dns mode when dns mode not defined
+
+  [ Kevin Choi ]
+  * * fixed nw nat/pat delete command typo
+  * * fw customized and nw nat/pat screens
+
+  [ Loi Vo ]
+  * 1. Timeout is now handled at dom0
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 30 Jul 2009 18:45:25 -0700
+
 vyatta-webgui (0.2.14+fxdU+94) unstable; urgency=low
 
   [ Kevin Choi ]

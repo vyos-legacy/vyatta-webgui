@@ -113,6 +113,7 @@ function FT_mainFrame(){
 	
 	this.f_logout = function() {
 		thisObj.m_tabPanel.f_stopPolling();
+        g_busObj.m_timeoutMonitor.f_stop();		
 	    g_busObj.f_userLogout();	
 	}
 	
@@ -276,12 +277,14 @@ function f_onLanguageChange()
 	var e = document.getElementById('ft_language');
 	g_utils.f_saveLanguage(e.value);
 	g_mainFrameObj.f_saveCurrentDomUlocation();
+    g_busObj.m_timeoutMonitor.f_stop();			
     g_utils.f_gotoHomePage();
 }
 
 function f_home()
 {
 	//g_mainFrameObj.f_saveCurrentDomUlocation();
+    g_busObj.m_timeoutMonitor.f_stop();			
     g_utils.f_gotoHomePage();	
 }
 

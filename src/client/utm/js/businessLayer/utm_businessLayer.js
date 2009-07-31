@@ -355,11 +355,14 @@ function UTM_businessLayer()
     this.f_userTimeout = function(guiCb)
     {
         thisObj.m_userObj.f_timeout(guiCb);
+		//comment this out.  This is taken care of the the timeoutMonitor in dom0
+		/*
 		if ((window.parent != undefined) && (window.parent != null)) {
 			if (window.parent.f_timeout != undefined) {
 				window.parent.f_timeout();
 			}
 		}
+		*/
     }
 
     this.f_respondRequestCallback = function()

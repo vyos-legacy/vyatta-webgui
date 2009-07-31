@@ -198,7 +198,9 @@ function FT_confUserUpdate(name, callback, busLayer)
         if (eventObj.f_isError()) {
             thisObj.f_enableClick(true);
             thisObj.m_transaction.length = 0;
-            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', g_lang.m_error,true);
+			if (eventObj.m_errCode != 3) {
+				g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', g_lang.m_error, true);
+			}
         } else if (thisObj.m_transaction.length > 0) {
             thisObj.f_processTransaction();
         } else {
@@ -228,7 +230,9 @@ function FT_confUserUpdate(name, callback, busLayer)
     {
         if (eventObj.f_isError()) {
             thisObj.f_enableClick(false);
-            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', g_lang.m_error, true,'f_confUserUpdateMakeModal()');
+			if (eventObj.m_errCode != 3) {
+				g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', g_lang.m_error, true, 'f_confUserUpdateMakeModal()');
+			}
         } else {
             var message = g_lang.m_userResetPasswdSuccess;
             var type = 'ok';

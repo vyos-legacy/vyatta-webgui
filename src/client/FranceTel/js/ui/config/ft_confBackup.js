@@ -157,6 +157,9 @@ function FT_confBackup(name, callback, busLayer)
     {
 		var path = '';
         if (eventObj.f_isError()) {
+			if (eventObj.m_errCode == 3) {
+				return; //timeout is handled by timeoutMonitor.
+			}			
             g_utils.f_popupMessage(g_lang.m_backupFail + ': ' + eventObj.m_errMsg, 'error', g_lang.m_error, true);
             return;
         }
@@ -172,6 +175,9 @@ function FT_confBackup(name, callback, busLayer)
     this.f_oaBackupCb = function(eventObj)
     {
         if (eventObj.f_isError()) {
+			if (eventObj.m_errCode == 3) {
+				return; //timeout is handled by timeoutMonitor.
+			}			
             g_utils.f_popupMessage(g_lang.m_backupFail + ': ' + eventObj.m_errMsg, 'error', g_lang.m_error, true);
         } else {
             g_utils.f_popupMessage(g_lang.m_backupInProgress + '.', 'ok', g_lang.m_info, true, 'f_handleConfBackupOkCb()');
@@ -205,6 +211,9 @@ function FT_confBackup(name, callback, busLayer)
     this.f_overflow = function(evt)
     {
         if (evt.f_isError()) {
+			if (evt.m_errCode == 3) {
+				return; //timeout is handled by timeoutMonitor.
+			}			
             g_utils.f_popupMessage(eventObj.m_errMsg, 'error', g_lang.m_error, true);
         } else {
             if (thisObj.m_busLayer.m_backup.m_limit == true) { //the limit has been reached
@@ -222,6 +231,9 @@ function FT_confBackup(name, callback, busLayer)
 	this.f_backupStatusCb = function(evt)
 	{
         if (evt.f_isError()) {
+			if (evt.m_errCode == 3) {
+				return; //timeout is handled by timeoutMonitor.
+			}			
             g_utils.f_popupMessage(eventObj.m_errMsg, 'error', g_lang.m_error, true);
         } else {
 			var status = evt.m_value.trim();

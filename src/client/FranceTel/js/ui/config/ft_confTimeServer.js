@@ -58,8 +58,7 @@ function FT_confTimeServer (name, callback, busLayer) {
         {
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-		        if (evt.f_isError()) {
-					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+		        if (thisObj.f_isServerError(evt, g_lang.m_error)) {
 					return;
 				}				
                 var ntp = evt.m_value;
@@ -108,8 +107,8 @@ function FT_confTimeServer (name, callback, busLayer) {
 		var ntp = new FT_ntpServer(thisObj.m_form.conf_time_srv_ntp.value);
 		
         var cb = function(evt) {
-		    if (evt.f_isError()) {
-		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
+		    if (thisObj.f_isServerError(evt, g_lang.m_error)) {
+		        return;		    
 		    } else {
                 g_utils.f_popupMessage(g_lang.m_ntpTimeSrvConfig +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_ntpTimeSrvConfig,true);
 		    }			

@@ -100,7 +100,9 @@ function FT_confRestoreUpdate (name, callback, busLayer) {
 	this.f_restoreVmCb = function(eventObj)
 	{
         if (eventObj.f_isError()) {
-            g_utils.f_popupMessage(g_lang.m_resUpdateFail + ': ' + eventObj.m_errMsg, 'error', g_lang.m_error,true);
+			if (eventObj.m_errCode != 3) {
+				g_utils.f_popupMessage(g_lang.m_resUpdateFail + ': ' + eventObj.m_errMsg, 'error', g_lang.m_error, true);
+			}
 		} else {
             g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_UPDATE_ID);                             			
 		}            

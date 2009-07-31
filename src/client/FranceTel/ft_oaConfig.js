@@ -8,6 +8,10 @@
 var g_oaConfig =
 {
     ////////////////////////////////////////
+    // OA WUI timeout monitor interval.
+    m_oaTimeoutMonitorInterval : 5000,     // 5 seconds	
+	
+    ////////////////////////////////////////
     // OA WUI Dashboard screen refresh time.
     m_oaRefreshTime : 5000,     // 5 seconds
 

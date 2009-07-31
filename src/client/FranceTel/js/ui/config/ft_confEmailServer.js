@@ -100,8 +100,7 @@ function FT_confEmailServer(name, callback, busLayer)
         {
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-		        if (evt.f_isError()) {
-					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+		        if (thisObj.f_isServerError(evt, g_lang.m_error)) {
 					return;
 				}				
                 var em = evt.m_value;
@@ -165,8 +164,8 @@ function FT_confEmailServer(name, callback, busLayer)
 									thisObj.m_form.conf_email_srv_auth_name.value, 
 									thisObj.m_form.conf_email_srv_auth_passwd.value);
         var cb = function(evt) {
-		    if (evt.f_isError()) {
-		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
+		    if (thisObj.f_isServerError(evt, g_lang.m_error)) {
+		        return;			    
 		    } else {
 			    g_utils.f_popupMessage(g_lang.m_emailSrvConfig + ' ' + g_lang.m_formSave, 'ok', g_lang.m_emailSrvConfig,true);
 		    }			

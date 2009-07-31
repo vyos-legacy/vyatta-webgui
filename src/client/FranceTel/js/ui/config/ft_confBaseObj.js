@@ -667,7 +667,8 @@ function FT_confBaseObj(name, callback, busLayer)
         if(evt.f_isError())
         {
 			if (evt.m_errCode == 3) {
-				g_utils.f_popupMessage('timeout', 'timeout', null, true);
+				//handle in timeoutMonitor.js
+				//g_utils.f_popupMessage('timeout', 'timeout', null, true);
 			}
 			else {
 				g_utils.f_popupMessage(evt.m_errMsg, 'ok', errTitle, true);

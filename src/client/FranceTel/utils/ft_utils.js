@@ -416,7 +416,8 @@ var g_utils =
 function f_utilsPopupTimeout(id)
 {
     g_utils.f_hidePopupMessage(id);
-    g_busObj.f_userTimeout();
+    //g_busObj.f_userTimeout();
+    g_utils.f_gotoHomePage();	
 }
 
 function f_utilsPopupApply(id)

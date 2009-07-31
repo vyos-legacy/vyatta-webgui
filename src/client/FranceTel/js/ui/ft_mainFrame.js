@@ -66,7 +66,7 @@ function FT_mainFrame(){
         thisObj.f_hideLogin(true);
         g_busObj.f_getVMSummaryDataFromServer(function(evt){
             if (evt.f_isError()) {
-                alert('Error: ' + evt.m_errMsg);
+                g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
             } else {
                 thisObj.f_initComponent(evt.m_value);
             }
@@ -173,10 +173,11 @@ function FT_mainFrame(){
 		        }				
 				uriPath = vmRec.m_guiUri + 'utm_netconf_' + lang + '.html';	
 				vmRec.m_guiUri = vmRec.m_guiUri + 'utm_main_' + lang + '.html';
-			} /* else if (vmRec.m_name == 'jvm') {
+			}  /* else if (vmRec.m_name == 'jvm') {
 				//vmRec.m_guiUri = '/utm/Loi/test.html';
-				vmRec.m_guiUri = '/utm/Loi/wui/brickId/components.html';
-			} */
+				//vmRec.m_guiUri = '/utm/Loi/wui/brickId/components.html';
+				vmRec.m_guiUri = '/utm/Loi/wui/blb/lan.html';
+			} */ 
 		}
 		if (bUtmIncluded) {
 		    thisObj.m_vmList[index].m_guiUri = uriPath;	

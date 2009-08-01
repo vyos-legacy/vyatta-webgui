@@ -28,7 +28,7 @@ my $CFG_VM_RESP_TIMEOUT = 'system open-app parameters vm-response-timeout';
 
 ### "static" functions
 sub _lockStatus {
-  system("sudo mkdir $STATUS_DIR");
+  system("sudo mkdir $STATUS_DIR >&/dev/null");
   while (1) {
     system("sudo mkdir $STATUS_LOCK >&/dev/null");
     last if (!($? >> 8));
@@ -37,7 +37,7 @@ sub _lockStatus {
 }
 
 sub _unlockStatus {
-  system("sudo rmdir $STATUS_LOCK");
+  system("sudo rmdir $STATUS_LOCK >&/dev/null");
 }
 
 my %status_hash = (

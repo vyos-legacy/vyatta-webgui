@@ -714,7 +714,7 @@ sub list_archive {
 	    
 	    my $output;
 	    my @output = `tar -xf $file -O ./$name2[0].txt 2>/dev/null`;
-	    if (defined $output[0]) {
+	    if (defined $cmdline) {
 		$cmd .= $output[0];
 	    }
 	    else {

@@ -173,7 +173,6 @@ function UTM_confBaseObj(name, callback, busLayer)
     {
         if(enableScroll)
         {
-            g_nwConfig.m_nwMaxDHCPresevedIP = 3;
             tableDiv.appendChild(child);
             if(tableDiv.childNodes.length > g_nwConfig.m_nwMaxDHCPresevedIP)
             {
@@ -1070,7 +1069,7 @@ function UTM_confBaseObj(name, callback, busLayer)
 		thisObj.m_sortCol = col;
 		thisObj.m_sortColPrev = prevCol;
 	}
-	
+
 	//Abstract function.  Should be override by the sub class.
 	this.f_changed = function()
 	{

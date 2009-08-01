@@ -1,3 +1,16 @@
+vyatta-webgui (0.2+fxd0+99) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * redirect output to /dev/null
+
+  [ Michael Larson ]
+  * fix for listing archives of both installer and admin for user
+    installer
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 31 Jul 2009 18:27:41 -0700
+
 vyatta-webgui (0.2+fxd0+98) unstable; urgency=low
 
   * 1. When user logout, stop the polling thread.

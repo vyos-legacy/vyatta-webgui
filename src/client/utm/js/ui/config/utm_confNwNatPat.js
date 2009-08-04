@@ -84,18 +84,6 @@ function UTM_confNwNatPat(name, callback, busLayer)
         thisObj.m_busLayer.f_setNatPatNamePairValue(fireRec, name, value, cb);
     }
 
-    this.f_sendMultiCommands = function(cmds, cmdName)
-    {
-        var cb = function(evt)
-        {
-            if(cmds.length > 0)
-            {
-                var sRC = cmds.pop();
-                thisObj.f_sendSetCommand(sRC, cmdName, sRC.m_enabled, cb);
-            }
-        }
-    }
-
     this.f_loadVMData = function()
     {
         thisObj.m_updateFields = [];
@@ -311,7 +299,6 @@ function UTM_confNwNatPat(name, callback, busLayer)
     this.f_cbOnChkClick = function(chkid)
     {
         var chk = document.getElementById(chkid);
-        var rNo = chkid.split("-");
 
         if(chkid.indexOf(thisObj.m_fieldIds[6]) >= 0)
         {

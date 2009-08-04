@@ -41,13 +41,15 @@ function UTM_nwDNSRecord(mode, primary, secondary)
 /**
  * routin data record
  */
-function UTM_nwRoutingRecord()
+function UTM_nwRoutingRecord(ruleNo)
 {
     var thisObj = this;
+    this.m_ruleNo = ruleNo;
     this.m_destIpAddr = "";
     this.m_destIpMask = "";
     this.m_gwOrInterface = "";
     this.m_metric = "";
+    this.m_enabled = "Yes"; // Yes/No
     this.m_isGateway = true;
 }
 

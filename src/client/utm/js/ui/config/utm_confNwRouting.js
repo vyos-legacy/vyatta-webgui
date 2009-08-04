@@ -12,19 +12,19 @@ function UTM_confNwRouting(name, callback, busLayer)
 {
     var thisObj = this;
     this.m_fwObj = busLayer.f_getFWObject();
+    this.m_sendList = [];
     this.m_btnAddId = "nwRoutingddId";
     this.m_btnSaveId = "nwRoutingSaveId";
     this.m_btnCancelId = "nwRoutingCancelId";
     this.m_btnBackId = "nwRoutingBackId";
+    this.m_enabledChkId = "nwRoutingEnableId-";
     this.m_gwId = "nwRouting_gw_Id-";
     this.m_intId = "nwRouting_int_Id-";
     this.m_gwIntDivId = "nw_gwInt_id-";
     this.m_rRecs = [];
     this.tempRuleNo = 0;
-    this.m_ruleZoneOptName = [/*"Any",*/ "DMZ_to_LAN", "DMZ_to_WAN", "LAN_to_DMZ",
-                      "LAN_to_WAN", "WAN_to_DMZ", "WAN_to_LAN"];
     this.m_fieldIds = ["rulenoId-", "dipaddr-", "dipaddrMaskId-", "optionId-",
-                        "gwId-", "interfaceId-", "metricId-"];
+                        "gwId-", "interfaceId-", "metricId-", "enabledId-"];
     this.m_protocol = ["Any", "tcp", "udp", "icmp", "ipsec", "vrrp", " "];
 
     /**
@@ -47,13 +47,17 @@ function UTM_confNwRouting(name, callback, busLayer)
     {
         var cols = [];
         this.f_colorGridBackgroundRow(true);
+        var chkbox = 'enabled<br><br>' + thisObj.f_renderCheckbox("no",
+                      thisObj.m_enabledChkId, "f_nwRouteEnabledOnChkClick('" +
+                      thisObj.m_enabledChkId+"')", 'Click here to enable/disable all');
 
         cols[0] = this.f_createColumn(g_lang.m_nwRoutDestNetwork, 110, 'textField', '3', true, 'center');
         cols[1] = this.f_createColumn(g_lang.m_nwRoutDestNwMask, 110, 'textField', '3', true, 'center');
         cols[2] = this.f_createColumn(g_lang.m_nwRoutConf, 200, 'div', '3', false, 'center');
         cols[3] = this.f_createColumn(g_lang.m_nwRoutGwInterface, 120, 'textField', '3', true, 'center');
         cols[4] = this.f_createColumn(g_lang.m_nwRoutMetric, 90, 'textField', '3', true, 'center');
-        cols[5] = this.f_createColumn(g_lang.m_fireCustDelete, 70, 'combo', '3', false, 'center');
+        cols[5] = this.f_createColumn(chkbox, 55, 'checkbox', 3, false, 'center');
+        cols[6] = this.f_createColumn(g_lang.m_fireCustDelete, 70, 'combo', '3', false, 'center');
 
         return cols;
     }
@@ -63,7 +67,7 @@ function UTM_confNwRouting(name, callback, busLayer)
         return new UTM_nwRoutingRecord(ruleNo);
     }
 
-    this.f_sendSetCommand = function(fireRec, name, value, wantCB)
+    this.f_sendSetCommand = function(rec, name, value, wantCB)
     {
         var cb = function(evt)
         {
@@ -75,19 +79,7 @@ function UTM_confNwRouting(name, callback, busLayer)
         }
 
         g_utils.f_cursorWait();
-        thisObj.m_busLayer.f_setFirewallCustomize(fireRec, name, value, cb);
-    }
-
-    this.f_sendMultiCommands = function(cmds, cmdName)
-    {
-        var cb = function(evt)
-        {
-            if(cmds.length > 0)
-            {
-                var sRC = cmds.pop();
-                thisObj.f_sendSetCommand(sRC, cmdName, sRC.m_enabled, cb);
-            }
-        }
+        thisObj.m_busLayer.f_setFirewallCustomize(rec, name, value, cb);
     }
 
     this.f_loadVMData = function()
@@ -119,11 +111,12 @@ function UTM_confNwRouting(name, callback, busLayer)
 
     this.f_populateTable = function()
     {
-        thisObj.f_removeDivChildren(thisObj.m_gridBody);
-        thisObj.f_removeDivChildren(thisObj.m_grid);
+        this.f_removeDivChildren(thisObj.m_div);
+        this.f_removeDivChildren(thisObj.m_gridBody);
         this.m_gridHeader = this.f_createGridHeader(this.m_colModel, "f_nwRoutingGridHeaderClick");
-        thisObj.m_grid.appendChild(thisObj.m_gridHeader);
-        thisObj.m_grid.appendChild(thisObj.m_gridBody);
+        this.m_div.appendChild(thisObj.f_headerText());
+        this.m_div.appendChild(thisObj.m_gridHeader);
+        this.m_div.appendChild(thisObj.m_gridBody);
 
         var sortCol = UTM_confNwRouting.superclass.m_sortCol;
         var ar = thisObj.f_createSortingArray(sortCol, thisObj.m_rRecs);
@@ -131,7 +124,6 @@ function UTM_confNwRouting(name, callback, busLayer)
         for(var i=0; i<ar.length; i++)
             thisObj.f_addRoutingIntoRow(ar[i]);
 
-        thisObj.f_adjustGridHeight();
     }
 
     this.f_createSortingArray = function(sortIndex, rRecs)
@@ -146,39 +138,27 @@ function UTM_confNwRouting(name, callback, busLayer)
             // compose a default table row
             ar[i] = rRecs[i].m_destIpAddr + '|' + rRecs[i].m_destIpMask + '|' +
                     rRecs[i].m_isGateway + "|" + rRecs[i].m_gwOrInterface +
-                    '|' + rRecs[i].m_metric + "|" + rRecs[i].m_ruleNo;
+                    '|' + rRecs[i].m_metric + "|" +
+                    rRecs[i].m_enabled + "|" + rRecs[i].m_ruleNo;
         }
 
         var sar = thisObj.f_sortArray(sortIndex, ar);
         for(var i=0; i<sar.length; i++)
         {
             var r = sar[i].split("|");
-            var rec = thisObj.f_createRoutingRecord(r[5]);
+            var rec = thisObj.f_createRoutingRecord(r[6]);
             rec.m_destIpAddr = r[0];
             rec.m_destIpMask = r[1];
             rec.m_isGateway = r[2]=="true"? true: false;
             rec.m_gwOrInterface = r[3];
             rec.m_metric = r[4];
+            rec.m_enabled = r[5];
             recs.push(rec);
         }
 
         return recs;
     }
 
-    this.f_adjustGridHeight = function()
-    {
-        var counter = thisObj.m_rRecs != null ? thisObj.m_rRecs.length : 0;
-        var h = counter * 30 + 60;
-
-        // the minimum height of grid is 160
-        if(counter < 2)
-            h = 168;
-
-        thisObj.m_grid.style.height = h+"px";
-        thisObj.f_resetTableRowCounter(0);
-
-        window.setTimeout(function(){thisObj.f_resize();}, 10);
-    }
     this.f_addRoutingIntoRow = function(rRec)
     {
         var zpRule = rRec.m_ruleNo;
@@ -205,6 +185,10 @@ function UTM_confNwRouting(name, callback, busLayer)
                             rRec.m_metric, '', 80,
                             ["f_nwRoutingOnTFBlur('" + thisObj.m_fieldIds[6]+
                             zpRule + "')"], false);
+        var enable = "<div align=center>" + thisObj.f_renderCheckbox(
+                  rRec.m_enabled, thisObj.m_fieldIds[7]+zpRule,
+                  "f_nwRouteEnabledOnChkClick('"+thisObj.m_fieldIds[7]+zpRule+"')",
+                  "") + "</div>";
         var del = "<div align=center>" + thisObj.f_renderButton(
                   "delete", true, "f_nwRoutingDeleteHandler(" + rRec.m_ruleNo +
                   ")", "") + "</div>";
@@ -212,7 +196,7 @@ function UTM_confNwRouting(name, callback, busLayer)
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [dip, dmip, opt, gwInterface, metric, del]);
+                    [dip, dmip, opt, gwInterface, metric, enable, del]);
         thisObj.m_gridBody.appendChild(div);
     };
 
@@ -249,7 +233,6 @@ function UTM_confNwRouting(name, callback, busLayer)
         var rr = thisObj.f_createRoutingRecord(ruleNo);
         thisObj.m_rRecs.push(rr);
         thisObj.f_addRoutingIntoRow(rr);
-        thisObj.f_adjustGridHeight();
     };
 
     this.f_handleGridSort = function(col)
@@ -273,15 +256,12 @@ function UTM_confNwRouting(name, callback, busLayer)
                     g_lang.m_fireCustCancelTip, this.m_btnCancelId]];
         this.m_buttons = this.f_createButtons(btns);
 
-        this.m_grid = this.f_initGridDiv([this.m_gridHeader, this.m_gridBody])
-
         window.setTimeout(function()
         {
-            thisObj.f_adjustGridHeight();
             thisObj.f_enabledActionButtons(false);
         }, 100);
 
-        return [this.f_headerText(), this.m_grid, this.m_buttons];
+        return [this.f_headerText(), this.m_gridHeader, this.m_gridBody, this.m_buttons];
     };
 
     this.f_initGridDiv = function(children)
@@ -317,11 +297,15 @@ function UTM_confNwRouting(name, callback, busLayer)
         var tf = document.getElementById(tfeid);
         var ip = tf.value;
 
+        if(ip.length == 0 && tfeid.indexOf(thisObj.m_fieldIds[4] >= 0))
+            return;
+
         ///////////////////////////////
         // validate ip address
         if(!g_utils.f_validateIP(ip))
         {
-            alert("invalid ip address : " + ip);
+            g_utils.f_popupMessage(g_lang.m_invalidIpAddr + " : " + ip, "error",
+                          g_lang.m_ipaddrTitle, true);
             tf.focus();
             return;
         }
@@ -377,26 +361,87 @@ function UTM_confNwRouting(name, callback, busLayer)
         return;
     };
 
+    this.f_updateGridHeaderChkbox = function()
+    {
+        var checked = true;
+
+        for(var i=0; i<this.m_rRecs.length; i++)
+        {
+            var rec = this.m_rRecs[i];
+            var el = document.getElementById(this.m_fieldIds[7]+rec.m_ruleNo);
+
+            if(el != null)
+            {
+                if(!el.checked)
+                {
+                    checked = false;
+                    break;
+                }
+            }
+        }
+
+        var el = document.getElementById(this.m_enabledChkId);
+        el.checked = checked;
+    }
+
+    this.f_setEnableValue2Server = function()
+    {
+        var cb = function(evt)
+        {
+            if(evt.m_errCode != 0)
+                alert("set enable error: " + evt.m_errMsg + " for " + eid);
+
+            if(thisObj.m_sendList.length > 0)
+                thisObj.f_setEnableValue2Server();
+        }
+
+        var eid = this.m_sendList.pop();
+        if(eid != null)
+        {
+            ///////////////////////////////////////////
+            // submit set to server.
+            var el = document.getElementById(eid);
+            var ids = eid.split("-");
+            var rec = thisObj.f_createRoutingRecord(ids[1]);
+
+            rec.m_enable = el.checked ? 'Yes' : 'No';
+            thisObj.f_sendSetCommand(rec, "enable", el.checked ? "Yes":"No", cb);
+        }
+    }
+
     this.f_chkOnSelected = function(chkid)
     {
         var chk = document.getElementById(chkid);
-        var rNo = chkid.split("-");
-        var fireRec = thisObj.f_createRoutingRecord(rNo[2]);
 
         /////////////////////////
-        // log column
-        if(chkid.indexOf(thisObj.m_fieldIds[11]) >= 0)
+        // enabled from column
+        if(chkid == this.m_enabledChkId)
         {
-            thisObj.f_sendSetCommand(fireRec, "log",
-                    chk.checked ? "Yes":"No");
+            for(var i=0; i<thisObj.m_rRecs.length; i++)
+            {
+                var rec = thisObj.m_rRecs[i];
+                var eeid = thisObj.m_fieldIds[7] + rec.m_ruleNo;
+                var eel = document.getElementById(eeid);
+
+                if(eel != null)
+                {
+                    if(eel.checked != chk.checked)
+                        this.m_sendList.push(eeid);
+
+                    eel.checked = chk.checked;
+                }
+            }
         }
-        ////////////////////////
-        // enabled column
-        else if(chkid.indexOf(thisObj.m_fieldIds[12]) >= 0)
+        ///////////////////////////
+        // enabled from row
+        else if(chkid.indexOf(thisObj.m_fieldIds[7]) >= 0)
         {
-            thisObj.f_sendSetCommand(fireRec, "enable",
-                    chk.checked ? "Yes":"No");
+            this.f_updateGridHeaderChkbox();
+            this.m_sendList.push(chkid);
+            
         }
+
+        this.f_setEnableValue2Server();
     };
 
     this.f_cbOnSelected = function(cbeid)
@@ -405,35 +450,10 @@ function UTM_confNwRouting(name, callback, busLayer)
         var rNo = cbeid.split("-");
         var fireRec = thisObj.f_createRoutingRecord(rNo[2]);
 
-        ///////////////////////////////
-        // application/service cbb changed
-        if(cbeid.indexOf(thisObj.m_fieldIds[2]) >= 0)
-        {
-            var dport = document.getElementById(thisObj.m_fieldIds[9]+rNo[1]+"-"+rNo[2]);
-            var proto = document.getElementById(thisObj.m_fieldIds[3]+rNo[1]+"-"+rNo[2]);
-
-            fireRec.m_appService = cbb.value;
-
-            ////////////////////////////////////
-            // set protocol per appService
-            var proVal = thisObj.m_fwObj.f_getProtocol(fireRec);
-            proto.value = proVal;
-            fireRec.m_protocol = proto.value;
-            dport.value = thisObj.m_fwObj.f_getPortNumber(fireRec);
-
-            thisObj.f_sendSetCommand(fireRec, "dport", dport.value);
-
-            var sendproto = function(fr, val)
-            {
-                if(val != null)
-                    thisObj.f_sendSetCommand(fr, "protocol", val);
-            }
-
-            window.setTimeout(function(){sendproto(fireRec, proVal)}, 100);
-        }
+        
         /////////////////////////////
         // protocol cbb changed
-        else if(cbeid.indexOf(thisObj.m_fieldIds[3]) >= 0)
+        if(cbeid.indexOf(thisObj.m_fieldIds[3]) >= 0)
         {
             var dport = document.getElementById(thisObj.m_fieldIds[9]+rNo[1]+"-"+rNo[2]);
             var service = document.getElementById(thisObj.m_fieldIds[2]+rNo[1]+"-"+rNo[2]);
@@ -482,6 +502,7 @@ function UTM_confNwRouting(name, callback, busLayer)
 
     this.f_handleAddAction = function()
     {
+        thisObj.f_enabledActionButtons(true);
         thisObj.f_handleAddRoutingRow(thisObj.tempRuleNo++);
         //thisObj.f_handleAddFirewallCustomRow(thisObj.f_getTheNextRuleNo(null));
     }
@@ -563,7 +584,7 @@ function f_nwRoutingOnTFBlur(tfeid)
 
     // ip address text fields
     if(tfeid.indexOf(aObj.m_fieldIds[1]) >= 0 ||
-        tfeid.indexOf(aObj.m_fieldIds[4] >= 0))
+        tfeid.indexOf(aObj.m_fieldIds[4]) >= 0)
         aObj.f_handleIPAddressOnBlur(tfeid, null);
     // net mask text fields
     else if(tfeid.indexOf(aObj.m_fieldIds[2]) >= 0)
@@ -573,6 +594,11 @@ function f_nwRoutingOnTFBlur(tfeid)
 function f_nwRoutingOnCbbBlur(cbeId)
 {
     g_configPanelObj.m_activeObj.f_cbOnSelected(cbeId);
+}
+
+function f_nwRouteEnabledOnChkClick(chkid)
+{
+    g_configPanelObj.m_activeObj.f_chkOnSelected(chkid);
 }
 
 function f_nwRoutingGridHeaderClick(col)

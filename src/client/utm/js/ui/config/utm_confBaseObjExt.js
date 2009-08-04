@@ -272,6 +272,17 @@ function UTM_confBaseObjExt(name, callback, busLayer)
     {
         return ('<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">' + item + '</li>');
     }	
+	    
+    this.f_enableTextField = function(b, id)
+    {
+        var el = document.getElementById(id);
+        el.readOnly = (!b);
+        if (b) {
+            el.style.backgroundColor = '#FFFFFF';
+        } else {
+            el.style.backgroundColor = '#EFEFEF';
+        }
+    }	
 	
 }
 

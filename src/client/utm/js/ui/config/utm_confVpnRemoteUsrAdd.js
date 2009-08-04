@@ -9,6 +9,22 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     var thisObjName = 'UTM_confVpnRemoteUsrAdd';
     var thisObj = this;
     this.m_form = undefined;
+	this.m_change = false;
+	this.m_eventCbFunction = 'f_confFormObjEventCallback';
+
+	this.m_clickItems = [
+	];
+	
+	this.m_keyItems = [
+	    'conf_vpn_rusr_usr_name',
+		'conf_vpn_rusr_usr_passwd',
+        'conf_vpn_rusr_confirm_usr_passwd'	
+	];		
+	
+	this.m_changeItems = [
+        'conf_vpn_rusr_vpn_grp'
+	];
+
 		    
     /**
      * @param name - name of configuration screens.
@@ -30,7 +46,7 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     {
 		var defObj = new UTM_confFormDefObj('conf_vpn_rusr', '400', new Array(), 
 		    [{
-                id: 'conf_vpn_rusr_update_button',
+                id: 'conf_vpn_rusr_back_button',
                 text: 'Back',
 				align: 'left',
 				tooltip: g_lang.m_tooltip_back,
@@ -57,7 +73,7 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
 		defObj.f_addPassword('conf_vpn_rusr_confirm_usr_passwd', '32', g_lang.m_vpn_Confirm + ' ' + g_lang.m_vpnRUadd_UserPasswd);		
 		defObj.f_addHtml(
 		   'conf_vpn_rusr_vpn_grp',
-		   '<select name="vpn_grp" class="v_form_input"><option value="Manager" selected>Manager</option>',
+		   '<select name="conf_vpn_rusr_vpn_grp" id="conf_vpn_rusr_vpn_grp" class="v_form_input"><option value="manager" selected>manager</option>',
 		   g_lang.m_vpnRUadd_VPNGroup
 		);
 					
@@ -86,6 +102,8 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
         thisObj.m_form = document.getElementById('conf_vpn_rusr' + "_form");
 		thisObj.f_setFocus();
 		thisObj.f_resize();
+		thisObj.f_attachListener();			
+		thisObj.f_enableAllButton(false);
     }
 	
 	
@@ -97,6 +115,7 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     
     this.f_stopLoadVMData = function()
     {
+		thisObj.f_detachListener();
     }
         		
     this.f_validate = function()
@@ -133,9 +152,108 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
 			    thisObj.f_apply();
             } else if (id == 'conf_vpn_rusr_cancel_button') { //cancel clicked
                 thisObj.f_reset();
-            } 
+            } else if (id == 'conf_vpn_rusr_back_button') {
+				thisObj.f_back();
+			}
         }
     }
+
+	this.f_eventCallback = function(id)
+	{
+		g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID, null, true);				
+	}
+    
+	this.f_changed = function()
+	{
+		return thisObj.m_change;		
+	}
+	
+	this.f_back = function()
+	{
+		if (thisObj.f_changed()) {
+			g_utils.f_popupMessage(g_lang.m_remindSaveChange, 'confirm', g_lang.m_info, true, 
+			    thisObj.m_eventCbFunction + "('apply')"); 
+		} else {
+			g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID, null, true);			
+		}
+	}
+
+    this.f_handleKey = function(e)
+    {
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if (target != undefined) {
+            var id = target.getAttribute('id');
+            thisObj.f_enableAllButton(true);
+        }
+    }	
+   
+    this.f_handleChange = function(e)
+    {
+        var target = g_xbObj.f_xbGetEventTarget(e);
+        if (target != undefined) {
+            var id = target.getAttribute('id');
+            thisObj.f_enableAllButton(true);
+        }
+    }   
+   
+    this.f_enableAllButton = function(state)
+    {
+        thisObj.f_enableButton('apply', state);
+        thisObj.f_enableButton('cancel', state);
+    }
+    
+    this.f_enableButton = function(btName, state)
+    {
+        var id = '';
+        switch (btName.toLowerCase()) {
+            case 'apply':
+                id = 'conf_vpn_rusr_apply_button';
+                break;
+            case 'cancel':
+                id = 'conf_vpn_rusr_cancel_button';
+                break;
+            default:
+                break;
+        }
+        thisObj.f_enabledDisableButton(id, state);
+		if (state) {
+			thisObj.m_change = true;
+		} else {
+			thisObj.m_change = false;
+		}
+    }   
+
+    this.f_attachListener = function()
+    {        
+        for (var i = 0; i < thisObj.m_clickItems.length; i++) {
+            var el = document.getElementById(thisObj.m_clickItems[i]);
+            g_xbObj.f_xbAttachEventListener(el, 'click', thisObj.f_handleClick, false);
+        }
+        for (var i = 0; i < thisObj.m_keyItems.length; i++) {
+            var el = document.getElementById(thisObj.m_keyItems[i]);
+            g_xbObj.f_xbAttachEventListener(el, 'keydown', thisObj.f_handleKey, false);
+        }
+		for (var i = 0; i < thisObj.m_changeItems.length; i++) {
+			var el = document.getElementById(thisObj.m_changeItems[i]);
+			g_xbObj.f_xbAttachEventListener(el, 'change', thisObj.f_handleChange, false);
+		}		
+    }
+    
+    this.f_detachListener = function()
+    {		
+        for (var i = 0; i < thisObj.m_clickItems.length; i++) {
+            var el = document.getElementById(thisObj.m_clickItems[i]);
+            g_xbObj.f_xbDetachEventListener(el, 'click', thisObj.f_handleClick, false);
+        }
+        for (var i = 0; i < thisObj.m_keyItems.length; i++) {
+            var el = document.getElementById(thisObj.m_keyItems[i]);
+            g_xbObj.f_xbDetachEventListener(el, 'keydown', thisObj.f_handleKey, false);
+        }
+		for (var i = 0; i < thisObj.m_changeItems.length; i++) {
+			var el = document.getElementById(thisObj.m_changeItems[i]);
+			g_xbObj.f_xbDetachEventListener(el, 'change', thisObj.f_handleChange, false);
+		}		
+    }	
     
 }
 

@@ -518,6 +518,16 @@ function UTM_confNwNatPat(name, callback, busLayer)
         var fireRec = new UTM_nwNatPatRecord(ruleNo, "incoming");
         thisObj.m_busLayer.f_deleteNatPatConfiguration(fireRec, cb);
     }
+
+    this.f_changed = function()
+    {
+        var el = document.getElementById("nwNatPatSaveId");
+
+        if(el != null && !el.disabled)
+            return true;
+
+        return false;
+    }
 }
 UTM_extend(UTM_confNwNatPat, UTM_confBaseObj);
 //==============================================================================

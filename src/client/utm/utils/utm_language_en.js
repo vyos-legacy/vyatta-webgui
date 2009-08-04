@@ -159,7 +159,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Customize Level
     m_fireCustTitle : "Customized firewall",
-    m_fireDeleteConfirm : "Are you sure you want to delete this rule?",
+    m_fireDeleteConfirm : "Are you sure you want to delete the selected rule?",
     m_fireCustDeleteConfirmHeader : "Delete Customize Rule",
     m_discardConfirm : "This action will discard all your changes. Are you sure you still want to cancel?",
     m_fireCustDiscardConfirmHeader : "Cancel All Changes",

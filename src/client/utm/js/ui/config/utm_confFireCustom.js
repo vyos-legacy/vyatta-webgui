@@ -918,6 +918,16 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         var fireRec = thisObj.f_createFireRecord(ruleNo);
         thisObj.m_busLayer.f_deleteFirewallCustomizeRule(fireRec, cb);
     }
+
+    this.f_changed = function()
+    {
+        var el = document.getElementById("wfCustomizeSaveId");
+
+        if(el != null && !el.disabled)
+            return true;
+
+        return false;
+    }
 }
 UTM_extend(UTM_confFireCustom, UTM_confBaseObj);
 
@@ -971,7 +981,7 @@ function f_fireCustomBackConfirm(e)
 function f_fireCustomBackHandler()
 {
     if(g_configPanelObj.m_activeObj.m_isDirty)
-        g_utils.f_popupMessage(g_lang.m_confModify,
+        g_utils.f_popupMessage(g_lang.m_remindSaveChange,
                 'confirm', "Firewall Customize", true,
                 "f_fireCustomBackConfirm(this)");
     else

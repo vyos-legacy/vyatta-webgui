@@ -322,13 +322,23 @@ function UTM_confFireZoneMgmtEditor(name, callback, busLayer, zoneRec)
             else if (id == 'fwZoneMgmtEditorBackButtonId')
             {
                 if(thisObj.m_isDirty)
-                    g_utils.f_popupMessage(g_lang.m_confModify,
+                    g_utils.f_popupMessage(g_lang.m_remindSaveChange,
                     'confirm', "Firewall Customize", true,
                     "f_fireZoneMgmtBackConfirm(this)");
                 else
                     g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_ZONE_ID);
             }
         }
+    }
+
+    this.f_changed = function()
+    {
+        var el = document.getElementById("fwZoneMgmtEditorApplyButtonId");
+
+        if(el != null && !el.disabled)
+            return true;
+
+        return false;
     }
 }
 UTM_extend(UTM_confFireZoneMgmtEditor, UTM_confFormObj);

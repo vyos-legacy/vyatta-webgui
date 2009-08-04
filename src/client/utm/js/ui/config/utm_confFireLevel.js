@@ -442,6 +442,16 @@ function UTM_confFireLevel(name, callback, busLayer)
         g_utils.f_cursorWait();
         thisObj.m_busLayer.f_setFirewallSecurityLevel(fr, cb);
     };
+
+    this.f_changed = function()
+    {
+        var el = document.getElementById("id_fireLevelApply");
+
+        if(el != null && !el.disabled)
+            return true;
+
+        return false;
+    }
 }
 UTM_extend(UTM_confFireLevel, UTM_confBaseObj);
 

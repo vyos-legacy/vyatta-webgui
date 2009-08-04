@@ -641,8 +641,24 @@ function UTM_confFormObj(name, callback, busLayer)
         }
         return true;
     }	
+    
+    this.f_enableTextField = function(b, id)
+    {
+        var el = document.getElementById(id);
+        el.readOnly = (!b);
+        if (b) {
+            el.style.backgroundColor = '#FFFFFF';
+        } else {
+            el.style.backgroundColor = '#EFEFEF';
+        }
+    }	
 }
 
 UTM_extend(UTM_confFormObj, UTM_confBaseObj);
 
 EMPTY_ROW = { v_type: 'empty', v_new_row: 'true',v_end_row: 'true'};
+
+function f_confFormObjEventCallback(id)
+{
+	g_configPanelObj.m_activeObj.f_eventCallback(id);
+}

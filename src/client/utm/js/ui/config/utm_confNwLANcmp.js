@@ -138,17 +138,6 @@ function UTM_confNwLANitf(name, callback, busLayer)
 		}
     }
     
-    this.f_enableTextField = function(b, id)
-    {
-        var el = document.getElementById(id);
-        el.readOnly = (!b);
-        if (b) {
-            el.style.backgroundColor = '#FFFFFF';
-        } else {
-            el.style.backgroundColor = '#EFEFEF';
-        }
-    }
-    
     this.f_getContentPane = function()
     {
         thisObj.f_init();
@@ -573,17 +562,6 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
                 break;
         }
         thisObj.f_enabledDisableButton(id, state);
-    }
-    
-    this.f_enableTextField = function(b, id)
-    {
-        var el = document.getElementById(id);
-        el.readOnly = (!b);
-        if (b) {
-            el.style.backgroundColor = '#FFFFFF';
-        } else {
-            el.style.backgroundColor = '#EFEFEF';
-        }
     }
     
     this.f_enableDHCP = function(state)

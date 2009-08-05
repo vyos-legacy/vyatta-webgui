@@ -1,3 +1,26 @@
+vyatta-webgui (0.2.14+fxdU+97) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * nw nat/pat : allowed maximum number of configurable rules to 399.
+  * * removed debug statment from config base class
+
+  [ Loi Vo ]
+  * 1. Move enableTextField, eventCallback handlers to the base form
+    object.
+
+  [ Kevin Choi ]
+  * * nw static route : added "enabled" column.
+  * * added code to prompt un-save warning message when user about to
+    leave the page.
+
+  [ Loi Vo ]
+  * 1. Correct a typo in vpnBusObj for DFS group.
+
+  [ Mohit Mehta ]
+  * backend support to allow both tcp and udp in a single NAT rule
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Wed, 05 Aug 2009 16:14:17 -0700
+
 vyatta-webgui (0.2.14+fxdU+96) unstable; urgency=low
 
   [ Kevin Choi ]

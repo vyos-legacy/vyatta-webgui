@@ -250,7 +250,11 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       }
     }
   }
-
+  stdout = WebGUI::mass_replace(stdout, "&", "&amp;");
+  stdout = WebGUI::mass_replace(stdout, "\"", "&quot;");
+  stdout = WebGUI::mass_replace(stdout, "'", "&apos;");
+  stdout = WebGUI::mass_replace(stdout, "<", "&lt;");
+  stdout = WebGUI::mass_replace(stdout, ">", "&gt;");
   resp = WebGUI::mass_replace(stdout, "\n", "&#xD;&#xA;");
 }
 

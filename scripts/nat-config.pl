@@ -130,7 +130,10 @@ sub get_dnat_rule {
   $cli_rule->setup("$level");
   
   if (defined $cli_rule->{_proto}) {
-    $rule_string .= ",protocol=[$cli_rule->{_proto}]";
+    my $protocol_str = "";
+    $protocol_str = ",protocol=[$cli_rule->{_proto}]";
+    $protocol_str = ",protocol=[both]" if $cli_rule->{_proto} eq 'tcp_udp';
+    $rule_string .= $protocol_str;
   } else {
     $rule_string .= ",protocol=[Any]";
   }
@@ -242,6 +245,9 @@ sub set_dnat_rule {
     case 'protocol' {
       if ($value eq 'any') {
         $value = 'all';
+      }
+      if ($value eq 'both') {
+        $value = 'tcp_udp';
       }
       @cmds = (
          "set $nat_rule_level protocol $value",

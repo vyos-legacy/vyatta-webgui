@@ -75,6 +75,7 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
 
       var f_authCb = function(options, success, response)
       {
+          f_hideSendWaitMessage();
           if(response.responseXML != undefined)
           {
               var xmlRoot = response.responseXML.documentElement;
@@ -97,6 +98,17 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
               }
           }
       }
+
+      ////////////////////////////////////////////////////
+      // 'root' user is not allow in GUI
+      if(userField.getValue() == "root")
+      {
+          f_promptErrorMessage("Login Failed",
+                "Root user only can be accessed throught the CLI. It does not have access via Web-GUI.");
+          return;
+      }
+
+      g_cliCmdObj.m_sendCmdWait = Ext.MessageBox.wait("Login in process...", 'Log in');
 
       var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                    + '<vyatta><auth><user>'

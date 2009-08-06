@@ -96,6 +96,7 @@ function UTM_confNwRouting(name, callback, busLayer)
                 {
                     thisObj.m_rRecs = evt.m_value;
                     thisObj.f_populateTable();
+                    thisObj.f_updateGridHeaderChkbox();
                 }
             }
         };
@@ -117,6 +118,7 @@ function UTM_confNwRouting(name, callback, busLayer)
         this.m_div.appendChild(thisObj.f_headerText());
         this.m_div.appendChild(thisObj.m_gridHeader);
         this.m_div.appendChild(thisObj.m_gridBody);
+        this.m_div.appendChild(thisObj.m_buttons);
 
         var sortCol = UTM_confNwRouting.superclass.m_sortCol;
         var ar = thisObj.f_createSortingArray(sortCol, thisObj.m_rRecs);

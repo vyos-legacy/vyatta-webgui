@@ -349,7 +349,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
             }
             else if(app.indexOf("IPSec") >= 0)
             {
-                // do nothing
+                thisObj.f_enableComboboxSelection(proId, ["tcp","udp","both"], true);
             }
             else if(app.indexOf("Others") < 0)
             {
@@ -368,7 +368,10 @@ function UTM_confNwNatPat(name, callback, busLayer)
             if(rec.m_appService.indexOf("Other") >= 0)
                 thisObj.f_enableTextField(dport, true);
             else
+            {
                 thisObj.f_enableTextField(dport, false);
+                thisObj.f_enableComboboxSelection(proId, [], true);
+            }
         }
 
         //////////////////////////////////////////////////////
@@ -376,6 +379,8 @@ function UTM_confNwNatPat(name, callback, busLayer)
         // then send protocol value to server.
         if(cbeid.indexOf(thisObj.m_fieldIds[1]) >= 0)
         {
+            var proId = thisObj.m_fieldIds[4]+rNo[1];
+            thisObj.f_enableComboboxSelection(proId, ["tcp","udp","both"], true);
             rec.m_appService = cbb.value;
             cbb = document.getElementById(thisObj.m_fieldIds[4]+rNo[1]);
             rec.m_protocol = cbb.value;
@@ -547,15 +552,9 @@ function f_nwNatPatCancelHandler()
     g_configPanelObj.m_activeObj.f_handleCancelAction();
 }
 
-function f_nwNatPatDeleteConfirm(ruleNo)
-{
-    g_configPanelObj.m_activeObj.f_handleDeleteNatPat(ruleNo);
-}
 function f_nwNatPatDeleteHandler(ruleNo)
 {
-    g_utils.f_popupMessage(g_lang.m_fireDeleteConfirm,
-                'confirm', g_lang.m_fireCustDeleteConfirmHeader, true,
-                "f_nwNatPatDeleteConfirm('" + ruleNo + "')");
+    g_configPanelObj.m_activeObj.f_handleDeleteNatPat(ruleNo);
 }
 
 function f_nwNatPatOnTFBlur(tfeid)

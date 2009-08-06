@@ -120,6 +120,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
                 onclick: this.f_handleClick
             }]		
 		);
+		defObj.padding = '0px 0px 0px 30px';		
 		defObj.f_addLabelBold('conf_vpn_rug_header_label', g_lang.m_vpnRUG_GroupSettings,'true');
         defObj.f_addDivider('conf_vpn_rug_divider1','2');
 		defObj.f_addEmptySpace('conf_vpn_rug_spacer1','2');

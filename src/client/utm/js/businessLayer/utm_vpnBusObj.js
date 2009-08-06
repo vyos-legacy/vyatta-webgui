@@ -39,7 +39,7 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
     this.m_auth1 = null;
     this.m_diffieHellmann = null;
     this.m_lifeTime1 = null;
-    this.m_pfsGroup = null;
+    this.m_dfsGroup = null;
     this.m_lifeTime2 = null;
     this.m_encryption2 = null;
     this.m_auth2 = null;
@@ -61,7 +61,7 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
         thisObj.m_auth1 = 'SHA1';
         thisObj.m_diffieHellmann = 'Group 5';
         thisObj.m_lifeTime1 = '';
-        thisObj.m_pfsGroup = 'Group 5';
+        thisObj.m_dfsGroup = 'Group 5';
         thisObj.m_lifeTime2 = '';
         thisObj.m_encryption2 = 'AES128';
         thisObj.m_auth2 = 'SHA1';

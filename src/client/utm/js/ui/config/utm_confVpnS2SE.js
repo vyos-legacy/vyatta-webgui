@@ -123,6 +123,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
                 onclick: this.f_handleClick
             }]		
 		);
+		defObj.padding = '0px 0px 0px 30px';
 		defObj.f_addLabelBold('conf_vpn_s2se_header_label',g_lang.m_vpnS2S_VpnConSettings,'true');
         defObj.f_addDivider('conf_vpn_s2se_divider','2');
 		defObj.f_addEmptySpace('conf_vpn_s2se_basic_spacer','2');
@@ -254,6 +255,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		          '<a href="#" onclick="f_loadVpnLink(\'usr\')">Remote User</a><br/>';
 				  
         var div = document.createElement('div');
+		div.style.padding = '5px 0px 0px 30px';
         div.style.display = 'block';
 		div.style.height = 'auto';
         div.style.backgroundColor = 'white';
@@ -292,7 +294,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		thisObj.m_form.conf_vpn_s2se_ike_p2_local_network_mask.value = thisObj.m_vpn.f_getLocalNetworkPrefix();
         thisObj.m_form.conf_vpn_s2se_ike_p2_remote_network_ip.value = thisObj.m_vpn.f_getRemoteNetworkIp();
 		thisObj.m_form.conf_vpn_s2se_ike_p2_remote_network_mask.value = thisObj.m_vpn.f_getRemoteNetworkPrefix();
-		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_s2sexp_ike_p2_dfs, thisObj.m_vpn.m_pfsGroup);
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_s2sexp_ike_p2_dfs, thisObj.m_vpn.m_dfsGroup);
 		thisObj.m_form.conf_vpn_s2sexp_ike_p2_lifetime.value = thisObj.m_vpn.m_lifeTime2;
 		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_s2sexp_ike_p2_encrypt, thisObj.m_vpn.m_encryption2);
 		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_s2sexp_ike_p2_auth, thisObj.m_vpn.m_auth2);		
@@ -363,10 +365,46 @@ function UTM_confVpnS2SE(name, callback, busLayer)
         }
         return true;
     }
+	
+	this.f_getVpn = function()
+	{		
+		var vpnRec = new UTM_vpnRecord();
+		vpnRec.m_tunnel = thisObj.m_form.conf_vpn_s2se_tunnel_name.value;
+		vpnRec.m_peerIp = thisObj.m_form.conf_vpn_s2se_peer_ip.value;		
+		vpnRec.m_remoteVpnDevice = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_s2se_remote_device);
+				
+		if (thisObj.m_form.conf_vpn_s2se_tunnel_config_mode_ez.checked) {
+			vpnRec.m_mode = 'easy';
+			vpnRec.m_presharedKey = thisObj.m_form.conf_vpn_s2se_preshared_key.value;
+			vpnRec.f_setLocalNetwork(thisObj.m_form.conf_vpn_s2se_local_network_ip.value, 
+			    thisObj.m_form.conf_vpn_s2se_local_network_mask.value);
+			vpnRec.f_setRemoteNetwork(thisObj.m_form.conf_vpn_s2se_remote_network_ip.value,
+			    thisObj.m_form.conf_vpn_s2se_remote_network_mask);
+		} else {
+			vpnRec.m_mode = 'expert';
+			vpnRec.m_type = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_s2sexp_ike_p1_proto);
+			vpnRec.m_exchange = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_s2sexp_ike_p1_ex_mode);
+			vpnRec.m_encryption1 = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_s2sexp_ike_p1_encrypt);
+			vpnRec.m_presharedKey = thisObj.m_form.conf_vpn_s2sexp_ike_p1_preshare.value;
+			vpnRec.m_auth1 = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_s2sexp_ike_p1_auth);
+			vpnRec.m_diffieHellmann = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_s2sexp_ike_p1_diffle);
+			vpnRec.m_lifeTime1 = thisObj.m_form.conf_vpn_s2sexp_ike_p1_lifetime.value;
+			vpnRec.f_setLocalNetwork(thisObj.m_form.conf_vpn_s2se_ike_p2_local_network_ip.value,
+			    thisObj.m_form.conf_vpn_s2se_ike_p2_local_network_mask.value);
+			vpnRec.f_setRemoteNetwork(thisObj.m_form.conf_vpn_s2se_ike_p2_remote_network_ip.value,
+			    thisObj.m_form.conf_vpn_s2se_ike_p2_remote_network_mask.value);
+			vpnRec.m_dfsGroup = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_s2sexp_ike_p2_dfs);
+			vpnRec.m_lifeTime2 = thisObj.m_form.conf_vpn_s2sexp_ike_p2_lifetime.value;			
+			vpnRec.m_encryption2 = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_s2sexp_ike_p2_encrypt);
+			vpnRec.m_auth2 = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_s2sexp_ike_p2_auth);			
+		}
+		return vpnRec;
+
+	}
     
     this.f_apply = function()
     {
-		alert('apply');
+        var vpnRec = thisObj.f_getVpn();
     }
     
     this.f_reset = function()

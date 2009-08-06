@@ -65,6 +65,7 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
                 onclick: this.f_handleClick
             }]		
 		);
+		defObj.padding = '0px 0px 0px 30px';		
 		defObj.f_addLabelBold('conf_vpn_rusr_header_label', g_lang.m_vpnRUadd_RemoteUserSettings,'true');
         defObj.f_addDivider('conf_vpn_rusr_divider1','2');
 		defObj.f_addEmptySpace('conf_vpn_rusr_spacer1','2');

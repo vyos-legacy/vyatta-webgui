@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+101) unstable; urgency=low
+
+  * * user right screen : blocked 'security' tab from normal user.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 07 Aug 2009 04:17:36 +0000
+
 vyatta-webgui (0.2+fxd0+100) unstable; urgency=low
 
   * 1. Fix bug: 4775

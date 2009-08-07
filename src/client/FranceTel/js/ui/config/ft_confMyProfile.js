@@ -146,8 +146,8 @@ function FT_confMyProfile (name, callback, busLayer) {
      */
     this.f_resetPasswordCb = function(eventObj)
     {
-        if (eventObj.f_isError()) {
-            g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', g_lang.m_error, true);
+        if (thisObj.f_isServerError(eventObj, g_lang.m_error)) {
+            return;
         } else {
             var message = g_lang.m_myprofPasswdRestSucessful;
             var type = 'ok';

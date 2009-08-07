@@ -302,8 +302,8 @@ function FT_confUserAdd (name, callback, busLayer)
 		//    1. Close  the waiting message dialog
 		//    2. Display error messsage from server if any.  
 		//    3. Take user to user list screen when no error.
-		if (eventObj.f_isError()) {
-		    g_utils.f_popupMessage(eventObj.m_errMsg, 'ok', 'Error',true);			    
+		if (thisObj.f_isServerError(eventObj, g_lang.m_error)) {
+		    return;	    
 		} else {
 			g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_USER_ID);
 		}

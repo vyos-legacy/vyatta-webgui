@@ -3,6 +3,7 @@ package OpenApp::VMMgmt;
 use strict;
 use lib '/opt/vyatta/share/perl5';
 use OpenApp::VMDeploy;
+use Vyatta::Config;
 
 our $OPENAPP_ID = 'openapp';
 our $OPENAPP_DNAME = 'OpenAppliance';
@@ -15,11 +16,76 @@ our $LIBVIRT_DIR = '/var/oa/libvirt';
 
 my $STATUS_DIR = '/var/run/vmstatus';
 my $HWMON_FILE = '/var/run/vmstatus.hw';
+my $STATUS_LOCK = "$STATUS_DIR/.lock";
 
+my $OA_IMAGE_ROOT = '/live/image/boot';
 my $OA_VERSION_FILE = '/opt/vyatta/etc/version';
 my $OA_GRUB_CFG = '/live/image/boot/grub/grub.cfg';
+my $OA_GRUB_CFG_LIMIT = 5;
+
+my $CFG_VM_START_TIMEOUT = 'system open-app parameters vm-start-timeout';
+my $CFG_VM_RESP_TIMEOUT = 'system open-app parameters vm-response-timeout';
 
 ### "static" functions
+sub _lockStatus {
+  system("sudo mkdir $STATUS_DIR >&/dev/null");
+  while (1) {
+    system("sudo mkdir $STATUS_LOCK >&/dev/null");
+    last if (!($? >> 8));
+    sleep 1;
+  }
+}
+
+sub _unlockStatus {
+  system("sudo rmdir $STATUS_LOCK >&/dev/null");
+}
+
+my %status_hash = (
+  'starting' => 1,
+  'stopped' => 1,
+  'restart' => 1,
+  'restart-failed' => 1,
+  'out' => 1
+);
+
+sub _isValidStatus {
+  my ($st) = @_;
+  return 0 if (!defined($st));
+  return (defined($status_hash{$st}));
+}
+
+sub _statusSet {
+  my ($status, $id) = @_;
+  return if (!defined($status) || !defined($id));
+  return if (!_isValidStatus($status));
+  return if (! -f "$STATUS_DIR/$id");
+  system("sudo touch '$STATUS_DIR/.$status.$id'");
+}
+
+sub _statusRm {
+  my ($status, $id) = @_;
+  return if (!defined($status) || !defined($id));
+  return if (!_isValidStatus($status));
+  return if (! -f "$STATUS_DIR/$id");
+  system("sudo rm -f '$STATUS_DIR/.$status.$id'");
+}
+
+sub _isStatus {
+  my ($status, $id) = @_;
+  return 0 if (!defined($status) || !defined($id));
+  return 0 if (!_isValidStatus($status));
+  return 0 if (! -f "$STATUS_DIR/$id");
+  return (-f "$STATUS_DIR/.$status.$id");
+}
+
+sub _statusTime {
+  my ($status, $id) = @_;
+  return undef if (!defined($status) || !defined($id));
+  return undef if (!_isValidStatus($status));
+  return undef if (! -f "$STATUS_DIR/.$status.$id");
+  return ((stat("$STATUS_DIR/.$status.$id"))[9]);
+}
+
 sub getVMList {
   my $dd = undef;
   opendir($dd, "$META_DIR") or return;
@@ -28,14 +94,74 @@ sub getVMList {
   return @v;
 }
 
+sub _getVMStartingWait {
+  my $cfg = new Vyatta::Config;
+  $cfg->{_active_dir_base} = '/opt/vyatta/config/active';
+  my $to = $cfg->returnOrigValue($CFG_VM_START_TIMEOUT);
+  return (defined($to) ? $to : 300);
+}
+
+sub _getVMStatusTimeout {
+  my $cfg = new Vyatta::Config;
+  $cfg->{_active_dir_base} = '/opt/vyatta/config/active';
+  my $to = $cfg->returnOrigValue($CFG_VM_RESP_TIMEOUT);
+  return (defined($to) ? $to : 180);
+}
+
+sub readStatus {
+  my ($id) = @_;
+  return () if (! -r "$STATUS_DIR/$id");
+  my $fd = undef;
+  open($fd, '<', "$STATUS_DIR/$id") or return ();
+  my $data = <$fd>;
+  close($fd);
+  chomp($data);
+  my ($st, $cpu, $dall, $dfree, $mall, $mfree, $upd, $crit)
+    = split(/ /, $data, 8);
+  return ($st, $cpu, $dall, $dfree, $mall, $mfree, $upd, $crit);
+}
+
 sub updateStatus {
   my ($id, $st, $cpu, $dall, $dfree, $mall, $mfree, $upd, $crit) = @_;
-  my $fd = undef;
-  # make sure the directory exists
-  mkdir($STATUS_DIR);
-  open($fd, '>', "$STATUS_DIR/$id") or return;
-  print $fd "$st $cpu $dall $dfree $mall $mfree $upd $crit\n";
-  close($fd);
+  _lockStatus();
+  my ($ost) = readStatus($id); # old state
+  while (1) {
+    if ("$ost" ne 'up' && "$st" eq 'up') {
+      # transition to up
+      _statusRm('starting', $id);
+      _statusRm('out', $id);
+      _statusRm('restart', $id);
+      _statusRm('restart-failed', $id);
+      # new status will be updated below
+    } elsif (_isStatus('starting', $id)) {
+      # it has been starting
+      my $start_wait = _getVMStartingWait();
+      my $start_time = _statusTime('starting', $id);
+      my $cur_time = time();
+      if (($cur_time - $start_time) <= $start_wait) {
+        # still starting. not updating status.
+        last;
+      }
+      # starting should be done by now. but it's not up yet.
+      # mark it as out.
+      _statusRm('starting', $id);
+      _statusSet('out', $id);
+      # new status will be updated below
+    }
+    
+    if (!_isStatus('out', $id) && "$ost" eq 'up' && "$st" ne 'up') {
+      # transition from up. mark it as out.
+      _statusSet('out', $id);
+    }
+
+    my $fd = undef;
+    if (open($fd, '>', "$STATUS_DIR/$id")) {
+      print $fd "$st $cpu $dall $dfree $mall $mfree $upd $crit\n";
+      close($fd);
+    }
+    last;
+  }
+  _unlockStatus();
 }
 
 sub updateHwMon {
@@ -146,6 +272,37 @@ sub setDom0GrubDefVer {
   return $newdef;
 }
 
+sub cleanupDom0Ver {
+  my ($ver) = @_;
+  # clean up the image directory for the version
+  ## if directory doesn't exist, do nothing (not treating as error).
+  return undef if ("$ver" eq '' || $ver =~ /\// || ! -d "$OA_IMAGE_ROOT/$ver");
+  system("sudo rm -rf $OA_IMAGE_ROOT/$ver");
+  return 'Failed to remove image directory' if ($? >> 8);
+
+  # clean up the grub config.
+  # sufficient to just limit the number of entries.
+  my $fd = undef;
+  return undef if (!open($fd, '<', $OA_GRUB_CFG));
+  my ($count, $line) = (0, 0);
+  while (<$fd>) {
+    ++$line;
+    if (/^menuentry /) {
+      ++$count;
+      last if ($count > $OA_GRUB_CFG_LIMIT);
+    }
+  }
+  close($fd);
+  if ($count > $OA_GRUB_CFG_LIMIT) {
+    # remove the extra entries
+    my $start = $line - 1;
+    system("sudo sed -i '$start,\${d}' $OA_GRUB_CFG");
+    return 'Failed to update boot configuration' if ($? >> 8);
+  }
+
+  return undef;
+}
+
 sub _getLibvirtCfg {
   my ($id) = @_;
   my $dd;
@@ -158,6 +315,22 @@ sub _getLibvirtCfg {
 
 sub startVM {
   my ($id) = @_;
+
+  _lockStatus();
+  if (_isStatus('starting', $id)) {
+    # already starting. do nothing.
+    _unlockStatus();
+    return;
+  }
+  
+  _statusSet('starting', $id);
+  _statusRm('stopped', $id);
+  _statusRm('out', $id);
+  
+  # change status to unknown
+  system("sudo sh -c 'echo \"unknown 0 0 0 0 0  \" >\"$STATUS_DIR/$id\"'");
+  _unlockStatus();
+
   my $lv_cfg = _getLibvirtCfg($id);
   system("sudo virsh -c xen:/// create $lv_cfg");
 }
@@ -174,9 +347,76 @@ sub _waitVmShutOff {
 
 sub shutdownVM {
   my ($id) = @_;
+  
+  _lockStatus();
+  my $starting = _isStatus('starting', $id);
+  _unlockStatus();
+  return if ($starting); # it's starting. do nothing.
+
   system("sudo virsh -c xen:/// shutdown $id");
   _waitVmShutOff($id);
   system("sudo virsh -c xen:/// destroy $id");
+  
+  _lockStatus();
+  _statusSet('stopped', $id);
+  _unlockStatus();
+}
+
+sub needRestart {
+  my ($id) = @_;
+
+  my $ret = 0;
+  _lockStatus();
+  while (1) {
+    # XXX special case:
+    # if this is not UTM, and UTM is out, don't do auto-restart.
+    # (can't get a domU's status if UTM is out or starting.)
+    last if ("$id" ne 'utm' && (_isStatus('out', 'utm')
+                                || _isStatus('starting', 'utm')));
+
+    last if (!_isStatus('out', $id));
+
+    my $out_time = _statusTime('out', $id);
+    last if (!defined($out_time));
+
+    my $timeout = _getVMStatusTimeout();
+    my $cur_time = time();
+    last if (($cur_time - $out_time) <= $timeout);
+
+    # don't restart if already starting
+    last if (_isStatus('starting', $id));
+  
+    # don't restart if stopped
+    last if (_isStatus('stopped', $id));
+
+    if (_isStatus('restart', $id)) {
+      # already started once and never reached 'up'.
+      if (!_isStatus('restart-failed', $id)) {
+        # TODO log message
+        _statusSet('restart-failed', $id);
+      }
+      last;
+    }
+
+    $ret = 1;
+    last;
+  }
+  _unlockStatus();
+  return $ret;
+}
+
+sub tryAutoRestart {
+  my ($id) = @_;
+
+  _lockStatus();
+  _statusSet('restart', $id);
+  _statusRm('starting', $id);
+  _statusRm('stopped', $id);
+  _statusRm('out', $id);
+  _unlockStatus();
+
+  shutdownVM($id);
+  startVM($id);
 }
 
 ### data
@@ -246,17 +486,10 @@ sub _setupMeta {
 
 sub refreshStatus {
   my ($self) = @_;
-  my $id = $self->{_vmId};
-  if (! -r "$STATUS_DIR/$id") {
-    return;
-  }
-  my $fd = undef;
-  open($fd, '<', "$STATUS_DIR/$id") or return;
-  my $data = <$fd>;
-  close($fd);
-  chomp($data);
+  _lockStatus();
   my ($st, $cpu, $dall, $dfree, $mall, $mfree, $upd, $crit)
-    = split(/ /, $data, 8);
+    = readStatus($self->{_vmId});
+  _unlockStatus();
   $self->{_vmState} = $st;
   $self->{_vmCpu} = $cpu;
   $self->{_vmDiskAll} = $dall;

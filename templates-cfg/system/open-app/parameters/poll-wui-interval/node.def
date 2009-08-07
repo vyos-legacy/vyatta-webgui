@@ -1,0 +1,4 @@
+type: u32
+default: 5
+help: Set interval (seconds) between polling VM info for OpenAppliance WUI
+syntax:expression: $VAR(@) > 0; "\"poll-wui-interval\" must be at least 1"

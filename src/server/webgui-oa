@@ -5,5 +5,5 @@ VYATTA_BACKEND_TYPE=OA
 
 echo -en "Content-Type: text/xml\r\n\r\n"
 
-sg operator -c /usr/lib/cgi-bin/webgui
+sg operator -c /usr/lib/cgi-bin/webgui -l
 

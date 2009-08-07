@@ -229,8 +229,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
         {
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
-		        if (evt.f_isError()) {
-					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
+		        if (thisObj.f_isServerError(evt, g_lang.m_error)) {
 					return;
 				}				
 				thisObj.m_ldap = evt.m_value;
@@ -336,8 +335,8 @@ function FT_confLDAPserver (name, callback, busLayer) {
 		thisObj.m_ldap = ldap;	
 			
         var cb = function(evt) {
-		    if (evt.f_isError()) {
-		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
+		    if (thisObj.f_isServerError(evt, g_lang.m_error)) {
+		        return;		    
 		    } else {
                 g_utils.f_popupMessage(g_lang.m_menuLDAPConfig +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_menuLDAPConfig,true);
 		    }			

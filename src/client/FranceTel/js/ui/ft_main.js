@@ -21,6 +21,7 @@ g_xbObj.f_xbOnDomReady(function(){
         g_mainFrameObj.f_login(loginDiv);
     } else {
         g_mainFrameObj.f_show();
+		g_busObj.m_timeoutMonitor.f_start();
     }
 });
 

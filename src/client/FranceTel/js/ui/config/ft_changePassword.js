@@ -257,6 +257,9 @@ function FT_changePassword(name, callback, busLayer)
     this.f_resetPasswordCb = function(eventObj)
     {
         if (eventObj.f_isError()) {
+			if (eventObj.m_errCode == 3) {
+				return; //timeout is handled by timeoutMonitor.
+			}
             var err = '<br/>' + g_lang.m_error + ': ' + eventObj.m_errMsg;
             thisObj.f_showError(true, err, thisObj.form.conf_changepasswd_old_passwd);
         } else { //password saved.  Proceed to login.
@@ -326,6 +329,9 @@ function FT_changePassword(name, callback, busLayer)
         var cb = function(event)
         {
             if (event.f_isError()) {
+			    if (event.m_errCode == 3) {
+				    return; //timeout is handled by timeoutMonitor.
+			    }				
                 g_utils.f_popupMessage(g_lang.m_loginUnableToLogin + event.m_errMsg, g_lang.m_ok, g_lang.m_loginError);
             } else {
                 g_utils.f_saveUserName(un);

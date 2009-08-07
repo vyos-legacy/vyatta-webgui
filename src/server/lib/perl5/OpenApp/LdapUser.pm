@@ -135,6 +135,7 @@ sub _setPasswordInstaller {
   waitpid($pid, 0);
   chomp($epass);
   return 'Failed to encrypt installer password' if (!($epass =~ /^\$1\$/));
+  `logger -p info 'dom0: set installer password'`;
   system("sudo /usr/sbin/usermod -p '$epass' installer");
   return 'Failed to change installer password' if ($? >> 8);
   return undef;
@@ -149,6 +150,7 @@ sub createUser {
   return 'User already exists' if ($u->isExisting());
 
   # create the user
+  `logger -p info 'dom0: create $user'`;
   my $err = `sudo ldapadduser '$user' operator 2>&1`;
   return "Failed to create user: $err" if ($? >> 8);
 
@@ -177,6 +179,7 @@ sub deleteUser {
     if ($user eq 'admin' || $user eq 'installer');
 
   # delete the user
+  `logger -p info 'dom0: delete $user'`;
   my $err = `sudo ldapdeleteuser '$user' 2>&1`;
   return "Failed to delete user: $err" if ($? >> 8);
 
@@ -190,7 +193,7 @@ my %fields = (
   _umail => undef,
   _ulast => undef,
   _ufirst => undef,
-  _urights => undef,
+  _urights => {},
   _urole => undef
 );
 
@@ -314,43 +317,51 @@ sub passwordExists {
 ### setters for user attributes
 sub setMail {
   my ($self, $mail) = @_;
+  `logger -p info 'dom0: set mail to $mail for $self->{_uname}'`;
   return _replaceUserAttr($self->{_uname}, $OA_LDAP_ATTR_MAIL, $mail);
 }
 
 sub setLast {
   my ($self, $last) = @_;
+  `logger -p info 'dom0: set lastname to $last for $self->{_uname}'`;
   return _replaceUserAttr($self->{_uname}, $OA_LDAP_ATTR_LAST, $last);
 }
 
 sub setFirst {
   my ($self, $first) = @_;
+  `logger -p info 'dom0: set firstname to $first for $self->{_uname}'`;
   return _replaceUserAttr($self->{_uname}, $OA_LDAP_ATTR_FIRST, $first);
 }
 
 # add one right for the user
 sub addRight {
   my ($self, $right) = @_;
+  `logger -p info 'dom0: add right $right for $self->{_uname}'`;
   return _addUserAttrVal($self->{_uname}, $OA_LDAP_ATTR_RIGHT, $right);
 }
 
 # remove one right for the user
 sub delRight {
   my ($self, $right) = @_;
+  `logger -p info 'dom0: delete right $right for $self->{_uname}'`;
   return _delUserAttrVal($self->{_uname}, $OA_LDAP_ATTR_RIGHT, $right);
 }
 
 sub setRole {
   my ($self, $role) = @_;
+  `logger -p info 'dom0: set role $role for $self->{_uname}'`;
   return _replaceUserAttr($self->{_uname}, $OA_LDAP_ATTR_ROLE, $role);
 }
 
 sub deletePassword {
   my ($self) = @_;
+  `logger -p info 'dom0: delete password for $self->{_uname}'`;
   return _deleteUserAttr($self->{_uname}, $OA_LDAP_ATTR_PASSWORD);
 }
 
 sub resetPassword {
   my ($self) = @_;
+  `logger -p info 'dom0: reset password for $self->{_uname}'`;
   return $self->setPassword($self->{_uname});
 }
 
@@ -373,6 +384,7 @@ sub setPassword {
   close($ep);
   unlink($fname);
   chomp($epass);
+  `logger -p info 'dom0: set password for $self->{_uname}'`;
   return _replaceUserAttr($self->{_uname}, $OA_LDAP_ATTR_PASSWORD, $epass);
 }
 

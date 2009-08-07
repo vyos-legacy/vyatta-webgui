@@ -102,8 +102,8 @@ function FT_userBusObj(busObj)
                 // this login user before we call the guicb.
                 if(thisObj.m_lastCmdSent.indexOf('<auth>') >= 0)
                 {
-                    g_utils.f_saveUserLoginId(thisObj.m_sid);
-                    thisObj.f_getUserFromServer(thisObj.m_loginUser.m_user, thisObj.m_guiCb);
+                    g_utils.f_saveUserLoginId(thisObj.m_sid);                    
+					thisObj.f_getUserFromServer(thisObj.m_loginUser.m_user, thisObj.m_guiCb);
                 }
                 else
                 {
@@ -167,7 +167,7 @@ function FT_userBusObj(busObj)
         // need to remove all cookies
         thisObj.m_sid = undefined;	
         g_cookie.f_remove_session();			
-		g_utils.f_gotoHomePage();		
+		//g_utils.f_gotoHomePage();		
     }
 
     /**

@@ -1,0 +1,27 @@
+help: Configure parameters for the OpenAppliance
+end: if [ "${COMMIT_ACTION}" = 'DELETE' ]; then
+       exit 0
+     fi
+     if [ -z "$VAR(poll-status-interval/@)" ]; then
+       echo '"poll-status-interval" must be set'
+       exit 1
+     fi
+     if [ -z "$VAR(vm-response-timeout/@)" ]; then
+       echo '"vm-response-timeout" must be set'
+       exit 1
+     fi
+     if [ -z "$VAR(poll-wui-interval/@)" ]; then
+       echo '"poll-wui-interval" must be set'
+       exit 1
+     fi
+     if [ $(( $VAR(poll-status-interval/@) % $VAR(poll-wui-interval/@) )) \
+          != 0 ]; then
+       echo '"poll-status-interval" must be multiples of "poll-wui-interval"'
+       exit 1
+     fi
+     if [ $(( $VAR(vm-response-timeout/@) % $VAR(poll-status-interval/@) )) \
+          != 0 ]; then
+       echo '"vm-response-timeout" must be multiples of "poll-status-interval"'
+       exit 1
+     fi
+     exit 0

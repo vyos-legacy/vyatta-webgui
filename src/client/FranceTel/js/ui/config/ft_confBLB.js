@@ -72,6 +72,9 @@ function FT_confBLB(name, callback, busLayer)
             if(evt != undefined && evt.m_objName == 'FT_eventObj')
             {
 		        if (evt.f_isError()) {
+			        if (evt.m_errCode == 3) {
+				        return; //timeout is handled by timeoutMonitor.
+			        }					
 					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);
 					return;
 				}					
@@ -117,6 +120,9 @@ function FT_confBLB(name, callback, busLayer)
 			
         var cb = function(evt) {
 		    if (evt.f_isError()) {
+			    if (evt.m_errCode == 3) {
+				    return; //timeout is handled by timeoutMonitor.
+			    }				
 		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
 		    } else {
                 g_utils.f_popupMessage(g_lang.m_menuBLBAssocication +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_menuBLBAssocication,true);

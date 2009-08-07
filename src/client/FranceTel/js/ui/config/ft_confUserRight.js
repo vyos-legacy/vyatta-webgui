@@ -275,10 +275,13 @@ function FT_confUserRight(name, callback, busLayer)
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
-            if(evt != undefined && !evt.f_isError())
-                thisObj.f_loadVMData();
-            else if(evt != undefined && evt.f_isError())
-                alert(evt.m_errMsg);
+            if (evt != undefined && !evt.f_isError()) {
+				thisObj.f_loadVMData();
+			} else if (evt != undefined && evt.f_isError()) {
+				if (evt.m_errCode != 3) { //timeout is handled by timeoutMonitor
+					alert(evt.m_errMsg);
+				}
+			}
         };
 
         if(cmdStr.length > 0)

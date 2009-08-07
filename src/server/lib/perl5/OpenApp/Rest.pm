@@ -50,10 +50,10 @@ sub send {
 	  $self->{_success} = 1;
 	  return $self;
       }
-      if ($out =~ /Status:/) {
-	  my @tmp = split(" ", $out);
-	  my $tmp;
-	  $self->{_http_code} = $tmp[1];
+      # The HTTP status code is on the HTTP "Status-Line" (e.g.,
+      # "HTTP/1.1 302 Found"), *not* in the "Status:" header.
+      if ($out =~ /^HTTP\/[\d.]+\s+(\d+)\s+.*$/) {
+	  $self->{_http_code} = $1;
 	  last;
       }
   }

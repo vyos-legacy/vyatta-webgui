@@ -13,8 +13,8 @@ using namespace std;
 /**
  *
  **/
-SessionExchangeFile::SessionExchangeFile(const string &file, bool debug) :
-  SessionExchange(debug),
+SessionExchangeFile::SessionExchangeFile(const string &file, bool req_resp_log_file, bool debug) :
+  SessionExchange(req_resp_log_file, debug),
   _file(file)
 {
 

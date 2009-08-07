@@ -31,8 +31,9 @@ if (defined($sched)) {
   if (!OpenApp::VMMgmt::isValidId($sched) 
       || !OpenApp::VMDeploy::isValidNewVer($sched, $ver) 
       || !OpenApp::VMDeploy::isValidSchedTime($time)) {
-    print "Invalid command\n";
-    exit 1;
+      `logger -p info 'dom0: Invalid command'`;
+      print "Invalid command\n";
+      exit 1;
   }
   do_sched($sched, $ver, $time);
   exit 0;
@@ -40,8 +41,9 @@ if (defined($sched)) {
 
 if (defined($cancel)) {
   if (!OpenApp::VMMgmt::isValidId($cancel)) {
-    print "Invalid command\n";
-    exit 1;
+      `logger -p info 'dom0: Invalid command'`;
+      print "Invalid command\n";
+      exit 1;
   }
   do_cancel($cancel);
   exit 0;
@@ -50,8 +52,9 @@ if (defined($cancel)) {
 if (defined($restore)) {
   if (!OpenApp::VMMgmt::isValidId($restore) 
       || !OpenApp::VMDeploy::isValidPrevVer($restore, $ver)) {
-    print "Invalid command\n";
-    exit 1;
+      `logger -p info 'dom0: Invalid command'`;
+      print "Invalid command\n";
+      exit 1;
   }
   do_restore($restore, $ver);
   exit 0;
@@ -62,6 +65,7 @@ if ($list) {
   exit 0;
 }
 
+`logger -p info 'dom0: Invalid command'`;
 print "Invalid command\n";
 exit 1;
 
@@ -69,13 +73,15 @@ sub do_sched {
   my ($id, $ver, $time) = @_;
   my $vm = new OpenApp::VMDeploy($id);
   if (!defined($vm)) {
-    print "Invalid VM ID '$id'\n";
-    exit 1;
+      `logger -p info 'dom0: Invalid VM ID $id'`;
+      print "Invalid VM ID '$id'\n";
+      exit 1;
   }
   my $err = $vm->sched($ver, $time);
   if (defined($err)) {
-    print "$err\n";
-    exit 1;
+      `logger -p info 'dom0: $err'`;
+      print "$err\n";
+      exit 1;
   }
   print "'$id' update scheduled successfully\n";
 }
@@ -84,13 +90,15 @@ sub do_cancel {
   my ($id) = @_;
   my $vm = new OpenApp::VMDeploy($id);
   if (!defined($vm)) {
-    print "Invalid VM ID '$id'\n";
-    exit 1;
+      `logger -p info 'dom0: Invalid VM ID $id'`;
+      print "Invalid VM ID '$id'\n";
+      exit 1;
   }
   my $err = $vm->cancel();
   if (defined($err)) {
-    print "$err\n";
-    exit 1;
+      `logger -p info 'dom0: $err'`;
+      print "$err\n";
+      exit 1;
   }
   print "'$id' update cancelled successfully\n";
 }
@@ -99,13 +107,15 @@ sub do_restore {
   my ($id, $ver) = @_;
   my $vm = new OpenApp::VMDeploy($id);
   if (!defined($vm)) {
-    print "Invalid VM ID '$id'\n";
-    exit 1;
+      `logger -p info 'dom0: Invalid VM ID $id'`;
+      print "Invalid VM ID '$id'\n";
+      exit 1;
   }
   my $err = $vm->schedRestore($ver);
   if (defined($err)) {
-    print "$err\n";
-    exit 1;
+      `logger -p info 'dom0: $err'`;
+      print "$err\n";
+      exit 1;
   }
   print "'$id' restore initiated successfully\n";
 }

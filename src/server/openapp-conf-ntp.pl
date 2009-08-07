@@ -46,6 +46,7 @@ sub set_ntp {
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -53,6 +54,7 @@ sub set_ntp {
     # delete previous entry
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete system ntp-server");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -60,6 +62,7 @@ sub set_ntp {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system ntp-server $server");
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -67,6 +70,7 @@ sub set_ntp {
     # commit
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
     if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }

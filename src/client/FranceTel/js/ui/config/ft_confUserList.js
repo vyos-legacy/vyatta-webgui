@@ -201,7 +201,9 @@ function f_handleUserListDeleteUser(e, username)
         g_utils.f_cursorDefault();
         if(evt.f_isError())
         {
-            alert('delete error');
+			if (evt.m_errCode != 3) {
+                g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
+			}
         }
         else
             g_configPanelObj.m_activeObj.f_loadVMData();

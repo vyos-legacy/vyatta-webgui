@@ -71,10 +71,6 @@ Manager::process()
 void
 Manager::register_session(Session &session)
 {
-  if (_debug) {
-    cout << "Manager::register_session(): registering new session for: " << session.get_id() << ", " << session.get_sock() << endl;
-  }
-
   SessionIter iter = _session_coll.find(session.get_id());
   if (iter != _session_coll.end()) {
     //close and remove this session

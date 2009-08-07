@@ -107,6 +107,37 @@ sub do_conf_standalone {
     print "BLB configuration failed: $err\n";
     exit 1;
   }
+  
+  # switch NTP server back to default
+  my $fd = undef;
+  if (!open($fd, '<', '/opt/vyatta/etc/config/config.boot.xen')) {
+    print "Failed to switch NTP server: Cannot open default config\n";
+    exit 1;
+  }
+  my $def_ntp = undef;
+  while (<$fd>) {
+    if (/^\s+ntp-server\s+(\S+)$/) {
+      $def_ntp = $1;
+      chomp($def_ntp);
+      last;
+    }
+  }
+  close($fd);
+  if (!defined($def_ntp)) {
+    print "Failed to get default NTP server\n";
+    exit 1;
+  }
+  @cmds = (
+    'delete system ntp-server',
+    "set system ntp-server '$def_ntp'",
+    'commit',
+    'save'
+  );
+  $err = OpenApp::Conf::execute_session(@cmds);
+  if (defined($err)) {
+    print "Failed to set NTP server: $err\n";
+    exit 1;
+  }
 }
   
 sub do_standalone {
@@ -160,6 +191,25 @@ sub do_conf_blb {
   my $err = OpenApp::Conf::execute_session(@cmds);
   if (defined($err)) {
     print "Failed to save BLB configuration: $err\n";
+    exit 1;
+  }
+
+  # switch NTP server to the BLB
+  my $blb_ip = undef;
+  ($blb_ip, $err) = OpenApp::BLB::getBLBIP();
+  if (!defined($blb_ip)) {
+    print "Failed to get BLB IP: $err\n";
+    exit 1;
+  }
+  @cmds = (
+    'delete system ntp-server',
+    "set system ntp-server '$blb_ip'",
+    'commit',
+    'save'
+  );
+  $err = OpenApp::Conf::execute_session(@cmds);
+  if (defined($err)) {
+    print "Failed to set NTP server: $err\n";
     exit 1;
   }
 }

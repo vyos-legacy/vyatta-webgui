@@ -50,7 +50,7 @@ static void usage()
 static void sig_end(int signo)
 {
   g_shutdown = true;
-  syslog(LOG_ERR, "webgui_chunker, exit signal caught, exiting..");
+  syslog(LOG_ERR, "dom0: exit signal caught, exiting..");
 }
 
 /**
@@ -152,7 +152,7 @@ pid_output (const char *path)
     }
   /* XXX Why do we continue instead of exiting?  This seems incompatible
      with the behavior of the fcntl version below. */
-  syslog(LOG_ERR,"Can't fopen pid lock file %s, continuing",
+  syslog(LOG_INFO,"dom0: Can't fopen pid lock file %s, continuing",
             path);
   umask(oldumask);
   return -1;

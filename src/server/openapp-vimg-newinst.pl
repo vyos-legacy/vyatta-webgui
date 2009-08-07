@@ -33,6 +33,7 @@ while (1) {
 }
 
 if (defined($err)) {
+    `logger -p info 'dom0: $err'`;
   print "$err\n";
   exit 1;
 }

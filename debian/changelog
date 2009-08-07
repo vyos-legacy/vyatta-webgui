@@ -1,3 +1,70 @@
+vyatta-webgui (0.2+fxd0+100) unstable; urgency=low
+
+  * 1. Fix bug: 4775
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 05 Aug 2009 18:19:24 +0000
+
+vyatta-webgui (0.2+fxd0+99) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * redirect output to /dev/null
+
+  [ Michael Larson ]
+  * fix for listing archives of both installer and admin for user
+    installer
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 31 Jul 2009 18:27:41 -0700
+
+vyatta-webgui (0.2+fxd0+98) unstable; urgency=low
+
+  * 1. When user logout, stop the polling thread.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 31 Jul 2009 01:52:29 +0000
+
+vyatta-webgui (0.2+fxd0+97) unstable; urgency=low
+
+  [ Michael Larson ]
+  * allow request and response logging to /tmp/foo to be configurable
+    via the cmd line, currently enabled. also set up syslog of request
+    response pairs at debug
+  * syslog messages added to webgui. also conditionally disable
+    remainder of stdout and stderr messages.
+  * more syslog entries, this time in feature perl scripts
+
+  [ An-Cheng Huang ]
+  * fix chroot check and ISO-less upgrade
+  * set up NTP server according to BLB association setting.
+
+  [ Michael Larson ]
+  * added syslog for user account changes as per task item: 1.14.8
+
+  [ Loi Vo ]
+  * 1. Add background thread to poll for timeout to backend. The thread
+    will send:
+
+  [ An-Cheng Huang ]
+  * add cleanup mechanism for unused dom0 version during upgrade.
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 30 Jul 2009 19:13:23 -0700
+
+vyatta-webgui (0.2+fxd0+96) unstable; urgency=low
+
+  * make LDAP "root" access localhost-only
+  * add OA configurable parameters to vyatta config
+  * fix REST response parsing
+  * treat domU 404 response as error
+  * make OA parameters configurable through vyatta config.
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 29 Jul 2009 19:19:54 -0700
+
+vyatta-webgui (0.2+fxd0+95) unstable; urgency=low
+
+  * implement domU monitoring and auto-restart
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 28 Jul 2009 18:59:49 -0700
+
 vyatta-webgui (0.2+fxd0+94) unstable; urgency=low
 
   [ Kevin Choi ]

@@ -62,6 +62,7 @@ function FT_businessLayer()
     this.m_vm = new FT_vmBusObj(this);
     this.m_backup = new FT_backupObj(this);
     this.m_oaConfig = new FT_oaConfigObj(this);
+	this.m_timeoutMonitor = new FT_timeoutMonitor(this);
 
     ///////////////////////////////
     // functions
@@ -71,10 +72,12 @@ function FT_businessLayer()
      * @param content - content to be sent (w/o xml header)
      * @param callback - a callback function to be called upon respond
      */
-    this.f_sendRequest = function(content, callback)
+    this.f_sendRequest = function(content, callback, request)
     {
         var r = this.m_request;
-
+        if ((request != undefined) && (request != null)) {
+			r = request;
+		}
         var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + content + "</openappliance>\n";
         var innerCB = callback;
@@ -144,7 +147,7 @@ function FT_businessLayer()
 			             }
                     }
                     else if(errCode == 3) {
-						thisObj.f_userTimeout();
+						//thisObj.f_userTimeout();
 					} //handle in confBaseObj
 		        } 
                 else if (cn[i].nodeName == 'msg' && errCode != 0)

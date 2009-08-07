@@ -13,13 +13,15 @@ GetOptions(
   'ver=s' => \$vver
 );
 if (!defined($action) || !defined($vmid) || !defined($vver)) {
-  print "Must specify action, VM ID, and version\n";
-  exit 1;
+    `logger -p debug 'dom0: Must specify action, VM ID, and version'`;
+    print "Must specify action, VM ID, and version\n";
+    exit 1;
 }
 my $vmObj = new OpenApp::VMMgmt($vmid);
 if (!defined($vmObj)) {
-  print "Invalid VM ID '$vmid'\n";
-  exit 1;
+    `logger -p debug 'dom0: Invalid VM ID '$vmid'`;
+    print "Invalid VM ID '$vmid'\n";
+    exit 1;
 }
 
 my $vmDeploy = new OpenApp::VMDeploy($vmid);

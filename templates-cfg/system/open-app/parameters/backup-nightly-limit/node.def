@@ -1,0 +1,4 @@
+type: u32
+default: 7
+help: Set maximum number of nightly backup archives kept on OpenAppliance
+syntax:expression: $VAR(@) > 0; "\"backup-nightly-limit\" must be at least 1"

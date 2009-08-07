@@ -1,0 +1,4 @@
+type: u32
+default: 300
+help: Set timeout (seconds) before a VM is considered "started"
+syntax:expression: $VAR(@) > 0; "\"vm-start-timeout\" must be at least 1"

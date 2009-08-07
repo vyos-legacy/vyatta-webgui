@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <syslog.h>
 #include "rl_str_proc.hh"
 #include "processor.hh"
 #include "systembase.hh"
@@ -617,6 +618,7 @@ Configuration::validate_session(unsigned long id)
   string directory = WebGUI::LOCAL_CONFIG_DIR + string(buf);
   DIR *dp = opendir(directory.c_str());
   if (dp == NULL) {
+    syslog(LOG_DEBUG,"dom0: failed to session data");
     return false;
   }
   closedir(dp);

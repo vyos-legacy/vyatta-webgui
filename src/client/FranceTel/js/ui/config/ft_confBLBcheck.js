@@ -114,7 +114,9 @@ function FT_confBLBcheck(name, callback, busLayer)
 			
         var cb = function(evt) {
 		    if (evt.f_isError()) {
-		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true,'f_confBLBcheckApply()');			    
+				if (evt.m_errCode != 3) {
+					g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true, 'f_confBLBcheckApply()');
+				}			    
 		    } else {
                 g_utils.f_popupMessage(g_lang.m_menuBLBAssocication +  ' ' + g_lang.m_formSave,   
 				                       'ok', g_lang.m_menuBLBCredCheck, true, 'f_confBLBcheckApply()');

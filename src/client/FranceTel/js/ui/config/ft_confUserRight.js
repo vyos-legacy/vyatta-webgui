@@ -275,13 +275,10 @@ function FT_confUserRight(name, callback, busLayer)
         var cb = function(evt)
         {
             g_utils.f_cursorDefault();
-            if (evt != undefined && !evt.f_isError()) {
-				thisObj.f_loadVMData();
-			} else if (evt != undefined && evt.f_isError()) {
-				if (evt.m_errCode != 3) { //timeout is handled by timeoutMonitor
-					alert(evt.m_errMsg);
-				}
-			}
+            if(evt != undefined && !evt.f_isError())
+                thisObj.f_loadVMData();
+            else if(evt != undefined && evt.f_isError())
+                alert(evt.m_errMsg);
         };
 
         if(cmdStr.length > 0)
@@ -312,24 +309,33 @@ function FT_confUserRight(name, callback, busLayer)
 
     this.f_init = function()
     {
-        this.m_colHd = this.f_createColumns();
-        this.m_header = this.f_createGridHeader(this.m_colHd, 'f_urGridHeaderOnclick');
-        this.m_body = this.f_createGridView(this.m_colHd, true);
-        this.f_loadVMData();
-        thisObj.f_resetSorting();
+        var cb = function(evt)
+        {
+            thisObj.m_colHd = thisObj.f_createColumns();
+            thisObj.m_header = thisObj.f_createGridHeader(thisObj.m_colHd, 'f_urGridHeaderOnclick');
+            thisObj.m_body = thisObj.f_createGridView(thisObj.m_colHd, true);
+            //thisObj.f_loadVMData();
+            thisObj.f_resetSorting();
 
-        /////////////////////////////////////////////////////////
-        // create a callback for paging. when user click on the
-        // page number, this function will be called.
-        FT_confUserRight.superclass.prototype = this.f_loadVMData;
+            window.setTimeout(function(){thisObj.f_loadVMData()}, 100);
 
-        var btns = [['Apply', "f_userRightHandleApply()", g_lang.m_urBtnApply,
-                      this.m_btnApplyId],
-                    ['Cancel', "f_userRightHandleCancel()", g_lang.m_urBtnCancel,
-                      this.m_btnCancelId]];
-        this.m_buttons = this.f_createButtons(btns);
+            /////////////////////////////////////////////////////////
+            // create a callback for paging. when user click on the
+            // page number, this function will be called.
+            FT_confUserRight.superclass.prototype = this.f_loadVMData;
 
-        return [this.m_header, this.m_body, this.m_buttons];
+            var btns = [['Apply', "f_userRightHandleApply()", g_lang.m_urBtnApply,
+                          thisObj.m_btnApplyId],
+                        ['Cancel', "f_userRightHandleCancel()", g_lang.m_urBtnCancel,
+                          thisObj.m_btnCancelId]];
+            thisObj.m_buttons = thisObj.f_createButtons(btns);
+            g_utils.f_cursorDefault();
+        }
+
+        g_utils.f_cursorWait();
+        this.m_busLayer.f_getVMDataFromServer(cb, true);
+
+        return [];
     }
 }
 

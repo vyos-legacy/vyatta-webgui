@@ -35,7 +35,7 @@ function FT_confUserRight(name, callback, busLayer)
     {
         //////////////////////////////////
         // skip open appliance, blb and undeploy vm
-        if(vm.m_name == 'openapp' || vm.m_name == 'blb' ||
+        if(vm.m_name == 'openapp' || vm.m_name == 'blb' || vm.m_name == 'utm' ||
             !vm.m_isDeployed)
             return false;
 

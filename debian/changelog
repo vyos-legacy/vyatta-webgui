@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+102) unstable; urgency=low
+
+  * * user right screen: load vm data for vm deployment check.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 07 Aug 2009 05:52:32 +0000
+
 vyatta-webgui (0.2+fxd0+101) unstable; urgency=low
 
   * * user right screen : blocked 'security' tab from normal user.

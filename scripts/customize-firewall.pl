@@ -100,9 +100,13 @@ sub get_rule {
  $cli_rule->setup("$level");
 
  if (defined $cli_rule->{_protocol}) {
-   $rule_string .= ",protocol=[$cli_rule->{_protocol}]";
+   if ($cli_rule->{_protocol} eq 'tcp_udp') {
+     $rule_string .= ",protocol=[both]";
+   } else {
+     $rule_string .= ",protocol=[$cli_rule->{_protocol}]";
+   }
  } else {
-   $rule_string .= ",protocol=[Any]";
+   $rule_string .= ",protocol=[any]";
  }
 
  my $source_addr = get_srcdst_address("firewall name $ruleset rule $rulenum source", 'setup');
@@ -283,6 +287,9 @@ sub execute_set_value {
       if ($value eq 'any') {
         $value = 'all';
       }
+      if ($value eq 'both') {
+        $value = 'tcp_udp';
+      }      
       @cmds = (
          "set $fw_rule_level protocol $value",
       );

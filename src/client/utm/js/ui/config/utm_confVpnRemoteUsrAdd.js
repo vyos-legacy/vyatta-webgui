@@ -10,6 +10,7 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     var thisObj = this;
     this.m_form = undefined;
 	this.m_change = false;
+	this.m_usr= undefined;
 	this.m_eventCbFunction = 'f_confFormObjEventCallback';
 
 	this.m_clickItems = [
@@ -42,8 +43,14 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     }			
     this.privateConstructor(name, callback, busLayer);	    
     	
-    this.f_init = function()
+    this.f_init = function(obj)
     {
+		if (obj != undefined) {
+			thisObj.m_usr = obj;
+		} else {
+			thisObj.m_usr = UTM_vpnRemoteRec();
+			thisObj.m_usr.f_setDefault();
+		}		
 		var defObj = new UTM_confFormDefObj('conf_vpn_rusr', '400', new Array(), 
 		    [{
                 id: 'conf_vpn_rusr_back_button',

@@ -23,6 +23,94 @@ function UTM_vpnRemoteRec(name, group, ipaddr, localaddr, status, mode, enable)
     this.m_status = status;
 }
 
+function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAccess, mode,p1_proto,
+                          exchangeMode, p1_encrypt, preshareKey, p1_auth, p1_dfsGrp, p1_lifetime, 
+						  localNetwork, remoteNetwork, p2_dfsGrp, p2_lifetime, p2_encrypt, p2_auth)
+{
+	this.m_name = name;
+	this.m_vpnsw= vpnsw;
+	this.m_users = users;
+	this.m_auth = auth;
+	this.m_ipalloc = ipalloc;
+	this.m_internetAccess = internetAccess;
+	this.m_mode = mode;
+	this.m_p1_proto = p1_proto;
+	this.m_exchangeMode = exchangeMode;
+	this.m_p1_encrypt = p1_encrypt;
+	this.m_preshareKey = preshareKey;
+	this.m_p1_auth = p1_auth;
+	this.m_p1_dfsGrp = p1_dfsGrp;
+	this.m_p1_lifetime = p1_lifetime;
+	this.m_localNetwork = localNetwork;
+	this.m_remoteNetwork = remoteNetwork;
+	this.m_p2_dfsGrp = p2_dfsGrp;
+	this.m_p2_lifetime = p2_lifetime;
+	this.m_p2_encrypt = p2_encrypt;
+	this.m_p2_auth = p2_auth;			
+	
+	this.f_setDefault = function()
+	{
+		this.m_name = '';
+		this.m_vpnsw = 'cisco';
+		this.m_users = new Array();
+		this.m_auth = 'Xauth';
+		this.m_ipalloc = 'internet DHCP';
+		this.m_internetAccess = 'directly';
+		this.m_mode = 'easy';
+		this.m_preshareKey = '';
+		this.m_p1_proto = 'ESP';
+		this.m_exchangeMode = 'aggressive';
+		this.m_p1_encrypt = 'DES';
+		this.m_p1_auth = 'MD5';
+		this.m_p1_dfsGrp = 'group 2';
+		this.m_p1_lifetime = '';
+		this.m_localNetwork = '';
+		this.m_remoteNetwork = '';
+		this.m_p2_dfsGrp = 'group 2';
+		this.m_lifetime = '';
+		this.m_p2_encrypt = 'DES';
+		this.m_p2_auth = 'MD5';		
+	}		  	
+	
+    this.f_setLocalNetwork = function(ip, prefix)
+    {
+        thisObj.m_localNetwork = ip + '/' + prefix;
+    }
+
+    this.f_getLocalNetworkIp = function()
+    {
+        var n = thisObj.m_localNetwork.split('/');
+
+        return n[0];
+    }
+
+    this.f_getLocalNetworkPrefix = function()
+    {
+        var n = thisObj.m_localNetwork.split('/');
+
+        return n[1];
+    }
+
+    this.f_setRemoteNetwork = function(ip, prefix)
+    {
+        thisObj.m_remoteNetwork = ip + '/' + prefix;
+    }
+
+    this.f_getRemoteNetworkIp = function()
+    {
+        var n = thisObj.m_remoteNetwork.split('/');
+
+        return n[0];
+    }
+
+    this.f_getRemoteNetworkPrefix = function()
+    {
+        var n = thisObj.m_remoteNetwork.split('/');
+
+        return n[1];
+    }	
+}
+
 function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
 {
     var thisObj = this;

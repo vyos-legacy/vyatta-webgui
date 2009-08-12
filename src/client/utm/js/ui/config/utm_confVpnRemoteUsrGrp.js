@@ -98,6 +98,9 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     {
 		if (obj != undefined) {
 			thisObj.m_usrGrp = obj;
+		} else {
+			thisObj.m_usrGrp = new UTM_vpnRemoteUsrGrpRec();
+			thisObj.m_usrGrp.f_setDefault();
 		}
 		var defObj = new UTM_confFormDefObj('conf_vpn_rug', '500', new Array(), 
 		    [{
@@ -128,9 +131,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		defObj.f_addInput('conf_vpn_rug_prof_name', '32', g_lang.m_vpnRUG_ProfileName);
 		defObj.f_addHtml(
 		   'conf_vpn_rug_vpn_software',
-		   '<select name="conf_vpn_rug_vpn_software" id="conf_vpn_rug_vpn_software" class="v_form_input"><option value="safenet" selected>safenet</option>' +
-		   '<option value="cisco">cisco</option>' + 
-		   '<option value="microsoft">microsoft</option></select>',
+		   '<select name="conf_vpn_rug_vpn_software" id="conf_vpn_rug_vpn_software" class="v_form_input"><option value="cisco" selected>cisco</option><option value="microsoft">microsoft</option><option value="safenet">safenet</option></select>',
 		   g_lang.m_vpnRUG_VPNsoft
 		);
 		defObj.f_addInput('conf_vpn_rug_usr', '32', g_lang.m_vpn_Users);		
@@ -181,29 +182,29 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		defObj.f_addLabelBold('conf_vpn_rug_ike_phase1_label',g_lang.m_vpn_IKEnegPhase1,'true');
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p1_proto',
-            '<select name="conf_vpn_rug_ike_p1_proto" id="conf_vpn_rug_ike_p1_proto" class="v_form_input"><option value="ESP/tunnel" selected>EXP/tunnel</option></select>',
+            '<select name="conf_vpn_rug_ike_p1_proto" id="conf_vpn_rug_ike_p1_proto" class="v_form_input"><option value="ESP" selected>ESP</option><option value="AH">AH</option></select>',
 			g_lang.m_vpn_IKE_p1_proto			
 		);		
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p1_ex_mode',
-            '<select name="conf_vpn_rug_ike_p1_ex_mode" id="conf_vpn_rug_ike_p1_ex_mode" class="v_form_input"><option value="aggressive" selected>aggressive</option></select>',
+            '<select name="conf_vpn_rug_ike_p1_ex_mode" id="conf_vpn_rug_ike_p1_ex_mode" class="v_form_input"><option value="aggressive" selected>aggressive</option><option value="main">main</option></select>',
 			g_lang.m_vpn_IKE_p1_ex_mode		
 		);			
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p1_encrypt',
-            '<select name="conf_vpn_rug_ike_p1_encrypt" id="conf_vpn_rug_ike_p1_encrypt" class="v_form_input"><option value="AES128" selected>AES128</option></select>',
+            '<select name="conf_vpn_rug_ike_p1_encrypt" id="conf_vpn_rug_ike_p1_encrypt" class="v_form_input"><option value="DES" selected>DES</option><option value="3DES">3DES</option><option value="AES128">AES128</option><option value="AES192">AES192</option><option value="AES256">AES256</option><option value="Blowfish">Blowfish</option></select>',
 			g_lang.m_vpn_Encrypt		
 		);	
 		defObj.f_addPassword('conf_vpn_rug_ike_p1_preshare','25',g_lang.m_vpn_PresharedKey);
 		defObj.f_addPassword('conf_vpn_rug_ike_p1_confirm_preshare','25',g_lang.m_vpn_Confirm + ' ' + g_lang.m_vpn_PresharedKey);
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p1_auth',
-            '<select name="conf_vpn_rug_ike_p1_auth" id="conf_vpn_rug_ike_p1_auth" class="v_form_input"><option value="SHA1" selected>SHA1</option></select>',
+            '<select name="conf_vpn_rug_ike_p1_auth" id="conf_vpn_rug_ike_p1_auth" class="v_form_input"><option value="MD5">MD5</option><option value="SHA1" selected>SHA1</option></select>',
 			g_lang.m_vpn_auth		
 		);			
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p1_diffle',
-            '<select name="conf_vpn_rug_ike_p1_diffle" id="conf_vpn_rug_ike_p1_diffle" class="v_form_input"><option value="group 5" selected>group 5</option></select>',
+            '<select name="conf_vpn_rug_ike_p1_diffle" id="conf_vpn_rug_ike_p1_diffle" class="v_form_input"><option value="group 1" selected>group 1</option><option value="group 2">group 2</option><option value="group 5">group 5</option><option value="group 14">group 14</option></select>',
 			g_lang.m_vpn_Diffle		
 		);			
 		defObj.f_addPassword('conf_vpn_rug_ike_p1_lifetime','25',g_lang.m_vpn_LifeTime);
@@ -227,18 +228,18 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		);						
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p2_dfs',
-            '<select name="conf_vpn_rug_ike_p2_dfs" id="conf_vpn_rug_ike_p2_dfs" class="v_form_input"><option value="group 5" selected>group 5</option></select>',
+            '<select name="conf_vpn_rug_ike_p2_dfs" id="conf_vpn_rug_ike_p2_dfs" class="v_form_input"><option value="group 1" selected>group 1</option><option value="group 2">group 2</option><option value="group 5">group 5</option><option value="group 14">group 14</option></select>',
 			g_lang.m_vpn_DFS	
 		);							
 		defObj.f_addPassword('conf_vpn_rug_ike_p2_lifetime','25',g_lang.m_vpn_LifeTime);
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p2_encrypt',
-            '<select name="conf_vpn_rug_ike_p2_encrypt" id="conf_vpn_rug_ike_p2_encrypt" class="v_form_input"><option value="AES128" selected>AES128</option></select>',
+            '<select name="conf_vpn_rug_ike_p2_encrypt" id="conf_vpn_rug_ike_p2_encrypt" class="v_form_input"><option value="DES" selected>DES</option><option value="3DES">3DES</option><option value="AES128">AES128</option><option value="AES192">AES192</option><option value="AES256">AES256</option><option value="Blowfish">Blowfish</option></select>',
 			g_lang.m_vpn_Encrypt
 		);						
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p2_auth',
-            '<select name="conf_vpn_rug_ike_p2_auth" id="conf_vpn_rug_ike_p2_auth" class="v_form_input"><option value="SHA1" selected>SHA1</option></select>',
+            '<select name="conf_vpn_rug_ike_p2_auth" id="conf_vpn_rug_ike_p2_auth" class="v_form_input"><option value="MD5">MD5</option><option value="SHA1" selected>SHA1</option></select>',
 			g_lang.m_vpn_auth
 		);						
 
@@ -260,15 +261,87 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 
         return this.f_createGeneralDiv(txt);
     }		
+	
+	this.f_loadVMDataEZ = function()
+	{
+		thisObj.f_showExpert(false);
+		thisObj.m_form.conf_vpn_rug_preshared_key.value = thisObj.m_usrGrp.m_preshareKey;
+	}
+
+    this.f_loadVMDataExpert = function()
+	{
+		thisObj.f_showExpert(true);
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_proto, thisObj.m_usrGrp.m_p1_proto);
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_ex_mode, thisObj.m_usrGrp.m_exchangeMode);
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_encrypt, thisObj.m_usrGrp.m_p1_encrypt);
+		thisObj.m_form.conf_vpn_rug_ike_p1_preshare.value = thisObj.m_usrGrp.m_preshareKey;
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_auth, thisObj.m_usrGrp.m_p1_auth);
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_diffle, thisObj.m_usrGrp.m_p1_dfsGrp);
+		thisObj.m_form.conf_vpn_rug_ike_p1_lifetime.value = thisObj.m_usrGrp.m_p1_lifetime;
+		thisObj.m_form.conf_vpn_rug_ike_p2_local_network_ip.value = thisObj.m_usrGrp.f_getLocalNetworkIp();
+		thisObj.m_form.conf_vpn_rug_ike_p2_local_network_mask.value = thisObj.m_usrGrp.f_getLocalNetworkPrefix();
+        thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_ip.value = thisObj.m_usrGrp.f_getRemoteNetworkIp();
+		thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_mask.value = thisObj.m_usrGrp.f_getRemoteNetworkPrefix();		
+		thisObj.m_form.conf_vpn_rug_ike_p2_lifetime.value = thisObj.m_usrGrp.m_p2_lifetime;		
+	}
 
     this.f_loadVMData = function(element)
     {
         thisObj.m_form = document.getElementById('conf_vpn_rug' + "_form");
+		thisObj.m_form.conf_vpn_rug_prof_name.value = thisObj.m_usrGrp.m_name;
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_vpn_software, thisObj.m_usrGrp.m_vpnsw);
+		//thisObj.m_form.conf_vpn_rug_usr = 
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_auth, thisObj.m_usrGrp.m_auth);
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ip_alloc, thisObj.m_usrGrp.m_ipalloc);
+		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ip_access, thisObj.m_usrGrp.m_internetAccess);
+		
+		if (thisObj.m_usrGrp.m_mode == 'easy') {
+            thisObj.m_form.conf_vpn_rug_tunnel_config_mode_ez.checked = true;
+			thisObj.m_form.conf_vpn_rug_tunnel_config_mode_exp.checked = false;
+			thisObj.f_loadVMDataEZ();
+		} else {
+            thisObj.m_form.conf_vpn_rug_tunnel_config_mode_ez.checked = false;
+			thisObj.m_form.conf_vpn_rug_tunnel_config_mode_exp.checked = true;		
+			thisObj.f_loadVMDataExpert();
+		}	
+		
+		
 		thisObj.f_setFocus();
-		thisObj.f_showExpert(false);
 		thisObj.f_attachListener();	
 		thisObj.f_enableAllButton(false);		
     }
+	
+	this.f_getUsrGrp = function()
+	{		
+		var usrGrp = new UTM_vpnRemoteUsrGrpRec();
+		usrGrp.m_name = thisObj.m_form.conf_vpn_rug_prof_name.value;
+		usrGrp.m_vpnsw = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_vpn_software);
+		usrGrp.m_users = new Array();
+		usrGrp.m_auth = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_auth);
+        usrGrp.m_ipalloc = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ip_alloc);
+        usrGrp.m_internetAccess = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ip_access);
+				
+		if (thisObj.m_form.conf_vpn_rug_tunnel_config_mode_ez.checked) {
+			usrGrp.m_mode = 'easy';
+			usrGrp.m_presharedKey = thisObj.m_form.conf_vpn_rug_preshared_key.value;
+		} else {
+			vpnRec.m_mode = 'expert';
+		    thisObj.m_usrGrp.m_p1_proto = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_proto);
+		    thisObj.m_usrGrp.m_exchangeMode = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_ex_mode);
+		    thisObj.m_usrGrp.m_p1_encrypt = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_encrypt);
+		    thisObj.m_usrGrp.m_preshareKey = thisObj.m_form.conf_vpn_rug_ike_p1_preshare.value;
+		    thisObj.m_usrGrp.m_p1_auth = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_auth);
+		    thisObj.m_usrGrp.m_p1_dfsGrp = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_diffle);
+		    thisObj.m_usrGrp.m_p1_lifetime = thisObj.m_form.conf_vpn_rug_ike_p1_lifetime.value;
+			thisObj.m_usrGrp.f_setLocalNetwork(thisObj.m_form.conf_vpn_rug_ike_p2_local_network_ip.value,
+			    thisObj.m_form.conf_vpn_rug_ike_p2_local_network_mask.value);
+			thisObj.m_usrGrp.f_setRemoteNetwork(thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_ip.value,
+			    thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_mask.value);	
+		    thisObj.m_usrGrp.m_p2_lifetime = thisObj.m_form.conf_vpn_rug_ike_p2_lifetime.value;					
+		}
+		return usrGrp;
+
+	}	
 	
 	this.f_showExpert = function(b)
 	{
@@ -315,11 +388,13 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     
     this.f_apply = function()
     {
+        var usrGrp = thisObj.f_getUsrGrp();
+		
     }
     
     this.f_reset = function()
     {
-    
+        thisObj.f_loadVMData();
     }
     
     this.f_handleClick = function(e)

@@ -242,7 +242,7 @@ function UTM_configPanel()
 		    case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID:
                 thisObj.m_selectObj = new UTM_confVpnRemoteUsrAdd('VPNRemoteUserAdd', cb, g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				
-                thisObj.m_selectObj.f_init();
+                thisObj.m_selectObj.f_init(obj);
                 return thisObj.m_selectObj.f_getConfigurationPage();
 
             case VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_ID:

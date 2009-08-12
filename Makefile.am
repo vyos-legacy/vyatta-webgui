@@ -56,7 +56,7 @@ ssbin_SCRIPTS += scripts/chunker_cmd
 
 # this is the vyatta sbin (/opt/vyatta/sbin)
 sbin_SCRIPTS = scripts/enterprise-mib.pl
-sbin_SCRIPTS += scripts/site-to-site-easy.pl
+sbin_SCRIPTS += scripts/vpn-site-to-site.pl
 sbin_SCRIPTS += scripts/firewall-security-level.pl
 sbin_SCRIPTS += scripts/customize-firewall.pl
 sbin_SCRIPTS += scripts/nat-config.pl

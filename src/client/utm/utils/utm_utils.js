@@ -539,6 +539,18 @@ var g_utils =
         }
     },
 
+	f_getRootDir : function()
+	{
+		var url = window.document.location.href;
+		var index = url.indexOf("://");
+		var protocol = url.substring(0,index+3);
+		url = url.substring(index+3,url.length);
+		index = url.lastIndexOf('/');
+		
+		url = protocol + url.substring(0,index) + '/';
+		return url;
+	},
+
     f_gotoHomePage: function()
     {
         var hp = this.f_launchHomePage();

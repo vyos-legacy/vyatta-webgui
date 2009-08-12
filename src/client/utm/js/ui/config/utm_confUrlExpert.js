@@ -90,7 +90,8 @@ function UTM_confUrlExpert(name, callback, busLayer)
     this.f_doLayout = function()
     {		
 	   var text = '<p>' + g_lang.m_url_expertSubscribeP1 + '<br/>';
-       text += '<ul style="padding-left:30px;list-style-type:square;list-style-image: url(' +  'images/puce_squar.gif)">' +
+       text += '<ul style="padding-left:30px;list-style-type:square;list-style-image: url(' +
+	              g_utils.f_getRootDir() + 'images/puce_squar.gif)">' +
                   '<li>' + g_lang.m_url_expertSubscribeListItem1 + '</a></li>' +
                   '<li>' + g_lang.m_url_expertSubscribeListItem2 + '</a></li>' +
                   '<li>' + g_lang.m_url_expertSubscribeListItem3 + '</a></li>' +						  

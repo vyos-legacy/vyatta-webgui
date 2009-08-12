@@ -1,0 +1,1 @@
+run: perl /opt/vyatta/sbin/vpn-site-to-site.pl --set "$3"

@@ -215,6 +215,7 @@ var g_lang =
     m_nwRoutDestNwMask : "destination<br>network mask",
     m_nwRoutConf : "configure option",
     m_nwRoutGwInterface : "gateway or<br>interface",
+    m_nwGateway : "gateway",
     m_nwRoutMetric : "metric",
 
 

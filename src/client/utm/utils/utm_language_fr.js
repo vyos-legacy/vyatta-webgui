@@ -209,6 +209,7 @@ var g_lang =
     m_nwRoutDestNwMask : "masque du réseau de destination", 
     m_nwRoutConf : "configurer l'option", 
     m_nwRoutGwInterface : "interface de<br>l'Open Appliance", 
+    m_nwGateway : "gateway",
     m_nwRoutMetric : "métrique",
 
 

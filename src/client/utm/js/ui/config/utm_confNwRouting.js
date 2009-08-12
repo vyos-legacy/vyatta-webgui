@@ -53,11 +53,11 @@ function UTM_confNwRouting(name, callback, busLayer)
 
         cols[0] = this.f_createColumn(g_lang.m_nwRoutDestNetwork, 110, 'textField', '3', true, 'center');
         cols[1] = this.f_createColumn(g_lang.m_nwRoutDestNwMask, 110, 'textField', '3', true, 'center');
-        cols[2] = this.f_createColumn(g_lang.m_nwRoutConf, 200, 'div', '3', false, 'center');
-        cols[3] = this.f_createColumn(g_lang.m_nwRoutGwInterface, 120, 'textField', '3', true, 'center');
-        cols[4] = this.f_createColumn(g_lang.m_nwRoutMetric, 90, 'textField', '3', true, 'center');
-        cols[5] = this.f_createColumn(chkbox, 55, 'checkbox', 3, false, 'center');
-        cols[6] = this.f_createColumn(g_lang.m_fireCustDelete, 70, 'combo', '3', false, 'center');
+        //cols[2] = this.f_createColumn(g_lang.m_nwRoutConf, 200, 'div', '3', false, 'center');
+        cols[2] = this.f_createColumn(g_lang.m_nwGateway, 120, 'textField', '3', true, 'center');
+        cols[3] = this.f_createColumn(g_lang.m_nwRoutMetric, 90, 'textField', '3', true, 'center');
+        cols[4] = this.f_createColumn(chkbox, 55, 'checkbox', 3, false, 'center');
+        cols[5] = this.f_createColumn(g_lang.m_fireCustDelete, 70, 'combo', '3', false, 'center');
 
         return cols;
     }
@@ -198,7 +198,7 @@ function UTM_confNwRouting(name, callback, busLayer)
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [dip, dmip, opt, gwInterface, metric, enable, del]);
+                    [dip, dmip, gwInterface, metric, enable, del]);
         thisObj.m_gridBody.appendChild(div);
     };
 

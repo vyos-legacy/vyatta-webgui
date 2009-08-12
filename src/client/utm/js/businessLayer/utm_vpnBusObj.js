@@ -9,22 +9,23 @@
 /**
  * VPN data record
  */
-function UTM_vpnRemoteRec(name, group, ipaddr, localaddr, status, mode, enable)
+function UTM_vpnRemoteUserRec(name, pw, group)
 {
     this.m_userName = name;
+    this.m_pw = pw;
     this.m_groupName = group;
-    this.m_vpnSoftware = null;
-    this.m_auth = null;
-    this.m_ipAllocation = localaddr;
-    this.m_internetAccess = ipaddr;
-    this.m_mode = mode;   // easy/expert
-    this.m_presharedKey = null;
+}
+
+function UTM_vpnRemoteTableRec(userRec, groupRec, status, enable)
+{
+    this.m_userRec = userRec;
+    this.m_groupRec = groupRec;
     this.m_enable = enable;  // yes/no
     this.m_status = status;
 }
 
 function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAccess, mode,p1_proto,
-                          exchangeMode, p1_encrypt, preshareKey, p1_auth, p1_dfsGrp, p1_lifetime, 
+                          exchangeMode, p1_encrypt, preshareKey, p1_auth, p1_dfsGrp, p1_lifetime,
 						  localNetwork, remoteNetwork, p2_dfsGrp, p2_lifetime, p2_encrypt, p2_auth)
 {
 	this.m_name = name;
@@ -46,8 +47,8 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 	this.m_p2_dfsGrp = p2_dfsGrp;
 	this.m_p2_lifetime = p2_lifetime;
 	this.m_p2_encrypt = p2_encrypt;
-	this.m_p2_auth = p2_auth;			
-	
+	this.m_p2_auth = p2_auth;
+
 	this.f_setDefault = function()
 	{
 		this.m_name = '';
@@ -69,9 +70,9 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 		this.m_p2_dfsGrp = 'group 2';
 		this.m_lifetime = '';
 		this.m_p2_encrypt = 'DES';
-		this.m_p2_auth = 'MD5';		
-	}		  	
-	
+		this.m_p2_auth = 'MD5';
+	}
+
     this.f_setLocalNetwork = function(ip, prefix)
     {
         thisObj.m_localNetwork = ip + '/' + prefix;
@@ -108,7 +109,7 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
         var n = thisObj.m_remoteNetwork.split('/');
 
         return n[1];
-    }	
+    }
 }
 
 function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
@@ -154,7 +155,7 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
         thisObj.m_encryption2 = 'AES128';
         thisObj.m_auth2 = 'SHA1';
         thisObj.m_status = 'yes';   // yes/no
-        thisObj.m_enable = false;		
+        thisObj.m_enable = false;
 	}
 
     this.f_setLocalNetwork = function(ip, prefix)
@@ -305,7 +306,7 @@ function UTM_vpnBusObj(busObj)
 
                     for(var j=0; j<vals.length; j++)
                     {
-                        vpn[j] = new UTM_vpnRemoteRec();
+                        vpn[j] = new UTM_vpnRemoteTableRec();
 
                         vpn[j].m_userName = this.f_getValueFromNameValuePair("name", vals[j]);
                         vpn[j].m_groupName = this.f_getValueFromNameValuePair("group", vals[j]);

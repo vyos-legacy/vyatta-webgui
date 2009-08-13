@@ -41,16 +41,33 @@ function UTM_nwDNSRecord(mode, primary, secondary)
 /**
  * routin data record
  */
-function UTM_nwRoutingRecord(ruleNo)
+function UTM_nwRoutingRecord(tempId)
 {
     var thisObj = this;
-    this.m_ruleNo = ruleNo;
+    this.m_tempId = tempId;
     this.m_destIpAddr = "";
     this.m_destIpMask = "";
-    this.m_gwOrInterface = "";
+    this.m_gateway = "";
+    //this.m_gwOrInterface = "";
     this.m_metric = "";
     this.m_enabled = "Yes"; // Yes/No
-    this.m_isGateway = true;
+    //this.m_isGateway = true;
+
+    this.f_compare = function(rec)
+    {
+        if(this.f_getRecId() == rec.f_getRecId())
+            return 0;
+        else
+            return -1;
+    }
+
+    this.f_getRecId = function()
+    {
+        var id = this.m_destIpAddr + this.m_destIpMask + this.m_gateway;
+
+        if(id == "")
+            return this.m_tempId;
+    }
 }
 
 /**
@@ -307,49 +324,10 @@ function UTM_nwConfigBusObj(busObj)
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
                       "<handler>static-route get" +
-                      "</handler><data></data></statement>";
+                      "</handler><data>all</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                                           thisObj.f_respondRequestCallback);
-/*
- return;
-        var zm = function(ruleNo)
-        {
-            var z = new UTM_nwRoutingRecord(ruleNo);
-            z.m_destIpAddr = "10.1.21." + ruleNo;
-            z.m_destIpMask = "255.255.255.0";
-            z.m_metric = 5 + ruleNo;
-            //if(ruleNo == 1 || ruleNo == 3)
-            {
-                z.m_isGateway = true;
-                z.m_gwOrInterface = "100.23.33." + ruleNo;
-            }
-            //else
-            //{
-              //  z.m_isGateway = false;
-                //z.m_gwOrInterface = "tcp";
-            //}
-
-            return z;
-        }
-
-        var cb = function()
-        {
-            var z = [];
-            z.push(zm(1));
-            z.push(zm(2));
-            z.push(zm(3));
-            z.push(zm(4));
-            z.push(zm(5));
-            z.push(zm(6));
-
-            var evt = new UTM_eventObj(0, z, '');
-            guicb(evt);
-        
-        }
-
-        window.setTimeout(cb, 500);
-        */
     }
 
 

@@ -256,43 +256,28 @@ function UTM_nwConfigBusObj(busObj)
         {
             var n = node.childNodes[i];
 
-            if(n.nodeName == "dest-network")
-                rec.m_destIpAddr = n.nodeValue;
-            else if(n.nodeName == "dest-mask")
-                rec.m_destIpMask = n.nodeValue;
+            if(n.nodeName == "dest_network_mask")
+                this.f_setDestAddress(rec, n.nodeValue);
             else if(node.nodeName == "gateway")
                 rec.m_gateway = n.nodeValue;
-            else if(node.nodeName == "interface")
-                rec.m_interface = n.nodeValue;
             else if(node.nodeName == "metric")
                 rec.m_metric = n.nodeValue;
+            else if(node.nodeName == 'enable')
+                rec.m_enabled = n.nodeVallue == 'true' ? 'Yes':'No';
         }
 
         return rec;
     }
 
-    this.f_setInternAddress = function(fireRec, addr)
+    this.f_setDestAddress = function(rec, addr)
     {
         if(addr.length > 0)
         {
             if(addr.indexOf("/") > 0)
             {
                 var ips = addr.split("/");
-                fireRec.m_srcIpAddr = ips[0];
-                fireRec.m_srcMaskIpAddr = g_utils.f_convertCIDRToNetmask(ips[1]);
-            }
-        }
-    };
-
-    this.f_setDestinationAddress = function(fireRec, addr)
-    {
-        if(addr.length > 0)
-        {
-            if(addr.indexOf("/") > 0)
-            {
-                var ips = addr.split("/");
-                fireRec.m_destIpAddr = ips[0];
-                fireRec.m_destMaskIpAddr = g_utils.f_convertCIDRToNetmask(ips[1]);
+                rec.m_destIpAddr = ips[0];
+                rec.m_destIpMask = g_utils.f_convertCIDRToNetmask(ips[1]);
             }
         }
     };
@@ -318,32 +303,32 @@ function UTM_nwConfigBusObj(busObj)
     }
 
     this.f_getNwRoutingList = function(guicb)
-    {/*
+    {
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
                       "<handler>static-route get" +
                       "</handler><data></data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);
-        return;
-*/
+                                          thisObj.f_respondRequestCallback);
+/*
+ return;
         var zm = function(ruleNo)
         {
             var z = new UTM_nwRoutingRecord(ruleNo);
             z.m_destIpAddr = "10.1.21." + ruleNo;
             z.m_destIpMask = "255.255.255.0";
             z.m_metric = 5 + ruleNo;
-            if(ruleNo == 1 || ruleNo == 3)
+            //if(ruleNo == 1 || ruleNo == 3)
             {
                 z.m_isGateway = true;
                 z.m_gwOrInterface = "100.23.33." + ruleNo;
             }
-            else
-            {
-                z.m_isGateway = false;
-                z.m_gwOrInterface = "tcp";
-            }
+            //else
+            //{
+              //  z.m_isGateway = false;
+                //z.m_gwOrInterface = "tcp";
+            //}
 
             return z;
         }
@@ -360,9 +345,11 @@ function UTM_nwConfigBusObj(busObj)
 
             var evt = new UTM_eventObj(0, z, '');
             guicb(evt);
+        
         }
 
         window.setTimeout(cb, 500);
+        */
     }
 
 

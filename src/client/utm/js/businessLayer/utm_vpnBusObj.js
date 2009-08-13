@@ -195,6 +195,40 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
 
         return n[1];
     }
+	
+	this.f_toXml = function()
+	{
+		var xml = '<site-to-site>';
+		if (thisObj.m_mode == 'easy') {
+			xml += '<easy>';
+		} else {
+		    xml += '<expert>';
+		}
+		xml = xml + '<peerip>' + thisObj.m_peerIp + '</peerIp>';
+		xml = xml + '<tunnelname>' + thisObj.m_tunnel + '</tunnelname>';
+		xml = xml + '<presharedkey>' + thisObj.m_presharedKey + '</presharedkey>';	
+		xml = xml + '<lnet>' + thisObj.m_localNetwork + '</lnet>';
+		xml = xml + '<rnet>' + thisObj.m_remoteNetwork + '</rnet>';
+		if (thisobj.m_mode == 'expert') {
+			xml = xml + '<type>' + thisObj.m_type + '</type>';
+			xml = xml + '<emode>' + thisObj.m_exchange + '</emode>';
+			xml = xml + '<ikeencrypt>' + thisObj.m_encryption1 + '</ikeencrypt>';
+			xml = xml + '<espencrypt>' + thisObj.m_encryption2 + '</espencrypt>';
+			xml = xml + '<dhgroup>' + thisObj.m_diffieHellmann + '</dhgroup>';
+			xml = xml + '<ikeltime>' + thisObj.m_lifeTime1 + '</ikeltime>';
+			xml = xml + '<espltime>' + thisObj.m_lifeTime2 + '</espltime>';
+			xml = xml + '<ikeauth>' + thisObj.m_auth1 + '</ikeauth>';
+			xml = xml + '<espauth>' + thisObj.m_auth2 + '</espauth>';
+		} 
+		if (thisObj.m_mode == 'easy') {
+			xml += '</easy>';
+		} else {
+			xml += '</expert>';
+		}
+		xml += '</site-to-site>';
+		return xml;
+	}	
+
 }
 
 /**
@@ -256,6 +290,42 @@ function UTM_vpnBusObj(busObj)
         }
     }
 
+    this.f_respondRequestCallbackSetCmd = function(resp, cmdSent, noUICallback)
+    {
+        var response = thisObj.m_busObj.f_getRequestResponse(
+                        thisObj.m_busObj.m_request);
+
+        if(response == null) return;
+
+        if(response.f_isError != null) { //This is server error case.
+            //alert('response.f_isError is not null');
+            if(noUICallback == undefined || !noUICallback)
+                thisObj.m_guiCb(response);
+        } else {
+            var evt = new UTM_eventObj(0, thisObj, '');
+
+            var err = response.getElementsByTagName('error');
+            if (err != null && err[0] != null) { //The return value is inside the <error> tag.
+				var tmp = thisObj.f_getFormError(err);
+				if (tmp != null) { //form has error
+					if (thisObj.m_guiCb != undefined) {
+						return thisObj.m_guiCb(tmp);
+					}
+				}
+			}
+
+            if(thisObj.m_guiCb != undefined)
+                thisObj.m_guiCb(evt);
+        }
+    }
+
+    this.f_getFormErrMsg = function(form)
+	{
+		var errmsgNode = g_utils.f_xmlGetChildNode(form, 'errmsg');
+		if (errmsgNode == null) return null;
+		
+		return g_utils.f_xmlGetNodeValue(errmsgNode);		
+	}
 
     this.f_parseSite2SiteOverviewGet = function(resp)
     {
@@ -463,6 +533,55 @@ function UTM_vpnBusObj(busObj)
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
+    }
+
+    this.f_setSite2SiteConfig = function(rec, guicb)
+	{
+		if (g_devConfig.m_isLocalMode) {
+			thisObj.f_setSite2SiteConfigLocal(rec,guicb);
+		} else {
+			thisObj.f_setSite2SiteConfigServer(rec,guicb);
+		}
+	}
+	
+    this.f_setSite2SiteConfigServer = function(rec, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var xmlstr = "<statement mode='proc'><handler>vpn site-to-site set</handler><data>";
+	    xmlstr += rec.f_toXml();
+        xmlstr +=  "</data></statement>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallbackSetCmd);
+    }	
+
+    this.f_setSite2SiteConfigLocal = function(rec, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var xmlstr = "<statement mode='proc'><handler>vpn site-to-site set</handler><data>";
+	    xmlstr += rec.f_toXml();
+        xmlstr +=  "</data></statement>";
+
+        var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                       + "<openappliance>" + xmlstr + "</openappliance>\n";
+
+		alert ('cmdSend: ' + cmdSend);
+
+        thisObj.m_lastCmdSent = cmdSend;
+
+		var resp = g_utils.f_parseXmlFromString(
+		    '<?xml version="1.0" encoding="utf-8"?>' +
+                '<openappliance>' +
+                    '<token></token>' +
+                        '<error>' +
+                            '<code>0</code>' +
+                               '<msg>' +
+                                   '<form name=\'site-to-site-easy\' code=\'0\'>' +
+                                    '</form>' +
+                                '</msg>' +
+                          '</error>' +
+                  '</openappliance>');
+        thisObj.f_respondRequestCallback(resp, guicb);
     }
 
 }

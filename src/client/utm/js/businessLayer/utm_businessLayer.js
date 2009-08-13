@@ -557,6 +557,10 @@ function UTM_businessLayer()
         thisObj.f_getVPNObject().f_setOverviewEnableValue(rec, guicb);
     }
 
+    this.f_vpnSetSite2SiteConfig = function(rec, guicb)
+	{
+		thisObj.f_getVPNObject().f_setSite2SiteConfig(rec, guicb);
+	}
 
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////

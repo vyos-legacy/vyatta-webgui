@@ -352,10 +352,21 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     {
     }
         		
-    this.f_validate = function()
+    this.f_validate = function(vpnRec)
     {
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
+		
+        if (!thisObj.f_checkIP(vpnRec.m_peerIp)) {
+			if (!thisObj.f_checkHostname(vpnRec.m_peerIp)) {
+				errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpnS2S_DomainName + g_lang.m_exclamationMark);
+			}
+        }		
+		
+		if (vpnRec.m_presharedkey != thisObj.m_form.conf_vpn_s2se_confirm_preshared_key.value) {
+			errorInner += thisObj.f_createlistItem(g_lang.m_vpnS2S_preshareKey_confirm_mismatch);
+		}
+		
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
@@ -404,6 +415,23 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     this.f_apply = function()
     {
         var vpnRec = thisObj.f_getVpn();
+		if (!thisObj.f_validate(vpnRec)) {
+			return;
+		}
+		g_utils.f_startWait();
+				
+        var cb = function(evt)
+        {        
+		    g_utils.f_stopWait();
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {            
+                if (evt.f_isError()) {                
+                    g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);  
+                    return;                    
+                }        
+                thisObj.f_enableAllButton(false);	
+            }                                 
+        };      
+        g_busObj.f_vpnSetSite2SiteConfig(vpnRec, cb); 	
     }
     
     this.f_reset = function()

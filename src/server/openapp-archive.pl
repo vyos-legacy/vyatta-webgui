@@ -79,19 +79,29 @@ my $BACKUP_TIMEOUT = 3600; #one hour
 ##########################################################################
 my $config = new Vyatta::Config;
 
-my $option = $config->returnValue("system open-app archive installer");
-if (defined $option) {
-    $INSTALLER_BU_LIMIT = $option;
+
+my $limit = `perl /opt/vyatta/sbin/vyatta-output-config.pl system open-app archive installer`;
+if (defined $limit) {
+    my @tmp = split " ",$limit;
+    if (defined $tmp[1]) {
+	$INSTALLER_BU_LIMIT = $tmp[1];
+    }
 }
 	
-my $option = $config->returnValue("system open-app archive admin");
-if (defined $option) {
-    $ADMIN_BU_LIMIT = $option;
+my $limit = `perl /opt/vyatta/sbin/vyatta-output-config.pl system open-app archive admin`;
+if (defined $limit) {
+    my @tmp = split " ",$limit;
+    if (defined $tmp[1]) {
+	$ADMIN_BU_LIMIT = $tmp[1];
+    }
 }
 
-my $option = $config->returnValue("system open-app archive backup timeout");
-if (defined $option) {
-    $BACKUP_TIMEOUT = $option;
+my $timeout = `perl /opt/vyatta/sbin/vyatta-output-config.pl system open-app archive backup timeout`;
+if (defined $timeout) {
+    my @tmp = split " ",$timeout;
+    if (defined $tmp[1]) {
+	$BACKUP_TIMEOUT = $tmp[1];
+    }
 }
 
 my ($backup,$backup_get,$backup_auto,$filename,$file,$restore,$restore_target,$restore_status,$backup_status,$list,$get,$get_archive,$put_archive,$delete);

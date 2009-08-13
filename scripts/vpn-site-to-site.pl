@@ -40,25 +40,25 @@ my ($set,$get);
 #
 ##########################################################################
 sub execute_set {
+    my ($s) = @_;
+    $s =~ s/^\s+//;
 
-    $set =~ s/^\s+//;
-
-    if (!defined $set || $set == '') {
-	print ("<form name='site-to-site-easy' code=1></form>");
+    if (!defined $s) {
+	print ("<form name='' code=1></form>");
 	exit 1;
     }
     #let's use the xmlin parser here to handle this.
     my $xs = new XML::Simple(forcearray=>1);
-    my $opt = $xs->XMLin($set);
+    my $opt = $xs->XMLin($s);
     #now parse the rest code
-    if ( defined $opt->{"site-to-site-easy"}->[0] ) {
+    if ( defined $opt->{"easy"}->[0] ) {
 	execute_set_easy($opt);
     }
-    elsif (defined $opt->{"site-to-site-easy"}->[0] ) {
+    elsif (defined $opt->{"expert"}->[0] ) {
 	execute_set_expert($opt);
     }
     else {
-	print ("<form name='site-to-site-easy' code=1></form>");
+	print ("<form name='' code=1></form>");
 	exit 1;
     }
 }
@@ -71,20 +71,20 @@ sub execute_set {
 sub execute_set_expert {
     my ($opt) = @_;
 
-    my $peerip = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{peerip}->[0];
-    my $presharedkey = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{presharedkey}->[0];
-    my $tunnelname = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{tunnelname}->[0];
-    my $lnet = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{lnet}->[0];
-    my $rnet = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{rnet}->[0];
-    my $type = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{type}->[0];
-    my $emode = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{emode}->[0];
-    my $ikeencrypt = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{ikeencrypt}->[0];
-    my $espencrypt = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{espencrypt}->[0];
-    my $dhgroup = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{dhgroup}->[0];
-    my $ikeltime = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{ikeltime}->[0];
-    my $espltime = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{espltime}->[0];
-    my $ikeauth = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{ikeauth}->[0];
-    my $espauth = $opt->{openappliance}->[0]->{"site-to-site-expert"}->[0]->{espauth}->[0];
+    my $peerip = $opt->{expert}->[0]->{peerip}->[0];
+    my $presharedkey = $opt->{expert}->[0]->{presharedkey}->[0];
+    my $tunnelname = $opt->{expert}->[0]->{tunnelname}->[0];
+    my $lnet = $opt->{expert}->[0]->{lnet}->[0];
+    my $rnet = $opt->{expert}->[0]->{rnet}->[0];
+    my $type = $opt->{expert}->[0]->{type}->[0];
+    my $emode = $opt->{expert}->[0]->{emode}->[0];
+    my $ikeencrypt = $opt->{expert}->[0]->{ikeencrypt}->[0];
+    my $espencrypt = $opt->{expert}->[0]->{espencrypt}->[0];
+    my $dhgroup = $opt->{expert}->[0]->{dhgroup}->[0];
+    my $ikeltime = $opt->{expert}->[0]->{ikeltime}->[0];
+    my $espltime = $opt->{expert}->[0]->{espltime}->[0];
+    my $ikeauth = $opt->{expert}->[0]->{ikeauth}->[0];
+    my $espauth = $opt->{expert}->[0]->{espauth}->[0];
 
     if (!defined $peerip ||
 	!defined $presharedkey ||
@@ -100,7 +100,7 @@ sub execute_set_expert {
 	!defined $espltime ||
 	!defined $ikeauth ||
 	!defined $espauth) {
-	print ("<form name='site-to-site-expert' code=1>");
+	print ("<form name='expert' code=1>");
 	if (!defined $tunnelname) {
 	    print("<key>tunnelname</key>");
 	}
@@ -150,7 +150,7 @@ sub execute_set_expert {
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -158,7 +158,7 @@ sub execute_set_expert {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec esp-group esp_1 proposal 1");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -166,15 +166,15 @@ sub execute_set_expert {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec ike-group ike_1 proposal 1");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $tunnelname");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -183,7 +183,7 @@ sub execute_set_expert {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -192,25 +192,25 @@ sub execute_set_expert {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip authentication pre-shared-secret $presharedkey");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $tunnelname local-subnet $lnet");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 local-subnet $lnet");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $tunnelname remote-subnet $rnet");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 remote-subnet $rnet");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -219,15 +219,15 @@ sub execute_set_expert {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip ike-group ike_1");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $tunnelname esp-group esp_1");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 esp-group esp_1");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -237,7 +237,7 @@ sub execute_set_expert {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec ipsec-interfaces interface eth0");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -245,7 +245,16 @@ sub execute_set_expert {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip local-ip 192.168.0.1");
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # apply config command
+    my $tmp = "$tunnelname:expert";
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip description $tmp");
+    if ($err != 0) {
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -254,7 +263,7 @@ sub execute_set_expert {
     # commit
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
     if ($err != 0) {
-	print("<form name='site-to-site-expert' code=2></form>");
+	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -269,14 +278,14 @@ sub execute_set_expert {
 sub execute_set_easy {
     my ($opt) = @_;
 
-    my $peerip = $opt->{openappliance}->[0]->{"site-to-site-easy"}->[0]->{peerip}->[0];
-    my $presharedkey = $opt->{openappliance}->[0]->{"site-to-site-easy"}->[0]->{presharedkey}->[0];
-    my $tunnelname = $opt->{openappliance}->[0]->{"site-to-site-easy"}->[0]->{tunnelname}->[0];
-    my $lnet = $opt->{openappliance}->[0]->{"site-to-site-easy"}->[0]->{lnet}->[0];
-    my $rnet = $opt->{openappliance}->[0]->{"site-to-site-easy"}->[0]->{rnet}->[0];
+    my $peerip = $opt->{easy}->[0]->{peerip}->[0];
+    my $presharedkey = $opt->{easy}->[0]->{presharedkey}->[0];
+    my $tunnelname = $opt->{easy}->[0]->{tunnelname}->[0];
+    my $lnet = $opt->{easy}->[0]->{lnet}->[0];
+    my $rnet = $opt->{easy}->[0]->{rnet}->[0];
 
     if (!defined $tunnelname || !defined $peerip || !defined $presharedkey || !defined $lnet || !defined $rnet) {
-	print ("<form name='site-to-site-easy' code=1>");
+	print ("<form name='easy' code=1>");
 	if (!defined $tunnelname) {
 	    print("<key>tunnelname</key>");
 	}
@@ -299,31 +308,31 @@ sub execute_set_easy {
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec esp-group utm proposal 1");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec esp-group esp_easy proposal 1");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec ike-group utm proposal 1");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec ike-group ike_easy proposal 1");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $tunnelname");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -332,7 +341,7 @@ sub execute_set_easy {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -341,42 +350,42 @@ sub execute_set_easy {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip authentication pre-shared-secret $presharedkey");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $tunnelname local-subnet $lnet");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 local-subnet $lnet");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $tunnelname remote-subnet $rnet");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 remote-subnet $rnet");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip ike-group utm");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip ike-group ike_easy");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $tunnelname esp-group utm");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 esp-group esp_easy");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -386,7 +395,7 @@ sub execute_set_easy {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec ipsec-interfaces interface eth0");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -394,7 +403,16 @@ sub execute_set_easy {
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip local-ip 192.168.0.1");
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # apply config command
+    my $tmp = "$tunnelname:easy";
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip description $tmp");
+    if ($err != 0) {
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -402,7 +420,7 @@ sub execute_set_easy {
     # commit
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit"); 
     if ($err != 0) {
-	print("<form name='site-to-site-easy' code=2></form>");
+	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
@@ -424,26 +442,41 @@ sub execute_get {
     my $v;
     my @v;
     my $ct = 0;
-    print "<site-to-site-easy>";
+    my $tmp;
+    my $type = "easy";
     for $v (@values) {
 	$ct++;
 	if ($v eq 'peer') {
-	    print "<peerip>$values[$ct]</peerip>";
+	    if ($tmp ne '') {
+		print "<site-to-site><$type>$tmp</$type></site-to-site>";
+		$tmp = "";
+	    }
+	    $tmp .= "<peerip>$values[$ct]</peerip>";
 	}
-	elsif ($v eq 'tunnel') {
-	    print "<tunnelname>$values[$ct]</tunnelname>";
+	elsif ($v eq 'description') {
+	    #let's overload this with the form type as well (easy|expert)
+	    my $desc = $values[$ct];
+	    my @tmp2 = split(':', $desc);
+	    if ($tmp2[1] ne '' && ($tmp2[1] eq 'easy' || $tmp2[1] eq 'expert')) {
+		$type = $tmp2[1];
+	    }
+	    $tmp .= "<tunnelname>$tmp2[0]</tunnelname>";
 	}
 	elsif ($v eq 'local-subnet') {
-	    print "<lnet>$values[$ct]</lnet>";
+	    $tmp.= "<lnet>$values[$ct]</lnet>";
 	}
 	elsif ($v eq 'remote-subnet') {
-	    print "<rnet>$values[$ct]</rnet>";
+	    $tmp .= "<rnet>$values[$ct]</rnet>";
 	}
 	elsif ($v eq 'pre-shared-secret') {
-	    print "<presharedkey>$values[$ct]</presharedkey>";
+	    $tmp .= "<presharedkey>$values[$ct]</presharedkey>";
 	}
     }
-    print "</site-to-site-easy>";
+
+    #let's catch the last one here
+    if ($tmp ne '') {
+	print "<site-to-site><$type>$tmp</$type></site-to-site>";
+    }
 }
 
 ##########################################################################
@@ -454,21 +487,21 @@ sub execute_get {
 #
 ##########################################################################
 sub usage() {
-    print "       $0 --set=<key>key</key><value>value</value><key>key</key><value>value</value>...>\n";
-    print "       $0 --get\n";
+    print "       $0 --set <key>key</key><value>value</value><key>key</key><value>value</value>...>\n";
+    print "       $0 --get [tunnelname]\n";
     exit 0;
 }
 
 #pull commands and call command
 GetOptions(
-    "set=s"              => \$set,
-    "get"                => \$get,
+    "set=s"                => \$set,
+    "get:s"                => \$get,
     ) or usage();
 
 if (defined $set ) {
     execute_set($set);
 }
 else {
-    execute_get();
+    execute_get($get);
 }
 exit 0;

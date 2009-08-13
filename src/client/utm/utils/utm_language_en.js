@@ -248,6 +248,7 @@ var g_lang =
     m_vpnS2S_TunnelName : "tunnel name",
 	m_vpnS2S_DomainName : "peer IP address / domain name",
 	m_vpnS2S_RemoteVPNdevice : "remote site VPN device",
+	m_vpnS2S_preshareKey_confirm_mismatch : "preshared key does not match with confirm preshared key",
 
     ///////////////////////////////////////////////////////////////////
     // VPN Remote User Group

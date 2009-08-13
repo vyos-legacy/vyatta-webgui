@@ -242,6 +242,8 @@ var g_lang =
     m_vpnS2S_TunnelName : "nom du tunnel", 
 	m_vpnS2S_DomainName : "adresse du site distant / nom de domaine", 
 	m_vpnS2S_RemoteVPNdevice : "équipement VPN du site distant", 
+	m_vpnS2S_preshareKey_confirm_mismatch : "preshared key does not match with confirm preshared key",
+	
 
     ///////////////////////////////////////////////////////////////////;;
     // VPN Remote User Group;;

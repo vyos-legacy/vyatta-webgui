@@ -302,7 +302,7 @@ function UTM_vpnBusObj(busObj)
 
             var err = response.getElementsByTagName('error');
             if (err != null && err[0] != null) { //The return value is inside the <error> tag.
-				var tmp = thisObj.f_getFormError(err);
+				var tmp = thisObj.m_busObj.f_getFormError(err);
 				if (tmp != null) { //form has error
 					if (thisObj.m_guiCb != undefined) {
 						return thisObj.m_guiCb(tmp);

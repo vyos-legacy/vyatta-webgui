@@ -374,6 +374,13 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 			} else if (vpnRec.m_presharedKey != thisObj.m_form.conf_vpn_s2sexp_ike_p1_confirm_preshare.value) {
 				errorInner += thisObj.f_createListItem(g_lang.m_vpnS2S_preshareKey_confirm_mismatch);
 			}			
+		    if (!g_utils.f_validateInt(vpnRec.m_lifeTime1, true)) {
+			    errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_IKEnegPhase1 + ' ' + g_lang.m_vpn_LifeTime);
+		    }			
+			
+		    if (!g_utils.f_validateInt(vpnRec.m_lifeTime2, true)) {
+			    errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_IKEphase2 + ' ' + g_lang.m_vpn_LifeTime);
+		    }				
 		}
 	   
 		
@@ -389,15 +396,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		}
 		if (!g_utils.f_validateCIDR(vpnRec.f_getRemoteNetworkPrefix())) {
 			errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_RemoteNetwork + ' ' + g_lang.m_mask);
-		}
-			
-		if (!g_utils.f_validateInt(vpnRec.m_lifeTime1, true)) {
-			errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_IKEnegPhase1 + ' ' + g_lang.m_vpn_LifeTime);
-		}			
-			
-		if (!g_utils.f_validateInt(vpnRec.m_lifeTime2, true)) {
-			errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_IKEphase2 + ' ' + g_lang.m_vpn_LifeTime);
-		}				
+		}						
 				
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
@@ -421,7 +420,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 			vpnRec.f_setLocalNetwork(thisObj.m_form.conf_vpn_s2se_local_network_ip.value, 
 			    thisObj.m_form.conf_vpn_s2se_local_network_mask.value);
 			vpnRec.f_setRemoteNetwork(thisObj.m_form.conf_vpn_s2se_remote_network_ip.value,
-			    thisObj.m_form.conf_vpn_s2se_remote_network_mask);
+			    thisObj.m_form.conf_vpn_s2se_remote_network_mask.value);
 		} else {
 			vpnRec.m_mode = 'expert';
 			vpnRec.m_type = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_s2sexp_ike_p1_proto);

@@ -299,12 +299,12 @@ sub backup {
 			
 			#and retrieve the archive
 			#writes to specific location on disk
-			my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
+			my $bufile = "$BACKUP_WORKSPACE_DIR/$filename.tar";
 			`mkdir -p $BACKUP_WORKSPACE_DIR`;
 			my $rc = `wget $archive_location -O $bufile 2>&1`;
 			
 			if ($rc =~ /200 OK/) {
-			    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+			    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$filename.enc`;
 			    `rm -f $bufile`;  #now remove source file
 			    #and remove from poll collection
 			    delete $new_hash_coll{$key};
@@ -315,12 +315,14 @@ sub backup {
 		    }
 		    elsif ($err->{_http_code} == 200 && defined($err->{_body})) {
 			#we'll now interpret this as including the archive in the response
-			my $bufile = "$BACKUP_WORKSPACE_DIR/$key";
+			my $bufile = "$BACKUP_WORKSPACE_DIR/$filename.tar";
 			open (MYFILE, '>$bufile');
 			print (MYFILE $err->{_body});
 			close (MYFILE);
 			
-			my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
+			$domu_archive_names{$key} = $filename;
+
+			my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$filename.enc`;
 			`rm -f $bufile`;  #now remove source file
 			#and remove from poll collection
 			delete $new_hash_coll{$key};
@@ -420,6 +422,7 @@ sub get_archive_location {
 	    #strip out the filename
 	    my @a = split "/",$tmp;
 	    $filename = $a[$#a];
+	    substr($filename,-4) = ""; #remove '.tar'
 	    return ($tmp,$filename);
 	}
 	if ($tmp =~ /Location:/) {
@@ -527,6 +530,26 @@ sub restore_archive {
     ##########################################################################
     my %hash_coll;
     my $hash_coll;
+
+    my %archive_name_coll;
+    my $archive_name_coll;
+
+
+    my $metafile = $ARCHIVE_ROOT_DIR."/".$restore;
+    my @output = `tar -xf $metafile.tar -O ./$restore.txt 2>/dev/null`;
+    my $text = join("",@output);
+    my $xs = new XML::Simple(forcearray=>1);
+    my $opt = $xs->XMLin($text);
+    #now parse the rest code
+    
+    my $arrayref = $opt->{contents}->[0]->{entry};
+    for (my $i = 0; $i < @$arrayref; $i++) {
+	my $vm = $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0];
+	my $ar_name = $opt->{contents}->[0]->{entry}->[$i]->{name}->[0];
+	$archive_name_coll{ $vm } = $ar_name;
+    }
+
+
     my $archive;
     if (defined($restore_target) && $restore_target ne '') {
 	my @archive = split(',',$restore_target);
@@ -535,42 +558,35 @@ sub restore_archive {
 	    my $bu;
 	    my @bu = split(':',$archive);
 	    if ($bu[1] eq 'data') {
-		$hash_coll{$bu[0]} |= 1;
+		$hash_coll{ $bu[0] } |= 1;
 	    }
 	    elsif ($bu[1] eq 'config') {
-		$hash_coll{$bu[0]} |= 2;
+		$hash_coll{ $bu[0] } |= 2;
 	    }
 	}
     }
     else {
 	#used with restore from my pc command
 	#instead use the xml file to fill out hash_coll...
-	my $metafile = $ARCHIVE_ROOT_DIR."/".$restore;
-	my @output = `tar -xf $metafile.tar -O ./$restore.txt 2>/dev/null`;
-	my $text = join("",@output);
-	my $xs = new XML::Simple(forcearray=>1);
-	my $opt = $xs->XMLin($text);
-	#now parse the rest code
-
 	my $arrayref = $opt->{contents}->[0]->{entry};
 	for (my $i = 0; $i < @$arrayref; $i++) {
-#	    print "$opt->{contents}->[0]->{entry}->[$i]->{vm}->[0]\n";
-#	    print "$opt->{contents}->[0]->{entry}->[$i]->{type}->[0]\n";
+	    
+	    my $vm = $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0];
+	    my $ar_name = $opt->{contents}->[0]->{entry}->[$i]->{name}->[0];
 	    my $ar_type = $opt->{contents}->[0]->{entry}->[$i]->{type}->[0];
+
+	    $archive_name_coll{ $vm } = $ar_name;
+
 	    if ($ar_type eq 'data') {
-		$hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = 1;
+		$hash_coll{ $vm } = 1;
 	    }
 	    elsif ($ar_type eq 'config') {
-		$hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = 2;
+		$hash_coll{ $vm } = 2;
 	    }
 	    else {
-		$hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = 3;
+		$hash_coll{ $vm } = 3;
 	    }
-
-#	    $hash_coll{ $opt->{contents}->[0]->{entry}->[$i]->{vm}->[0] } = $opt->{contents}->[0]->{entry}->[$i]->{type}->[0];
 	}
-	#now something like for each instance
-#	$hash_coll{ $opt->{archive}->{contents}->{vm} } = $opt->{archive}->{contents}->{type};
     }
 
     ##########################################################################
@@ -586,12 +602,14 @@ sub restore_archive {
 	my $vm = new OpenApp::VMMgmt($key);
 	next if (!defined($vm));
 
+	my $ar_name = $archive_name_coll{ $key };
+
 	if ($key =~ /openapp/) {
 	    my $value = $hash_coll{$key};
 	    if ($value != 1) {
-		my $restorefile = "/tmp/$key";
+		my $restorefile = "/tmp/$ar_name";
 		#call dom0 backup script here
-		my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$key.enc -out $restorefile`;
+		my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$ar_name.enc -out $restorefile`;
 		`sudo /opt/vyatta/sbin/openapp-dom0-backup.pl --restore=config=true --filename=$restorefile`;
 	    }
 	}
@@ -600,7 +618,7 @@ sub restore_archive {
 	    my $ip = $vm->getIP();
 	    my $port = $vm->getWuiPort();
 	    if (defined $ip && $ip ne '') {
-		my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$key.enc -out /var/www/backup/restore/$key`;
+		my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$ar_name.enc -out /var/www/backup/restore/$ar_name`;
 		my $cmd;
 		if (defined $port && $port ne '') {
 		    $cmd = "http://$ip:$port/backup/backupArchive?";
@@ -618,7 +636,7 @@ sub restore_archive {
 		else {
 		    $cmd .= "data=true&config=true";
 		}
-		$cmd .= "&file=http://192.168.0.101/backup/restore/$key";
+		$cmd .= "&file=http://192.168.0.101/backup/restore/$ar_name";
 		my $obj = new OpenApp::Rest();
 		my $err = $obj->send("PUT",$cmd);
 		if ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {
@@ -627,49 +645,7 @@ sub restore_archive {
 	    }
 	}
     }
-
     `logger -p info 'dom0: Restore operation has successfully finished'`;
-
-    ##########################################################################
-    #
-    # now poll for response from VM in restore process. just looking for 200
-    # success. updating status based on number of finished archive units. 
-    # continue until all are done or chunker kills me.
-    #
-    ##########################################################################
-#    my $progress_ct = 0;
-#    `echo '0' > $RESTORE_WORKSPACE_DIR/status`;
-    #now that each are started, let's sequentially iterate through and retrieve
-#    while ($#new_coll > -1) {
-#	foreach $i (0..$#new_coll) {
-#	    my $vm = new OpenApp::VMMgmt($new_coll[$i][0]);
-#	    next if (!defined($vm));
-#	    my $ip = '';
-#	    $ip = $vm->getIP();
-#	    if (defined $ip && $ip ne '') {
-#		my $cmd = "http://$ip/archive/restore/$new_coll[$i][1]/status/";
-#		#writes to specific location on disk
-#		my $rc = `curl -X GET -q -I $cmd 2>&1`;
-#		if ($rc =~ /200 OK/) {
-#		    print "SUCCESS\n";
-#		    #remove from new_collection
-#		    $progress_ct = $progress_ct + 1;
-#		    #when done write
-#		    my $progress = 100;
-#		    if ($coll_ct != 0) {
-#			$progress = (100 * $progress_ct) / $coll_ct;
-#		    }
-#		    `echo '$progress' > $RESTORE_WORKSPACE_DIR/status`;
-#		    delete $new_coll[$i];
-#		}
-#	    }
-#	}
-#	sleep 1;
-
-	#what is a reasonable time to kick out of this command?
-	#let's kick out of this command after 1/2 hour--which should be done by the chunker
-#    }
-
     #now we are done and this is a success
 }
 

@@ -160,9 +160,9 @@ function UTM_confNwRouting(name, callback, busLayer)
             rec.m_destIpMask = r[1];
             //rec.m_isGateway = r[2]=="true"? true: false;
             //rec.m_gwOrInterface = r[3];
-            rec.m_gateway = r[3];
-            rec.m_metric = r[4];
-            rec.m_enabled = r[5];
+            rec.m_gateway = r[2];
+            rec.m_metric = r[3];
+            rec.m_enabled = r[4];
             recs.push(rec);
         }
 
@@ -483,7 +483,7 @@ function UTM_confNwRouting(name, callback, busLayer)
             rrec.m_destIpMask = this.f_getValueFromElement(rec, this.m_fieldIds[1], rec.m_destIpMask);
             rrec.m_gateway = this.f_getValueFromElement(rec, this.m_fieldIds[2], rec.m_gateway);
             rrec.m_metric = this.f_getValueFromElement(rec, this.m_fieldIds[3], rec.m_metric);
-            rrec.m_enabled = this.f_getValueFromElement(rec, this.m_fieldIds[4], rec.m_enabled);
+            rrec.m_enabled = this.f_getValueFromElement(rec, this.m_fieldIds[4], rec.m_enabled, "chkbox");
 
             sRecs.push(rrec);
         }
@@ -491,13 +491,18 @@ function UTM_confNwRouting(name, callback, busLayer)
         thisObj.m_busLayer.f_saveNwRouting(sRecs, cb);
     };
 
-    this.f_getValueFromElement = function(rec, fid, oldVal)
+    this.f_getValueFromElement = function(rec, fid, oldVal, fldType)
     {
         var eid = fid+rec.f_getRecId();
         var el = document.getElementById(eid);
 
         if(el != null && el.value != oldVal)
-            return el.value;
+        {
+            if(fldType != null && fldType == "chkbox")
+                return el.checked;
+            else
+                return el.value;
+        }
 
         return "";
     }

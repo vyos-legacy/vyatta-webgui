@@ -31,8 +31,23 @@ use File::Copy;
 use Getopt::Long;
 use XML::Simple;
 
-my ($set,$get);
+my ($set,$get,$disable);
 
+
+
+##########################################################################
+#
+# hash_code
+#
+##########################################################################
+sub hash_code {
+    my $hash = 0;
+    use integer;
+    foreach(split //,shift) {
+	$hash = 31*$hash+ord($_);
+    }
+    return $hash;
+}
 
 ##########################################################################
 #
@@ -61,6 +76,65 @@ sub execute_set {
 	print ("<form name='' code=1></form>");
 	exit 1;
     }
+}
+
+##########################################################################
+#
+# execute_disable
+#
+##########################################################################
+sub execute_disable {
+    my ($opt) = @_;
+    my $peerip = $opt->{peerip}->[0];
+    my $tunnelname = $opt->{tunnelname}->[0];
+    my $disable = $opt->{disable}->[0];
+
+    if (!defined $peerip || !defined $tunnelname || !$disable) {
+	print ("<form name='disable' code=1></form>");
+    }
+
+    # set up config session
+    my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
+    if ($err != 0) {
+	print("<form name='expert' code=2></form>");
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # apply config command
+    my $thash = hash_code($tunnelname);
+
+    my $cmd;
+    if ($disable eq 'true') {
+	$cmd = "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $thash disable"
+    }
+    else {
+	$cmd = "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec site-to-site peer $peerip tunnel $thash disable"
+    }
+    $err = system($cmd);
+    if ($err != 0) {
+	print("<form name='expert' code=2></form>");
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    if ($err != 0) {
+	print("<form name='expert' code=2></form>");
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # apply config command
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit");
+    if ($err != 0) {
+	print("<form name='expert' code=2></form>");
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # set up config session
+    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+
 }
 
 ##########################################################################
@@ -172,7 +246,8 @@ sub execute_set_expert {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1");
+    my $h = hash_code($tunnelname);
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $h");
     if ($err != 0) {
 	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -199,7 +274,7 @@ sub execute_set_expert {
 
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 local-subnet $lnet");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $h local-subnet $lnet");
     if ($err != 0) {
 	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -208,7 +283,7 @@ sub execute_set_expert {
 
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 remote-subnet $rnet");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $h remote-subnet $rnet");
     if ($err != 0) {
 	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -225,7 +300,7 @@ sub execute_set_expert {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 esp-group esp_1");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $h esp-group esp_1");
     if ($err != 0) {
 	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -330,7 +405,8 @@ sub execute_set_easy {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1");
+    my $h = hash_code($tunnelname);
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $h");
     if ($err != 0) {
 	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -357,7 +433,7 @@ sub execute_set_easy {
 
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 local-subnet $lnet");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $h local-subnet $lnet");
     if ($err != 0) {
 	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -366,7 +442,7 @@ sub execute_set_easy {
 
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 remote-subnet $rnet");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $h remote-subnet $rnet");
     if ($err != 0) {
 	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -383,7 +459,7 @@ sub execute_set_easy {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel 1 esp-group esp_easy");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $h esp-group esp_easy");
     if ($err != 0) {
 	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -471,6 +547,9 @@ sub execute_get {
 	elsif ($v eq 'pre-shared-secret') {
 	    $tmp .= "<presharedkey>$values[$ct]</presharedkey>";
 	}
+	elsif ($v eq 'enable') {
+	    $tmp .= "<enable>$values[$ct]</enable>";
+	}
     }
 
     #let's catch the last one here
@@ -496,10 +575,14 @@ sub usage() {
 GetOptions(
     "set=s"                => \$set,
     "get:s"                => \$get,
+    "enable=s"             => \$disable,
     ) or usage();
 
 if (defined $set ) {
     execute_set($set);
+}
+elsif (defined $disable) {
+    execute_enable($disable);
 }
 else {
     execute_get($get);

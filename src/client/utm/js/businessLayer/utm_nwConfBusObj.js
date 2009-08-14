@@ -41,7 +41,7 @@ function UTM_nwDNSRecord(mode, primary, secondary)
 /**
  * routin data record
  */
-function UTM_nwRoutingRecord(tempId)
+function UTM_nwRoutingRecord(tempId, action)
 {
     var thisObj = this;
     this.m_tempId = tempId;
@@ -52,6 +52,7 @@ function UTM_nwRoutingRecord(tempId)
     this.m_metric = "";
     this.m_enabled = "Yes"; // Yes/No
     //this.m_isGateway = true;
+    this.m_action = action == null ? "update" : action;   // add/update/delete
 
     this.f_compare = function(rec)
     {
@@ -67,6 +68,8 @@ function UTM_nwRoutingRecord(tempId)
 
         if(id == "")
             return this.m_tempId;
+
+        return id;
     }
 }
 
@@ -330,6 +333,37 @@ function UTM_nwConfigBusObj(busObj)
                                           thisObj.f_respondRequestCallback);
     }
 
+    this.f_saveNwRouting = function(recs, cb)
+    {
+        thisObj.m_guiCb = cb;
+        var xmlstr = "<statement mode='proc'>" +
+                      "<handler>static-route set" +
+                      "</handler><data><static-route>";
+
+        for(var i=0; i<recs.length; i++)
+        {
+            var rec = recs[i];
+            xmlstr += "<route><action>" + rec.m_action + "</action>";
+
+            if(rec.m_destIpAddr.length > 0)
+                xmlstr += "<dest_newtork_mask>" + rec.m_destIpAddr + "</dest_network_mask>";
+
+            if(rec.m_gateway.length > 0)
+                xmlstr += "<gateway>" + rec.m_gateway + "</gateway>";
+
+            if(rec.m_metric.length > 0)
+                xmlstr += "<metric>" + rec.m_metric + "</metric>";
+
+            if(rec.m_enabled.length > 0)
+                xmlstr += "<enable>" + (rec.m_enabled=="yes"?"true":"false") + "</enable>";
+
+            xmlstr += "</route>";
+        }
+
+        xmlstr += "</satic-route></data></statement>";
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                                          thisObj.f_respondRequestCallback);
+    }
 
     /**
      * perform a set vpn site2site configurations request to server.

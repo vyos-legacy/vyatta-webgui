@@ -672,6 +672,11 @@ function UTM_businessLayer()
         thisObj.f_getNwObject().f_getNwRoutingList(guicb);
     }
 
+    this.f_saveNwRouting = function(recs, guicb)
+    {
+        thisObj.f_getNwObject().f_saveNwRouting(recs, guicb);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // Port config section

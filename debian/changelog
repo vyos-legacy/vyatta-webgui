@@ -1,3 +1,14 @@
+vyatta-webgui (0.2.14+fxdU+102) unstable; urgency=low
+
+  [ slioch ]
+  * support for enable/disable interface
+  * expose disable interface and connect to proc handler
+
+  [ Loi Vo ]
+  * Fix s2s ez mode validation
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 14 Aug 2009 22:20:20 +0000
+
 vyatta-webgui (0.2.14+fxdU+101) unstable; urgency=low
 
   * * nw status route: update set api and fixed syntax

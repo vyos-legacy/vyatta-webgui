@@ -1,3 +1,42 @@
+vyatta-webgui (0.2.14+fxdU+99) unstable; urgency=low
+
+  [ Loi Vo ]
+  * Fix a cross-browser issue (IE) where css attribute:
+
+  [ Kevin Choi ]
+  * * nw static route :
+  * * forgot to include language files for previous check in.
+
+  [ slioch ]
+  * initial check in of vpn site to site proc cmd structure.
+  * more clean up to support site to site vpn
+  * support for expert mode re: vpn site to site configuration
+
+  [ Loi Vo ]
+  * Add more logic to remote user and group.
+
+  [ Kevin Choi ]
+  * * vpn bus object :
+
+  [ slioch ]
+  * more updates to site-to-site configuration support
+
+  [ Loi Vo ]
+  * 1. Add biz logic layer for S2S set config.
+
+  [ Kevin Choi ]
+  * * nw static route : integrated api get static route list
+  * * nw static route : slightly changed get static route list and its
+    data structure
+
+  [ Loi Vo ]
+  * Add validation to S2S vpn config.
+
+  [ Mohit Mehta ]
+  * add backend support for handling static routes
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Thu, 13 Aug 2009 17:34:03 -0700
+
 vyatta-webgui (0.2.14+fxdU+98) unstable; urgency=low
 
   [ Kevin Choi ]

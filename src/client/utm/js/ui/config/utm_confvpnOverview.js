@@ -273,7 +273,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         for(var i=0; i<sar.length; i++)
         {
             var r = sar[i].split("|");
-            var rec = new UTM_vpnRemoteRec(r[0], r[1], r[2], r[3], r[4], r[5], r[6]);
+            var rec = new UTM_vpnRemoteTableRec(r[0], r[1], r[2], r[3], r[4], r[5], r[6]);
             recs.push(rec);
         }
 
@@ -454,7 +454,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         var rec = this.f_getRemoteRecByName(name);
 
         if(rec != null)
-            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID, rec);
+            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID, rec);
     }
 
     this.f_handleS2SApply = function()

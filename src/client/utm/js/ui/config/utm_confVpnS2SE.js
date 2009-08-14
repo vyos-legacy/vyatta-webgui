@@ -362,11 +362,34 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 				errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpnS2S_DomainName + g_lang.m_exclamationMark);
 			}
         }		
-		
-		if (vpnRec.m_presharedkey != thisObj.m_form.conf_vpn_s2se_confirm_preshared_key.value) {
-			errorInner += thisObj.f_createlistItem(g_lang.m_vpnS2S_preshareKey_confirm_mismatch);
+		if (vpnRec.m_presharedKey.trim().length <=0 ) {
+			;//is preshared key mandatory?
+		} else if (vpnRec.m_presharedKey != thisObj.m_form.conf_vpn_s2se_confirm_preshared_key.value) {
+			errorInner += thisObj.f_createListItem(g_lang.m_vpnS2S_preshareKey_confirm_mismatch);
 		}
 		
+		if (!thisObj.f_checkIP(vpnRec.f_getLocalNetworkIp())) {
+			errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_LocalNetwork + ' ' + g_lang.m_ipAddr);
+		}
+		if (!g_utils.f_validateCIDR(vpnRec.f_getLocalNetworkPrefix())) {
+			errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_LocalNetwork + ' ' + g_lang.m_mask);
+		}
+		
+		if (!thisObj.f_checkIP(vpnRec.f_getRemoteNetworkIp())) {
+			errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_RemoteNetwork + ' ' + g_lang.m_ipAddr);
+		}
+		if (!g_utils.f_validateCIDR(vpnRec.f_getRemoteNetworkPrefix())) {
+			errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_RemoteNetwork + ' ' + g_lang.m_mask);
+		}
+			
+		if (!g_utils.f_validateInt(vpnRec.m_lifeTime1, true)) {
+			errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_IKEnegPhase1 + ' ' + g_lang.m_vpn_LifeTime);
+		}			
+			
+		if (!g_utils.f_validateInt(vpnRec.m_lifeTime2, true)) {
+			errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_IKEphase2 + ' ' + g_lang.m_vpn_LifeTime);
+		}				
+				
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
@@ -465,9 +488,6 @@ function UTM_confVpnS2SE(name, callback, busLayer)
         if (target != undefined) {
             var id = target.getAttribute('id');
             if (id == 'conf_vpn_s2se_apply_button') { //apply clicked
-                if (!thisObj.f_validate()) {
-					return false;
-				} 
 			    thisObj.f_apply();
             } else if (id == 'conf_vpn_s2se_cancel_button') { //cancel clicked
                 thisObj.f_reset();

@@ -819,6 +819,29 @@ var g_utils =
 
         return true;
     },
+	
+	f_validateCIDR: function (nm)
+	{
+        var regex = /^([0-9]|[1-2][0-9]|[3][0-2])$/;
+        if (!nm.match(regex)) {
+            return false;
+        }
+        return true;		
+	},
+
+    f_validateInt: function (number, positiveNumberCheck)
+	{
+		var n = parseInt(number,10);
+		var ns = '<' + n + '>';
+		if ( ns == '<NaN>') {
+			return false;
+		} else if (positiveNumberCheck) {
+			if (n < 0) {
+				return false;
+			}
+		}
+		return true;
+	},
 
     f_validateNetmask : function(nm)
     {

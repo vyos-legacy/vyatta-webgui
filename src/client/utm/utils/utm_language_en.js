@@ -79,6 +79,7 @@ var g_lang =
 	m_duplicate :'Duplicate',
     m_ipAddr : 'IP address',
 	m_macAddr: 'MAC address',
+	m_mask : 'subnet mask',
     m_invalidIpAddr : "Invalid IP address",
     m_ipaddrTitle : "IP address validation",
     m_underConstruction : 'Under Construction',

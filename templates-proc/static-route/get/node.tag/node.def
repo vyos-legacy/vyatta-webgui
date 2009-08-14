@@ -1,0 +1,1 @@
+run: /opt/vyatta/sbin/bl_static_route.pl --action='get_static_route' --data="$3"

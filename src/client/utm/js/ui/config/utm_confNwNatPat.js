@@ -93,6 +93,13 @@ function UTM_confNwNatPat(name, callback, busLayer)
             g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
+                if(evt.m_errCode != 0)
+                {
+                    g_utils.f_popupMessage(evt.m_errMsg,
+                            "error", g_lang.m_menu_nat_pat, true);
+                    return;
+                }
+
                 if(evt.m_value != null)
                 {
                     thisObj.m_npRecs = evt.m_value;

@@ -275,15 +275,16 @@ function UTM_nwConfigBusObj(busObj)
         for(var i=0; i<node.childNodes.length; i++)
         {
             var n = node.childNodes[i];
+            var chd = n.firstChild;
 
-            if(n.nodeName == "dest_network_mask")
-                this.f_setDestAddress(rec, n.nodeValue);
-            else if(node.nodeName == "gateway")
-                rec.m_gateway = n.nodeValue;
-            else if(node.nodeName == "metric")
-                rec.m_metric = n.nodeValue;
-            else if(node.nodeName == 'enable')
-                rec.m_enabled = n.nodeVallue == 'true' ? 'Yes':'No';
+            if(n.nodeName == "dest_network_mask" && chd != null)
+                rec = this.f_setDestAddress(rec, chd.nodeValue);
+            else if(n.nodeName == "gateway" && chd != null)
+                rec.m_gateway = chd.nodeValue;
+            else if(n.nodeName == "metric" && chd != null)
+                rec.m_metric = chd.nodeValue;
+            else if(n.nodeName == 'enable' && chd != null)
+                rec.m_enabled = chd.nodeVallue == 'true' ? 'Yes':'No';
         }
 
         return rec;
@@ -291,15 +292,14 @@ function UTM_nwConfigBusObj(busObj)
 
     this.f_setDestAddress = function(rec, addr)
     {
-        if(addr.length > 0)
+        if(addr.indexOf("/") > 0)
         {
-            if(addr.indexOf("/") > 0)
-            {
-                var ips = addr.split("/");
-                rec.m_destIpAddr = ips[0];
-                rec.m_destIpMask = g_utils.f_convertCIDRToNetmask(ips[1]);
-            }
+            var ips = addr.split("/");
+            rec.m_destIpAddr = ips[0];
+            rec.m_destIpMask = g_utils.f_convertCIDRToNetmask(ips[1]);
         }
+
+        return rec;
     };
 
     this.f_getValueFromNameValuePair = function(name, nv)

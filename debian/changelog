@@ -1,3 +1,18 @@
+vyatta-webgui (0.2.14+fxdU+100) unstable; urgency=low
+
+  [ slioch ]
+  * partial fix to preserve domU archive name. additional changes needed
+    on dom0 and in archive format.
+
+  [ Kevin Choi ]
+  * * nw static route:
+  * * nw nat/pat : prompted server error.
+
+  [ Loi Vo ]
+  * Change to support xml API for s2s vpn
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 14 Aug 2009 02:04:33 +0000
+
 vyatta-webgui (0.2.14+fxdU+99) unstable; urgency=low
 
   [ Loi Vo ]

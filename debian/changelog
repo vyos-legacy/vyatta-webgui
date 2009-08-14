@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.14+fxdU+101) unstable; urgency=low
+
+  * * nw status route: update set api and fixed syntax
+  * * nw static route :
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 14 Aug 2009 18:39:23 +0000
+
 vyatta-webgui (0.2.14+fxdU+100) unstable; urgency=low
 
   [ slioch ]

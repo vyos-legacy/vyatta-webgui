@@ -346,7 +346,9 @@ function UTM_nwConfigBusObj(busObj)
             xmlstr += "<route><action>" + rec.m_action + "</action>";
 
             if(rec.m_destIpAddr.length > 0)
-                xmlstr += "<dest_newtork_mask>" + rec.m_destIpAddr + "</dest_network_mask>";
+                xmlstr += "<dest_network_mask>" + rec.m_destIpAddr +
+                "/" + g_utils.f_convertNetmaskToCIDR(rec.m_destIpMask) +
+                "</dest_network_mask>";
 
             if(rec.m_gateway.length > 0)
                 xmlstr += "<gateway>" + rec.m_gateway + "</gateway>";
@@ -360,7 +362,7 @@ function UTM_nwConfigBusObj(busObj)
             xmlstr += "</route>";
         }
 
-        xmlstr += "</satic-route></data></statement>";
+        xmlstr += "</static-route></data></statement>";
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                                           thisObj.f_respondRequestCallback);
     }

@@ -567,6 +567,7 @@ sub execute_get {
 ##########################################################################
 sub usage() {
     print "       $0 --set <key>key</key><value>value</value><key>key</key><value>value</value>...>\n";
+    print "       $0 --disable <key>key</key><value>value</value><key>key</key><value>value</value>...>\n";
     print "       $0 --get [tunnelname]\n";
     exit 0;
 }
@@ -575,7 +576,7 @@ sub usage() {
 GetOptions(
     "set=s"                => \$set,
     "get:s"                => \$get,
-    "enable=s"             => \$disable,
+    "disable=s"            => \$disable,
     ) or usage();
 
 if (defined $set ) {

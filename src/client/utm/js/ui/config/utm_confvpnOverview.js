@@ -454,7 +454,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         var rec = this.f_getRemoteRecByName(name);
 
         if(rec != null)
-            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID, rec);
+            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID, rec);
     }
 
     this.f_handleS2SApply = function()

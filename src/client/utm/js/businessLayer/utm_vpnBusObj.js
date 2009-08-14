@@ -68,7 +68,7 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 		this.m_localNetwork = '';
 		this.m_remoteNetwork = '';
 		this.m_p2_dfsGrp = 'group 2';
-		this.m_lifetime = '';
+		this.m_p2_lifetime = '';
 		this.m_p2_encrypt = 'DES';
 		this.m_p2_auth = 'MD5';
 	}

@@ -79,7 +79,6 @@ my $BACKUP_TIMEOUT = 3600; #one hour
 ##########################################################################
 my $config = new Vyatta::Config;
 
-
 my $limit = `perl /opt/vyatta/sbin/vyatta-output-config.pl system open-app archive installer`;
 if (defined $limit) {
     my @tmp = split " ",$limit;
@@ -254,6 +253,8 @@ sub backup {
     #now need overall time for this process
     my $end_time = time() + $BACKUP_TIMEOUT;
 
+    my %domu_archive_names;
+
     #need to loop forever until either time expired, or vm error received or bu received.
     while (1) {
 	foreach $key (keys (%new_hash_coll)) {
@@ -291,7 +292,10 @@ sub backup {
 		    if ($err->{_http_code} == 302) { #redirect means server is done with archive
 			#now parse the new location...
 			my $header = $err->{_header};
-			my $archive_location = get_archive_location($header);
+			my $filename;
+			my ($archive_location,$filename) = get_archive_location($header);
+
+			$domu_archive_names{$key} = $filename;
 			
 			#and retrieve the archive
 			#writes to specific location on disk
@@ -367,6 +371,7 @@ sub backup {
 	next if (!defined($vm));
 	print FILE "<entry>";
 	print FILE "<vm>$key</vm>";
+	print FILE "<name>".$domu_archive_names{$key}."</name>";
 	if ($value == 1) {
 	    print FILE "<type>data</type>";
 	}
@@ -405,13 +410,17 @@ sub backup {
 ##########################################################################
 sub get_archive_location {
     my ($header) = @_;
+    my $filename;
     
     #looking for Location: in header
     my @tmp = split " ",$header;
     my $flag = 0;
     foreach my $tmp (@tmp) {
 	if ($flag == 1) {
-	    return $tmp;
+	    #strip out the filename
+	    my @a = split "/",$tmp;
+	    $filename = $a[$#a];
+	    return ($tmp,$filename);
 	}
 	if ($tmp =~ /Location:/) {
 	    $flag = 1;

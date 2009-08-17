@@ -147,7 +147,7 @@ sub list_smtp() {
 	    print "SMTP:\n";
 	    print "\taddress:\t$address[1]\n";
 	    print "\temail:\t$email[1]\n";
-	    print "\tname:\t$$name[1]\n";
+	    print "\tname:\t\t$name[1]\n";
 	    print "\tpassword:\t$password[1]\n";
 	    print "\tusername:\t$username[1]\n";
 	}

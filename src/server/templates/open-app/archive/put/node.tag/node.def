@@ -1,2 +1,3 @@
 access:admin
+help: not supported in cli
 run: sudo perl /opt/vyatta/sbin/openapp-archive.pl --put-archive "$4"

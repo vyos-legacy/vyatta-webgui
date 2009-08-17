@@ -233,8 +233,10 @@ sub list_user {
 	my $mail = $user->getMail();
 	my $role = $user->getRole();
 	my $rights = '';
+	my $rights_plain = '';
 	for my $r (keys %{$user->getRights()}) {
 	    $rights .= "  <rights>$r</rights>\n";
+	    $rights_plain .= "$r ";
 	}
     if (!defined $cmdline) {
 	print "<user name='$u'>
@@ -251,7 +253,7 @@ sub list_user {
 	    print "\tfirst:\t$first\n";
 	    print "\tlast:\t$last\n";
 	    print "\temail:\t$mail\n";
-	    print "\trights:\t$rights\n";
+	    print "\trights:\t$rights_plain\n";
 	    print "\trole:\t$role\n\n";
 	}
     }

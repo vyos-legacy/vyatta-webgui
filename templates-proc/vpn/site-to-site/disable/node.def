@@ -1,1 +1,1 @@
-run: perl /opt/vyatta/sbin/vpn-site-to-site.pl --disable "$3"
+run: perl /opt/vyatta/sbin/vpn-site-to-site.pl --disable 

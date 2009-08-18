@@ -48,7 +48,7 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
 		if (obj != undefined) {
 			thisObj.m_usr = obj;
 		} else {
-			thisObj.m_usr = UTM_vpnRemoteRec();
+			thisObj.m_usr = UTM_vpnRemoteUserRec();
 			thisObj.m_usr.f_setDefault();
 		}		
 		var defObj = new UTM_confFormDefObj('conf_vpn_rusr', '400', new Array(), 
@@ -108,6 +108,10 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     this.f_loadVMData = function(element)
     {
         thisObj.m_form = document.getElementById('conf_vpn_rusr' + "_form");
+		thisObj.m_form.conf_vpn_rusr_usr_name.value = thisObj.m_usr.m_userName;
+		thisObj.m_form.conf_vpn_rusr_usr_passwd.value = thisObj.m_usr.m_pw;
+		thisObj.m_form.conf_vpn_rusr_confirm_usr_passwd.value = thisObj.m_usr.m_pw;
+		//thisObj.m_form.
 		thisObj.f_setFocus();
 		thisObj.f_resize();
 		thisObj.f_attachListener();			

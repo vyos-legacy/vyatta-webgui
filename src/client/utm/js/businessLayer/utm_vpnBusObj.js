@@ -14,6 +14,13 @@ function UTM_vpnRemoteUserRec(name, pw, group)
     this.m_userName = name;
     this.m_pw = pw;
     this.m_groupName = group;
+	
+	this.f_setDefault = function() 
+	{
+	    this.m_userName = '';
+		this.m_pw = '';
+		this.m_groupName = '';
+	}
 }
 
 function UTM_vpnRemoteTableRec(userRec, groupRec, status, enable)
@@ -48,6 +55,7 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 	this.m_p2_lifetime = p2_lifetime;
 	this.m_p2_encrypt = p2_encrypt;
 	this.m_p2_auth = p2_auth;
+	var thisObj = this;
 
 	this.f_setDefault = function()
 	{
@@ -254,6 +262,8 @@ function UTM_vpnBusObj(busObj)
 
         if (g_devConfig.m_isLocalMode) {
 			response = resp;
+		} else if (thisObj.m_simulationMode) {
+			response = resp;
 		}
 
         if(response == null) return;
@@ -397,15 +407,24 @@ function UTM_vpnBusObj(busObj)
 
                     for(var j=0; j<vals.length; j++)
                     {
-                        vpn[j] = new UTM_vpnRemoteTableRec();
+						var userRec = new UTM_vpnRemoteUserRec();
+						userRec.m_userName = this.f_getValueFromNameValuePair("name", vals[j]);
+						userRec.m_pw = 'pw';
+						userRec.m_groupName = this.f_getValueFromNameValuePair("group", vals[j]);
 
-                        vpn[j].m_userName = this.f_getValueFromNameValuePair("name", vals[j]);
-                        vpn[j].m_groupName = this.f_getValueFromNameValuePair("group", vals[j]);
-                        vpn[j].m_ipAllocation = this.f_getValueFromNameValuePair("localaddress", vals[j]);
-                        vpn[j].m_internetAccess = this.f_getValueFromNameValuePair("ipaddress", vals[j]);
+						var groupRec = new UTM_vpnRemoteUsrGrpRec();
+						groupRec.f_setDefault();
+						groupRec.m_mode = this.f_getValueFromNameValuePair("configmode", vals[j]);
+						groupRec.m_name = this.f_getValueFromNameValuePair("group", vals[j]);
+                        groupRec.f_setLocalNetwork(this.f_getValueFromNameValuePair("localaddress", vals[j]),'21');
+						groupRec.f_setRemoteNetwork(this.f_getValueFromNameValuePair("ipaddress", vals[j]),'21');
+						
+                        vpn[j] = new UTM_vpnRemoteTableRec();
+						vpn[j].m_userRec = userRec;
+						vpn[j].m_groupRec = groupRec;
                         vpn[j].m_status = this.f_getValueFromNameValuePair("status", vals[j]);
                         vpn[j].m_enable = this.f_getValueFromNameValuePair("enable", vals[j]);
-                        vpn[j].m_mode = this.f_getValueFromNameValuePair("configmode", vals[j]);
+
                     }
                 }
             }

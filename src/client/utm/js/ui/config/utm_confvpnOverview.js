@@ -15,6 +15,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
     this.m_s2sGridChkboxId = "s2sGridChkboxId";
     this.m_remoteRecs = null;
     this.m_remoteGridChkboxId = "remoteGridChkboxId";
+	this.m_userRecs = null;
+	this.m_groupRecs = null;
 
     /**
      * @param name - name of configuration screens.
@@ -224,17 +226,21 @@ function UTM_confVPNOverview(name, callback, busLayer)
         {
             var rec = recs[i];
             var c = "<div align=center>";
-            var eId = "remote_enabledId-" + rec.m_userName;
+            var eId = "remote_enabledId-" + rec.m_userRec.m_userName;
 
-            var uname = thisObj.f_renderAnchor(rec.m_userName,
-                    "f_vpnUpdateHandler('" + rec.m_userName + "', 'remote')",
+            var uname = thisObj.f_renderAnchor(rec.m_userRec.m_userName,
+                    "f_vpnUpdateHandler('" + rec.m_userRec.m_userName + "', 'remote', 'user')",
+                    'Click on name for update');
+
+            var gname = thisObj.f_renderAnchor(rec.m_groupRec.m_name,
+                    "f_vpnUpdateHandler('" + rec.m_groupRec.m_name + "', 'remote', 'group')",
                     'Click on name for update');
 
             var enable = c + thisObj.f_renderCheckbox(rec.m_enable, eId,
                           "f_vpnChkboxHandler('"+ eId +"', 'remote')", "") + "</div>";
 
             var del = c + thisObj.f_renderButton("delete", true,
-                          "f_vpnDeleteHandler('" + rec.m_userName +
+                          "f_vpnDeleteHandler('" + rec.m_userRec.m_userName +
                           "', 'remote')", g_lang.m_tooltip_delete) + "</div>";
 
             var status = thisObj.f_createStatusDiv(rec.m_status);
@@ -243,11 +249,11 @@ function UTM_confVPNOverview(name, callback, busLayer)
             // add fields into grid view
             var div = thisObj.f_createGridRow(thisObj.m_hdremote,
                   [thisObj.f_createSimpleDiv(uname, 'center'),
-                  thisObj.f_createSimpleDiv(rec.m_groupName, 'center'),
-                  thisObj.f_createSimpleDiv(rec.m_internetAccess, 'center'),
-                  thisObj.f_createSimpleDiv(rec.m_ipAllocation, 'center'),
+                  thisObj.f_createSimpleDiv(gname, 'center'),
+                  thisObj.f_createSimpleDiv(rec.m_groupRec.f_getLocalNetworkIp(), 'center'),
+                  thisObj.f_createSimpleDiv(rec.m_groupRec.f_getRemoteNetworkIp(), 'center'),
                   status,
-                  thisObj.f_createSimpleDiv(rec.m_mode, 'center'), enable, del]);
+                  thisObj.f_createSimpleDiv(rec.m_groupRec.m_mode, 'center'), enable, del]);
 
             thisObj.m_bodyRemotes.appendChild(div);
         }
@@ -257,23 +263,34 @@ function UTM_confVPNOverview(name, callback, busLayer)
     {
         var ar = new Array();
         var recs = new Array();
+		thisObj.m_userRecs = new Array();
+		thisObj.m_groupRecs = new Array();
 
         for(var i=0; i<zRecs.length; i++)
         {
             // NOTE: the order of this partition same as the order
             // grid columns.
             // compose a default table row
-            ar[i] = zRecs[i].m_userName + '|' + zRecs[i].m_groupName + '|' +
-                    zRecs[i].m_internetAccess + '|' + zRecs[i].m_ipAllocation + '|' +
-                    zRecs[i].m_status + '|' + zRecs[i].m_mode + '|' +
+            ar[i] = zRecs[i].m_userRec.m_userName + '|' + zRecs[i].m_userRec.m_groupName + '|' +
+                    zRecs[i].m_groupRec.f_getRemoteNetworkIp() + '|' + zRecs[i].m_groupRec.f_getLocalNetworkIp() + '|' +
+                    zRecs[i].m_status + '|' + zRecs[i].m_groupRec.m_mode + '|' +
                     zRecs[i].m_enable;
+			thisObj.m_userRecs.push(zRecs[i].m_userRec);
+			thisObj.m_groupRecs.push(zRecs[i].m_groupRec);
         }
 
         var sar = thisObj.f_sortArray(sortIndex, ar);
         for(var i=0; i<sar.length; i++)
         {
             var r = sar[i].split("|");
-            var rec = new UTM_vpnRemoteTableRec(r[0], r[1], r[2], r[3], r[4], r[5], r[6]);
+			//user_name: r[0], group: r{1], group.remoteNetwork: r[2], group.localNetwork: r[3], status: r[4], group.m_mode: r[5], enable: r[6]
+			var ur = thisObj.f_getUserRecByName(r[0]);
+			var gr = thisObj.f_getGroupRecByName(r[1]);
+            var rec = new UTM_vpnRemoteTableRec();
+			rec.m_userRec = ur;
+			rec.m_groupRec = gr;
+			rec.m_enable = r[6];
+			rec.m_status = r[4];
             recs.push(rec);
         }
 
@@ -300,6 +317,34 @@ function UTM_confVPNOverview(name, callback, busLayer)
         return null;
     }
 
+    this.f_getUserRecByName = function(name)
+	{
+        if(thisObj.m_userRecs != null)
+        {
+            for(var i=0; i<thisObj.m_userRecs.length; i++)
+            {
+                if(thisObj.m_userRecs[i].m_userName == name)
+                    return thisObj.m_userRecs[i];
+            }
+        }
+
+        return null;		
+	}
+
+    this.f_getGroupRecByName = function(name)
+	{
+        if(thisObj.m_groupRecs != null)
+        {
+            for(var i=0; i<thisObj.m_groupRecs.length; i++)
+            {
+                if(thisObj.m_groupRecs[i].m_name == name)
+                    return thisObj.m_groupRecs[i];
+            }
+        }
+
+        return null;		
+	}
+	
     this.f_getRemoteRecByName = function(name)
     {
         if(thisObj.m_remoteRecs != null)
@@ -449,12 +494,20 @@ function UTM_confVPNOverview(name, callback, busLayer)
             g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID, rec, true);
     }
 
-    this.f_handleRemoteUpdate = function(name)
+    this.f_handleRemoteUpdate = function(name, objType)
     {
-        var rec = this.f_getRemoteRecByName(name);
-
-        if(rec != null)
-            g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID, rec);
+		var rec = null;
+		if (objType == 'user') {
+			rec = thisObj.f_getUserRecByName(name);		
+			if (rec != null) {
+				g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID, rec);
+			}
+		} else {
+			rec = thisObj.f_getGroupRecByName(name);
+			if (rec != null) {
+				g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID, rec);				
+			}
+		}
     }
 
     this.f_handleS2SApply = function()
@@ -581,12 +634,12 @@ function f_vpnRemoteGridHeaderOnclick(col)
     g_configPanelObj.m_activeObj.f_handleRemoteGridSort(col);
 }
 
-function f_vpnUpdateHandler(name, grid)
+function f_vpnUpdateHandler(name, grid, objType)
 {
     if(grid == "s2s")
         g_configPanelObj.m_activeObj.f_handleS2SUpdate(name);
-    else
-        g_configPanelObj.m_activeObj.f_handleRemoteUpdate(name);
+    else 
+        g_configPanelObj.m_activeObj.f_handleRemoteUpdate(name, objType);
 }
 
 function f_deleteConfirmation(e, name, grid)

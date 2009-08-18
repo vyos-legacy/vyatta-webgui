@@ -1,3 +1,21 @@
+vyatta-webgui (0.2.14+fxdU+103) unstable; urgency=low
+
+  [ slioch ]
+  * rework of vpn support
+
+  [ Loi Vo ]
+  * Change so that user/group in vpn overview will link up to user
+    record, and group rec.
+
+  [ slioch ]
+  * need this file to find the vpn proc cmd
+  * need hook to access delete api
+
+  [ Loi Vo ]
+  * change to comply with API update
+
+ -- Loi Vo <loi.vo@vyatta.com>  Tue, 18 Aug 2009 23:02:01 +0000
+
 vyatta-webgui (0.2.14+fxdU+102) unstable; urgency=low
 
   [ slioch ]

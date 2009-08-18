@@ -339,7 +339,7 @@ function UTM_vpnBusObj(busObj)
         var s2sNodeArray = g_utils.f_xmlGetChildNodeArray(msgNode, 'site-to-site');
 		var tagArray = ['peerip', 'presharedkey', 'tunnelname', 'lnet', 'rnet', 'type',
 		                'emode', 'ikeencrypt', 'espencrypt', 'dhgroup', 'ikeltime',
-						'espltime', 'ikeauth', 'espauth', 'status', 'enable'];
+						'espltime', 'ikeauth', 'espauth', 'status', 'disable'];
 		var tagValue = [];				
         var vpn = new Array();
 		
@@ -385,7 +385,7 @@ function UTM_vpnBusObj(busObj)
 			vpn[i].m_encryption2= (tagValue['espencrypt'] == undefined)? '' : tagValue['espencrypt'];
 			vpn[i].m_auth2= (tagValue['espauth'] == undefined)? 'DES' : tagValue['espauth'];
 			vpn[i].m_status= (tagValue['status'] == undefined)? 'yes' : tagValue['status'];
-			vpn[i].m_enable= (tagValue['enable'] == undefined)? 'no' : tagValue['enable'];			
+			vpn[i].m_enable= (tagValue['disable'] == undefined)? 'yes' : 'no';			
 		}
 
         return vpn;
@@ -501,7 +501,7 @@ function UTM_vpnBusObj(busObj)
 				resp += '<lnet>10.1.3.' + i + '/24</lnet>';
 				resp += '<rnet>10.1.2.' + i + '/24</rnet>';
 				resp += '<status>' + dis + '</status>';
-				resp += '<enable>no</enable>';
+				resp += '<disable/>';
 				resp += '</easy>';	
 			} else {
 			    resp += '<expert>';
@@ -510,17 +510,17 @@ function UTM_vpnBusObj(busObj)
 				resp += '<presharedkey>test_key_' + i + '</presharedkey>';
 				resp += '<lnet>10.1.3.' + i + '/24</lnet>';
 				resp += '<rnet>10.1.2.' + i + '/24</rnet>';
-				resp += '<type>ESP</type>';
+				resp += '<type>esp</type>';
 				resp += '<emode>aggressive</emode>';
 				resp += '<ikeencrypt>aes128</ikeencrypt>';
 				resp += '<espencrypt>aes128</espencrypt>';
-				resp += '<dhgroup>group 5</dhgroup>';
+				resp += '<dhgroup>5</dhgroup>';
 				resp += '<ikeltime>500</ikeltime>';
 				resp += '<espltime>500</espltime>';
 				resp += '<ikeauth>sha1</ikeauth>';
 				resp += '<espauth>sha1</espauth>';
 				resp += '<status>' + dis + '</status>';
-				resp += '<enable>no</enable>';
+				resp += '<disable/>';
 				resp += '</expert>';					
 			}
 			resp += '</site-to-site>';	
@@ -532,12 +532,16 @@ function UTM_vpnBusObj(busObj)
         thisObj.f_respondRequestCallback(resp, guicb);				
 	}
 
-    this.f_deleteSite2SiteOverviewConfig = function(tunnelName, cb)
+    this.f_deleteSite2SiteOverviewConfig = function(rec, cb)
     {
         thisObj.m_guiCb = cb;
         var xmlstr = "<statement mode='proc'>" +
-                      "<handler>vpn-site2site delete-overview" +
-                      "</handler><data>name=["+tunnelName+"]</data></statement>";
+                      "<handler>vpn site-to-site delete" +
+                      "</handler><data>" +
+					  "<peerip>" + rec.m_peerIp + "</peerip>" +
+					  "<tunnelname>" + rec.m_tunnel + "</tunnelname>" +
+					  "</data></statement>";
+					  
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -597,17 +601,30 @@ function UTM_vpnBusObj(busObj)
         thisObj.m_guiCb = guicb;
         var xmlstr = "";
 
-        if(rec.m_tunnel != null)
-            xmlstr = "<statement mode='proc'>" +
-                      "<handler>vpn-site2site set-overview-enable" +
-                      "</handler><data>name=["+rec.m_tunnel+"],enable=[" +
-                      rec.m_enable + "]</data></statement>";
-        else
-            xmlstr = "<statement mode='proc'>" +
-                      "<handler>vpn-remote set-overview-enable" +
-                      "</handler><data>name=["+rec.m_userName+"],enable=[" +
-                      rec.m_enable + "]</data></statement>";
-
+        if (rec.m_tunnel != null) {
+			xmlstr = "<statement mode='proc'>" +
+			"<handler>vpn site-to-site disable" +
+			"</handler><data><peerip>" +
+			rec.m_peerIp +
+			"</peerip>" +
+			"<tunnelname>" +
+			rec.m_tunnel +
+			"</tunnelname>";
+			if (rec.m_enable == 'yes') {
+				xmlstr += "<disable>false</disable>";
+			} else {
+				xmlstr += "<disable>true</disable>"
+			}
+			xmlstr += "</data></statement>";
+		} else {
+			xmlstr = "<statement mode='proc'>" +
+			"<handler>vpn-remote set-overview-enable" +
+			"</handler><data>name=[" +
+			rec.m_userName +
+			"],enable=[" +
+			rec.m_enable +
+			"]</data></statement>";
+		}
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }

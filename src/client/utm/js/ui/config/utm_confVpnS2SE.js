@@ -167,7 +167,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		defObj.f_addLabelBold('conf_vpn_s2sexp_ike_phase1_label',g_lang.m_vpn_IKEnegPhase1,'true');
 		defObj.f_addHtml(
 		    'conf_vpn_s2sexp_ike_p1_proto',
-            '<select name="conf_vpn_s2sexp_ike_p1_proto" id="conf_vpn_s2sexp_ike_p1_proto" class="v_form_input"><option value="ESP" selected>ESP</option><option value="AH">AH</option></select>',
+            '<select name="conf_vpn_s2sexp_ike_p1_proto" id="conf_vpn_s2sexp_ike_p1_proto" class="v_form_input"><option value="esp" selected>ESP</option><option value="ah">AH</option></select>',
 			g_lang.m_vpn_IKE_p1_proto			
 		);		
 		defObj.f_addHtml(
@@ -177,19 +177,19 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		);			
 		defObj.f_addHtml(
 		    'conf_vpn_s2sexp_ike_p1_encrypt',
-            '<select name="conf_vpn_s2sexp_ike_p1_encrypt" id="conf_vpn_s2sexp_ike_p1_encrypt" class="v_form_input"><option value="DES" selected>DES</option><option value="3DES">3DES</option><option value="AES128">AES128</option><option value="AES192">AES192</option><option value="AES256">AES256</option><option value="Blowfish">Blowfish</option></select>',
+            '<select name="conf_vpn_s2sexp_ike_p1_encrypt" id="conf_vpn_s2sexp_ike_p1_encrypt" class="v_form_input"><option value="3des" selected>3DES</option><option value="aes128">AES128</option><option value="aes256">AES256</option></select>',
 			g_lang.m_vpn_Encrypt		
 		);	
 		defObj.f_addPassword('conf_vpn_s2sexp_ike_p1_preshare','25',g_lang.m_vpn_PresharedKey);
 		defObj.f_addPassword('conf_vpn_s2sexp_ike_p1_confirm_preshare','25',g_lang.m_vpn_Confirm + ' ' + g_lang.m_vpn_PresharedKey);
 		defObj.f_addHtml(
 		    'conf_vpn_s2sexp_ike_p1_auth',
-            '<select name="conf_vpn_s2sexp_ike_p1_auth" id="conf_vpn_s2sexp_ike_p1_auth" class="v_form_input"><option value="MD5">MD5</option><option value="SHA1" selected>SHA1</option></select>',
+            '<select name="conf_vpn_s2sexp_ike_p1_auth" id="conf_vpn_s2sexp_ike_p1_auth" class="v_form_input"><option value="md5">MD5</option><option value="sha1" selected>SHA1</option></select>',
 			g_lang.m_vpn_auth		
 		);			
 		defObj.f_addHtml(
 		    'conf_vpn_s2sexp_ike_p1_diffle',
-            '<select name="conf_vpn_s2sexp_ike_p1_diffle" id="conf_vpn_s2sexp_ike_p1_diffle" class="v_form_input"><option value="group 1" selected>group 1</option><option value="group 2">group 2</option><option value="group 5">group 5</option><option value="group 14">group 14</option></select>',
+            '<select name="conf_vpn_s2sexp_ike_p1_diffle" id="conf_vpn_s2sexp_ike_p1_diffle" class="v_form_input"><option value="2">group 2</option><option value="5">group 5</option></select>',
 			g_lang.m_vpn_Diffle		
 		);			
 		defObj.f_addInput('conf_vpn_s2sexp_ike_p1_lifetime','25',g_lang.m_vpn_LifeTime);
@@ -211,18 +211,18 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		);						
 		defObj.f_addHtml(
 		    'conf_vpn_s2sexp_ike_p2_dfs',
-            '<select name="conf_vpn_s2sexp_ike_p2_dfs" id="conf_vpn_s2sexp_ike_p2_dfs" class="v_form_input"><option value="group 1" selected>group 1</option><option value="group 2">group 2</option><option value="group 5">group 5</option><option value="group 14">group 14</option></select>',
+            '<select name="conf_vpn_s2sexp_ike_p2_dfs" id="conf_vpn_s2sexp_ike_p2_dfs" class="v_form_input"><option value="2" selected>group 2</option><option value="5">group 5</option></select>',
 			g_lang.m_vpn_DFS	
 		);							
 		defObj.f_addInput('conf_vpn_s2sexp_ike_p2_lifetime','25',g_lang.m_vpn_LifeTime);
 		defObj.f_addHtml(
 		    'conf_vpn_s2sexp_ike_p2_encrypt',
-            '<select name="conf_vpn_s2sexp_ike_p2_encrypt" id="conf_vpn_s2sexp_ike_p2_encrypt" class="v_form_input"><option value="DES" selected>DES</option><option value="3DES">3DES</option><option value="AES128">AES128</option><option value="AES192">AES192</option><option value="AES256">AES256</option><option value="Blowfish">Blowfish</option></select>',
+            '<select name="conf_vpn_s2sexp_ike_p2_encrypt" id="conf_vpn_s2sexp_ike_p2_encrypt" class="v_form_input"><option value="3des" selected>3DES</option><option value="aes128">AES128</option><option value="aes256">AES256</option></select>',
 			g_lang.m_vpn_Encrypt
 		);						
 		defObj.f_addHtml(
 		    'conf_vpn_s2sexp_ike_p2_auth',
-            '<select name="conf_vpn_s2sexp_ike_p2_auth" id="conf_vpn_s2sexp_ike_p2_auth" class="v_form_input"><option value="MD5">MD5</option><option value="SHA1" selected>SHA1</option></select>',
+            '<select name="conf_vpn_s2sexp_ike_p2_auth" id="conf_vpn_s2sexp_ike_p2_auth" class="v_form_input"><option value="md5">MD5</option><option value="sha1" selected>SHA1</option></select>',
 			g_lang.m_vpn_auth
 		);						
 

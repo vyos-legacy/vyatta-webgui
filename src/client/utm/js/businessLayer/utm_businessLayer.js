@@ -534,9 +534,9 @@ function UTM_businessLayer()
         thisObj.f_getVPNObject().f_getSite2SiteOverviewData(guicb);
     }
 
-    this.f_vpnDeleteSite2SiteOverviewConfig = function(tunnelName, guicb)
+    this.f_vpnDeleteSite2SiteOverviewConfig = function(rec, guicb)
     {
-        thisObj.f_getVPNObject().f_deleteSite2SiteOverviewConfig(tunnelName, guicb);
+        thisObj.f_getVPNObject().f_deleteSite2SiteOverviewConfig(rec, guicb);
     }
 
     this.f_vpnGetRemoteOverviewConfigData = function(guicb)

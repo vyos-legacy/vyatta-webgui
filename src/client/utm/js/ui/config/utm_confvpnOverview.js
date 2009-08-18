@@ -543,8 +543,10 @@ function UTM_confVPNOverview(name, callback, busLayer)
             thisObj.f_loadVMData();
             thisObj.f_enabledActionButtons(true);
         }
-
-        this.m_busLayer.f_vpnDeleteSite2SiteOverviewConfig(name, cb);
+        var rec = this.f_getS2SRecByName(name);
+		if (rec != null) {
+			this.m_busLayer.f_vpnDeleteSite2SiteOverviewConfig(rec, cb);
+		}
     }
 
     this.f_handleRemoteDelete = function(name)

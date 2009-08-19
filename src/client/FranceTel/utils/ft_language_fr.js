@@ -274,7 +274,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////;;;
     // Mainframe;;;
 	m_mainFrmGuest : "invité",
-    m_mainFrmWelcome : "bienvenue",
+    m_mainFrmWelcome : "Bienvenue",
 	m_mainFrmConnected : "vous êtes connecté au module d'administration de l'Open Appliance",
 	m_mainFrmSignIn : "Veuillez vous authentifier", 
 

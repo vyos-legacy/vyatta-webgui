@@ -273,7 +273,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Mainframe
 	m_mainFrmGuest : "guest",
-    m_mainFrmWelcome : "welcome",
+    m_mainFrmWelcome : "Welcome",
 	m_mainFrmConnected: "you are connected to the Open Appliance admin service",
 	m_mainFrmSignIn: "Please sign in to the Open Appliance admin service",
 

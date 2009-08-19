@@ -120,6 +120,7 @@ function FT_confBLBcheck(name, callback, busLayer)
 		    } else {
                 g_utils.f_popupMessage(g_lang.m_menuBLBAssocication +  ' ' + g_lang.m_formSave,   
 				                       'ok', g_lang.m_menuBLBCredCheck, true, 'f_confBLBcheckApply()');
+			    g_mainFrameObj.m_priNavigation.f_addBlb();									  
 		    }	
 		}	
 		thisObj.m_busLayer.f_setOAConfig(cb, blb);					

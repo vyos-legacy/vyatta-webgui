@@ -114,10 +114,13 @@ function FT_confBLB(name, callback, busLayer)
 	
 	this.f_applyStandAlone = function()
 	{
-        thisObj.m_blb.m_type = 'standalone';
-		thisObj.m_blb.m_username = 'installer';
-		thisObj.m_blb.m_passwd = '';
-			
+		if (thisObj.m_blb == undefined) {
+			thisObj.m_blb = new FT_blb('standalone', 'installer', '');
+		} else {
+			thisObj.m_blb.m_type = 'standalone';
+			thisObj.m_blb.m_username = 'installer';
+			thisObj.m_blb.m_passwd = '';
+		}
         var cb = function(evt) {
 		    if (evt.f_isError()) {
 			    if (evt.m_errCode == 3) {
@@ -126,6 +129,7 @@ function FT_confBLB(name, callback, busLayer)
 		        g_utils.f_popupMessage(evt.m_errMsg, 'ok', g_lang.m_error, true);			    
 		    } else {
                 g_utils.f_popupMessage(g_lang.m_menuBLBAssocication +  ' ' + g_lang.m_formSave,   'ok', g_lang.m_menuBLBAssocication,true);
+				g_mainFrameObj.m_priNavigation.f_removeBlb();
 		    }			
 		}	
 		thisObj.m_busLayer.f_setOAConfig(cb, thisObj.m_blb);	
@@ -134,8 +138,12 @@ function FT_confBLB(name, callback, busLayer)
 	
 	this.f_applyAssociation = function()
 	{
-		thisObj.m_blb.m_type = 'association';
-		thisObj.m_blb.m_username = 'installer';
+		if (thisObj.m_blb == undefined) {
+			thisObj.m_blb = new FT_blb('association', 'installer', '');
+		} else {
+		    thisObj.m_blb.m_type = 'association';
+		    thisObj.m_blb.m_username = 'installer';
+		}		
         g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_BLB_CHECK_ID, thisObj.m_blb);			
 	}
     

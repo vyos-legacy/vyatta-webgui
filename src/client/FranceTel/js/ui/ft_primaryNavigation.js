@@ -86,6 +86,76 @@ function FT_primaryNavigation()
         g_xbObj.f_xbAttachEventListener(newVM, 'mouseover', thisObj.f_handleMouseover, true);
         g_xbObj.f_xbAttachEventListener(newVM, 'mouseout', thisObj.f_handleMouseout, true);
     }
+	
+	/*
+	 * Remove this VM from the primary navigation bar
+	 */
+	this.f_removeVm = function(vmId)
+	{
+		var removeVm = document.getElementById(vmId);
+		if (removeVm != null) {
+            g_xbObj.f_xbDetachEventListener(removeVm, 'click', thisObj.f_handleClick, true);
+            g_xbObj.f_xbDetachEventListener(removeVm, 'mouseover', thisObj.f_handleMouseover, true);
+            g_xbObj.f_xbDetachEventListener(removeVm, 'mouseout', thisObj.f_handleMouseout, true);		
+			var p = document.getElementById(VYA.FT_CONST.DOM_MAIN_FRM_NAV_BAR_ID);
+			p.removeChild(removeVm);
+            return true; 
+		}
+		return false;
+	}
+	
+	this.f_removeBlb = function()
+	{
+		var removed = thisObj.f_removeVm('blb');
+		if (removed) {
+			for (var i =0; i < thisObj.m_vmList.length; i++) {
+				if (thisObj.m_vmList[i].m_name == 'blb') {
+					thisObj.m_vmList.splice(i,1);
+					break;
+				}
+			}			
+		}
+	}
+	
+	this.f_addBlb = function()
+	{
+		var found = false;
+		for (var i=0; i < thisObj.m_vmList.length; i++) {
+			if (thisObj.m_vmList[i].m_name == 'blb') {
+				found = true;
+			}
+		}
+		if (!found) {
+			var vm = new FT_vmRecObj('blb', g_lang.m_tnBLB);
+			vm.m_guiUri = "/webconf/openappliance_index.html";
+			thisObj.m_vmList.unshift(vm);
+			thisObj.f_addBlb2VmTab(vm);
+		}			
+	}
+	
+    this.f_addBlb2VmTab = function(blb)
+    {
+        //alert('addVm: vmId: ' + vmId + ' vmDisplay: ' + vmDisplay + ' vmURL: ' + vmURL);
+        var p = document.getElementById(VYA.FT_CONST.DOM_MAIN_FRM_NAV_BAR_ID);
+        var newVM = document.createElement('th');
+        newVM.setAttribute('id', blb.m_name);
+        newVM.setAttribute("class", 'VYA.FT_CONST.DOM_MAIN_FRM_NAV_BAR_CLS');
+        newVM.setAttribute("urlPath", blb.m_guiUri);
+        newVM.appendChild(document.createTextNode(blb.m_displayName));
+        newVM.style.width = VYA.DYN_STYLE.PRI_NAV_ITEM_WIDTH;
+        newVM.style.height = '40px';
+        newVM.style.border = VYA.DYN_STYLE.PRI_NAV_ITEM_BORDER;
+        newVM.style.fontWeight = VYA.DYN_STYLE.PRI_NAV_ITEM_FONT_WEIGHT;
+        newVM.style.textAlign = VYA.DYN_STYLE.PRI_NAV_ITEM_TEXT_ALIGN;
+        newVM.style.backgroundImage = VYA.DYN_STYLE.PRI_NAV_ITEM_BG_IMG;
+		var oaVm = document.getElementById('openapp');
+		if (oaVm) {
+			p.insertBefore(newVM, oaVm);
+			g_xbObj.f_xbAttachEventListener(newVM, 'click', thisObj.f_handleClick, true);
+			g_xbObj.f_xbAttachEventListener(newVM, 'mouseover', thisObj.f_handleMouseover, true);
+			g_xbObj.f_xbAttachEventListener(newVM, 'mouseout', thisObj.f_handleMouseout, true);
+		}
+    }	
     
     /*
      * Return the current selected VM

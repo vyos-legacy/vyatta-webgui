@@ -51,6 +51,47 @@ sub hash_code {
 
 ##########################################################################
 #
+# get number of tunnels for this peer
+#
+##########################################################################
+sub get_tunnel_count {
+    my ($p) = @_;
+    my $ct = 0;
+    my $config = get();
+    if (!defined $config) {
+	return $ct;
+    }
+    #let's use the xmlin parser here to handle this.
+    my $xs = new XML::Simple(forcearray=>1);
+    my $opt = $xs->XMLin($config);
+    my $peerip = $opt->{"peerip"};
+    for (my $i = 0; $i < @$peerip; $i++) {
+	if ($opt->{"peerip"}->[0] eq $p) {
+	    $ct++;
+	}
+    }
+    return $ct;
+}
+
+##########################################################################
+#
+# find peerip for this tunnelname
+#
+##########################################################################
+sub get_current_peer {
+    my ($h) = @_;
+    my $config = get($h);
+    if (!defined $config || $config eq '') {
+	return;
+    }
+    #let's use the xmlin parser here to handle this.
+    my $xs = new XML::Simple(forcearray=>1);
+    my $opt = $xs->XMLin($config);
+    return $opt->{"peerip"}->[0];
+}
+
+##########################################################################
+#
 # execute_set
 #
 ##########################################################################
@@ -94,11 +135,10 @@ sub execute_disable {
     }
     my $xs = new XML::Simple(forcearray=>1);
     my $opt = $xs->XMLin($s);
-    my $peerip = $opt->{"peerip"}->[0];
     my $tunnelname = $opt->{"tunnelname"}->[0];
     my $disable = $opt->{"disable"}->[0];
 
-    if (!defined $peerip || !defined $tunnelname || !$disable) {
+    if (!defined $tunnelname || !$disable) {
 	print ("<form name='disable' code=1></form>");
     }
 
@@ -111,14 +151,22 @@ sub execute_disable {
     }
 
     # apply config command
-    my $thash = hash_code($tunnelname);
+    my $h = hash_code($tunnelname);
+
+    #now find the peerip for this tunnel, if different delete current configuration
+    my $peerip = get_current_peer($h);
+    if ($peerip eq '') {
+	print ("<form name='disable' code=1></form>");
+	exit 1;
+    }
+
 
     my $cmd;
     if ($disable eq 'true') {
-	$cmd = "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $thash disable"
+	$cmd = "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $h disable"
     }
     else {
-	$cmd = "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec site-to-site peer $peerip tunnel $thash disable"
+	$cmd = "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec site-to-site peer $peerip tunnel $h disable"
     }
     $err = system($cmd);
     if ($err != 0) {
@@ -163,11 +211,29 @@ sub execute_delete {
     }
     my $xs = new XML::Simple(forcearray=>1);
     my $opt = $xs->XMLin($s);
-    my $peerip = $opt->{"peerip"}->[0];
     my $tunnelname = $opt->{"tunnelname"}->[0];
 
-    if (!defined $peerip || !defined $tunnelname) {
+    if (!defined $tunnelname) {
 	print ("<form name='delete' code=1></form>");
+	exit 1;
+    }
+    del($tunnelname);
+}
+
+##########################################################################
+#
+# del
+#
+##########################################################################
+sub del {
+    my ($tunnelname) = @_;
+    my $h = hash_code($tunnelname);
+
+    #now find the peerip for this tunnel, if different delete current configuration
+    my $peerip = get_current_peer($h);
+    if ($peerip eq '') {
+	print ("<form name='delete' code=1></form>");
+	exit 1;
     }
 
     # set up config session
@@ -181,8 +247,37 @@ sub execute_delete {
     # apply config command
     my $h = hash_code($tunnelname);
 
-    my $cmd = "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec site-to-site peer $peerip tunnel $h";
+    my $cmd;
+
+    #NEED TO REMOVE THE PEER IF THIS IS THE LAST ENTRY...
+    my $ct = get_tunnel_count($peerip);
+    if ($ct > 1) {
+	$cmd = "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec site-to-site peer $peerip tunnel $h";	
+    }
+    else {
+	$cmd = "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec site-to-site peer $peerip";
+    }
     $err = system($cmd);
+    if ($err != 0) {
+	print("<form name='delete' code=2></form>");
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    #NEED TO DELETE AND COMMIT THIS FIRST
+    # apply config command
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit");
+    if ($err != 0) {
+	print("<form name='delete' code=2></form>");
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # set up config session
+    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+
+    # set up config session
+    my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
     if ($err != 0) {
 	print("<form name='delete' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -197,7 +292,7 @@ sub execute_delete {
 	exit 1;
     }
 
-    $cmd = "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec esp-group ike_$h";
+    $cmd = "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec esp-group esp_$h";
     $err = system($cmd);
     if ($err != 0) {
 	print("<form name='delete' code=2></form>");
@@ -292,10 +387,13 @@ sub execute_set_expert {
 	exit 1;
     }
 
-
-
-
     my $h = hash_code($tunnelname);
+
+    #now find the peerip for this tunnel, if different delete current configuration
+    my $cur_peerip = get_current_peer($h);
+    if ($cur_peerip ne $peerip) {
+	del($tunnelname);
+    }
 
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
@@ -481,6 +579,14 @@ sub execute_set_easy {
 
     my $h = hash_code($tunnelname);
 
+    #now find the peerip for this tunnel, if different delete current configuration
+    my $cur_peerip = get_current_peer($h);
+    if (defined($cur_peerip) && $cur_peerip ne '' && $cur_peerip ne $peerip) {
+	del($tunnelname);
+    }
+
+
+
     # set up config session
     my $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin");
     if ($err != 0) {
@@ -619,9 +725,19 @@ sub execute_get {
     if (defined $s && $s ne '') {
 	my $xs = new XML::Simple(forcearray=>1);
 	my $opt = $xs->XMLin($s);
-	my $peerip = $opt->{"peerip"}->[0];
 	my $tunnelname = $opt->{"tunnelname"}->[0];
+	return get($tunnelname);
     }
+    return;
+}
+
+##########################################################################
+#
+# execute_get
+#
+##########################################################################
+sub get {
+    my ($tunnelname) = @_;
 
     my @values;
     my $out;
@@ -631,12 +747,13 @@ sub execute_get {
     my @v;
     my $ct = 0;
     my $tmp;
+    my $ret;
     my $type = "easy";
     for $v (@values) {
 	$ct++;
 	if ($v eq 'peer') {
 	    if ($tmp ne '') {
-		print "<site-to-site><$type>$tmp</$type><status>tbd</status></site-to-site>";
+		$ret .= "<site-to-site><$type/>$tmp<status>tbd</status></site-to-site>";
 		$tmp = "";
 	    }
 	    $tmp .= "<peerip>$values[$ct]</peerip>";
@@ -666,8 +783,9 @@ sub execute_get {
 
     #let's catch the last one here
     if ($tmp ne '') {
-	print "<site-to-site><$type>$tmp</$type></site-to-site>";
+	$ret .= "<site-to-site><$type/>$tmp</site-to-site>";
     }
+    return $ret;
 }
 
 ##########################################################################
@@ -679,9 +797,9 @@ sub execute_get {
 ##########################################################################
 sub usage() {
     print "       $0 --set <key>key</key><value>value</value><key>key</key><value>value</value>...>\n";    
-    print "       $0 --get [tunnelname]\n";
-    print "       $0 --delete <key>peer</key><tunnelname>name</tunnelname>\n";
-    print "       $0 --disable <key>peer</key><tunnelname>name</tunnelname><disable>true|false</disable>\n";
+    print "       $0 --get <tunnelname>name</tunnelname>\n";
+    print "       $0 --delete <tunnelname>name</tunnelname>\n";
+    print "       $0 --disable <tunnelname>name</tunnelname><disable>true|false</disable>\n";
     exit 0;
 }
 
@@ -700,9 +818,10 @@ elsif (defined $disable) {
     execute_disable($disable);
 }
 elsif (defined $delete) {
-    execute_disable($delete);
+    execute_delete($delete);
 }
 else {
-    execute_get($get);
+    my $out = execute_get($get);
+    print $out;
 }
 exit 0;

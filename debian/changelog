@@ -1,3 +1,28 @@
+vyatta-webgui (0.2+fxd0+103) unstable; urgency=low
+
+  [ Loi Vo ]
+  * Change welcome message to lower case 'You'
+
+  [ Michael Larson ]
+  * fix for bug 4820. problem was environment wasn't set up correctly
+    for cmdline completion via webgui. changing method in script to
+    access config values outside of
+  * fix for bug 4800.
+  * partial fix for domU archive naming support. archive is now returned
+    to dom0 with specified name and stored in archive contents file.
+    will be used when retrieving restored name.
+  * support for arbritrary  domU filenames rather than filenames based
+    on utm--supports date/time/version format
+  * fixes to oa cli command interface
+
+  [ Loi Vo ]
+  * Bug 4857:
+  * Bug: 4802
+  * Bug: 4816
+  * Bug: 4814
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 19 Aug 2009 18:04:13 +0000
+
 vyatta-webgui (0.2+fxd0+102) unstable; urgency=low
 
   * * user right screen: load vm data for vm deployment check.

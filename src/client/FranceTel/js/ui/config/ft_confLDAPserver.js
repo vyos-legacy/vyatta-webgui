@@ -69,7 +69,7 @@ function FT_confLDAPserver (name, callback, busLayer) {
 				v_type: 'label',
 				id: 'conf_ldap_srv_suffix_label',
 				padding : '60px',				
-				text: g_lang.m_ldapSuffix,
+				text: g_lang.m_ldapSuffix.toLowerCase(),
 				v_new_row: 'true'				
 			}, {
 				v_type: 'text',

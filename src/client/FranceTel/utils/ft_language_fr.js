@@ -369,7 +369,7 @@ var g_lang =
 	m_ldapInOA : "dans l'Open Appliance", 
 	m_ldapInLan : "sur le LAN Entreprise", 
 	m_ldapSrvAddr : "adresse du serveur", 
-	m_ldapSuffix : "Suffixe", 
+	m_ldapSuffix : "suffixe", 
 	m_ldapUsrUpdateRt : "utilisateur (droits d'écriture)", 
 	m_ldapUsrReadRt : "utilisateur (droits de lecture)",
 	m_ldapPasswdUpdateRt : "mot de passe (droits d'écriture)", 

@@ -61,64 +61,84 @@ function FT_confLDAPserver (name, callback, busLayer) {
 				text: g_lang.m_ldapSrvAddr,
 				v_new_row: 'true'
 			}, {
+				v_type: 'label',
+				id: 'conf_ldap_srv_server_addr_label_require',
+				text: ' ',
+				require: 'true'					
+			}, {
 				v_type: 'text',
 				id : 'conf_ldap_srv_server_addr',				
 				size: '64',
+				colspan: 4,
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
 				id: 'conf_ldap_srv_suffix_label',
 				padding : '60px',				
 				text: g_lang.m_ldapSuffix.toLowerCase(),
-				v_new_row: 'true'				
+				v_new_row: 'true'
+			}, {
+				v_type: 'label',
+				id: 'conf_ldap_srv_suffix_label_require',
+				text: ' ',
+				require: 'true'	
 			}, {
 				v_type: 'text',
 				id : 'conf_ldap_srv_suffix',				
 				size: '64',
+				colspan: 4,				
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
 				id: 'conf_ldap_srv_user_update_label',
 				padding : '60px',				
 				text: g_lang.m_ldapUsrUpdateRt,
+				colspan: 2,
 				v_new_row: 'true'
 			}, {
 				v_type: 'text',
 				id: 'conf_ldap_srv_user_update',
 				size: '64',
+				colspan: 4,				
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
 				id: 'conf_ldap_srv_user_update_passwd_label',
 				padding : '60px',					
 				text: g_lang.m_formPassword,
+				colspan: 2,
 				v_new_row: 'true'
 			}, {
 				v_type: 'password',
 				id: 'conf_ldap_srv_user_update_passwd',
 				size: '64',
+				colspan: 4,				
 				v_end_row: 'true'				
 			}, {
 				v_type: 'label',
 				id: 'conf_ldap_srv_user_read_label',
 				padding : '60px',					
 				text: g_lang.m_ldapUsrReadRt,
+				colspan: 2,
 				v_new_row: 'true'
 			}, {
 				v_type: 'text',
 				id: 'conf_ldap_srv_user_read',
 				size: '64',
+				colspan: 4,				
 				v_end_row: 'true'
 			}, {
 				v_type: 'label',
 				id: 'conf_ldap_srv_user_read_passwd_label',
 				padding : '60px',					
 				text: g_lang.m_formPassword,
+				colspan: 2,
 				v_new_row: 'true'
 			}, {
 				v_type: 'password',
 				id: 'conf_ldap_srv_user_read_passwd',
 				size: '64',
+				colspan: 4,				
 				v_end_row: 'true'					
 			}],				
 			buttons: [ {
@@ -274,11 +294,12 @@ function FT_confLDAPserver (name, callback, busLayer) {
         }
 			
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_suffix, g_lang.m_ldapSuffix + ' ' + g_lang.m_formNoEmpty, errorInner);
+		/*
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_user_update, g_lang.m_ldapUsrUpdateRt + ' ' + g_lang.m_formNoEmpty, errorInner);
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_user_update_passwd, g_lang.m_ldapPasswdUpdateRt + ' ' + g_lang.m_formNoEmpty, errorInner);
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_user_read, g_lang.m_ldapUsrReadRt + ' ' + g_lang.m_formNoEmpty, errorInner);
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_ldap_srv_user_read_passwd, g_lang.m_ldapPasswdReadRt + ' ' + g_lang.m_formNoEmpty, errorInner);
-			   		   
+		*/	   		   
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';

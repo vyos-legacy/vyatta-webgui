@@ -321,20 +321,20 @@ sub del {
 sub execute_set_expert {
     my ($opt) = @_;
 
-    my $peerip = $opt->{expert}->[0]->{peerip}->[0];
-    my $presharedkey = $opt->{expert}->[0]->{presharedkey}->[0];
-    my $tunnelname = $opt->{expert}->[0]->{tunnelname}->[0];
-    my $lnet = $opt->{expert}->[0]->{lnet}->[0];
-    my $rnet = $opt->{expert}->[0]->{rnet}->[0];
-    my $type = $opt->{expert}->[0]->{type}->[0];
-    my $emode = $opt->{expert}->[0]->{emode}->[0];
-    my $ikeencrypt = $opt->{expert}->[0]->{ikeencrypt}->[0];
-    my $espencrypt = $opt->{expert}->[0]->{espencrypt}->[0];
-    my $dhgroup = $opt->{expert}->[0]->{dhgroup}->[0];
-    my $ikeltime = $opt->{expert}->[0]->{ikeltime}->[0];
-    my $espltime = $opt->{expert}->[0]->{espltime}->[0];
-    my $ikeauth = $opt->{expert}->[0]->{ikeauth}->[0];
-    my $espauth = $opt->{expert}->[0]->{espauth}->[0];
+    my $peerip = $opt->{peerip}->[0];
+    my $presharedkey = $opt->{presharedkey}->[0];
+    my $tunnelname = $opt->{tunnelname}->[0];
+    my $lnet = $opt->{lnet}->[0];
+    my $rnet = $opt->{rnet}->[0];
+    my $type = $opt->{type}->[0];
+    my $emode = $opt->{emode}->[0];
+    my $ikeencrypt = $opt->{ikeencrypt}->[0];
+    my $espencrypt = $opt->{espencrypt}->[0];
+    my $dhgroup = $opt->{dhgroup}->[0];
+    my $ikeltime = $opt->{ikeltime}->[0];
+    my $espltime = $opt->{espltime}->[0];
+    my $ikeauth = $opt->{ikeauth}->[0];
+    my $espauth = $opt->{espauth}->[0];
 
     my $err_str = '';
     if (!defined $tunnelname) {
@@ -550,11 +550,11 @@ sub execute_set_expert {
 sub execute_set_easy {
     my ($opt) = @_;
 
-    my $peerip = $opt->{easy}->[0]->{peerip}->[0];
-    my $presharedkey = $opt->{easy}->[0]->{presharedkey}->[0];
-    my $tunnelname = $opt->{easy}->[0]->{tunnelname}->[0];
-    my $lnet = $opt->{easy}->[0]->{lnet}->[0];
-    my $rnet = $opt->{easy}->[0]->{rnet}->[0];
+    my $peerip = $opt->{peerip}->[0];
+    my $presharedkey = $opt->{presharedkey}->[0];
+    my $tunnelname = $opt->{tunnelname}->[0];
+    my $lnet = $opt->{lnet}->[0];
+    my $rnet = $opt->{rnet}->[0];
 
     if (!defined $tunnelname || !defined $peerip || !defined $presharedkey || !defined $lnet || !defined $rnet) {
 	print ("<form name='easy' code=1>");

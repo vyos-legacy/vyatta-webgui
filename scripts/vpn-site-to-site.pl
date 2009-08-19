@@ -42,11 +42,33 @@ my ($set,$get,$disable,$delete);
 ##########################################################################
 sub hash_code {
     my $hash = 0;
-    use integer;
+#    use integer;
     foreach(split //,shift) {
 	$hash = 31*$hash+ord($_);
     }
     return $hash;
+}
+
+##########################################################################
+#
+# tunnel_exists
+#
+##########################################################################
+sub tunnel_exists {
+    my ($p,$t) = @_;
+    my $h = hash_code($t);
+    my $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site peer $p`;
+    my @values = split(' ', $out);
+    my $v;
+    my @v;
+    my $ct = 0;
+    for $v (@values) {
+	$ct++;
+	if ($v eq 'tunnel' && $values[$ct] ne $h) {
+	    return "true";
+	}
+    }
+    return "false";
 }
 
 ##########################################################################
@@ -387,6 +409,13 @@ sub execute_set_expert {
 	exit 1;
     }
 
+    #now check if peerip exists with a different tunnel name, then reject
+    if (tunnel_exists($peerip,$tunnelname) eq "true") {
+	print ("<form name='expert' code=3>");
+	print ("</form>");
+	exit 1;
+    }
+
     my $h = hash_code($tunnelname);
 
     #now find the peerip for this tunnel, if different delete current configuration
@@ -577,6 +606,13 @@ sub execute_set_easy {
 	exit 1;
     }
 
+    #now check if peerip exists with a different tunnel name, then reject
+    if (tunnel_exists($peerip,$tunnelname) eq "true") {
+	print ("<form name='easy' code=3>");
+	print ("</form>");
+	exit 1;
+    }
+
     my $h = hash_code($tunnelname);
 
     #now find the peerip for this tunnel, if different delete current configuration
@@ -739,10 +775,8 @@ sub execute_get {
 sub get {
     my ($tunnelname) = @_;
 
-    my @values;
-    my $out;
-    $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site`;
-    @values = split(' ', $out);
+    my $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site`;
+    my @values = split(' ', $out);
     my $v;
     my @v;
     my $ct = 0;

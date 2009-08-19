@@ -212,10 +212,14 @@ function FT_tabPanel()
 		}
 		var ifr = document.getElementById('mainFrame');
 		if (ifr) {
-			var d = ifr.contentWindow.document;
-			if (d) {
-				g_cookie.f_set(vmId + '_' + g_consObj.V_COOKIES_LOC, d.location, g_cookie.m_userNameExpire);
-			}
+			try {
+				var d = ifr.contentWindow.document;
+				if (d) {
+					g_cookie.f_set(vmId + '_' + g_consObj.V_COOKIES_LOC, d.location, g_cookie.m_userNameExpire);
+				}
+			} catch (e) {
+				//catching permission denied exception
+			};
 		}
 	}
 		
@@ -243,6 +247,9 @@ function FT_tabPanel()
 			return;
 		} 
 		var r = (d.compatMode == 'BackCompat') ? d.body : d.documentElement;
+		
+		if (d.body == null) return;
+		
 		var scrollHeight = Math.max(r.scrollHeight, d.body.scrollHeight);
 		var isVS = scrollHeight > r.clientHeight;
 		//var isVS = r.scrollHeight > r.clientHeight;

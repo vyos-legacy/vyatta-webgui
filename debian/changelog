@@ -1,3 +1,23 @@
+vyatta-webgui (0.2.14+fxdU+104) unstable; urgency=low
+
+  [ slioch ]
+  * additional configuration needed
+  * correct args
+  * additional fixes to disable and deletion logic for vpn
+  * now just key off of tunnelname and not peerip. additional fixes to
+    removal of configuration.
+  * changes associated with api changes
+  * added restriction on configuration to allow a single tunnel per peer
+    ip. openswan configuration limitation.
+  * changed hash key to avoid collisions. added support for expert
+    parameters, added support for status field, changed api to support
+    unique key gen
+
+  [ Loi Vo ]
+  * 1. Move <easy>, <expert> tag to same level with other parameters.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 20 Aug 2009 18:37:43 +0000
+
 vyatta-webgui (0.2.14+fxdU+103) unstable; urgency=low
 
   [ slioch ]

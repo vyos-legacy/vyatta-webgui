@@ -17,8 +17,8 @@
 # All Rights Reserved.
 # 
 # Author: Michael Larson
-# Date: April 2009
-# Description: Script to archive backup and restore
+# Date: August 2009
+# Description: Script to support vpn configuration on the utm
 # 
 # **** End License ****
 #
@@ -33,7 +33,7 @@ use XML::Simple;
 
 my ($set,$get,$disable,$delete);
 
-
+#NOTE: need to run a collision detection on newly added configurations.
 
 ##########################################################################
 #
@@ -41,12 +41,35 @@ my ($set,$get,$disable,$delete);
 #
 ##########################################################################
 sub hash_code {
-    my $hash = 0;
-#    use integer;
-    foreach(split //,shift) {
-	$hash = 31*$hash+ord($_);
+    #base code off of peer ip since there is a one to one mapping between 
+    #tunnel and peer ip.
+
+    #convert ipv4 to u32
+    my ($ip_address) = @_;
+    my @octets = split(/\./, $ip_address);
+    return ($octets[0]*1<<24)+($octets[1]*1<<16)+($octets[2]*1<<8)+($octets[3]);
+}
+
+##########################################################################
+#
+# tunnel status
+#
+##########################################################################
+sub get_status {
+    my ($peerip) = @_;
+    my $out = `/opt/vyatta/sbin/vyatta-output-config.pl run show vpn ipsec sa`;
+    my $ct = 0;
+    my $v;
+    my @values = split(' ', $out);
+    for $v (@values) {
+	if ($v eq $peerip) {
+	    if ($values[$ct+3] ne 'n/a') {
+		return "up";
+	    }
+	    $ct++;
+	}
     }
-    return $hash;
+    return "down";
 }
 
 ##########################################################################
@@ -56,7 +79,7 @@ sub hash_code {
 ##########################################################################
 sub tunnel_exists {
     my ($p,$t) = @_;
-    my $h = hash_code($t);
+    my $h = hash_code($p);
     my $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site peer $p`;
     my @values = split(' ', $out);
     my $v;
@@ -73,7 +96,7 @@ sub tunnel_exists {
 
 ##########################################################################
 #
-# get number of tunnels for this peer
+# get_tunnel_count
 #
 ##########################################################################
 sub get_tunnel_count {
@@ -97,7 +120,7 @@ sub get_tunnel_count {
 
 ##########################################################################
 #
-# find peerip for this tunnelname
+# get_current_peer
 #
 ##########################################################################
 sub get_current_peer {
@@ -157,10 +180,10 @@ sub execute_disable {
     }
     my $xs = new XML::Simple(forcearray=>1);
     my $opt = $xs->XMLin($s);
-    my $tunnelname = $opt->{"tunnelname"}->[0];
+    my $peerip = $opt->{"peerip"}->[0];
     my $disable = $opt->{"disable"}->[0];
 
-    if (!defined $tunnelname || !$disable) {
+    if (!defined $peerip || !$disable) {
 	print ("<form name='disable' code=1></form>");
     }
 
@@ -173,7 +196,7 @@ sub execute_disable {
     }
 
     # apply config command
-    my $h = hash_code($tunnelname);
+    my $h = hash_code($peerip);
 
     #now find the peerip for this tunnel, if different delete current configuration
     my $peerip = get_current_peer($h);
@@ -233,7 +256,7 @@ sub execute_delete {
     }
     my $xs = new XML::Simple(forcearray=>1);
     my $opt = $xs->XMLin($s);
-    my $tunnelname = $opt->{"tunnelname"}->[0];
+    my $tunnelname = $opt->{"peerip"}->[0];
 
     if (!defined $tunnelname) {
 	print ("<form name='delete' code=1></form>");
@@ -248,8 +271,8 @@ sub execute_delete {
 #
 ##########################################################################
 sub del {
-    my ($tunnelname) = @_;
-    my $h = hash_code($tunnelname);
+    my ($peerip) = @_;
+    my $h = hash_code($peerip);
 
     #now find the peerip for this tunnel, if different delete current configuration
     my $peerip = get_current_peer($h);
@@ -265,9 +288,6 @@ sub del {
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 	exit 1;
     }
-
-    # apply config command
-    my $h = hash_code($tunnelname);
 
     my $cmd;
 
@@ -337,7 +357,7 @@ sub del {
 
 ##########################################################################
 #
-# execute_set
+# execute_set_expert
 #
 ##########################################################################
 sub execute_set_expert {
@@ -416,7 +436,7 @@ sub execute_set_expert {
 	exit 1;
     }
 
-    my $h = hash_code($tunnelname);
+    my $h = hash_code($peerip);
 
     #now find the peerip for this tunnel, if different delete current configuration
     my $cur_peerip = get_current_peer($h);
@@ -449,6 +469,22 @@ sub execute_set_expert {
     }
 
     # apply config command
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec esp-group esp_$h lifetime $espltime");
+    if ($err != 0) {
+	print("<form name='expert' code=2></form>");
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # apply config command
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec esp-group esp_$h proposal 1 hash $espauth");
+    if ($err != 0) {
+	print("<form name='expert' code=2></form>");
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec ike-group ike_$h proposal 1 encryption $ikeencrypt");
     if ($err != 0) {
 	print("<form name='expert' code=2></form>");
@@ -457,7 +493,7 @@ sub execute_set_expert {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec ike-group ike_$h proposal 1 hash $ikeauth");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec ike-group ike_$h proposal 1 dh-group $dhgroup");
     if ($err != 0) {
 	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -465,7 +501,15 @@ sub execute_set_expert {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec ike-group ike_$h proposal 1 dh-group $dhgroup");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec ike-group ike_$h lifetime $ikeltime");
+    if ($err != 0) {
+	print("<form name='expert' code=2></form>");
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+
+    # apply config command
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip authentication $ikeauth");
     if ($err != 0) {
 	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -573,7 +617,7 @@ sub execute_set_expert {
 
 ##########################################################################
 #
-# execute_set
+# execute_set_easy
 #
 ##########################################################################
 sub execute_set_easy {
@@ -613,7 +657,7 @@ sub execute_set_easy {
 	exit 1;
     }
 
-    my $h = hash_code($tunnelname);
+    my $h = hash_code($peerip);
 
     #now find the peerip for this tunnel, if different delete current configuration
     my $cur_peerip = get_current_peer($h);
@@ -761,19 +805,19 @@ sub execute_get {
     if (defined $s && $s ne '') {
 	my $xs = new XML::Simple(forcearray=>1);
 	my $opt = $xs->XMLin($s);
-	my $tunnelname = $opt->{"tunnelname"}->[0];
-	return get($tunnelname);
+	my $peerip = $opt->{"peerip"}->[0];
+	return get($peerip);
     }
-    return;
+    return get();
 }
 
 ##########################################################################
 #
-# execute_get
+# get
 #
 ##########################################################################
 sub get {
-    my ($tunnelname) = @_;
+    my ($peerip_filt) = @_;
 
     my $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec site-to-site`;
     my @values = split(' ', $out);
@@ -781,16 +825,19 @@ sub get {
     my @v;
     my $ct = 0;
     my $tmp;
+    my $peerip;
     my $ret;
     my $type = "easy";
     for $v (@values) {
 	$ct++;
 	if ($v eq 'peer') {
 	    if ($tmp ne '') {
-		$ret .= "<site-to-site><$type/>$tmp<status>tbd</status></site-to-site>";
+		my $status = get_status($peerip);
+		$ret .= "<site-to-site><$type/>$tmp<status>$status</status></site-to-site>";
 		$tmp = "";
 	    }
-	    $tmp .= "<peerip>$values[$ct]</peerip>";
+	    $peerip = $values[$ct];
+	    $tmp .= "<peerip>$peerip</peerip>";
 	}
 	elsif ($v eq 'description') {
 	    #let's overload this with the form type as well (easy|expert)
@@ -800,6 +847,9 @@ sub get {
 		$type = $tmp2[1];
 	    }
 	    $tmp .= "<tunnelname>$tmp2[0]</tunnelname>";
+	    if ($tmp2[1] eq 'expert') {
+		$tmp .= get_expert_params($peerip);
+	    }
 	}
 	elsif ($v eq 'local-subnet') {
 	    $tmp.= "<lnet>$values[$ct]</lnet>";
@@ -817,9 +867,61 @@ sub get {
 
     #let's catch the last one here
     if ($tmp ne '') {
-	$ret .= "<site-to-site><$type/>$tmp</site-to-site>";
+	my $status = get_status($peerip);
+	$ret .= "<site-to-site><$type/>$tmp<status>$status</status></site-to-site>";
     }
     return $ret;
+}
+
+##########################################################################
+#
+# get_expert_params
+#
+##########################################################################
+sub get_expert_params {
+    my ($peerip) = @_;
+    my $h = get_hash_code($peerip);
+
+    #grab the additional details out of the ike/esp configuration areas
+    my $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec ike-group ike_$h`;
+    my @values = split(' ', $out);
+    my $v;
+    my @v;
+    my $ct = 0;
+    my $tmp;
+    for $v (@values) {
+	$ct++;
+	if ($v eq "dh-group") {
+	    $tmp .= "<dh-group>$values[$ct]</dh-group>";
+	}
+	elsif ($v eq "encryption") {
+	    $tmp .= "<ikeencrypt>$values[$ct]</ikencrypt>";
+	}
+	elsif ($v eq "agressive-mode") {
+	    $tmp .= "<emode>$values[$ct]</emode>";
+	}
+	elsif ($v eq "lifetime") {
+	    $tmp .= "<ikeltime>$values[$ct]</ikeltime>";
+	}
+    }
+
+    #grab the additional details out of the ike/esp configuration areas
+    $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec esp-group esp_$h`;
+    @values = split(' ', $out);
+    $ct = 0;
+    for $v (@values) {
+	if ($v eq "lifetime") {
+	    $tmp .= "<espltime>$values[$ct]</espltime>";
+	}
+	elsif ($v eq "encryption") {
+	    $tmp .= "<espencrypt>$values[$ct]</espencrypt>";
+	}
+	elsif ($v eq "hash") {
+	    $tmp .= "<espauth>$values[$ct]</espauth>";
+	}
+	$ct++;
+    }
+    return $tmp;
 }
 
 ##########################################################################

@@ -739,6 +739,10 @@ sub list_archive {
 
 
 	my $archiveref = $opt->{archive};
+	if (!defined $archiveref) {
+	    print "no archives\n";
+	    return;
+	}
 	for (my $i = 0; $i < @$archiveref; $i++) {
 
 	    my $arrayref = $opt->{archive}->[$i]->{contents}->[0]->{entry};

@@ -208,9 +208,9 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
 	{
 		var xml = '<site-to-site>';
 		if (thisObj.m_mode == 'easy') {
-			xml += '<easy>';
+			xml += '<easy/>';
 		} else {
-		    xml += '<expert>';
+		    xml += '<expert/>';
 		}
 		xml = xml + '<peerip>' + thisObj.m_peerIp + '</peerip>';
 		xml = xml + '<tunnelname>' + thisObj.m_tunnel + '</tunnelname>';
@@ -228,11 +228,6 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
 			xml = xml + '<ikeauth>' + thisObj.m_auth1 + '</ikeauth>';
 			xml = xml + '<espauth>' + thisObj.m_auth2 + '</espauth>';
 		} 
-		if (thisObj.m_mode == 'easy') {
-			xml += '</easy>';
-		} else {
-			xml += '</expert>';
-		}
 		xml += '</site-to-site>';
 		return xml;
 	}	
@@ -348,15 +343,26 @@ function UTM_vpnBusObj(busObj)
 		}
 
 		for (var i = 0; i < s2sNodeArray.length; i++) {
+			/*
 			var s2sNode = g_utils.f_xmlGetChildNode(s2sNodeArray[i], 'easy');
 			var mode = 'easy';
 			if (s2sNode == null) {
 				s2sNode = g_utils.f_xmlGetChildNode(s2sNodeArray[i], 'expert');
 				mode = 'expert';
 			}
-			if (s2sNode == null) {
-				continue;
-			}
+			*/
+			var s2sNode = s2sNodeArray[i];
+			var mode = 'easy';
+			var modeNode = g_utils.f_xmlGetChildNode(s2sNode, 'easy');
+			if (modeNode == null) {
+				modeNode = g_utils.f_xmlGetChildNode(s2sNode, 'expert');
+				if (modeNode == null) {
+					continue;
+				} else {
+					mode = 'expert';
+				}
+			} 
+
 			for (var j = 0; j < tagArray.length; j++) {
 				var cnode = g_utils.f_xmlGetChildNode(s2sNode, tagArray[j]);
 				if (cnode != null) {
@@ -494,7 +500,7 @@ function UTM_vpnBusObj(busObj)
 			resp += '<site-to-site>';			
             var dis = i == 2 || i==4 ? "disconnected" : "connected";
             if (dis=="disconnected") {
-			    resp += '<easy>';
+			    resp += '<easy/>';
 				resp += '<tunnelname>' + i + '</tunnelname>';
 				resp += '<peerip>192.168.1.' + i + '</peerip>';
 				resp += '<presharedkey>test_key_' + i + '</presharedkey>';
@@ -502,9 +508,8 @@ function UTM_vpnBusObj(busObj)
 				resp += '<rnet>10.1.2.' + i + '/24</rnet>';
 				resp += '<status>' + dis + '</status>';
 				resp += '<disable/>';
-				resp += '</easy>';	
 			} else {
-			    resp += '<expert>';
+			    resp += '<expert/>';
 				resp += '<tunnelname>' + i + '</tunnelname>';
 				resp += '<peerip>192.168.1.' + i + '</peerip>';
 				resp += '<presharedkey>test_key_' + i + '</presharedkey>';
@@ -521,7 +526,6 @@ function UTM_vpnBusObj(busObj)
 				resp += '<espauth>sha1</espauth>';
 				resp += '<status>' + dis + '</status>';
 				resp += '<disable/>';
-				resp += '</expert>';					
 			}
 			resp += '</site-to-site>';	
         }
@@ -537,10 +541,10 @@ function UTM_vpnBusObj(busObj)
         thisObj.m_guiCb = cb;
         var xmlstr = "<statement mode='proc'>" +
                       "<handler>vpn site-to-site delete" +
-                      "</handler><data>" +
+                      "</handler><data><site-to-site>" +
 					  "<peerip>" + rec.m_peerIp + "</peerip>" +
-					  "<tunnelname>" + rec.m_tunnel + "</tunnelname>" +
-					  "</data></statement>";
+					  //"<tunnelname>" + rec.m_tunnel + "</tunnelname>" +
+					  "</site-to-site></data></statement>";
 					  
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
@@ -604,18 +608,15 @@ function UTM_vpnBusObj(busObj)
         if (rec.m_tunnel != null) {
 			xmlstr = "<statement mode='proc'>" +
 			"<handler>vpn site-to-site disable" +
-			"</handler><data><peerip>" +
+			"</handler><data><site-to-site><peerip>" +
 			rec.m_peerIp +
-			"</peerip>" +
-			"<tunnelname>" +
-			rec.m_tunnel +
-			"</tunnelname>";
+			"</peerip>";
 			if (rec.m_enable == 'yes') {
 				xmlstr += "<disable>false</disable>";
 			} else {
 				xmlstr += "<disable>true</disable>"
 			}
-			xmlstr += "</data></statement>";
+			xmlstr += "</site-to-site></data></statement>";
 		} else {
 			xmlstr = "<statement mode='proc'>" +
 			"<handler>vpn-remote set-overview-enable" +

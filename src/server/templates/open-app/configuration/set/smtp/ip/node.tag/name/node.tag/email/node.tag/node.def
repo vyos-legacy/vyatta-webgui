@@ -1,1 +1,7 @@
 help: set smtp email address
+access:admin
+run: if perl /opt/vyatta/sbin/openapp-conf-smtp.pl --server "$6" --name "$8" --email "${10}"; then
+       return 0
+     else
+       return 1
+     fi

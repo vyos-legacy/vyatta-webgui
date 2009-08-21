@@ -37,7 +37,7 @@ sub write_smtp {
     }
 
     $option = $config->returnValue("username");
-    if (defined $option) {
+    if (defined $option && $option ne '') {
 	$option =~ s/^\s+//;
 	if (length($option) > 0)  {
 	    print FILE_LCK "AuthUser=" . $option . "\n";
@@ -45,7 +45,7 @@ sub write_smtp {
     }
     
     $option = $config->returnValue("password");
-    if (defined $option) {
+    if (defined $option && $option ne '') {
 	$option =~ s/^\s+//;
 	if (length($option) > 0)  {
 	    print FILE_LCK "AuthPass=" . $option . "\n";

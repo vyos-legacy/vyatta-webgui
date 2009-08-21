@@ -68,19 +68,23 @@ sub set_smtp {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client username $username");
-    if ($err != 0) {
-	`logger -p debug 'dom0: system command error: $err'`;
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
+    if (defined $username && $username ne '') {
+	$err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client username $username");
+	if ($err != 0) {
+	    `logger -p debug 'dom0: system command error: $err'`;
+	    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	    exit 1;
+	}
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client password $pswd");
-    if ($err != 0) {
-	`logger -p debug 'dom0: system command error: $err'`;
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
+    if (defined $pswd && $pswd ne '') {
+	$err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client password $pswd");
+	if ($err != 0) {
+	    `logger -p debug 'dom0: system command error: $err'`;
+	    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	    exit 1;
+	}
     }
 
     # apply config command
@@ -120,15 +124,37 @@ sub list_smtp() {
 # password bar
 # server 2.3.4.2
 # username harry
-    my @address = split(" ",$out[0]);
-    my @email = split(" ",$out[1]);
-    my @name = split(" ",$out[2]);
-    my @password = split(" ",$out[3]);
-    my @username = split(" ",$out[4]);
+    my $out;
+    my $address = "";
+    my $email = "";
+    my $name = "";
+    my $password = "";
+    my $username = "";
 
-    if ($address[1] eq '' || 
-	$email[1] eq '' ||
-	$name[1] eq '') {
+    my $ct = 0;
+    $out = join(" ",@out);
+    @out = split(" ",$out);
+    for $out (@out) {
+	$ct++;
+	if ($out eq 'address') {
+	    $address = $out[$ct];
+	}
+	elsif ($out eq 'name') {
+	    $name = $out[$ct];
+	}
+	elsif ($out eq 'password') {
+	    $password = $out[$ct];
+	}
+	elsif ($out eq 'email') {
+	    $email = $out[$ct];
+	}
+	elsif ($out eq 'username') {
+	    $username = $out[$ct];
+	}
+    }
+
+    if ($address eq '' || 
+	$email eq '') {
 	if (!defined $cmdline) {
 	    print "<smtp-client><address></address><email></email><name></name><password></password><username></username></smtp-client>";
 	}
@@ -136,20 +162,20 @@ sub list_smtp() {
     else {
 	if (!defined $cmdline) {
 	    print "<smtp-client>";
-	    print "<address>$address[1]</address>";
-	    print "<email>$email[1]</email>";
-	    print "<name>$name[1]</name>";
-	    print "<password>$password[1]</password>";
-	    print "<username>$username[1]</username>";
+	    print "<address>$address</address>";
+	    print "<email>$email</email>";
+	    print "<name>$name</name>";
+	    print "<password>$password</password>";
+	    print "<username>$username</username>";
 	    print "</smtp-client>";
 	}
 	else {
 	    print "SMTP:\n";
-	    print "\taddress:\t$address[1]\n";
-	    print "\temail:\t$email[1]\n";
-	    print "\tname:\t\t$name[1]\n";
-	    print "\tpassword:\t$password[1]\n";
-	    print "\tusername:\t$username[1]\n";
+	    print "\taddress:\t$address\n";
+	    print "\temail:\t\t$email\n";
+	    print "\tname:\t\t$name\n";
+	    print "\tpassword:\t$password\n";
+	    print "\tusername:\t$username\n";
 	}
     }
 }
@@ -173,13 +199,13 @@ sub usage() {
 GetOptions(
     "server=s"                => \$server,
     "email=s"                 => \$email,
-    "username=s"              => \$username,
-    "pswd=s"                  => \$pswd,
+    "username:s"              => \$username,
+    "pswd:s"                  => \$pswd,
     "name=s"                  => \$name,
     "list:s"                  => \$list,
     ) or usage();
 
-if (defined $server && defined $email && defined $username && defined $pswd && defined $name) {
+if (defined $server && defined $email && defined $name) {
     set_smtp();
 }
 else {

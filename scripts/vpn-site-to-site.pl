@@ -30,6 +30,7 @@ use POSIX;
 use File::Copy;
 use Getopt::Long;
 use XML::Simple;
+use Vyatta::Misc;
 
 my ($set,$get,$disable,$delete);
 
@@ -256,13 +257,13 @@ sub execute_delete {
     }
     my $xs = new XML::Simple(forcearray=>1);
     my $opt = $xs->XMLin($s);
-    my $tunnelname = $opt->{"peerip"}->[0];
+    my $peerip = $opt->{"peerip"}->[0];
 
-    if (!defined $tunnelname) {
+    if (!defined $peerip) {
 	print ("<form name='delete' code=1></form>");
 	exit 1;
     }
-    del($tunnelname);
+    del($peerip);
 }
 
 ##########################################################################
@@ -441,7 +442,7 @@ sub execute_set_expert {
     #now find the peerip for this tunnel, if different delete current configuration
     my $cur_peerip = get_current_peer($h);
     if ($cur_peerip ne $peerip) {
-	del($tunnelname);
+	del($cur_peerip);
     }
 
     # set up config session
@@ -588,7 +589,10 @@ sub execute_set_expert {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip local-ip 192.168.0.1");
+    
+    my @foo = Vyatta::Misc::getIP("eth0");
+    my @l_ip = split("/",$foo[0]);
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip local-ip $l_ip[0]");
     if ($err != 0) {
 	print("<form name='expert' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -662,7 +666,7 @@ sub execute_set_easy {
     #now find the peerip for this tunnel, if different delete current configuration
     my $cur_peerip = get_current_peer($h);
     if (defined($cur_peerip) && $cur_peerip ne '' && $cur_peerip ne $peerip) {
-	del($tunnelname);
+	del($cur_peerip);
     }
 
 
@@ -763,7 +767,9 @@ sub execute_set_easy {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip local-ip 192.168.0.1");
+    my @foo = Vyatta::Misc::getIP("eth0");
+    my @l_ip = split("/",$foo[0]);
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip local-ip $l_ip[0]");
     if ($err != 0) {
 	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");

@@ -581,6 +581,7 @@ function UTM_vpnBusObj(busObj)
             thisObj.m_simulationMode = true;
             thisObj.m_lastCmdSent = xmlstr;
             thisObj.f_respondRequestCallback(resp, xmlstr, guicb);
+			thisObj.m_simulationMode = false;
         }
         window.setTimeout(cb, 200);
 

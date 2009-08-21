@@ -4,46 +4,47 @@
 function FT_timeoutMonitor(busObj)
 {
     var thisObj = this;
-	this.m_threadId = null;
-	this.m_thread = null;
+	this.m_start = false;
 	this.m_request = createXMLHttpRequest();
 	this.m_busObj = busObj;
+	this.m_lastSentTimestamp = undefined;
+	this.m_queryThreadId = null;
 	
     this.f_start = function() 
 	{
-		if (thisObj.m_threadId != null)
+		if (thisObj.m_start)
 		    return;
-		// create a new thread object
-        thisObj.m_thread = new FT_thread(g_oaConfig.m_oaTimeoutMonitorInterval);
-
-        var callback = function()
-        {
-            thisObj.f_poll();
-        }
-
-        // start to run
-        thisObj.m_threadId = thisObj.m_thread.f_start(callback);
+        thisObj.f_poll();
+		thisObj.m_start = true;
 	}
 	
 	this.f_stop = function()
 	{
-        if (thisObj.m_threadId != null) {
-			thisObj.m_thread.f_stop(thisObj.m_threadId);
-			thisObj.m_threadId = null;
+        if (thisObj.m_queryThreadId != null) {
+			window.clearTimeout(thisObj.m_queryThreadId);
+			thisObj.m_queryThreadId = null;
 		}		
 	}
 	
-	this.f_poll = function(cb)
+	this.f_poll = function()
+	{
+        if (thisObj.m_lastSentTimestamp == undefined) {
+			thisObj.f_query();
+		} 
+	}
+	
+	this.f_query = function()
 	{
         var sid = g_utils.f_getUserLoginedID();
         var xmlstr = "<static></static>";
         //var xmlstr = "";
 
         xmlstr += "<command><id>" + sid + "</id><statement>" +
-                      "open-app vm status </statement></command>";
+                      "open-app archive backup status</statement></command>";
 
         this.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback, thisObj.m_request);
+                              thisObj.f_respondRequestCallback, thisObj.m_request);	
+		thisObj.m_lastSentTimestamp = new Date();	
 	}
 	
 	this.f_timeout = function()
@@ -68,13 +69,16 @@ function FT_timeoutMonitor(busObj)
             if(r.status == 200)
             {						
                 var response = r.responseXML;
+				thisObj.m_queryThreadId = window.setTimeout(thisObj.f_query, g_oaConfig.m_oaTimeoutMonitorInterval);			
+				
                 var error = thisObj.f_parseResponseError(response, false);
 
                 if(error.f_isError())
                     response = error;
-
+			    
                 return response;
             }
+			thisObj.m_queryThreadId = window.setTimeout(thisObj.f_query, g_oaConfig.m_oaTimeoutMonitorInterval);			
         }
 
         return null;

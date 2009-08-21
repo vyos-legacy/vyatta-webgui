@@ -108,7 +108,6 @@ ul ul ul li {
 /*########## Secondary Navigation ##########*/
 
 #header {
-	margin-left:20px;
 	margin-right:20px;
 	color : #999999;
 	font: 11px arial, sans-serif;
@@ -169,7 +168,6 @@ ul ul ul li {
 /*########## Sub-menu (vertical menu) ##########*/
 
 #submenu {
-	margin:0px 8px 0px 20px;
 	width:155px;
 	/*height:400px;*/
 }
@@ -287,7 +285,7 @@ h1 {
 	/* Added for OA */
 	position:absolute;
 	top:60px;
-	left:210px;
+	left:185px;
 }
 
 
@@ -479,7 +477,8 @@ ul.pagination li.pagination-page-on a {
 	float: left;
 	margin: 0 auto;
 	padding: 1px;
-	height:14px;
+	overflow:hidden;
+	height: 14px;
 	width: 100px;
 }
 
@@ -498,6 +497,7 @@ ul.pagination li.pagination-page-on a {
 	float: left;
 	font-weight: bold;
 	left: 40px;
+	top:-14px;
 	position: relative;
 }
 

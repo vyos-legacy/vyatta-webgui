@@ -19,6 +19,8 @@ $(function() {
 
 	var opts = $.extend(defaults, options);
 
+	var gauge;
+
 	return this.each(function() {
 
 		// Geting value and description
@@ -38,7 +40,7 @@ $(function() {
 		$('<div id="gauge-bar" class="gauge-bar, '+classColor+'">&nbsp;</div>')
 			.css("width", value+"px")
 			.attr("title",message)
-			.appendTo(gauge);
+			.prependTo(gauge);
 
 		// Setting class on value and description
 		$(".gauge-value", $(this)).addClass('gauge-value');

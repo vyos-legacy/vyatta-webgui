@@ -1,0 +1,2 @@
+type: u32
+help: Set global session timeout value (seconds)

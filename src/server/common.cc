@@ -18,8 +18,8 @@ using namespace std;
 const unsigned long WebGUI::ID_START = 2147483648UL;
 const unsigned long WebGUI::ID_RANGE = 2147483647UL;
 
-const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = 1800UL;
-//const unsigned long WebGUI::SESSION_TIMEOUT_WINDOW = (unsigned long)99999999;
+const unsigned long WebGUI::DEFAULT_SESSION_TIMEOUT_WINDOW = 1800UL;
+const string WebGUI::VYATTA_CONFIG_SESSION_TIMEOUT_WINDOW = "/opt/vyatta/config/active/system/open-app/parameters/session-timeout/node.val";
 
 const string WebGUI::VYATTA_TEMP_CONFIG_DIR = "/opt/vyatta/config/tmp/new_config_"; 
 const string WebGUI::VYATTA_CHANGES_ONLY_DIR = "/tmp/changes_only_"; 
@@ -100,7 +100,27 @@ WebGUI::is_restricted(unsigned long id)
   return (val == 1);
 }
 
-
+/**
+ *
+ *
+ **/
+unsigned long
+WebGUI::get_session_timeout()
+{
+  unsigned long val = WebGUI::DEFAULT_SESSION_TIMEOUT_WINDOW;
+  //now check to see if this value was configured
+  FILE *fp = fopen(WebGUI::VYATTA_CONFIG_SESSION_TIMEOUT_WINDOW.c_str(), "r");
+  if (fp) {
+    char buf[1025];
+    //read value in her....
+    while (fgets(buf, 1024, fp) != 0) {
+      val = strtoul(buf,NULL,10);
+      break;
+    }
+    fclose(fp);
+  }
+  return val;
+}
 
 /**
  *

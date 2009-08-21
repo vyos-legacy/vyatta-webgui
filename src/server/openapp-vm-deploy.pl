@@ -140,6 +140,11 @@ sub do_list {
       my $msg = $href->{_msg};
       my $old = (defined($href->{_old})) ? " old='true'" : '';
       my $prev = OpenApp::VMDeploy::vmCheckPrev($vid);
+
+      #convert time to speced format
+      my $epoch = OpenApp::VMDeploy::time2epoch($time);
+      $time = POSIX::strftime('%Y/%m/%d %H:%M',localtime($epoch));
+
       if (!defined($cmdline)) {
         print <<EOF;
 <record$old>

@@ -1,0 +1,4 @@
+tag:
+type: txt
+help: Configure VM parameters
+allowed: find /var/oa/libvirt/ -name '*.xml' 2>/dev/null | sort | awk -F / {' print $5 '} | sed -e 's/.xml$//'

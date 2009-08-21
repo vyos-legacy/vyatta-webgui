@@ -11,6 +11,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
     this.m_form = undefined;
 	this.m_vpn = undefined;
 	this.m_change = false;
+	this.m_new = false;
 	this.m_eventCbFunction = 'f_confFormObjEventCallback';
 	
 	this.m_ezItems = [
@@ -99,6 +100,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 			thisObj.m_vpn = obj;
 		} else {
 			thisObj.m_vpn = new UTM_vpnRecord();
+			thisObj.m_new = true;
 			thisObj.m_vpn.f_setDefault();
 		}		
 		
@@ -236,7 +238,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		children.push(this.f_getForm());
 		
 		///////-------- Test link.  Will be removed later
-		children.push(this.f_createTestLink());
+		//children.push(this.f_createTestLink());
 		///////-------------------------------------------
 		
 	    return this.f_getPage(children);
@@ -302,6 +304,11 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		
     this.f_loadVMData = function(element)
     {
+		if (thisObj.m_new) {
+			thisObj.f_enableTextField(true, 'conf_vpn_s2se_tunnel_name');
+		} else {
+			thisObj.f_enableTextField(false, 'conf_vpn_s2se_tunnel_name');
+		}
 		thisObj.m_form = document.getElementById('conf_vpn_s2se_form');
 		thisObj.m_form.conf_vpn_s2se_tunnel_name.value = thisObj.m_vpn.m_tunnel;
 		thisObj.m_form.conf_vpn_s2se_peer_ip.value = thisObj.m_vpn.m_peerIp;
@@ -345,7 +352,11 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 			
 	this.f_setFocus = function()
 	{
-		thisObj.m_form.conf_vpn_s2se_tunnel_name.focus();
+		if (thisObj.m_new) {
+			thisObj.m_form.conf_vpn_s2se_tunnel_name.focus();
+		} else {
+			thisObj.m_form.conf_vpn_s2se_peer_ip.focus();
+		}
 	}		
     
     this.f_stopLoadVMData = function()
@@ -460,6 +471,7 @@ function UTM_confVpnS2SE(name, callback, busLayer)
                     return;                    
                 }        
                 thisObj.f_enableAllButton(false);	
+				thisObj.f_enableTextField(false, 'conf_vpn_s2se_tunnel_name');
             }                                 
         };      
         g_busObj.f_vpnSetSite2SiteConfig(vpnRec, cb); 	

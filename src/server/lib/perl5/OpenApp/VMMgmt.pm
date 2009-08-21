@@ -392,7 +392,7 @@ sub needRestart {
     if (_isStatus('restart', $id)) {
       # already started once and never reached 'up'.
       if (!_isStatus('restart-failed', $id)) {
-        # TODO log message
+	`logger -p err 'dom0: restart-failed [$id]'`;
         _statusSet('restart-failed', $id);
       }
       last;
@@ -415,6 +415,7 @@ sub tryAutoRestart {
   _statusRm('out', $id);
   _unlockStatus();
 
+  `logger -p err 'dom0: restarting [$id]'`;
   shutdownVM($id);
   startVM($id);
 }

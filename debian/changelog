@@ -1,3 +1,19 @@
+vyatta-webgui (0.2+fxd0+104) unstable; urgency=low
+
+  [ Loi Vo ]
+  * Bug: 4819
+  * Bug: 4839
+
+  [ Michael Larson ]
+  * fix for bug 4858. handle uninitialized variable.
+  * fix for 4425, server side username and password are now optional.
+    still needs changes on client side to remove restriction
+
+  [ Stig Thormodsrud ]
+  * Fix 4787: Log domU restart
+
+ -- Stig Thormodsrud <stig@vyatta.com>  Fri, 21 Aug 2009 15:52:15 -0700
+
 vyatta-webgui (0.2+fxd0+103) unstable; urgency=low
 
   [ Loi Vo ]

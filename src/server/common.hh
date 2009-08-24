@@ -7,8 +7,9 @@ public:
   const static unsigned long ID_START;
   const static unsigned long ID_RANGE;
 
-  const static unsigned long SESSION_TIMEOUT_WINDOW;
-
+  const static unsigned long DEFAULT_SESSION_TIMEOUT_WINDOW;
+  const static std::string VYATTA_CONFIG_SESSION_TIMEOUT_WINDOW;
+  
   const static std::string VYATTA_TEMP_CONFIG_DIR;
   const static std::string VYATTA_CHANGES_ONLY_DIR;
   const static std::string VYATTA_ACTIVE_CONFIGURATION_DIR;
@@ -146,6 +147,13 @@ public:
    **/
   static std::string
   trim_whitespace(const std::string &src);
+
+  /**
+   *
+   *
+   **/
+  static unsigned long
+  get_session_timeout();
 
   /**
    *

@@ -320,7 +320,7 @@ Session::update_session()
 
   time_t t = time(NULL);
 
-  if ((buf.st_mtime + WebGUI::SESSION_TIMEOUT_WINDOW) < (unsigned)t) {
+  if ((buf.st_mtime + WebGUI::get_session_timeout()) < (unsigned)t) {
     _processor->set_response(WebGUI::SESSION_FAILURE);
 
     //command pulled from exit discard
@@ -382,7 +382,7 @@ Session::clean_up_old_sessions()
       if (lstat((WebGUI::VYATTA_MODIFY_DIR + string(dirp->d_name)).c_str(), &tmp) == 0) {
         string id_str = string(dirp->d_name).substr(14,24);
         time_t t = time(NULL);
-        if ((tmp.st_mtime + WebGUI::SESSION_TIMEOUT_WINDOW) < (unsigned)t) {
+        if ((tmp.st_mtime + WebGUI::get_session_timeout()) < (unsigned)t) {
 
           //as requested by justin don't discard changes on timeout expiration!
 	  WebGUI::discard_session(id_str);

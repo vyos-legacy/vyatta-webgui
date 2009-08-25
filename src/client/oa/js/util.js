@@ -9,3 +9,22 @@ function loadHelp(helpUrl) {
 
 	return false;
 }
+
+/*
+ * This function resize the center iframe height to a desirable height in pixel.
+ */
+function resizeFrameHeight(pixel) {    
+    if ((window.parent != undefined) && (window.parent != null)) {
+        if (window.parent.f_resizeChildIframe != undefined) {
+            window.parent.f_resizeChildIframe(pixel);
+        }
+    }
+}
+
+function stopAutoResize(state) {
+    if ((window.parent != undefined) && (window.parent != null)) {
+        if (window.parent.f_stopAutoResize != undefined) {
+            window.parent.f_stopAutoResize(state);
+        }
+    }	
+}

@@ -1,0 +1,1 @@
+run: /opt/vyatta/sbin/bl_remote-access.pl --action='get_group' --data="$4"

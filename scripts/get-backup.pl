@@ -30,7 +30,7 @@ my $datamodel = '1';
 $filename = $date."_".$time."_".$datamodel;
 
 #move filename to 
-`rm -f /var/www/archive/*.tar`;
+`rm -f /var/www/archive/*_1.tar`;
 `mv /var/www/archive/utm.tar /var/www/archive/$filename.tar`;
 
 print $cgi->redirect("http://192.168.1.1/archive/$filename.tar");

@@ -55,6 +55,8 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 	this.m_p2_lifetime = p2_lifetime;
 	this.m_p2_encrypt = p2_encrypt;
 	this.m_p2_auth = p2_auth;
+	this.m_start = '';
+	this.m_stop = '';
 	var thisObj = this;
 
 	this.f_setDefault = function()
@@ -79,6 +81,9 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 		this.m_p2_lifetime = '';
 		this.m_p2_encrypt = 'DES';
 		this.m_p2_auth = 'MD5';
+		this.m_start = '';
+		this.m_stop = '';
+		
 	}
 
     this.f_setLocalNetwork = function(ip, prefix)
@@ -118,6 +123,49 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 
         return n[1];
     }
+	
+	this.f_toXml = function(action)
+	{
+		var xml = '<remote_group>';
+		xml += '<action>' + action + '</action>';
+		if (thisObj.m_mode == 'easy') {
+			xml += '<easy/>';
+		} else {
+		    xml += '<expert/>';
+		}
+		xml = xml + '<name>' + thisObj.m_name + '</name>';
+		xml = xml + '<vpnsw>' + thisObj.m_vpnsw + '</vpnsw>';
+		xml = xml + '<users>';
+		for (var i=0; i < thisObj.m_users.length; i++) {
+		    xml = xml + '<user>' + thisObj.m_users[i] + '</user>';	
+		}
+		xml = xml + '</users>';
+		xml = xml + '<auth>' + thisObj.m_auth + '</auth>';
+		if (thisObj.m_ipalloc == 'static') {
+			xml = xml + '<ipalloc><static><start>' + thisObj.m_start + '</start><stop>' + thisObj.m_stop + '</stop></static></ipalloc>';			
+		} else {
+			xml = xml + '<ipalloc><dhcp/></ipalloc>';
+		}
+		xml = xml + '<iaccess>' + thisObj.m_internetAccess + '</iaccess>';
+		xml = xml + '<presharedkey>' + thisObj.m_preshareKey + '</presharedkey>';
+
+		if (thisObj.m_mode == 'expert') {
+			xml = xml + '<type>' + thisObj.m_p1_proto + '</type>';
+			xml = xml + '<emode>' + thisObj.m_exchangeMode + '</emode>';
+			xml = xml + '<ikeencrypt>' + thisObj.m_p1_encrypt + '</ikeencrypt>';
+			xml = xml + '<ikeauth>' + thisObj.m_p1_auth + '</ikeauth>';
+			xml = xml + '<dhgroup>' + thisObj.m_p1_dfsGrp + '</dhgroup>';
+			xml = xml + '<ikeltime>' + thisObj.m_p1_lifetime + '</ikeltime>';
+			xml = xml + '<lnet>' + thisObj.m_localNetwork + '</lnet>';
+		    xml = xml + '<rnet>' + thisObj.m_remoteNetwork + '</rnet>';
+			xml = xml + '<espdhgroup>' + thisObj.m_p2_dfsGrp + '</espdhgroup>';
+			xml = xml + '<espltime>' + thisObj.m_p2_lifetime + '</espltime>';			
+			xml = xml + '<espencrypt>' + thisObj.m_p2_encrypt + '</espencrypt>';
+			xml = xml + '<espauth>' + thisObj.m_p2_auth + '</espauth>';			
+		} 
+		xml += '</remote_group>';
+		return xml;		
+	}
 }
 
 function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
@@ -274,16 +322,25 @@ function UTM_vpnBusObj(busObj)
             var err = response.getElementsByTagName('error');
             if(err != null && err[0] != null)
             {
-                if(thisObj.m_lastCmdSent.indexOf("<handler>vpn site-to-site get") > 0)
-                {
+                if(thisObj.m_lastCmdSent.indexOf("<handler>vpn site-to-site get") > 0) {
                     var vpnRec = thisObj.f_parseSite2SiteOverviewGet(err);
                     evt = new UTM_eventObj(0, vpnRec, '');
-                }
-                else if(thisObj.m_lastCmdSent.indexOf("<handler>vpn-remote get-overview") > 0)
-                {
+                } else if(thisObj.m_lastCmdSent.indexOf("<handler>vpn-remote get-overview") > 0) {
                     var vpnRec = thisObj.f_parseRemoteOverviewGet(err);
                     evt = new UTM_eventObj(0, vpnRec, '');
-                }
+                } else { //These APIs have the form tag.  Check for form error.                
+                    var tmp = thisObj.m_busObj.f_getFormError(err);
+				    if (tmp != null) { //form has error
+						if (thisObj.m_guiCb != undefined) {
+							return thisObj.m_guiCb(tmp);
+						}
+					} else {										
+						if (thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get_group") > 0) {
+							var groupList = thisObj.f_parseRemoteUserGroupGet(err);
+							evt = new UTM_eventObj(0, groupList, '');
+						}
+					}
+				}
             }
 
             if(thisObj.m_guiCb != undefined)
@@ -396,6 +453,100 @@ function UTM_vpnBusObj(busObj)
 
         return vpn;
     }
+
+    this.f_parseRemoteUserGroupGet = function(resp)
+	{
+		var form = thisObj.m_busObj.f_getFormNode(resp);	
+        var rgNodeArray = g_utils.f_xmlGetChildNodeArray(form, 'remote_group');
+		//<users>, <ipalloc> are special cases, will be processed separately.
+		var tagArray = ['name', 'vpnsw', 'auth', 'iaccess', 'presharedkey',
+		                'enable', 'type', 'emode', 'ikeencrypt', 'ikeauth',
+						'dhgroup', 'ikeltime', 'lnet', 'rnet', 'espdhgroup', 'espltime',
+						'espencrypt', 'espauth'];
+		var tagValue = [];				
+        var groupList = new Array();		
+		
+		if (rgNodeArray == null) 
+		    return groupList;
+		
+		for (var i = 0; i < rgNodeArray.length; i++) {
+			var rgNode = rgNodeArray[i];
+			var mode = 'easy';
+			var modeNode = g_utils.f_xmlGetChildNode(rgNode, 'easy');
+			if (modeNode == null) {
+				modeNode = g_utils.f_xmlGetChildNode(rgNode, 'expert');
+				if (modeNode == null) {
+					continue;
+				} else {
+					mode = 'expert';
+				}
+			} 
+
+			for (var j = 0; j < tagArray.length; j++) {
+				var cnode = g_utils.f_xmlGetChildNode(rgNode, tagArray[j]);
+				if (cnode != null) {
+					var value = g_utils.f_xmlGetNodeValue(cnode);
+					if (value != null) {
+						tagValue[tagArray[j]] = value;
+					}
+				}
+			}
+			groupList[i] = new UTM_vpnRemoteUsrGrpRec();
+			//parse user list.
+			groupList[i].m_users = new Array();			
+			var uNode = g_utils.f_xmlGetChildNode(rgNode, 'users');
+			if (uNode != null) {
+				var uNodeArray = g_utils.f_xmlGetChildNodeArray(uNode, 'user');
+				if (uNodeArray != null) {
+				    for (var j=0 ; j < uNodeArray.length; j++) {
+						var value = g_utils.f_xmlGetNodeValue(uNodeArray[j]);
+						if (value != null) {
+							groupList[i].m_users.push(value);
+						}						
+					}					
+				}				
+			} 
+            //parse ip allocation.
+            var iNode = g_utils.f_xmlGetChildNode(rgNode, 'ipalloc');
+			if (iNode == null) {
+				groupList[i].m_ipalloc = 'static';
+				groupList[i].m_start = '';
+			    groupList[i].m_stop = '';
+			} else {
+				var iSubNode = g_utils.f_xmlGetChildNode(iNode, 'static');
+				if (iSubNode != null) {
+					groupList[i].m_ipalloc = 'static';
+					var value = g_utils.f_xmlGetChildNodeValue(iNode, 'start');
+					groupList[i].m_start = (value == null)? '' : value;
+					value = g_utils.f_xmlGetChildNodeValue(iNode, 'stop');
+					groupList[i].m_stop = (value == null)? '' : value;
+				}
+			}   
+
+			groupList[i].m_name = (tagValue['name'] == undefined)? '' : tagValue['name'];
+			groupList[i].m_mode = mode;
+			groupList[i].m_vpnsw = (tagValue['vpnsw'] == undefined)? '' : tagValue['vpnsw'];
+			groupList[i].m_auth = (tagValue['auth'] == undefined)? 'l2tp' : tagValue['auth'];
+			groupList[i].m_internetAccess = (tagValue['iaccess'] == undefined)? 'directly' : tagValue['iaccess'];
+			groupList[i].m_preshareKey = (tagValue['presharedkey'] == undefined)? '' : tagValue['presharedkey'];
+			groupList[i].m_p1_proto = (tagValue['type'] == undefined)? 'esp' : tagValue['type'];
+			groupList[i].m_exchangeMode= (tagValue['emode'] == undefined)? 'aggressive' : tagValue['emode'];
+			groupList[i].m_p1_encrypt= (tagValue['ikeencrypt'] == undefined)? 'des' : tagValue['ikeencrypt'];
+			groupList[i].m_p1_auth = (tagValue['ikeauth'] == undefined)? 'md5' : tagValue['ikeauth'];
+			groupList[i].m_p1_dfsGrp= (tagValue['dhgroup'] == undefined)? '5' : tagValue['dhgroup'];
+			groupList[i].m_p1_lifetime= (tagValue['ikeltime'] == undefined)? '' : tagValue['ikeltime'];
+			groupList[i].m_localNetwork = (tagValue['lnet'] == undefined)? '' : tagValue['lnet'];
+			groupList[i].m_remoteNetwork = (tagValue['rnet'] == undefined)? '' : tagValue['rnet'];
+			groupList[i].m_p2_dfsGrp= (tagValue['espdhgroup'] == undefined)? '2' : tagValue['espdhgroup'];
+			groupList[i].m_p2_lifetime= (tagValue['espltime'] == undefined)? '' : tagValue['espltime'];
+			groupList[i].m_p2_encrypt= (tagValue['espencrypt'] == undefined)? 'des' : tagValue['espencrypt'];
+			groupList[i].m_p2_auth = (tagValue['espauth'] == undefined)? 'md5' : tagValue['espauth'];
+			groupList[i].m_enable= (tagValue['enable'] == undefined)? 'yes' : tagValue['enable'];			
+		}		
+		
+		return groupList;
+		
+	}
 
     this.f_parseRemoteOverviewGet = function(resp)
     {

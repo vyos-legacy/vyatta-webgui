@@ -1,3 +1,20 @@
+vyatta-webgui (0.2.14+fxdU+105) unstable; urgency=low
+
+  [ slioch ]
+  * fixes to site-to-site vpn. fixed delete, disable handlers, and set
+    correct local ip.
+  * fixed auth mode for expert
+
+  [ Loi Vo ]
+  * Set simulation mode back to false after getVpnRemoteOverviewData.
+  * Gray out tunnel name when update the site to site entry.  We don't
+    let the user modify the tunnel name when update.
+
+  [ Mohit Mehta ]
+  * add backend support to get l2tp group info
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Mon, 24 Aug 2009 18:55:53 -0700
+
 vyatta-webgui (0.2.14+fxdU+104) unstable; urgency=low
 
   [ slioch ]

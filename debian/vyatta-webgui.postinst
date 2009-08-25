@@ -38,6 +38,7 @@ fi
 if ! grep -q 'HTTP.*"/\$"' $cgi_conf; then
 cat <<'EOF' >>$cgi_conf
 $HTTP["url"] =~ "/$" {
+  dir-listing.activate = "disable"
   cgi.assign = ( ".cgi" => "" )
 }
 EOF

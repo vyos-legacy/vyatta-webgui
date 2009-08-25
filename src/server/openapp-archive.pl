@@ -82,7 +82,7 @@ my $config = new Vyatta::Config;
 my $limit = `perl /opt/vyatta/sbin/vyatta-output-config.pl system open-app archive installer`;
 if (defined $limit) {
     my @tmp = split " ",$limit;
-    if (defined $tmp[1]) {
+    if (defined $tmp[1] && (($tmp[1] * 1) eq $tmp[1])) {
 	$INSTALLER_BU_LIMIT = $tmp[1];
     }
 }
@@ -90,7 +90,7 @@ if (defined $limit) {
 my $limit = `perl /opt/vyatta/sbin/vyatta-output-config.pl system open-app archive admin`;
 if (defined $limit) {
     my @tmp = split " ",$limit;
-    if (defined $tmp[1]) {
+    if (defined $tmp[1] && (($tmp[1] * 1) eq $tmp[1])) {
 	$ADMIN_BU_LIMIT = $tmp[1];
     }
 }
@@ -98,7 +98,7 @@ if (defined $limit) {
 my $timeout = `perl /opt/vyatta/sbin/vyatta-output-config.pl system open-app archive backup timeout`;
 if (defined $timeout) {
     my @tmp = split " ",$timeout;
-    if (defined $tmp[1]) {
+    if (defined $tmp[1] && (($tmp[1] * 1) eq $tmp[1])) {
 	$BACKUP_TIMEOUT = $tmp[1];
     }
 }
@@ -111,6 +111,8 @@ sub backup_archive {
     # Apply bu limit for installer and admin user
     #
     ##########################################################################
+    `sudo rm -fr $ARCHIVE_ROOT_DIR/tmp`;
+
     my $limit_ct = `ls $ARCHIVE_ROOT_DIR | wc -w`;
     if ($auth_user_role eq 'installer' && $limit_ct >= $INSTALLER_BU_LIMIT+1) {
 	print STDERR "Your backup directory is full. Please delete an archive to make room.";
@@ -799,6 +801,8 @@ sub get_archive {
 ##########################################################################
 sub put_archive {
     my $OA_SESSION_ID = $ENV{OA_SESSION_ID};
+
+    `sudo rm -fr $ARCHIVE_ROOT_DIR/tmp`;
 
     #first check for archive limit
     my $limit_ct = `ls $ARCHIVE_ROOT_DIR | wc -w`;

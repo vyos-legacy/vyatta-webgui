@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+107) unstable; urgency=low
+
+  * Bug: 4848 - QC 72
+
+ -- Loi Vo <loi.vo@vyatta.com>  Tue, 25 Aug 2009 22:00:23 +0000
+
 vyatta-webgui (0.2+fxd0+106) unstable; urgency=low
 
   * Fix a missing function stopAutoResize

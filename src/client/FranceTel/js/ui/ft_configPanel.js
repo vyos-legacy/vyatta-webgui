@@ -82,7 +82,7 @@ function FT_configPanel()
         }
     }
 
-    this.f_showPage = function(id, obj)
+    this.f_showPage = function(id, obj, highlight)
     {
         //Lookup the id2desc in the hidden link first
         var desc = thisObj.m_dynSubMenu.f_get(id);
@@ -91,6 +91,9 @@ function FT_configPanel()
             desc = thisObj.m_parent.m_3navMenu.f_getDescById(id);
         }
         if (desc != undefined) {
+			if ((highlight != undefined) && (highlight != null) && (highlight == true)) {
+				thisObj.m_parent.f_3navHighlightItem(id);
+			}
             thisObj.f_show(id, desc, obj);
         } else {
             alert('cannot find description for id: ' + id);

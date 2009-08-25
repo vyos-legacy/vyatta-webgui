@@ -332,7 +332,7 @@ function FT_confSchedUpdate (name, callback, busLayer) {
     this.f_processResponse = function()
 	{
 		if (thisObj.m_response.length <= 0) {
-            g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_UPDATE_ID);	
+            g_configPanelObj.f_showPage(VYA.FT_CONST.DOM_3_NAV_SUB_UPDATE_ID, null, true);	
 			return;		
 		}
 		var error = g_lang.m_schedUpdateErrorOccur + '<br>';

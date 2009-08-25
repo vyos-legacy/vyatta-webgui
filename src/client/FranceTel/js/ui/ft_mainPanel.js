@@ -136,6 +136,11 @@ function FT_mainPanel(){
         thisObj.m_configPanel.f_show(id, desc);        
     }	
 	
+	this.f_3navHighlightItem  = function(id)
+	{
+		thisObj.m_3navMenu.f_highlightItem(id);
+	}	
+	
     this.f_getDefaultSelection = function(id){
 		//alert('f_getDefaultSelection return: ' + thisObj.m_3navMenu.f_getDefaultSelection(id));
         return thisObj.m_3navMenu.f_getDefaultSelection(id);

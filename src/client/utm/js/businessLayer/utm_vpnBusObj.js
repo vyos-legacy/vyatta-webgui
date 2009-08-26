@@ -75,25 +75,25 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 	this.f_setDefault = function()
 	{
 		this.m_name = '';
-		this.m_vpnsw = 'cisco';
+		this.m_vpnsw = 'microsoft';
 		this.m_users = new Array();
-		this.m_auth = 'Xauth';
-		this.m_ipalloc = 'internet DHCP';
+		this.m_auth = 'l2tp';
+		this.m_ipalloc = 'static';
 		this.m_internetAccess = 'directly';
 		this.m_mode = 'easy';
 		this.m_preshareKey = '';
-		this.m_p1_proto = 'ESP';
+		this.m_p1_proto = 'esp';
 		this.m_exchangeMode = 'aggressive';
-		this.m_p1_encrypt = 'DES';
-		this.m_p1_auth = 'MD5';
-		this.m_p1_dfsGrp = 'group 2';
+		this.m_p1_encrypt = 'des';
+		this.m_p1_auth = 'md5';
+		this.m_p1_dfsGrp = '2';
 		this.m_p1_lifetime = '';
 		this.m_localNetwork = '';
 		this.m_remoteNetwork = '';
-		this.m_p2_dfsGrp = 'group 2';
+		this.m_p2_dfsGrp = '2';
 		this.m_p2_lifetime = '';
-		this.m_p2_encrypt = 'DES';
-		this.m_p2_auth = 'MD5';
+		this.m_p2_encrypt = 'des';
+		this.m_p2_auth = 'md5';
 		this.m_start = '';
 		this.m_stop = '';
 		

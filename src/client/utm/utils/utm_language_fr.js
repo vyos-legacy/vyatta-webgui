@@ -252,6 +252,8 @@ var g_lang =
     m_vpnRUG_VPNsoft : "logiciel VPN", 
     m_vpnRUG_UsrSettings : "paramètres utilisateurs", 
     m_vpnRUG_IPAlloc : "attribution d'adresses IP", 
+	m_vpnRUG_ipstart : "start range",
+	m_vpnRUG_ipend: "end range",	
     m_vpnRUG_InternetAccess : "accès internet",
 
     ///////////////////////////////////////////////////////////////////;;

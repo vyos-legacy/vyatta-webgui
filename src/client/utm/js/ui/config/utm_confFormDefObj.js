@@ -48,6 +48,14 @@ function UTM_confFormDefObj(_id, _width, _items, _buttons)
 		}
 		thisObj.f_addItem(thisObj.f_createInput(_id, 'false', 'true', 'right', undefined, undefined, _size, _onblur));
 	}
+	this.f_addInputWithPadding = function(_id, _size, _label, _onblur, _padding)
+	{
+		if ((_label != undefined) && (_label != null)) {
+			var labelCtrl = thisObj.f_createLabelWithPadding(_id + '_label', _label, 'true', 'false', undefined, 'left', undefined, _padding);
+			thisObj.f_addItem(labelCtrl);
+		}
+		thisObj.f_addItem(thisObj.f_createInput(_id, 'false', 'true', 'right', undefined, undefined, _size, _onblur));
+	}	
 	this.f_addPassword = function(_id, _size, _label) 
 	{
 		if ((_label != undefined) && (_label != null)) {
@@ -74,6 +82,11 @@ function UTM_confFormDefObj(_id, _width, _items, _buttons)
 		return new UTM_formItemObj('label', _id, _text, _newRow, _endRow, _fontWeight, _align,
 		                           _colspan, undefined, undefined, undefined);
 	}
+    this.f_createLabelWithPadding = function(_id, _text, _newRow, _endRow, _fontWeight, _align, _colspan, _padding) 
+	{
+		return new UTM_formItemObj('label', _id, _text, _newRow, _endRow, _fontWeight, _align,
+		                           _colspan, _padding, undefined, undefined);
+	}	
 	this.f_createDivider = function(_id, _colspan) 
 	{
 		return new UTM_formItemObj('html', _id, '<div id="' + _id + '" class="liner"></div>','true','true',undefined, undefined,

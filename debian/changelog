@@ -1,3 +1,25 @@
+vyatta-webgui (0.2.14+fxdU+108) unstable; urgency=low
+
+  [ slioch ]
+  * clean up configured nodes from the expert side of the configuration
+    when submitting from easy mode
+
+  [ Kevin Choi ]
+  * * added 'enable' attribute to xml list
+  * * vpn remote user screen : added code to handle group enable/disable
+    from each row and from
+
+  [ Loi Vo ]
+  * Add validation to user group configuration form
+  * Change to user remote group configuration screen such that it can
+    accept both a group name and a record.
+
+  [ Mohit Mehta ]
+  * add backend support to set, get, delete, disable remote-access l2tp
+    vpn users
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Wed, 26 Aug 2009 16:30:40 -0700
+
 vyatta-webgui (0.2.14+fxdU+107) unstable; urgency=low
 
   [ Loi Vo ]

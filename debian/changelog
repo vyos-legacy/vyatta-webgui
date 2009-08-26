@@ -1,3 +1,22 @@
+vyatta-webgui (0.2.14+fxdU+107) unstable; urgency=low
+
+  [ Loi Vo ]
+  * Make change to user group so that it only show easy mode + static ip
+    allocation.
+
+  [ Kevin Choi ]
+  * * vpn remote users screen:
+
+  [ slioch ]
+  * vpn site-to-site fix for expert mode.
+
+  [ Loi Vo ]
+  * Add m_enable to the user group record.
+  * Change remote User API:
+  * Change for vpn s2s per Mike's request:
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 26 Aug 2009 21:22:14 +0000
+
 vyatta-webgui (0.2.14+fxdU+106) unstable; urgency=low
 
   [ Loi Vo ]

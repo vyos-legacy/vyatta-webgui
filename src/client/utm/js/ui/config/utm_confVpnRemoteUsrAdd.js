@@ -48,7 +48,7 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
 		if (obj != undefined) {
 			thisObj.m_usr = obj;
 		} else {
-			thisObj.m_usr = UTM_vpnRemoteUserRec();
+			thisObj.m_usr = new UTM_vpnRemoteUserRec();
 			thisObj.m_usr.f_setDefault();
 		}		
 		var defObj = new UTM_confFormDefObj('conf_vpn_rusr', '400', new Array(), 

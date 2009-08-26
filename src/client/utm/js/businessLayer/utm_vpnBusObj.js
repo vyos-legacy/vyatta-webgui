@@ -142,9 +142,9 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 		var xml = '<remote_group>';
 		xml += '<action>' + action + '</action>';
 		if (thisObj.m_mode == 'easy') {
-			xml += '<easy/>';
+			xml += '<mode>easy</mode>';
 		} else {
-		    xml += '<expert/>';
+		    xml += '<mode>expert</mode>';
 		}
 		xml = xml + '<name>' + thisObj.m_name + '</name>';
 		xml = xml + '<vpnsw>' + thisObj.m_vpnsw + '</vpnsw>';
@@ -761,7 +761,7 @@ function UTM_vpnBusObj(busObj)
 		var form = thisObj.m_busObj.f_getFormNode(resp);	
         var rgNodeArray = g_utils.f_xmlGetChildNodeArray(form, 'remote_group');
 		//<users>, <ipalloc> are special cases, will be processed separately.
-		var tagArray = ['name', 'vpnsw', 'auth', 'iaccess', 'presharedkey',
+		var tagArray = ['mode','name', 'vpnsw', 'auth', 'iaccess', 'presharedkey',
 		                'enable', 'type', 'emode', 'ikeencrypt', 'ikeauth',
 						'dhgroup', 'ikeltime', 'lnet', 'rnet', 'espdhgroup', 'espltime',
 						'espencrypt', 'espauth'];
@@ -773,16 +773,6 @@ function UTM_vpnBusObj(busObj)
 		
 		for (var i = 0; i < rgNodeArray.length; i++) {
 			var rgNode = rgNodeArray[i];
-			var mode = 'easy';
-			var modeNode = g_utils.f_xmlGetChildNode(rgNode, 'easy');
-			if (modeNode == null) {
-				modeNode = g_utils.f_xmlGetChildNode(rgNode, 'expert');
-				if (modeNode == null) {
-					continue;
-				} else {
-					mode = 'expert';
-				}
-			} 
 
 			for (var j = 0; j < tagArray.length; j++) {
 				var cnode = g_utils.f_xmlGetChildNode(rgNode, tagArray[j]);
@@ -826,7 +816,7 @@ function UTM_vpnBusObj(busObj)
 			}   
 
 			groupList[i].m_name = (tagValue['name'] == undefined)? '' : tagValue['name'];
-			groupList[i].m_mode = mode;
+			groupList[i].m_mode = (tagValue['mode'] == undefined)? 'easy' : tagValue['mode'];
 			groupList[i].m_vpnsw = (tagValue['vpnsw'] == undefined)? '' : tagValue['vpnsw'];
 			groupList[i].m_auth = (tagValue['auth'] == undefined)? 'l2tp' : tagValue['auth'];
 			groupList[i].m_internetAccess = (tagValue['iaccess'] == undefined)? 'directly' : tagValue['iaccess'];

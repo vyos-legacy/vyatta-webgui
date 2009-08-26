@@ -679,6 +679,18 @@ sub execute_set_easy {
 	exit 1;
     }
 
+    #let's remove any settings from the expert mode settings:
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec esp-group esp_$h proposal 1");
+    #ignore errors
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec ike-group ike_$h proposal 1");
+    #ignore errors
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec esp-group esp_$h lifetime");
+    #ignore errors
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec ike-group ike_$h lifetime");
+    #ignore errors
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec site-to-site peer $peerip authentication mode");
+    #ignore errors
+
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec esp-group esp_$h proposal 1");
     if ($err != 0) {
@@ -697,15 +709,6 @@ sub execute_set_easy {
 
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $h");
-    if ($err != 0) {
-	print("<form name='easy' code=2></form>");
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-
-    # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip");
     if ($err != 0) {
 	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");

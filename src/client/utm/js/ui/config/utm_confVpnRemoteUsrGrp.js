@@ -272,6 +272,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 	{
 		thisObj.f_showExpert(false);
 		thisObj.m_form.conf_vpn_rug_preshared_key.value = thisObj.m_usrGrp.m_preshareKey;
+		thisObj.m_form.conf_vpn_rug_confirm_preshared_key.value = thisObj.m_form.conf_vpn_rug_preshared_key.value;
 	}
 
     this.f_loadVMDataExpert = function()
@@ -281,6 +282,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_ex_mode, thisObj.m_usrGrp.m_exchangeMode);
 		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_encrypt, thisObj.m_usrGrp.m_p1_encrypt);
 		thisObj.m_form.conf_vpn_rug_ike_p1_preshare.value = thisObj.m_usrGrp.m_preshareKey;
+        thisObj.m_form.conf_vpn_rug_ike_p1_confirm_preshare.value = thisObj.m_form.conf_vpn_rug_ike_p1_preshare.value;		
 		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_auth, thisObj.m_usrGrp.m_p1_auth);
 		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_diffle, thisObj.m_usrGrp.m_p1_dfsGrp);
 		thisObj.m_form.conf_vpn_rug_ike_p1_lifetime.value = thisObj.m_usrGrp.m_p1_lifetime;
@@ -418,6 +420,34 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     {
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
+		
+		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_vpn_rug_prof_name, g_lang.m_vpnRUG_ProfileName + ' ' + g_lang.m_formNoEmpty, errorInner);
+		var ipalloc = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ip_alloc);
+		if (ipalloc == 'static') {
+		    var start = thisObj.m_form.conf_vpn_rug_ip_alloc_start.value;
+		    var end = thisObj.m_form.conf_vpn_rug_ip_alloc_stop.value;			
+			if (!thisObj.f_checkIP(start)) {
+				errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpnRUG_ipstart);
+			}
+			if (!thisObj.f_checkIP(end)) {
+				errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpnRUG_ipend);
+			}			
+		    if ((start.trim().length > 0) && (end.trim().length >0)) {
+			    var startNum = f_inetAddr(start);
+			    var endNum = f_inetAddr(end);
+			    if (endNum < startNum) {
+				    errorInner += thisObj.f_createListItem(g_lang.m_vpnRUG_range_invalid);
+			    }
+		    }						
+		}
+		if (thisObj.m_form.conf_vpn_rug_tunnel_config_mode_ez.checked) {
+			if (thisObj.m_form.conf_vpn_rug_preshared_key.value.trim().length <= 0) {
+				errorInner += thisObj.f_createListItem(g_lang.m_vpn_PresharedKey + ' ' + g_lang.m_formNoEmpty);
+			} else if (thisObj.m_form.conf_vpn_rug_preshared_key.value != thisObj.m_form.conf_vpn_rug_confirm_preshared_key.value) {
+				errorInner += thisObj.f_createListItem(g_lang.m_vpnS2S_preshareKey_confirm_mismatch);
+			}
+		}		
+		
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';

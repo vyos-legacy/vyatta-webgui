@@ -226,7 +226,7 @@ var g_lang =
 	m_vpn_auth: "authentication",
 	m_vpn_TunnelSettings: "tunnel settings",
 	m_vpn_TunnelConfigMode: "tunnel configuration mode",
-	m_vpn_PresharedKey : "preshared Key",
+	m_vpn_PresharedKey : "preshared key",
 	m_vpn_Confirm: "confirm",
     m_vpn_IKEnegPhase1 : "IKE negotiation (Phase 1)",
     m_vpn_IKE_p1_proto : "type/protocol",
@@ -261,6 +261,7 @@ var g_lang =
 	m_vpnRUG_ipstart : "start range",
 	m_vpnRUG_ipend: "end range",
     m_vpnRUG_InternetAccess : "internet access",
+	m_vpnRUG_range_invalid: "end range must be greater than start range!",
 
     ///////////////////////////////////////////////////////////////////
     // VPN Remote User Add

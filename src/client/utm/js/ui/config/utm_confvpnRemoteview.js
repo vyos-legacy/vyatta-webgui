@@ -11,6 +11,8 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     this.thisObjName = 'UTM_confVPNRemoteview';
     this.m_groupRecs = null;
     this.m_userRecs = null;
+    this.m_sendGrpList = [];
+    this.m_sendUserList = []
 
     /**
      * @param name - name of configuration screens.
@@ -27,6 +29,8 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
         this.m_groupRecs = null;
         this.m_userRecs = null;
+        this.m_sendGrpList = [];
+        this.m_sendUserList = []
 
         var div = this.f_getPanelDiv(this.f_init());
 		thisObj.f_resize();
@@ -37,7 +41,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
         var cols = [];
         var chkbox = 'Enabled<br>' + thisObj.f_renderCheckbox('no',
-                      'vpnGroupsRemoteView', 'f_vpnRemoteViewGroupHdChkboxCb',
+                      'vpnGridGroupEnableId', 'f_vpnRemoteViewGroupHdChkboxCb()',
                       'tooltip');
 
         cols[0] = this.f_createColumn('Name<br>', 110, 'text', '6');
@@ -54,7 +58,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
         var cols = [];
         var chkbox = 'Enabled<br>' + thisObj.f_renderCheckbox('no',
-                      'vpnUsersRemoteView', 'f_vpnRemoteViewUserHdChkboxCb',
+                      '', 'f_vpnRemoteViewUserHdChkboxCb()',
                       'tooltip');
 
         cols[0] = this.f_createColumn('User Name<br>', 220, 'text', '6');
@@ -63,16 +67,6 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
         cols[3] = this.f_createColumn('Delete<br>', 70, 'image', '0');
 
         return cols;
-    }
-
-    this.f_groupsChkboxCb = function()
-    {
-
-    }
-
-    this.f_usersChkboxCb = function()
-    {
-
     }
 
     this.f_loadVMDataRemoteUser = function()
@@ -128,14 +122,15 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
         {
             var rec = recs[i];
             var c = "<div align=center>";
-            var eId = "remote_enabledId-" + rec.m_name;
+            var eId = "vpnGroup_enabledId-" + rec.m_name;
 
             var gname = thisObj.f_renderAnchor(rec.m_name,
                     "f_vpnGroupUpdateHandler('" + rec.m_name + "')",
                     'Click on name for update');
 
+            var readonly = rec.m_users != null && rec.m_users.length > 0 ? false : true;
             var enable = c + thisObj.f_renderCheckbox(rec.m_enable, eId,
-                          "f_vpnChkboxHandler('"+ eId +"', 'remote')", "") + "</div>";
+                          "f_vpnGroupChkboxHandler('"+ eId +"')", "", readonly) + "</div>";
 
             var del = c + thisObj.f_renderButton("delete", true,
                           "f_vpnGroupDeleteHandler('" + rec.m_name +
@@ -152,6 +147,8 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
 
             thisObj.m_bodyGroup.appendChild(div);
         }
+
+        this.f_updateGroupHeaderChkbox();
     }
 
     this.f_getGroupRecByName = function(name)
@@ -236,11 +233,6 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             parent.appendChild(child[i]);
     }
 
-    this.f_handleCheckboxClick = function(chkbox)
-    {
-
-    }
-
     this.f_stopLoadVMData = function()
     {
     }
@@ -276,28 +268,147 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
         return this.f_createGeneralDiv(g_lang.m_vpnRemoteviewHeader+"<br><br><br>");
     }
+
+    this.f_updateGroupHeaderChkbox = function()
+    {
+        var chk = document.getElementById("vpnGridGroupEnableId");
+
+        //////////////////////////////////////////
+        // work on enable/disable header checkbox
+        var enable = false;
+        for(var i=0; i<this.m_groupRecs.length; i++)
+        {
+            var rec = this.m_groupRecs[i];
+            if(rec.m_users != null && rec.m_users.length > 0)
+            {
+                enable = true;
+                break;
+            }
+        }
+        chk.disabled = !enable;
+
+        /////////////////////////////////////////
+        // work on check/dis-check checkbox
+        if(enable)
+        {
+            var checked = true;
+            for(var i=0; i<this.m_groupRecs.length; i++)
+            {
+                var rec = this.m_groupRecs[i];
+                var eId = "vpnGroup_enabledId-" + rec.m_name;
+                var el = document.getElementById(eId);
+                if(el != null && !el.checked)
+                {
+                    checked = false;
+                    break;
+                }
+            }
+            chk.checked = checked;
+        }
+    }
+
+    this.f_setGroupEnableValue2Server = function()
+    {
+        var cb = function(evt)
+        {
+            if(evt.m_errCode != 0)
+                alert("set group enable error: " + evt.m_errMsg + " for " + eid);
+
+            if(thisObj.m_sendGrpList.length > 0)
+                thisObj.f_setEnableValue2Server();
+            else
+                thisObj.f_updateGroupHeaderChkbox();
+        }
+
+        var eid = this.m_sendGrpList.pop();
+        if(eid != null)
+        {
+            ///////////////////////////////////////////
+            // submit set to server.
+            var el = document.getElementById(eid);
+            var ids = eid.split("-");
+            var rec = thisObj.f_getGroupRecByName(ids[1]);
+
+            rec.m_enable = el.checked ? 'yes' : 'no';
+            thisObj.m_busLayer.f_vpnSetRemoteUserGroup(rec, "update", cb);
+        }
+    }
+
+    this.f_groupsChkboxCb = function()
+    {
+        var chk = document.getElementById("vpnGridGroupEnableId");
+
+        for(var i=0; i<thisObj.m_groupRecs.length; i++)
+        {
+            var rec = thisObj.m_npRecs[i];
+            var eeid = "vpnGroup_enabledId-" + rec.m_name;
+            var eel = document.getElementById(eeid);
+
+            if(eel != null)
+            {
+                if(eel.checked != chk.checked)
+                    this.m_sendGrpList.push(eeid);
+
+                eel.checked = chk.checked;
+            }
+        }
+
+        this.f_setGroupEnableValue2Server();
+    }
+
+    this.m_handlerGroupChkbox = function(eid)
+    {
+        thisObj.m_sendGrpList.push(eid);
+        thisObj.f_setGroupEnableValue2Server();
+    }
+
+    this.f_usersChkboxCb = function()
+    {
+
+    }
 }
 UTM_extend(UTM_confVPNRemoteview, UTM_confBaseObj);
 
 
+/**
+ * group table enable checkbox
+ */
 function f_vpnRemoteViewGroupHdChkboxCb(e)
 {
     g_configPanelObj.m_activeObj.f_groupsChkboxCb();
 }
 
+/**
+ * user table enable checkbox
+ */
 function f_vpnRemoteViewUserHdChkboxCb(e)
 {
     g_configPanelObj.m_activeObj.f_usersChkboxCb();
 }
 
+/**
+ * group table header mouse click handler
+ */
 function f_vpnGroupGridHeaderOnclick(col)
 {
-    g_configPanelObj.m_activeObj.f_handleS2sGridSort(col);
+    //g_configPanelObj.m_activeObj.f_handleGridSort(col);
 }
 
+/**
+ * user table header mouse click handler
+ */
 function f_vpnUserGridHeaderOnclick(col)
 {
 
+}
+
+function f_vpnGroupChkboxHandler(eid)
+{
+    g_configPanelObj.m_activeObj.m_handlerGroupChkbox(eid);
+}
+
+function f_vpnUserChkboxHandler(eid)
+{
 }
 
 function f_vpnGroupUpdateHandler(gName)

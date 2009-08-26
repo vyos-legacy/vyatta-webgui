@@ -586,11 +586,11 @@ function UTM_businessLayer()
 	}
 	
     /**
-     * Get the vpn remote user configuration.  If userName == null, get all users.
+     * Get the vpn remote user configuration.  If userName == null, groupName==null: get all users.
      */
-    this.f_vpnGetRemoteUser = function(userName, guicb)
+    this.f_vpnGetRemoteUser = function(userName, groupName, guicb)
 	{
-		thisObj.f_getVPNObject().f_getRemoteUser(userName, guicb);
+		thisObj.f_getVPNObject().f_getRemoteUser(userName, groupName, guicb);
 	}
 	
 	this.f_vpnDeleteRemoteUser = function(userName, groupName, guicb)

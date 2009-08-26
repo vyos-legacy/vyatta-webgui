@@ -30,7 +30,7 @@ function UTM_vpnRemoteUserRec(name, pw, group)
 		xml += '<action>' + action + '</action>';
 		xml = xml + '<username>' + thisObj.m_userName + '</username>';
 		xml = xml + '<passwd><![CDATA[' + thisObj.m_pw + ']]></passwd>';
-		xml = xml + '<groups><group>' + thisObj.m_groupName + '</group></groups>';
+		xml = xml + '<groupname>' + thisObj.m_groupName + '</groupname>';
 		xml += '</remote_user>';
 		return xml;
 	}
@@ -70,7 +70,7 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 	this.m_p2_auth = p2_auth;
 	this.m_start = '';
 	this.m_stop = '';
-        this.m_enable = 'no';
+       this.m_enable = 'no';
 	var thisObj = this;
 
 	this.f_setDefault = function()
@@ -97,7 +97,7 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 		this.m_p2_auth = 'md5';
 		this.m_start = '';
 		this.m_stop = '';
-
+		this.m_enable = '';
 	}
 
     this.f_setLocalNetwork = function(ip, prefix)
@@ -211,20 +211,20 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
         thisObj.m_mode = 'easy'; // easy or export
         thisObj.m_tunnel = '';
         thisObj.m_peerIp = '0.0.0.0';
-        thisObj.m_remoteVpnDevice = 'Cisco';
+        thisObj.m_remoteVpnDevice = 'cisco';
         thisObj.m_presharedKey = null;
         thisObj.m_localNetwork = '0.0.0.0/24';
         thisObj.m_remoteNetwork = '0.0.0.0/24';
-        thisObj.m_type = 'EXP/Tunnel';
-        thisObj.m_exchange = 'Aggresive';
-        thisObj.m_encryption1 = 'AES128';
-        thisObj.m_auth1 = 'SHA1';
-        thisObj.m_diffieHellmann = 'Group 5';
+        thisObj.m_type = 'ESP/tunnel';
+        thisObj.m_exchange = 'aggresive';
+        thisObj.m_encryption1 = 'aes128';
+        thisObj.m_auth1 = 'pre-shared-secret';
+        thisObj.m_diffieHellmann = '5';
         thisObj.m_lifeTime1 = '';
-        thisObj.m_dfsGroup = 'Group 5';
+        thisObj.m_dfsGroup = '5';
         thisObj.m_lifeTime2 = '';
-        thisObj.m_encryption2 = 'AES128';
-        thisObj.m_auth2 = 'SHA1';
+        thisObj.m_encryption2 = 'aes128';
+        thisObj.m_auth2 = 'sha1';
         thisObj.m_status = 'yes';   // yes/no
         thisObj.m_enable = false;
 	}
@@ -455,16 +455,16 @@ function UTM_vpnBusObj(busObj)
 			vpn[i].m_presharedKey = (tagValue['presharedkey'] == undefined)? '' : tagValue['presharedkey'];
 			vpn[i].m_localNetwork = (tagValue['lnet'] == undefined)? '' : tagValue['lnet'];
 			vpn[i].m_remoteNetwork = (tagValue['rnet'] == undefined)? '' : tagValue['rnet'];
-			vpn[i].m_type= (tagValue['type'] == undefined)? 'ESP' : tagValue['type'];
+			vpn[i].m_type= (tagValue['type'] == undefined)? 'esp' : tagValue['type'];
 			vpn[i].m_exchange= (tagValue['emode'] == undefined)? 'aggressive' : tagValue['emode'];
-			vpn[i].m_encryption1= (tagValue['ikeencrypt'] == undefined)? 'DES' : tagValue['ikeencrypt'];
-			vpn[i].m_auth1= (tagValue['ikeauth'] == undefined)? 'MD5' : tagValue['ikeauth'];
-			vpn[i].m_diffieHellmann= (tagValue['dhgroup'] == undefined)? 'group 5' : tagValue['dhgroup'];
-			vpn[i].m_dfsGroup= (tagValue['dhgroup'] == undefined)? 'group 5' : tagValue['dhgroup'];
+			vpn[i].m_encryption1= (tagValue['ikeencrypt'] == undefined)? 'des' : tagValue['ikeencrypt'];
+			vpn[i].m_auth1= (tagValue['ikeauth'] == undefined)? 'pre-shared-secret' : tagValue['ikeauth'];
+			vpn[i].m_diffieHellmann= (tagValue['dhgroup'] == undefined)? '5' : tagValue['dhgroup'];
+			vpn[i].m_dfsGroup= (tagValue['dhgroup'] == undefined)? '5' : tagValue['dhgroup'];
 			vpn[i].m_lifeTime1= (tagValue['ikeltime'] == undefined)? '' : tagValue['ikeltime'];
 			vpn[i].m_lifeTime2= (tagValue['espltime'] == undefined)? '' : tagValue['espltime'];
 			vpn[i].m_encryption2= (tagValue['espencrypt'] == undefined)? '' : tagValue['espencrypt'];
-			vpn[i].m_auth2= (tagValue['espauth'] == undefined)? 'DES' : tagValue['espauth'];
+			vpn[i].m_auth2= (tagValue['espauth'] == undefined)? 'des' : tagValue['espauth'];
 			vpn[i].m_status= (tagValue['status'] == undefined)? 'yes' : tagValue['status'];
 			vpn[i].m_enable= (tagValue['disable'] == undefined)? 'yes' : 'no';
 		}
@@ -905,11 +905,11 @@ function UTM_vpnBusObj(busObj)
 		var form = thisObj.m_busObj.f_getFormNode(resp);
         var ruNodeArray = g_utils.f_xmlGetChildNodeArray(form, 'remote_user');
 		//<groups> is special cases, will be processed separately.
-		var tagArray = ['username', 'passwd', 'enable'];
-		var tagValue = [];
-        var userList = new Array();
-
-		if (ruNodeArray == null)
+		var tagArray = ['username', 'groupname','passwd', 'enable'];
+		var tagValue = [];				
+        var userList = new Array();		
+		
+		if (ruNodeArray == null) 
 		    return userList;
 
 		for (var i = 0; i < ruNodeArray.length; i++) {
@@ -926,20 +926,7 @@ function UTM_vpnBusObj(busObj)
 			}
 			userList[i] = new UTM_vpnRemoteUserRec();
 			//parse group list.  One user belongs to one group for now.
-			userList[i].m_groupName = '';
-			var gNode = g_utils.f_xmlGetChildNode(ruNode, 'groups');
-			if (gNode != null) {
-				var gNodeArray = g_utils.f_xmlGetChildNodeArray(gNode, 'group');
-				if (uNodeArray != null) {
-				    for (var j=0 ; j < gNodeArray.length; j++) {
-						var value = g_utils.f_xmlGetNodeValue(gNodeArray[j]);
-						if (value != null) {
-							userList[i].m_groupName = value;
-							break;
-						}
-					}
-				}
-			}
+			userList[i].m_groupName = (tagValue['groupname'] == undefined)? '' : tagValue['groupname'];;			
 			userList[i].m_userName = (tagValue['username'] == undefined)? '' : tagValue['username'];
 			userList[i].m_pw = (tagValue['passwd'] == undefined)? '' : tagValue['passwd'];
 			userList[i].m_enable= (tagValue['enable'] == undefined)? 'yes' : tagValue['enable'];
@@ -949,17 +936,18 @@ function UTM_vpnBusObj(busObj)
 
 	}
 
-	this.f_getRemoteUser = function(userName, guicb)
+	this.f_getRemoteUser = function(userName, groupname, guicb)
 	{
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
                       "<handler>vpn remote-access get_user" +
-                      "</handler><data><remote_user>";
+                      "</handler><data>";
         if (userName != null) {
-			xmlstr += "<username>" + userName + "</username>";
-		}
-		xmlstr += "</remote_user></data></statement>";
-
+			xmlstr += "<remote_user><username>" + userName + "</username><groupname>" +
+			          groupname + "</groupname></remote_user>";
+		}					  
+		xmlstr += "</data></statement>";
+		
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
 	}

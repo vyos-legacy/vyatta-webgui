@@ -679,6 +679,18 @@ sub execute_set_easy {
 	exit 1;
     }
 
+    #let's remove any settings from the expert mode settings:
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec esp-group esp_$h proposal 1");
+    #ignore errors
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec ike-group ike_$h proposal 1");
+    #ignore errors
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec esp-group esp_$h lifetime");
+    #ignore errors
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec ike-group ike_$h lifetime");
+    #ignore errors
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete vpn ipsec site-to-site peer $peerip authentication mode");
+    #ignore errors
+
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec esp-group esp_$h proposal 1");
     if ($err != 0) {
@@ -697,15 +709,6 @@ sub execute_set_easy {
 
     # apply config command
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip tunnel $h");
-    if ($err != 0) {
-	print("<form name='easy' code=2></form>");
-	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	exit 1;
-    }
-
-
-    # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set vpn ipsec site-to-site peer $peerip");
     if ($err != 0) {
 	print("<form name='easy' code=2></form>");
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -839,7 +842,11 @@ sub get {
 	if ($v eq 'peer') {
 	    if ($tmp ne '') {
 		my $status = get_status($peerip);
-		$ret .= "<site-to-site><$type/>$tmp<status>$status</status></site-to-site>";
+		$ret .= "<site-to-site><$type/>$tmp<status>$status</status>";
+		if ($type eq "expert") {
+		    $ret .= get_expert_params($peerip);
+		}
+		$ret .= "</site-to-site>";
 		$tmp = "";
 	    }
 	    $peerip = $values[$ct];
@@ -854,7 +861,7 @@ sub get {
 	    }
 	    $tmp .= "<tunnelname>$tmp2[0]</tunnelname>";
 	    if ($tmp2[1] eq 'expert') {
-		$tmp .= get_expert_params($peerip);
+		$type = "expert";
 	    }
 	}
 	elsif ($v eq 'local-subnet') {
@@ -874,7 +881,11 @@ sub get {
     #let's catch the last one here
     if ($tmp ne '') {
 	my $status = get_status($peerip);
-	$ret .= "<site-to-site><$type/>$tmp<status>$status</status></site-to-site>";
+	$ret .= "<site-to-site><$type/>$tmp<status>$status</status>";
+	if ($type eq "expert") {
+	    $ret .= get_expert_params($peerip);
+	}
+	$ret .= "</site-to-site>";
     }
     return $ret;
 }
@@ -886,7 +897,7 @@ sub get {
 ##########################################################################
 sub get_expert_params {
     my ($peerip) = @_;
-    my $h = get_hash_code($peerip);
+    my $h = hash_code($peerip);
 
     #grab the additional details out of the ike/esp configuration areas
     my $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec ike-group ike_$h`;

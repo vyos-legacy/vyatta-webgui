@@ -847,11 +847,11 @@ function UTM_vpnBusObj(busObj)
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
                       "<handler>vpn remote-access get_group" +
-                      "</handler><data><remote_group>";
+                      "</handler><data>";
         if (groupName != null) {
-			xmlstr += "<name>" + groupName + "</name>";
+			xmlstr += "<remote_group><name>" + groupName + "</name></remote_group>";
 		}
-		xmlstr += "</remote_group></data></statement>";
+		xmlstr += "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

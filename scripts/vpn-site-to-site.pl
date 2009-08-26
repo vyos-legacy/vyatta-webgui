@@ -839,7 +839,11 @@ sub get {
 	if ($v eq 'peer') {
 	    if ($tmp ne '') {
 		my $status = get_status($peerip);
-		$ret .= "<site-to-site><$type/>$tmp<status>$status</status></site-to-site>";
+		$ret .= "<site-to-site><$type/>$tmp<status>$status</status>";
+		if ($type eq "expert") {
+		    $ret .= get_expert_params($peerip);
+		}
+		$ret .= "</site-to-site>";
 		$tmp = "";
 	    }
 	    $peerip = $values[$ct];
@@ -854,7 +858,7 @@ sub get {
 	    }
 	    $tmp .= "<tunnelname>$tmp2[0]</tunnelname>";
 	    if ($tmp2[1] eq 'expert') {
-		$tmp .= get_expert_params($peerip);
+		$type = "expert";
 	    }
 	}
 	elsif ($v eq 'local-subnet') {
@@ -874,7 +878,11 @@ sub get {
     #let's catch the last one here
     if ($tmp ne '') {
 	my $status = get_status($peerip);
-	$ret .= "<site-to-site><$type/>$tmp<status>$status</status></site-to-site>";
+	$ret .= "<site-to-site><$type/>$tmp<status>$status</status>";
+	if ($type eq "expert") {
+	    $ret .= get_expert_params($peerip);
+	}
+	$ret .= "</site-to-site>";
     }
     return $ret;
 }
@@ -886,7 +894,7 @@ sub get {
 ##########################################################################
 sub get_expert_params {
     my ($peerip) = @_;
-    my $h = get_hash_code($peerip);
+    my $h = hash_code($peerip);
 
     #grab the additional details out of the ike/esp configuration areas
     my $out = `/opt/vyatta/sbin/vyatta-output-config.pl vpn ipsec ike-group ike_$h`;

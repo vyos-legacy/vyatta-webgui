@@ -1,3 +1,36 @@
+vyatta-webgui (0.2.14+fxdU+106) unstable; urgency=low
+
+  [ Loi Vo ]
+  * Add vpn remote-access get_group API parsing to biz layer.
+
+  [ slioch ]
+  * modify get archive to fix bug where actual archive was deleted
+    during backup
+
+  [ Loi Vo ]
+  * Add APIs @ biz layer to get user group, and user for remote vpn
+
+  [ Kevin Choi ]
+  * * vpn overview screen :
+
+  [ Loi Vo ]
+  * Change to reflect a change in the API for the following:
+  * Fix missing new operator for the f_init in
+    utm_confVpnRemoteUserAdd.js
+
+  [ Kevin Choi ]
+  * * vpn remote user:
+
+  [ Loi Vo ]
+  * Change user from textfield to a list box, as a group can contain
+    many users.
+
+  [ Mohit Mehta ]
+  * add backend support for setting, deleting, disabling ravpn l2tp
+    group
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 25 Aug 2009 21:45:04 -0700
+
 vyatta-webgui (0.2.14+fxdU+105) unstable; urgency=low
 
   [ slioch ]

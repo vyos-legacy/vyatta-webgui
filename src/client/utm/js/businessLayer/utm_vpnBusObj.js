@@ -211,20 +211,20 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
         thisObj.m_mode = 'easy'; // easy or export
         thisObj.m_tunnel = '';
         thisObj.m_peerIp = '0.0.0.0';
-        thisObj.m_remoteVpnDevice = 'Cisco';
+        thisObj.m_remoteVpnDevice = 'cisco';
         thisObj.m_presharedKey = null;
         thisObj.m_localNetwork = '0.0.0.0/24';
         thisObj.m_remoteNetwork = '0.0.0.0/24';
-        thisObj.m_type = 'EXP/Tunnel';
-        thisObj.m_exchange = 'Aggresive';
-        thisObj.m_encryption1 = 'AES128';
-        thisObj.m_auth1 = 'SHA1';
-        thisObj.m_diffieHellmann = 'Group 5';
+        thisObj.m_type = 'ESP/tunnel';
+        thisObj.m_exchange = 'aggresive';
+        thisObj.m_encryption1 = 'aes128';
+        thisObj.m_auth1 = 'pre-shared-secret';
+        thisObj.m_diffieHellmann = '5';
         thisObj.m_lifeTime1 = '';
-        thisObj.m_dfsGroup = 'Group 5';
+        thisObj.m_dfsGroup = '5';
         thisObj.m_lifeTime2 = '';
-        thisObj.m_encryption2 = 'AES128';
-        thisObj.m_auth2 = 'SHA1';
+        thisObj.m_encryption2 = 'aes128';
+        thisObj.m_auth2 = 'sha1';
         thisObj.m_status = 'yes';   // yes/no
         thisObj.m_enable = false;
 	}
@@ -455,16 +455,16 @@ function UTM_vpnBusObj(busObj)
 			vpn[i].m_presharedKey = (tagValue['presharedkey'] == undefined)? '' : tagValue['presharedkey'];
 			vpn[i].m_localNetwork = (tagValue['lnet'] == undefined)? '' : tagValue['lnet'];
 			vpn[i].m_remoteNetwork = (tagValue['rnet'] == undefined)? '' : tagValue['rnet'];
-			vpn[i].m_type= (tagValue['type'] == undefined)? 'ESP' : tagValue['type'];
+			vpn[i].m_type= (tagValue['type'] == undefined)? 'esp' : tagValue['type'];
 			vpn[i].m_exchange= (tagValue['emode'] == undefined)? 'aggressive' : tagValue['emode'];
-			vpn[i].m_encryption1= (tagValue['ikeencrypt'] == undefined)? 'DES' : tagValue['ikeencrypt'];
-			vpn[i].m_auth1= (tagValue['ikeauth'] == undefined)? 'MD5' : tagValue['ikeauth'];
-			vpn[i].m_diffieHellmann= (tagValue['dhgroup'] == undefined)? 'group 5' : tagValue['dhgroup'];
-			vpn[i].m_dfsGroup= (tagValue['dhgroup'] == undefined)? 'group 5' : tagValue['dhgroup'];
+			vpn[i].m_encryption1= (tagValue['ikeencrypt'] == undefined)? 'des' : tagValue['ikeencrypt'];
+			vpn[i].m_auth1= (tagValue['ikeauth'] == undefined)? 'pre-shared-secret' : tagValue['ikeauth'];
+			vpn[i].m_diffieHellmann= (tagValue['dhgroup'] == undefined)? '5' : tagValue['dhgroup'];
+			vpn[i].m_dfsGroup= (tagValue['dhgroup'] == undefined)? '5' : tagValue['dhgroup'];
 			vpn[i].m_lifeTime1= (tagValue['ikeltime'] == undefined)? '' : tagValue['ikeltime'];
 			vpn[i].m_lifeTime2= (tagValue['espltime'] == undefined)? '' : tagValue['espltime'];
 			vpn[i].m_encryption2= (tagValue['espencrypt'] == undefined)? '' : tagValue['espencrypt'];
-			vpn[i].m_auth2= (tagValue['espauth'] == undefined)? 'DES' : tagValue['espauth'];
+			vpn[i].m_auth2= (tagValue['espauth'] == undefined)? 'des' : tagValue['espauth'];
 			vpn[i].m_status= (tagValue['status'] == undefined)? 'yes' : tagValue['status'];
 			vpn[i].m_enable= (tagValue['disable'] == undefined)? 'yes' : 'no';			
 		}

@@ -15,25 +15,25 @@ function UTM_vpnRemoteUserRec(name, pw, group)
     this.m_pw = pw;
     this.m_groupName = group;
 	this.m_enable = 'no';
-	
-	this.f_setDefault = function() 
+
+	this.f_setDefault = function()
 	{
 	    this.m_userName = '';
 		this.m_pw = '';
 		this.m_groupName = '';
 		this.m_enable = 'no';
 	}
-	
+
 	this.f_toXml = function(action)
 	{
 		var xml = '<remote_user>';
 		xml += '<action>' + action + '</action>';
-		xml = xml + '<username>' + thisObj.m_userName + '</username>';		
+		xml = xml + '<username>' + thisObj.m_userName + '</username>';
 		xml = xml + '<passwd><![CDATA[' + thisObj.m_pw + ']]></passwd>';
 		xml = xml + '<groups><group>' + thisObj.m_groupName + '</group></groups>';
 		xml += '</remote_user>';
-		return xml;		
-	}	
+		return xml;
+	}
 }
 
 function UTM_vpnRemoteTableRec(userRec, groupRec, status, enable)
@@ -70,6 +70,7 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 	this.m_p2_auth = p2_auth;
 	this.m_start = '';
 	this.m_stop = '';
+        this.m_enable = 'no';
 	var thisObj = this;
 
 	this.f_setDefault = function()
@@ -96,7 +97,7 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 		this.m_p2_auth = 'md5';
 		this.m_start = '';
 		this.m_stop = '';
-		
+
 	}
 
     this.f_setLocalNetwork = function(ip, prefix)
@@ -136,7 +137,7 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 
         return n[1];
     }
-	
+
 	this.f_toXml = function(action)
 	{
 		var xml = '<remote_group>';
@@ -147,15 +148,16 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 		    xml += '<mode>expert</mode>';
 		}
 		xml = xml + '<name>' + thisObj.m_name + '</name>';
+                xml += "<enable>" + thisObj.m_enable + "</enable>";
 		xml = xml + '<vpnsw>' + thisObj.m_vpnsw + '</vpnsw>';
 		xml = xml + '<users>';
 		for (var i=0; i < thisObj.m_users.length; i++) {
-		    xml = xml + '<user>' + thisObj.m_users[i] + '</user>';	
+		    xml = xml + '<user>' + thisObj.m_users[i] + '</user>';
 		}
 		xml = xml + '</users>';
 		xml = xml + '<groupauth>' + thisObj.m_auth + '</groupauth>';
 		if (thisObj.m_ipalloc == 'static') {
-			xml = xml + '<ipalloc><static><start>' + thisObj.m_start + '</start><stop>' + thisObj.m_stop + '</stop></static></ipalloc>';			
+			xml = xml + '<ipalloc><static><start>' + thisObj.m_start + '</start><stop>' + thisObj.m_stop + '</stop></static></ipalloc>';
 		} else {
 			xml = xml + '<ipalloc><dhcp/></ipalloc>';
 		}
@@ -172,12 +174,12 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 			xml = xml + '<lnet>' + thisObj.m_localNetwork + '</lnet>';
 		    xml = xml + '<rnet>' + thisObj.m_remoteNetwork + '</rnet>';
 			xml = xml + '<espdhgroup>' + thisObj.m_p2_dfsGrp + '</espdhgroup>';
-			xml = xml + '<espltime>' + thisObj.m_p2_lifetime + '</espltime>';			
+			xml = xml + '<espltime>' + thisObj.m_p2_lifetime + '</espltime>';
 			xml = xml + '<espencrypt>' + thisObj.m_p2_encrypt + '</espencrypt>';
-			xml = xml + '<espauth>' + thisObj.m_p2_auth + '</espauth>';			
-		} 
+			xml = xml + '<espauth>' + thisObj.m_p2_auth + '</espauth>';
+		}
 		xml += '</remote_group>';
-		return xml;		
+		return xml;
 	}
 }
 
@@ -264,7 +266,7 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
 
         return n[1];
     }
-	
+
 	this.f_toXml = function()
 	{
 		var xml = '<site-to-site>';
@@ -275,7 +277,7 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
 		}
 		xml = xml + '<peerip>' + thisObj.m_peerIp + '</peerip>';
 		xml = xml + '<tunnelname>' + thisObj.m_tunnel + '</tunnelname>';
-		xml = xml + '<presharedkey>' + thisObj.m_presharedKey + '</presharedkey>';	
+		xml = xml + '<presharedkey>' + thisObj.m_presharedKey + '</presharedkey>';
 		xml = xml + '<lnet>' + thisObj.m_localNetwork + '</lnet>';
 		xml = xml + '<rnet>' + thisObj.m_remoteNetwork + '</rnet>';
 		if (thisObj.m_mode == 'expert') {
@@ -288,10 +290,10 @@ function UTM_vpnRecord(tunnel, mode, src, dest, peer, status, enable)
 			xml = xml + '<espltime>' + thisObj.m_lifeTime2 + '</espltime>';
 			xml = xml + '<ikeauth>' + thisObj.m_auth1 + '</ikeauth>';
 			xml = xml + '<espauth>' + thisObj.m_auth2 + '</espauth>';
-		} 
+		}
 		xml += '</site-to-site>';
 		return xml;
-	}	
+	}
 
 }
 
@@ -341,13 +343,13 @@ function UTM_vpnBusObj(busObj)
                 } else if(thisObj.m_lastCmdSent.indexOf("<handler>vpn-remote get-overview") > 0) {
                     var vpnRec = thisObj.f_parseRemoteOverviewGet(err);
                     evt = new UTM_eventObj(0, vpnRec, '');
-                } else { //These APIs have the form tag.  Check for form error.                
+                } else { //These APIs have the form tag.  Check for form error.
                     var tmp = thisObj.m_busObj.f_getFormError(err);
 				    if (tmp != null) { //form has error
 						if (thisObj.m_guiCb != undefined) {
 							return thisObj.m_guiCb(tmp);
 						}
-					} else {										
+					} else {
 						if (thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get_group") > 0) {
 							var groupList = thisObj.f_parseRemoteUserGroupGet(err);
 							evt = new UTM_eventObj(0, groupList, '');
@@ -397,8 +399,8 @@ function UTM_vpnBusObj(busObj)
 	{
 		var errmsgNode = g_utils.f_xmlGetChildNode(form, 'errmsg');
 		if (errmsgNode == null) return null;
-		
-		return g_utils.f_xmlGetNodeValue(errmsgNode);		
+
+		return g_utils.f_xmlGetNodeValue(errmsgNode);
 	}
 
     this.f_parseSite2SiteOverviewGet = function(resp)
@@ -408,9 +410,9 @@ function UTM_vpnBusObj(busObj)
 		var tagArray = ['peerip', 'presharedkey', 'tunnelname', 'lnet', 'rnet', 'type',
 		                'emode', 'ikeencrypt', 'espencrypt', 'dhgroup', 'ikeltime',
 						'espltime', 'ikeauth', 'espauth', 'status', 'disable'];
-		var tagValue = [];				
+		var tagValue = [];
         var vpn = new Array();
-		
+
 		if (s2sNodeArray == null) {
 			return vpn;
 		}
@@ -434,7 +436,7 @@ function UTM_vpnBusObj(busObj)
 				} else {
 					mode = 'expert';
 				}
-			} 
+			}
 
 			for (var j = 0; j < tagArray.length; j++) {
 				var cnode = g_utils.f_xmlGetChildNode(s2sNode, tagArray[j]);
@@ -464,7 +466,7 @@ function UTM_vpnBusObj(busObj)
 			vpn[i].m_encryption2= (tagValue['espencrypt'] == undefined)? '' : tagValue['espencrypt'];
 			vpn[i].m_auth2= (tagValue['espauth'] == undefined)? 'DES' : tagValue['espauth'];
 			vpn[i].m_status= (tagValue['status'] == undefined)? 'yes' : tagValue['status'];
-			vpn[i].m_enable= (tagValue['disable'] == undefined)? 'yes' : 'no';			
+			vpn[i].m_enable= (tagValue['disable'] == undefined)? 'yes' : 'no';
 		}
 
         return vpn;
@@ -497,7 +499,7 @@ function UTM_vpnBusObj(busObj)
 						groupRec.m_name = this.f_getValueFromNameValuePair("group", vals[j]);
                         groupRec.f_setLocalNetwork(this.f_getValueFromNameValuePair("localaddress", vals[j]),'21');
 						groupRec.f_setRemoteNetwork(this.f_getValueFromNameValuePair("ipaddress", vals[j]),'21');
-						
+
                         vpn[j] = new UTM_vpnRemoteTableRec();
 						vpn[j].m_userRec = userRec;
 						vpn[j].m_groupRec = groupRec;
@@ -542,9 +544,9 @@ function UTM_vpnBusObj(busObj)
 			thisObj.f_getSite2SiteOverviewDataLocal(rec,guicb);
 		} else {
 			thisObj.f_getSite2SiteOverviewDataServer(rec,guicb);
-		}		
+		}
     }
-	
+
     this.f_getSite2SiteOverviewDataServer = function(guicb)
 	{
         thisObj.m_guiCb = guicb;
@@ -552,8 +554,8 @@ function UTM_vpnBusObj(busObj)
                       "<handler>vpn site-to-site get" +
                       "</handler><data></data></statement>";
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);					  		
-	}	
+                              thisObj.f_respondRequestCallback);
+	}
 
     this.f_getSite2SiteOverviewDataLocal = function(guicb)
 	{
@@ -564,13 +566,13 @@ function UTM_vpnBusObj(busObj)
 		var cmdSend = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                        + "<openappliance>" + xmlstr + "</openappliance>\n";
         thisObj.m_lastCmdSent = cmdSend;
-		
+
         var resp = '<?xml version="1.0" encoding="utf-8"?>' +
                         '<openappliance><token></token><error><code>0</code><msg>';
-        
+
         for (var i=0; i<5; i++)
         {
-			resp += '<site-to-site>';			
+			resp += '<site-to-site>';
             var dis = i == 2 || i==4 ? "disconnected" : "connected";
             if (dis=="disconnected") {
 			    resp += '<easy/>';
@@ -600,13 +602,13 @@ function UTM_vpnBusObj(busObj)
 				resp += '<status>' + dis + '</status>';
 				resp += '<disable/>';
 			}
-			resp += '</site-to-site>';	
+			resp += '</site-to-site>';
         }
-             
-        resp += "</msg></error></openappliance>";      
-        resp = g_utils.f_parseXmlFromString(resp);		
-		
-        thisObj.f_respondRequestCallback(resp, guicb);				
+
+        resp += "</msg></error></openappliance>";
+        resp = g_utils.f_parseXmlFromString(resp);
+
+        thisObj.f_respondRequestCallback(resp, guicb);
 	}
 
     this.f_deleteSite2SiteOverviewConfig = function(rec, cb)
@@ -618,7 +620,7 @@ function UTM_vpnBusObj(busObj)
 					  "<peerip>" + rec.m_peerIp + "</peerip>" +
 					  //"<tunnelname>" + rec.m_tunnel + "</tunnelname>" +
 					  "</site-to-site></data></statement>";
-					  
+
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
@@ -712,7 +714,7 @@ function UTM_vpnBusObj(busObj)
 			thisObj.f_setSite2SiteConfigServer(rec,guicb);
 		}
 	}
-	
+
     this.f_setSite2SiteConfigServer = function(rec, guicb)
     {
         thisObj.m_guiCb = guicb;
@@ -722,7 +724,7 @@ function UTM_vpnBusObj(busObj)
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
-    }	
+    }
 
     this.f_setSite2SiteConfigLocal = function(rec, guicb)
     {
@@ -758,19 +760,19 @@ function UTM_vpnBusObj(busObj)
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
     this.f_parseRemoteUserGroupGet = function(resp)
 	{
-		var form = thisObj.m_busObj.f_getFormNode(resp);	
+		var form = thisObj.m_busObj.f_getFormNode(resp);
         var rgNodeArray = g_utils.f_xmlGetChildNodeArray(form, 'remote_group');
 		//<users>, <ipalloc> are special cases, will be processed separately.
 		var tagArray = ['mode','name', 'vpnsw', 'groupauth', 'iaccess', 'presharedkey',
 		                'enable', 'type', 'emode', 'ikeencrypt', 'ikeauth',
 						'dhgroup', 'ikeltime', 'lnet', 'rnet', 'espdhgroup', 'espltime',
 						'espencrypt', 'espauth'];
-		var tagValue = [];				
-        var groupList = new Array();		
-		
-		if (rgNodeArray == null) 
+		var tagValue = [];
+        var groupList = new Array();
+
+		if (rgNodeArray == null)
 		    return groupList;
-		
+
 		for (var i = 0; i < rgNodeArray.length; i++) {
 			var rgNode = rgNodeArray[i];
 
@@ -785,7 +787,7 @@ function UTM_vpnBusObj(busObj)
 			}
 			groupList[i] = new UTM_vpnRemoteUsrGrpRec();
 			//parse user list.
-			groupList[i].m_users = new Array();			
+			groupList[i].m_users = new Array();
 			var uNode = g_utils.f_xmlGetChildNode(rgNode, 'users');
 			if (uNode != null) {
 				var uNodeArray = g_utils.f_xmlGetChildNodeArray(uNode, 'user');
@@ -794,10 +796,10 @@ function UTM_vpnBusObj(busObj)
 						var value = g_utils.f_xmlGetNodeValue(uNodeArray[j]);
 						if (value != null) {
 							groupList[i].m_users.push(value);
-						}						
-					}					
-				}				
-			} 
+						}
+					}
+				}
+			}
             //parse ip allocation.
             var iNode = g_utils.f_xmlGetChildNode(rgNode, 'ipalloc');
 			if (iNode == null) {
@@ -813,7 +815,7 @@ function UTM_vpnBusObj(busObj)
 					value = g_utils.f_xmlGetChildNodeValue(iNode, 'stop');
 					groupList[i].m_stop = (value == null)? '' : value;
 				}
-			}   
+			}
 
 			groupList[i].m_name = (tagValue['name'] == undefined)? '' : tagValue['name'];
 			groupList[i].m_mode = (tagValue['mode'] == undefined)? 'easy' : tagValue['mode'];
@@ -833,13 +835,13 @@ function UTM_vpnBusObj(busObj)
 			groupList[i].m_p2_lifetime= (tagValue['espltime'] == undefined)? '' : tagValue['espltime'];
 			groupList[i].m_p2_encrypt= (tagValue['espencrypt'] == undefined)? 'des' : tagValue['espencrypt'];
 			groupList[i].m_p2_auth = (tagValue['espauth'] == undefined)? 'md5' : tagValue['espauth'];
-			groupList[i].m_enable= (tagValue['enable'] == undefined)? 'yes' : tagValue['enable'];			
-		}		
-		
+			groupList[i].m_enable= (tagValue['enable'] == undefined)? 'yes' : tagValue['enable'];
+		}
+
 		return groupList;
-		
+
 	}
-	
+
 	this.f_getRemoteUserGroup = function(groupName, guicb)
 	{
         thisObj.m_guiCb = guicb;
@@ -848,12 +850,12 @@ function UTM_vpnBusObj(busObj)
                       "</handler><data><remote_group>";
         if (groupName != null) {
 			xmlstr += "<name>" + groupName + "</name>";
-		}					  
+		}
 		xmlstr += "</remote_group></data></statement>";
-		
+
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);			
-	}	
+                              thisObj.f_respondRequestCallback);
+	}
 
     this.f_deleteRemoteUserGroup = function(groupName, cb)
     {
@@ -863,12 +865,12 @@ function UTM_vpnBusObj(busObj)
                       "</handler><data><remote_group>" +
 					  "<name>" + groupName + "</name>" +
 					  "</remote_group></data></statement>";
-					  
+
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
-	
+
     this.f_disableRemoteUserGroup = function(groupName, disable, cb)
     {
         thisObj.m_guiCb = cb;
@@ -878,11 +880,11 @@ function UTM_vpnBusObj(busObj)
 					  "<name>" + groupName + "</name>" +
 					  "<disable>" + disable + "</disable>" +
 					  "</remote_group></data></statement>";
-					  
+
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
-    }	
+    }
 
     this.f_setRemoteUserGroup = function(rec, action, guicb)
     {
@@ -893,23 +895,23 @@ function UTM_vpnBusObj(busObj)
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallbackSetCmd);
-    }	
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
 	////// Remote user
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
     this.f_parseRemoteUserGet = function(resp)
 	{
-		var form = thisObj.m_busObj.f_getFormNode(resp);	
+		var form = thisObj.m_busObj.f_getFormNode(resp);
         var ruNodeArray = g_utils.f_xmlGetChildNodeArray(form, 'remote_user');
 		//<groups> is special cases, will be processed separately.
 		var tagArray = ['username', 'passwd', 'enable'];
-		var tagValue = [];				
-        var userList = new Array();		
-		
-		if (ruNodeArray == null) 
+		var tagValue = [];
+        var userList = new Array();
+
+		if (ruNodeArray == null)
 		    return userList;
-		
+
 		for (var i = 0; i < ruNodeArray.length; i++) {
 			var ruNode = ruNodeArray[i];
 
@@ -924,7 +926,7 @@ function UTM_vpnBusObj(busObj)
 			}
 			userList[i] = new UTM_vpnRemoteUserRec();
 			//parse group list.  One user belongs to one group for now.
-			userList[i].m_groupName = '';			
+			userList[i].m_groupName = '';
 			var gNode = g_utils.f_xmlGetChildNode(ruNode, 'groups');
 			if (gNode != null) {
 				var gNodeArray = g_utils.f_xmlGetChildNodeArray(gNode, 'group');
@@ -934,17 +936,17 @@ function UTM_vpnBusObj(busObj)
 						if (value != null) {
 							userList[i].m_groupName = value;
 							break;
-						}						
-					}					
-				}				
-			} 
+						}
+					}
+				}
+			}
 			userList[i].m_userName = (tagValue['username'] == undefined)? '' : tagValue['username'];
 			userList[i].m_pw = (tagValue['passwd'] == undefined)? '' : tagValue['passwd'];
-			userList[i].m_enable= (tagValue['enable'] == undefined)? 'yes' : tagValue['enable'];			
-		}		
-		
+			userList[i].m_enable= (tagValue['enable'] == undefined)? 'yes' : tagValue['enable'];
+		}
+
 		return userList;
-		
+
 	}
 
 	this.f_getRemoteUser = function(userName, guicb)
@@ -955,11 +957,11 @@ function UTM_vpnBusObj(busObj)
                       "</handler><data><remote_user>";
         if (userName != null) {
 			xmlstr += "<username>" + userName + "</username>";
-		}					  
+		}
 		xmlstr += "</remote_user></data></statement>";
-		
+
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
-                              thisObj.f_respondRequestCallback);			
+                              thisObj.f_respondRequestCallback);
 	}
 
     this.f_deleteRemoteUser = function(userName, groupName, cb)
@@ -971,12 +973,12 @@ function UTM_vpnBusObj(busObj)
 					  "<username>" + userName + "</username>" +
 					  "<groupname>" + groupName + "</groupname>" +
 					  "</remote_user></data></statement>";
-					  
+
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
-	
+
     this.f_disableRemoteUser = function(userName, groupName, disable, cb)
     {
         thisObj.m_guiCb = cb;
@@ -987,11 +989,11 @@ function UTM_vpnBusObj(busObj)
 					  "<groupname>" + groupName + "</groupname>";
 		xml += "<disable>" + disable + "</disable>";
 		xml += "</remote_user></data></statement>";
-					  
+
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
-    }	
+    }
 
     this.f_setRemoteUser = function(rec, action, guicb)
     {

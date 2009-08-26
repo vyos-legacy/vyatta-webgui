@@ -13,6 +13,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 	this.m_change = false;
 	this.m_eventCbFunction = 'f_confFormObjEventCallback';
 	this.m_new = true;
+	this.m_groupName = undefined;
 	
 	this.m_ezItems = [
 	    'conf_vpn_rug_preshared_key_label',
@@ -97,12 +98,14 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     	
     this.f_init = function(obj)
     {
-		if (obj != undefined) {
-			thisObj.m_usrGrp = obj;		
+		if ((obj != undefined) && (obj != null)) {
+			if (typeof obj == UTM_vpnRemoteUsrGrpRec) {
+				thisObj.m_groupName = obj.m_name;
+			} else {
+				thisObj.m_groupName = obj;
+			}		
 			this.m_new = false;
 		} else {
-			thisObj.m_usrGrp = new UTM_vpnRemoteUsrGrpRec();
-			thisObj.m_usrGrp.f_setDefault();
 			this.m_new = true;
 		}
 		var defObj = new UTM_confFormDefObj('conf_vpn_rug', '500', new Array(), 
@@ -312,7 +315,33 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 
     this.f_loadVMData = function(element)
     {
-        thisObj.m_form = document.getElementById('conf_vpn_rug' + "_form");
+        thisObj.m_form = document.getElementById('conf_vpn_rug' + "_form");		
+		thisObj.f_setFocus();
+		thisObj.f_attachListener();	
+		if (thisObj.m_groupName == undefined) {
+			thisObj.m_usrGrp = new UTM_vpnRemoteUsrGrpRec();
+			thisObj.m_usrGrp.f_setDefault();
+			thisObj.f_initData();
+		} else {
+			var cb = function(evt)
+			{
+				if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
+					if (evt.f_isError()) {
+						g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
+						return;
+					} else {
+						thisObj.m_usrGrp = evt.m_value[0];
+                        thisObj.f_initData();
+					}
+				}
+			};
+			window.setTimeout(function() {
+				g_busObj.f_vpnGetRemoteUserGroup(thisObj.m_groupName, cb) }, 10);
+		}	
+    }
+	
+	this.f_initData = function()
+	{
 		thisObj.m_form.conf_vpn_rug_prof_name.value = thisObj.m_usrGrp.m_name;
 		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_vpn_software, thisObj.m_usrGrp.m_vpnsw);
 		thisObj.f_loadUserList();
@@ -337,12 +366,8 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 			thisObj.m_form.conf_vpn_rug_tunnel_config_mode_exp.checked = true;		
 			thisObj.f_loadVMDataExpert();
 		}	
-		
-		
-		thisObj.f_setFocus();
-		thisObj.f_attachListener();	
 		thisObj.f_enableAllButton(false);		
-    }
+	}
 	
 	this.f_getUsrGrp = function()
 	{		
@@ -481,7 +506,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     
     this.f_reset = function()
     {
-        thisObj.f_loadVMData();
+        thisObj.f_initData();
     }
     
     this.f_handleClick = function(e)

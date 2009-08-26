@@ -70,6 +70,7 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 	this.m_p2_auth = p2_auth;
 	this.m_start = '';
 	this.m_stop = '';
+	this.m_enable = 'no';
 	var thisObj = this;
 
 	this.f_setDefault = function()
@@ -96,6 +97,7 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 		this.m_p2_auth = 'md5';
 		this.m_start = '';
 		this.m_stop = '';
+		this.m_enable = '';
 		
 	}
 

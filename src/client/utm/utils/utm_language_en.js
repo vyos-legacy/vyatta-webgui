@@ -258,6 +258,8 @@ var g_lang =
     m_vpnRUG_VPNsoft : "VPN software",
     m_vpnRUG_UsrSettings : "user setttings",
     m_vpnRUG_IPAlloc : "IP allocation",
+	m_vpnRUG_ipstart : "start range",
+	m_vpnRUG_ipend: "end range",
     m_vpnRUG_InternetAccess : "internet access",
 
     ///////////////////////////////////////////////////////////////////

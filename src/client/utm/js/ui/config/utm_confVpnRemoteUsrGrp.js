@@ -12,6 +12,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 	this.m_usrGrp = undefined;
 	this.m_change = false;
 	this.m_eventCbFunction = 'f_confFormObjEventCallback';
+	this.m_new = true;
 	
 	this.m_ezItems = [
 	    'conf_vpn_rug_preshared_key_label',
@@ -98,9 +99,11 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     {
 		if (obj != undefined) {
 			thisObj.m_usrGrp = obj;		
+			this.m_new = false;
 		} else {
 			thisObj.m_usrGrp = new UTM_vpnRemoteUsrGrpRec();
 			thisObj.m_usrGrp.f_setDefault();
+			this.m_new = true;
 		}
 		var defObj = new UTM_confFormDefObj('conf_vpn_rug', '500', new Array(), 
 		    [{
@@ -131,7 +134,8 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		defObj.f_addInput('conf_vpn_rug_prof_name', '32', g_lang.m_vpnRUG_ProfileName);
 		defObj.f_addHtml(
 		   'conf_vpn_rug_vpn_software',
-		   '<select name="conf_vpn_rug_vpn_software" id="conf_vpn_rug_vpn_software" class="v_form_input"><option value="cisco" selected>cisco</option><option value="microsoft">microsoft</option><option value="safenet">safenet</option></select>',
+		   //'<select name="conf_vpn_rug_vpn_software" id="conf_vpn_rug_vpn_software" class="v_form_input"><option value="cisco" selected>cisco</option><option value="microsoft">microsoft</option><option value="safenet">safenet</option></select>',
+		   '<select name="conf_vpn_rug_vpn_software" id="conf_vpn_rug_vpn_software" class="v_form_input"><option value="microsoft" selected>microsoft</option></select>',		   
 		   g_lang.m_vpnRUG_VPNsoft
 		);
 		defObj.f_addHtml('conf_vpn_rug_usr', '<select id="conf_vpn_rug_usr" size="3" style="width:150px;"></select>', g_lang.m_vpn_Users);		
@@ -143,14 +147,16 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		defObj.f_addLabelBold('conf_vpn_rug_usr_setting_label',g_lang.m_vpnRUG_UsrSettings,'true');
 		defObj.f_addHtml(
 		   'conf_vpn_rug_auth',
-		   '<select name="conf_vpn_rug_auth" id="conf_vpn_rug_auth" class="v_form_input"><option value="Xauth" selected>Xauth</option>',
+		   '<select name="conf_vpn_rug_auth" id="conf_vpn_rug_auth" class="v_form_input"><option value="l2tp" selected>L2TP</option>',
 		   g_lang.m_vpn_auth
 		);		
 		defObj.f_addHtml(
 		   'conf_vpn_rug_ip_alloc',
-		   '<select name="conf_vpn_rug_ip_alloc" id="conf_vpn_rug_ip_alloc" class="v_form_input"><option value="internet DHCP" selected>internet DHCP</option>',
+		   '<select name="conf_vpn_rug_ip_alloc" id="conf_vpn_rug_ip_alloc" class="v_form_input"><option value="static" selected>static</option>',
 		   g_lang.m_vpnRUG_IPAlloc
 		);			
+		defObj.f_addInputWithPadding('conf_vpn_rug_ip_alloc_start', '32', g_lang.m_vpnRUG_ipstart, undefined, '30px');
+		defObj.f_addInputWithPadding('conf_vpn_rug_ip_alloc_stop', '32', g_lang.m_vpnRUG_ipend, undefined, '30px');		
 		defObj.f_addHtml(
 		   'conf_vpn_rug_ip_access',
 		   '<select name="conf_vpn_rug_ip_access" id="conf_vpn_rug_ip_access" class="v_form_input"><option value="directly" selected>directly</option>',
@@ -165,10 +171,10 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		defObj.f_addHtml(
 		   'conf_vpn_rug_tunnel_config_mode',
            '<input id="conf_vpn_rug_tunnel_config_mode_ez" type="radio" name="conf_vpn_rug_tunnel_mode_group" value="ez" checked>&nbsp;' + 
-				      g_lang.m_vpn_EZ + '&nbsp;&nbsp;' +
-					  '<input id="conf_vpn_rug_tunnel_config_mode_exp" type="radio" name="conf_vpn_rug_tunnel_mode_group" value="exp">&nbsp;' +
-					  g_lang.m_vpn_Expert,	
-		   g_lang.m_vpn_TunnelConfigMode	   
+				      g_lang.m_vpn_EZ + '&nbsp;&nbsp;' 					  
+					  + '<input style="display:none" id="conf_vpn_rug_tunnel_config_mode_exp" type="radio" name="conf_vpn_rug_tunnel_mode_group" value="exp">&nbsp;' 
+					  //+ g_lang.m_vpn_Expert	
+		   ,g_lang.m_vpn_TunnelConfigMode	   
 		);
 		defObj.f_addEmptySpace('conf_vpn_rug_spacer6','2');
 		
@@ -310,6 +316,14 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		thisObj.f_loadUserList();
 		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_auth, thisObj.m_usrGrp.m_auth);
 		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ip_alloc, thisObj.m_usrGrp.m_ipalloc);
+		if (thisObj.m_usrGrp.m_ipalloc == 'static') {
+			//need to initialize the start, stop range.
+			thisObj.m_form.conf_vpn_rug_ip_alloc_start.value = thisObj.m_usrGrp.m_start;
+			thisObj.m_form.conf_vpn_rug_ip_alloc_stop.value = thisObj.m_usrGrp.m_stop;
+		} else {
+			thisObj.m_form.conf_vpn_rug_ip_alloc_start.value = '';
+			thisObj.m_form.conf_vpn_rug_ip_alloc_stop.value = '';			
+		}
 		thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ip_access, thisObj.m_usrGrp.m_internetAccess);
 		
 		if (thisObj.m_usrGrp.m_mode == 'easy') {
@@ -332,26 +346,33 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 	{		
 		var usrGrp = new UTM_vpnRemoteUsrGrpRec();
 		usrGrp.m_name = thisObj.m_form.conf_vpn_rug_prof_name.value;
-		usrGrp.m_vpnsw = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_vpn_software);
+		usrGrp.m_vpnsw = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_vpn_software);
 		usrGrp.m_users = new Array();
 		for (var i=0; i < thisObj.m_usrGrp.m_users.length; i++) {
 			usrGrp.m_users[i] = thisObj.m_userGrp.m_users[i];
 		}
-		usrGrp.m_auth = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_auth);
-        usrGrp.m_ipalloc = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ip_alloc);
-        usrGrp.m_internetAccess = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ip_access);
+		usrGrp.m_auth = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_auth);
+        usrGrp.m_ipalloc = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ip_alloc);
+		if (usrGrp.m_ipalloc == 'static') {
+			usrGrp.m_start = thisObj.m_form.conf_vpn_rug_ip_alloc_start.value;
+			usrGrp.m_stop = thisObj.m_form.conf_vpn_rug_ip_alloc_stop.value;
+		} else {
+			usrGrp.m_start = '';
+			usrGrp.m_stop = '';			
+		}
+        usrGrp.m_internetAccess = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ip_access);
 				
 		if (thisObj.m_form.conf_vpn_rug_tunnel_config_mode_ez.checked) {
 			usrGrp.m_mode = 'easy';
-			usrGrp.m_presharedKey = thisObj.m_form.conf_vpn_rug_preshared_key.value;
+			usrGrp.m_preshareKey = thisObj.m_form.conf_vpn_rug_preshared_key.value;
 		} else {
 			vpnRec.m_mode = 'expert';
-		    usrGrp.m_p1_proto = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_proto);
-		    usrGrp.m_exchangeMode = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_ex_mode);
-		    usrGrp.m_p1_encrypt = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_encrypt);
+		    usrGrp.m_p1_proto = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ike_p1_proto);
+		    usrGrp.m_exchangeMode = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ike_p1_ex_mode);
+		    usrGrp.m_p1_encrypt = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ike_p1_encrypt);
 		    usrGrp.m_preshareKey = thisObj.m_form.conf_vpn_rug_ike_p1_preshare.value;
-		    usrGrp.m_p1_auth = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_auth);
-		    usrGrp.m_p1_dfsGrp = thisObj.f_getComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_diffle);
+		    usrGrp.m_p1_auth = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ike_p1_auth);
+		    usrGrp.m_p1_dfsGrp = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ike_p1_diffle);
 		    usrGrp.m_p1_lifetime = thisObj.m_form.conf_vpn_rug_ike_p1_lifetime.value;
 			usrGrp.f_setLocalNetwork(thisObj.m_form.conf_vpn_rug_ike_p2_local_network_ip.value,
 			    thisObj.m_form.conf_vpn_rug_ike_p2_local_network_mask.value);
@@ -409,6 +430,22 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     this.f_apply = function()
     {
         var usrGrp = thisObj.f_getUsrGrp();
+		
+        var cb = function(evt)
+        {
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
+                if (evt.f_isError()) {
+                    g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
+                    return;
+                } else {
+					thisObj.m_usrGrp = usrGrp;
+					thisObj.m_new = false;
+                    thisObj.f_enableAllButton(false);
+                }
+            }
+        };
+		var action = (thisObj.m_new) ? 'add' : 'update';
+        g_busObj.f_vpnSetRemoteUserGroup(usrGrp, action, cb);	
 		
     }
     

@@ -153,7 +153,7 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 		    xml = xml + '<user>' + thisObj.m_users[i] + '</user>';	
 		}
 		xml = xml + '</users>';
-		xml = xml + '<auth>' + thisObj.m_auth + '</auth>';
+		xml = xml + '<groupauth>' + thisObj.m_auth + '</groupauth>';
 		if (thisObj.m_ipalloc == 'static') {
 			xml = xml + '<ipalloc><static><start>' + thisObj.m_start + '</start><stop>' + thisObj.m_stop + '</stop></static></ipalloc>';			
 		} else {
@@ -761,7 +761,7 @@ function UTM_vpnBusObj(busObj)
 		var form = thisObj.m_busObj.f_getFormNode(resp);	
         var rgNodeArray = g_utils.f_xmlGetChildNodeArray(form, 'remote_group');
 		//<users>, <ipalloc> are special cases, will be processed separately.
-		var tagArray = ['mode','name', 'vpnsw', 'auth', 'iaccess', 'presharedkey',
+		var tagArray = ['mode','name', 'vpnsw', 'groupauth', 'iaccess', 'presharedkey',
 		                'enable', 'type', 'emode', 'ikeencrypt', 'ikeauth',
 						'dhgroup', 'ikeltime', 'lnet', 'rnet', 'espdhgroup', 'espltime',
 						'espencrypt', 'espauth'];
@@ -818,7 +818,7 @@ function UTM_vpnBusObj(busObj)
 			groupList[i].m_name = (tagValue['name'] == undefined)? '' : tagValue['name'];
 			groupList[i].m_mode = (tagValue['mode'] == undefined)? 'easy' : tagValue['mode'];
 			groupList[i].m_vpnsw = (tagValue['vpnsw'] == undefined)? '' : tagValue['vpnsw'];
-			groupList[i].m_auth = (tagValue['auth'] == undefined)? 'l2tp' : tagValue['auth'];
+			groupList[i].m_auth = (tagValue['groupauth'] == undefined)? 'l2tp' : tagValue['groupauth'];
 			groupList[i].m_internetAccess = (tagValue['iaccess'] == undefined)? 'directly' : tagValue['iaccess'];
 			groupList[i].m_preshareKey = (tagValue['presharedkey'] == undefined)? '' : tagValue['presharedkey'];
 			groupList[i].m_p1_proto = (tagValue['type'] == undefined)? 'esp' : tagValue['type'];

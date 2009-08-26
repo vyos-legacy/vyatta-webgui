@@ -74,16 +74,9 @@ function UTM_confVPNOverview(name, callback, busLayer)
 
     this.f_loadVMData = function()
     {
-        //var wait = true;
-
         var cb = function(evt)
         {
-            //if(wait)
-            {
-                g_utils.f_cursorDefault();
-            //    wait = false;
-            }
-
+            g_utils.f_cursorDefault();
             if(evt != undefined && evt.m_objName == 'UTM_eventObj')
             {
                 thisObj.m_s2sRecs = evt.m_value;
@@ -93,7 +86,6 @@ function UTM_confVPNOverview(name, callback, busLayer)
         }
 
         g_utils.f_cursorWait();
-        //this.m_threadId = this.m_busLayer.f_startVPNRequestThread(cb);
         this.m_busLayer.f_vpnGetSite2SiteOverviewConfigData(cb);
     }
 
@@ -555,7 +547,6 @@ function UTM_confVPNOverview(name, callback, busLayer)
         this.m_bodyRemotes = this.f_createGridView(this.m_hdremote, false);
         btns = [['Add', "f_vpnAddHandler('remote')"]];
         this.m_remoteButtons = this.f_createButtons(btns, 'left');
-
         this.m_remoteDiv = this.f_createEmptyDiv([this.m_anchorRemote,
                   this.m_headerRemotes, this.m_bodyRemotes, this.m_remoteButtons]);
         this.m_remoteDiv = this.f_createEmptyDiv();

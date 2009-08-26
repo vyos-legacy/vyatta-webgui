@@ -531,7 +531,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
     {
         // init s2s grid table
         this.m_hds2s = this.f_createS2SColumns();
-        this.m_anchorS2s = this.f_createAnchorDiv('<b>' + g_lang.m_vpnOVS2S + '</b>', 's2s');
+        this.m_anchorS2s = this.f_createGeneralDiv('<b>' + g_lang.m_vpnOVS2S + '</b><br><br>');
         this.m_headerS2s = this.f_createGridHeader(this.m_hds2s, 'f_vpnS2SGridHeaderOnclick');
         this.m_bodyS2s = this.f_createGridView(this.m_hds2s, false);
         var btns = [['Add', "f_vpnAddHandler('s2s')"]];
@@ -541,7 +541,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
 
         // init remote grid table
         this.m_hdremote = this.f_createRemotesColumns();
-        this.m_anchorRemote = this.f_createAnchorDiv('<b>' + g_lang.m_vpnOVRemote + '</b>', 'remote');
+        this.m_anchorRemote = this.f_createGeneralDiv('<b>' + g_lang.m_vpnOVRemote + '</b><br><br>');
         this.m_anchorRemote.style.marginTop = "35px";
         this.m_headerRemotes = this.f_createGridHeader(this.m_hdremote, 'f_vpnRemoteGridHeaderOnclick');
         this.m_bodyRemotes = this.f_createGridView(this.m_hdremote, false);

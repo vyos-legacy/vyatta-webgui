@@ -205,7 +205,7 @@ function UTM_confBaseObj(name, callback, busLayer)
                   "#FFFFFF" : "#F9F9FF";
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
-        innerHtml += '<tbody><tr height="' + rHeight +
+        innerHtml += '<tbody><tr valign="top" height="' + rHeight +
                     '" cellspacing="0" cellpadding="0" bgcolor=' + bkc + '>';
 
         var width = 0;

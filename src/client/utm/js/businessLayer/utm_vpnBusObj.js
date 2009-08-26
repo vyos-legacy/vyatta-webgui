@@ -30,7 +30,7 @@ function UTM_vpnRemoteUserRec(name, pw, group)
 		xml += '<action>' + action + '</action>';
 		xml = xml + '<username>' + thisObj.m_userName + '</username>';		
 		xml = xml + '<passwd><![CDATA[' + thisObj.m_pw + ']]></passwd>';
-		xml = xml + '<groups><group>' + thisObj.m_groupName + '</group></groups>';
+		xml = xml + '<groupname>' + thisObj.m_groupName + '</groupname>';
 		xml += '</remote_user>';
 		return xml;		
 	}	
@@ -905,7 +905,7 @@ function UTM_vpnBusObj(busObj)
 		var form = thisObj.m_busObj.f_getFormNode(resp);	
         var ruNodeArray = g_utils.f_xmlGetChildNodeArray(form, 'remote_user');
 		//<groups> is special cases, will be processed separately.
-		var tagArray = ['username', 'passwd', 'enable'];
+		var tagArray = ['username', 'groupname','passwd', 'enable'];
 		var tagValue = [];				
         var userList = new Array();		
 		
@@ -926,20 +926,7 @@ function UTM_vpnBusObj(busObj)
 			}
 			userList[i] = new UTM_vpnRemoteUserRec();
 			//parse group list.  One user belongs to one group for now.
-			userList[i].m_groupName = '';			
-			var gNode = g_utils.f_xmlGetChildNode(ruNode, 'groups');
-			if (gNode != null) {
-				var gNodeArray = g_utils.f_xmlGetChildNodeArray(gNode, 'group');
-				if (uNodeArray != null) {
-				    for (var j=0 ; j < gNodeArray.length; j++) {
-						var value = g_utils.f_xmlGetNodeValue(gNodeArray[j]);
-						if (value != null) {
-							userList[i].m_groupName = value;
-							break;
-						}						
-					}					
-				}				
-			} 
+			userList[i].m_groupName = (tagValue['groupname'] == undefined)? '' : tagValue['groupname'];;			
 			userList[i].m_userName = (tagValue['username'] == undefined)? '' : tagValue['username'];
 			userList[i].m_pw = (tagValue['passwd'] == undefined)? '' : tagValue['passwd'];
 			userList[i].m_enable= (tagValue['enable'] == undefined)? 'yes' : tagValue['enable'];			
@@ -949,16 +936,17 @@ function UTM_vpnBusObj(busObj)
 		
 	}
 
-	this.f_getRemoteUser = function(userName, guicb)
+	this.f_getRemoteUser = function(userName, groupname, guicb)
 	{
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
                       "<handler>vpn remote-access get_user" +
-                      "</handler><data><remote_user>";
+                      "</handler><data>";
         if (userName != null) {
-			xmlstr += "<username>" + userName + "</username>";
+			xmlstr += "<remote_user><username>" + userName + "</username><groupname>" +
+			          groupname + "</groupname></remote_user>";
 		}					  
-		xmlstr += "</remote_user></data></statement>";
+		xmlstr += "</data></statement>";
 		
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);			

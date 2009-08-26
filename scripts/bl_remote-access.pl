@@ -40,6 +40,10 @@ my %func = (
     'set_group'         => \&set_group,
     'disable_group'     => \&disable_group,
     'delete_group'      => \&delete_group,
+    'get_user'          => \&get_user,
+    'set_user'          => \&set_user,
+    'disable_user'      => \&disable_user,
+    'delete_user'       => \&delete_user,
 );
 
 my $ravpn_log = '/tmp/remote_access_vpn';
@@ -293,6 +297,161 @@ sub delete_group {
   # else invalid group - return error code='3' with error message
   
   # TODO : delete global vpn settings if no ravpn group or site-to-site vpn
+  print $msg;
+}
+
+sub set_user {
+  my ($data) = @_;
+  my $msg = "<form name='vpn remote-access set_user' code='0'></form>";
+  my $xs  = XML::Simple->new();
+  my $xml = $xs->XMLin($data);
+  my $user = $xml->{username};
+  my $user_pass = $xml->{passwd};
+  my $grp_name = $xml->{groupname};
+  my $err;
+  my @cmds = ();
+
+  if (is_group_l2tp($grp_name) == 0) {
+    my $l2tp_users_path = "vpn l2tp remote-access authentication local-users";
+    push @cmds, "set $l2tp_users_path username $user password $user_pass";
+    push @cmds, "commit", "save";
+    $err = OpenApp::Conf::execute_session(@cmds);
+    if (defined $err) {
+      $msg = "<form name='vpn remote-access set_user' code='7'>";
+      $msg .= "<errmsg>Error setting remote-access user $user</errmsg>";
+      $msg .= "</form>";
+      print $msg;
+      exit 1;		
+    }
+  } else {
+    # group must be an XAUTH group
+  }
+  # else invalid group - return error code='7' with error message
+  print $msg;	
+}
+
+sub get_l2tp_user_info {
+  my ($user) = @_;
+  my $config = new Vyatta::Config;
+  my $msg = "";
+  my $l2tp_user_path =  "vpn l2tp remote-access authentication local-users" . 
+                        " username $user";
+  $msg .= "<remote_user>";
+  $msg .= "<username>$user</username>";
+  my $user_pass = $config->returnValue("$l2tp_user_path password");
+  $msg .= "<passwd>$user_pass</passwd>";
+  my $grp_name = $config->returnValue("vpn l2tp remote-access description");
+  $msg .= "<groupname>$grp_name</groupname>";
+  my $user_disabled = $config->exists("$l2tp_user_path disable");
+  $msg .= "<enable>no</enable>" if defined $user_disabled;
+  $msg .= "<enable>yes</enable>" if !defined $user_disabled;
+  $msg .= "</remote_user>";
+  return $msg;
+}
+
+sub get_user {
+  my ($data) = @_;
+  my ($grp_name, $user) = (undef, undef);
+  my $xs  = XML::Simple->new() if defined $data;
+  my $xml = $xs->XMLin($data) if defined $data;
+  $grp_name = $xml->{groupname} if defined $data;
+  $user = $xml->{username} if defined $data;
+  my $msg;
+  $msg  = "<form name='vpn remote-access get_user' code='0'>";
+  my $config = new Vyatta::Config;
+
+  if (!defined $user && !defined $grp_name) {
+    # get all remote-access users
+    
+    # get l2tp remote-access users
+    my @l2tp_users = get_l2tp_grp_users();
+    if (scalar(@l2tp_users) > 0) {
+      foreach my $l2tp_user (@l2tp_users) {
+        $msg .= get_l2tp_user_info($l2tp_user);
+      }
+    }
+    
+    # get XAUTH remote-access users
+    
+  } else {
+    # get given user info
+    
+    if (is_group_l2tp($grp_name) == 0) {
+      # get l2tp group user info
+      $msg .= get_l2tp_user_info($user);      
+    } else {
+      # get XAUTH group user info
+    }
+    # else group is not a valid one, return error code '8' with error message
+  }
+
+  $msg  .= "</form>";
+  print $msg;
+}
+
+sub delete_user {
+  my ($data) = @_;
+  my $msg = "<form name='vpn remote-access delete_user' code='0'></form>";
+  my $xs  = XML::Simple->new();
+  my $xml = $xs->XMLin($data);
+  my $grp_name = $xml->{groupname};
+  my $user = $xml->{username};
+  my $err;
+  my @cmds = ();
+  
+  if (is_group_l2tp($grp_name) == 0) {
+
+    my $l2tp_user_path = "vpn l2tp remote-access authentication local-users";
+    if (scalar(grep(/^$user$/, get_l2tp_grp_users())) == 0) {
+      # user not in l2tp group
+      $msg = "<form name='vpn remote-access delete_user' code='6'>";
+      $msg .= "<errmsg>User $user is not a member of group $grp_name</errmsg>";
+      $msg .= "</form>";
+      print $msg;
+      exit 1;
+    }
+
+    push @cmds, "delete $l2tp_user_path username $user", "commit", "save";
+    $err = OpenApp::Conf::execute_session(@cmds);
+    if (defined $err) {
+      $msg = "<form name='vpn remote-access delete_user' code='6'>";
+      $msg .= "<errmsg>Error deleting remote-access user $user</errmsg>";
+      $msg .= "</form>";
+      print $msg;
+      exit 1;
+    }
+  
+  } else {
+    # group must be an XAUTH group
+  }
+  # else invalid group - return error code='6' with error message
+
+  print $msg;
+}
+
+sub disable_user {
+  my ($data) = @_;
+  my $msg = "<form name='vpn remote-access disable_user' code='0'></form>";
+  my $xs  = XML::Simple->new();
+  my $xml = $xs->XMLin($data);
+  my $user = $xml->{username};
+  my $grp_name = $xml->{groupname};
+  my $disable = $xml->{disable};
+  $disable = undef if $disable eq 'no';
+  if (is_group_l2tp($grp_name) == 0) {
+    my $ret = disable_enable_l2tp_user($user, $disable);
+    if ($ret == 1) {
+      $msg = "<form name='vpn remote-access disable_user' code='5'>";
+      $msg .= "<errmsg>" . "Error disabling remote-access user $user" .
+              "</errmsg>";
+      $msg .= "</form>";
+      print $msg;
+      exit 1;
+    }
+  } else {
+    # group must be an XAUTH group
+  }
+  # else invalid group - return error code='5' with error message
   print $msg;
 }
 

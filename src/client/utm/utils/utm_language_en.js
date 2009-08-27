@@ -266,9 +266,11 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // VPN Remote User Add
     m_vpnRUadd_RemoteUserSettings : "remote user setttings",
-    m_vpnRUadd_UserName : "user Name",
-    m_vpnRUadd_UserPasswd : "user Password",
+    m_vpnRUadd_UserName : "user name",
+    m_vpnRUadd_UserPasswd : "user password",
     m_vpnRUadd_VPNGroup : "VPN group",
+	m_vpnRUadd__confirm_mismatch : "user password does not match with confirm user password",
+	
 
 	///////////////////////////////////////////////////////////////////
     // URL Filtering

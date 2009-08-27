@@ -264,6 +264,7 @@ var g_lang =
     m_vpnRUadd_UserName : "nom d'utilisateur",
     m_vpnRUadd_UserPasswd : "mot de passe d'utilisateur ",
     m_vpnRUadd_VPNGroup : "groupe VPN",
+	m_vpnRUadd__confirm_mismatch : "user password does not match with confirm user password",
 
 	///////////////////////////////////////////////////////////////////
     // URL Filtering;;

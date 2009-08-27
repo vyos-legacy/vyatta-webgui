@@ -352,12 +352,7 @@ function UTM_vpnBusObj(busObj)
                                 return thisObj.m_guiCb(tmp);
                         }
                     } else {
-                        if(thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get-user") > 0)
-                        {
-                            var vpnRec = thisObj.f_parseRemoteOverviewGet(err);
-                            evt = new UTM_eventObj(0, vpnRec, '');
-                        }
-                        else if (thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get_group") > 0) {
+                        if (thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get_group") > 0) {
                                     var groupList = thisObj.f_parseRemoteUserGroupGet(err);
                                     evt = new UTM_eventObj(0, groupList, '');
                         } else if (thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get_user") > 0) {
@@ -638,8 +633,8 @@ function UTM_vpnBusObj(busObj)
     {
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
-                      "<handler>vpn remote-access get-user" +
-                      "</handler><data><remote_user></remote_user></data></statement>";
+                      "<handler>vpn remote-access get_user" +
+                      "</handler><data></data></statement>";
 /*/
         var cb = function()
         {

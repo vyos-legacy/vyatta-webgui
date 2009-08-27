@@ -104,6 +104,8 @@ sub set_smtp {
     }
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
    
+    #save configuration
+    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save"); 
 }
 
 ##########################################################################

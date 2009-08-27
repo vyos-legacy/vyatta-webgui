@@ -68,6 +68,8 @@ sub set_password_policy {
     }
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
    
+    #save configuration
+    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save"); 
 }
 
 
@@ -97,6 +99,8 @@ sub delete_password_policy {
     }
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
    
+    #save configuration
+    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save"); 
 }
 
 sub list_password_policy {

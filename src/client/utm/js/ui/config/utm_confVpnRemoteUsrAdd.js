@@ -121,8 +121,10 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
 			thisObj.m_usr.f_setDefault();
 			thisObj.f_initGroupList();
 		} else {
+			g_utils.f_cursorWait();
 			var cb = function(evt)
 			{
+				g_utils.f_cursorDefault();
 				if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
 					if (evt.f_isError()) {
 						g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
@@ -150,8 +152,10 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
 	
     this.f_initGroupList = function()
     {
+		g_utils.f_cursorWait();
         var cb = function(evt)
         {
+			g_utils.f_cursorDefault();
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
                 if (evt.f_isError()) {
                     g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
@@ -167,6 +171,14 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
         }, 10);
     }
 	
+	this.f_addOption = function(selectCtrl, value)
+	{
+		var opElem = document.createElement('option');
+		opElem.innerHTML = value;
+		opElem.setAttribute('value', value);
+		selectCtrl.appendChild(opElem);		
+	}
+	
 	this.f_populateGroupList = function(a)
 	{
 	    thisObj.m_groupList = new Array();
@@ -179,9 +191,8 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
 			return;
 		}
 
-		var html = '';
 		if (!thisObj.m_new) {
-			html += '<option value="' + thisObj.m_usr.m_groupName + '" selected>' + thisObj.m_usr_m_groupName + '</option>';
+			thisObj.f_addOption(selectCtrl, thisObj.m_usr.m_groupName);
 		}
 		for (var i=0; i < thisObj.m_groupList.length; i++) {
 			if (!thisObj.m_new) {
@@ -189,9 +200,9 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
 					continue;
 				}
 			}
-			html += '<option value="' + thisObj.m_groupList[i] + '">' + thisObj.m_groupList[i] + '</option>';
+			thisObj.f_addOption(selectCtrl, thisObj.m_groupList[i]);
 		}
-		selectCtrl.innerHTML = html;
+		thisObj.f_setComboBoxSelectionByValue(selectCtrl, thisObj.m_usr.m_groupName);
 	}
 	
 	
@@ -238,8 +249,10 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     {
         var usr = thisObj.f_getUsr();
 		
+		g_utils.f_cursorWait();
         var cb = function(evt)
         {
+			g_utils.f_cursorDefault();
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
                 if (evt.f_isError()) {
                     g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);

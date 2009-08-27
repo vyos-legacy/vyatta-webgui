@@ -99,7 +99,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     this.f_init = function(obj)
     {
 		if ((obj != undefined) && (obj != null)) {
-			if (typeof obj == UTM_vpnRemoteUsrGrpRec) {
+			if (obj.m_name != undefined) {
 				thisObj.m_groupName = obj.m_name;
 			} else {
 				thisObj.m_groupName = obj;
@@ -376,8 +376,9 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		usrGrp.m_vpnsw = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_vpn_software);
 		usrGrp.m_users = new Array();
 		for (var i=0; i < thisObj.m_usrGrp.m_users.length; i++) {
-			usrGrp.m_users[i] = thisObj.m_userGrp.m_users[i];
+			usrGrp.m_users[i] = thisObj.m_usrGrp.m_users[i];
 		}
+		usrGrp.m_enable = thisObj.m_usrGrp.m_enable;
 		usrGrp.m_auth = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_auth);
         usrGrp.m_ipalloc = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ip_alloc);
 		if (usrGrp.m_ipalloc == 'static') {
@@ -549,7 +550,11 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 			g_utils.f_popupMessage(g_lang.m_remindSaveChange, 'confirm', g_lang.m_info, true, 
 			    thisObj.m_eventCbFunction + "('apply')"); 
 		} else {
-			g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID, null, true);			
+			if (g_configPanelObj.m_previousPage != undefined) {
+				g_configPanelObj.f_showPage(g_configPanelObj.m_previousPage, null, true);
+			} else {
+				g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID, null, true);
+			}			
 		}
 	}
 

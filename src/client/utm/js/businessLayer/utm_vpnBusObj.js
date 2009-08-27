@@ -15,6 +15,7 @@ function UTM_vpnRemoteUserRec(name, pw, group)
     this.m_pw = pw;
     this.m_groupName = group;
 	this.m_enable = 'no';
+	var thisObj =  this;
 
 	this.f_setDefault = function()
 	{
@@ -30,7 +31,7 @@ function UTM_vpnRemoteUserRec(name, pw, group)
 		xml += '<action>' + action + '</action>';
 		xml = xml + '<username>' + thisObj.m_userName + '</username>';
 		xml = xml + '<passwd><![CDATA[' + thisObj.m_pw + ']]></passwd>';
-		xml = xml + '<groups><group>' + thisObj.m_groupName + '</group></groups>';
+		xml = xml + '<groupname>' + thisObj.m_groupName + '</groupname>';
 		xml += '</remote_user>';
 		return xml;
 	}
@@ -819,9 +820,9 @@ function UTM_vpnBusObj(busObj)
 				var iSubNode = g_utils.f_xmlGetChildNode(iNode, 'static');
 				if (iSubNode != null) {
 					groupList[i].m_ipalloc = 'static';
-					var value = g_utils.f_xmlGetChildNodeValue(iNode, 'start');
+					var value = g_utils.f_xmlGetChildNodeValue(iSubNode, 'start');
 					groupList[i].m_start = (value == null)? '' : value;
-					value = g_utils.f_xmlGetChildNodeValue(iNode, 'stop');
+					value = g_utils.f_xmlGetChildNodeValue(iSubNode, 'stop');
 					groupList[i].m_stop = (value == null)? '' : value;
 				}
 			}
@@ -963,11 +964,11 @@ function UTM_vpnBusObj(busObj)
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
                       "<handler>vpn remote-access get_user" +
-                      "</handler><data><remote_user>";
+                      "</handler><data>";
         if (userName != null) {
-			xmlstr += "<username>" + userName + "</username>";
+			xmlstr += "<remote_user><username>" + userName + "</username></remote_user>";
 		}
-		xmlstr += "</remote_user></data></statement>";
+		xmlstr += "</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);

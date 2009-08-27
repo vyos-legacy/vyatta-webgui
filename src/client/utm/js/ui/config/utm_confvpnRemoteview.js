@@ -201,7 +201,8 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             var eId = this.m_usrRowChkboxId + rec.m_userName + "~" + rec.m_groupName;
 
             var uname = thisObj.f_renderAnchor(rec.m_userName,
-                    "f_vpnUserUpdateHandler('" + rec.m_userName + "', 'user')",
+                    "f_vpnUserUpdateHandler('" + rec.m_userName + "', 'user', '" +
+                    rec.m_groupName + "')",
                     'Click on name for update');
 
             var gname = thisObj.f_renderAnchor(rec.m_groupName,
@@ -356,7 +357,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             // submit set to server.
             var el = document.getElementById(eid);
             var ids = eid.split("~");
-            var enable = el.checked ? 'yes' : 'no';
+            var enable = el.checked ? 'no' : 'yes';
             thisObj.m_busLayer.f_vpnDisableRemoteUserGroup(ids[1], enable, cb);
         }
     }
@@ -381,7 +382,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             // submit set to server.
             var el = document.getElementById(eid);
             var ids = eid.split("~");
-            var enable = el.checked ? 'yes' : 'no';
+            var enable = el.checked ? 'no' : 'yes';
             thisObj.m_busLayer.f_vpnDisableRemoteUser(ids[1], ids[2], enable, cb);
         }
     }
@@ -504,12 +505,13 @@ function f_vpnGroupUpdateHandler(gName)
     g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID, gRec);
 }
 
-function f_vpnUserUpdateHandler(name, colName)
+function f_vpnUserUpdateHandler(name, colName, groupName)
 {
     g_configPanelObj.m_previousPage = VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_ID;
 
     if(colName == 'user')
-        g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID, name)
+        g_configPanelObj.f_showPage(
+            VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID, [name, groupName]);
     else
         g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID, name);
 }

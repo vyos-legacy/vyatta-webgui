@@ -223,7 +223,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
             var eId = "remote_enabledId-" + rec.m_userName;
 
             var uname = thisObj.f_renderAnchor(rec.m_userName,
-                    "f_vpnUpdateHandler('" + rec.m_userName + "', 'remote', 'user')",
+                    "f_vpnUpdateHandler('" + rec.m_userName + "', 'remote', 'user', '" +
+                    rec.m_groupName + "')",
                     'Click on name for update');
 
             var gname = thisObj.f_renderAnchor(rec.m_groupName,
@@ -244,8 +245,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
             var div = thisObj.f_createGridRow(thisObj.m_hdremote,
                   [thisObj.f_createSimpleDiv(uname, 'center'),
                   thisObj.f_createSimpleDiv(gname, 'center'),
-                  thisObj.f_createSimpleDiv(rec.m_ipAddr, 'center'),
-                  thisObj.f_createSimpleDiv(rec.m_localIpAddr, 'center'),
+                  thisObj.f_createSimpleDiv(rec.m_remoteIp, 'center'),
+                  thisObj.f_createSimpleDiv(rec.m_localIp, 'center'),
                   status,
                   thisObj.f_createSimpleDiv(rec.m_mode, 'center'), enable, del]);
 
@@ -264,7 +265,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
             // grid columns.
             // compose a default table row
             ar[i] = zRecs[i].m_userName + '|' + zRecs[i].m_groupName + '|' +
-                    zRecs[i].m_ipAddr + '|' + zRecs[i].m_localIpAddr + '|' +
+                    zRecs[i].m_remoteIp + '|' + zRecs[i].m_localIp + '|' +
                     zRecs[i].m_status + '|' + zRecs[i].m_mode + '|' +
                     zRecs[i].m_enable;
         }
@@ -273,7 +274,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         for(var i=0; i<sar.length; i++)
         {
             var r = sar[i].split("|");
-            var rec = new UTM_vpnRemoteOverviewRec(r[0], r[1], r[2], r[3], r[4], r[5], r[6]);
+            var rec = new UTM_vpnRemoteUserRec(r[0], null, r[1], r[2], r[3], r[4], r[5], r[6]);
             recs.push(rec);
         }
 
@@ -475,25 +476,25 @@ function UTM_confVPNOverview(name, callback, busLayer)
             g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID, rec, true);
     }
 
-    this.f_handleRemoteUpdate = function(name, objType)
+    this.f_handleRemoteUpdate = function(name, objType, groupName)
     {
         var rec = null;
         g_configPanelObj.m_previousPage = VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID;
 
         if (objType == 'user') {
-            rec = thisObj.f_getRemoteUsersRecByUserName(name);
-            if (rec != null) {
+            //rec = thisObj.f_getRemoteUsersRecByUserName(name);
+            //if (rec != null) {
                 g_configPanelObj.f_showPage(
                   VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID,
-                  [rec.m_userName, rec.m_groupName]);
-            }
+                  [name, groupName]);
+            //}
         } else {
-            rec = thisObj.f_getRemoteUsersRecByGroupName(name);
-            if (rec != null) {
+            //rec = thisObj.f_getRemoteUsersRecByGroupName(name);
+            //if (rec != null) {
                 g_configPanelObj.f_showPage(
                     VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID,
-                    rec.m_groupName);
-            }
+                    name);
+            //}
         }
     }
 
@@ -591,12 +592,13 @@ function f_vpnRemoteGridHeaderOnclick(col)
     g_configPanelObj.m_activeObj.f_handleRemoteGridSort(col);
 }
 
-function f_vpnUpdateHandler(name, grid, objType)
+function f_vpnUpdateHandler(name, grid, objType, groupName)
 {
     if(grid == "s2s")
         g_configPanelObj.m_activeObj.f_handleS2SUpdate(name);
     else
-        g_configPanelObj.m_activeObj.f_handleRemoteUpdate(name, objType);
+        g_configPanelObj.m_activeObj.f_handleRemoteUpdate(name, objType, groupName);
+
 }
 
 function f_deleteConfirmation(e, name, grid)

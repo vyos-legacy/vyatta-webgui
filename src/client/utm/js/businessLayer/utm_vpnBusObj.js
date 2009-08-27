@@ -345,25 +345,27 @@ function UTM_vpnBusObj(busObj)
                 if(thisObj.m_lastCmdSent.indexOf("<handler>vpn site-to-site get") > 0) {
                     var vpnRec = thisObj.f_parseSite2SiteOverviewGet(err);
                     evt = new UTM_eventObj(0, vpnRec, '');
-                } else if(thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get-user") > 0) {
-                    var vpnRec = thisObj.f_parseRemoteOverviewGet(err);
-                    evt = new UTM_eventObj(0, vpnRec, '');
                 } else { //These APIs have the form tag.  Check for form error.
                     var tmp = thisObj.m_busObj.f_getFormError(err);
-				    if (tmp != null) { //form has error
-						if (thisObj.m_guiCb != undefined) {
-							return thisObj.m_guiCb(tmp);
-						}
-					} else {
-						if (thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get_group") > 0) {
-							var groupList = thisObj.f_parseRemoteUserGroupGet(err);
-							evt = new UTM_eventObj(0, groupList, '');
-						} else if (thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get_user") > 0) {
-							var userList = thisObj.f_parseRemoteUserGet(err);
-							evt = new UTM_eventObj(0, userList, '');
-						}
-					}
-				}
+                    if (tmp != null) { //form has error
+                        if (thisObj.m_guiCb != undefined) {
+                                return thisObj.m_guiCb(tmp);
+                        }
+                    } else {
+                        if(thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get-user") > 0)
+                        {
+                            var vpnRec = thisObj.f_parseRemoteOverviewGet(err);
+                            evt = new UTM_eventObj(0, vpnRec, '');
+                        }
+                        else if (thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get_group") > 0) {
+                                    var groupList = thisObj.f_parseRemoteUserGroupGet(err);
+                                    evt = new UTM_eventObj(0, groupList, '');
+                        } else if (thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get_user") > 0) {
+                                var userList = thisObj.f_parseRemoteUserGet(err);
+                                evt = new UTM_eventObj(0, userList, '');
+                        }
+                    }
+            }
             }
 
             if(thisObj.m_guiCb != undefined)
@@ -959,14 +961,15 @@ function UTM_vpnBusObj(busObj)
 
 	}
 
-	this.f_getRemoteUser = function(userName, guicb)
+	this.f_getRemoteUser = function(userName, groupName, guicb)
 	{
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
                       "<handler>vpn remote-access get_user" +
                       "</handler><data>";
         if (userName != null) {
-			xmlstr += "<remote_user><username>" + userName + "</username></remote_user>";
+			xmlstr += "<remote_user><username>" + userName + "</username><groupname>" +
+                            groupName + "</groupname></remote_user>";
 		}
 		xmlstr += "</data></statement>";
 

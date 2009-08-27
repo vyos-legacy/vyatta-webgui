@@ -569,22 +569,22 @@ function UTM_businessLayer()
 	{
 		thisObj.f_getVPNObject().f_getRemoteUserGroup(groupName, guicb);
 	}
-	
+
 	this.f_vpnDeleteRemoteUserGroup = function(groupName, guicb)
 	{
-        thisObj.f_getVPNObject().f_deleteRemoteUserGroup(groupName, guicb);		
-	} 
-	
+        thisObj.f_getVPNObject().f_deleteRemoteUserGroup(groupName, guicb);
+	}
+
 	this.f_vpnDisableRemoteUserGroup = function(groupName, disable, guicb)
 	{
 		thisObj.f_getVPNObject().f_disableRemoteUserGroup(groupName, disable, guicb);
 	}
-	
+
 	this.f_vpnSetRemoteUserGroup = function(rec, action, guicb)
 	{
-		thisObj.f_getVPNObject().f_setRemoteUserGroup(rec, action, guicb);		
+		thisObj.f_getVPNObject().f_setRemoteUserGroup(rec, action, guicb);
 	}
-	
+
     /**
      * Get the vpn remote user configuration.  If userName == null, groupName==null: get all users.
      */
@@ -592,22 +592,22 @@ function UTM_businessLayer()
 	{
 		thisObj.f_getVPNObject().f_getRemoteUser(userName, groupName, guicb);
 	}
-	
+
 	this.f_vpnDeleteRemoteUser = function(userName, groupName, guicb)
 	{
-        thisObj.f_getVPNObject().f_deleteRemoteUser(userName, groupName, guicb);		
-	} 
-	
+        thisObj.f_getVPNObject().f_deleteRemoteUser(userName, groupName, guicb);
+	}
+
 	this.f_vpnDisableRemoteUser = function(userName, groupName, disable, guicb)
 	{
 		thisObj.f_getVPNObject().f_disableRemoteUser(userName, groupName, disable, guicb);
 	}
-	
+
 	this.f_vpnSetRemoteUser = function(rec, action, guicb)
 	{
-		thisObj.f_getVPNObject().f_setRemoteUser(rec, action, guicb);		
-	}	
-	
+		thisObj.f_getVPNObject().f_setRemoteUser(rec, action, guicb);
+	}
+
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // url filtering section

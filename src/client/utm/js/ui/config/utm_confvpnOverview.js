@@ -460,6 +460,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
     this.f_handleS2SUpdate = function(name)
     {
         var rec = this.f_getS2SRecByName(name);
+        g_configPanelObj.m_previousPage = VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID;
 
         if(rec != null)
             g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID, rec, true);
@@ -468,6 +469,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
     this.f_handleRemoteUpdate = function(name, objType)
     {
         var rec = null;
+        g_configPanelObj.m_previousPage = VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID;
+
         if (objType == 'user') {
             rec = thisObj.f_getRemoteUsersRecByUserName(name);
             if (rec != null) {
@@ -554,6 +557,8 @@ UTM_extend(UTM_confVPNOverview, UTM_confBaseObj);
 
 function f_vpnAddHandler(grid)
 {
+    g_configPanelObj.m_previousPage = VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID;
+
     if(grid == 's2s')
         g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_S2S_ID);
     else

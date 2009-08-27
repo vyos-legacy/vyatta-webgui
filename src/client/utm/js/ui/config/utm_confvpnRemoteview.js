@@ -12,7 +12,11 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     this.m_groupRecs = null;
     this.m_userRecs = null;
     this.m_sendGrpList = [];
-    this.m_sendUserList = []
+    this.m_sendUserList = [];
+    this.m_grpGridChkboxId = 'vpnGridGroupEnableId';
+    this.m_grpRowChkboxId = "vpnRowGroupEnabledId~";
+    this.m_usrGridChkboxId = 'vpnGridUserEnableId';
+    this.m_usrRowChkboxId = "vpnRowUserEnableId~";
 
     /**
      * @param name - name of configuration screens.
@@ -41,7 +45,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
         var cols = [];
         var chkbox = 'Enabled<br>' + thisObj.f_renderCheckbox('no',
-                      'vpnGridGroupEnableId', 'f_vpnRemoteViewGroupHdChkboxCb()',
+                      this.m_grpGridChkboxId, 'f_vpnRemoteViewGroupHdChkboxCb()',
                       'tooltip');
 
         cols[0] = this.f_createColumn('Name<br>', 110, 'text', '6');
@@ -58,7 +62,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
         var cols = [];
         var chkbox = 'Enabled<br>' + thisObj.f_renderCheckbox('no',
-                      '', 'f_vpnRemoteViewUserHdChkboxCb()',
+                      this.m_usrGridChkboxId, 'f_vpnRemoteViewUserHdChkboxCb()',
                       'tooltip');
 
         cols[0] = this.f_createColumn('User Name<br>', 220, 'text', '6');
@@ -79,6 +83,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             {
                 thisObj.m_userRecs = evt.m_value;
                 thisObj.f_populateUsersTable(thisObj.m_userRecs);
+                thisObj.f_updateUserHeaderChkbox();
             }
         }
 
@@ -97,6 +102,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             {
                 thisObj.m_groupRecs = evt.m_value;
                 thisObj.f_populateGroupTable(thisObj.m_groupRecs);
+                thisObj.f_updateGroupHeaderChkbox();
                 thisObj.f_loadVMDataRemoteUser();
             }
         };
@@ -122,7 +128,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
         {
             var rec = recs[i];
             var c = "<div align=center>";
-            var eId = "vpnGroup_enabledId~" + rec.m_name;
+            var eId = thisObj.m_grpRowChkboxId + rec.m_name;
 
             var gname = thisObj.f_renderAnchor(rec.m_name,
                     "f_vpnGroupUpdateHandler('" + rec.m_name + "')",
@@ -147,8 +153,6 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
 
             thisObj.m_bodyGroup.appendChild(div);
         }
-
-        this.f_updateGroupHeaderChkbox();
     }
 
     this.f_getGroupRecByName = function(name)
@@ -181,7 +185,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     this.f_populateUsersTable = function(recs)
     {
         thisObj.f_removeDivChildren(thisObj.m_userDiv);
-        thisObj.f_removeDivChildren(thisObj.m_bodyUser);
+        thisObj.f_removeDivChildren(thisObj.m_bodyUsers);
         thisObj.m_headerUser = thisObj.f_createGridHeader(thisObj.m_hdUser, 'f_vpnUserGridHeaderOnclick');
         thisObj.f_reappendChildren(thisObj.m_userDiv, [thisObj.m_anchorUsers,
                   thisObj.m_headerUsers, thisObj.m_bodyUsers, thisObj.m_userButtons]);
@@ -194,7 +198,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
         {
             var rec = recs[i];
             var c = "<div align=center>";
-            var eId = "remote_enabledId~" + rec.m_userName + "~" + rec.m_groupName;
+            var eId = this.m_usrRowChkboxId + rec.m_userName + "~" + rec.m_groupName;
 
             var uname = thisObj.f_renderAnchor(rec.m_userName,
                     "f_vpnUserUpdateHandler('" + rec.m_userName + "', 'user')",
@@ -214,12 +218,12 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
 
             ///////////////////////////////////
             // add fields into grid view
-            var div = thisObj.f_createGridRow(thisObj.m_hdremote,
+            var div = thisObj.f_createGridRow(thisObj.m_hdUser,
                   [thisObj.f_createSimpleDiv(uname, 'center'),
                   thisObj.f_createSimpleDiv(gname, 'center'),
                   enable, del]);
 
-            thisObj.m_bodyRemotes.appendChild(div);
+            thisObj.m_bodyUsers.appendChild(div);
         }
     }
 
@@ -267,7 +271,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
 
     this.f_updateGroupHeaderChkbox = function()
     {
-        var chk = document.getElementById("vpnGridGroupEnableId");
+        var chk = document.getElementById(this.m_grpGridChkboxId);
 
         //////////////////////////////////////////
         // work on enable/disable header checkbox
@@ -291,7 +295,36 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             for(var i=0; i<this.m_groupRecs.length; i++)
             {
                 var rec = this.m_groupRecs[i];
-                var eId = "vpnGroup_enabledId~" + rec.m_name;
+                var eId = this.m_grpRowChkboxId + rec.m_name;
+                var el = document.getElementById(eId);
+                if(el != null && !el.checked)
+                {
+                    checked = false;
+                    break;
+                }
+            }
+            chk.checked = checked;
+        }
+    }
+
+    this.f_updateUserHeaderChkbox = function()
+    {
+        var chk = document.getElementById(this.m_usrGridChkboxId);
+
+        //////////////////////////////////////////
+        // work on enable/disable header checkbox
+        var disable = this.m_userRecs.length > 0 ? false:true;
+        chk.disabled = disalbe;
+
+        /////////////////////////////////////////
+        // work on check/dis-check checkbox
+        if(!disable)
+        {
+            var checked = true;
+            for(var i=0; i<this.m_userRecs.length; i++)
+            {
+                var rec = this.m_userRecs[i];
+                var eId = this.m_usrRowChkboxId + rec.m_userName + "~" + rec.m_groupName;
                 var el = document.getElementById(eId);
                 if(el != null && !el.checked)
                 {
@@ -355,12 +388,12 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
 
     this.f_groupsTableChkboxCb = function()
     {
-        var chk = document.getElementById("vpnGridGroupEnableId");
+        var chk = document.getElementById(this.m_grpGridChkboxId);
 
         for(var i=0; i<thisObj.m_groupRecs.length; i++)
         {
-            var rec = thisObj.m_npRecs[i];
-            var eeid = "vpnGroup_enabledId~" + rec.m_name;
+            var rec = thisObj.m_groupRecs[i];
+            var eeid = thisObj.m_grpRowChkboxId + rec.m_name;
             var eel = document.getElementById(eeid);
 
             if(eel != null)

@@ -81,6 +81,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
             {
                 thisObj.m_s2sRecs = evt.m_value;
                 thisObj.f_populateS2STable(thisObj.m_s2sRecs);
+                thisObj.f_updateGridHeaderChkbox(thisObj.m_s2sRecs,
+                          thisObj.m_s2sGridChkboxId, "s2s_enabledId-");
                 thisObj.f_loadRemoteVMData();
             }
         }
@@ -98,6 +100,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
             {
                 thisObj.m_remoteRecs = evt.m_value;
                 thisObj.f_populateRemoteTable(thisObj.m_remoteRecs);
+                thisObj.f_updateGridHeaderChkbox(thisObj.m_remoteRecs,
+                      thisObj.m_remoteGridChkboxId, "remote_enabledId-");
             }
         }
 
@@ -230,7 +234,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
                           "f_vpnChkboxHandler('"+ eId +"', 'remote')", "") + "</div>";
 
             var del = c + thisObj.f_renderButton("delete", true,
-                          "f_vpnDeleteHandler('" + rec.m_userRec.m_userName +
+                          "f_vpnDeleteHandler('" + rec.m_userName +
                           "', 'remote')", g_lang.m_tooltip_delete) + "</div>";
 
             var status = thisObj.f_createStatusDiv(rec.m_status);
@@ -340,12 +344,12 @@ function UTM_confVPNOverview(name, callback, busLayer)
 
     this.f_updateGridHeaderChkbox = function(gridRecs, gridChkboxId, rowChkboxId)
     {
-        var checked = true;
+        var el = null;
+        var checked = gridRecs.length <= 0 ? false:true;
 
         for(var i=0; i<gridRecs.length; i++)
         {
             var rec = gridRecs[i];
-            var el = null;
 
             if(gridChkboxId.indexOf("s2s") >= 0)
                 el = document.getElementById(rowChkboxId+rec.m_tunnel);
@@ -362,8 +366,13 @@ function UTM_confVPNOverview(name, callback, busLayer)
             }
         }
 
-        var el = document.getElementById(gridChkboxId);
+        el = document.getElementById(gridChkboxId);
         el.checked = checked;
+
+        if(gridRecs.length <= 0)
+            el.disabled = true;
+        else
+            el.disabled = false;
     }
 
     this.f_s2sChkboxCb = function(eid)

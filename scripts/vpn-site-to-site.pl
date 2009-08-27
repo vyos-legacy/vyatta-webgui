@@ -238,6 +238,8 @@ sub execute_disable {
     # set up config session
     system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
 
+    #now save config
+    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save");
 }
 
 
@@ -353,6 +355,9 @@ sub del {
 
     # set up config session
     system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+
+    #now save config
+    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save");
 
 }
 
@@ -617,6 +622,9 @@ sub execute_set_expert {
 	exit 1;
     }
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+
+    #now save config
+    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save");
 }
 
 ##########################################################################
@@ -797,6 +805,8 @@ sub execute_set_easy {
     }
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
    
+    #now save config
+    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save");
 }
 
 ##########################################################################

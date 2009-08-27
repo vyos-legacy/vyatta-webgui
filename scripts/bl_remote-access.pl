@@ -346,13 +346,13 @@ sub get_l2tp_user_info {
   $msg .= "<enable>no</enable>" if defined $user_disabled;
   $msg .= "<enable>yes</enable>" if !defined $user_disabled;
   my $user_stats = undef;
-  $user_stats = `/opt/vyatta/sbin/vyatta-show-ravpn.pl \| grep ^$user`;
+  $user_stats = `/opt/vyatta/sbin/vyatta-show-ravpn.pl \| grep \"^$user \"`;
   if (defined $user_stats && $user_stats =~ /\w/) {
     my @values = split(/\s+/, $user_stats);
     my $remoteip = $values[4];
     my $ppp_intf = $values[3];
     $msg .= "<remoteip>$remoteip</remoteip>";
-    my $localip = `/opt/vyatta/bin/vyatta-show-interfaces.pl --action=show-brief | grep $ppp_intf | awk {'print \$2'}`;
+    my $localip = `/opt/vyatta/bin/vyatta-show-interfaces.pl --action=show-brief | grep \"^$ppp_intf \" | awk {'print \$2'}`;
     chomp $localip;
     $msg .= "<localip>$localip</localip>";
     $msg .= "<status>connected</status>";

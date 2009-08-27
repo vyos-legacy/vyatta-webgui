@@ -1,3 +1,24 @@
+vyatta-webgui (0.2.14+fxdU+110) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * minus fixed to set enable/disable user group
+
+  [ Loi Vo ]
+  * Fix an thisObj not defined error
+  * Fix the <groups><group></group></groups> to <groupname></groupname>
+
+  [ slioch ]
+  * add save command to vpn site-to-site setup after configuration is
+    committed.
+
+  [ Loi Vo ]
+  * Fix:
+
+  [ Mohit Mehta ]
+  * get connection information for l2tp remote-access users
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Wed, 26 Aug 2009 18:46:48 -0700
+
 vyatta-webgui (0.2.14+fxdU+109) unstable; urgency=low
 
   [ Loi Vo ]

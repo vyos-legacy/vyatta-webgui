@@ -13,6 +13,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 	this.m_change = false;
 	this.m_eventCbFunction = 'f_confFormObjEventCallback';
 	this.m_new = true;
+	this.m_hideUser = false;
 	this.m_groupName = undefined;
 	
 	this.m_ezItems = [
@@ -109,6 +110,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 			this.m_new = false;
 		} else {
 			this.m_new = true;
+			this.m_hideUser = true;
 		}
 		var defObj = new UTM_confFormDefObj('conf_vpn_rug', '500', new Array(), 
 		    [{
@@ -273,6 +275,18 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
         return this.f_createGeneralDiv(txt);
     }		
 	
+	this.f_hideUser = function()
+	{		
+		var el = document.getElementById('conf_vpn_rug_usr_label');
+		if (el != null) {
+			el.style.display = 'none';
+		}
+        el = document.getElementById('conf_vpn_rug_usr');		
+		if (el != null) {
+			el.style.display = 'none';
+		}
+	}
+	
 	this.f_loadVMDataEZ = function()
 	{
 		thisObj.f_showExpert(false);
@@ -331,6 +345,9 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
         thisObj.m_form = document.getElementById('conf_vpn_rug' + "_form");		
 		thisObj.f_setFocus();
 		thisObj.f_attachListener();	
+		if (thisObj.m_hideUser) {
+			thisObj.f_hideUser();
+		}
 		if (thisObj.m_groupName == undefined) {
 			thisObj.m_usrGrp = new UTM_vpnRemoteUsrGrpRec();
 			thisObj.m_usrGrp.f_setDefault();

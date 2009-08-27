@@ -256,6 +256,7 @@ var g_lang =
     m_vpnRUG_UsrSettings : "paramètres utilisateurs", 
     m_vpnRUG_IPAlloc : "attribution d'adresses IP", 
     m_vpnRUG_InternetAccess : "accès internet",
+	m_vpnRUG_range_invalid: "end range must be greater than start range!",
 
     ///////////////////////////////////////////////////////////////////;;
     // VPN Remote User Add;;

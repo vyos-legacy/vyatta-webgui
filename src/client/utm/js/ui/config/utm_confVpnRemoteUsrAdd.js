@@ -11,7 +11,11 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     this.m_form = undefined;
 	this.m_change = false;
 	this.m_usr= undefined;
+	this.m_userName = undefined;
+	this.m_groupName = undefined;
+	this.m_groupList = undefined;
 	this.m_eventCbFunction = 'f_confFormObjEventCallback';
+	this.m_new = true;
 
 	this.m_clickItems = [
 	];
@@ -45,11 +49,12 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     	
     this.f_init = function(obj)
     {
-		if (obj != undefined) {
-			thisObj.m_usr = obj;
+		if ((obj != undefined) && (obj != null)) {
+			thisObj.m_userName = obj[0];
+			thisObj.m_groupName = obj[1];
+			thisObj.m_new = false;
 		} else {
-			thisObj.m_usr = new UTM_vpnRemoteUserRec();
-			thisObj.m_usr.f_setDefault();
+			thisObj.m_new = true;
 		}		
 		var defObj = new UTM_confFormDefObj('conf_vpn_rusr', '400', new Array(), 
 		    [{
@@ -81,7 +86,7 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
 		defObj.f_addPassword('conf_vpn_rusr_confirm_usr_passwd', '32', g_lang.m_vpn_Confirm + ' ' + g_lang.m_vpnRUadd_UserPasswd);		
 		defObj.f_addHtml(
 		   'conf_vpn_rusr_vpn_grp',
-		   '<select name="conf_vpn_rusr_vpn_grp" id="conf_vpn_rusr_vpn_grp" class="v_form_input"><option value="manager" selected>manager</option>',
+		   '<select name="conf_vpn_rusr_vpn_grp" id="conf_vpn_rusr_vpn_grp" class="v_form_input"></select>',
 		   g_lang.m_vpnRUadd_VPNGroup
 		);
 					
@@ -108,16 +113,86 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     this.f_loadVMData = function(element)
     {
         thisObj.m_form = document.getElementById('conf_vpn_rusr' + "_form");
-		thisObj.m_form.conf_vpn_rusr_usr_name.value = thisObj.m_usr.m_userName;
-		thisObj.m_form.conf_vpn_rusr_usr_passwd.value = thisObj.m_usr.m_pw;
-		thisObj.m_form.conf_vpn_rusr_confirm_usr_passwd.value = thisObj.m_usr.m_pw;
-		//thisObj.m_form.
 		thisObj.f_setFocus();
-		thisObj.f_resize();
 		thisObj.f_attachListener();			
-		thisObj.f_enableAllButton(false);
+		
+		if (thisObj.m_userName == undefined) {
+			thisObj.m_usr = new UTM_vpnRemoteUserRec();
+			thisObj.m_usr.f_setDefault();
+			thisObj.f_initGroupList();
+		} else {
+			var cb = function(evt)
+			{
+				if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
+					if (evt.f_isError()) {
+						g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
+						return;
+					} else {
+						thisObj.m_usr = evt.m_value[0];
+                        thisObj.f_initData();
+					}
+				}
+			};
+			window.setTimeout(function() {
+				g_busObj.f_vpnGetRemoteUser(thisObj.m_userName, thisObj.m_groupName, cb) }, 10);			
+		}
+		
     }
 	
+	this.f_initData = function()
+	{
+		thisObj.m_form.conf_vpn_rusr_usr_name.value = thisObj.m_usr.m_userName;
+		thisObj.m_form.conf_vpn_rusr_usr_passwd.value = thisObj.m_usr.m_pw;
+		thisObj.m_form.conf_vpn_rusr_confirm_usr_passwd.value = thisObj.m_usr.m_pw;		
+		thisObj.f_enableAllButton(false);		
+		thisObj.f_initGroupList();
+	}
+	
+    this.f_initGroupList = function()
+    {
+        var cb = function(evt)
+        {
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
+                if (evt.f_isError()) {
+                    g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
+                    return;
+                } else {
+                    thisObj.f_populateGroupList(evt.m_value);
+                }
+            }
+        };
+        window.setTimeout(function()
+        {
+            g_busObj.f_vpnGetRemoteUserGroup(null, cb)
+        }, 10);
+    }
+	
+	this.f_populateGroupList = function(a)
+	{
+	    thisObj.m_groupList = new Array();
+		for (var i=0; i < a.length; i++) {
+		    thisObj.m_groupList.push(a[i].m_name);				
+		}		
+		thisObj.m_groupList.sort();
+		var selectCtrl = document.getElementById('conf_vpn_rusr_vpn_grp');
+		if (selectCtrl == null) {
+			return;
+		}
+
+		var html = '';
+		if (!thisObj.m_new) {
+			html += '<option value="' + thisObj.m_usr.m_groupName + '" selected>' + thisObj.m_usr_m_groupName + '</option>';
+		}
+		for (var i=0; i < thisObj.m_groupList.length; i++) {
+			if (!thisObj.m_new) {
+				if (thisObj.m_usr.m_groupName == thisObj.m_groupList[i]) {
+					continue;
+				}
+			}
+			html += '<option value="' + thisObj.m_groupList[i] + '">' + thisObj.m_groupList[i] + '</option>';
+		}
+		selectCtrl.innerHTML = html;
+	}
 	
 	
 	this.f_setFocus = function()

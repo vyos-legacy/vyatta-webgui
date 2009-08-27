@@ -9,6 +9,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
 {
     var thisObj = this;
     this.thisObjName = 'UTM_confVPNOverview';
+    this.m_s2sAddId = "vpnS2SAddId";
+    this.m_userAddId = "vpnUserAddId";
     this.m_s2sRecs = null;
     this.m_s2sGridChkboxId = "s2sGridChkboxId";
     this.m_remoteRecs = null;
@@ -45,7 +47,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         cols[1] = this.f_createColumn(g_lang.m_vpnOVSource, 100, 'text', '6', true);
         cols[2] = this.f_createColumn(g_lang.m_vpnOVDest, 100, 'text', '6', true);
         cols[3] = this.f_createColumn(g_lang.m_vpnOVPeerDomainName, 110, 'text', '6', true);
-        cols[4] = this.f_createColumn(g_lang.m_status, 80, 'text', '6', true);
+        cols[4] = this.f_createColumn(g_lang.m_status, 90, 'text', '6', true);
         cols[5] = this.f_createColumn(g_lang.m_vpnOVConfMode, 100, 'text', '6', true);
         cols[6] = this.f_createColumn(chkbox, 70, 'checkbox', '0', false);
         cols[7] = this.f_createColumn(g_lang.m_delete, 70, 'image', '0');
@@ -65,7 +67,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         cols[2] = this.f_createColumn(g_lang.m_ipAddr, 100, 'text', '6', true);
         cols[3] = this.f_createColumn(g_lang.m_vpnOVLocal + '<br>' + g_lang.m_ipAddr,
                                       110, 'text', '6', true);
-        cols[4] = this.f_createColumn(g_lang.m_status, 80, 'text', '6', true);
+        cols[4] = this.f_createColumn(g_lang.m_status, 90, 'text', '6', true);
         cols[5] = this.f_createColumn(g_lang.m_vpnOVConfMode, 100, 'text', '6', true);
         cols[6] = this.f_createColumn(chkbox, 70, 'checkbox', '0');
         cols[7] = this.f_createColumn(g_lang.m_delete, 70, 'image', '0');
@@ -563,7 +565,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         this.m_anchorS2s = this.f_createGeneralDiv('<b>' + g_lang.m_vpnOVS2S + '</b><br><br>');
         this.m_headerS2s = this.f_createGridHeader(this.m_hds2s, 'f_vpnS2SGridHeaderOnclick');
         this.m_bodyS2s = this.f_createGridView(this.m_hds2s, false);
-        var btns = [['Add', "f_vpnAddHandler('s2s')"]];
+        var btns = [['Add', "f_vpnAddHandler('s2s')", "add site to site connection", this.m_s2sAddId]];
         this.m_s2sButtons = this.f_createButtons(btns, 'left');
         this.m_s2sDiv = this.f_createEmptyDiv([this.m_anchorS2s,
                       this.m_headerS2s, this.m_bodyS2s, this.m_s2sButtons]);
@@ -574,7 +576,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         this.m_anchorRemote.style.marginTop = "35px";
         this.m_headerRemotes = this.f_createGridHeader(this.m_hdremote, 'f_vpnRemoteGridHeaderOnclick');
         this.m_bodyRemotes = this.f_createGridView(this.m_hdremote, false);
-        btns = [['Add', "f_vpnAddHandler('remote')"]];
+        btns = [['Add', "f_vpnAddHandler('remote')", 'add remote user', this.m_userAddId]];
         this.m_remoteButtons = this.f_createButtons(btns, 'left');
         this.m_remoteDiv = this.f_createEmptyDiv([this.m_anchorRemote,
                   this.m_headerRemotes, this.m_bodyRemotes, this.m_remoteButtons]);

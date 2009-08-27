@@ -1,3 +1,22 @@
+vyatta-webgui (0.2.14+fxdU+109) unstable; urgency=low
+
+  [ Loi Vo ]
+  * Change to remote user so that it expects only an user name.
+
+  [ Kevin Choi ]
+  * * added remote users overview data structures
+
+  [ Loi Vo ]
+  * Add apply logic, and validation to the remote user.
+
+  [ Kevin Choi ]
+  * fixed mereged conflicted
+
+  [ Loi Vo ]
+  * Check in fixes for merge issues causing by Kevin's previous check in
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 27 Aug 2009 00:41:51 +0000
+
 vyatta-webgui (0.2.14+fxdU+108) unstable; urgency=low
 
   [ slioch ]

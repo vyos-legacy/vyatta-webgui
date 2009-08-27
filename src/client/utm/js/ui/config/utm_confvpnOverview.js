@@ -13,6 +13,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
     this.m_s2sGridChkboxId = "s2sGridChkboxId";
     this.m_remoteRecs = null;
     this.m_remoteGridChkboxId = "remoteGridChkboxId";
+    this.m_remoteRowChkboxId = "remoteRowChkboxId~";
     this.m_ugRecs = null;     // remote users table rec.
 	this.m_groupRecs = null;
 
@@ -101,7 +102,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
                 thisObj.m_remoteRecs = evt.m_value;
                 thisObj.f_populateRemoteTable(thisObj.m_remoteRecs);
                 thisObj.f_updateGridHeaderChkbox(thisObj.m_remoteRecs,
-                      thisObj.m_remoteGridChkboxId, "remote_enabledId-");
+                      thisObj.m_remoteGridChkboxId, this.m_remoteRowChkboxId);
             }
         }
 
@@ -220,7 +221,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
         {
             var rec = recs[i];
             var c = "<div align=center>";
-            var eId = "remote_enabledId-" + rec.m_userName;
+            var eId = this.f_createRemoteRowChkboxId(rec);
 
             var uname = thisObj.f_renderAnchor(rec.m_userName,
                     "f_vpnUpdateHandler('" + rec.m_userName + "', 'remote', 'user', '" +
@@ -236,7 +237,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
 
             var del = c + thisObj.f_renderButton("delete", true,
                           "f_vpnDeleteHandler('" + rec.m_userName +
-                          "', 'remote')", g_lang.m_tooltip_delete) + "</div>";
+                          "', 'remote', '" + rec.m_groupName + "')",
+                          g_lang.m_tooltip_delete) + "</div>";
 
             var status = thisObj.f_createStatusDiv(rec.m_status);
 
@@ -355,7 +357,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
             if(gridChkboxId.indexOf("s2s") >= 0)
                 el = document.getElementById(rowChkboxId+rec.m_tunnel);
             else
-                el = document.getElementById(rowChkboxId+rec.m_userName);
+                el = document.getElementById(this.f_createRemoteRowChkboxId(rec));
 
             if(el != null)
             {
@@ -409,6 +411,11 @@ function UTM_confVPNOverview(name, callback, busLayer)
         this.f_setEnableValue2Server();
     }
 
+    this.f_createRemoteRowChkboxId = function(rec)
+    {
+        return this.m_remoteRowChkboxId + rec.m_userName + "~" + rec.m_groupName;
+    }
+
     this.f_remoteChkboxCb = function(eid)
     {
         if(this.m_sendList == null) this.m_sendList = [];
@@ -419,7 +426,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
             for(var i=0; i<this.m_remoteRecs.length; i++)
             {
                 var rec = this.m_remoteRecs[i];
-                var eeid = "remote_enabledId-" + rec.m_userName;
+                var eeid = this.f_createRemoteRowChkboxId(rec);
                 var eel = document.getElementById(eeid);
                 if(eel != null)
                 {
@@ -430,10 +437,10 @@ function UTM_confVPNOverview(name, callback, busLayer)
                 }
             }
         }
-        else if(eid.indexOf("remote_enabledId-") >= 0)
+        else if(eid.indexOf(this.m_remoteRowChkboxId) >= 0)
         {
             this.f_updateGridHeaderChkbox(this.m_remoteRecs,
-                      this.m_remoteGridChkboxId, "remote_enabledId-");
+                      this.m_remoteGridChkboxId, this.m_remoteRowChkboxId);
             this.m_sendList.push(eid);
         }
 
@@ -444,11 +451,14 @@ function UTM_confVPNOverview(name, callback, busLayer)
     {
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt.m_errCode != 0)
                 alert("set enable error: " + evt.m_errMsg + " for " + eid);
 
             if(thisObj.m_sendList.length > 0)
                 thisObj.f_setEnableValue2Server();
+            else
+                thisObj.f_loadVMData();
         }
 
         var eid = this.m_sendList.pop();
@@ -457,13 +467,22 @@ function UTM_confVPNOverview(name, callback, busLayer)
             ///////////////////////////////////////////
             // submit set to server.
             var el = document.getElementById(eid);
-            var ids = eid.split("-");
-            var rec = eid.indexOf("s2s_enabledId-") >= 0 ?
-                      this.f_getS2SRecByName(ids[1]) :
-                      this.f_getRemoteRecByName(ids[1]);
 
-            rec.m_enable = el.checked ? 'yes' : 'no';
-            this.m_busLayer.f_vpnSetOverviewEnableValue(rec, cb);
+            g_utils.f_cursorWait();
+            if(eid.indexOf("s2s_enabledId-") >= 0)
+            {
+                var ids = eid.split("-");
+                var rec = this.f_getS2SRecByName(ids[1]);
+
+                rec.m_enable = el.checked ? 'yes' : 'no';
+                this.m_busLayer.f_vpnSetOverviewEnableValue(rec, cb);
+            }
+            else
+            {
+                var ids = eid.split("~");
+                var enable = el.checked ? 'no' : 'yes';
+                thisObj.m_busLayer.f_vpnDisableRemoteUser(ids[1], ids[2], enable, cb);
+            }
         }
     }
 
@@ -502,19 +521,22 @@ function UTM_confVPNOverview(name, callback, busLayer)
     {
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             thisObj.f_stopLoadVMData();
             thisObj.f_loadVMData();
         }
         var rec = this.f_getS2SRecByName(name);
 		if (rec != null) {
-			this.m_busLayer.f_vpnDeleteSite2SiteOverviewConfig(rec, cb);
+                    g_utils.f_cursorWait();
+                    this.m_busLayer.f_vpnDeleteSite2SiteOverviewConfig(rec, cb);
 		}
     }
 
-    this.f_handleRemoteDelete = function(name)
+    this.f_handleRemoteDelete = function(name, groupName)
     {
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt.m_errCode == 0)
             {
                 thisObj.f_stopLoadVMData();
@@ -524,7 +546,8 @@ function UTM_confVPNOverview(name, callback, busLayer)
                 alert('error ' + evt.m_errMsg);
         }
 
-        this.m_busLayer.f_vpnDeleteRemoteOverviewConfig(name, cb);
+        g_utils.f_cursorWait();
+        this.m_busLayer.f_vpnDeleteRemoteUser(name, groupName, cb);
     }
 
     this.f_handleRemoteGridSort = function(col)
@@ -601,19 +624,20 @@ function f_vpnUpdateHandler(name, grid, objType, groupName)
 
 }
 
-function f_deleteConfirmation(e, name, grid)
+function f_deleteConfirmation(e, name, grid, groupName)
 {
     if(e.getAttribute('id')== 'ft_popup_message_apply')
     {
         if(grid == "s2s")
             g_configPanelObj.m_activeObj.f_handleS2SDelete(name);
         else
-            g_configPanelObj.m_activeObj.f_handleRemoteDelete(name);
+            g_configPanelObj.m_activeObj.f_handleRemoteDelete(name, groupName);
     }
 }
-function f_vpnDeleteHandler(name, grid)
+function f_vpnDeleteHandler(name, grid, groupName)
 {
     g_utils.f_popupMessage(g_lang.m_vpnDeleteConfirm + " " + name,
                 'confirm', g_lang.m_vpnDeleteTitle, true,
-                "f_deleteConfirmation(this, '"+name+"', '" + grid + "')");
+                "f_deleteConfirmation(this, '"+name+"', '" + grid +
+                "', '" + groupName +"')");
 }

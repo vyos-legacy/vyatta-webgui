@@ -182,6 +182,11 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
         return thisObj.f_createSimpleDiv(ulist, "center");
     }
 
+    this.f_createUserRowChkboxId = function(rec)
+    {
+        return this.m_usrRowChkboxId + rec.m_userName + "~" + rec.m_groupName;
+    }
+
     this.f_populateUsersTable = function(recs)
     {
         thisObj.f_removeDivChildren(thisObj.m_userDiv);
@@ -198,7 +203,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
         {
             var rec = recs[i];
             var c = "<div align=center>";
-            var eId = this.m_usrRowChkboxId + rec.m_userName + "~" + rec.m_groupName;
+            var eId = this.f_createUserRowChkboxId(rec);
 
             var uname = thisObj.f_renderAnchor(rec.m_userName,
                     "f_vpnUserUpdateHandler('" + rec.m_userName + "', 'user', '" +
@@ -315,7 +320,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
         //////////////////////////////////////////
         // work on enable/disable header checkbox
         var disable = this.m_userRecs.length > 0 ? false:true;
-        chk.disabled = disalbe;
+        chk.disabled = disable;
 
         /////////////////////////////////////////
         // work on check/dis-check checkbox
@@ -325,7 +330,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             for(var i=0; i<this.m_userRecs.length; i++)
             {
                 var rec = this.m_userRecs[i];
-                var eId = this.m_usrRowChkboxId + rec.m_userName + "~" + rec.m_groupName;
+                var eId = this.f_createUserRowChkboxId(rec);
                 var el = document.getElementById(eId);
                 if(el != null && !el.checked)
                 {
@@ -341,13 +346,14 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt.m_errCode != 0)
                 alert("set group enable error: " + evt.m_errMsg + " for " + eid);
 
             if(thisObj.m_sendGrpList.length > 0)
                 thisObj.f_setGroupEnableValue2Server();
             else
-                thisObj.f_updateGroupHeaderChkbox();
+                thisObj.f_loadVMData();
         }
 
         var eid = this.m_sendGrpList.pop();
@@ -358,6 +364,8 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             var el = document.getElementById(eid);
             var ids = eid.split("~");
             var enable = el.checked ? 'no' : 'yes';
+
+            g_utils.f_cursorWait();
             thisObj.m_busLayer.f_vpnDisableRemoteUserGroup(ids[1], enable, cb);
         }
     }
@@ -366,13 +374,14 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt.m_errCode != 0)
                 alert("set user enable error: " + evt.m_errMsg + " for " + eid);
 
             if(thisObj.m_sendUserList.length > 0)
                 thisObj.f_setUserEnableValue2Server();
             else
-                thisObj.f_updateUserHeaderChkbox();
+                thisObj.f_loadVMData();
         }
 
         var eid = this.m_sendUserList.pop();
@@ -383,6 +392,8 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             var el = document.getElementById(eid);
             var ids = eid.split("~");
             var enable = el.checked ? 'no' : 'yes';
+
+            g_utils.f_cursorWait();
             thisObj.m_busLayer.f_vpnDisableRemoteUser(ids[1], ids[2], enable, cb);
         }
     }
@@ -430,12 +441,14 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt.m_errCode != 0)
                 g_utils.f_popupMessage(evt.m_errMsg, "error", g_lang.m_deleteError, true);
             else
                 thisObj.f_loadVMData();
         }
 
+        g_utils.f_cursorWait();
         thisObj.m_busLayer.f_vpnDeleteRemoteUserGroup(grpName, cb);
     }
 
@@ -443,12 +456,14 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
         var cb = function(evt)
         {
+            g_utils.f_cursorDefault();
             if(evt.m_errCode != 0)
                 g_utils.f_popupMessage(evt.m_errMsg, "error", g_lang.m_deleteError, true);
             else
                 thisObj.f_loadVMData();
         }
 
+        g_utils.f_cursorWait();
         thisObj.m_busLayer.f_vpnDeleteRemoteUser(usrName, grpName, cb);
     }
 }

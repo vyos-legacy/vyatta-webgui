@@ -15,6 +15,10 @@ function UTM_vpnRemoteUserRec(name, pw, group)
     this.m_pw = pw;
     this.m_groupName = group;
 	this.m_enable = 'no';
+	this.m_remoteIp = '';
+	this.m_localIp = '';
+	this.m_status = '';
+	this.m_mode = 'easy';
 	var thisObj =  this;
 
 	this.f_setDefault = function()
@@ -23,6 +27,10 @@ function UTM_vpnRemoteUserRec(name, pw, group)
 		this.m_pw = '';
 		this.m_groupName = '';
 		this.m_enable = 'no';
+	    this.m_remoteIp = '';
+	    this.m_localIp = '';
+	    this.m_status = '';
+	    this.m_mode = 'easy';		
 	}
 
 	this.f_toXml = function(action)
@@ -911,8 +919,7 @@ function UTM_vpnBusObj(busObj)
 	{
 		var form = thisObj.m_busObj.f_getFormNode(resp);
         var ruNodeArray = g_utils.f_xmlGetChildNodeArray(form, 'remote_user');
-		//<groups> is special cases, will be processed separately.
-		var tagArray = ['username', 'passwd', 'enable'];
+		var tagArray = ['username', 'groupname', 'passwd', 'enable', 'remoteip', 'localip', 'status', 'mode'];
 		var tagValue = [];
         var userList = new Array();
 
@@ -932,24 +939,15 @@ function UTM_vpnBusObj(busObj)
 				}
 			}
 			userList[i] = new UTM_vpnRemoteUserRec();
-			//parse group list.  One user belongs to one group for now.
-			userList[i].m_groupName = '';
-			var gNode = g_utils.f_xmlGetChildNode(ruNode, 'groups');
-			if (gNode != null) {
-				var gNodeArray = g_utils.f_xmlGetChildNodeArray(gNode, 'group');
-				if (uNodeArray != null) {
-				    for (var j=0 ; j < gNodeArray.length; j++) {
-						var value = g_utils.f_xmlGetNodeValue(gNodeArray[j]);
-						if (value != null) {
-							userList[i].m_groupName = value;
-							break;
-						}
-					}
-				}
-			}
+
 			userList[i].m_userName = (tagValue['username'] == undefined)? '' : tagValue['username'];
 			userList[i].m_pw = (tagValue['passwd'] == undefined)? '' : tagValue['passwd'];
+			userList[i].m_groupName = (tagValue['groupname'] == undefined)? '' : tagValue['groupname'];			
 			userList[i].m_enable= (tagValue['enable'] == undefined)? 'yes' : tagValue['enable'];
+			userList[i].m_remoteIp = (tagValue['remoteip'] == undefined)? '' : tagValue['remoteip'];
+			userList[i].m_localIp = (tagValue['localip'] == undefined)? '' : tagValue['localip'];			
+			userList[i].m_status = (tagValue['status'] == undefined)? 'disconnected' : tagValue['status'];			
+			userList[i].m_mode = (tagValue['mode'] == undefined)? 'easy' : tagValue['mode'];						
 		}
 
 		return userList;
@@ -995,8 +993,8 @@ function UTM_vpnBusObj(busObj)
                       "</handler><data><remote_user>" +
 					  "<username>" + userName + "</username>" +
 					  "<groupname>" + groupName + "</groupname>";
-		xml += "<disable>" + disable + "</disable>";
-		xml += "</remote_user></data></statement>";
+		xmlstr += "<disable>" + disable + "</disable>";
+		xmlstr += "</remote_user></data></statement>";
 
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,

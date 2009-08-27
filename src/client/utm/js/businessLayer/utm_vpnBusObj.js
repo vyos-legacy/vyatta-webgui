@@ -9,16 +9,16 @@
 /**
  * VPN data record
  */
-function UTM_vpnRemoteUserRec(name, pw, group)
+function UTM_vpnRemoteUserRec(name, pw, group, remoteip, localip, status, mode, enable)
 {
     this.m_userName = name;
     this.m_pw = pw;
     this.m_groupName = group;
-	this.m_enable = 'no';
-	this.m_remoteIp = '';
-	this.m_localIp = '';
-	this.m_status = '';
-	this.m_mode = 'easy';
+	this.m_enable = enable == null ? 'no':enable;
+	this.m_remoteIp = remoteip == null ? '':remoteip;
+	this.m_localIp = localip == null ? '':localip;
+	this.m_status = status == null ? '':status;
+	this.m_mode = mode == null ? 'easy':mode;
 	var thisObj =  this;
 
 	this.f_setDefault = function()
@@ -30,7 +30,7 @@ function UTM_vpnRemoteUserRec(name, pw, group)
 	    this.m_remoteIp = '';
 	    this.m_localIp = '';
 	    this.m_status = '';
-	    this.m_mode = 'easy';		
+	    this.m_mode = 'easy';
 	}
 
 	this.f_toXml = function(action)
@@ -43,18 +43,6 @@ function UTM_vpnRemoteUserRec(name, pw, group)
 		xml += '</remote_user>';
 		return xml;
 	}
-}
-
-function UTM_vpnRemoteOverviewRec(userName, groupName, ipAddr, localIpAddr,
-                                  mode, status, enable)
-{
-    this.m_userName = userName;
-    this.m_groupName = groupName;
-    this.m_ipAddr = ipAddr==null?"":ipAddr;   // remote ip
-    this.m_localIpAddr = localIpAddr==null?"":localIpAddr;
-    this.m_mode = mode == null?"easy":mode; // easy/expert
-    this.m_enable = enable==null?"no":enable;  // yes/no
-    this.m_status = status==null?"disconnected":status;
 }
 
 function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAccess, mode,p1_proto,
@@ -482,70 +470,6 @@ function UTM_vpnBusObj(busObj)
         return vpn;
     }
 
-    this.f_parseRemoteOverviewGet = function(resp)
-    {
-        var nodes = thisObj.m_busObj.f_getResponseChildNodes(resp, 'msg');
-        nodes = thisObj.m_busObj.f_getResponseChildNodes(resp, 'remote_user');
-        var vpn = new Array();
-
-        if(nodes != null)
-        {
-            for(var i=0; i<nodes.length; i++)
-            {
-                var n = nodes[i];
-
-                if(n.nodeName == "remote_user")
-                {
-                    var rec = new UTM_vpnRemoteOverviewRec();
-                    for(var j=0; j<n.childNodes.length; j++)
-                    {
-                        var cNode = n.childNodes[j];
-                        if(cNode == undefined) continue;
-
-                        if(cNode.nodeName == "username" && cNode.firstChild != undefined)
-                            rec.m_userName = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == "groupname" && cNode.firstChild != undefined)
-                            rec.m_groupName = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == "enable" && cNode.firstChild != undefined)
-                            rec.m_enable = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == "remoteip" && cNode.firstChild != undefined)
-                            rec.m_ipAddr = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == "localip" && cNode.firstChild != undefined)
-                            rec.m_localIpAddr = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == "status" && cNode.firstChild != undefined)
-                            rec.m_status = cNode.firstChild.nodeValue;
-                        else if(cNode.nodeName == "mode" && cNode.firstChild != undefined)
-                            rec.m_mode = cNode.firstChild.nodeValue;
-                    }
-                    vpn.push(rec);
-                }
-            }
-        }
-
-        return vpn;
-    }
-
-    this.f_getValueFromNameValuePair = function(name, nv)
-    {
-        var nvs = nv.split("]");
-
-        for(var i=0; i<nvs.length; i++)
-        {
-            if(nvs[i].indexOf(name+"=") >= 0)
-            {
-                var v = nvs[i].split("=");
-                if(v[1].length > 1)
-                {
-                    v = v[1].replace("[", "");
-                    //v = v.replace(/;/g, ",");
-                    return v;
-                }
-            }
-        }
-
-        return "";
-    }
-
     /**
      * get all site to site configurations
      */
@@ -942,12 +866,12 @@ function UTM_vpnBusObj(busObj)
 
 			userList[i].m_userName = (tagValue['username'] == undefined)? '' : tagValue['username'];
 			userList[i].m_pw = (tagValue['passwd'] == undefined)? '' : tagValue['passwd'];
-			userList[i].m_groupName = (tagValue['groupname'] == undefined)? '' : tagValue['groupname'];			
+			userList[i].m_groupName = (tagValue['groupname'] == undefined)? '' : tagValue['groupname'];
 			userList[i].m_enable= (tagValue['enable'] == undefined)? 'yes' : tagValue['enable'];
 			userList[i].m_remoteIp = (tagValue['remoteip'] == undefined)? '' : tagValue['remoteip'];
-			userList[i].m_localIp = (tagValue['localip'] == undefined)? '' : tagValue['localip'];			
-			userList[i].m_status = (tagValue['status'] == undefined)? 'disconnected' : tagValue['status'];			
-			userList[i].m_mode = (tagValue['mode'] == undefined)? 'easy' : tagValue['mode'];						
+			userList[i].m_localIp = (tagValue['localip'] == undefined)? '' : tagValue['localip'];
+			userList[i].m_status = (tagValue['status'] == undefined)? 'disconnected' : tagValue['status'];
+			userList[i].m_mode = (tagValue['mode'] == undefined)? 'easy' : tagValue['mode'];
 		}
 
 		return userList;

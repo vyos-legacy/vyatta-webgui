@@ -294,7 +294,11 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
 			g_utils.f_popupMessage(g_lang.m_remindSaveChange, 'confirm', g_lang.m_info, true, 
 			    thisObj.m_eventCbFunction + "('apply')"); 
 		} else {
-			g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID, null, true);			
+			if (g_configPanelObj.m_previousPage != undefined) {
+				g_configPanelObj.f_showPage(g_configPanelObj.m_previousPage, null, true);
+			} else {
+				g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID, null, true);
+			}			
 		}
 	}
 

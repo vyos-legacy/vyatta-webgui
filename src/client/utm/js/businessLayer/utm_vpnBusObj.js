@@ -815,9 +815,9 @@ function UTM_vpnBusObj(busObj)
 				var iSubNode = g_utils.f_xmlGetChildNode(iNode, 'static');
 				if (iSubNode != null) {
 					groupList[i].m_ipalloc = 'static';
-					var value = g_utils.f_xmlGetChildNodeValue(iNode, 'start');
+					var value = g_utils.f_xmlGetChildNodeValue(iSubNode, 'start');
 					groupList[i].m_start = (value == null)? '' : value;
-					value = g_utils.f_xmlGetChildNodeValue(iNode, 'stop');
+					value = g_utils.f_xmlGetChildNodeValue(iSubNode, 'stop');
 					groupList[i].m_stop = (value == null)? '' : value;
 				}
 			}

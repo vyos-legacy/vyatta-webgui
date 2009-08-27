@@ -21,6 +21,7 @@ function UTM_configPanel()
     this.m_selectCmp = undefined; //the component being selected (but not yet displayed)
     this.m_selectObj = undefined; //the object that its component is being selected
     this.m_dynSubMenu = undefined; //the dynamic inner sub menu (class=dyn_sub_menu) for user add/ user update
+    this.m_previousPage = undefined;
 
 	///////////////////////////////////////
     // functions

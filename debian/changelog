@@ -1,3 +1,12 @@
+vyatta-webgui (0.2+fxd0+109) unstable; urgency=low
+
+  * Bug: 4841: user seems to be asked to change hsi credentials twice at
+    first loging.
+  * Bug: 4841 - QC 35: user seems to be asked to change his credentials
+    twice at first login
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 27 Aug 2009 17:21:16 +0000
+
 vyatta-webgui (0.2+fxd0+108) unstable; urgency=low
 
   * fix bu limits to take into account tmp staging dir.

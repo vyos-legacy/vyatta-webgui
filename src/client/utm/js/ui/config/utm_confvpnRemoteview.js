@@ -327,10 +327,8 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
             // submit set to server.
             var el = document.getElementById(eid);
             var ids = eid.split("-");
-            var rec = thisObj.f_getGroupRecByName(ids[1]);
-
-            rec.m_enable = el.checked ? 'yes' : 'no';
-            thisObj.m_busLayer.f_vpnSetRemoteUserGroup(rec, "update", cb);
+            var enable = el.checked ? 'yes' : 'no';
+            thisObj.m_busLayer.f_vpnDisableRemoteUserGroup(ids[1], enable, cb);
         }
     }
 

@@ -1,3 +1,16 @@
+vyatta-webgui (0.2+fxd0+110) unstable; urgency=low
+
+  [ Michael Larson ]
+  * upgrade watchdog. wakes up every 10 minutes to see if the at
+    scheduler has passed over any scheduled upgrade. The watchdog will
+    execute
+
+  [ slioch ]
+  * ensure committed configuration parameters are saved to the config
+    upon commit
+
+ -- slioch <slioch@eng-140.vyatta.com>  Thu, 27 Aug 2009 11:24:21 -0700
+
 vyatta-webgui (0.2+fxd0+109) unstable; urgency=low
 
   * Bug: 4841: user seems to be asked to change hsi credentials twice at

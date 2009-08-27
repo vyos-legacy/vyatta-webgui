@@ -41,11 +41,11 @@ function UTM_vpnRemoteOverviewRec(userName, groupName, ipAddr, localIpAddr,
 {
     this.m_userName = userName;
     this.m_groupName = groupName;
-    this.m_ipAddr = ipAddr;
-    this.m_localIpAddr = localIpAddr;
-    this.m_mode = mode; // easy/expert
-    this.m_enable = enable;  // yes/no
-    this.m_status = status;
+    this.m_ipAddr = ipAddr==null?"":ipAddr;   // remote ip
+    this.m_localIpAddr = localIpAddr==null?"":localIpAddr;
+    this.m_mode = mode == null?"easy":mode; // easy/expert
+    this.m_enable = enable==null?"no":enable;  // yes/no
+    this.m_status = status==null?"disconnected":status;
 }
 
 function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAccess, mode,p1_proto,
@@ -344,7 +344,7 @@ function UTM_vpnBusObj(busObj)
                 if(thisObj.m_lastCmdSent.indexOf("<handler>vpn site-to-site get") > 0) {
                     var vpnRec = thisObj.f_parseSite2SiteOverviewGet(err);
                     evt = new UTM_eventObj(0, vpnRec, '');
-                } else if(thisObj.m_lastCmdSent.indexOf("<handler>vpn-remote get-overview") > 0) {
+                } else if(thisObj.m_lastCmdSent.indexOf("<handler>vpn remote-access get-user") > 0) {
                     var vpnRec = thisObj.f_parseRemoteOverviewGet(err);
                     evt = new UTM_eventObj(0, vpnRec, '');
                 } else { //These APIs have the form tag.  Check for form error.
@@ -479,6 +479,7 @@ function UTM_vpnBusObj(busObj)
     this.f_parseRemoteOverviewGet = function(resp)
     {
         var nodes = thisObj.m_busObj.f_getResponseChildNodes(resp, 'msg');
+        nodes = thisObj.m_busObj.f_getResponseChildNodes(resp, 'remote_user');
         var vpn = new Array();
 
         if(nodes != null)
@@ -486,31 +487,31 @@ function UTM_vpnBusObj(busObj)
             for(var i=0; i<nodes.length; i++)
             {
                 var n = nodes[i];
-                if(n.nodeName == "vpn-remote")
+
+                if(n.nodeName == "remote_user")
                 {
-                    var vals = n.firstChild.nodeValue.split(":");
-
-                    for(var j=0; j<vals.length; j++)
+                    var rec = new UTM_vpnRemoteOverviewRec();
+                    for(var j=0; j<n.childNodes.length; j++)
                     {
-						var userRec = new UTM_vpnRemoteUserRec();
-						userRec.m_userName = this.f_getValueFromNameValuePair("name", vals[j]);
-						userRec.m_pw = 'pw';
-						userRec.m_groupName = this.f_getValueFromNameValuePair("group", vals[j]);
+                        var cNode = n.childNodes[j];
+                        if(cNode == undefined) continue;
 
-						var groupRec = new UTM_vpnRemoteUsrGrpRec();
-						groupRec.f_setDefault();
-						groupRec.m_mode = this.f_getValueFromNameValuePair("configmode", vals[j]);
-						groupRec.m_name = this.f_getValueFromNameValuePair("group", vals[j]);
-                        groupRec.f_setLocalNetwork(this.f_getValueFromNameValuePair("localaddress", vals[j]),'21');
-						groupRec.f_setRemoteNetwork(this.f_getValueFromNameValuePair("ipaddress", vals[j]),'21');
-
-                        vpn[j] = new UTM_vpnRemoteOverviewRec();
-						vpn[j].m_userRec = userRec;
-						vpn[j].m_groupRec = groupRec;
-                        vpn[j].m_status = this.f_getValueFromNameValuePair("status", vals[j]);
-                        vpn[j].m_enable = this.f_getValueFromNameValuePair("enable", vals[j]);
-
+                        if(cNode.nodeName == "username" && cNode.firstChild != undefined)
+                            rec.m_userName = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == "groupname" && cNode.firstChild != undefined)
+                            rec.m_groupName = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == "enable" && cNode.firstChild != undefined)
+                            rec.m_enable = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == "remoteip" && cNode.firstChild != undefined)
+                            rec.m_ipAddr = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == "localip" && cNode.firstChild != undefined)
+                            rec.m_localIpAddr = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == "status" && cNode.firstChild != undefined)
+                            rec.m_status = cNode.firstChild.nodeValue;
+                        else if(cNode.nodeName == "mode" && cNode.firstChild != undefined)
+                            rec.m_mode = cNode.firstChild.nodeValue;
                     }
+                    vpn.push(rec);
                 }
             }
         }
@@ -634,27 +635,30 @@ function UTM_vpnBusObj(busObj)
     {
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
-                      "<handler>vpn-remote get-overview" +
-                      "</handler><data></data></statement>";
-/*
+                      "<handler>vpn remote-access get-user" +
+                      "</handler><data><remote_user></remote_user></data></statement>";
+/*/
         var cb = function()
         {
             var resp = '<?xml version="1.0" encoding="utf-8"?>' +
-                        '<openappliance><token></token><error><code>0</code><msg><vpn-remote>';
-            var sep = ":";
+                        '<openappliance><token></token><error><code>0</code><msg>';
+            //resp += "<form name='vpn remote-access get_user' code='0'>";
 
-            for(var i=0; i<5; i++)
+            for(var i=0; i<1; i++)
             {
-                var dis = i == 2 || i==4 ? "disconnected" : "connected";
-
-                if(i == 4) sep = "";
-                resp += "name=[user_" + i + "],group=[group_" + i +
-                        "],ipaddress=[10.1.2." + i + "],localaddress=[192.168.1." + i +
-                        "],status=[" + dis + "],configmode=[expert],enable=[no]" +
-                        sep;
+                resp += "<remote_user>" +
+                      "<username>username</username>" +
+                      "<passwd>string</passwd>" +
+                      "<groupname>groupname</groupname>" +
+                      "<enable>yes</enable>" +
+                      "<remoteip>1.3.3." + i + "</remoteip>" +
+                      "<localip>33.33.33.1" + i + "</localip>" +
+                      "<status>disconnected</status>" +
+                      "<mode>easy</mode>" +
+                      "</remote_user>";
             }
 
-            resp += "</vpn-remote></msg></error></openappliance>";
+            resp += "</vpn remote-access get_user></msg></error></openappliance>";
 
             resp = g_utils.f_parseXmlFromString(resp);
             thisObj.m_simulationMode = true;
@@ -664,7 +668,8 @@ function UTM_vpnBusObj(busObj)
         }
         window.setTimeout(cb, 200);
 
-        return;*/
+        return;
+        */
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }

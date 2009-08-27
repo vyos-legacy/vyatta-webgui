@@ -106,13 +106,15 @@ var g_lang =
     m_vpnOVLocal : 'local',
     m_vpnOVS2S : 'site to site connections',
     m_vpnOVRemote : 'remote users',
-    m_vpnDeleteConfirm : "Are you sure you want to delete VPN",
-    m_vpnDeleteTitle : "Delete VPN",
+    m_vpnDeleteConfirm : "are you sure you want to delete",
+    m_vpnDeleteTitle : "delete VPN",
 
     ///////////////////////////////////////////////////////////////////
     // VPN RemoteUser View
     m_vpnRemoteviewHeader : "This page enables you to configure a Virtual " +
         "Private Network (VPN) Server to connect remote users.",
+    m_vpnDeleteGropuTitle : "delete remote user group",
+    m_vpnDeleteUserTitle : "delete remote user",
 
     ///////////////////////////////////////////////////////////////////
     // Firewall Security Level
@@ -258,8 +260,6 @@ var g_lang =
     m_vpnRUG_VPNsoft : "VPN software",
     m_vpnRUG_UsrSettings : "user setttings",
     m_vpnRUG_IPAlloc : "IP allocation",
-	m_vpnRUG_ipstart : "start range",
-	m_vpnRUG_ipend: "end range",
     m_vpnRUG_InternetAccess : "internet access",
 
     ///////////////////////////////////////////////////////////////////

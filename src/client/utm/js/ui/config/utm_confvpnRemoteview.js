@@ -366,6 +366,19 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
     {
 
     }
+
+    this.f_handleDeleteVpnGroup = function(grpName)
+    {
+        var cb = function(evt)
+        {
+            if(evt.m_errCode != 0)
+                g_utils.f_popupMessage(evt.m_errMsg, "error", g_lang.m_deleteError, true);
+            else
+                thisObj.f_loadVMData();
+        }
+
+        thisObj.m_busLayer.f_vpnDeleteRemoteUserGroup(grpName, cb);
+    }
 }
 UTM_extend(UTM_confVPNRemoteview, UTM_confBaseObj);
 
@@ -422,9 +435,17 @@ function f_vpnUserUpdateHandler(uRec)
 
 }
 
-function f_vpnGroupDeleteHandler(eid)
+function f_vpnGroupDeleteConfirmHandler(e, grpName)
 {
+    if(e.getAttribute('id')== 'ft_popup_message_apply')
+        g_configPanelObj.m_activeObj.f_handleDeleteVpnGroup(grpName);
+}
 
+function f_vpnGroupDeleteHandler(grpName)
+{
+    g_utils.f_popupMessage(g_lang.m_vpnDeleteConfirm + ' (' + grpName + ')?',
+                'confirm', g_lang.m_vpnDeleteGropuTitle, true,
+                "f_vpnGroupDeleteConfirmHandler(this, '"+ grpName + "')");
 }
 
 function f_vpnUserDeleteHandler(eid)

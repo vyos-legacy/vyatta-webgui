@@ -506,7 +506,12 @@ function f_vpnGroupUpdateHandler(gName)
 
 function f_vpnUserUpdateHandler(name, colName)
 {
+    g_configPanelObj.m_previousPage = VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_ID;
 
+    if(colName == 'user')
+        g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_ADD_ID, name)
+    else
+        g_configPanelObj.f_showPage(VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_REMOTE_USR_GRP_ID, name);
 }
 
 function f_vpnGroupDeleteConfirmHandler(e, grpName)

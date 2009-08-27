@@ -209,6 +209,14 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     {
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
+		
+		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_vpn_rusr_usr_name, g_lang.m_vpnRUadd_UserName + ' ' + g_lang.m_formNoEmpty, errorInner);
+		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_vpn_rusr_usr_passwd, g_lang.m_vpnRUadd_UserPasswd + ' ' + g_lang.m_formNoEmpty, errorInner);
+		
+        if (thisObj.m_form.conf_vpn_rusr_usr_passwd.value != thisObj.m_form.conf_vpn_rusr_confirm_usr_passwd.value) {
+			errorInner += thisObj.f_createListItem(g_lang.m_vpnRUadd__confirm_mismatch);
+		}		
+		
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';
             error = error + errorInner + '</ul>';
@@ -218,13 +226,38 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
         return true;
     }
     
+	this.f_getUsr = function()
+	{
+		var group = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rusr_vpn_grp);
+		var usr = new UTM_vpnRemoteUserRec(thisObj.m_form.conf_vpn_rusr_usr_name.value, thisObj.m_form.conf_vpn_rusr_usr_passwd.value, 
+		    group);
+		return usr;
+	}
+	
     this.f_apply = function()
     {
+        var usr = thisObj.f_getUsr();
+		
+        var cb = function(evt)
+        {
+            if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
+                if (evt.f_isError()) {
+                    g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
+                    return;
+                } else {
+					thisObj.m_usr = usr;
+					thisObj.m_new = false;
+                    thisObj.f_enableAllButton(false);
+                }
+            }
+        };
+		var action = (thisObj.m_new) ? 'add' : 'update';
+        g_busObj.f_vpnSetRemoteUser(usr, action, cb);			
     }
     
     this.f_reset = function()
     {
-    
+        thisObj.f_initData();
     }
     
     this.f_handleClick = function(e)

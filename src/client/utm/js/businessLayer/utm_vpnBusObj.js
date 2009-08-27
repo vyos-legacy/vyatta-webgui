@@ -31,7 +31,7 @@ function UTM_vpnRemoteUserRec(name, pw, group)
 		xml += '<action>' + action + '</action>';
 		xml = xml + '<username>' + thisObj.m_userName + '</username>';
 		xml = xml + '<passwd><![CDATA[' + thisObj.m_pw + ']]></passwd>';
-		xml = xml + '<groups><group>' + thisObj.m_groupName + '</group></groups>';
+		xml = xml + '<groupname>' + thisObj.m_groupName + '</groupname>';
 		xml += '</remote_user>';
 		return xml;
 	}

@@ -61,7 +61,9 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
         'conf_vpn_rug_ike_p2_local_network_mask',
         'conf_vpn_rug_ike_p2_remote_network_ip',
         'conf_vpn_rug_ike_p2_remote_network_mask',
-        'conf_vpn_rug_ike_p2_lifetime'		
+        'conf_vpn_rug_ike_p2_lifetime',
+		'conf_vpn_rug_ip_alloc_start',
+        'conf_vpn_rug_ip_alloc_stop'		
 	];		
 	
 	this.m_changeItems = [
@@ -296,19 +298,30 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		thisObj.m_form.conf_vpn_rug_ike_p2_lifetime.value = thisObj.m_usrGrp.m_p2_lifetime;		
 	}
 
+	this.f_addOption = function(listCtrl, value, setValue)
+	{
+		var opElem = document.createElement('option');
+		opElem.innerHTML = value;
+		if (setValue) {
+			opElem.setAttribute('value', value);
+		}
+		listCtrl.appendChild(opElem);		
+	}
+
     this.f_loadUserList = function()
 	{
 		var listCtrl = document.getElementById('conf_vpn_rug_usr');
 		if (listCtrl != null) {
 			if ((thisObj.m_usrGrp.m_users == null) || (thisObj.m_usrGrp.m_users.length <= 0)) {
 				//no user
-				listCtrl.innerHTML = '<option>&nbsp;</option><option>&nbsp;</option><option>&nbsp;</option>';
-			} else {
-				var html = '';
-				for (var i =0; i < thisObj.m_usrGrp.m_users.length; i++) {
-					html += '<option>' + thisObj.m_usrGrp.m_users[i] + '</option>';
+				for (var i=0; i < 3; i++) {
+					thisObj.f_addOption(listCtrl, '&nbsp;', false);
 				}
-				listCtrl.innerHTML = html;
+			} else {
+				thisObj.m_usrGrp.m_users.sort();
+				for (var i =0; i < thisObj.m_usrGrp.m_users.length; i++) {
+					thisObj.f_addOption(listCtrl, thisObj.m_usrGrp.m_users[i], true);
+				}
 			}			
 		}
 	}
@@ -323,8 +336,10 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 			thisObj.m_usrGrp.f_setDefault();
 			thisObj.f_initData();
 		} else {
+			g_utils.f_cursorWait();
 			var cb = function(evt)
 			{
+				g_utils.f_cursorDefault();
 				if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
 					if (evt.f_isError()) {
 						g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
@@ -486,9 +501,10 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
     this.f_apply = function()
     {
         var usrGrp = thisObj.f_getUsrGrp();
-		
+		g_utils.f_cursorWait();
         var cb = function(evt)
         {
+			g_utils.f_cursorDefault();
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
                 if (evt.f_isError()) {
                     g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);

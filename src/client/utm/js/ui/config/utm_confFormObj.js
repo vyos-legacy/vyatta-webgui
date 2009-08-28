@@ -438,8 +438,8 @@ function UTM_confFormObj(name, callback, busLayer)
     }
     
     this.f_createListItem = function(item)
-    {
-        return ('<li style="list-style-type:square;list-style-image: url(images/puce_squar.gif);">' + item + '</li>');
+    {				
+        return ('<li style="list-style-type:square;list-style-image: url(' + g_utils.f_getRootDir() + 'images/puce_squar.gif);">' + item + '</li>');
     }
     
     this.f_checkEmpty = function(field, message, err)
@@ -658,6 +658,15 @@ function UTM_confFormObj(name, callback, busLayer)
 		}
 		return true;			
 	}	
+	
+	this.f_hasSpaceCharacter= function(s)
+	{
+		s = s.trim();
+		if (s.indexOf(' ') != -1) {
+			return true;
+		}
+		return false;			
+	}		
 	
     this.f_enableTextField = function(b, id)
     {

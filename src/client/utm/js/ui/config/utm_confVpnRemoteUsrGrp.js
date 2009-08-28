@@ -504,6 +504,8 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		if (thisObj.m_form.conf_vpn_rug_tunnel_config_mode_ez.checked) {
 			if (thisObj.m_form.conf_vpn_rug_preshared_key.value.trim().length <= 0) {
 				errorInner += thisObj.f_createListItem(g_lang.m_vpn_PresharedKey + ' ' + g_lang.m_formNoEmpty);
+			} else if (thisObj.f_hasSpaceCharacter(thisObj.m_form.conf_vpn_rug_preshared_key.value)) {
+				errorInner += thisObj.f_createListItem(g_lang.m_vpn_PresharedKey + ' ' + g_lang.m_formNoSpace);							
 			} else if (thisObj.m_form.conf_vpn_rug_preshared_key.value != thisObj.m_form.conf_vpn_rug_confirm_preshared_key.value) {
 				errorInner += thisObj.f_createListItem(g_lang.m_vpnS2S_preshareKey_confirm_mismatch);
 			}

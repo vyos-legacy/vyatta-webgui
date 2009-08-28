@@ -243,6 +243,7 @@ var g_lang =
 	m_vpn_Expert: "expert",
     m_vpn_DFS : "DFS Group",
 	m_vpn_Users : "users",
+    m_vpn_LifeTime_outofrange: " has to be in the range from 30 to 86400 seconds",	
 
     ///////////////////////////////////////////////////////////////////
     // VPN Site 2 Site
@@ -252,6 +253,10 @@ var g_lang =
 	m_vpnS2S_DomainName : "peer IP address / domain name",
 	m_vpnS2S_RemoteVPNdevice : "remote site VPN device",
 	m_vpnS2S_preshareKey_confirm_mismatch : "preshared key does not match with confirm preshared key",
+	m_vpnS2S_error_missing_required_field : "Missing required fields",
+	m_vpnS2S_error_failure_configure : "Fail to set up the vpn configuration",
+	m_vpnS2S_error_peerip_exists : "The peer IP already exists with a different tunnel",
+	
 
     ///////////////////////////////////////////////////////////////////
     // VPN Remote User Group
@@ -272,7 +277,7 @@ var g_lang =
     m_vpnRUadd_UserPasswd : "user password",
     m_vpnRUadd_VPNGroup : "VPN group",
 	m_vpnRUadd__confirm_mismatch : "user password does not match with confirm user password",
-	
+    m_vpnRUadd_requireGroup	: "You cannot add a user when there is no group",
 
 	///////////////////////////////////////////////////////////////////
     // URL Filtering
@@ -396,6 +401,7 @@ var g_lang =
 	m_formInvalid: "is invalid",
 	m_formInvalidCapital: "Invalid",
 	m_exclamationMark: "!",
+    m_formAlphaNumericChar: "can only contain alpha numeric characters",
 	
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images

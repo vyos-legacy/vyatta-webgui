@@ -554,13 +554,21 @@ function UTM_confFormObj(name, callback, busLayer)
 	this.f_getComboBoxSelectedValue = function(cb)
 	{
 		var i = cb.selectedIndex;
-		return cb.options[i].value;
+		if (i >= 0) {
+			return cb.options[i].value;
+		} else {
+			return null;
+		}
 	}
 	
 	this.f_getComboBoxSelectedName = function(cb)
 	{
 		var i = cb.selectedIndex;
-		return cb.options[i].text;
+		if (i >= 0) {
+			return cb.options[i].text;
+		} else {
+			return null;
+		}
 	}	
 	
 	this.f_setComboBoxSelectionByValue = function(cb, value)
@@ -642,6 +650,15 @@ function UTM_confFormObj(name, callback, busLayer)
         return true;
     }	
     
+	this.f_checkUsername= function(username)
+	{
+		hnRegex = /^[a-zA-Z0-9]+$/;
+		if (!username.match(hnRegex)) {			
+			return false;
+		}
+		return true;			
+	}	
+	
     this.f_enableTextField = function(b, id)
     {
         var el = document.getElementById(id);

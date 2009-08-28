@@ -404,6 +404,10 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		var error = g_lang.m_formFixError + '<br>';
 		var errorInner = '';
 		
+		if (!thisObj.f_checkUsername(thisObj.m_form.conf_vpn_s2se_tunnel_name.value.trim())) {
+			errorInner += thisObj.f_createListItem(g_lang.m_vpnS2S_TunnelName + ' ' + g_lang.m_formAlphaNumericChar);				
+		}			
+		
 		if (!thisObj.f_checkIP(vpnRec.m_peerIp)) {
 			if (!thisObj.f_checkHostname(vpnRec.m_peerIp)) {
 				errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpnS2S_DomainName + g_lang.m_exclamationMark);
@@ -411,23 +415,33 @@ function UTM_confVpnS2SE(name, callback, busLayer)
 		}
 		if (thisObj.m_form.conf_vpn_s2se_tunnel_config_mode_ez.checked) {
 			if (vpnRec.m_presharedKey.trim().length <= 0) {
-				;//is preshared key mandatory?
+			    errorInner += thisObj.f_createListItem(g_lang.m_vpn_PresharedKey + ' ' + g_lang.m_formNoEmpty);		
 			} else if (vpnRec.m_presharedKey != thisObj.m_form.conf_vpn_s2se_confirm_preshared_key.value) {
 				errorInner += thisObj.f_createListItem(g_lang.m_vpnS2S_preshareKey_confirm_mismatch);
 			}
 		} else {
 			if (vpnRec.m_presharedKey.trim().length <= 0) {
-				;//is preshared key mandatory?
+			    errorInner += thisObj.f_createListItem(g_lang.m_vpn_PresharedKey + ' ' + g_lang.m_formNoEmpty);		
 			} else if (vpnRec.m_presharedKey != thisObj.m_form.conf_vpn_s2sexp_ike_p1_confirm_preshare.value) {
 				errorInner += thisObj.f_createListItem(g_lang.m_vpnS2S_preshareKey_confirm_mismatch);
 			}			
 		    if (!g_utils.f_validateInt(vpnRec.m_lifeTime1, true)) {
 			    errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_IKEnegPhase1 + ' ' + g_lang.m_vpn_LifeTime);
-		    }			
+		    } else {
+				var n = parseInt(vpnRec.m_lifeTime1,10);
+				if ((n < 30) || (n > 86400)) {
+			       errorInner += thisObj.f_createListItem(g_lang.m_vpn_IKEnegPhase1 + ' ' + g_lang.m_vpn_LifeTime + ' ' + g_lang.m_vpn_LifeTime_outofrange);					
+				}
+			}			
 			
 		    if (!g_utils.f_validateInt(vpnRec.m_lifeTime2, true)) {
 			    errorInner += thisObj.f_createListItem(g_lang.m_formInvalidCapital + ' ' + g_lang.m_vpn_IKEphase2 + ' ' + g_lang.m_vpn_LifeTime);
-		    }				
+		    } else {
+				var n = parseInt(vpnRec.m_lifeTime2,10);
+				if ((n < 30) || (n > 86400)) {
+			       errorInner += thisObj.f_createListItem(g_lang.m_vpn_IKEphase2 + ' ' + g_lang.m_vpn_LifeTime + ' ' + g_lang.m_vpn_LifeTime_outofrange);					
+				}				
+			}				
 		}
 	   
 		

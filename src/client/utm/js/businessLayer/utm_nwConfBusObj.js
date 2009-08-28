@@ -356,8 +356,7 @@ function UTM_nwConfigBusObj(busObj)
             if(rec.m_metric.length > 0)
                 xmlstr += "<metric>" + rec.m_metric + "</metric>";
 
-            if(rec.m_enabled.length > 0)
-                xmlstr += "<enable>" + (rec.m_enabled=="yes"?"true":"false") + "</enable>";
+            xmlstr += "<enable>" + rec.m_enabled + "</enable>";
 
             xmlstr += "</route>";
         }

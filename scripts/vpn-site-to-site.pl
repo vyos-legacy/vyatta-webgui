@@ -949,6 +949,7 @@ sub get_expert_params {
     @values = split(' ', $out);
     $ct = 0;
     for $v (@values) {
+	$ct++;
 	if ($v eq "lifetime") {
 	    $tmp .= "<espltime>$values[$ct]</espltime>";
 	}
@@ -958,7 +959,6 @@ sub get_expert_params {
 	elsif ($v eq "hash") {
 	    $tmp .= "<espauth>$values[$ct]</espauth>";
 	}
-	$ct++;
     }
     return $tmp;
 }

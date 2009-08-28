@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+116) unstable; urgency=low
+
+  * invalid xml tag on export mode form.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Fri, 28 Aug 2009 10:08:03 -0700
+
 vyatta-webgui (0.2.14+fxdU+115) unstable; urgency=low
 
   * * init un-used array var

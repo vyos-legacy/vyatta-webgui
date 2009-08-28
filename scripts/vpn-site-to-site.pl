@@ -934,7 +934,7 @@ sub get_expert_params {
 	    $tmp .= "<dh-group>$values[$ct]</dh-group>";
 	}
 	elsif ($v eq "encryption") {
-	    $tmp .= "<ikeencrypt>$values[$ct]</ikencrypt>";
+	    $tmp .= "<ikeencrypt>$values[$ct]</ikeencrypt>";
 	}
 	elsif ($v eq "agressive-mode") {
 	    $tmp .= "<emode>$values[$ct]</emode>";

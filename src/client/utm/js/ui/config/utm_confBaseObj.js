@@ -630,7 +630,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_renderCheckbox = function(val, elId, cb, tooltip, readonly)
     {
 		var ro = '';
-        var checked = val == 'yes' || val == 'Yes' ? 'checked' : '';
+        var checked = val == 'yes' || val == 'Yes' || val == 'true' ? 'checked' : '';
         tooltip = tooltip == undefined ? "" : tooltip;
 
 		if (readonly != null) {

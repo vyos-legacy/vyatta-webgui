@@ -141,7 +141,7 @@ function UTM_confNwRouting(name, callback, busLayer)
         for(var i=0; i<ar.length; i++)
         {
             if(ar[i].m_action != 'delete')
-                thisObj.f_addRoutingIntoRow(ar[i], true);
+                thisObj.f_addRoutingIntoRow(ar[i], ar[i].m_action == 'add'?false:true);
         }
     }
 
@@ -370,6 +370,7 @@ function UTM_confNwRouting(name, callback, busLayer)
     {
         var el = null;
         var checked = true;
+        var disabled = true;
 
         for(var i=0; i<this.m_rRecs.length; i++)
         {
@@ -379,15 +380,50 @@ function UTM_confNwRouting(name, callback, busLayer)
             if(el != null)
             {
                 if(!el.checked)
-                {
                     checked = false;
-                    break;
-                }
             }
+
+            if(rec.m_action != 'delete')
+                disabled = false;
         }
 
         el = document.getElementById(this.m_enabledChkId);
         el.checked = checked;
+        el.disabled = disabled;
+    }
+
+    this.f_getRecByRecId = function(recId)
+    {
+        for(var i=0; i<thisObj.m_rRecs.length; i++)
+        {
+            if(thisObj.m_rRecs[i].f_getRecId() == recId)
+                return thisObj.m_rRecs[i];
+        }
+
+        return null;
+    }
+
+    this.f_handleOnTFBlur = function(tfeid)
+    {
+        // ip address text fields
+        if(tfeid.indexOf(thisObj.m_fieldIds[0]) >= 0 ||
+            tfeid.indexOf(thisObj.m_fieldIds[2]) >= 0)
+            thisObj.f_handleIPAddressOnBlur(tfeid, null);
+        // net mask text fields
+        else if(tfeid.indexOf(thisObj.m_fieldIds[1]) >= 0)
+            thisObj.f_handleNetMaskOnBlur(tfeid);
+        else if(tfeid.indexOf(thisObj.m_fieldIds[3]) >= 0)
+        {
+            //var ids = tfeid.split("-");
+            //var rec = this.f_getRecByRecId(ids[1]);
+            //if(rec != null)
+            //{
+              //  var tf = document.getElementById(tfeid);
+                //rec.m_metric = tf.value;
+            //}
+        }
+
+        thisObj.f_enabledActionButtons(true);
     }
 
     this.f_chkOnSelected = function(chkid)
@@ -411,7 +447,14 @@ function UTM_confNwRouting(name, callback, busLayer)
         ///////////////////////////
         // enabled from row
         else if(chkid.indexOf(thisObj.m_fieldIds[4]) >= 0)
-            this.f_updateGridHeaderChkbox();
+        {
+            //var ids = chkid.split("-");
+            //var rec = this.f_getRecByRecId(ids[1]);
+            //if(rec != null)
+              //  rec.m_enabled = chk.checked ? 'Yes' : 'No';
+
+            //this.f_updateGridHeaderChkbox();
+        }
 
         thisObj.f_enabledActionButtons(true);
     };
@@ -441,17 +484,8 @@ function UTM_confNwRouting(name, callback, busLayer)
         thisObj.f_handleAddRoutingRow(thisObj.tempRuleNo++);
     }
 
-    this.f_handleSaveAction = function()
+    this.f_getUserInputValues = function()
     {
-        var cb = function(evt)
-        {
-            g_utils.f_cursorDefault();
-            thisObj.f_loadVMData();
-        };
-
-        thisObj.f_enabledActionButtons(false);
-        g_utils.f_cursorWait();
-
         var sRecs = [];
         for(var i=0; i<this.m_rRecs.length; i++)
         {
@@ -474,6 +508,21 @@ function UTM_confNwRouting(name, callback, busLayer)
             sRecs.push(rrec);
         }
 
+        return sRecs;
+    }
+
+    this.f_handleSaveAction = function()
+    {
+        var cb = function(evt)
+        {
+            g_utils.f_cursorDefault();
+            thisObj.f_loadVMData();
+        };
+
+        thisObj.f_enabledActionButtons(false);
+        var sRecs = this.f_getUserInputValues();
+
+        g_utils.f_cursorWait();
         thisObj.m_busLayer.f_saveNwRouting(sRecs, cb);
     };
 
@@ -507,8 +556,10 @@ function UTM_confNwRouting(name, callback, busLayer)
             if(rec.f_getRecId() == recId)
             {
                 this.m_rRecs[i].m_action = 'delete';
+                this.m_rRecs = this.f_getUserInputValues();
                 thisObj.f_loadVMData('loadLocal');
                 thisObj.f_enabledActionButtons(true);
+                break;
             }
         }
     }
@@ -542,17 +593,7 @@ function f_nwRoutingRadioHandler(rid)
 */
 function f_nwRoutingOnTFBlur(tfeid)
 {
-    var aObj = g_configPanelObj.m_activeObj;
-
-    // ip address text fields
-    if(tfeid.indexOf(aObj.m_fieldIds[0]) >= 0 ||
-        tfeid.indexOf(aObj.m_fieldIds[2]) >= 0)
-        aObj.f_handleIPAddressOnBlur(tfeid, null);
-    // net mask text fields
-    else if(tfeid.indexOf(aObj.m_fieldIds[1]) >= 0)
-        aObj.f_handleNetMaskOnBlur(tfeid);
-
-    aObj.f_enabledActionButtons(true);
+    g_configPanelObj.m_activeObj.f_handleOnTFBlur(tfeid);
 }
 
 function f_nwRouteEnabledOnChkClick(chkid)

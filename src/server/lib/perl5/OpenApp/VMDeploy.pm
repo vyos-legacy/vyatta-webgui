@@ -1196,11 +1196,32 @@ sub _postInstProc {
   
   # restore backup
   my $bstr = "$self->{_vmId}:config,$self->{_vmId}:data";
-  my $args = "--restore 'dummy' --restore-target '$bstr' --file '$backup'";
+
+  #fix for release... mdl
+  my @out = `sudo ls /var/archive/installer/tmp/backup/*.txt`;
+  my $file =  $out[0];
+  if (defined $file) {
+      substr($file,-5) = ""; #remove '.tar'                                   
+      my @tmp = split "/",$file;
+      $file = $tmp[$#tmp];
+  }
+  else {
+      $file = 'dummy';
+  }
+
+  #now move the file to the expected location:
+  `cp $backup /var/archive/installer/$file.tar`;
+
+  #patch is now done!
+
+  my $args = "--restore '$file' --restore-target '$bstr' --file '$backup'";
   my $err = `$BACKUP_CMD $args 2>&1`;
   my $ret = ($? >> 8);
   unlink($backup);
   return "Failed to restore VM backup: $err" if ($ret);
+
+  #patch 2: hack to remove
+  `rm /var/archive/installer/$file.tar`;
 
   # done.
   return undef;

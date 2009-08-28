@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+115) unstable; urgency=low
+
+  * * init un-used array var
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 28 Aug 2009 04:40:05 +0000
+
 vyatta-webgui (0.2.14+fxdU+114) unstable; urgency=low
 
   * Fix the following:

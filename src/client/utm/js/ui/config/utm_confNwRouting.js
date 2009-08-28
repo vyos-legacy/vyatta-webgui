@@ -141,7 +141,7 @@ function UTM_confNwRouting(name, callback, busLayer)
         for(var i=0; i<ar.length; i++)
         {
             if(ar[i].m_action != 'delete')
-                thisObj.f_addRoutingIntoRow(ar[i]);
+                thisObj.f_addRoutingIntoRow(ar[i], true);
         }
     }
 
@@ -180,7 +180,7 @@ function UTM_confNwRouting(name, callback, busLayer)
         return recs;
     }
 
-    this.f_addRoutingIntoRow = function(rRec)
+    this.f_addRoutingIntoRow = function(rRec, readonly)
     {
         var zpRule = rRec.f_getRecId();
         //var gwRdId = thisObj.m_gwId + zpRule;
@@ -194,11 +194,11 @@ function UTM_confNwRouting(name, callback, busLayer)
         var dip = thisObj.f_renderTextField(thisObj.m_fieldIds[0]+zpRule,
                             rRec.m_destIpAddr, '', 100,
                             ["f_nwRoutingOnTFBlur('" + thisObj.m_fieldIds[0]+
-                            zpRule + "')"], false);
+                            zpRule + "')"], readonly);
         var dmip = thisObj.f_renderTextField(thisObj.m_fieldIds[1]+zpRule,
                             rRec.m_destIpMask, '', 100,
                             ["f_nwRoutingOnTFBlur('" + thisObj.m_fieldIds[1]+
-                            zpRule + "')"], false);
+                            zpRule + "')"], readonly);
         //var opt = "<div align=center>Gateway: "+gw+
         //          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Interface: "+inter+"</div>";
         //var gwInterface = thisObj.f_createGWInterfaceDiv(rRec);
@@ -217,7 +217,8 @@ function UTM_confNwRouting(name, callback, busLayer)
         ///////////////////////////////////
         // add fields into grid view
         var div = thisObj.f_createGridRow(thisObj.m_colModel,
-                    [dip, dmip, thisObj.f_createGatewayTextField(rRec), metric, enable, del]);
+                    [dip, dmip, thisObj.f_createGatewayTextField(rRec, readonly),
+                    metric, enable, del]);
         thisObj.m_gridBody.appendChild(div);
     };
 /*
@@ -234,14 +235,14 @@ function UTM_confNwRouting(name, callback, busLayer)
         return div;
     }
 */
-    this.f_createGatewayTextField = function(rRec)
+    this.f_createGatewayTextField = function(rRec, readonly)
     {
         var id = rRec.f_getRecId();
 
         return thisObj.f_renderTextField(thisObj.m_fieldIds[2]+id,
                       rRec.m_gateway, '', 110,
                       ["f_nwRoutingOnTFBlur('" + thisObj.m_fieldIds[2]+
-                      id + "')"], false);
+                      id + "')"], readonly);
     }
 /*
     this.f_createInterfaceCombo = function(rRec)
@@ -256,7 +257,7 @@ function UTM_confNwRouting(name, callback, busLayer)
     {
         var rr = thisObj.f_createRoutingRecord(tempId, "add");
         thisObj.m_rRecs.push(rr);
-        thisObj.f_addRoutingIntoRow(rr);
+        thisObj.f_addRoutingIntoRow(rr, false);
     };
 
     this.f_handleGridSort = function(col)
@@ -550,6 +551,8 @@ function f_nwRoutingOnTFBlur(tfeid)
     // net mask text fields
     else if(tfeid.indexOf(aObj.m_fieldIds[1]) >= 0)
         aObj.f_handleNetMaskOnBlur(tfeid);
+
+    aObj.f_enabledActionButtons(true);
 }
 
 function f_nwRouteEnabledOnChkClick(chkid)

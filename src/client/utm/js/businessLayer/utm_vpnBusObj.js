@@ -860,6 +860,8 @@ function UTM_vpnBusObj(busObj)
 					if (value != null) {
 						tagValue[tagArray[j]] = value;
 					}
+                                        else
+                                            tagValue[tagArray[j]] = null;
 				}
 			}
 			userList[i] = new UTM_vpnRemoteUserRec();

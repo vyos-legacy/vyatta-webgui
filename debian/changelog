@@ -1,3 +1,9 @@
+vyatta-webgui (0.2+fxd0+112) unstable; urgency=low
+
+  * fix for upgrade regression-->4877
+
+ -- slioch <slioch@eng-140.vyatta.com>  Fri, 28 Aug 2009 16:10:00 -0700
+
 vyatta-webgui (0.2+fxd0+111) unstable; urgency=low
 
   * UNRELEASED

@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+118) unstable; urgency=low
+
+  * fix for export mode get. fix counter for esp settings.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Fri, 28 Aug 2009 10:29:23 -0700
+
 vyatta-webgui (0.2.14+fxdU+117) unstable; urgency=low
 
   * * nw routing screen:

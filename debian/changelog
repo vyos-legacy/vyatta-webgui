@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+117) unstable; urgency=low
+
+  * * nw routing screen:
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 28 Aug 2009 06:08:48 +0000
+
 vyatta-webgui (0.2.14+fxdU+116) unstable; urgency=low
 
   * invalid xml tag on export mode form.

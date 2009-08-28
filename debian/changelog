@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+114) unstable; urgency=low
+
+  * Fix the following:
+
+ -- Loi Vo <loi.vo@vyatta.com>  Fri, 28 Aug 2009 02:19:05 +0000
+
 vyatta-webgui (0.2.14+fxdU+113) unstable; urgency=low
 
   * * nw routing screen:

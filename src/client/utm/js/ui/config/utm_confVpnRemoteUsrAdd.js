@@ -220,12 +220,25 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
     {
         var error = g_lang.m_formFixError + '<br>';
         var errorInner = '';
-		
+				
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_vpn_rusr_usr_name, g_lang.m_vpnRUadd_UserName + ' ' + g_lang.m_formNoEmpty, errorInner);
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_vpn_rusr_usr_passwd, g_lang.m_vpnRUadd_UserPasswd + ' ' + g_lang.m_formNoEmpty, errorInner);
 		
+		if (!thisObj.f_checkUsername(thisObj.m_form.conf_vpn_rusr_usr_name.value.trim())) {
+			errorInner += thisObj.f_createListItem(g_lang.m_vpnRUadd_UserName + ' ' + g_lang.m_formAlphaNumericChar);		
+		}
+		
+		if (!thisObj.f_checkUsername(thisObj.m_form.conf_vpn_rusr_usr_passwd.value.trim())) {
+			errorInner += thisObj.f_createListItem(g_lang.m_vpnRUadd_UserPasswd + ' ' + g_lang.m_formAlphaNumericChar);				
+		}		
+		
         if (thisObj.m_form.conf_vpn_rusr_usr_passwd.value != thisObj.m_form.conf_vpn_rusr_confirm_usr_passwd.value) {
 			errorInner += thisObj.f_createListItem(g_lang.m_vpnRUadd__confirm_mismatch);
+		}		
+		
+		var group = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rusr_vpn_grp);
+		if (group == null) {
+			errorInner += thisObj.f_createListItem(g_lang.m_vpnRUadd_requireGroup);
 		}		
 		
         if (errorInner.trim().length > 0) {

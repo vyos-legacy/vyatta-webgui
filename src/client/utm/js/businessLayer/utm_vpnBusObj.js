@@ -382,6 +382,15 @@ function UTM_vpnBusObj(busObj)
             if (err != null && err[0] != null) { //The return value is inside the <error> tag.
 				var tmp = thisObj.m_busObj.f_getFormError(err);
 				if (tmp != null) { //form has error
+				    if (thisObj.m_lastCmdSent.indexOf("vpn site-to-site")) {										
+						if (tmp.m_errCode == 1) {
+							tmp.m_errMsg = g_lang.m_vpnS2S_error_missing_required_field; //missing required fields
+						} else if (tmp.m_errCode == 2) {
+							tmp.m_errMsg = g_lang.m_vpnS2S_error_failure_configure; //failure to set up the vpn configuration
+						} else if (tmp.m_errCode == 3) {
+							tmp.m_errMsg = g_lang.m_vpnS2S_error_peerip_exists; //peer ip already exists with a different tunnel
+						}
+					}
 					if (thisObj.m_guiCb != undefined) {
 						return thisObj.m_guiCb(tmp);
 					}
@@ -407,7 +416,7 @@ function UTM_vpnBusObj(busObj)
         var s2sNodeArray = g_utils.f_xmlGetChildNodeArray(msgNode, 'site-to-site');
 		var tagArray = ['peerip', 'presharedkey', 'tunnelname', 'lnet', 'rnet', 'type',
 		                'emode', 'ikeencrypt', 'espencrypt', 'dhgroup', 'ikeltime',
-						'espltime', 'ikeauth', 'espauth', 'status', 'disable'];
+						'espltime', 'ikeauth', 'espauth', 'status'];
 		var tagValue = [];
         var vpn = new Array();
 
@@ -435,6 +444,11 @@ function UTM_vpnBusObj(busObj)
 					mode = 'expert';
 				}
 			}
+			var enableValue = 'no';
+			var disableNode = g_utils.f_xmlGetChildNode(s2sNode, 'disable');
+			if (disableNode == null) {
+				enableValue = 'yes';
+			}			
 
 			for (var j = 0; j < tagArray.length; j++) {
 				var cnode = g_utils.f_xmlGetChildNode(s2sNode, tagArray[j]);
@@ -464,7 +478,7 @@ function UTM_vpnBusObj(busObj)
 			vpn[i].m_encryption2= (tagValue['espencrypt'] == undefined)? '' : tagValue['espencrypt'];
 			vpn[i].m_auth2= (tagValue['espauth'] == undefined)? 'des' : tagValue['espauth'];
 			vpn[i].m_status= (tagValue['status'] == undefined)? 'yes' : tagValue['status'];
-			vpn[i].m_enable= (tagValue['disable'] == undefined)? 'yes' : 'no';
+			vpn[i].m_enable= enableValue;
 		}
 
         return vpn;

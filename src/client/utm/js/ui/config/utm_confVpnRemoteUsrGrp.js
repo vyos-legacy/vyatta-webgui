@@ -480,6 +480,9 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
         var errorInner = '';
 		
 		errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_vpn_rug_prof_name, g_lang.m_vpnRUG_ProfileName + ' ' + g_lang.m_formNoEmpty, errorInner);
+		if (!thisObj.f_checkUsername(thisObj.m_form.conf_vpn_rug_prof_name.value.trim())) {
+			errorInner += thisObj.f_createListItem(g_lang.m_vpnRUG_ProfileName + ' ' + g_lang.m_formAlphaNumericChar);				
+		}	
 		var ipalloc = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ip_alloc);
 		if (ipalloc == 'static') {
 		    var start = thisObj.m_form.conf_vpn_rug_ip_alloc_start.value;

@@ -59,7 +59,11 @@ sub get_zoneinfo {
     if (!($intf eq $zonename || defined $intf_disabled)) {
       # replace dom-U interface with dom-0 interface
       $dom0_interfaces[$index] = $domU_to_dom0_intfhash{$intf};
-      $index++;
+      if (!defined $dom0_interfaces[$index]) { 
+        delete $dom0_interfaces[$index];
+      } else {
+        $index++;
+      }
     }
   }
 

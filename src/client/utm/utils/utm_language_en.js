@@ -96,6 +96,7 @@ var g_lang =
 	m_formNotAValidMac: " is not a valid MAC address",
 	m_formFixError: "Please fix the following errors:",
     m_formNoEmpty : "cannot be empty",
+    m_formNoSpace : "cannot contain space character",
 
     ///////////////////////////////////////////////////////////////////
     // VPN Overview

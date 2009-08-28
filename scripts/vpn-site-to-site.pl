@@ -109,11 +109,14 @@ sub get_tunnel_count {
     }
     #let's use the xmlin parser here to handle this.
     my $xs = new XML::Simple(forcearray=>1);
+    $config = "<a>$config</a>";
     my $opt = $xs->XMLin($config);
-    my $peerip = $opt->{"peerip"};
-    for (my $i = 0; $i < @$peerip; $i++) {
-	if ($opt->{"peerip"}->[0] eq $p) {
-	    $ct++;
+    my $peerip = $opt->{"site-to-site"};
+    if (defined $peerip) {
+	for (my $i = 0; $i < @$peerip; $i++) {
+	    if ($opt->{"site-to-site"}->[$i]->{"peerip"}->[0] eq $p) {
+		$ct++;
+	    }
 	}
     }
     return $ct;
@@ -132,11 +135,15 @@ sub get_current_peer {
     }
     #let's use the xmlin parser here to handle this.
     my $xs = new XML::Simple(forcearray=>1);
+    $config = "<a>$config</a>";
     my $opt = $xs->XMLin($config);
-    my $peerip = $opt->{"peerip"};
-    for (my $i = 0; $i < @$peerip; $i++) {
-	if ($opt->{"tunnelname"}->[0] eq $h) {
-	    return $opt->{"peerip"}->[0];
+    my $peerip = $opt->{"site-to-site"};
+    if (defined $peerip) {
+	for (my $i = 0; $i < @$peerip; $i++) {
+	    my $foo = hash_code($opt->{"site-to-site"}->[$i]->{"peerip"}->[0]);
+	    if ($foo eq $h) {
+		return $opt->{"site-to-site"}->[$i]->{"peerip"}->[0];
+	    }
 	}
     }
 }

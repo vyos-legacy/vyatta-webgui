@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+120) unstable; urgency=low
+
+  * do not add undefined interface to zone interfaces
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Fri, 28 Aug 2009 12:40:56 -0700
+
 vyatta-webgui (0.2.14+fxdU+119) unstable; urgency=low
 
   * 1. Add additional validation for preshared-key.  When preshared-key

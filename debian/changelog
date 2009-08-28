@@ -1,3 +1,52 @@
+vyatta-webgui (0.2.14+fxdU+113) unstable; urgency=low
+
+  * * nw routing screen:
+  * * nw routing :
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 28 Aug 2009 02:07:35 +0000
+
+vyatta-webgui (0.2.14+fxdU+112) unstable; urgency=low
+
+  * correct handling for multiple tunnels
+
+ -- slioch <slioch@eng-140.vyatta.com>  Thu, 27 Aug 2009 18:17:14 -0700
+
+vyatta-webgui (0.2.14+fxdU+111) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * parse remote user overview
+
+  [ Mohit Mehta ]
+  * tighten grep patterns
+
+  [ Kevin Choi ]
+  * * vpn remote user screen:
+  * * removed overlap codes
+  * * populated remote user table and remote user overview table
+
+  [ Loi Vo ]
+  * Fix user get parsing.  Add additional fields
+
+  [ Kevin Choi ]
+  * * added remote user and group link for remote user table
+  * * fixed user and user group links
+  * * Misc fixed to both overview and remote user screens
+  * removed unused code
+  * * add tooltip to all 'add' buttons
+
+  [ Loi Vo ]
+  * 1. Add wait cursor before sending requests to server.
+  * Hide user list box control when adding a new group, since we cannot
+    add user to group at group creation time, showing the list control
+    is confusing.
+
+  [ slioch ]
+  * fix for peerip match and error return codes.
+
+  [ Kevin Choi ]
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 27 Aug 2009 11:05:44 +0000
+
 vyatta-webgui (0.2.14+fxdU+110) unstable; urgency=low
 
   [ Kevin Choi ]

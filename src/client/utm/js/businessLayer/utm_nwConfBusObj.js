@@ -284,7 +284,7 @@ function UTM_nwConfigBusObj(busObj)
             else if(n.nodeName == "metric" && chd != null)
                 rec.m_metric = chd.nodeValue;
             else if(n.nodeName == 'enable' && chd != null)
-                rec.m_enabled = chd.nodeVallue == 'true' ? 'Yes':'No';
+                rec.m_enabled = chd.nodeValue == 'true' ? 'Yes':'No';
         }
 
         return rec;
@@ -355,9 +355,10 @@ function UTM_nwConfigBusObj(busObj)
 
             if(rec.m_metric.length > 0)
                 xmlstr += "<metric>" + rec.m_metric + "</metric>";
+            else
+                xmlstr += "<metric>1</metric>";
 
-            if(rec.m_enabled.length > 0)
-                xmlstr += "<enable>" + (rec.m_enabled=="yes"?"true":"false") + "</enable>";
+            xmlstr += "<enable>" + rec.m_enabled + "</enable>";
 
             xmlstr += "</route>";
         }

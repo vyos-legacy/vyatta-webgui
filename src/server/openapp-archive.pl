@@ -154,7 +154,7 @@ sub backup {
     $hour == 0 and $hour=12; # convert day's first hour
 
     my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
-    my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
+    my $time = sprintf("%02dh%02dm%02d%s",$hour,$min,$sec,$am_pm);
 
     my $datamodel = '1';
 
@@ -876,7 +876,7 @@ sub backup_status {
     $hour == 0 and $hour=12; # convert day's first hour
 
     my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
-    my $time = sprintf("%02dh%02d%s",$hour,$min,$am_pm);
+    my $time = sprintf("%02dh%02dm%02d%s",$hour,$min,$sec,$am_pm);
 
     my $datamodel = '1';
 

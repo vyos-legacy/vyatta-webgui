@@ -563,6 +563,16 @@ function UTM_confNwRouting(name, callback, busLayer)
             }
         }
     }
+
+    this.f_changed = function()
+    {
+        var el = document.getElementById(this.m_btnCancelId);
+
+        if(el != null && !el.disabled)
+            return true;
+
+        return false;
+    }
 }
 UTM_extend(UTM_confNwRouting, UTM_confBaseObj);
 

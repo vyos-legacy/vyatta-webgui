@@ -311,7 +311,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         var al = align == null ? 'left' : align;
         var col = color == null ? 'black' : color;
 
-        return "<div align=" + al + "><font color=" + color + ">" + text +
+        return "<div align=" + al + "><font color=" + col + ">" + text +
                 "</color></div>";
     }
 

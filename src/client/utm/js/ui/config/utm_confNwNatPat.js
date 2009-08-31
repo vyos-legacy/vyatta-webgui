@@ -107,6 +107,8 @@ function UTM_confNwNatPat(name, callback, busLayer)
 
                     for(var i=0; i<evt.m_value.length; i++)
                         thisObj.f_addDataIntoTable(evt.m_value[i]);
+
+                    thisObj.f_updateGridHeaderChkbox();
                 }
             }
 
@@ -149,7 +151,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
                             ["f_nwNatPatOnCbbBlur('" + thisObj.m_fieldIds[4]+
                             zpRule + "')"]);
         var sip = thisObj.f_renderTextField(thisObj.m_fieldIds[5]+zpRule,
-                            rec.m_internIpAddr, '', 170,
+                            rec.m_internIpAddr, '', 160,
                             ["f_nwNatPatOnTFBlur('" + thisObj.m_fieldIds[5]+
                             zpRule + "')"], false);
         var enable = "<div align=center>" + thisObj.f_renderCheckbox(
@@ -300,6 +302,14 @@ function UTM_confNwNatPat(name, callback, busLayer)
         }
 
         var el = document.getElementById(this.m_enabledchkId);
+        if(this.m_npRecs.length > 0)
+            el.disabled = false;
+        else
+        {
+            el.disabled = true;
+            checked = false;
+        }
+
         el.checked = checked;
     }
 
@@ -456,6 +466,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
             {
                 thisObj.f_handleAddNewNatRow(evt.m_value.m_ruleNo);
                 thisObj.f_enabledActionButtons(true);
+                thisObj.f_updateGridHeaderChkbox();
             }
         }
 
@@ -533,7 +544,7 @@ function UTM_confNwNatPat(name, callback, busLayer)
 
     this.f_changed = function()
     {
-        var el = document.getElementById("nwNatPatSaveId");
+        var el = document.getElementById(this.m_btnSaveId);
 
         if(el != null && !el.disabled)
             return true;

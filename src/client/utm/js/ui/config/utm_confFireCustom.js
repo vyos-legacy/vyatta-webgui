@@ -86,8 +86,7 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
 
     this.f_createFireRecord = function(ruleNo)
     {
-        var ruleOp = document.getElementById(thisObj.m_headercbbId);
-        var zonePair = this.f_getComboBoxOptionName(ruleOp);
+        var zonePair = this.f_getShowRuleSelection();
 
         return new UTM_fireRecord(ruleNo, zonePair);
     }
@@ -125,9 +124,10 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
     this.f_onOffEnabledAllChkBox = function()
     {
         var enabled = true;
-        for(var i=0; i<thisObj.m_fireRecs.length; i++)
+        var recs = thisObj.m_fireRecs;
+        for(var i=0; i<recs.length; i++)
         {
-            var fr = thisObj.m_fireRecs[i];
+            var fr = recs[i];
             var elid = thisObj.m_fieldIds[13] + fr.m_zonePair + "-" + fr.m_ruleNo;
             var chk = document.getElementById(elid);
 
@@ -136,7 +136,15 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         }
 
         var chkAll = document.getElementById(thisObj.m_enabledchkId);
-        chkAll.checked = enabled;
+        if(chkAll != null)
+        {
+            chkAll.checked = enabled;
+
+            if(recs.length > 0 && this.f_getShowRuleSelection() != "Any")
+                chkAll.disabled = false;
+            else
+                chkAll.disabled = true;
+        }
     }
 
     this.f_loadZonePairs = function()
@@ -825,9 +833,10 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
         ruleOp.value = zonepair;
     }
 
-    this.f_getComboBoxOptionName = function(cbb)
+    this.f_getShowRuleSelection = function()
     {
-        return cbb.value;
+        var ruleOp = document.getElementById(thisObj.m_headercbbId);
+        return ruleOp.value;
     };
 
     this.f_handleAddAction = function()

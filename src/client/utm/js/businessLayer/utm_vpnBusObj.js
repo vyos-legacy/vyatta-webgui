@@ -773,6 +773,7 @@ function UTM_vpnBusObj(busObj)
 			groupList[i].m_name = (tagValue['name'] == undefined)? '' : tagValue['name'];
 			groupList[i].m_mode = (tagValue['mode'] == undefined)? 'easy' : tagValue['mode'];
 			groupList[i].m_vpnsw = (tagValue['vpnsw'] == undefined)? '' : tagValue['vpnsw'];
+			groupList[i].m_vpnsw = groupList[i].m_vpnsw.toLowerCase();
 			groupList[i].m_auth = (tagValue['groupauth'] == undefined)? 'l2tp' : tagValue['groupauth'];
 			groupList[i].m_internetAccess = (tagValue['iaccess'] == undefined)? 'directly' : tagValue['iaccess'];
 			groupList[i].m_preshareKey = (tagValue['presharedkey'] == undefined)? '' : tagValue['presharedkey'];

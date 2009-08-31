@@ -186,7 +186,7 @@ function UTM_confBaseObj(name, callback, busLayer)
             tableDiv.appendChild(child);
     }
 
-    this.f_createGridRow = function(header, data, height, rowId, enableScroll)
+    this.f_createGridRow = function(header, data, height, rowId, enableScroll, valign)
     {
         var div = document.createElement('div');
         //div.style.position = 'relative';
@@ -204,8 +204,13 @@ function UTM_confBaseObj(name, callback, busLayer)
         var bkc = thisObj.m_tableRowCounter%2 == 0 || !thisObj.m_colorGridRow ?
                   "#FFFFFF" : "#F9F9FF";
 
+        if(valign != null)
+            valign = "valign=" + valign + " ";
+        else
+            valign = "";
+
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
-        innerHtml += '<tbody><tr valign="top" height="' + rHeight +
+        innerHtml += '<tbody><tr ' + valign + ' height="' + rHeight +
                     '" cellspacing="0" cellpadding="0" bgcolor=' + bkc + '>';
 
         var width = 0;

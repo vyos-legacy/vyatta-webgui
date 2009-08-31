@@ -151,7 +151,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
                   thisObj.f_createSimpleDiv(rec.m_auth, 'center'),
                   thisObj.f_createSimpleDiv(rec.m_internetAccess, "center"),
                   thisObj.f_createGroupUserDiv(rec.m_users),
-                  enable, del]);
+                  enable, del], null, null, null, "top");
 
             thisObj.m_bodyGroup.appendChild(div);
         }

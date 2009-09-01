@@ -1,3 +1,18 @@
+vyatta-webgui (0.2+fxd0+113) unstable; urgency=low
+
+  [ slioch ]
+  * fix for qc54, #4821. seconds are added to metaarchive name (i.e. the
+    backup) only.
+
+  [ Loi Vo ]
+  * Change to conform with Orange l&f for form fields (padding, etc.)
+  * Bug 4888: QC75 - Space and accents are not allowed in sender name.
+  * Bug: 4887 - QC 74: authorization name and password are not mandatory
+  * Bug 4899 - QC 78: [OA backup error]: error in message displayed when
+    a backup is already running has an extra '.' character before '!'
+
+ -- Loi Vo <loi.vo@vyatta.com>  Tue, 01 Sep 2009 22:03:42 +0000
+
 vyatta-webgui (0.2+fxd0+112) unstable; urgency=low
 
   * fix for upgrade regression-->4877

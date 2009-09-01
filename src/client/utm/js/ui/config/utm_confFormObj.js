@@ -255,6 +255,8 @@ function UTM_confFormObj(name, callback, busLayer)
     this.f_configLabel = function(configItem)
     {
         var html = '';
+		var requireSuffix = '_required';
+		
         html = html + '<label id=' + '"' + configItem.id;
         if (this.f_checkValue(configItem.font_weight, 'bold')) {
             if (this.f_checkCondition(configItem.v_new_row)) {
@@ -264,11 +266,30 @@ function UTM_confFormObj(name, callback, busLayer)
             }
         } else {
             if (this.f_checkCondition(configItem.v_new_row)) {
-                html = html + '" class="v_label"';
+                //if (this.f_checkCondition(configItem.require)) {
+				//	html = html + '" class="v_label' + requireSuffix + '"';
+				//} else {
+					html = html + '" class="v_label"';
+				//}
             } else {
                 html = html + '" class="v_label_right"';
             }
         }
+		html += '>';
+        if (configItem.text != undefined) {
+            html += configItem.text;
+        }		
+		
+		
+		html += '</label><td>';
+        if (this.f_checkCondition(configItem.require)) {
+            html = html + '<label><img src="images/ico_required.png" style="padding-left:0px;float:left;clear:left"></label>';				
+        } else {
+			html += '<label>&nbsp;</label>'
+		}		
+		
+		//html += '</label>';
+		
         return html;
     }
     
@@ -300,10 +321,8 @@ function UTM_confFormObj(name, callback, busLayer)
     {
         var html = '';
         if ((configItem.colspan != undefined)) {
-            html = html + '<td colspan="' + configItem.colspan + '"';
-        } else {
-            html = html + '<td';
-        }
+            html = html + ' colspan="' + configItem.colspan + '"';
+        } 
         return html;
     }
     
@@ -316,13 +335,27 @@ function UTM_confFormObj(name, callback, busLayer)
         return html;
     }	
 	
-    this.f_configPadding = function(configItem)
+    this.f_configPadding = function(configItem, newRow)
     {
         var html = '';
+		var widthStr = '';
+		if (newRow) {
+			if (configItem.width) {
+				widthStr = 'width: ' + configItem.width + ';';
+			} else {
+				if (this.m_config && this.m_config.firstColWidth) {
+					widthStr = 'width: ' + this.m_config.firstColWidth + ';';
+				}
+			}
+		}
         if ((configItem.padding != undefined)) {
-            html = html + ' style="padding-left: ' + configItem.padding + ';">';
+            html = html + ' style="padding-left: ' + configItem.padding + ";" + widthStr + '">';
         } else {
-            html = html + '>';
+			if (!newRow) {
+				html = html + '>';
+			} else {
+				html = html + ' style="' + widthStr + '">';
+			}
         }
         return html;
     }
@@ -337,10 +370,8 @@ function UTM_confFormObj(name, callback, busLayer)
     this.f_configVType = function(configItem, input_class)
     {
         var html = '';
-        var enclosing = '';
         switch (configItem.v_type) {
             case 'label':
-                enclosing = '</label>';
                 html += this.f_configLabel(configItem);
                 break;
             case 'password':
@@ -353,22 +384,17 @@ function UTM_confFormObj(name, callback, busLayer)
                 html += '<div id="' + configItem.id + '"><br/></div';
                 break;
             case 'html':
+                if (configItem.text != undefined) {
+                    html += configItem.text;
+                } 			
                 break;
         }
-        if (configItem.v_type != 'html') {
+        if ((configItem.v_type != 'html') && (configItem.v_type != 'label')) {
             if (configItem.size != undefined) {
                 html = html + ' size="' + configItem.size + '"'
             }
             html += '>';
         }
-        if (configItem.text != undefined) {
-            html += configItem.text;
-            if (this.f_checkCondition(configItem.require)) {
-                html = html + '</label><img src="images/ico_required.png" style="padding-left: 20px;">';				
-                //html = html + '</label><label style="color: #FF5500; font-weight: bold; font-size:14px;padding-left: 20px; text-align:right;">*';
-            }
-        }
-        html += enclosing;
         
         return html;
     }
@@ -405,12 +431,16 @@ function UTM_confFormObj(name, callback, busLayer)
 				continue;
 			}
             var input_class = this.f_getConfigItemCls(this.m_config.items[i]);
+			var newRow = false;
             if (this.f_checkCondition(this.m_config.items[i].v_new_row)) {
-                html += '<tr>';
-            }
+                html += '<tr><td';
+				newRow = true;
+            } else {
+				html += '<td';
+			}
             html += this.f_configColspan(this.m_config.items[i]);
             html += this.f_configColAlign(this.m_config.items[i]);			
-            html += this.f_configPadding(this.m_config.items[i]);
+            html += this.f_configPadding(this.m_config.items[i], newRow);
             html += this.f_configVType(this.m_config.items[i], input_class);
             
             if (this.m_config.items[i].v_padding != undefined) {
@@ -433,7 +463,7 @@ function UTM_confFormObj(name, callback, busLayer)
         html += this.f_createButtons();
         html += '</form>';
         html = html + '</br>';
-        
+        //alert('form=' + html);
         return html;
     }
     

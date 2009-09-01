@@ -133,12 +133,13 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
                 onclick: this.f_handleClick
             }]		
 		);
-		defObj.padding = '0px 0px 0px 30px';		
+		defObj.padding = '0px 0px 0px 30px';	
+		defObj.firstColWidth = '105px';
 		defObj.f_addLabelBold('conf_vpn_rug_header_label', g_lang.m_vpnRUG_GroupSettings,'true');
-        defObj.f_addDivider('conf_vpn_rug_divider1','2');
-		defObj.f_addEmptySpace('conf_vpn_rug_spacer1','2');
+        defObj.f_addDivider('conf_vpn_rug_divider1','3');
+		defObj.f_addEmptySpace('conf_vpn_rug_spacer1','3');
 		defObj.f_addLabelBold('conf_vpn_rug_basic_label',g_lang.m_vpn_BasicSettings,'true');
-		defObj.f_addInput('conf_vpn_rug_prof_name', '32', g_lang.m_vpnRUG_ProfileName);
+		defObj.f_addInput('conf_vpn_rug_prof_name', '32', g_lang.m_vpnRUG_ProfileName, undefined, 'true');
 		defObj.f_addHtml(
 		   'conf_vpn_rug_vpn_software',
 		   //'<select name="conf_vpn_rug_vpn_software" id="conf_vpn_rug_vpn_software" class="v_form_input"><option value="cisco" selected>cisco</option><option value="microsoft">microsoft</option><option value="safenet">safenet</option></select>',
@@ -147,9 +148,9 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		);
 		defObj.f_addHtml('conf_vpn_rug_usr', '<select id="conf_vpn_rug_usr" size="3" style="width:150px;"></select>', g_lang.m_vpn_Users);		
 		
-		defObj.f_addEmptySpace('conf_vpn_rug_spacer2','2');
-        defObj.f_addDivider('conf_vpn_rug_divider2','2');	
-		defObj.f_addEmptySpace('conf_vpn_rug_spacer3','2');
+		defObj.f_addEmptySpace('conf_vpn_rug_spacer2','3');
+        defObj.f_addDivider('conf_vpn_rug_divider2','3');	
+		defObj.f_addEmptySpace('conf_vpn_rug_spacer3','3');
 					
 		defObj.f_addLabelBold('conf_vpn_rug_usr_setting_label',g_lang.m_vpnRUG_UsrSettings,'true');
 		defObj.f_addHtml(
@@ -162,17 +163,17 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		   '<select name="conf_vpn_rug_ip_alloc" id="conf_vpn_rug_ip_alloc" class="v_form_input"><option value="static" selected>static</option>',
 		   g_lang.m_vpnRUG_IPAlloc
 		);			
-		defObj.f_addInputWithPadding('conf_vpn_rug_ip_alloc_start', '32', g_lang.m_vpnRUG_ipstart, undefined, '30px');
-		defObj.f_addInputWithPadding('conf_vpn_rug_ip_alloc_stop', '32', g_lang.m_vpnRUG_ipend, undefined, '30px');		
+		defObj.f_addInputWithPadding('conf_vpn_rug_ip_alloc_start', '32', g_lang.m_vpnRUG_ipstart, undefined, '30px', 'true');
+		defObj.f_addInputWithPadding('conf_vpn_rug_ip_alloc_stop', '32', g_lang.m_vpnRUG_ipend, undefined, '30px', 'true');		
 		defObj.f_addHtml(
 		   'conf_vpn_rug_ip_access',
 		   '<select name="conf_vpn_rug_ip_access" id="conf_vpn_rug_ip_access" class="v_form_input"><option value="directly" selected>directly</option>',
 		   g_lang.m_vpnRUG_InternetAccess
 		);			
 		
-		defObj.f_addEmptySpace('conf_vpn_rug_spacer4','2');
-        defObj.f_addDivider('conf_vpn_rug_divider3','2');	
-		defObj.f_addEmptySpace('conf_vpn_rug_spacer5','2');		
+		defObj.f_addEmptySpace('conf_vpn_rug_spacer4','3');
+        defObj.f_addDivider('conf_vpn_rug_divider3','3');	
+		defObj.f_addEmptySpace('conf_vpn_rug_spacer5','3');		
 		
 		defObj.f_addLabelBold('conf_vpn_rug_tunnel_setting_label',g_lang.m_vpn_TunnelSettings,'true');		
 		defObj.f_addHtml(
@@ -183,15 +184,15 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 					  //+ g_lang.m_vpn_Expert	
 		   ,g_lang.m_vpn_TunnelConfigMode	   
 		);
-		defObj.f_addEmptySpace('conf_vpn_rug_spacer6','2');
+		defObj.f_addEmptySpace('conf_vpn_rug_spacer6','3');
 		
         ////----------------------Easy mode----------------------							
-		defObj.f_addPassword('conf_vpn_rug_preshared_key','25',g_lang.m_vpn_PresharedKey);
+		defObj.f_addPassword('conf_vpn_rug_preshared_key','25',g_lang.m_vpn_PresharedKey, 'true');
 		defObj.f_addPassword('conf_vpn_rug_confirm_preshared_key','25',g_lang.m_vpn_Confirm + ' ' + g_lang.m_vpn_PresharedKey);
 
 		////----------------------Expert mode------------------ 
-        defObj.f_addDivider('conf_vpn_rug_divider4','2');	
-		defObj.f_addEmptySpace('conf_vpn_rug_basic_spacer7','2');
+        defObj.f_addDivider('conf_vpn_rug_divider4','3');	
+		defObj.f_addEmptySpace('conf_vpn_rug_basic_spacer7','3');
 		defObj.f_addLabelBold('conf_vpn_rug_ike_phase1_label',g_lang.m_vpn_IKEnegPhase1,'true');
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p1_proto',
@@ -208,7 +209,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
             '<select name="conf_vpn_rug_ike_p1_encrypt" id="conf_vpn_rug_ike_p1_encrypt" class="v_form_input"><option value="DES" selected>DES</option><option value="3DES">3DES</option><option value="AES128">AES128</option><option value="AES192">AES192</option><option value="AES256">AES256</option><option value="Blowfish">Blowfish</option></select>',
 			g_lang.m_vpn_Encrypt		
 		);	
-		defObj.f_addPassword('conf_vpn_rug_ike_p1_preshare','25',g_lang.m_vpn_PresharedKey);
+		defObj.f_addPassword('conf_vpn_rug_ike_p1_preshare','25',g_lang.m_vpn_PresharedKey,'true');
 		defObj.f_addPassword('conf_vpn_rug_ike_p1_confirm_preshare','25',g_lang.m_vpn_Confirm + ' ' + g_lang.m_vpn_PresharedKey);
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p1_auth',
@@ -222,9 +223,9 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		);			
 		defObj.f_addPassword('conf_vpn_rug_ike_p1_lifetime','25',g_lang.m_vpn_LifeTime);
 		
-		defObj.f_addEmptySpace('conf_vpn_rug_spacer8','2');
-        defObj.f_addDivider('conf_vpn_rug_divider5','2');
-		defObj.f_addEmptySpace('conf_vpn_rug_spacer9','2');
+		defObj.f_addEmptySpace('conf_vpn_rug_spacer8','3');
+        defObj.f_addDivider('conf_vpn_rug_divider5','3');
+		defObj.f_addEmptySpace('conf_vpn_rug_spacer9','3');
 		
 		defObj.f_addLabelBold('conf_vpn_rug_ike_p2_label',g_lang.m_vpn_IKEphase2,'true');
 		defObj.f_addHtml(

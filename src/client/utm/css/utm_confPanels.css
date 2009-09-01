@@ -42,6 +42,8 @@
 	font-size: 12px;
 	font-weight: bold;
 	text-align: left;
+	margin-right: 0px;
+	padding-right: 5px;	
 }
 
 .v_label_bold_right {
@@ -49,6 +51,25 @@
 	font-weight: bold;		
 	margin-left: 30px;
 }
+	
+.v_label {
+	display: block;
+	text-align: left;
+	margin-right: 0px;
+	padding-right: 5px;
+}
+
+.v_label_required {
+	display: block;
+	text-align: left;
+	margin-right: 0px;
+	padding-right: 5px;
+	background: transparent url(../images/ico_required.png) no-repeat right center;	
+}
+
+.v_label_right {	
+	margin-left: 30px;
+}	
 			
 .v_form_label {
 	font-size: 11px;
@@ -59,6 +80,9 @@
 	/* display: block; */
 	border: 1px solid #CCCCCC;
 	/* margin-left: 30px; */
+	margin-bottom: 7px;
+	margin-top: 7px;
+	padding: 3px;	
 }
 
 .v_form_input_no_left_margin {
@@ -66,6 +90,9 @@
 	display: block;
 	border: 1px solid #CCCCCC;
 	margin-left: 1px;
+	margin-bottom: 7px;
+	margin-top: 7px;
+	padding: 3px;	
 }
 
 select, textarea {
@@ -97,11 +124,11 @@ select, textarea {
 .v_button_right {
 	margin-left: 20px;
 }
-
+/*
 .cell {
     width: 14px;
 } 
-
+*/
 .maintd {
     border: 1px solid #DEDEDE;
     padding: 1px 1px 1px 1px;

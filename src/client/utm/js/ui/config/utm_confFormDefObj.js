@@ -25,9 +25,9 @@ function UTM_confFormDefObj(_id, _width, _items, _buttons)
 	{
 		thisObj.f_addItem(thisObj.f_createString(_id, _text));
 	}	
-    this.f_addLabel = function(_id, _text, _endRow)
+    this.f_addLabel = function(_id, _text, _endRow, required)
 	{
-		thisObj.f_addItem(thisObj.f_createLabel(_id, _text, 'true', _endRow, undefined, 'left', undefined));
+		thisObj.f_addItem(thisObj.f_createLabel(_id, _text, 'true', _endRow, undefined, 'left', undefined, required));
 	}	
 	this.f_addLabelBold = function(_id, _text, _endRow) 
 	{
@@ -41,32 +41,32 @@ function UTM_confFormDefObj(_id, _width, _items, _buttons)
 	{
 		thisObj.f_addItem(thisObj.f_createEmptySpace(_id, _colspan));
 	}
-	this.f_addInput = function(_id, _size, _label, _onblur)
+	this.f_addInput = function(_id, _size, _label, _onblur, required)
 	{
 		if ((_label != undefined) && (_label != null)) {
-			thisObj.f_addLabel(_id + '_label', _label, 'false');
+			thisObj.f_addLabel(_id + '_label', _label, 'false', required);
 		}
 		thisObj.f_addItem(thisObj.f_createInput(_id, 'false', 'true', 'right', undefined, undefined, _size, _onblur));
 	}
-	this.f_addInputWithPadding = function(_id, _size, _label, _onblur, _padding)
+	this.f_addInputWithPadding = function(_id, _size, _label, _onblur, _padding, required)
 	{
 		if ((_label != undefined) && (_label != null)) {
-			var labelCtrl = thisObj.f_createLabelWithPadding(_id + '_label', _label, 'true', 'false', undefined, 'left', undefined, _padding);
+			var labelCtrl = thisObj.f_createLabelWithPadding(_id + '_label', _label, 'true', 'false', undefined, 'left', undefined, _padding, required);
 			thisObj.f_addItem(labelCtrl);
 		}
 		thisObj.f_addItem(thisObj.f_createInput(_id, 'false', 'true', 'right', undefined, undefined, _size, _onblur));
 	}	
-	this.f_addPassword = function(_id, _size, _label) 
+	this.f_addPassword = function(_id, _size, _label, required) 
 	{
 		if ((_label != undefined) && (_label != null)) {
-			thisObj.f_addLabel(_id + '_label', _label, 'false');
+			thisObj.f_addLabel(_id + '_label', _label, 'false', required);
 		}		
 		thisObj.f_addItem(thisObj.f_createPassword(_id, 'false', 'true', 'right', undefined, undefined, _size));
 	}	
-	this.f_addHtml = function(_id, _text, _label) 
+	this.f_addHtml = function(_id, _text, _label, required) 
 	{
 		if ((_label != undefined) && (_label != null)) {
-			thisObj.f_addLabel(_id + '_label', _label, 'false');
+			thisObj.f_addLabel(_id + '_label', _label, 'false', required);
 		}		
 		thisObj.f_addItem(thisObj.f_createHtml(_id, _text,'false', 'true', 'right', undefined, undefined, undefined));
 	}
@@ -77,15 +77,15 @@ function UTM_confFormDefObj(_id, _width, _items, _buttons)
 		return new UTM_formItemObj('string', _id, _text, undefined, undefined, undefined, undefined,
 		                           undefined, undefined, undefined, undefined);
 	}	
-    this.f_createLabel = function(_id, _text, _newRow, _endRow, _fontWeight, _align, _colspan) 
+    this.f_createLabel = function(_id, _text, _newRow, _endRow, _fontWeight, _align, _colspan, required) 
 	{
 		return new UTM_formItemObj('label', _id, _text, _newRow, _endRow, _fontWeight, _align,
-		                           _colspan, undefined, undefined, undefined);
+		                           _colspan, undefined, undefined, undefined, undefined, required);
 	}
-    this.f_createLabelWithPadding = function(_id, _text, _newRow, _endRow, _fontWeight, _align, _colspan, _padding) 
+    this.f_createLabelWithPadding = function(_id, _text, _newRow, _endRow, _fontWeight, _align, _colspan, _padding, required) 
 	{
 		return new UTM_formItemObj('label', _id, _text, _newRow, _endRow, _fontWeight, _align,
-		                           _colspan, _padding, undefined, undefined);
+		                           _colspan, _padding, undefined, undefined, undefined, required);
 	}	
 	this.f_createDivider = function(_id, _colspan) 
 	{
@@ -121,7 +121,7 @@ function UTM_confFormDefObj(_id, _width, _items, _buttons)
 
 
 function UTM_formItemObj(_type, _id, _text, _newRow, _endRow, _fontWeight, _align, 
-                         _colspan, _padding, _size, _no_left_margin, _on_blur)
+                         _colspan, _padding, _size, _no_left_margin, _on_blur, _required)
 {
     this.v_type = _type;
 	this.id = _id;
@@ -134,7 +134,8 @@ function UTM_formItemObj(_type, _id, _text, _newRow, _endRow, _fontWeight, _alig
 	this.padding = _padding;
 	this.size = _size;
 	this.no_left_margin = _no_left_margin;
-        this.on_blur = _on_blur;
+    this.on_blur = _on_blur;
+	this.require = _required;
 }
 
 function UTM_formButtonObj(_id, _text, _align, _clickHandler)

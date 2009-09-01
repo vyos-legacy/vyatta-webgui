@@ -78,16 +78,17 @@ function UTM_confVpnRemoteUsrAdd(name, callback, busLayer)
             }]		
 		);
 		defObj.padding = '0px 0px 0px 30px';		
+		defObj.firstColWidth = '135px';
 		defObj.f_addLabelBold('conf_vpn_rusr_header_label', g_lang.m_vpnRUadd_RemoteUserSettings,'true');
-        defObj.f_addDivider('conf_vpn_rusr_divider1','2');
-		defObj.f_addEmptySpace('conf_vpn_rusr_spacer1','2');
-		defObj.f_addInput('conf_vpn_rusr_usr_name', '32', g_lang.m_vpnRUadd_UserName);
-		defObj.f_addPassword('conf_vpn_rusr_usr_passwd', '32', g_lang.m_vpnRUadd_UserPasswd);		
+        defObj.f_addDivider('conf_vpn_rusr_divider1','3');
+		defObj.f_addEmptySpace('conf_vpn_rusr_spacer1','3');
+		defObj.f_addInput('conf_vpn_rusr_usr_name', '32', g_lang.m_vpnRUadd_UserName, null, 'true');
+		defObj.f_addPassword('conf_vpn_rusr_usr_passwd', '32', g_lang.m_vpnRUadd_UserPasswd, 'true');		
 		defObj.f_addPassword('conf_vpn_rusr_confirm_usr_passwd', '32', g_lang.m_vpn_Confirm + ' ' + g_lang.m_vpnRUadd_UserPasswd);		
 		defObj.f_addHtml(
 		   'conf_vpn_rusr_vpn_grp',
 		   '<select name="conf_vpn_rusr_vpn_grp" id="conf_vpn_rusr_vpn_grp" class="v_form_input"></select>',
-		   g_lang.m_vpnRUadd_VPNGroup
+		   g_lang.m_vpnRUadd_VPNGroup, 'true'
 		);
 					
 

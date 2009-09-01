@@ -32,9 +32,15 @@ function FT_confEmailServer(name, callback, busLayer)
                 text: g_lang.m_emailSmtpAddr,
                 v_new_row: 'true'
             }, {
+				v_type: 'label',
+				id: 'conf_email_srv_smtp_label_require',
+				text: ' ',
+				require: 'true'					
+			}, {
                 v_type: 'text',
                 id: 'conf_email_srv_smtp',
                 size: '64',
+				colspan: 4,				
                 v_end_row: 'true'
             }, {
                 v_type: 'label',
@@ -42,9 +48,15 @@ function FT_confEmailServer(name, callback, busLayer)
                 text: g_lang.m_emailLocalMachName,
                 v_new_row: 'true'
             }, {
+				v_type: 'label',
+				id: 'conf_email_srv_local_machine_label_require',
+				text: ' ',
+				require: 'true'					
+			}, {
                 v_type: 'text',
                 id: 'conf_email_srv_local_machine',
                 size: '64',
+				colspan: 4,				
                 v_end_row: 'true'
             }, {
                 v_type: 'label',
@@ -52,29 +64,39 @@ function FT_confEmailServer(name, callback, busLayer)
                 text: g_lang.m_emailLocalEmail,
                 v_new_row: 'true'
             }, {
+				v_type: 'label',
+				id: 'conf_email_srv_local_email_label_require',
+				text: ' ',
+				require: 'true'					
+			}, {
                 v_type: 'text',
                 id: 'conf_email_srv_local_email',
                 size: '64',
+				colspan: 4,				
                 v_end_row: 'true'
             }, {
                 v_type: 'label',
                 id: 'conf_email_srv_auth_name_label',
                 text: g_lang.m_emailAuthName,
+				colspan: 2,				
                 v_new_row: 'true'
             }, {
                 v_type: 'text',
                 id: 'conf_email_srv_auth_name',
                 size: '64',
+				colspan: 4,				
                 v_end_row: 'true'
             }, {
                 v_type: 'label',
                 id: 'conf_email_srv_auth_passwd_label',
                 text: g_lang.m_emailAuthPasswd,
+				colspan: 2,				
                 v_new_row: 'true'
             }, {
                 v_type: 'password',
                 id: 'conf_email_srv_auth_passwd',
                 size: '64',
+				colspan: 4,				
                 v_end_row: 'true'
             }],
             buttons: [{
@@ -135,6 +157,8 @@ function FT_confEmailServer(name, callback, busLayer)
                 errorInner += thisObj.f_createListItem(g_lang.m_emailSmtpAddr + ' '+ g_lang.m_formInvalid);
             }
         }
+        errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_email_srv_local_machine, g_lang.m_emailLocalMachName + ' '+ g_lang.m_formNoEmpty, errorInner);
+		
         /*
         if (!thisObj.f_checkHostname(thisObj.m_form.conf_email_srv_local_machine.value)) {
             errorInner += thisObj.f_createListItem(g_lang.m_emailLocalMachName + ' '+ g_lang.m_formInvalid);
@@ -144,8 +168,8 @@ function FT_confEmailServer(name, callback, busLayer)
             errorInner += thisObj.f_createListItem(g_lang.m_emailLocalEmail + ' '+ g_lang.m_formInvalid);
         }
         
-        errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_email_srv_auth_name, g_lang.m_emailAuthName + ' '+ g_lang.m_formNoEmpty, errorInner);
-        errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_email_srv_auth_passwd, g_lang.m_emailAuthPasswd + ' ' + g_lang.m_formNoEmpty, errorInner);
+        //errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_email_srv_auth_name, g_lang.m_emailAuthName + ' '+ g_lang.m_formNoEmpty, errorInner);
+        //errorInner = thisObj.f_checkEmpty(thisObj.m_form.conf_email_srv_auth_passwd, g_lang.m_emailAuthPasswd + ' ' + g_lang.m_formNoEmpty, errorInner);
         
         if (errorInner.trim().length > 0) {
             error = error + '<ul style="padding-left:30px;">';

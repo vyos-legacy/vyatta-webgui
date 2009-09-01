@@ -135,11 +135,11 @@ function FT_confEmailServer(name, callback, busLayer)
                 errorInner += thisObj.f_createListItem(g_lang.m_emailSmtpAddr + ' '+ g_lang.m_formInvalid);
             }
         }
-        
+        /*
         if (!thisObj.f_checkHostname(thisObj.m_form.conf_email_srv_local_machine.value)) {
             errorInner += thisObj.f_createListItem(g_lang.m_emailLocalMachName + ' '+ g_lang.m_formInvalid);
         }
-        
+        */		
         if (!thisObj.f_checkEmail(thisObj.m_form.conf_email_srv_local_email.value)) {
             errorInner += thisObj.f_createListItem(g_lang.m_emailLocalEmail + ' '+ g_lang.m_formInvalid);
         }

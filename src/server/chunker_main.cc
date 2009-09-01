@@ -56,6 +56,22 @@ static void sig_end(int signo)
 /**
  *
  **/
+static void sig_debug(int signo)
+{
+  struct stat s;
+  if ((lstat("/tmp/chunk", &s) == 0)) {
+    syslog(LOG_DEBUG, "dom0: enabling debugging in chunk");
+    WebGUI::enable_debug(true);
+  }
+  else {
+    syslog(LOG_DEBUG, "dom0: disabling debugging in chunk");
+    WebGUI::enable_debug(false);
+  }
+}
+
+/**
+ *
+ **/
 int main(int argc, char* argv[])
 {
   int ch;
@@ -69,6 +85,7 @@ int main(int argc, char* argv[])
 
   signal(SIGINT, sig_end);
   signal(SIGTERM, sig_end);
+  signal(SIGUSR1, sig_debug);
 
   //grab inputs
   while ((ch = getopt(argc, argv, "s:i:p:k:dh")) != -1) {
@@ -100,6 +117,14 @@ int main(int argc, char* argv[])
       exit(0);
     }
   }
+  
+  //override debug on existance of file /tmp/chunk
+  struct stat s;
+  if ((lstat("/tmp/chunk", &s) == 0)) {
+    debug = true;
+    WebGUI::enable_debug(true);
+  }
+
 
   if (fork() != 0) {
     int s;

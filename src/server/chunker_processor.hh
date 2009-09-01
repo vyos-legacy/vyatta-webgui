@@ -6,19 +6,20 @@
 class ChunkerProcessor 
 {
 public:
-  ChunkerProcessor() {}
+  typedef enum {k_NOT_STARTED, k_IN_PROGRESS, k_DONE} ProcState;
+
+public:
+  ChunkerProcessor() : _state(k_NOT_STARTED) {}
 
   void
-  init (unsigned long chunk_size, const std::string &pid_path, bool debug) 
-  {
-    _chunk_size = chunk_size;
-    _pid_path = pid_path;
-    _debug = debug;
-  }
+  init (unsigned long chunk_size, const std::string &pid_path, bool debug) ;
 
   void
   start_new(std::string token, const std::string &cmd);
   
+  ProcState
+  state() {return _state;}
+
 private:
   void
   writer(std::string token, const std::string &cmd,int (&cp)[2]);
@@ -43,6 +44,7 @@ private:
   unsigned long _chunk_size;
   std::string _pid_path;
   unsigned long _kill_timeout;
+  ProcState _state;
   bool _debug;
 };
 

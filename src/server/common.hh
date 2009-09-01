@@ -177,6 +177,18 @@ public:
   
   static int
   get_gui_gid(gid_t &gid);
+
+
+  static void
+  debug(std::string);
+
+  static void
+  enable_debug(bool state);
+
+private:
+  static bool _debug;
+  static FILE* _deb_fp;
+
 };
 
 

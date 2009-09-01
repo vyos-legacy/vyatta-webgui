@@ -72,6 +72,9 @@ char const* WebGUI::ErrorDesc[9] = {" ",
 				    "configuration has changed",
 				    "change password required"};
 
+bool WebGUI::_debug = false;
+FILE* WebGUI::_deb_fp = NULL;
+
 /**
  *
  *
@@ -391,3 +394,34 @@ WebGUI::get_gui_gid(gid_t &gid)
   return 0;
 }
 
+
+void
+WebGUI::debug(string msg)
+{
+  if (_debug == true && _deb_fp != NULL) {
+    fwrite(msg.c_str(),1,msg.length(),_deb_fp);
+    fwrite("\n",1,1,_deb_fp);
+    fflush(_deb_fp);
+  }
+}
+
+void
+WebGUI::enable_debug(bool flag)
+{
+  if (flag == true) {
+    if (_deb_fp == NULL) {
+      _deb_fp = fopen("/tmp/webgui_debug","w");
+      if (_deb_fp != NULL) {
+	_debug = true;
+	debug("starting log...");
+      }
+    }
+  }
+  else {
+    debug("stopping log!");
+    _debug = false;
+    if (_deb_fp) {
+      fclose(_deb_fp);
+    }
+  }
+}

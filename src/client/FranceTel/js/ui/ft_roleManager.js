@@ -84,16 +84,25 @@ function FT_roleManager()
 	
 	this.f_isUser = function() {
         var uo = g_busObj.f_getLoginUserObj();		
+		if (thisObj.m_user == undefined) {
+		    thisObj.m_user = g_busObj.f_getLoginUserRec();			
+		}
 		return (thisObj.m_user.m_role == uo.V_ROLE_USER);
 	}
 	
 	this.f_isInstaller = function() {
-        var uo = g_busObj.f_getLoginUserObj();			
+        var uo = g_busObj.f_getLoginUserObj();	
+		if (thisObj.m_user == undefined) {
+		    thisObj.m_user = g_busObj.f_getLoginUserRec();			
+		}
 		return (thisObj.m_user.m_role == uo.V_ROLE_INSTALL);		
 	}
 	
 	this.f_isAdmin = function() {
-        var uo = g_busObj.f_getLoginUserObj();			
+        var uo = g_busObj.f_getLoginUserObj();		
+		if (thisObj.m_user == undefined) {
+		    thisObj.m_user = g_busObj.f_getLoginUserRec();			
+		}
 		return (thisObj.m_user.m_role == uo.V_ROLE_ADMIN);		
 	}	
 }

@@ -132,7 +132,7 @@ var g_lang =
     m_fireLevelHdStand : "standard",
     m_fireLevelBdStand : "allows all services except Netbios (ports 135, 137, 138, 139 and 445).",
     m_fireLevelHdAdvan : "advanced",
-    m_fireLevelBdAdvan : "traffic blocked except those involving internet browsing and email.",
+    m_fireLevelBdAdvan : "firewall allows the exit of standard services(www,ftp,mail,news,...) and ignores not expected entering connections.",
     m_fireLevelHdCustom : "customized",
     m_fireLevelBdCustom : "customisation of advanced profile.",
     m_fireLevelHdBlock : "block all",

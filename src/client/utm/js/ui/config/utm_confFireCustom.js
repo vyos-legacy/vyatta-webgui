@@ -334,27 +334,27 @@ function UTM_confFireCustom(name, callback, busLayer, levelRec)
                             ["f_fwCustomizeOnCbbBlur('" + thisObj.m_fieldIds[3]+
                             zpRule + "')"]);
         var sip = thisObj.f_renderTextField(thisObj.m_fieldIds[4]+zpRule,
-                            fireRec.m_srcIpAddr, '', 105,
+                            fireRec.m_srcIpAddr, '', 100,
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[4]+
                             zpRule + "')"], false);
         var smip = thisObj.f_renderTextField(thisObj.m_fieldIds[5]+zpRule,
-                            fireRec.m_srcMaskIpAddr, '', 105,
+                            fireRec.m_srcMaskIpAddr, '', 100,
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[5]+
                             zpRule + "')"], false);
         var sport = thisObj.f_renderTextField(thisObj.m_fieldIds[6]+zpRule,
-                            fireRec.m_srcPort, fireRec.m_srcPort, 80,
+                            fireRec.m_srcPort, fireRec.m_srcPort, 75,
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[6]+
                             zpRule + "')"], false);
         var dip = thisObj.f_renderTextField(thisObj.m_fieldIds[7]+zpRule,
-                            fireRec.m_destIpAddr, '', 105,
+                            fireRec.m_destIpAddr, '', 100,
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[7]+
                             zpRule + "')"], false);
         var dmip = thisObj.f_renderTextField(thisObj.m_fieldIds[8]+zpRule,
-                            fireRec.m_destMaskIpAddr, '', 105,
+                            fireRec.m_destMaskIpAddr, '', 100,
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[8]+
                             zpRule + "')"], false);
         var dport = thisObj.f_renderTextField(thisObj.m_fieldIds[9]+zpRule,
-                            fireRec.m_destPort, fireRec.m_destPort, 80,
+                            fireRec.m_destPort, fireRec.m_destPort, 75,
                             ["f_fwCustomOnTFBlur('" + thisObj.m_fieldIds[9]+
                             zpRule + "')"], readonly);
         var act = thisObj.f_renderCombobox(action, fireRec.m_action, 80,

@@ -59,8 +59,8 @@ function UTM_confNwNatPat(name, callback, busLayer)
                       thisObj.m_enabledchkId+"')", 'Click here to enable/disable all');
 
         cols[0] = this.f_createColumn(g_lang.m_fireCustAppService, 150, 'combo', '3', false, 'center');
-        cols[1] = this.f_createColumn(g_lang.m_fireCustDestPort, 100, 'textField', '3', false, 'center');
-        cols[2] = this.f_createColumn(g_lang.m_fireCustInternPort, 100, 'textField', '3', false, 'center');
+        cols[1] = this.f_createColumn(g_lang.m_fireCustDestPort, 105, 'textField', '3', false, 'center');
+        cols[2] = this.f_createColumn(g_lang.m_fireCustInternPort, 105, 'textField', '3', false, 'center');
         cols[3] = this.f_createColumn(g_lang.m_fireCustProtocol, 90, 'combo', '3', false, 'center');
         cols[4] = this.f_createColumn(g_lang.m_fireCustInternIpAddr, 180, 'textField', '3', false, 'center');
         cols[5] = this.f_createColumn(chkbox, 55, 'checkbox', '3', false, 'center');
@@ -147,11 +147,11 @@ function UTM_confNwNatPat(name, callback, busLayer)
                             ["f_nwNatPatOnTFBlur('" + thisObj.m_fieldIds[3]+
                             zpRule + "')"], false);
         var pro = thisObj.f_renderCombobox(thisObj.m_protocol, rec.m_protocol,
-                            80, thisObj.m_fieldIds[4]+zpRule,
+                            82, thisObj.m_fieldIds[4]+zpRule,
                             ["f_nwNatPatOnCbbBlur('" + thisObj.m_fieldIds[4]+
                             zpRule + "')"]);
         var sip = thisObj.f_renderTextField(thisObj.m_fieldIds[5]+zpRule,
-                            rec.m_internIpAddr, '', 160,
+                            rec.m_internIpAddr, '', 163,
                             ["f_nwNatPatOnTFBlur('" + thisObj.m_fieldIds[5]+
                             zpRule + "')"], false);
         var enable = "<div align=center>" + thisObj.f_renderCheckbox(

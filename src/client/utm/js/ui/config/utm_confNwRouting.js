@@ -51,11 +51,11 @@ function UTM_confNwRouting(name, callback, busLayer)
                       thisObj.m_enabledChkId, "f_nwRouteEnabledOnChkClick('" +
                       thisObj.m_enabledChkId+"')", 'Click here to enable/disable all');
 
-        cols[0] = this.f_createColumn(g_lang.m_nwRoutDestNetwork, 110, 'textField', '3', true, 'center');
-        cols[1] = this.f_createColumn(g_lang.m_nwRoutDestNwMask, 110, 'textField', '3', true, 'center');
+        cols[0] = this.f_createColumn(g_lang.m_nwRoutDestNetwork, 116, 'textField', '3', true, 'center');
+        cols[1] = this.f_createColumn(g_lang.m_nwRoutDestNwMask, 116, 'textField', '3', true, 'center');
         //cols[2] = this.f_createColumn(g_lang.m_nwRoutConf, 200, 'div', '3', false, 'center');
-        cols[2] = this.f_createColumn(g_lang.m_nwGateway, 120, 'textField', '3', true, 'center');
-        cols[3] = this.f_createColumn(g_lang.m_nwRoutMetric, 90, 'textField', '3', true, 'center');
+        cols[2] = this.f_createColumn(g_lang.m_nwGateway, 126, 'textField', '3', true, 'center');
+        cols[3] = this.f_createColumn(g_lang.m_nwRoutMetric, 96, 'textField', '3', true, 'center');
         cols[4] = this.f_createColumn(chkbox, 55, 'checkbox', 3, false, 'center');
         cols[5] = this.f_createColumn(g_lang.m_fireCustDelete, 70, 'combo', '3', false, 'center');
 

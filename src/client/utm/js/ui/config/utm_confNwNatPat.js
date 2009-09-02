@@ -262,7 +262,8 @@ function UTM_confNwNatPat(name, callback, busLayer)
         var cb = function(evt)
         {
             if(evt.m_errCode != 0)
-                alert("set enable error: " + evt.m_errMsg + " for " + eid);
+                g_utils.f_popupMessage(evt.m_errMsg,
+                                    "error", g_lang.m_menu_nat_pat, true);
 
             if(thisObj.m_sendList.length > 0)
                 thisObj.f_setEnableValue2Server();

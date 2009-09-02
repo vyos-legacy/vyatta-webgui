@@ -354,7 +354,8 @@ function UTM_confNwRouting(name, callback, busLayer)
             cidr = g_utils.f_convertNetmaskToCIDR(tf.value);
         else
         {
-            alert('netmask invalidate');
+            g_utils.f_popupMessage("invalid netmask",
+                            "error", g_lang.m_menu_csc_router, true);
             return;
         }
 

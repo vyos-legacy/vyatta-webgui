@@ -28,7 +28,7 @@ function FT_primaryNavigation()
 		var selectionVmPath = null;
 		        
         if (thisObj.m_vmList != undefined) {
-            for (i = 0; i < thisObj.m_vmList.length; i++) {
+            for (var i = 0; i < thisObj.m_vmList.length; i++) {
                 if (i == (thisObj.m_vmList.length - 1)) {
                     thisObj.m_lastVm = thisObj.m_vmList[i].m_name;
                 }
@@ -44,10 +44,26 @@ function FT_primaryNavigation()
 	
     }
     
+	this.f_getFirstNonOAVmId = function()
+	{
+		var id = VYA.FT_CONST.OA_ID;
+		for (var i=0; i < thisObj.m_vmList.length; i++) {
+			if (thisObj.m_vmList[i].m_name != id) {
+				id = thisObj.m_vmList[i].m_name;
+				break;
+			}
+		}
+		return id;
+	}
+	
     this.f_getVmSelectionPath = function() {	
 	    var id = g_cookie.f_get(g_consObj.V_COOKIES_VM_PATH, g_consObj.V_NOT_FOUND);
 		if (id==g_consObj.V_NOT_FOUND) {
-			id = VYA.FT_CONST.OA_ID;
+			if (g_roleManagerObj.f_isUser()) {
+			    id = thisObj.f_getFirstNonOAVmId();
+			} else {
+				id = VYA.FT_CONST.OA_ID;
+			}
 		} /* else {
 			g_cookie.f_set(g_consObj.V_COOKIES_VM_PATH, g_consObj.V_NOT_FOUND, g_cookie.m_userNameExpire);			
 		} */	

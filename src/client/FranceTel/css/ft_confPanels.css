@@ -57,6 +57,9 @@
 	display: block;
 	border: 1px solid #CCCCCC;
 	margin-left: 30px;
+	margin-bottom: 7px;
+	margin-top: 7px;
+	padding: 3px;		
 }
 
 .v_form_input_no_left_margin {
@@ -64,6 +67,23 @@
 	display: block;
 	border: 1px solid #CCCCCC;
 	margin-left: 1px;
+	margin-bottom: 7px;
+	margin-top: 7px;
+	padding: 3px;		
+}
+
+select, textarea {
+	/*
+	float:left;
+	clear: left;
+	margin:10px;
+	*/
+	font-size: 11px;
+	color: #444444;
+	border: 1px solid #CCCCCC;
+	margin-bottom: 7px;
+	margin-top: 7px;
+	padding: 3px;
 }
 
 .v_button_container {

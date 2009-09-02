@@ -316,7 +316,7 @@ var g_lang =
 	m_backupMyPC: "my PC",
     m_backupTooltipCancel : 'reset selection',
     m_backupTooltipBackup : 'backup selected applications',
-	m_backupPlsWait: "Another backup request is currently being processed.  Please wait for a few minutes and try again.",
+	m_backupPlsWait: "Another backup request is currently being processed.  Please wait for a few minutes and try again",
 
 
     ///////////////////////////////////////////////////////////////////

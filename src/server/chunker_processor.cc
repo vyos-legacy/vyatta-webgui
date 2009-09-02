@@ -20,12 +20,29 @@ using namespace std;
  *
  **/
 void
+ChunkerProcessor::init (unsigned long chunk_size, const std::string &pid_path, bool debug) 
+{
+  _chunk_size = chunk_size;
+  _pid_path = pid_path;
+  _debug = debug;
+
+}
+
+
+
+/**
+ *
+ **/
+void
 ChunkerProcessor::start_new(string token, const string &cmd)
 {
-  if (_debug) {
-    cout << "ChunkerProcessor::start_new(): starting new processor" << endl;
-  }
+  WebGUI::debug("ChunkerProcessor::start_new(): starting new processor");
   syslog(LOG_DEBUG,"dom0: starting new processor");
+  _state = k_IN_PROGRESS;
+
+  //clear data dir
+  string clean_cmd = string("rm -f ") + WebGUI::CHUNKER_RESP_TOK_DIR + "/" + WebGUI::CHUNKER_RESP_TOK_BASE + token + "_* >/dev/null";
+  system(clean_cmd.c_str());
 
   struct sigaction sa;
   sigaction(SIGCHLD, NULL, &sa);
@@ -73,6 +90,7 @@ void
 ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
 {
   //set up to run as user id...
+  WebGUI::debug("ChunkerProcessor::writer(), starting...");
 
   unsigned long id = strtoul(token.c_str(),NULL,10);
   string name = WebGUI::get_user(id);
@@ -124,9 +142,9 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
 		   arg.c_str(),
 		   opmodecmd.c_str(),
 		   NULL);
-  if (_debug) {
-    cout << "ChunkerProcessor::writer(): finished executing cmd: " << err << endl;
-  }
+  char buf[80];
+  sprintf(buf,"%d",(int)err);
+  WebGUI::debug("ChunkerProcessor::writer(): finished executing cmd: " + string(buf));
   syslog(LOG_ERR, "dom0: ERROR RECEIVED FROM EXECVP(1): %d, %d",err, errno);
 }
 
@@ -136,6 +154,7 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
 void
 ChunkerProcessor::reader(string token,int (&cp)[2])
 {
+  WebGUI::debug("ChunkerProcess:reader(), starting");
   /* Parent. */
   /* Close what we don't need. */
   char buf[_chunk_size+1];
@@ -154,6 +173,9 @@ ChunkerProcessor::reader(string token,int (&cp)[2])
     tmp = process_chunk(tmp, token, chunk_ct, last_time);
   }
   process_chunk_end(tmp,token,chunk_ct);
+  WebGUI::debug("ChunkerProcess:reader(), done");
+  
+  _state = k_DONE;
 }
 
 

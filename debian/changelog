@@ -1,3 +1,58 @@
+vyatta-webgui (0.2+fxd0+113) unstable; urgency=low
+
+  [ slioch ]
+  * fix for qc54, #4821. seconds are added to metaarchive name (i.e. the
+    backup) only.
+
+  [ Loi Vo ]
+  * Change to conform with Orange l&f for form fields (padding, etc.)
+  * Bug 4888: QC75 - Space and accents are not allowed in sender name.
+  * Bug: 4887 - QC 74: authorization name and password are not mandatory
+  * Bug 4899 - QC 78: [OA backup error]: error in message displayed when
+    a backup is already running has an extra '.' character before '!'
+
+ -- Loi Vo <loi.vo@vyatta.com>  Tue, 01 Sep 2009 22:03:42 +0000
+
+vyatta-webgui (0.2+fxd0+112) unstable; urgency=low
+
+  * fix for upgrade regression-->4877
+
+ -- slioch <slioch@eng-140.vyatta.com>  Fri, 28 Aug 2009 16:10:00 -0700
+
+vyatta-webgui (0.2+fxd0+111) unstable; urgency=low
+
+  * UNRELEASED
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 27 Aug 2009 22:46:16 +0000
+
+vyatta-webgui (0.2+fxd0+110) unstable; urgency=low
+
+  [ Michael Larson ]
+  * upgrade watchdog. wakes up every 10 minutes to see if the at
+    scheduler has passed over any scheduled upgrade. The watchdog will
+    execute
+
+  [ slioch ]
+  * ensure committed configuration parameters are saved to the config
+    upon commit
+
+ -- slioch <slioch@eng-140.vyatta.com>  Thu, 27 Aug 2009 11:24:21 -0700
+
+vyatta-webgui (0.2+fxd0+109) unstable; urgency=low
+
+  * Bug: 4841: user seems to be asked to change hsi credentials twice at
+    first loging.
+  * Bug: 4841 - QC 35: user seems to be asked to change his credentials
+    twice at first login
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 27 Aug 2009 17:21:16 +0000
+
+vyatta-webgui (0.2+fxd0+108) unstable; urgency=low
+
+  * fix bu limits to take into account tmp staging dir.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Tue, 25 Aug 2009 17:12:28 -0700
+
 vyatta-webgui (0.2+fxd0+107) unstable; urgency=low
 
   * Bug: 4848 - QC 72

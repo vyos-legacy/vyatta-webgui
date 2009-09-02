@@ -44,6 +44,13 @@ $HTTP["url"] =~ "/$" {
 EOF
 fi
 
+# update crontab
+crontab_conf=/etc/crontab
+if ! grep -q 'upgrade_check.pl' $crontab_conf; then
+    echo '*/10 * * * * root /opt/vyatta/sbin/upgrade_check.pl >&/dev/null' >> $crontab_conf
+    /etc/init.d/cron restart
+fi
+
 # enable index.cgi
 if ! grep -q '^index-file.names.*index.cgi' /etc/lighttpd/lighttpd.conf; then
   sed -i '/^index-file.names/{s/"index.php"/"index.cgi", "index.php"/}' \

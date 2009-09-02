@@ -97,7 +97,7 @@ function f_submit()
         if(event.f_isError()) {
 			if (event.m_errCode == 8) {
 				//this is the case which requires the user to change his/her password at login.
-                //g_utils.f_saveUserLoginId(event.m_sid);		
+                g_utils.f_saveUserLoginId(event.m_sid);		
 				g_utils.f_saveUserName(un);
 				var cb = function()
 				{

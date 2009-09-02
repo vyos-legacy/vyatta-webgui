@@ -75,7 +75,8 @@ sub set_ntp {
 	exit 1;
     }
     $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-   
+
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save");
 }
 
 sub list_ntp {

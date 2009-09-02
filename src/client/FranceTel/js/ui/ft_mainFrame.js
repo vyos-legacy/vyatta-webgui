@@ -105,10 +105,23 @@ function FT_mainFrame(){
 		}
         var e = document.getElementById('welcome_admin');		
 		var admin = g_busObj.f_getLoginUserRec().m_user;
+		var first = g_busObj.f_getLoginUserRec().m_first;
+		var last =  g_busObj.f_getLoginUserRec().m_last;
 		//alert('admin: ' + admin + ' loginObj: ' + g_busObj.f_getLoginUserRec());
-		e.innerHTML = g_lang.m_mainFrmWelcome + ' ' + 
-		    admin + ', ' +
-			g_lang.m_mainFrmConnected;		
+		if ((first != null) && (last != null)) {
+			e.innerHTML = g_lang.m_mainFrmWelcome + ' ' +
+			/*admin*/
+			first +
+			' ' +
+			last +
+			', ' +
+			g_lang.m_mainFrmConnected;
+		} else {
+			e.innerHTML = g_lang.m_mainFrmWelcome + ' ' +
+			admin + 
+			', ' +
+			g_lang.m_mainFrmConnected;
+		}	
 	}
 	
 	this.f_logout = function() {

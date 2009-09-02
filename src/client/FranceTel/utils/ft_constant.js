@@ -12,6 +12,8 @@ function FT_constanst()
     //////////////////////////////////////////////
     // cookies property name
     this.V_COOKIES_USER_NAME = 'userName';
+    this.V_COOKIES_USER_LNAME = 'lastName';
+    this.V_COOKIES_USER_FNAME = 'firstName';
     this.V_COOKIES_USER_ID = 'id';
     this.V_COOKIES_ISLOGIN = 'isLogin';
     this.V_COOKIES_LANG = 'lang';

@@ -178,7 +178,13 @@ function FT_userBusObj(busObj)
         if(cb != undefined)
             thisObj.m_guiCb = cb;
 
-        thisObj.m_loginUser = new FT_userRecObj(u, null, null, p, null, null, null, null);
+        if(thisObj.m_loginUser == null || thisObj.m_loginUser.m_user != u)
+        {
+            var f = g_utils.f_getUserFirstName();
+            var l = g_utils.f_getUserLastName();
+            thisObj.m_loginUser = new FT_userRecObj(u, l, f, p, null, null, null, null);
+        }
+
         thisObj.f_setUserRole(u);
     }
 
@@ -218,6 +224,8 @@ function FT_userBusObj(busObj)
             if(ul[i].m_user == thisObj.m_loginUser.m_user)
             {
                 thisObj.f_setUserRole(thisObj.m_userList[i].m_role);
+                g_utils.f_saveUserLastName(this.m_userList[i].m_last);
+                g_utils.f_saveUserFirstName(this.m_userList[i].m_first);
                 break;
             }
         }

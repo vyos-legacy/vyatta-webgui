@@ -100,6 +100,26 @@ var g_utils =
         g_cookie.f_set(g_consObj.V_COOKIES_USER_NAME, username, g_cookie.m_userNameExpire);
     },
 
+    f_saveUserLastName : function(lname)
+    {
+        g_cookie.f_set(g_consObj.V_COOKIES_USER_LNAME, lname, g_cookie.m_userNameExpire);
+    },
+
+    f_saveUserFirstName : function(fname)
+    {
+        g_cookie.f_set(g_consObj.V_COOKIES_USER_FNAME, fname, g_cookie.m_userNameExpire);
+    },
+
+    f_getUserLastName : function()
+    {
+        return g_cookie.f_get(g_consObj.V_COOKIES_USER_LNAME);
+    },
+
+    f_getUserFirstName : function()
+    {
+        return g_cookie.f_get(g_consObj.V_COOKIES_USER_FNAME);
+    },
+
     f_getUserLoginedID: function(cookieP /* cookieP is optional */)
     {
         return g_cookie.f_get(g_consObj.V_COOKIES_USER_ID);

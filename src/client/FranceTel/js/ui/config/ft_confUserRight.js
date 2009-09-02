@@ -322,7 +322,7 @@ function FT_confUserRight(name, callback, busLayer)
             /////////////////////////////////////////////////////////
             // create a callback for paging. when user click on the
             // page number, this function will be called.
-            FT_confUserRight.superclass.prototype = this.f_loadVMData;
+            FT_confUserRight.superclass.prototype = thisObj.f_loadVMData;
 
             var btns = [['Apply', "f_userRightHandleApply()", g_lang.m_urBtnApply,
                           thisObj.m_btnApplyId],

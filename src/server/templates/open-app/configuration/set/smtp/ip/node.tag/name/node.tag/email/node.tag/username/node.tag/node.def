@@ -1,6 +1,6 @@
 help: set smtp user
 access:admin
-run: if perl /opt/vyatta/sbin/openapp-conf-smtp.pl --address "$4" --email "$6" --username "$8" --password "$10"; then
+run: if perl /opt/vyatta/sbin/openapp-conf-smtp.pl --server "$6" --name "$8" --email "${10}"; then
        return 0
      else
        return 1

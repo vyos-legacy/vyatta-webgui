@@ -70,21 +70,27 @@ sub set_smtp {
     # apply config command
     if (defined $username && $username ne '') {
 	$err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client username $username");
-	if ($err != 0) {
-	    `logger -p debug 'dom0: system command error: $err'`;
-	    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	    exit 1;
-	}
     }
-
+    else {
+	$err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete system open-app smtp client username");
+    }
+    if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
+    }
+    
     # apply config command
     if (defined $pswd && $pswd ne '') {
 	$err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client password $pswd");
-	if ($err != 0) {
-	    `logger -p debug 'dom0: system command error: $err'`;
-	    system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
-	    exit 1;
-	}
+    }
+    else {
+	$err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete system open-app smtp client password");
+    }
+    if ($err != 0) {
+	`logger -p debug 'dom0: system command error: $err'`;
+	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
+	exit 1;
     }
 
     # apply config command

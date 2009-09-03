@@ -105,8 +105,6 @@ function FT_confRestart(name, callback, busLayer)
             var bodyDiv = thisObj.f_createGridRow(thisObj.m_colHd, vmData);
             thisObj.m_body.appendChild(bodyDiv);
         }
-
-        thisObj.f_adjustDivPosition(thisObj.m_button);
     }
 
     this.f_createSortingArray = function(sortIndex, vm)
@@ -162,6 +160,7 @@ function FT_confRestart(name, callback, busLayer)
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.height = '40px';
+        div.style.marginTop = "25px";
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr height="22">';

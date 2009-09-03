@@ -238,11 +238,14 @@ function FT_confBaseObj(name, callback, busLayer)
         div.style.position = 'relative';
         div.style.borderBottom = '1px dotted #CCC';
         div.style.backgroundColor = 'white';
-        div.style.paddingTop = '3px';
+        div.style.paddingTop = '0px';
         div.style.paddingBottom = '0px';
 
-        var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
-        innerHtml += '<tbody><tr height="28" cellspacing="0" cellpadding="0">';
+        var bkc = thisObj.m_tableRowCounter%2 == 0 ? "#FFFFFF" : "#F9F9FF";
+
+        var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">' +
+                '<tbody><tr height="28" cellspacing="0" cellpadding="0" ' +
+                'bgcolor="' + bkc + '">';
 
         var width = 0;
         for(var i=0; i<data.length; i++)
@@ -803,7 +806,6 @@ function FT_confBaseObj(name, callback, busLayer)
      */
     this.f_getCursor = function(enable)
     {
-        //alert(g_xbObj.f_getBrowserAgent());
         switch(g_xbObj.f_getBrowserAgent())
         {
             case 'ie':
@@ -819,10 +821,3 @@ function FT_confBaseObj(name, callback, busLayer)
         }
     }
 }
-
-/*
-function f_confHandleSessionTimeoutConfirm()
-{
-	g_busObj.f_userTimeout();
-}
-*/

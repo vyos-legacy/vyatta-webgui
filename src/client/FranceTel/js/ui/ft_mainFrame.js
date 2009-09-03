@@ -108,20 +108,27 @@ function FT_mainFrame(){
 		var first = g_busObj.f_getLoginUserRec().m_first;
 		var last =  g_busObj.f_getLoginUserRec().m_last;
 		//alert('admin: ' + admin + ' loginObj: ' + g_busObj.f_getLoginUserRec());
-		if ((first != null) && (last != null)) {
-			e.innerHTML = g_lang.m_mainFrmWelcome + ' ' +
-			/*admin*/
-			first +
-			' ' +
-			last +
-			', ' +
-			g_lang.m_mainFrmConnected;
+		if (g_roleManagerObj.f_isUser()) {
+			if ((first != null) && (last != null)) {
+				e.innerHTML = g_lang.m_mainFrmWelcome + ' ' +
+				/*admin*/
+				g_utils.f_toUpperCaseFirstChar(first) +
+				' ' +
+				g_utils.f_toUpperCaseFirstChar(last) +
+				', ' +
+				g_lang.m_mainFrmConnected;
+			} else {
+				e.innerHTML = g_lang.m_mainFrmWelcome + ' ' +
+				admin +
+				', ' +
+				g_lang.m_mainFrmConnected;
+			}
 		} else {
-			e.innerHTML = g_lang.m_mainFrmWelcome + ' ' +
-			admin + 
-			', ' +
-			g_lang.m_mainFrmConnected;
-		}	
+				e.innerHTML = g_lang.m_mainFrmWelcome + ' ' +
+				g_utils.f_toUpperCaseFirstChar(admin) +
+				', ' +
+				g_lang.m_mainFrmConnected;			
+		}
 	}
 	
 	this.f_logout = function() {

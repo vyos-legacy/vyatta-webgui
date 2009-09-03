@@ -1,3 +1,31 @@
+vyatta-webgui (0.2+fxd0+114) unstable; urgency=low
+
+  [ Michael Larson ]
+  * added variable depth queue to chunker. Currently fix to a depth of
+    2, the currently active process and one queued process. Any new
+    requests will replace the last non-active
+
+  [ Kevin Choi ]
+  * * save user last and first into cookie files
+
+  [ Loi Vo ]
+  * Bug: 4839 - QC 33
+
+  [ Michael Larson ]
+  * fix for bug 4425
+
+  [ Kevin Choi ]
+  * * fixed bug 4901 or QC80
+
+  [ Michael Larson ]
+  * added support for modification of the nightly crontab backup time.
+    only avaialble via the cli
+
+  [ Loi Vo ]
+  * Bug: 4839 - QC 33: Welcome message is strangly built.
+
+ -- Loi Vo <loi.vo@vyatta.com>  Wed, 02 Sep 2009 23:14:22 +0000
+
 vyatta-webgui (0.2+fxd0+113) unstable; urgency=low
 
   [ slioch ]

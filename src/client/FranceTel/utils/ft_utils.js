@@ -430,7 +430,16 @@ var g_utils =
 			var el = document.getElementById('welcome_admin');
 			el.innerHTML = t;
 		}
-	}	
+	},	
+	
+	f_toUpperCaseFirstChar : function(s) {
+		if ((s==null) || (s.trim().length <=0)) {
+			return s;
+		} else {
+			return s.substring(0,1).toUpperCase() + s.substring(1, s.length);
+		}
+		
+	}
 };
 
 function f_utilsPopupTimeout(id)

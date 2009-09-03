@@ -1,0 +1,5 @@
+type: txt
+default: "1:00"
+help: Sets the hour and minute that the scheduled backup is to be performed (24 hour time)
+update: sudo /opt/vyatta/sbin/openapp-conf-nightly-backup.pl --update $VAR(@);
+delete: sudo /opt/vyatta/sbin/openapp-conf-nightly-backup.pl --update "1:00";

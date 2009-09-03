@@ -94,7 +94,7 @@ sub set_smtp {
     }
 
     # apply config command
-    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client name $name");
+    $err = system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set system open-app smtp client name '$name'");
     if ($err != 0) {
 	`logger -p debug 'dom0: system command error: $err'`;
 	system("/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end");
@@ -139,25 +139,30 @@ sub list_smtp() {
     my $password = "";
     my $username = "";
 
-    my $ct = 0;
     $out = join(" ",@out);
-    @out = split(" ",$out);
+    @out = split("\n",$out);
     for $out (@out) {
-	$ct++;
-	if ($out eq 'address') {
-	    $address = $out[$ct];
+	$out =~ s/^\s+//;
+	if ($out =~ /address/) {
+	    $out =~ s/^\S+\s+//;
+	    $address = $out;
 	}
-	elsif ($out eq 'name') {
-	    $name = $out[$ct];
+	elsif ($out =~ /username/) {
+	    $out =~ s/^\S+\s+//;
+	    $username = $out;
 	}
-	elsif ($out eq 'password') {
-	    $password = $out[$ct];
+	elsif ($out =~ /name/) {
+	    $out =~ s/^\S+\s+//;
+	    $out =~ s/("|")//g;
+	    $name = $out;
 	}
-	elsif ($out eq 'email') {
-	    $email = $out[$ct];
+	elsif ($out =~ /password/) {
+	    $out =~ s/^\S+\s+//;
+	    $password = $out;
 	}
-	elsif ($out eq 'username') {
-	    $username = $out[$ct];
+	elsif ($out =~ /email/) {
+	    $out =~ s/^\S+\s+//;
+	    $email = $out;
 	}
     }
 

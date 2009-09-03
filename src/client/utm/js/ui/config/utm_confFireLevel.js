@@ -52,6 +52,7 @@ function UTM_confFireLevel(name, callback, busLayer)
 
     this.f_createActiveTableColumns = function()
     {
+        this.f_colorGridBackgroundRow(true);
         var cols = [];
 
         cols[0] = this.f_createColumn(g_lang.m_fireLevelColSelect, 90, 'checkbox', '3', false);

@@ -45,6 +45,7 @@ function UTM_confVPNRemoteview(name, callback, busLayer)
 
     this.f_createGroupColumns = function()
     {
+        this.f_colorGridBackgroundRow(true);
         var cols = [];
         var chkbox = 'Enabled<br>' + thisObj.f_renderCheckbox('no',
                       this.m_grpGridChkboxId, 'f_vpnRemoteViewGroupHdChkboxCb()',

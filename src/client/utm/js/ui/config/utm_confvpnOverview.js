@@ -38,6 +38,7 @@ function UTM_confVPNOverview(name, callback, busLayer)
 
     this.f_createS2SColumns = function()
     {
+        this.f_colorGridBackgroundRow(true);
         var cols = [];
         var chkbox = g_lang.m_enabled + '<br>' + thisObj.f_renderCheckbox('no',
                       this.m_s2sGridChkboxId, "f_vpnChkboxHandler('" +

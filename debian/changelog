@@ -1,3 +1,24 @@
+vyatta-webgui (0.2.14+fxdU+122) unstable; urgency=low
+
+  [ Loi Vo ]
+  * 1. Update css files to draw Orange l&f listbox + text area
+
+  [ Kevin Choi ]
+  * * fixed grid table row vertical alignment
+  * * fixed IE default text color.
+
+  [ Loi Vo ]
+  * 1. Add css rule to conform with Orange l&f for form elements (fields
+    padding, etc.)
+
+  [ Kevin Choi ]
+  * * changed table columns width for firewall customize, nat/pat and
+    static route to fit FT's
+  * * converted user popup window using g_utils instead of alert
+  * * added table row background color for better viewing
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 03 Sep 2009 00:13:26 +0000
+
 vyatta-webgui (0.2.14+fxdU+121) unstable; urgency=low
 
   * * nw static route:

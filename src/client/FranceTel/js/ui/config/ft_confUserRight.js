@@ -44,12 +44,14 @@ function FT_confUserRight(name, callback, busLayer)
 
     this.f_createColumns = function()
     {
+        this.f_enableTableIndex(true);
         var cols = [];
 
-        cols[0] = this.f_createColumn(g_lang.m_name, 180, 'text', '6', true);
+        cols[0] = this.f_createColumn("#", 38, 'text', '6', false);
+        cols[1] = this.f_createColumn(g_lang.m_name, 180, 'text', '6', true);
 
         var vm = g_busObj.f_getVmRecObj();
-        var vmIndex = 1;
+        var vmIndex = 2;
         for(var i=0; i<vm.length; i++)
         {
             if(!this.f_showThisVM(vm[i]))
@@ -162,7 +164,6 @@ function FT_confUserRight(name, callback, busLayer)
                 thisObj.m_body.appendChild(bodyDiv);
         }
 
-        thisObj.f_adjustDivPosition(thisObj.m_buttons);
         thisObj.f_handleOnCheckBoxClick();
     };
 

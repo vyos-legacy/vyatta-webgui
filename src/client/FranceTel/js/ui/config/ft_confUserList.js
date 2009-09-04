@@ -33,12 +33,14 @@ function FT_confUserList(name, callback, busLayer)
      */
     this.f_createColumns = function()
     {
+        this.f_enableTableIndex(true);
         var cols = [];
 
-        cols[0] = this.f_createColumn(g_lang.m_name, 200, 'text', '6', true);
-        cols[1] = this.f_createColumn(g_lang.m_login, 150, 'text', '6', true);
-        cols[2] = this.f_createColumn(g_lang.m_email, 100, 'button', '35');
-        cols[3] = this.f_createColumn(g_lang.m_delete, 100, 'button', '35');
+        cols[0] = this.f_createColumn("#", 38, 'text', '6', false);
+        cols[1] = this.f_createColumn(g_lang.m_name, 200, 'text', '6', true);
+        cols[2] = this.f_createColumn(g_lang.m_login, 150, 'text', '6', true);
+        cols[3] = this.f_createColumn(g_lang.m_email, 100, 'button', '35');
+        cols[4] = this.f_createColumn(g_lang.m_delete, 100, 'button', '35');
 
         return cols;
     };
@@ -151,6 +153,7 @@ function FT_confUserList(name, callback, busLayer)
     {
         //this.m_busLayer.f_stopVMRequestThread(this.m_threadId);
         this.m_threadId = null;
+        this.f_enableTableIndex(false);
     };
 
     this.f_init = function()

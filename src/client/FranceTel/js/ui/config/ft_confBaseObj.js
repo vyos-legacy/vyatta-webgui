@@ -14,6 +14,7 @@ function FT_confBaseObj(name, callback, busLayer)
 {
     var thisObj = this;
     this.m_pagingObj = null;
+    this.m_enableTableIndexCol = false;
     this.m_allowSort = false;
     this.m_sortColPrev = -1;
     this.m_sortCol = 0;
@@ -153,7 +154,7 @@ function FT_confBaseObj(name, callback, busLayer)
             }
 
             var colName = thisObj.f_createColNameHTML(h[0], i, isSortable);
-            var rBorder = (i == header.length-1) || h[0].length < 2 ?
+            var rBorder = (i == header.length-1) || h[0].length < 0 ?
                               '' : 'border-right:1px solid #CCC; ';
 
             inner += '<td style="' + sortColor + ';" width="' + h[1] +'">' +
@@ -278,12 +279,20 @@ function FT_confBaseObj(name, callback, busLayer)
                     break;
             }
 
-            innerHtml += '<td cellspacing="0" cellpadding="0" width="' +
+            var td = '<td cellspacing="0" cellpadding="0" width="' +
                         fWidth +'"><div style=" ' + lBorder + rBorder +
                         ' padding-top:0px; padding-bottom:0px; ' +
                         ' margin-top:0px; margin-bottom: 0px; ' +
                         lPadding + 'padding-top:' +
-                        tPadding + ';">' + data[i] + '</div></td>';
+                        tPadding + ';">';
+
+            if(i == 0 && thisObj.m_enableTableIndexCol)
+            {
+                var ar = [thisObj.m_tableRowCounter+1]
+                data = ar.concat(data);
+            }
+
+            innerHtml +=  td + data[i] + '</div></td>';
         }
 
         var term = '</tr></tbody></table>';
@@ -519,7 +528,7 @@ function FT_confBaseObj(name, callback, busLayer)
         var header = "";
         var cName = isSortable != null && isSortable ? "<u>" + colName + "</u>" : colName;
 
-        if(colName != null && colName.length > 2)
+        if(colName != null && colName.length > 0)
         {
             if(thisObj.m_sortCol == col)
             {
@@ -710,6 +719,12 @@ function FT_confBaseObj(name, callback, busLayer)
         }
     }
 
+    this.f_enableTableIndex = function(enable)
+    {
+        thisObj.m_enableTableIndexCol = enable;
+        thisObj.f_resetSorting();
+    }
+
     this.f_resetPagination = function(totalRecs)
     {
         if(thisObj.m_pagingObj != null)
@@ -719,7 +734,7 @@ function FT_confBaseObj(name, callback, busLayer)
     this.f_resetSorting = function()
     {
         thisObj.m_sortOrder = 'asc';
-        thisObj.m_sortCol = 0;
+        thisObj.m_sortCol = thisObj.m_enableTableIndexCol ? 1:0;
     }
 
     this.f_isSortEnabled = function(colHeader, col)
@@ -750,7 +765,7 @@ function FT_confBaseObj(name, callback, busLayer)
 
     this.f_sortArray = function(col, ar)
     {
-        var si = col;
+        var si = this.m_enableTableIndexCol ? col-1:col;
         var sar = new Array();
 
         //////////////////////////////////////////////////////////////////

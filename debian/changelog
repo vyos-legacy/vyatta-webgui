@@ -1,3 +1,17 @@
+vyatta-webgui (0.2+fxd0+115) unstable; urgency=low
+
+  [ Michael Larson ]
+  * spaces are now supported in name field for the smtp configuration.
+    The client side now needs to remove the restriction on spaces in the
+    name field.
+
+  [ Kevin Choi ]
+  * * added table row background color for better viewing
+  * * added table index column to display row number
+  * * fixed pagination to adjust for table index column were added.
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 04 Sep 2009 17:32:20 +0000
+
 vyatta-webgui (0.2+fxd0+114) unstable; urgency=low
 
   [ Michael Larson ]

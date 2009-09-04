@@ -23,7 +23,6 @@ function FT_pagingObj(total, curPage, rowPerPage)
     this.m_numOfRowInPage = 0;    // number of row on current display page.
     this.m_endPage = false;
 
-
     this.f_resetValues = function(totalRecs)
     {
         this.m_numOfRowInPage = 0;
@@ -79,12 +78,12 @@ function FT_pagingObj(total, curPage, rowPerPage)
 
         if(thisObj.m_curPage == 1)
             div += "<div class=pagination-off>&nbsp;" + g_lang.m_pgFirst + "</div></td>" +
-                  "<td width=55 style='padding-left:10px;'><image src=images/ico_previous.png/>"+
+                  "<td width=60 style='padding-left:10px;'><image src=images/ico_previous.png/>"+
                   "<div class=pagination-off>&nbsp;" + g_lang.m_pgPrev + "</div>";
         else
             div += "<div class=pagination><a href='#' onclick='f_paginationCallback" +
                   "(1)'>&nbsp;" + g_lang.m_pgFirst + "</a></div></td>" +
-                  "<td width=55 style='padding-left:10px;'><image src=images/ico_previous.png/>"+
+                  "<td width=60 style='padding-left:10px;'><image src=images/ico_previous.png/>"+
                   "<div class=pagination><a href='#' onclick='f_paginationCallback(" +
                   (thisObj.m_curPage-1) + ")'>&nbsp;" + g_lang.m_pgPrev + "</a></div>";
 

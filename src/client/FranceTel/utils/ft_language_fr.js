@@ -112,10 +112,10 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // pagination
-    m_pgFirst : "first",
-    m_pgPrev : "previous",
-    m_pgLast : "last",
-    m_pgNext : "next",
+    m_pgFirst : "premier",
+    m_pgPrev : "précédent",
+    m_pgLast : "dernier",
+    m_pgNext : "suivant",
 
     ///////////////////////////////////////////////////////////////////;;;
     // Calendar;;;

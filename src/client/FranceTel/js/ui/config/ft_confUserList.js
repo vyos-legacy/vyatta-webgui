@@ -80,7 +80,8 @@ function FT_confUserList(name, callback, busLayer)
                     thisObj.f_resetPagination(thisObj.m_uRec.length);
                     thisObj.f_populateTable();
                 }
-                thisObj.f_resize();
+
+                thisObj.f_resizeSimple();
             }
         };
 
@@ -122,8 +123,6 @@ function FT_confUserList(name, callback, busLayer)
             if(bodyDiv != null)
                 thisObj.m_body.appendChild(bodyDiv);
         }
-
-        thisObj.f_adjustDivPosition(thisObj.m_buttons, g_oaConfig.m_oaNumRowPerPage);
     };
 
     this.f_createSortingArray = function(sortIndex, vm)

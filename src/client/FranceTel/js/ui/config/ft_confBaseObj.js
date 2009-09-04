@@ -99,6 +99,15 @@ function FT_confBaseObj(name, callback, busLayer)
        body.className = bodyClass;
     }
 
+    this.f_resizeSimple = function()
+    {
+       var ft = document.getElementById('ft_container');
+       if (ft) {
+          ft.style.height = this.m_div.style.height + 'px';
+       }
+       this.f_reflow();
+    }
+
     this.f_resize = function(padding)
     {
 	if (this.m_id !=  g_configPanelObj.m_selectedItem ||
@@ -179,7 +188,7 @@ function FT_confBaseObj(name, callback, busLayer)
         var div = document.createElement('div');
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
-        div.style.height = '50px';
+        div.style.height = 'auto';
         div.style.overflow = 'visible';
         div.style.color = '#000';
 
@@ -236,7 +245,7 @@ function FT_confBaseObj(name, callback, busLayer)
     this.f_createGridRow = function(header, data, totalRecs)
     {
         var div = document.createElement('div');
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
         div.style.borderBottom = '1px dotted #CCC';
         div.style.backgroundColor = 'white';
         div.style.paddingTop = '0px';
@@ -327,6 +336,7 @@ function FT_confBaseObj(name, callback, busLayer)
                 innerHtml += term;
                 div.innerHTML = innerHtml;
                 thisObj.m_pagingObj.m_numOfRowInPage++;
+                thisObj.m_pagingObj.m_endPage = false;
             }
             // outside of paging
             else

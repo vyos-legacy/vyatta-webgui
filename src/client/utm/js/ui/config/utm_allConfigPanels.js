@@ -29,6 +29,7 @@ document.write('<script type="text/javascript" src="js/ui/config/utm_confIDSExpe
 document.write('<script type="text/javascript" src="js/ui/config/utm_confAVS.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confASM.js"></script>');
 document.write('<script type="text/javascript" src="js/ui/config/utm_confIMP2P.js"></script>');
+document.write('<script type="text/javascript" src="js/ui/config/utm_confDashboard.js"></script>');
 
 
 

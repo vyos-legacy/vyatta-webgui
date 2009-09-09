@@ -12,6 +12,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.m_id = undefined;
     this.m_rowHeight = 31;
     this.m_allowSort = false;
+    this.m_enableTableIndexCol = false;
     this.m_sortColPrev = -1;
     this.m_sortCol = 0;
     this.m_sortOrder = 'asc';   // asc or des
@@ -38,6 +39,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         this.m_sortCol = 0;
         this.m_sortOrder = 'asc';
         this.m_treadId = null;
+        this.m_enableTableIndexCol = false;
     }
     this.privateConstructor(name, callback, busLayer);
 
@@ -114,7 +116,7 @@ function UTM_confBaseObj(name, callback, busLayer)
             var pLeft = align == "center" ? 0 : h[3];
 
             var colName = thisObj.f_createColNameHTML(h[0], i, h[5], isSort);
-            var rBorder = (i == header.length-1) || h[0].length < 2 ?
+            var rBorder = (i == header.length-1) || h[0].length < 0 ?
                               '' : 'border-right:1px solid #CCC; ';
 
             inner += '<td width="' + h[1] + '" align="' + align +
@@ -242,11 +244,19 @@ function UTM_confBaseObj(name, callback, busLayer)
                     tPadding = '0px';
             }
 
-            innerHtml += '<td cellspacing="0" cellpadding="0" style="width:' +
-            fWidth + 'px;"><div style="overflow:hidden; ' +
-            lBorder + rBorder + ' padding-top:0px; padding-bottom:0px; ' +
-            ' margin-top:0px; margin-bottom: 0px"><div style="' + lPadding +
-            'padding-top:' + tPadding + ';">' + data[i] + '</div></div></td>';
+            var td = '<td cellspacing="0" cellpadding="0" style="width:' +
+                fWidth + 'px;"><div style="overflow:hidden; ' +
+                lBorder + rBorder + ' padding-top:0px; padding-bottom:0px; ' +
+                ' margin-top:0px; margin-bottom: 0px"><div style="' + lPadding +
+                'padding-top:' + tPadding + ';">';
+
+            if(i == 0 && thisObj.m_enableTableIndexCol)
+            {
+                var ar = [thisObj.m_tableRowCounter+1]
+                data = ar.concat(data);
+            }
+
+            innerHtml +=  td + data[i] + '</div></div></td>';
         }
 
         innerHtml += '</tr></tbody></table>';
@@ -260,6 +270,12 @@ function UTM_confBaseObj(name, callback, busLayer)
 
         thisObj.m_tableRowCounter++;
         return div;
+    }
+
+    this.f_enableTableIndex = function(enable)
+    {
+        thisObj.m_enableTableIndexCol = enable;
+        thisObj.f_resetSorting();
     }
 
     this.f_increateTableRowCounter = function(rows)
@@ -306,6 +322,21 @@ function UTM_confBaseObj(name, callback, busLayer)
         return div;
     }
 
+    this.f_createTitleDiv = function(title, width, childDiv)
+    {
+        var tDiv = this.f_createEmptyDiv();
+        var div = this.f_createEmptyDiv([tDiv, childDiv]);
+        div.style.border = "1px solid #CCC";
+
+        tDiv.innerHTML = "&nbsp;&nbsp;<b>" + title + "</b>";
+        tDiv.style.position = "relative";
+        tDiv.style.top = "-8px";
+        tDiv.style.left = "10px";
+        tDiv.style.width = width + "px";
+
+        return div;
+    }
+
     this.f_createSimpleDiv = function(text, align, color)
     {
         var al = align == null ? 'left' : align;
@@ -318,7 +349,6 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_createGeneralDiv = function(text)
     {
         var div = document.createElement('div');
-        //div.style.position = 'relative';
 		div.style.height = 'auto';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
@@ -586,7 +616,7 @@ function UTM_confBaseObj(name, callback, busLayer)
         var header = "";
         var cName = isSortCol != null && isSortCol ? "<u>" + colName + "</u>" : colName;
 
-        if (colName != null && colName.length > 2) {
+        if (colName != null && colName.length > 0) {
             if (thisObj.m_sortCol == col) {
                 var sortIcon = thisObj.m_sortOrder == 'asc' ?
                     '<img src="' + g_lang.m_imageDir + 'sortAsc.gif"/>' :
@@ -991,7 +1021,7 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_resetSorting = function()
     {
         thisObj.m_sortOrder = 'asc';
-        thisObj.m_sortCol = 0;
+        thisObj.m_sortCol = thisObj.m_enableTableIndexCol ? 1:0;
     }
 
     this.f_isSortEnabled = function(colHeader, col)
@@ -1018,7 +1048,7 @@ function UTM_confBaseObj(name, callback, busLayer)
 
     this.f_sortArray = function(col, ar)
     {
-        var si = col;
+        var si = this.m_enableTableIndexCol ? col-1:col;
         var sar = new Array();
 
         //////////////////////////////////////////////////////////////////

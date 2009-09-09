@@ -1,3 +1,10 @@
+vyatta-webgui (0.2+fxd0+116) unstable; urgency=low
+
+  [ rbays ]
+  * fix for bug 4908.
+
+ -- Robert Bays <rbays@roatan.lenny32.lenny32>  Wed, 09 Sep 2009 10:56:58 -0700
+
 vyatta-webgui (0.2+fxd0+115) unstable; urgency=low
 
   [ Michael Larson ]

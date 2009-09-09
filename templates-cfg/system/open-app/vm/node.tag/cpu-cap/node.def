@@ -1,14 +1,14 @@
 type: u32
 help: Configure CPU cap for the named vm
 syntax:expression: $VAR(@) >= 0 && $VAR(@) <= 99; "\"cpu-cap\" must be between 0-99"
-update: mkdir -p /var/oa/libvirt/$VAR(../@) 
-  echo $VAR(@) > /var/oa/libvirt/$VAR(../@)/cap
-  schedinfo=$(virsh schedinfo $VAR(../@) 2>/dev/null)
+update: sudo mkdir -p /var/oa/libvirt/$VAR(../@)
+  sudo sh -c "echo $VAR(@) > /var/oa/libvirt/$VAR(../@)/cap"
+  schedinfo=$(sudo virsh schedinfo $VAR(../@) 2>/dev/null)
   if [ -n "$schedinfo" ]; then
     sudo virsh schedinfo $VAR(../@) --cap $VAR(@) >/dev/null 2>&1
   fi
-delete: rm /var/oa/libvirt/$VAR(../@)/cap
-  schedinfo=$(virsh schedinfo $VAR(../@) 2>/dev/null)
+delete: sudo rm /var/oa/libvirt/$VAR(../@)/cap
+  schedinfo=$(sudo virsh schedinfo $VAR(../@) 2>/dev/null)
   if [ -n "$schedinfo" ]; then
     sudo virsh schedinfo $VAR(../@) --cap 0 >/dev/null 2>&1
   fi

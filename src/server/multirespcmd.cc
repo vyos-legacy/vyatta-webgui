@@ -108,6 +108,10 @@ MultiResponseCommand::process()
       }
       _next_token = get_next_resp_file(_next_token);
       fclose(fp);
+
+      //clean up old value after retrieval
+      string cleanup_cmd = "sudo rm -f " + file_chunk;
+      system(cleanup_cmd.c_str());
       return true;
     }
   }

@@ -1,3 +1,44 @@
+vyatta-webgui (0.2.13-11) unstable; urgency=low
+
+  [ slioch ]
+  * alter lighttpd configuration for event notification recommended for
+    2.6+ kernel
+  * fix for bug 4422. found condition that caused webgui to get stuck in
+    loop. fixed.
+  * merge is now supported on backend. Frontend support needs to be
+    added.
+
+  [ Kevin Choi ]
+  * * prompted warning message to user even the error code is 0.
+  * * fixed bug#4671 - fixed output window clears itself after display.
+    This bug cause by server
+
+  [ slioch ]
+  * fix for bug 4689. don't populate allowed fields if syntax explicitly
+    lists allowed values.
+
+  [ Kevin Choi ]
+  * * additional fix to bug 4644: to check for request/response mode.
+  * * fixed bug4693 : show config did not display full information. this
+    only happen on Fox3.
+  * * fixed bug#4645: allowed readonly configure file to be loaded
+
+  [ slioch ]
+  * fix for bug 4690. special characters are now escaped for config
+    commands.
+
+  [ Kevin Choi ]
+  * * fixed bug#4437 : re-words user message
+  * * additional fixed to bug#4690 : text message does not care for char
+    return
+  * * fixed bug4517
+
+  [ Michael Larson ]
+  * fix for bug 4853. Remove multi chunk file after request. this will
+    prevent gui from browsing back through the chunker
+
+ -- Michael Larson <mike@ft1.vyatta.com>  Thu, 10 Sep 2009 16:44:48 -0700
+
 vyatta-webgui (0.2.13-10) unstable; urgency=low
 
   [ slioch ]

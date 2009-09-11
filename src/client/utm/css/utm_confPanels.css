@@ -145,6 +145,36 @@ select, textarea {
     font-size: 8px;
 }
 
+.tree-icon {
+    list-style-type: none;
+	padding-left: 0px;
+} 
+
+.tree-item {
+    padding: 0px;
+    margin: 0px;
+} 
+
+.no-border {
+    margin: 0px;
+    padding: 0px 5px 0px 0px;
+} 
+
+.float-right {
+    float: right;
+} 
+
+.no-decoration {
+    text-decoration: none;
+    color: black;
+	outline-style: none;
+} 
+
+/*
+li a:focus {
+    outline-style: none;
+} 
+*/
 /***********************************************************
  * HTML_BASED COMPONENT END
 ************************************************************/

@@ -2,14 +2,14 @@
  * @author loi
  */
 /*
- Document   : utm_rptIdsBasic.js
+ Document   : utm_rptIdsAdvanced.js
  Created on : Mar 02, 2009, 6:18:51 PM
  Author     : Loi.Vo
- Description: basic intrusion prevention log class
+ Description: advanced intrusion prevention log class
  */
-function UTM_rptIdsBasic(name, busLayer, refresh)
+function UTM_rptIdsAdvanced(name, busLayer, refresh)
 {    
-    var thisObjName = 'UTM_rptIdsBasic';
+    var thisObjName = 'UTM_rptIdsAdvanced';
     var thisObj = this;	
 	
 	this.m_name = name;
@@ -19,7 +19,7 @@ function UTM_rptIdsBasic(name, busLayer, refresh)
 					
 	this.f_addChildren = function()
 	{
-		var c = new UTM_rptIdsBasicSummary('FT_rptIdsBasicSummary', thisObj.m_busLayer);
+		var c = new UTM_rptIdsAdvancedSummary('FT_rptIdsAdvancedSummary', thisObj.m_busLayer);
 		thisObj.m_container.f_addChild(c);
 	}	
 
@@ -30,7 +30,7 @@ function UTM_rptIdsBasic(name, busLayer, refresh)
 	
 	this.f_init = function()
 	{
-		thisObj.m_container.f_initInner('#rpt_log_basic_fw', 'rpt_ids_basic', g_lang.m_menu_idp);				
+		thisObj.m_container.f_initInner('#rpt_log_advanced_fw', 'rpt_ids_advanced', g_lang.m_menu_idp);				
 	}
 	
 	this.f_attachEventListener = function()
@@ -57,5 +57,4 @@ function UTM_rptIdsBasic(name, busLayer, refresh)
 	this.f_loadVMData = function() {}	
 	
 }
-//UTM_extend(UTM_rptIdsBasic, UTM_rptExpContainer);
 

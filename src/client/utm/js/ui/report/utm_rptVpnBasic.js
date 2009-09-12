@@ -30,7 +30,7 @@ function UTM_rptVpnBasic(name, busLayer, refresh)
 	
 	this.f_init = function()
 	{
-		thisObj.m_container.f_initInner('#rpt_log_basic_fw', 'rpt_vpn_basic', 'VPN');				
+		thisObj.m_container.f_initInner('#rpt_log_basic_fw', 'rpt_vpn_basic', g_lang.m_menu_vpn);				
 	}
 
     this.f_changed = function()

@@ -2,15 +2,15 @@
  * @author loi
  */
 /*
- Document   : utm_rptUrlfBasicSummary.js
+ Document   : utm_rptIdsAdvancedSummary.js
  Created on : Mar 02, 2009, 6:18:51 PM
  Author     : Loi.Vo
- Description: summary web filtering log 
+ Description: summary intrusion prevention advanced log 
  */
-function UTM_rptUrlfBasicSummary(name, busLayer)
+function UTM_rptIdsAdvancedSummary(name, busLayer)
 {
-    var thisObjName = 'UTM_rptUrlfBasicSummary';
-    this.m_id = 'rpt_urlf_basic_summary';
+    var thisObjName = 'UTM_rptIdsAdvancedSummary';
+    this.m_id = 'rpt_ids_advanced_summary';
     this.m_div = undefined;
     this.m_busLayer = undefined;
     this.m_name = undefined;
@@ -69,9 +69,9 @@ function UTM_rptUrlfBasicSummary(name, busLayer)
         div.style.height = 'auto';
 		//div.style.border= '1px solid blue';
 		
-		var html = "<h3>Top 5 URLs visited</h3>" +				   
+		var html = "<h3>Show intrusion prevention advanced log table</h3>" +
                 "<br/><br/><p>&nbsp;&nbsp;&nbsp;" +
-                "This space is reserved for top 5 URLs visited table." +
+                "This space is reserved for intrustion prevention advanced log table." +
                 "<br/>&nbsp;&nbsp;&nbsp;" +
                 "For now this is just dummy text." +
                 "</p>";

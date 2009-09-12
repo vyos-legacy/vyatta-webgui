@@ -79,7 +79,8 @@ function UTM_htmlBuilder()
 	    { 'key': 'vpn_remote_l2', 'desc': g_lang.m_menu_des_remote_users, 'value': g_lang.m_menu_remote_users}				
 	];				
 	var smLogMenu = [
-	    { 'key': 'log_l2', 'desc': g_lang.m_menu_des_log, 'value': g_lang.m_menu_log}
+	    { 'key': 'log_basic_l2', 'desc': g_lang.m_menu_des_basic_log, 'value': g_lang.m_menu_basic_log},
+	    { 'key': 'log_advanced_l2', 'desc': g_lang.m_menu_des_advanced_log, 'value': g_lang.m_menu_advanced_log},		
 	];
 					
 	var smArray = [

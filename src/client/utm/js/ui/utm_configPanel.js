@@ -251,8 +251,12 @@ function UTM_configPanel()
                 thisObj.m_selectObj = new UTM_confVPNRemoteview('VPNRemoteView', cb, g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
-            case VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID:
+            case VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_BASIC_ID:
 			    thisObj.m_selectObj = new UTM_rptLogBasic('UTM_rptLogBasic', g_busObj);
+	            thisObj.m_selectObj.f_setId(id);				
+                return thisObj.m_selectObj.f_getConfigurationPage();
+            case VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ADVANCED_ID:
+			    thisObj.m_selectObj = new UTM_rptLogAdvanced('UTM_rptLogAdvanced', g_busObj);
 	            thisObj.m_selectObj.f_setId(id);				
                 return thisObj.m_selectObj.f_getConfigurationPage();
 

@@ -82,9 +82,9 @@ function UTM_rptExpContainer(name, busLayer, refresh, owner)
             html += '<div id="op_' + this.m_id + '" class="float-right" style="display:none">' +
             '<a href="' +
             this.m_top +
-            '" class="no-decoration">top</a>&nbsp;<a href="#" class="no-decoration"><img id="refresh_' +
+            '" class="no-decoration">' + g_lang.m_log_top + '</a>&nbsp;<a href="#" class="no-decoration"><img id="refresh_' +
             this.m_id +
-            '" src="images/refresh16.png">&nbsp;refresh</a>' +
+            '" src="images/refresh16.png">&nbsp;'+ g_lang.m_log_refresh + '</a>' +
             '</div>'
         }
         html += '<li id="li_' + this.m_id + '" class="tree-icon">' +

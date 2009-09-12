@@ -83,7 +83,8 @@ VYA.UTM_CONST = {
     DOM_3_NAV_SUB_VPN_S2S_ID : 'vpn_s2s_l2',
     DOM_3_NAV_SUB_VPN_REMOTE_ID : 'vpn_remote_l2',
     //-----Logs		
-    DOM_3_NAV_SUB_LOG_ID : 'log_l2',
+    DOM_3_NAV_SUB_LOG_BASIC_ID : 'log_basic_l2',
+	DOM_3_NAV_SUB_LOG_ADVANCED_ID : 'log_advanced_l2',
 	
 	//-----Configuration menu item id for network configuration.
 	//-----LAN/ MultiLAN

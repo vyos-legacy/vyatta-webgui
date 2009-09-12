@@ -30,7 +30,7 @@ function UTM_rptUrlfBasic(name, busLayer, refresh)
 	
 	this.f_init = function()
 	{
-		thisObj.m_container.f_initInner('#rpt_log_basic_fw', 'rpt_urlf_basic', 'web filtering');				
+		thisObj.m_container.f_initInner('#rpt_log_basic_fw', 'rpt_urlf_basic', g_lang.m_menu_webf);				
 	}
 
     this.f_changed = function()

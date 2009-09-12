@@ -185,7 +185,7 @@ function UTM_3rdNavigation()
             case VYA.UTM_CONST.DOM_2_NAV_VPN_ID:
                 return VYA.UTM_CONST.DOM_3_NAV_SUB_VPN_OVERVIEW_ID;
             case VYA.UTM_CONST.DOM_2_NAV_LOG_ID:
-                return VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_ID;				
+                return VYA.UTM_CONST.DOM_3_NAV_SUB_LOG_BASIC_ID;				
 			//starting section for network configuration
             case VYA.UTM_CONST.DOM_2_NAV_LAN_ID:
                 return VYA.UTM_CONST.DOM_3_NAV_SUB_PORTCONF_ID;			

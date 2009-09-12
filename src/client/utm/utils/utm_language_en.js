@@ -27,6 +27,10 @@ var g_lang =
     m_menu_des_vpn: "VPN",
     m_menu_log : "logs",
     m_menu_des_log : "logs",
+	m_menu_basic_log: "basic",
+	m_menu_des_basic_log: "basic",	
+	m_menu_advanced_log: "advanced",
+	m_menu_des_advanced_log: "advanced",	
     m_menu_zone_mgt : "zone management",
     m_menu_des_zone_mgt: "zone management",
     m_menu_easy_mode : "easy mode",
@@ -418,6 +422,11 @@ var g_lang =
 	m_tooltip_delete: "delete a row",
 	m_tooltip_back: "go back to previous screen",
     m_remindSaveChange : 'You are about to leave this page without saving your modifications.  Are you sure you want to continue?',
+
+    ///////////////////////////////////////////////////////////////////
+    // Logs
+    m_log_top : 'top',
+	m_log_refresh: 'refresh',
 
     /////////////////////////////////////////
     // plesae do not edit beyound dummy

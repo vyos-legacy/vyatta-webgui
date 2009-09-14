@@ -14,6 +14,16 @@ function UTM_dbFirewallRec(serv, ruleNo, ipPro, numBlock, ldBlock)
     this.m_lastBlockDate = ldBlock==null?"":ldBlock;
 }
 
+function UTM_dbVPNRec(s2s, s2sConf, s2sUp, ru, ruConf, ruConn)
+{
+    this.m_s2s = s2s==null?"":s2s;
+    this.m_s2sConfigured = s2sConf==null?"":s2sConf;
+    this.m_s2sUp = s2sUp==null?"":s2sUp;
+    this.m_remoteUser = ru==null?"":ru;
+    this.m_ruConfigured = ruConf==null?"":ruConf;
+    this.m_ruConnected = ruConn==null?"":ruConn;
+}
+
 /**
  * dashboard business obj
  */

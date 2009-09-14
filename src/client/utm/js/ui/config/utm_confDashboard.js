@@ -33,27 +33,22 @@ function UTM_confDashboard(name, callback, busLayer)
 	return div;
     }
 
-    this.f_adjustPanelsHeight = function()
+    this.f_initChildPanels = function()
     {
-        for(var i=0; i<4; i+=2)
+        var tr = null;
+        for(var i=0; i<4; i++)
         {
             var p = thisObj.m_panels[i];
-            var pp = thisObj.m_panels[i+1];
-            var tr = document.getElementById(p.m_divId+"_tr");
+            var TR = document.getElementById(p.m_divId+"_tr");
+            tr = TR == null ? tr : TR;
 
             p.f_adjustHeight(tr.clientHeight);
-            pp.f_adjustHeight(tr.clientHeight);
 
             var td = document.getElementById(p.m_divId+"_td");
             td.appendChild(p.m_div);
-            td = document.getElementById(pp.m_divId+"_td");
-            td.appendChild(pp.m_div);
 
-            if(thisObj.m_panels[i].f_initTable != null)
-            {
-                thisObj.m_panels[i].f_initTable();
-                thisObj.m_panels[i].f_loadVMData();
-            }
+            p.f_initPanel();
+            p.f_loadVMData();
         }
     }
 
@@ -66,10 +61,10 @@ function UTM_confDashboard(name, callback, busLayer)
 
         var cb = function()
         {
-            thisObj.f_adjustPanelsHeight();
+            thisObj.f_initChildPanels();
         }
 
-        window.setTimeout(cb, 100);
+        window.setTimeout(cb, 10);
         return [div];
     }
 
@@ -112,6 +107,7 @@ function UTM_confDbBase(parent)
 {
     var thisObj = this;
     this.m_parent = null;
+    this.m_indent = "&nbsp;&nbsp;";
 
     this.constructor = function(parent)
     {
@@ -131,10 +127,10 @@ function UTM_confDbBase(parent)
 
     this.f_init = function()
     {
-        var t = this.m_parent.f_createEmptyDiv();
-        var div = this.m_parent.f_createTitleDiv(this.m_title, this.m_titleWidth, t);
+        /////////////////////////////////////////////////
+        // create panel with title
+        var div = this.m_parent.f_createTitleDiv(this.m_title, this.m_titleWidth);
         div.setAttribute("id", this.m_divId);
-        t.innerHTML = "<div align='center' id='" + this.m_divId + "_table' ></div>";
 
         this.m_div = div;
         return div;
@@ -156,26 +152,30 @@ function UTM_confDbFirewall(parent)
     this.m_tableHeader = null;
     this.m_divId = 'utmDashboard_firewallId';
     this.m_title = 'firewall';
+    this.m_pfTitle = "&nbsp;&nbsp;&bull; LAN to WAN Security Profile: ";
     this.m_titleWidth = 50;
-
-            //<br><br>&nbsp;&bull; LAN to WAN Security Profile: ' +
-              //      '<b>customized</b><br>&nbsp;&bull; top 5 blocked services:<br>';
 
 
     UTM_confDbFirewall.superclass.constructor(parent);
 
     this.f_loadVMData = function()
     {
-        var recs = [];
-
-        for(var i=0; i<5; i++)
+        var cb = function(evt)
         {
-            var rec = i<3?new UTM_dbFirewallRec('ssh', i, "10.1.16."+i, i+1, "09/09/2009"):
-                      new UTM_dbFirewallRec();
-            recs.push(rec);
+            var recs = [];
+
+            for(var i=0; i<5; i++)
+            {
+                var rec = i<3?new UTM_dbFirewallRec('ssh', i, "10.1.16."+i, i+1, "09/09/2009"):
+                          new UTM_dbFirewallRec();
+                recs.push(rec);
+            }
+
+            thisObj.f_populateProfile("customize");
+            thisObj.f_populateTable(recs);
         }
 
-        this.f_populateTable(recs);
+        window.setTimeout(cb, 100);
     }
 
     this.f_initColumnModel = function()
@@ -192,20 +192,38 @@ function UTM_confDbFirewall(parent)
         return cols;
     }
 
+    this.f_initPanel = function()
+    {
+        var profile = "<div id='" + this.m_divId + "_profile'>" + this.m_pfTitle +
+                      "<b>customized</b></div>";
+        var panelHd = this.m_parent.f_createGeneralDiv(profile + this.m_indent +
+                        "&bull; top 5 blocked services:");
+        this.m_div.appendChild(panelHd);
+        this.f_initTable();
+    }
+
     this.f_initTable = function()
     {
         this.m_parent.f_enableTableIndex(true);
         this.m_parent.f_colorGridBackgroundRow(true);
-
+        
         this.m_colModel = this.f_initColumnModel();
         this.m_tableHeader = this.m_parent.f_createGridHeader(this.m_colModel);
         this.m_tableBody = this.m_parent.f_createGridView(this.m_colModel, false);
-        this.m_parent.f_resetSorting();
         
-        var tDiv = document.getElementById(this.m_divId+"_table");
+        var tDiv = this.m_parent.f_createEmptyDiv();
         tDiv.style.marginTop = "15px";
+        tDiv.setAttribute('align', 'center');
         tDiv.appendChild(this.m_tableHeader);
         tDiv.appendChild(this.m_tableBody);
+
+        this.m_div.appendChild(tDiv);
+    }
+
+    this.f_populateProfile = function(profile)
+    {
+        var el = document.getElementById(this.m_divId+"_profile");
+        el.innerHTML = this.m_pfTitle + "<b>" + profile + "</b>";
     }
 
     this.f_populateTable = function(recs)
@@ -243,6 +261,44 @@ function UTM_confDbVPN(parent)
 
     UTM_confDbVPN.superclass.constructor.apply(parent);
 
+    this.f_loadVMData = function()
+    {
+        var cb = function(evt)
+        {
+            var rec = new UTM_dbVPNRec("activated", 10, 2, "deactivated", 9, 6);
+            thisObj.f_populateVPN(rec);
+        }
+
+        window.setTimeout(cb, 100);
+    }
+
+    this.f_initPanel = function()
+    {
+        var profile = "<div id='" + this.m_divId + "_profile'>" + this.m_pfTitle + "</div>";
+        var panelHd = this.m_parent.f_createGeneralDiv(profile);
+        this.m_div.appendChild(panelHd);
+    }
+
+    this.f_populateVPN = function(rec)
+    {
+        var el = document.getElementById(this.m_divId + "_profile");
+
+        el.innerHTML = "<table><tr><td colspan=2>" +
+                this.m_indent + "&bull; site to site: <b>" + rec.m_s2s + "</b></td></tr>" +
+                "<tr><td width='50'></td><td>" +
+                this.m_indent + "&bull; site to site connections configured: " +
+                rec.m_s2sConfigured + "</td></tr><tr><td></td><td>" +
+                this.m_indent + "&bull; <font color=orange>"+
+                "site to site connections up and running: " + rec.m_s2sUp +
+                "</font></td><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>" +
+                this.m_indent + "&bull; remote user: <b>" + rec.m_remoteUser +
+                "</b></td><tr><td width='50'></td><td>" +
+                this.m_indent + "&bull; number of remote users configured: " +
+                rec.m_ruConfigured + "</td></tr><tr><td></td><td>" +
+                this.m_indent + "&bull; <font color=orange>"+
+                "number of remote users connected: " +
+                rec.m_ruConnected + "</font></td>";
+    }
 }
 UTM_extend(UTM_confDbVPN, UTM_confDbBase);
 
@@ -257,6 +313,29 @@ function UTM_confDbIntrusionPrev(parent)
 
     UTM_confDbIntrusionPrev.superclass.constructor(parent);
 
+    this.f_loadVMData = function()
+    {
+        var cb = function(evt)
+        {
+            thisObj.f_populateIP();
+        }
+
+        window.setTimeout(cb, 100);
+    }
+
+    this.f_initPanel = function()
+    {
+        var profile = "<div id='" + this.m_divId + "_profile'>" + this.m_pfTitle + "</div>";
+        var panelHd = this.m_parent.f_createGeneralDiv(profile);
+        this.m_div.appendChild(panelHd);
+    }
+
+    this.f_populateIP = function(rec)
+    {
+        var el = document.getElementById(this.m_divId + "_profile");
+
+        el.innerHTML = this.m_indent + "&bull; site to site: <b>activated</b>";
+    }
 }
 UTM_extend(UTM_confDbIntrusionPrev, UTM_confDbBase);
 
@@ -271,5 +350,28 @@ function UTM_confDbWebFiltering(parent)
 
     UTM_confDbWebFiltering.superclass.constructor(parent);
 
+    this.f_loadVMData = function()
+    {
+        var cb = function(evt)
+        {
+            thisObj.f_populateWeb();
+        }
+
+        window.setTimeout(cb, 100);
+    }
+
+    this.f_initPanel = function()
+    {
+        var profile = "<div id='" + this.m_divId + "_profile'>" + this.m_pfTitle + "</div>";
+        var panelHd = this.m_parent.f_createGeneralDiv(profile);
+        this.m_div.appendChild(panelHd);
+    }
+
+    this.f_populateWeb = function(rec)
+    {
+        var el = document.getElementById(this.m_divId + "_profile");
+
+        el.innerHTML = this.m_indent + "&bull; site to site: <b>activated</b>";
+    }
 }
 UTM_extend(UTM_confDbWebFiltering, UTM_confDbBase);

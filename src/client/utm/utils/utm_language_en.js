@@ -444,6 +444,7 @@ var g_lang =
     // Logs
     m_log_top : 'top',
 	m_log_refresh: 'refresh',
+	m_log_click_to_config: 'Click here to configure log:',
 
     /////////////////////////////////////////
     // plesae do not edit beyound dummy

@@ -129,6 +129,7 @@ function UTM_rptListPanel(listId, listName, hrefs)
 	this.m_name = undefined;
 	this.m_hrefs = undefined;
 	this.m_div = undefined;
+	this.m_title = undefined;
     var thisObj = this;
 	
     this.constructor = function(listId, listName, hrefs)
@@ -146,6 +147,11 @@ function UTM_rptListPanel(listId, listName, hrefs)
     
 	this.f_distructor = function() {}
 	
+	this.f_setTitle = function(title) 
+	{
+		this.m_title = title;
+	}
+	
 	this.f_getPage = function()
 	{
         var div = document.createElement('div');
@@ -159,6 +165,9 @@ function UTM_rptListPanel(listId, listName, hrefs)
         div.style.height = 'auto';
 
         var html = '<ul>';
+		if (this.m_title != undefined) {
+			html = '<span style="margin-left: -10px;">' + this.m_title + '<br/><br/></span>' + html; 
+		}
 		for (var i=0; i < this.m_ids.length; i++) {
 			html += this.f_createListItem(this.m_ids[i], this.m_name[i], this.m_hrefs[i]);
 		}        

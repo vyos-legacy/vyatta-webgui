@@ -10,7 +10,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////;English;French;
     // Menu;;;
     m_menu_dashboard : "tableau de bord", 
-    m_menu_des_dashboard : "tableau de bord",
+    m_menu_des_dashboard : "tableau de bord sécurité",
     m_menu_firewall : "pare-feu", 
     m_menu_des_firewall : "pare-feu", 
     m_menu_idp : "prévention d'intrusion", 
@@ -70,6 +70,24 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////;;
     // Dash board screen;;
+    m_db_firewall: "pare-feu",
+    m_db_intrusion: "prévention d'intrusion",
+    m_db_webFiltering: "filtrage web",
+    m_db_fwProfile: "profil de sécurité",
+    m_db_fwTop5: "top 5 des services bloqué",
+    m_db_fwService: "service",
+    m_db_fwNoOfBlock: "nombre<br>de<br>blocs" ,
+    m_db_fwLastBlock: "date de<br>dernier<br>bloc",
+    m_db_vpnSite2Site: "site to site",
+    m_db_vpnS2sConfig: "site to site connections configured",
+    m_db_vpnS2sUpRunning: "site to site connections up and running",
+    m_db_vpnRuConfig: "number of remote users configured",
+    m_db_vpnRuConnected: "number of remote users connected",
+    m_db_lastUpdate: "dernière mise à jour",
+    m_db_ipNumOfAtBlock: "nombre d'attaques bloquées",
+    m_db_ipAttackAlert: "attaque d'alerte",
+    m_db_webViolation: "violation a été commise",
+
 
     ////////////////////////////////////////////////////////////////////;;
     // common;;

@@ -24,6 +24,21 @@ function UTM_dbVPNRec(s2s, s2sConf, s2sUp, ru, ruConf, ruConn)
     this.m_ruConnected = ruConn==null?"":ruConn;
 }
 
+function UTM_dbIntrusionRec(status, lastUpdate, attBlock, attAlert)
+{
+    this.m_status = status==null?"":status;
+    this.m_lastUpdateDate = lastUpdate==null?"":lastUpdate;
+    this.m_atBlocked = attBlock==null?"":attBlock;
+    this.m_atAlert = attAlert==null?"":attAlert;
+}
+
+function UTM_dbWebFilteringRec(status, lastUpdate, violation)
+{
+    this.m_status = status==null?"":status;
+    this.m_lastUpdateDate = lastUpdate==null?"":lastUpdate;
+    this.m_violation = violation==null?"":violation;
+}
+
 /**
  * dashboard business obj
  */

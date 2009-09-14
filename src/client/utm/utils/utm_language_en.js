@@ -10,7 +10,7 @@ var g_lang =
     ///////////////////////////////////////////////////////////////////
     // Menu
     m_menu_dashboard : "dashboard",
-    m_menu_des_dashboard: "Dashboard",
+    m_menu_des_dashboard: "Security Dashboard",
     m_menu_firewall : "firewall",
     m_menu_des_firewall : "firewall",
     m_menu_idp : "intrusion prevention",
@@ -28,9 +28,9 @@ var g_lang =
     m_menu_log : "logs",
     m_menu_des_log : "logs",
 	m_menu_basic_log: "basic",
-	m_menu_des_basic_log: "basic",	
+	m_menu_des_basic_log: "basic",
 	m_menu_advanced_log: "advanced",
-	m_menu_des_advanced_log: "advanced",	
+	m_menu_des_advanced_log: "advanced",
     m_menu_zone_mgt : "zone management",
     m_menu_des_zone_mgt: "zone management",
     m_menu_easy_mode : "easy mode",
@@ -70,6 +70,23 @@ var g_lang =
 
     ///////////////////////////////////////////////////////////////////
     // Dash board screen
+    m_db_firewall: "firewall",
+    m_db_intrusion: "intrusion prevention",
+    m_db_webFiltering: "web filtering",
+    m_db_fwProfile: "security profile",
+    m_db_fwTop5: "top 5 blocked services",
+    m_db_fwService: "service",
+    m_db_fwNoOfBlock: "number<br>of<br>blocks" ,
+    m_db_fwLastBlock: "date of<br>last<br>block",
+    m_db_vpnSite2Site: "site to site",
+    m_db_vpnS2sConfig: "site to site connections configured",
+    m_db_vpnS2sUpRunning: "site to site connections up and running",
+    m_db_vpnRuConfig: "number of remote users configured",
+    m_db_vpnRuConnected: "number of remote users connected",
+    m_db_lastUpdate: "last update date",
+    m_db_ipNumOfAtBlock: "number of attacks blocked",
+    m_db_ipAttackAlert: "attack alert",
+    m_db_webViolation: "violation occured",
 
     ////////////////////////////////////////////////////////////////////
     // common
@@ -249,7 +266,7 @@ var g_lang =
 	m_vpn_Expert: "expert",
     m_vpn_DFS : "DFS Group",
 	m_vpn_Users : "users",
-    m_vpn_LifeTime_outofrange: " has to be in the range from 30 to 86400 seconds",	
+    m_vpn_LifeTime_outofrange: " has to be in the range from 30 to 86400 seconds",
 
     ///////////////////////////////////////////////////////////////////
     // VPN Site 2 Site
@@ -262,7 +279,7 @@ var g_lang =
 	m_vpnS2S_error_missing_required_field : "Missing required fields",
 	m_vpnS2S_error_failure_configure : "Fail to set up the vpn configuration",
 	m_vpnS2S_error_peerip_exists : "The peer IP already exists with a different tunnel",
-	
+
 
     ///////////////////////////////////////////////////////////////////
     // VPN Remote User Group
@@ -272,7 +289,7 @@ var g_lang =
     m_vpnRUG_UsrSettings : "user setttings",
     m_vpnRUG_IPAlloc : "IP allocation",
 	m_vpnRUG_ipstart : "start range",
-	m_vpnRUG_ipend: "end range",	
+	m_vpnRUG_ipend: "end range",
     m_vpnRUG_InternetAccess : "internet access",
 	m_vpnRUG_range_invalid: "end range must be greater than start range!",
 
@@ -368,7 +385,7 @@ var g_lang =
 	m_dmzitf_title : "DMZ interface parameters",
 	m_dmzitf_ip : "LAN DMZ IP address",
 	m_lanitf_mask: "IP subnet mask",
-	m_lanitf_pls_config: "Please configure",	
+	m_lanitf_pls_config: "Please configure",
 	m_lanitf_change: "Changing",
 	m_lanitf_confirm_overwrite: "and subnet mask will reset DHCP paremeters and Reserved IP addresses settings.  Do you want to continue?",
 	m_landhcp_title: "DHCP parameters",
@@ -379,25 +396,25 @@ var g_lang =
 	m_landhcp_incompatible: "is incompatible with",
 	m_landhcp_dns_mode : "DNS mode",
 	m_landhcp_dns_pri : "Primary DNS server",
-	m_landhcp_dns_pri_lower: "primary DNS server",	
+	m_landhcp_dns_pri_lower: "primary DNS server",
 	m_landhcp_dns_sec : "Secondary DNS server",
-	m_landhcp_dns_sec_lower: "secondary DNS server",	
+	m_landhcp_dns_sec_lower: "secondary DNS server",
 	m_landhcp_dns_address: "address",
-	m_landhcp_1_dns_server_required : "At least one DNS server is required",	
+	m_landhcp_1_dns_server_required : "At least one DNS server is required",
 	m_landhcp_dns_static : "static",
 	m_landhcp_dns_dynamic : "dynamic",
 	m_landhcp_dns_none : "no DNS",
 	m_lanip_reserved_ip : "Reserved IP addresses",
 	m_lanip_reserved_ip_lower: "reserved IP address",
-	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",	
+	m_lanip_reserved_ip_limit : "Reserved IP address list is limited to",
 	m_lanip_reserved_ip_entry: "entries",
-    m_lanip_reserved_diff_lan : "Reserved IP address must be different from",	
+    m_lanip_reserved_diff_lan : "Reserved IP address must be different from",
 	m_lanitf_forbidden_ip: "Network & broadcast addresses are forbidden for",
-    m_lanip_zero: "this reserved IP address is forbidden!",	
+    m_lanip_zero: "this reserved IP address is forbidden!",
 	m_landhcp_range_or_map_required : "When the DNS mode is static mode, it is required to configure either a DHCP range, or to have at least on reserved IP address.",
 	m_lanitf_already_used: "This network address is already used by the Open appliance.  Please enter other parameters",
 	m_lanitf_invalid_mac: "Invalid MAC address! Example of valid format: 'aa:bb:cc:dd:ee:ff'",
-	
+
     ///////////////////////////////////////////////////////////////////
     // My Form
 	m_formNoEmpty : "cannot be empty",
@@ -408,7 +425,7 @@ var g_lang =
 	m_formInvalidCapital: "Invalid",
 	m_exclamationMark: "!",
     m_formAlphaNumericChar: "can only contain alpha numeric characters",
-	
+
     ///////////////////////////////////////////////////////////////////
     // Buttons and Images
     m_imageDir : 'images/en/',

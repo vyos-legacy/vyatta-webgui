@@ -151,8 +151,8 @@ function UTM_confDbFirewall(parent)
     this.m_colModel = null;
     this.m_tableHeader = null;
     this.m_divId = 'utmDashboard_firewallId';
-    this.m_title = 'firewall';
-    this.m_pfTitle = "&nbsp;&nbsp;&bull; LAN to WAN Security Profile: ";
+    this.m_title = g_lang.m_db_firewall;
+    this.m_pfTitle = "&nbsp;&nbsp;&bull; LAN to WAN " + g_lang.m_db_fwProfile + ": ";
     this.m_titleWidth = 50;
 
 
@@ -183,11 +183,11 @@ function UTM_confDbFirewall(parent)
         var cols = [];
 
         cols[0] = this.f_createColumn("#", 25, 'text', '6', false);
-        cols[1] = this.f_createColumn("service", 70, 'text', '0', false);
-        cols[2] = this.f_createColumn("rule<br>number", 55, 'text', '0', false);
-        cols[3] = this.f_createColumn("IP<br>protocol",72, 'text', '0', false);
-        cols[4] = this.f_createColumn("number<br>of<br>blocks", 50, 'text', '0', false);
-        cols[5] = this.f_createColumn("date of<br>last<br>block", 75, 'text', '0', false);
+        cols[1] = this.f_createColumn(g_lang.m_db_fwService, 70, 'text', '0', false);
+        cols[2] = this.f_createColumn(g_lang.m_fireCustRuleNo, 55, 'text', '0', false);
+        cols[3] = this.f_createColumn("IP<br>"+g_lang.m_fireCustProtocol,72, 'text', '0', false);
+        cols[4] = this.f_createColumn(g_lang.m_db_fwNoOfBlock, 50, 'text', '0', false);
+        cols[5] = this.f_createColumn(g_lang.m_db_fwLastBlock, 75, 'text', '0', false);
 
         return cols;
     }
@@ -197,7 +197,7 @@ function UTM_confDbFirewall(parent)
         var profile = "<div id='" + this.m_divId + "_profile'>" + this.m_pfTitle +
                       "<b>customized</b></div>";
         var panelHd = this.m_parent.f_createGeneralDiv(profile + this.m_indent +
-                        "&bull; top 5 blocked services:");
+                        "&bull; " + g_lang.m_db_fwTop5 + ":");
         this.m_div.appendChild(panelHd);
         this.f_initTable();
     }
@@ -206,11 +206,11 @@ function UTM_confDbFirewall(parent)
     {
         this.m_parent.f_enableTableIndex(true);
         this.m_parent.f_colorGridBackgroundRow(true);
-        
+
         this.m_colModel = this.f_initColumnModel();
         this.m_tableHeader = this.m_parent.f_createGridHeader(this.m_colModel);
         this.m_tableBody = this.m_parent.f_createGridView(this.m_colModel, false);
-        
+
         var tDiv = this.m_parent.f_createEmptyDiv();
         tDiv.style.marginTop = "15px";
         tDiv.setAttribute('align', 'center');
@@ -284,20 +284,20 @@ function UTM_confDbVPN(parent)
         var el = document.getElementById(this.m_divId + "_profile");
 
         el.innerHTML = "<table><tr><td colspan=2>" +
-                this.m_indent + "&bull; site to site: <b>" + rec.m_s2s + "</b></td></tr>" +
+                this.m_indent + "&bull; " + g_lang.m_db_vpnSite2Site + ": <b>" + rec.m_s2s + "</b></td></tr>" +
                 "<tr><td width='50'></td><td>" +
-                this.m_indent + "&bull; site to site connections configured: " +
-                rec.m_s2sConfigured + "</td></tr><tr><td></td><td>" +
+                this.m_indent + "&bull; " + g_lang.m_db_vpnS2sConfig + ": <b>" +
+                rec.m_s2sConfigured + "</b></td></tr><tr><td></td><td>" +
                 this.m_indent + "&bull; <font color=orange>"+
-                "site to site connections up and running: " + rec.m_s2sUp +
-                "</font></td><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>" +
-                this.m_indent + "&bull; remote user: <b>" + rec.m_remoteUser +
+                g_lang.m_db_vpnS2sUpRunning + ": <b>" + rec.m_s2sUp +
+                "</b></font></td><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>" +
+                this.m_indent + "&bull; " + g_lang.m_vpnOVRemote + ": <b>" + rec.m_remoteUser +
                 "</b></td><tr><td width='50'></td><td>" +
-                this.m_indent + "&bull; number of remote users configured: " +
-                rec.m_ruConfigured + "</td></tr><tr><td></td><td>" +
+                this.m_indent + "&bull; " + g_lang.m_db_vpnRuConfig + ": <b>" +
+                rec.m_ruConfigured + "</b></td></tr><tr><td></td><td>" +
                 this.m_indent + "&bull; <font color=orange>"+
-                "number of remote users connected: " +
-                rec.m_ruConnected + "</font></td>";
+                g_lang.m_db_vpnRuConnected + ": <b>" +
+                rec.m_ruConnected + "</b></font></td>";
     }
 }
 UTM_extend(UTM_confDbVPN, UTM_confDbBase);
@@ -308,8 +308,8 @@ function UTM_confDbIntrusionPrev(parent)
 {
     var thisObj = this;
     this.m_divId = 'utmDashboard_intrusionPrevId';
-    this.m_title = 'intrusion prevention';
-    this.m_titleWidth = 122;
+    this.m_title = g_lang.m_db_intrusion;
+    this.m_titleWidth = document.URL.indexOf("_fr") > 0 ? 132:122;
 
     UTM_confDbIntrusionPrev.superclass.constructor(parent);
 
@@ -317,7 +317,8 @@ function UTM_confDbIntrusionPrev(parent)
     {
         var cb = function(evt)
         {
-            thisObj.f_populateIP();
+            var rec = new UTM_dbIntrusionRec("activated", "17/08/2009", 0, 'NO');
+            thisObj.f_populateIP(rec);
         }
 
         window.setTimeout(cb, 100);
@@ -333,8 +334,17 @@ function UTM_confDbIntrusionPrev(parent)
     this.f_populateIP = function(rec)
     {
         var el = document.getElementById(this.m_divId + "_profile");
+        var alertColor = rec.m_atAlert == 'NO' ? 'green' : 'red';
 
-        el.innerHTML = this.m_indent + "&bull; site to site: <b>activated</b>";
+        el.innerHTML = "<p>" + this.m_indent + "&bull; " + g_lang.m_status + ": <b>" +
+                      rec.m_status + "</b></p>" +
+                      "<p>" + this.m_indent + "&bull; " + g_lang.m_db_lastUpdate + ": <b>" +
+                      rec.m_lastUpdateDate + "</b></p>" +
+                      "<p>" + this.m_indent + "&bull; " + g_lang.m_db_ipNumOfAtBlock +
+                      ": <b>" + rec.m_atBlocked + "</b></p>" +
+                      "<p>" + this.m_indent + "&bull; " + g_lang.m_db_ipAttackAlert +
+                      ": <font color="+
+                      alertColor + "><b>" + rec.m_atAlert + "</b></font></p>";
     }
 }
 UTM_extend(UTM_confDbIntrusionPrev, UTM_confDbBase);
@@ -345,7 +355,7 @@ function UTM_confDbWebFiltering(parent)
 {
     var thisObj = this;
     this.m_divId = 'utmDashboard_webFilteringId';
-    this.m_title = 'web filtering';
+    this.m_title = g_lang.m_db_webFiltering;
     this.m_titleWidth = 78;
 
     UTM_confDbWebFiltering.superclass.constructor(parent);
@@ -354,7 +364,8 @@ function UTM_confDbWebFiltering(parent)
     {
         var cb = function(evt)
         {
-            thisObj.f_populateWeb();
+            var rec = new UTM_dbWebFilteringRec('deactivated', "19/08/2009", 'YES');
+            thisObj.f_populateWeb(rec);
         }
 
         window.setTimeout(cb, 100);
@@ -370,8 +381,15 @@ function UTM_confDbWebFiltering(parent)
     this.f_populateWeb = function(rec)
     {
         var el = document.getElementById(this.m_divId + "_profile");
+        var alertColor = rec.m_violation == 'NO' ? 'green' : 'red';
 
-        el.innerHTML = this.m_indent + "&bull; site to site: <b>activated</b>";
+        el.innerHTML = "<p>" + this.m_indent + "&bull; " + g_lang.m_status + ": <b>" +
+                      rec.m_status + "</b></p>" +
+                      "<p>" + this.m_indent + "&bull; " + g_lang.m_db_lastUpdate + ": <b>" +
+                      rec.m_lastUpdateDate + "</b></p>" +
+                      "<p>" + this.m_indent + "&bull; " + g_lang.m_db_webViolation +
+                      ": <font color="+
+                      alertColor + "><b>" + rec.m_violation + "</b></font></p>";
     }
 }
 UTM_extend(UTM_confDbWebFiltering, UTM_confDbBase);

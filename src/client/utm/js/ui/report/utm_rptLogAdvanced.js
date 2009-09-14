@@ -78,9 +78,11 @@ function UTM_rptLogAdvancedConfigPanel()
 		div.style.pixelLeft = 0;
 		div.style.padding = '5px 5px 5px 20px';
 		div.style.backgroundColor = 'white';
-
+        
 		div.innerHTML = this.f_doLayout();
 		div.style.display = 'block';
+
+        //div.style.border = '1px solid blue';
 
 		this.m_div = div;
 
@@ -89,7 +91,7 @@ function UTM_rptLogAdvancedConfigPanel()
 
     this.f_doLayout = function()
     {		
-        var text = g_lang.m_log_click_to_config + '<br/><br/>';
+        var text = '<span id="rpt_log_advanced_config_text">' + g_lang.m_log_click_to_config + '</span><br/><br/>';
 		text += '<div title="' + g_lang.m_log_click_to_config + '"><img id="rpt_log_advanced_config_btn" src="' + g_lang.m_imageDir 
 		        + 'bt_config.gif"></div>';		
 				

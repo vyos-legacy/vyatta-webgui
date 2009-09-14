@@ -30,7 +30,7 @@ function UTM_rptUrlfAdvanced(name, busLayer, refresh)
 	
 	this.f_init = function()
 	{
-		thisObj.m_container.f_initInner('#rpt_log_advanced_fw', 'rpt_urlf_advanced', g_lang.m_menu_webf);				
+		thisObj.m_container.f_initInner('#rpt_log_advanced_config_text', 'rpt_urlf_advanced', g_lang.m_menu_webf);				
 	}
 
     this.f_changed = function()

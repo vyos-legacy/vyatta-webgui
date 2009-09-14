@@ -165,8 +165,14 @@ function UTM_rptListPanel(listId, listName, hrefs)
         div.style.height = 'auto';
 
         var html = '<ul>';
+		var spanStyle = 'margin-left: -10px;';
+		
+	    if (g_xbObj.m_isIE || g_xbObj.m_isOpera) {
+			div.style.paddingLeft = '20px';
+			spanStyle = 'margin-left: 0px;';
+		} 		
 		if (this.m_title != undefined) {
-			html = '<span style="margin-left: -10px;">' + this.m_title + '<br/><br/></span>' + html; 
+			html = '<span style="' + spanStyle + '">' + this.m_title + '<br/><br/></span>' + html; 
 		}
 		for (var i=0; i < this.m_ids.length; i++) {
 			html += this.f_createListItem(this.m_ids[i], this.m_name[i], this.m_hrefs[i]);
@@ -184,9 +190,22 @@ function UTM_rptListPanel(listId, listName, hrefs)
 	}
 	
     this.f_createListItem = function(id, text, link)
-    {				
-        return ('<li id="' + id + '" style="list-style-type:square;list-style-image: url(' + g_utils.f_getRootDir() + 'images/puce_squar.gif);">' + 
-		'<a style="text-decoration:underline;color:black;outline-style:none;font-weight:bold;" href="' + link + '">' + text + '</a>' + 
-		'</li>');
+    {	
+	    if (g_xbObj.m_isIE || g_xbObj.m_isOpera) {
+			return ('<li id="' + id + '" class="tree-icon"><a style="text-decoration:underline;color:black;outline-style:none;font-weight:bold;" href="' +
+			link +
+			'"><img border="0" style="padding-right:5px;" src="images/puce_squar.gif">' +
+			text +
+			'</a></li>');
+		} else {
+			return ('<li id="' + id + '" style="list-style-type:square;list-style-image: url(' + g_utils.f_getRootDir() + 'images/puce_squar.gif);">' +
+			'<a style="text-decoration:underline;color:black;outline-style:none;font-weight:bold;" href="' +
+			link +
+			'">' +
+			text +
+			'</a>' +
+			'</li>');
+		}
+
     }		
 }

@@ -30,7 +30,7 @@ function UTM_rptFwAdvanced(name, busLayer, refresh)
 	
 	this.f_init = function()
 	{
-		thisObj.m_container.f_initInner('#rpt_log_advanced_fw', 'rpt_fw_advanced', g_lang.m_menu_firewall);				
+		thisObj.m_container.f_initInner('#rpt_log_advanced_config_text', 'rpt_fw_advanced', g_lang.m_menu_firewall);				
 	}
 
     this.f_changed = function()

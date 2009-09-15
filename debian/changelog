@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-9+jenner17) unstable; urgency=low
+
+  * permissions did not allow chunker pid to be created after move from
+    cgi-lib parent dir. fixed.
+
+ -- Michael Larson <mike@ft1.vyatta.com>  Tue, 15 Sep 2009 16:17:24 -0700
+
 vyatta-webgui (0.2.13-9+jenner16) unstable; urgency=low
 
   * * additional fixed to bug#4690 : text message does not care for char

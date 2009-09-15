@@ -315,6 +315,8 @@ sub _getLibvirtCfg {
 
 sub startVM {
   my ($id) = @_;
+  my $fd;
+  my $cap;
 
   _lockStatus();
   if (_isStatus('starting', $id)) {
@@ -333,6 +335,16 @@ sub startVM {
 
   my $lv_cfg = _getLibvirtCfg($id);
   system("sudo virsh -c xen:/// create $lv_cfg");
+
+  # Set the cpu cap parameter
+  if ( -f "/var/oa/libvirt/$id/cap" ) {
+    open($fd, '<', "/var/oa/libvirt/$id/cap");
+    $cap = <$fd>;
+    close($fd);
+
+    system("sudo virsh schedinfo $id --cap $cap");
+  }
+
 }
 
 sub _waitVmShutOff {

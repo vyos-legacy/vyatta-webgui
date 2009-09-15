@@ -12,3 +12,4 @@ document.write('<script type="text/javascript" src="js/businessLayer/utm_fwBusOb
 document.write('<script type="text/javascript" src="js/businessLayer/utm_dbBusObj.js"></script>');
 document.write('<script type="text/javascript" src="js/businessLayer/utm_urlFilterObj.js"></script>');
 document.write('<script type="text/javascript" src="js/businessLayer/utm_nwConfBusObj.js"></script>');
+document.write('<script type="text/javascript" src="js/businessLayer/utm_logsBusObj.js"></script>');

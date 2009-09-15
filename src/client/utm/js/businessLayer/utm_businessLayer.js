@@ -472,13 +472,42 @@ function UTM_businessLayer()
 
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
+    // log related section
+    this.f_getLogObject = function()
+    {
+        if(this.m_logObj == null)
+            this.m_logObj = new UTM_firewallBusObj(thisObj);
+
+        return this.m_logObj;
+    }
+
+    this.f_getLogFirewall = function(mode/*0:basic; 1:advance*/, zonepair, cb)
+    {
+        this.m_getLogObject().f_getFirewallLog(mode, zonepair, cb);
+    }
+    this.f_getLogIntrusionPrevention = function(mode/*0:basic; 1:advance*/, cb)
+    {
+        this.m_getLogObject().f_getBasicIntrusionPreventionLog(mode, cb);
+    }
+    this.f_getLogWebFiltering = function(mode/*0:basic; 1:advance*/, cb)
+    {
+        this.m_getLogObject().f_getBasicWebFilteringLog(mode, cb);
+    }
+    this.f_getLogVPN = function(mode/*0:basic; 1:advance*/, cb)
+    {
+        this.m_getLogObject().f_getBasicVPNLog(mode, cb);
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     // firewall security level section
     this.f_getFWObject = function()
     {
-        if(m_fwObj == null)
-            m_fwObj = new UTM_firewallBusObj(thisObj);
+        if(this.m_fwObj == null)
+            this.m_fwObj = new UTM_firewallBusObj(thisObj);
 
-        return m_fwObj;
+        return this.m_fwObj;
     }
 
     this.f_getFirewallZoneMgmtNextRuleNo = function(zonepair, guicb)

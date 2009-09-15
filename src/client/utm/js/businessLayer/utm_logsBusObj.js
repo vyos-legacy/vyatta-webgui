@@ -6,6 +6,26 @@
 */
 
 
+function UTM_firewallLogRec()
+{
+
+}
+
+function UTM_intrusionLogRec()
+{
+
+}
+
+function UTM_webFilteringLogRec()
+{
+
+}
+
+function UTM_vpnLogRec()
+{
+
+}
+
 /**
  * logs business object
  */
@@ -48,6 +68,34 @@ function UTM_firewallBusObj(busObj)
                     '<handler>log-basic-intrusion get') > 0)
                 {
                 }
+                else if(thisObj.m_lastCmdSent.indexOf(
+                    '<handler>log-basic-firewall get') > 0)
+                {
+                }
+                else if(thisObj.m_lastCmdSent.indexOf(
+                    '<handler>log-basic-webfiltering get') > 0)
+                {
+                }
+                else if(thisObj.m_lastCmdSent.indexOf(
+                    '<handler>log-basic-vpn get') > 0)
+                {
+                }
+                if(thisObj.m_lastCmdSent.indexOf(
+                    '<handler>log-advanced-intrusion get') > 0)
+                {
+                }
+                else if(thisObj.m_lastCmdSent.indexOf(
+                    '<handler>log-advanced-firewall get') > 0)
+                {
+                }
+                else if(thisObj.m_lastCmdSent.indexOf(
+                    '<handler>log-advanced-webfiltering get') > 0)
+                {
+                }
+                else if(thisObj.m_lastCmdSent.indexOf(
+                    '<handler>log-advanced-vpn get') > 0)
+                {
+                }
             }
 
             if(thisObj.m_guiCb != undefined)
@@ -55,17 +103,60 @@ function UTM_firewallBusObj(busObj)
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    this.f_getModeByString = function(mode)
+    {
+        return mode == 0 ? 'basic' : 'advanced';
+    }
+
     /**
      * get basic intrusion prevention log data
      */
-    this.f_getBasicIntrusionPreventionLog = function(guicb)
+    this.f_getBasicIntrusionPreventionLog = function(mode, guicb)
     {
         thisObj.m_guiCb = guicb;
         var xmlstr = "<statement mode='proc'>" +
-                      "<handler>log-basic-intrusion get" +
+                      "<handler>log-" +
+                      this.f_getModeByString(mode) + "-intrusion get" +
                       "</handler><data>ALL</data></statement>";
 
         thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
     }
+
+    this.f_getFirewallLog = function(mode, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var xmlstr = "<statement mode='proc'>" +
+                      "<handler>log-" +
+                      this.f_getModeByString(mode) + "-firewall get" +
+                      "</handler><data>ALL</data></statement>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
+    this.f_getBasicWebFilteringLog = function(mode, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var xmlstr = "<statement mode='proc'>" +
+                      "<handler>log-" +
+                      this.f_getModeByString(mode) + "-webfiltering get" +
+                      "</handler><data>ALL</data></statement>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+    this.f_getBasicVPNLog = function(mode, guicb)
+    {
+        thisObj.m_guiCb = guicb;
+        var xmlstr = "<statement mode='proc'>" +
+                      "<handler>log-" +
+                      this.f_getModeByString(mode) + "-vpn get" +
+                      "</handler><data>ALL</data></statement>";
+
+        thisObj.m_lastCmdSent = thisObj.m_busObj.f_sendRequest(xmlstr,
+                              thisObj.f_respondRequestCallback);
+    }
+
 }

@@ -322,10 +322,10 @@ function UTM_confBaseObj(name, callback, busLayer)
         return div;
     }
 
-    this.f_createTitleDiv = function(title, width, childDiv)
+    this.f_createTitleDiv = function(title, width)
     {
         var tDiv = this.f_createEmptyDiv();
-        var div = this.f_createEmptyDiv([tDiv, childDiv]);
+        var div = this.f_createEmptyDiv([tDiv]);
         div.style.border = "1px solid #CCC";
 
         tDiv.innerHTML = "&nbsp;&nbsp;<b>" + title + "</b>";

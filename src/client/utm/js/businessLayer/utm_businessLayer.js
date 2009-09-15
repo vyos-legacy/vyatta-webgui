@@ -201,6 +201,30 @@ function UTM_businessLayer()
             thisObj.m_reqThread.f_stop(threadId);
     }
 
+    this.f_startDashboardThread = function(cb)
+    {
+        // create a new thread object
+        thisObj.m_reqThread = new UTM_thread(g_nwConfig.m_domURefreshTime);
+
+        var guiCb = cb;
+        var callback = function()
+        {
+            guiCb();
+        }
+
+        // start to run
+        var threadId = thisObj.m_reqThread.f_start(callback);
+
+        guiCb();
+        return threadId;
+    }
+
+    this.f_stopDashboardThread = function(threadId)
+    {
+        if(threadId != null)
+            thisObj.m_reqThread.f_stop(threadId);
+    }
+
     /**
      * get child nodes of 'node' from 'response'
      * @param response - a response data from server
@@ -413,6 +437,37 @@ function UTM_businessLayer()
 
         thisObj.m_lastCmdSent = thisObj.f_sendRequest(xmlstr,
                               thisObj.f_respondRequestCallback);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    // dashboard
+    this.f_getDashboardObj = function()
+    {
+        if(this.m_dbObj == null)
+            this.m_dbObj = new UTM_dbBusObj(this);
+
+        return this.m_dbObj;
+    }
+
+    this.f_getDashboardFirewall = function(cb)
+    {
+        this.f_getDashboardObj().f_getFirewall(cb);
+    }
+
+    this.f_getDashboardVPN = function(cb)
+    {
+        this.f_getDashboardObj().f_getVPN(cb);
+    }
+
+    this.f_getDashboardIntrusionPrevention = function(cb)
+    {
+        this.f_getDashboardObj().f_getIntrusionPrevention(cb);
+    }
+
+    this.f_getDashboardWebFiltering = function(cb)
+    {
+        this.f_getDashboardObj().f_getDashboardWebFiltering(cb);
     }
 
     ////////////////////////////////////////////////////////////////////////////

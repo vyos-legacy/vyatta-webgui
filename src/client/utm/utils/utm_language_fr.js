@@ -73,6 +73,8 @@ var g_lang =
     m_db_firewall: "pare-feu",
     m_db_intrusion: "prévention d'intrusion",
     m_db_webFiltering: "filtrage web",
+    m_dbActivated: "activée",
+    m_dbDeactivated: "Désactivé",
     m_db_fwProfile: "profil de sécurité",
     m_db_fwTop5: "top 5 des services bloqué",
     m_db_fwService: "service",

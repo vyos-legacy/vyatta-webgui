@@ -33,6 +33,54 @@ function UTM_confDashboard(name, callback, busLayer)
 	return div;
     }
 
+    this.f_startLoadVMData = function()
+    {
+        var cb = function()
+        {
+            //console.log("got it")
+            //thisObj.m_busLayer.f_getDashboardFirewall(cbFirewall);
+        }
+
+        var cbFirewall = function(evt)
+        {
+            if(evt != null && evt.m_objName == 'UTM_eventObj')
+            {
+                thisObj.m_busLayer.f_getDashboardVPN(cbvpn);
+            }
+        }
+
+        var cbvpn = function(evt)
+        {
+            if(evt != null && evt.m_objName == 'UTM_eventObj')
+            {
+                thisObj.m_busLayer.f_getDashboardIntrusionPrevention(cbIntrusion)
+            }
+        }
+
+        var cbIntrusion = function(evt)
+        {
+            if(evt != null && evt.m_objName == 'UTM_eventObj')
+            {
+                thisObj.m_busLayer.f_getDashboardWebFiltering(cbWeb);
+            }
+        }
+
+        var cbWeb = function(evt)
+        {
+            if(evt != null && evt.m_objName == 'UTM_eventObj')
+            {
+
+            }
+        }
+
+        this.m_threadId = this.m_busLayer.f_startDashboardThread(cb);
+    }
+
+    this.f_stopLoadVMData = function()
+    {
+        this.m_busLayer.f_stopDashboardThread(this.m_threadId);
+    }
+
     this.f_initChildPanels = function()
     {
         var tr = null;
@@ -62,6 +110,7 @@ function UTM_confDashboard(name, callback, busLayer)
         var cb = function()
         {
             thisObj.f_initChildPanels();
+            thisObj.f_startLoadVMData();
         }
 
         window.setTimeout(cb, 10);
@@ -105,7 +154,6 @@ UTM_extend(UTM_confDashboard, UTM_confBaseObj);
 // Dashboard child base class
 function UTM_confDbBase(parent)
 {
-    var thisObj = this;
     this.m_parent = null;
     this.m_indent = "&nbsp;&nbsp;";
 
@@ -265,7 +313,7 @@ function UTM_confDbVPN(parent)
     {
         var cb = function(evt)
         {
-            var rec = new UTM_dbVPNRec("activated", 10, 2, "deactivated", 9, 6);
+            var rec = new UTM_dbVPNRec("1", 10, 2, "0", 9, 6);
             thisObj.f_populateVPN(rec);
         }
 
@@ -284,15 +332,17 @@ function UTM_confDbVPN(parent)
         var el = document.getElementById(this.m_divId + "_profile");
 
         el.innerHTML = "<table><tr><td colspan=2>" +
-                this.m_indent + "&bull; " + g_lang.m_db_vpnSite2Site + ": <b>" + rec.m_s2s + "</b></td></tr>" +
-                "<tr><td width='50'></td><td>" +
+                this.m_indent + "&bull; " + g_lang.m_db_vpnSite2Site + ": <b>" + 
+                rec.f_getStatusString(rec.m_s2s) + "</b></td></tr>" +
+                "<tr><td width='35'></td><td>" +
                 this.m_indent + "&bull; " + g_lang.m_db_vpnS2sConfig + ": <b>" +
                 rec.m_s2sConfigured + "</b></td></tr><tr><td></td><td>" +
                 this.m_indent + "&bull; <font color=orange>"+
                 g_lang.m_db_vpnS2sUpRunning + ": <b>" + rec.m_s2sUp +
                 "</b></font></td><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>" +
-                this.m_indent + "&bull; " + g_lang.m_vpnOVRemote + ": <b>" + rec.m_remoteUser +
-                "</b></td><tr><td width='50'></td><td>" +
+                this.m_indent + "&bull; " + g_lang.m_vpnOVRemote + ": <b>" + 
+                rec.f_getStatusString(rec.m_remoteUser) +
+                "</b></td><tr><td width='35'></td><td>" +
                 this.m_indent + "&bull; " + g_lang.m_db_vpnRuConfig + ": <b>" +
                 rec.m_ruConfigured + "</b></td></tr><tr><td></td><td>" +
                 this.m_indent + "&bull; <font color=orange>"+
@@ -304,12 +354,13 @@ UTM_extend(UTM_confDbVPN, UTM_confDbBase);
 
 ////////////////////////////////////////////////////////////////////////////////
 // UTM_confDbIntrusionPrev class
+var counter =0;
 function UTM_confDbIntrusionPrev(parent)
 {
     var thisObj = this;
     this.m_divId = 'utmDashboard_intrusionPrevId';
     this.m_title = g_lang.m_db_intrusion;
-    this.m_titleWidth = document.URL.indexOf("_fr") > 0 ? 132:122;
+    this.m_titleWidth = document.URL.indexOf("_fr.") > 0 ? 132:122;
 
     UTM_confDbIntrusionPrev.superclass.constructor(parent);
 
@@ -317,7 +368,7 @@ function UTM_confDbIntrusionPrev(parent)
     {
         var cb = function(evt)
         {
-            var rec = new UTM_dbIntrusionRec("activated", "17/08/2009", 0, 'NO');
+            var rec = new UTM_dbIntrusionRec("0", "17/08/2009", 0, 'NO');
             thisObj.f_populateIP(rec);
         }
 
@@ -337,11 +388,11 @@ function UTM_confDbIntrusionPrev(parent)
         var alertColor = rec.m_atAlert == 'NO' ? 'green' : 'red';
 
         el.innerHTML = "<p>" + this.m_indent + "&bull; " + g_lang.m_status + ": <b>" +
-                      rec.m_status + "</b></p>" +
+                      rec.f_getStatusString() + "</b></p><br>" +
                       "<p>" + this.m_indent + "&bull; " + g_lang.m_db_lastUpdate + ": <b>" +
-                      rec.m_lastUpdateDate + "</b></p>" +
+                      rec.m_lastUpdateDate + "</b></p><br>" +
                       "<p>" + this.m_indent + "&bull; " + g_lang.m_db_ipNumOfAtBlock +
-                      ": <b>" + rec.m_atBlocked + "</b></p>" +
+                      ": <b>" + rec.m_atBlocked + "</b></p><br>" +
                       "<p>" + this.m_indent + "&bull; " + g_lang.m_db_ipAttackAlert +
                       ": <font color="+
                       alertColor + "><b>" + rec.m_atAlert + "</b></font></p>";
@@ -364,7 +415,7 @@ function UTM_confDbWebFiltering(parent)
     {
         var cb = function(evt)
         {
-            var rec = new UTM_dbWebFilteringRec('deactivated', "19/08/2009", 'YES');
+            var rec = new UTM_dbWebFilteringRec('1', "19/08/2009", 'YES');
             thisObj.f_populateWeb(rec);
         }
 
@@ -384,9 +435,9 @@ function UTM_confDbWebFiltering(parent)
         var alertColor = rec.m_violation == 'NO' ? 'green' : 'red';
 
         el.innerHTML = "<p>" + this.m_indent + "&bull; " + g_lang.m_status + ": <b>" +
-                      rec.m_status + "</b></p>" +
+                      rec.f_getStatusString() + "</b></p><br>" +
                       "<p>" + this.m_indent + "&bull; " + g_lang.m_db_lastUpdate + ": <b>" +
-                      rec.m_lastUpdateDate + "</b></p>" +
+                      rec.m_lastUpdateDate + "</b></p><br>" +
                       "<p>" + this.m_indent + "&bull; " + g_lang.m_db_webViolation +
                       ": <font color="+
                       alertColor + "><b>" + rec.m_violation + "</b></font></p>";

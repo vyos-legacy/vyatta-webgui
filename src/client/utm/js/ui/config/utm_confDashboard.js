@@ -230,7 +230,7 @@ function UTM_confDbFirewall(parent)
     {
         var cols = [];
 
-        cols[0] = this.f_createColumn("#", 25, 'text', '6', false);
+        cols[0] = this.f_createColumn("#", 25, 'text', '0', false);
         cols[1] = this.f_createColumn(g_lang.m_db_fwService, 70, 'text', '0', false);
         cols[2] = this.f_createColumn(g_lang.m_fireCustRuleNo, 55, 'text', '0', false);
         cols[3] = this.f_createColumn("IP<br>"+g_lang.m_fireCustProtocol,72, 'text', '0', false);
@@ -337,7 +337,7 @@ function UTM_confDbVPN(parent)
                 "<tr><td width='35'></td><td>" +
                 this.m_indent + "&bull; " + g_lang.m_db_vpnS2sConfig + ": <b>" +
                 rec.m_s2sConfigured + "</b></td></tr><tr><td></td><td>" +
-                this.m_indent + "&bull; <font color=orange>"+
+                this.m_indent + "&bull; <font color=#FF5500>"+
                 g_lang.m_db_vpnS2sUpRunning + ": <b>" + rec.m_s2sUp +
                 "</b></font></td><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>" +
                 this.m_indent + "&bull; " + g_lang.m_vpnOVRemote + ": <b>" + 
@@ -345,7 +345,7 @@ function UTM_confDbVPN(parent)
                 "</b></td><tr><td width='35'></td><td>" +
                 this.m_indent + "&bull; " + g_lang.m_db_vpnRuConfig + ": <b>" +
                 rec.m_ruConfigured + "</b></td></tr><tr><td></td><td>" +
-                this.m_indent + "&bull; <font color=orange>"+
+                this.m_indent + "&bull; <font color=#FF5500>"+
                 g_lang.m_db_vpnRuConnected + ": <b>" +
                 rec.m_ruConnected + "</b></font></td>";
     }

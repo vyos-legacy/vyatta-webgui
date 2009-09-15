@@ -191,7 +191,6 @@ function UTM_confBaseObj(name, callback, busLayer)
     this.f_createGridRow = function(header, data, height, rowId, enableScroll, valign)
     {
         var div = document.createElement('div');
-        //div.style.position = 'relative';
         div.style.borderBottom = '1px dotted #CCC';
         div.style.backgroundColor = 'white';
         div.style.paddingTop = '0px';
@@ -252,7 +251,7 @@ function UTM_confBaseObj(name, callback, busLayer)
 
             if(i == 0 && thisObj.m_enableTableIndexCol)
             {
-                var ar = [thisObj.m_tableRowCounter+1]
+                var ar = [thisObj.f_createSimpleDiv(thisObj.m_tableRowCounter+1, "center")];
                 data = ar.concat(data);
             }
 

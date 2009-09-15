@@ -30,7 +30,7 @@ function UTM_rptVpnAdvanced(name, busLayer, refresh)
 	
 	this.f_init = function()
 	{
-		thisObj.m_container.f_initInner('#rpt_log_advanced_fw', 'rpt_vpn_advanced', g_lang.m_menu_vpn);				
+		thisObj.m_container.f_initInner('#rpt_log_advanced_config_text', 'rpt_vpn_advanced', g_lang.m_menu_vpn);				
 	}
 
     this.f_changed = function()

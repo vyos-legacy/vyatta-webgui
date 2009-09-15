@@ -80,7 +80,7 @@ function UTM_htmlBuilder()
 	];				
 	var smLogMenu = [
 	    { 'key': 'log_basic_l2', 'desc': g_lang.m_menu_des_basic_log, 'value': g_lang.m_menu_basic_log},
-	    { 'key': 'log_advanced_l2', 'desc': g_lang.m_menu_des_advanced_log, 'value': g_lang.m_menu_advanced_log},		
+	    { 'key': 'log_advanced_l2', 'desc': g_lang.m_menu_des_advanced_log, 'value': g_lang.m_menu_advanced_log}		
 	];
 					
 	var smArray = [

@@ -30,7 +30,7 @@ function UTM_rptIdsAdvanced(name, busLayer, refresh)
 	
 	this.f_init = function()
 	{
-		thisObj.m_container.f_initInner('#rpt_log_advanced_fw', 'rpt_ids_advanced', g_lang.m_menu_idp);				
+		thisObj.m_container.f_initInner('#rpt_log_advanced_config_text', 'rpt_ids_advanced', g_lang.m_menu_idp);				
 	}
 	
 	this.f_attachEventListener = function()

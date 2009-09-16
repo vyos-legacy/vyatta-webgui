@@ -1,3 +1,34 @@
+vyatta-webgui (0.2.14+fxdU+123) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * added table index column
+
+  [ Loi Vo ]
+  * Prelimary work on template for expandable container, and basic log
+    screens.
+  * Remove backup files mistakenly checked in from previous commit
+  * Add advanced log menu + template support
+
+  [ Kevin Choi ]
+  * * dashboard screen:
+  * * dashboard
+
+  [ Loi Vo ]
+  * 1. Fix an extra comma in utm_htmlBuilder that causes exception in IE
+  * 1. Fix a cross-browser issue where the list item, and <img> tag in
+    <a href> don't align properly in IE and Opera.
+
+  [ Kevin Choi ]
+  * * dashboard:
+  * * intrusion basic log
+  * * created a new business layer for all utm log.
+  * * created a bus layer template for logs
+
+  [ Mohit Mehta ]
+  * code to handle read-only expert mode for l2tp vpn
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Wed, 16 Sep 2009 11:49:20 -0700
+
 vyatta-webgui (0.2.14+fxdU+122) unstable; urgency=low
 
   [ Loi Vo ]

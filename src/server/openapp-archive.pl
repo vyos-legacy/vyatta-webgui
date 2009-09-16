@@ -638,7 +638,7 @@ sub restore_archive {
 		else {
 		    $cmd .= "data=true&config=true";
 		}
-		$cmd .= "&file=http://192.168.0.101/backup/restore/$ar_name";
+		$cmd .= "&file=https://192.168.0.101/backup/restore/$ar_name";
 		my $obj = new OpenApp::Rest();
 		my $err = $obj->send("PUT",$cmd);
 		if ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {

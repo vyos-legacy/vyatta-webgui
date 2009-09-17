@@ -1,3 +1,13 @@
+vyatta-webgui (0.2.14+fxdU+124) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fixed cut&paste issue which cause firewall screen to fail.
+
+  [ Mohit Mehta ]
+  * * Remote access IP allocation range should be inside the LAN subnet
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Wed, 16 Sep 2009 18:58:03 -0700
+
 vyatta-webgui (0.2.14+fxdU+123) unstable; urgency=low
 
   [ Kevin Choi ]

@@ -37,10 +37,10 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		'conf_vpn_rug_divider5',
 		'conf_vpn_rug_spacer9',			
 		'conf_vpn_rug_ike_p2_label',
-		'conf_vpn_rug_ike_p2_local_network_label',
-		'conf_vpn_rug_ike_p2_remote_network_label',
+		//'conf_vpn_rug_ike_p2_local_network_label',
+		//'conf_vpn_rug_ike_p2_remote_network_label',
 		//o='conf_vpn_rug_ike_p2_dfs_label',
-		'conf_vpn_rug_ike_p2_lifetime_label',
+		//'conf_vpn_rug_ike_p2_lifetime_label',
 		'conf_vpn_rug_ike_p2_encrypt_label',
 		'conf_vpn_rug_ike_p2_auth_label'
 	];
@@ -58,10 +58,10 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
         'conf_vpn_rug_ike_p1_preshare',
         'conf_vpn_rug_ike_p1_confirm_preshare',
         'conf_vpn_rug_ike_p1_lifetime',
-        'conf_vpn_rug_ike_p2_local_network_ip',
-        'conf_vpn_rug_ike_p2_local_network_mask',
-        'conf_vpn_rug_ike_p2_remote_network_ip',
-        'conf_vpn_rug_ike_p2_remote_network_mask',
+        //'conf_vpn_rug_ike_p2_local_network_ip',
+        //'conf_vpn_rug_ike_p2_local_network_mask',
+        //'conf_vpn_rug_ike_p2_remote_network_ip',
+        //'conf_vpn_rug_ike_p2_remote_network_mask',
         //'conf_vpn_rug_ike_p2_lifetime',
 		'conf_vpn_rug_ip_alloc_start',
         'conf_vpn_rug_ip_alloc_stop'		
@@ -194,7 +194,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
         defObj.f_addDivider('conf_vpn_rug_divider4','3');	
 		defObj.f_addEmptySpace('conf_vpn_rug_basic_spacer7','3');
 		//defObj.f_addLabelBold('conf_vpn_rug_ike_phase1_label',g_lang.m_vpn_IKEnegPhase1,'true');				
-        var ikeLabel = defObj.f_createLabel('conf_vpn_rug_ike_phase1_label', g_lang.m_vpn_IKEnegPhase1, 'true', 'true', 'bold', 'left', '2');		
+        var ikeLabel = defObj.f_createLabel('conf_vpn_rug_ike_phase1_label', g_lang.m_vpn_IKEnegPhase1, 'true', 'true', 'bold', 'left', '3');		
 		defObj.f_addItem(ikeLabel);		
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p1_proto',
@@ -232,6 +232,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		defObj.f_addEmptySpace('conf_vpn_rug_spacer9','3');
 		
 		defObj.f_addLabelBold('conf_vpn_rug_ike_p2_label',g_lang.m_vpn_IKEphase2,'true');
+		/*
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p2_local_network',
             '<input type="text" id="conf_vpn_rug_ike_p2_local_network_ip" size="16" class="v_form_input">&nbsp;/&nbsp;' +
@@ -244,16 +245,17 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 				      '<input type="text" id="conf_vpn_rug_ike_p2_remote_network_mask" size="2" class="v_form_input">',
 			g_lang.m_vpn_RemoteNetwork	
 		);	
-		/*					
+						
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p2_dfs',
             '<select style="display:none" name="conf_vpn_rug_ike_p2_dfs" id="conf_vpn_rug_ike_p2_dfs" class="v_form_input"><option value="group 1" selected>group 1</option><option value="group 2">group 2</option><option value="group 5">group 5</option><option value="group 14">group 14</option></select>',
 			g_lang.m_vpn_DFS	
 		);
-		*/							
+									
 		defObj.f_addHtml('conf_vpn_rug_ike_p2_lifetime',
 		    '<span name="conf_vpn_rug_ike_p2_lifetime" id="conf_vpn_rug_ike_p2_lifetime" class="v_form_text">3600</span>',
 			g_lang.m_vpn_LifeTime);		
+		*/	
 		defObj.f_addHtml(
 		    'conf_vpn_rug_ike_p2_encrypt',
             '<span name="conf_vpn_rug_ike_p2_encrypt" id="conf_vpn_rug_ike_p2_encrypt" class="v_form_text">3DES/ AES256</span>',
@@ -314,10 +316,10 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		//thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_auth, thisObj.m_usrGrp.m_p1_auth);
 		//thisObj.f_setComboBoxSelectionByValue(thisObj.m_form.conf_vpn_rug_ike_p1_diffle, thisObj.m_usrGrp.m_p1_dfsGrp);
 		//thisObj.m_form.conf_vpn_rug_ike_p1_lifetime.value = thisObj.m_usrGrp.m_p1_lifetime;
-		thisObj.m_form.conf_vpn_rug_ike_p2_local_network_ip.value = thisObj.m_usrGrp.f_getLocalNetworkIp();
-		thisObj.m_form.conf_vpn_rug_ike_p2_local_network_mask.value = thisObj.m_usrGrp.f_getLocalNetworkPrefix();
-        thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_ip.value = thisObj.m_usrGrp.f_getRemoteNetworkIp();
-		thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_mask.value = thisObj.m_usrGrp.f_getRemoteNetworkPrefix();		
+		//thisObj.m_form.conf_vpn_rug_ike_p2_local_network_ip.value = thisObj.m_usrGrp.f_getLocalNetworkIp();
+		//thisObj.m_form.conf_vpn_rug_ike_p2_local_network_mask.value = thisObj.m_usrGrp.f_getLocalNetworkPrefix();
+        //thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_ip.value = thisObj.m_usrGrp.f_getRemoteNetworkIp();
+		//thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_mask.value = thisObj.m_usrGrp.f_getRemoteNetworkPrefix();		
 		//thisObj.m_form.conf_vpn_rug_ike_p2_lifetime.value = thisObj.m_usrGrp.m_p2_lifetime;		
 	}
 
@@ -330,18 +332,30 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		}
 		listCtrl.appendChild(opElem);		
 	}
+	
+	this.f_removeAllOptions = function(listCtrl)
+	{
+		while (listCtrl.childNodes[0]) {
+			listCtrl.removeChild(listCtrl.childNodes[0]);
+		}
+	}
 
     this.f_loadUserList = function()
 	{
 		var listCtrl = document.getElementById('conf_vpn_rug_usr');
 		if (listCtrl != null) {
+			thisObj.f_removeAllOptions(listCtrl);
 			if ((thisObj.m_usrGrp.m_users == null) || (thisObj.m_usrGrp.m_users.length <= 0)) {
 				//no user
+				listCtrl.setAttribute('size', '3');
 				for (var i=0; i < 3; i++) {
 					thisObj.f_addOption(listCtrl, '&nbsp;', false);
 				}
 			} else {
 				thisObj.m_usrGrp.m_users.sort();
+				if (thisObj.m_usrGrp.m_users.length > 10) {
+					listCtrl.setAttribute('size', '10');
+				}
 				for (var i =0; i < thisObj.m_usrGrp.m_users.length; i++) {
 					thisObj.f_addOption(listCtrl, thisObj.m_usrGrp.m_users[i], true);
 				}
@@ -421,7 +435,7 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		}
 		usrGrp.m_enable = thisObj.m_usrGrp.m_enable;
 		//usrGrp.m_auth = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_auth);
-		usrGrp.m_auth = 'L2TP';
+		usrGrp.m_auth = 'l2tp';
         //usrGrp.m_ipalloc = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ip_alloc);
 		usrGrp.m_ipalloc = 'static';
 		//if (usrGrp.m_ipalloc == 'static') {
@@ -445,10 +459,10 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 		    //usrGrp.m_p1_auth = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ike_p1_auth);
 		    //usrGrp.m_p1_dfsGrp = thisObj.f_getComboBoxSelectedValue(thisObj.m_form.conf_vpn_rug_ike_p1_diffle);
 		    //usrGrp.m_p1_lifetime = thisObj.m_form.conf_vpn_rug_ike_p1_lifetime.value;
-			usrGrp.f_setLocalNetwork(thisObj.m_form.conf_vpn_rug_ike_p2_local_network_ip.value,
-			    thisObj.m_form.conf_vpn_rug_ike_p2_local_network_mask.value);
-			usrGrp.f_setRemoteNetwork(thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_ip.value,
-			    thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_mask.value);	
+			//usrGrp.f_setLocalNetwork(thisObj.m_form.conf_vpn_rug_ike_p2_local_network_ip.value,
+			//    thisObj.m_form.conf_vpn_rug_ike_p2_local_network_mask.value);
+			//usrGrp.f_setRemoteNetwork(thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_ip.value,
+			//    thisObj.m_form.conf_vpn_rug_ike_p2_remote_network_mask.value);	
 		    //usrGrp.m_p2_lifetime = thisObj.m_form.conf_vpn_rug_ike_p2_lifetime.value;					
 		}
 		return usrGrp;

@@ -294,7 +294,7 @@ var g_lang =
 	m_vpnRUG_ipend: "end range",
     m_vpnRUG_InternetAccess : "internet access",
 	m_vpnRUG_range_invalid: "end range must be greater than start range!",
-	m_vpnRUG_from_OA: "from the Open Appliance",
+	m_vpnRUG_from_OA: "through the Open Appliance",
 	m_vpnRUG_transport_natt_esp: "transport with NAT-T/ ESP",
     m_vpnRUG_main: "main",
     m_vpnRUG_group_2_5: "group 2/ group 5",	

@@ -172,8 +172,8 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 			//xml = xml + '<ikeauth>' + thisObj.m_p1_auth + '</ikeauth>';
 			//xml = xml + '<dhgroup>' + thisObj.m_p1_dfsGrp + '</dhgroup>';
 			//xml = xml + '<ikeltime>' + thisObj.m_p1_lifetime + '</ikeltime>';
-			xml = xml + '<lnet>' + thisObj.m_localNetwork + '</lnet>';
-		    xml = xml + '<rnet>' + thisObj.m_remoteNetwork + '</rnet>';
+			//xml = xml + '<lnet>' + thisObj.m_localNetwork + '</lnet>';
+		    //xml = xml + '<rnet>' + thisObj.m_remoteNetwork + '</rnet>';
 			//xml = xml + '<espdhgroup>' + thisObj.m_p2_dfsGrp + '</espdhgroup>';
 			//xml = xml + '<espltime>' + thisObj.m_p2_lifetime + '</espltime>';
 			//xml = xml + '<espencrypt>' + thisObj.m_p2_encrypt + '</espencrypt>';

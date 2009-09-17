@@ -471,7 +471,9 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 	
 	this.f_showExpert = function(b)
 	{
-        if (b) {
+        if (b) {		    
+			thisObj.m_form.conf_vpn_rug_ike_p1_preshare.value = thisObj.m_form.conf_vpn_rug_preshared_key.value;				
+			thisObj.m_form.conf_vpn_rug_ike_p1_confirm_preshare.value = thisObj.m_form.conf_vpn_rug_confirm_preshared_key.value;			
             for (var i=0; i < thisObj.m_expItems.length; i++) {
 				thisObj.f_hideTableRow(thisObj.m_expItems[i], false);
 			}
@@ -479,6 +481,8 @@ function UTM_confVpnRemoteUsrGrp(name, callback, busLayer)
 				thisObj.f_hideTableRow(thisObj.m_ezItems[i], true);
 			}			
 		} else {
+			thisObj.m_form.conf_vpn_rug_preshared_key.value = thisObj.m_form.conf_vpn_rug_ike_p1_preshare.value;				
+			thisObj.m_form.conf_vpn_rug_confirm_preshared_key.value = thisObj.m_form.conf_vpn_rug_ike_p1_confirm_preshare.value;			
             for (var i=0; i < thisObj.m_expItems.length; i++) {
 				thisObj.f_hideTableRow(thisObj.m_expItems[i], true);
 			}

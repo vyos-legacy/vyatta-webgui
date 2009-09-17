@@ -29,7 +29,7 @@ function UTM_vpnLogRec()
 /**
  * logs business object
  */
-function UTM_firewallBusObj(busObj)
+function UTM_logBusObj(busObj)
 {
     /////////////////////////////////////
     // properteis

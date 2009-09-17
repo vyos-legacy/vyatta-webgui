@@ -476,7 +476,7 @@ function UTM_businessLayer()
     this.f_getLogObject = function()
     {
         if(this.m_logObj == null)
-            this.m_logObj = new UTM_firewallBusObj(thisObj);
+            this.m_logObj = new UTM_logBusObj(thisObj);
 
         return this.m_logObj;
     }
@@ -516,6 +516,7 @@ function UTM_businessLayer()
     }
     this.f_getFirewallZoneMgmtList = function(guicb)
     {
+        var t = thisObj.f_getFWObject();
         thisObj.f_getFWObject().f_getFirewallZoneMgmtList(guicb);
     }
     this.f_setFirewallZoneMgmtDescription = function(rec, guicb)

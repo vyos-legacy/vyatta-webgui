@@ -173,7 +173,9 @@ sub set_group {
   
   # set global vpn settings
   push @cmds, "set vpn ipsec ipsec-interfaces interface $wan_interface",
-              "set vpn ipsec nat-networks allowed-network 0.0.0.0/0",
+              "set vpn ipsec nat-networks allowed-network 10.0.0.0/8",
+              "set vpn ipsec nat-networks allowed-network 192.168.0.0/16",
+              "set vpn ipsec nat-networks allowed-network 172.16.0.0/12",
               "set vpn ipsec nat-traversal enable";
   
   if ($xml->{groupauth} eq 'l2tp') {
@@ -222,7 +224,12 @@ sub set_group {
     my $lan_ip_object = new NetAddr::IP($lan_ips[0]);
     my $start_ip_object = new NetAddr::IP($xml->{ipalloc}->{static}->{start});
     my $stop_ip_object = new NetAddr::IP($xml->{ipalloc}->{static}->{stop});
-    
+
+    push @cmds, "delete vpn ipsec nat-networks allowed-network 192.168.0.0/16"
+                . " exclude";
+    my $lan_network = $lan_ip_object->network();
+    push @cmds, "set vpn ipsec nat-networks allowed-network 192.168.0.0/16" 
+                . " exclude $lan_network";    
     if ( !($lan_ip_object->contains($start_ip_object) && 
            $lan_ip_object->contains($stop_ip_object)) ) {
       # start-stop range outside of LAN subnet
@@ -342,7 +349,9 @@ sub delete_group {
   my $err;
   my @cmds = ();
   if (is_group_l2tp($grp_name) == 0) {
-    $err = OpenApp::Conf::execute_session("delete vpn l2tp", "commit", "save");
+    $err = OpenApp::Conf::execute_session("delete vpn l2tp", 
+    "delete vpn ipsec nat-networks allowed-network 192.168.0.0/16 exclude", 
+    "commit", "save");
     if (defined $err) {
       $msg = "<form name='vpn remote-access delete_group' code='3'>";
       $msg .= "<errmsg>Error deleting remote-access group $grp_name</errmsg>";

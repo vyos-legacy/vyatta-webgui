@@ -324,8 +324,8 @@ function FT_confBackup(name, callback, busLayer)
                     //alert('adding row: vm: ' + v.m_name + ' innerHTML: ' + bodyDiv.innerHTML);
                     thisObj.m_body.appendChild(bodyDiv);
                 }
-                thisObj.f_adjustDivPosition(thisObj.m_bottom);
-                thisObj.f_resize(10);
+                //thisObj.f_adjustDivPosition(thisObj.m_bottom);
+                //thisObj.f_resize(10);
             }
         }
         thisObj.m_busLayer.f_getVMDataFromServer(cb);

@@ -65,7 +65,7 @@ function FT_confDashboard(name, callback, busLayer)
 
                 thisObj.f_populateTable();
             }
-            thisObj.f_resize();
+            //thisObj.f_resize();
         };
 
         g_utils.f_cursorWait();
@@ -143,7 +143,7 @@ function FT_confDashboard(name, callback, busLayer)
         }
         thisObj.m_body.appendChild(thisObj.f_createGridMsgRow(criticalText));
 
-        thisObj.f_adjustDivPosition(thisObj.m_buttons);
+        //thisObj.f_adjustDivPosition(thisObj.m_buttons);
         thisObj.f_updateButtons();
     };
 

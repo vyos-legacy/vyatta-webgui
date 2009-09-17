@@ -80,8 +80,8 @@ function FT_confUserList(name, callback, busLayer)
                     thisObj.f_resetPagination(thisObj.m_uRec.length);
                     thisObj.f_populateTable();
                 }
-
-                thisObj.f_resizeSimple();
+                //thisObj.f_adjustDivPosition(thisObj.m_buttons);
+                //thisObj.f_resizeSimple();
             }
         };
 

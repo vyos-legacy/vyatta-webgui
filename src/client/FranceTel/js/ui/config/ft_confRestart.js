@@ -62,7 +62,7 @@ function FT_confRestart(name, callback, busLayer)
                 if(thisObj.m_vmRec == undefined) return;
                 thisObj.f_populateTable();
             }
-            thisObj.f_resize();
+            //thisObj.f_resize();
         }
 
         g_utils.f_cursorWait();

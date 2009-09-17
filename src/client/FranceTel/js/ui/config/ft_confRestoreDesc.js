@@ -82,8 +82,8 @@ function FT_confRestoreDesc(name, callback, busLayer)
             thisObj.m_body.appendChild(bodyDiv);
         }
 
-        thisObj.f_adjustDivPosition(thisObj.m_buttons);
-        thisObj.f_resize();
+        //thisObj.f_adjustDivPosition(thisObj.m_buttons);
+        //thisObj.f_resize();
     }
 
     this.f_stopLoadVMData = function()

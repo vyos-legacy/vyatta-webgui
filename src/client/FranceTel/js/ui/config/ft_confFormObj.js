@@ -91,7 +91,7 @@ function FT_confFormObj(name, callback, busLayer) {
         this.f_attachEventListener();
         this.f_loadVMData(div);
         this.m_div = div;
-		this.f_resize(20);
+		//this.f_resize(20);
         return div;
     }
 

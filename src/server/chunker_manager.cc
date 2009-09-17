@@ -42,19 +42,11 @@ ProcessQueue::~ProcessQueue()
  * updates current time for specific process coll
  **/
 void
-ProcessQueue::update_time(string key)
+ProcessQueue::update_time()
 {
-  ProcIter i = _proc_coll.find(key);
-  if (i != _proc_coll.end()) {
-    std::vector<ProcessData> q = i->second;
-    
-    std::vector<ProcessData>::iterator j = q.begin();
-    if (j != q.end()) {
-      struct timeval t;
-      gettimeofday(&t,NULL);
-      j->_time = t.tv_sec;
-    }
-  }
+  timeval t;
+  gettimeofday(&t,NULL);
+  _active_proc._time = t.tv_sec;
 }
 
 /**
@@ -66,25 +58,15 @@ ProcessQueue::cull()
   struct timeval t;
   gettimeofday(&t,NULL);
   unsigned long cur_time = t.tv_sec;
-
-  ProcIter i = _proc_coll.begin();
-  while (i != _proc_coll.end()) {
-    std::vector<ProcessData> q = i->second;
-    std::vector<ProcessData>::iterator j = q.begin();
-    if (j != q.end()) {
-      if ((j->_time + _kill_timeout) < cur_time) {
-	//kill current process
-	WebGUI::debug("ProcessQueue::cull() process killed, exceeded timeout: " + i->first);
-	
-	//erase and start second process
-	pop(i->first);
-      }
-    }
-    if (is_done(i->first) == true) {
-      WebGUI::debug("ProcessQueue::cull() process done: " + i->first);
-      pop(i->first);
-    }
-    ++i;
+  
+  if ((_active_proc._time + _kill_timeout) < cur_time ||
+      is_done() == true) {
+    //kill current process
+    WebGUI::debug("ProcessQueue::cull() process killed, exceeded timeout: ");
+    
+    //erase and start second process
+    kill_process();
+    start_new_proc();
   }
 }
 
@@ -101,27 +83,20 @@ ProcessQueue::push(string key, ProcessData &pd)
   WebGUI::debug("ProcessQueue::push(), entering push");
   ProcIter i = _proc_coll.find(key);
   if (i == _proc_coll.end()) {
-    _proc_coll.insert(pair<string,vector<ProcessData> >(key,vector<ProcessData>()));
+    _proc_coll.insert(pair<string,ProcessData>(key,pd));
     i = _proc_coll.find(key);
   }
-  if (i->second.size() > _depth) {
-    vector<ProcessData>::iterator j = i->second.end();
-    --j;
-    if (j != i->second.end()) {
-      *j = pd;
-    }
+  else {
+    i->second = pd;
     //replace last entry...
   }
-  else {
-    i->second.push_back(pd);
-  }
   char buf[80];
-  sprintf(buf,"%d",(int)i->second.size());
+  sprintf(buf,"%d",(int)_proc_coll.size());
   WebGUI::debug("ProcessQueue::push(), pushing command into queue of size: " + string(buf));
 
   //only start if this is the first one
-  if (i->second.size() == 1) {
-    start_new_proc(key);
+  if (_active_proc._active == false) {
+    start_new_proc();
   }
 }
 
@@ -129,67 +104,32 @@ ProcessQueue::push(string key, ProcessData &pd)
  *
  **/
 void
-ProcessQueue::start_new_proc(string key) 
-{
-  ProcIter i = _proc_coll.find(key);
-  if (i != _proc_coll.end()) {
-    vector<ProcessData>::iterator j = i->second.begin();
-    if (j != i->second.end()) {
-      WebGUI::debug("ProcessQueue::start_new_proc(): starting new process...");
-      j->_proc.init(_chunk_size,_pid,_debug);
-      j->_proc.start_new(j->_token,j->_command);
-    }
-  }
-}
-
-/**
- * Removes active process from queue for key
- **/
-void
-ProcessQueue::pop(string key)
-{
-  WebGUI::debug("Processqueue::pop(), entering");
-  ProcIter i = _proc_coll.find(key);
-  if (i != _proc_coll.end()) {
-    char buf[80];
-    sprintf(buf,"%d",(int)i->second.size());
-    WebGUI::debug("ProcessQueue::pop(), removing " + string(buf));
-    vector<ProcessData>::iterator j = i->second.begin();
-    if (j != i->second.end()) {
-      i->second.erase(j);
-
-      //kill process too
-      kill_process(key);
-
-      start_new_proc(key); //if any
-    }
-  }
-}
-
-/**
- *
- **/
-void
-ProcessQueue::kill_all()
+ProcessQueue::start_new_proc()
 {
   ProcIter i = _proc_coll.begin();
-  while (i != _proc_coll.end()) {
-    kill_process(i->first);
-    ++i;
+  if (i != _proc_coll.end()) {
+      WebGUI::debug("ProcessQueue::start_new_proc(): starting new process...");
+      _active_proc = i->second;
+      _active_proc._proc.init(_chunk_size,_pid,_debug);
+      _active_proc._proc.start_new(_active_proc._token,_active_proc._command);
+      _active_proc._active = true;
+      _proc_coll.erase(i);
+  }
+  else {
+    _active_proc = ProcessData(); //reset with empty non-processing process
   }
 }
-
 
 /**
  *
  **/
 void
-ProcessQueue::kill_process(string key)
+ProcessQueue::kill_process()
 {
   string cmd = "kill -9 -"; //now is expecting to kill group
 
   //need to get pid from pid directory...
-  string file = WebGUI::CHUNKER_RESP_PID + "/" + key;
+  string file = WebGUI::CHUNKER_RESP_PID + "/" + _active_proc._token;
   FILE *fp = fopen(file.c_str(), "r");
   char pid[81];
   if (fp) {
@@ -209,9 +149,9 @@ ProcessQueue::kill_process(string key)
  *
  **/
 bool
-ProcessQueue::is_done(string key)
+ProcessQueue::is_done()
 {
-  string end_file = WebGUI::CHUNKER_RESP_TOK_DIR + WebGUI::CHUNKER_RESP_TOK_BASE + key + "_end";
+  string end_file = WebGUI::CHUNKER_RESP_TOK_DIR + WebGUI::CHUNKER_RESP_TOK_BASE + _active_proc._token + "_end";
   struct stat s;
 
   WebGUI::debug("ProcessQueue::is_done(): checking for end file status: " + end_file);
@@ -358,7 +298,7 @@ ChunkerManager::process(char *buf)
       _proc_queue.push(token,pd);
     }
     else {
-      _proc_queue.update_time(token);
+      _proc_queue.update_time();
     }
   }    
   //now go through and cull any orphaned processes
@@ -372,7 +312,7 @@ ChunkerManager::process(char *buf)
 void
 ChunkerManager::shutdown()
 {
-  _proc_queue.kill_all();
+  _proc_queue.kill_process();
   //clean up output directory on startup
   string clean_cmd = string("rm -f ") + WebGUI::CHUNKER_RESP_TOK_DIR + "/* >/dev/null";
   system(clean_cmd.c_str());

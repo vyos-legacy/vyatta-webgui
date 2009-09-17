@@ -183,9 +183,9 @@ sub set_group {
     my @ip = Vyatta::Misc::getIP($wan_interface, '4');
     if (scalar(@ip) == 0) {
       # no IP on WAN interface
-      $msg = "<form name='vpn remote-access set_group' code='4'></form>";
+      $msg = "<form name='vpn remote-access set_group' code='4'>";
       $msg .= "<errmsg>" . "No IP address configured on WAN interface"
-              . "</errmsg>";
+              . "</errmsg></form>";
       print $msg;
       exit 1;
     }
@@ -198,14 +198,71 @@ sub set_group {
         grep '*' | grep $wan_interface | grep -v directly | awk {'print \$5'}`;
     if (scalar(@next_hops) == 0) {
       # no next-hop for WAN interface
-      $msg = "<form name='vpn remote-access set_group' code='4'></form>";
+      $msg = "<form name='vpn remote-access set_group' code='4'>";
       $msg .= "<errmsg>" . "No next-hop for WAN interface"
-              . "</errmsg>";
+              . "</errmsg></form>";
       print $msg;
       exit 1;
     }
     $next_hops[0] =~ s/,//;
     my $next_hop = $next_hops[0]; # right now just get the 1st next-hop u got
+    
+    # start-stop range should be inside LAN subnet 
+    my @lan_ips = Vyatta::Misc::getIP('eth1', '4');
+    if (!defined $lan_ips[0]) {
+      # no IP on LAN interface
+      $msg = "<form name='vpn remote-access set_group' code='4'>";
+      $msg .= "<errmsg>" . "No IP address configured on LAN interface." 
+              . " Remote Access IP range should lie inside the LAN subnet" 
+              . "</errmsg></form>";
+      print $msg;
+      exit 1;
+    }
+    
+    my $lan_ip_object = new NetAddr::IP($lan_ips[0]);
+    my $start_ip_object = new NetAddr::IP($xml->{ipalloc}->{static}->{start});
+    my $stop_ip_object = new NetAddr::IP($xml->{ipalloc}->{static}->{stop});
+    
+    if ( !($lan_ip_object->contains($start_ip_object) && 
+           $lan_ip_object->contains($stop_ip_object)) ) {
+      # start-stop range outside of LAN subnet
+      $msg = "<form name='vpn remote-access set_group' code='4'>";
+      $msg .= "<errmsg>" 
+              . "Remote Access IP range should lie inside the LAN subnet"
+              . "</errmsg></form>";
+      print $msg;
+      exit 1;
+    }
+    
+    # Remote IP start-stop range shud not overlap with LAN's DHCP range
+    my $config = new Vyatta::Config;
+    my $path = "service dhcp-server shared-network-name LAN subnet $lan_ips[0]";
+    my @start_ip = $config->listNodes("$path start"); # shud only be one start
+    if (scalar(@start_ip) > 0) {
+      my $stop_ip = $config->returnValue("$path start $start_ip[0] stop");
+      my $dhcp_startip_object = new NetAddr::IP($start_ip[0]);
+      my $dhcp_stopip_object = new NetAddr::IP($stop_ip);
+      if (  ( ($dhcp_startip_object <= $start_ip_object) && 
+              ($start_ip_object <= $dhcp_stopip_object) ) 
+            ||
+            ( ($dhcp_startip_object <= $stop_ip_object) && 
+              ($stop_ip_object <= $dhcp_stopip_object) ) 
+            ||
+            ( ($start_ip_object <= $dhcp_startip_object) &&
+              ($dhcp_startip_object <= $stop_ip_object) )
+            ||
+            ( ($start_ip_object <= $dhcp_stopip_object) &&
+              ($dhcp_stopip_object <= $stop_ip_object) )
+         ) {      
+        # remote IP range overlaps with DHCP LAN range
+        $msg = "<form name='vpn remote-access set_group' code='4'>";
+        $msg .= "<errmsg>"
+                . "LAN DHCP range and Remote Access IP range shouldn't overlap"
+                . "</errmsg></form>";
+        print $msg;
+        exit 1;
+      }
+    }
     
     # set default l2tp settings
     push @cmds, "set $l2tp_path dns-servers server-1 $wan_ip",

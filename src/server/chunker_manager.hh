@@ -13,10 +13,13 @@
 class ProcessData
 {
 public:
+  ProcessData() : _active(false) {}
+
   ChunkerProcessor _proc;
   unsigned long _time;
   std::string _command;
   std::string _token; //is the string version of the key
+  bool _active;
 };
 
 /**
@@ -26,15 +29,15 @@ public:
 class ProcessQueue 
 {
 public:
-  typedef std::map<std::string, std::vector<ProcessData> > ProcColl;
-  typedef std::map<std::string, std::vector<ProcessData> >::iterator ProcIter;
+  typedef std::map<std::string, ProcessData> ProcColl;
+  typedef std::map<std::string, ProcessData>::iterator ProcIter;
 
 public:
   ProcessQueue(unsigned long depth, const std::string &pid, unsigned long kill_timeout, unsigned long chunk_size, bool debug);
   virtual ~ProcessQueue();
 
   void
-  update_time(std::string key);
+  update_time();
   
   void
   cull();
@@ -43,23 +46,21 @@ public:
   push(std::string key, ProcessData &pd);
 
   void
-  kill_all();
-
-  void
-  kill_process(std::string key);
+  kill_process();
 
 private:
   void
-  start_new_proc(std::string key);
+  start_new_proc();
 
   bool
-  is_done(std::string key);
+  is_done();
 
   void
-  pop(std::string key);
+  pop();
 
 
 private:
+  ProcessData _active_proc;
   unsigned long _depth;
   ProcColl _proc_coll;
   const std::string _pid;

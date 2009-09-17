@@ -167,37 +167,6 @@ MultiResponseCommand::load_valid_multi_cmds()
 }
 
 /**
- * Token is of the form: multi_%rand%_%chunk%
- **/
-string
-MultiResponseCommand::generate_token(std::string &tok)
-{
-  string ret = string("");;
-  //if tok is empty then generate a new one
-  if (tok.empty()) {
-    unsigned long val;
-    char buf[80];
-    
-    FILE *fp = fopen("/dev/urandom", "r");
-    if (fp) {
-      char *ptr = (char*)&val;
-      
-      *ptr = fgetc(fp); if (*ptr == EOF) return string("");
-      *(ptr+1) = fgetc(fp); if (*(ptr+1) == EOF) return ret;
-      *(ptr+2) = fgetc(fp); if (*(ptr+2) == EOF) return ret;
-      *(ptr+3) = fgetc(fp); if (*(ptr+3) == EOF) return ret;
-
-      unsigned long id = (float(val) / float(4294967296.)) * WebGUI::ID_RANGE * 2;
-      sprintf(buf,"%lu",id);
-      
-      ret = string(buf);
-      fclose(fp);
-    }
-  }
-  return ret;
-}
-
-/**
  *
  **/
 string

@@ -92,8 +92,7 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   //set up to run as user id...
   WebGUI::debug("ChunkerProcessor::writer(), starting...");
 
-  unsigned long id = strtoul(token.c_str(),NULL,10);
-  string name = WebGUI::get_user(id);
+  string name = WebGUI::get_user(token);
 
   struct passwd *pw;
   pw = getpwnam(name.c_str());

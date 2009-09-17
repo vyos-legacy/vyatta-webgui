@@ -37,7 +37,7 @@ void
 Configuration::get_config()
 {
   //now check for directory
-  if (!validate_session(_proc->get_msg().id_by_val())) {
+  if (!validate_session(_proc->get_msg().id())) {
     _proc->set_response(WebGUI::SESSION_FAILURE);
     return;
   }
@@ -607,15 +607,10 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
  *
  **/
 bool
-Configuration::validate_session(unsigned long id)
+Configuration::validate_session(string id)
 {
-  if (id <= WebGUI::ID_START) {
-    return false;
-  }
   //then add a directory check here for valid configuration
-  char buf[40];
-  sprintf(buf, "%lu", id);
-  string directory = WebGUI::LOCAL_CONFIG_DIR + string(buf);
+  string directory = WebGUI::LOCAL_CONFIG_DIR + id;
   DIR *dp = opendir(directory.c_str());
   if (dp == NULL) {
     syslog(LOG_DEBUG,"dom0: failed to session data");

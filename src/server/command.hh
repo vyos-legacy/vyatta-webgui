@@ -21,7 +21,7 @@ private:
   execute_single_command(std::string &cmd, const std::string &username, WebGUI::AccessLevel access_level, std::string &resp, WebGUI::Error &err);
 
   bool
-  validate_session(unsigned long id);
+  validate_session(std::string id);
 
   WebGUI::AccessLevel
   validate_op_cmd(const std::string &username, WebGUI::AccessLevel user_access_level, std::string &cmd);

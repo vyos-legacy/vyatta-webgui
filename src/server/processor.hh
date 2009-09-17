@@ -61,18 +61,14 @@ class Message
 public:
   Message() : 
     _mode(0),
-    _static(false),
-    _id(0) 
+    _static(false)
   {}
   
   void
-  set_id(unsigned long id);
+  set_id(std::string &id);
 
   std::string
   id();
-
-  unsigned long
-  id_by_val();
 
 public:
   char *_request;
@@ -97,7 +93,7 @@ public:
   bool _static;
 
 private:
-  unsigned long _id;
+  std::string _id;
 };
 
 class Processor
@@ -140,7 +136,7 @@ public:
   get_msg() {return _msg;}
 
   void
-  set_session_id(unsigned long id) {_msg.set_id(id);}
+  set_session_id(std::string id) {_msg.set_id(id);}
 
   void
   clear_message() {_msg = Message();}

@@ -17,6 +17,7 @@ using namespace std;
 
 const unsigned long WebGUI::ID_START = 2147483648UL;
 const unsigned long WebGUI::ID_RANGE = 2147483647UL;
+const unsigned long WebGUI::ID_MAX =   4294967295UL;
 
 const unsigned long WebGUI::DEFAULT_SESSION_TIMEOUT_WINDOW = 1800UL;
 const string WebGUI::VYATTA_CONFIG_SESSION_TIMEOUT_WINDOW = "/opt/vyatta/config/active/system/open-app/parameters/session-timeout/node.val";
@@ -80,17 +81,16 @@ FILE* WebGUI::_deb_fp = NULL;
  *
  **/
 bool
-WebGUI::is_restricted(unsigned long id)
+WebGUI::is_restricted(std::string id)
 {
-  char buf[1025];
-  sprintf(buf, "%lu", id);
-  string file = WebGUI::VYATTA_MODIFY_FILE + buf;
+  string file = WebGUI::VYATTA_MODIFY_FILE + id;
   FILE *fp = fopen(file.c_str(), "r");
   if (!fp) {
     return true;
   }
   
   //now delimit line based on ',' and take second value
+  char buf[1025];
   fgets(buf, 1024, fp);
   string tmp(buf);
   string::size_type pos = tmp.find(",");
@@ -130,17 +130,16 @@ WebGUI::get_session_timeout()
  *
  **/
 std::string
-WebGUI::get_user(unsigned long id)
+WebGUI::get_user(std::string id)
 {
-  char buf[1025];
-  sprintf(buf, "%lu", id);
-  string file = WebGUI::VYATTA_MODIFY_FILE + buf;
+  string file = WebGUI::VYATTA_MODIFY_FILE + id;
   FILE *fp = fopen(file.c_str(), "r");
   if (!fp) {
     return false;
   }
   
   //now delimit line based on ',' and take second value
+  char buf[1025];
   fgets(buf,1024,fp);
   string tmp(buf);
   string::size_type pos = tmp.find(",");
@@ -156,7 +155,7 @@ WebGUI::get_user(unsigned long id)
  *
  **/
 bool
-WebGUI::set_user(unsigned long id, const std::string &user, bool restricted,
+WebGUI::set_user(std::string id, const std::string &user, bool restricted,
                  const std::string &pass)
 {
   string flag = string((restricted == true) ? "1" : "0");
@@ -171,9 +170,7 @@ WebGUI::set_user(unsigned long id, const std::string &user, bool restricted,
 
   string tmp = user + "," + flag + "," + string(epass);
 
-  char buf[80];
-  sprintf(buf, "%lu", id);
-  string file = WebGUI::VYATTA_MODIFY_FILE + buf;
+  string file = WebGUI::VYATTA_MODIFY_FILE + id;
   FILE *fp = fopen(file.c_str(), "w");
   if (!fp) {
     return false;
@@ -277,12 +274,9 @@ WebGUI::trim_whitespace(const std::string &src)
  *
  **/
 void
-WebGUI::remove_session(unsigned long id)
+WebGUI::remove_session(string id)
 {
-  char buf[40];
-  sprintf(buf, "%lu", id);
-  string val(buf);
-  discard_session(val);
+  discard_session(id);
 }
 
 /**

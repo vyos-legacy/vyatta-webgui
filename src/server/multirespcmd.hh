@@ -30,9 +30,6 @@ private:
   start_new_proc();
 
   std::string
-  generate_token(std::string &tok);
-
-  std::string
   get_next_resp_file(std::string &tok);
 
 private:

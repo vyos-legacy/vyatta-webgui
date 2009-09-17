@@ -6,6 +6,7 @@ class WebGUI
 public:
   const static unsigned long ID_START;
   const static unsigned long ID_RANGE;
+  const static unsigned long ID_MAX;
 
   const static unsigned long DEFAULT_SESSION_TIMEOUT_WINDOW;
   const static std::string VYATTA_CONFIG_SESSION_TIMEOUT_WINDOW;
@@ -106,17 +107,17 @@ public:
    *
    **/
   static bool
-  is_restricted(unsigned long id);
+  is_restricted(std::string id);
 
   /**
    *
    *
    **/
   static std::string
-  get_user(unsigned long id);
+  get_user(std::string id);
 
   static bool
-  set_user(unsigned long id, const std::string &user, bool restricted,
+  set_user(std::string id, const std::string &user, bool restricted,
            const std::string &pass);
 
   /**
@@ -160,9 +161,7 @@ public:
    *
    **/
   static void
-  remove_session(unsigned long id);
-  static void
-  remove_session(std::string &id);
+  remove_session(std::string id);
   static void
   discard_session(std::string &id);
   

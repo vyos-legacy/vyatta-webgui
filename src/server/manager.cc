@@ -78,7 +78,7 @@ Manager::register_session(Session &session)
     iter->second.close_session();
   }
 
-  _session_coll.insert(pair<unsigned long,Session>(session.get_id(),session));
+  _session_coll.insert(pair<string,Session>(session.get_id(),session));
 
   //NEED TO FIX THIS BELOW--MAP ISN'T CALL COPY CONSTRUCTOR.
   //hack debug code here

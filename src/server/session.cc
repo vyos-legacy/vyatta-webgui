@@ -277,7 +277,7 @@ Session::update_session()
     return false;
   }
 
-  _username = WebGUI::get_user(_processor->get_msg().id_by_val());
+  _username = WebGUI::get_user(_processor->get_msg().id());
   if (_username.empty()) {
     _processor->set_response(WebGUI::SESSION_FAILURE);
     return false;
@@ -324,7 +324,7 @@ Session::update_session()
     _processor->set_response(WebGUI::SESSION_FAILURE);
 
     //command pulled from exit discard
-    WebGUI::remove_session(_processor->get_msg().id_by_val());
+    WebGUI::remove_session(_processor->get_msg().id());
     return false;
   }
 
@@ -380,7 +380,7 @@ Session::clean_up_old_sessions()
     if (strncmp(dirp->d_name, ".vyattamodify_", 14) == 0) {
       struct stat tmp;
       if (lstat((WebGUI::VYATTA_MODIFY_DIR + string(dirp->d_name)).c_str(), &tmp) == 0) {
-        string id_str = string(dirp->d_name).substr(14,24);
+        string id_str = string(dirp->d_name).substr(14,16);
         time_t t = time(NULL);
         if ((tmp.st_mtime + WebGUI::get_session_timeout()) < (unsigned)t) {
 

@@ -38,7 +38,7 @@ private:
   parse_value(std::string &rel_path, std::string &node_name, std::string &out);
 
   bool
-  validate_session(unsigned long id);
+  validate_session(std::string id);
 };
 
 #endif //__CONFIGURATION_HH__

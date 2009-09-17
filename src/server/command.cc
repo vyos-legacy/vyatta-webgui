@@ -35,7 +35,7 @@ Command::execute_command(const string &username, WebGUI::AccessLevel user_access
   }
 
   //validate session id
-  if (!validate_session(_proc->get_msg().id_by_val())) {
+  if (!validate_session(_proc->get_msg().id())) {
     _proc->set_response(WebGUI::SESSION_FAILURE);
     return;
   }
@@ -184,11 +184,8 @@ Command::multi_part_op_cmd(std::string &orig_cmd,std::string &mod_cmd)
  *
  **/
 bool
-Command::validate_session(unsigned long id)
+Command::validate_session(string id)
 {
-  if (id <= WebGUI::ID_START) {
-    return false;
-  }
   //then add a directory check here for valid configuration
   string directory = WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id();
   DIR *dp = opendir(directory.c_str());

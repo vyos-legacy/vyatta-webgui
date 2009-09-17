@@ -23,7 +23,7 @@ int Processor::_REQ_BUFFER_SIZE = 2048;
  *
  **/
 void
-Message::set_id(unsigned long id)
+Message::set_id(string &id)
 {
   _id = id;
 }
@@ -31,16 +31,8 @@ Message::set_id(unsigned long id)
 /**
  *
  **/
-string
+std::string
 Message::id()
-{
-  char buf[40];
-  sprintf(buf, "%lu", _id);
-  return string(buf);
-}
-
-unsigned long
-Message::id_by_val()
 {
   return _id;
 }
@@ -150,7 +142,7 @@ data_hndl(void *data, const XML_Char *s, int len) {
     str = WebGUI::trim_whitespace(str);
 
     if (m->_node == WebGUI::GETCONFIG_ID) {
-      m->set_id(strtoul(str.c_str(), NULL, 10));
+      m->set_id(str);
     }
     else if (m->_node == WebGUI::GETCONFIG_NODE) {
       //value between configuration tags
@@ -188,7 +180,7 @@ data_hndl(void *data, const XML_Char *s, int len) {
     str = WebGUI::trim_whitespace(str);
 
     if (m->_node == WebGUI::CLICMD_ID) {
-      m->set_id(strtoul(str.c_str(), NULL, 10));
+      m->set_id(str);
     }
     else {
       m->_command_coll.push_back(str);

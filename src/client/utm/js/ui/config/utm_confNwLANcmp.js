@@ -302,8 +302,10 @@ function UTM_confNwLANitf(name, callback, busLayer)
     
     this.f_apply = function()
     {
+		g_utils.f_cursorWait();		
         var cb = function(evt)
         {
+			g_utils.f_cursorDefault();			
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
                 if (evt.f_isError()) {
                     g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
@@ -321,7 +323,7 @@ function UTM_confNwLANitf(name, callback, busLayer)
                         thisObj.m_ifObj.m_ip = thisObj.m_form.conf_lan_itf_ip.value.trim();
 		                thisObj.m_ifObj.m_mask = g_utils.f_convertNetmaskToCIDR(thisObj.m_form.conf_lan_itf_mask.value.trim());						
 					}
-                                        thisObj.f_enableAllButton(false);
+                    thisObj.f_enableAllButton(false);
                 }
             }
         };
@@ -342,8 +344,14 @@ function UTM_confNwLANitf(name, callback, busLayer)
             return false;
         }
 		if (thisObj.f_confirmOverwrite()) {
-			g_utils.f_popupMessage(g_lang.m_lanitf_change + " " +
-			    thisObj.m_lanip_label + " " + g_lang.m_lanitf_confirm_overwrite, 'confirm', g_lang.m_info, true, thisObj.m_eventCbFunction + "('" + thisObj.m_objectId + "," + thisObj.m_btnConfirmOverwriteCbId + "')");
+			var message = g_lang.m_lanitf_change + " " + thisObj.m_lanip_label + " " + g_lang.m_lanitf_confirm_overwrite;
+			message += '<div style="padding-left:30px">'; 
+			message += thisObj.f_createListItem(g_lang.m_lanitf_confirm_overwrite_2);
+			message += thisObj.f_createListItem(g_lang.m_lanitf_confirm_overwrite_3);
+			message += thisObj.f_createListItem(g_lang.m_lanitf_confirm_overwrite_4);
+			message += '</div>';
+			message += '<br/>' + g_lang.m_lanitf_confirm_overwrite_5 + '<br/><br/>';					
+			g_utils.f_popupMessage(message, 'confirm-large', g_lang.m_info, true, thisObj.m_eventCbFunction + "('" + thisObj.m_objectId + "," + thisObj.m_btnConfirmOverwriteCbId + "')");
 		} else {
 			thisObj.f_apply();
 		}		
@@ -876,9 +884,10 @@ function UTM_confNwLANdhcp(name, callback, busLayer)
     
     this.f_apply = function()
     {
+		g_utils.f_cursorWait();				
         var cb = function(evt)
         {
-            //g_utils.f_stopWait();
+            g_utils.f_cursorDefault();
             if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
                 if (evt.f_isError()) {
                     g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
@@ -1310,7 +1319,7 @@ function UTM_confNwLANip(name, callback, busLayer)
                  dhcpMapList.push(mapObj);
                  this.m_deletedRow = seedId;
 				 var dhcpMap = new UTM_nwDHCPmap(thisObj.m_ifName, dhcpMapList)
-                 g_utils.f_startWait();
+                 g_utils.f_cursorWait();		
                  this.f_setDhcpMap(dhcpMap, this.f_deleteRowCb);
                  return;
             } else {
@@ -1538,7 +1547,7 @@ function UTM_confNwLANip(name, callback, busLayer)
         }
         if (dhcpMapList.length > 0) {
 			var dhcpMap = new UTM_nwDHCPmap(thisObj.m_ifName, dhcpMapList)
-            g_utils.f_startWait();
+            g_utils.f_cursorWait();		
             this.f_setDhcpMap(dhcpMap, this.f_applyCb);
         } else {
 			thisObj.f_enableAllButton(false);
@@ -1690,7 +1699,7 @@ function UTM_confNwLANip(name, callback, busLayer)
     
     this.f_deleteRowCb = function(evt)
     {
-        g_utils.f_stopWait();
+        g_utils.f_cursorDefault();
         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
             if (evt.f_isError()) {
                 g_utils.f_popupMessage(evt.m_errMsg, 'error', g_lang.m_error, true);
@@ -1707,7 +1716,7 @@ function UTM_confNwLANip(name, callback, busLayer)
     
     this.f_applyCb = function(evt)
     {
-        g_utils.f_stopWait();
+        g_utils.f_cursorDefault();
         
         if (evt != undefined && evt.m_objName == 'UTM_eventObj') {
             if (evt.f_isError()) {

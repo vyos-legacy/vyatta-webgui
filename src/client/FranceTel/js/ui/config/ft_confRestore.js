@@ -251,7 +251,7 @@ function FT_confRestore(name, callback, busLayer)
     this.f_createRestoreFromPC = function()
     {
         var div = document.createElement('div');
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.overflow = 'visible';

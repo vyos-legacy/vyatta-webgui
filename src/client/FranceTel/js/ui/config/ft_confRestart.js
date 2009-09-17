@@ -156,11 +156,11 @@ function FT_confRestart(name, callback, busLayer)
         var cursor = thisObj.f_getCursor(true);
         var handleFunc = "f_vmRestart('openapp')";
         var div = document.createElement('div');
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
         div.style.height = '40px';
-        div.style.marginTop = "25px";
+        div.style.marginTop = "20px";
 
         var innerHtml = '<table cellspacing="0" cellpadding="0" border="0">';
         innerHtml += '<tbody><tr height="22">';

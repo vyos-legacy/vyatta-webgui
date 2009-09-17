@@ -342,9 +342,10 @@ function FT_confBackup(name, callback, busLayer)
     this.f_createTargetView = function()
     {
         var div = document.createElement('div');
-        div.style.position = 'relative';
+        //div.style.position = 'relative';
         div.style.display = 'block';
         div.style.backgroundColor = 'white';
+        div.style.marginTop = "20px";
         
         var innerHtml = '<form id="conf_backup_form" class="v_form" border="0">' +
         '<table cellspacing="0" cellpadding="0" border="0">' +

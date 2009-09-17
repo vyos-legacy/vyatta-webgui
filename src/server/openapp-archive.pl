@@ -301,12 +301,12 @@ sub backup {
 			
 			#and retrieve the archive
 			#writes to specific location on disk
-			my $bufile = "$BACKUP_WORKSPACE_DIR/$filename.tar";
-			`mkdir -p $BACKUP_WORKSPACE_DIR`;
+			my $bufile = "$BACKUP_WORKSPACE_DIR/$key/$filename.tar";
+			`mkdir -p $BACKUP_WORKSPACE_DIR/$key`;
 			my $rc = `wget $archive_location -O $bufile 2>&1`;
 			
 			if ($rc =~ /200 OK/) {
-			    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$filename.enc`;
+			    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key/$filename.enc`;
 			    `rm -f $bufile`;  #now remove source file
 			    #and remove from poll collection
 			    delete $new_hash_coll{$key};
@@ -317,14 +317,14 @@ sub backup {
 		    }
 		    elsif ($err->{_http_code} == 200 && defined($err->{_body})) {
 			#we'll now interpret this as including the archive in the response
-			my $bufile = "$BACKUP_WORKSPACE_DIR/$filename.tar";
+			my $bufile = "$BACKUP_WORKSPACE_DIR/$key/$filename.tar";
 			open (MYFILE, '>$bufile');
 			print (MYFILE $err->{_body});
 			close (MYFILE);
 			
 			$domu_archive_names{$key} = $filename;
 
-			my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$filename.enc`;
+			my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key/$filename.enc`;
 			`rm -f $bufile`;  #now remove source file
 			#and remove from poll collection
 			delete $new_hash_coll{$key};
@@ -620,7 +620,8 @@ sub restore_archive {
 	    my $ip = $vm->getIP();
 	    my $port = $vm->getWuiPort();
 	    if (defined $ip && $ip ne '') {
-		my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$ar_name.enc -out /var/www/backup/restore/$ar_name`;
+		`sudo mkdir /var/www/backup/restore/$key`;
+		my $resp = `openssl enc -aes-256-cbc -d -salt -pass file:$MAC_ADDR -in $RESTORE_WORKSPACE_DIR/$key/$ar_name.enc -out /var/www/backup/restore/$key/$ar_name`;
 		my $cmd;
 		if (defined $port && $port ne '') {
 		    $cmd = "http://$ip:$port/backup/backupArchive?";
@@ -638,7 +639,7 @@ sub restore_archive {
 		else {
 		    $cmd .= "data=true&config=true";
 		}
-		$cmd .= "&file=http://192.168.0.101/backup/restore/$ar_name";
+		$cmd .= "&file=https://192.168.0.101/backup/restore/$key/$ar_name";
 		my $obj = new OpenApp::Rest();
 		my $err = $obj->send("PUT",$cmd);
 		if ($err->{_success} != 0 || $err->{_http_code} == 500 || $err->{_http_code} == 501) {

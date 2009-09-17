@@ -27,7 +27,7 @@ start () {
       ret=1
       echo -n '!'
     fi
-    vmname=$(echo $cfg | awk -F / {' print $5 '} | sed -e 's/.xml$//')
+    vmname=$(echo $cfg | awk -F / {' print $5 '} | sed -e 's/.xml$//' | sed -e 's/^[0-9]*-//')
     if [ -f /var/oa/libvirt/$vmname/cap ]; then
       cap=$(cat /var/oa/libvirt/$vmname/cap)
       sudo virsh schedinfo $vmname --cap $cap >/dev/null 2>&1

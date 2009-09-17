@@ -1,3 +1,16 @@
+vyatta-webgui (0.2+fxd0+117) unstable; urgency=low
+
+  * add code to set cap on vm restart
+
+ -- Robert Bays <rbays@roatan.lenny32.lenny32>  Tue, 15 Sep 2009 07:59:15 -0700
+
+vyatta-webgui (0.2+fxd0+116) unstable; urgency=low
+
+  [ rbays ]
+  * fix for bug 4908.
+
+ -- Robert Bays <rbays@roatan.lenny32.lenny32>  Wed, 09 Sep 2009 10:56:58 -0700
+
 vyatta-webgui (0.2+fxd0+115) unstable; urgency=low
 
   [ Michael Larson ]

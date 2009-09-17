@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.14+fxdU+125) unstable; urgency=low
+
+  * Add support for remote vpn user group expert mode.
+  * Fix the following:
+
+ -- Loi Vo <loi.vo@vyatta.com>  Thu, 17 Sep 2009 17:17:24 +0000
+
 vyatta-webgui (0.2.14+fxdU+124) unstable; urgency=low
 
   [ Kevin Choi ]

@@ -61,7 +61,8 @@ sub is_group_l2tp {
   my $path = "vpn l2tp remote-access description";
   my $config = new Vyatta::Config;
   my $description = $config->returnValue("$path");
-  if (defined $description && $description eq $group) {
+  my @val_description = split(':', $description) if defined $description;
+  if (defined $description && $val_description[0] eq $group) {
     return 0; # true
   } 
   return 1;   # false
@@ -89,6 +90,10 @@ sub get_l2tp_grp_info {
   my $group = shift;
   my $config = new Vyatta::Config;
   my $path = "vpn l2tp remote-access";
+  my $description = $config->returnValue("$path description");
+  my @val_description = split (':', $description);
+  my $mode = 'easy';
+  $mode = $val_description[1] if defined $val_description[1];
   my $client_pool_start_ip = $config->returnValue("$path client-ip-pool start");
   my $client_pool_stop_ip = $config->returnValue("$path client-ip-pool stop");
   my $presharedkey = $config->returnValue(
@@ -102,14 +107,14 @@ sub get_l2tp_grp_info {
     $user_msg .= "<user>$user</user>";
   }
   my $msg = "<remote_group>";
-  $msg .= "<mode>easy</mode>";
+  $msg .= "<mode>$mode</mode>";
   $msg .= "<name>$group</name>";
   $msg .= "<vpnsw>Microsoft</vpnsw>";
   $msg .= "<users>" . $user_msg . "</users>";
   $msg .= "<groupauth>l2tp</groupauth>";
   $msg .= "<ipalloc><static><start>$client_pool_start_ip</start>" .
           "<stop>$client_pool_stop_ip</stop></static></ipalloc>";
-  $msg .= "<iaccess>directly</iaccess>";
+  $msg .= "<iaccess>through the OA</iaccess>";
   $msg .= "<presharedkey>$presharedkey</presharedkey>";
   if ($is_grp_disabled == 0) {
     $msg .= "<enable>no</enable>";
@@ -134,9 +139,10 @@ sub get_group {
   if (!defined $grp_name) {
     # get l2tp remote-access vpn info
     my $l2tp_grp = $config->returnValue("vpn l2tp remote-access description");
+    my @val_l2tp_grp = split (':', $l2tp_grp);
     if (defined $l2tp_grp && !($l2tp_grp eq '')) {
       # get l2tp specific info
-      $msg .= get_l2tp_grp_info($l2tp_grp);
+      $msg .= get_l2tp_grp_info($val_l2tp_grp[0]);
     }
     # get XAUTH remote-access info
     # else group is not a valid one, return error code='1' with error message
@@ -207,23 +213,19 @@ sub set_group {
                 "set $l2tp_path outside-nexthop $next_hop",
                 "set $l2tp_path authentication mode local";
     
-    if ($xml->{mode} eq 'easy') {
-      # set easy mode l2tp ipsec server
+    if ($xml->{mode} eq 'easy' || $xml->{mode} eq 'expert') {
+      # set l2tp ipsec server
       push @cmds,
-        "set $l2tp_path description $grp_name", 
         "set $l2tp_path ipsec-settings authentication mode pre-shared-secret",
         "set $l2tp_path ipsec-settings authentication pre-shared-secret $xml->{presharedkey}",
         "set $l2tp_path client-ip-pool start $xml->{ipalloc}->{static}->{start}",
         "set $l2tp_path client-ip-pool stop $xml->{ipalloc}->{static}->{stop}";
+    } 
+    
+    if ($xml->{mode} eq 'easy') {
+      push @cmds, "set $l2tp_path description $grp_name:easy";
     } elsif ($xml->{mode} eq 'expert') {
-      # set expert mode l2tp ipsec server
-      # currently not supported so error out
-      $msg = "<form name='vpn remote-access set_group' code='4'></form>";
-      $msg .= "<errmsg>" . "Unsupported mode for l2tp authentication"
-              . "</errmsg>";
-      $msg .= "</form>";
-      print $msg;
-      exit 1;
+      push @cmds, "set $l2tp_path description $grp_name:expert";
     } else {
       # undefined mode, print error with code='4' and exit 1
     }
@@ -341,7 +343,8 @@ sub get_l2tp_user_info {
   my $user_pass = $config->returnValue("$l2tp_user_path password");
   $msg .= "<passwd>$user_pass</passwd>";
   my $grp_name = $config->returnValue("vpn l2tp remote-access description");
-  $msg .= "<groupname>$grp_name</groupname>";
+  my @val_grp_name = split (':', $grp_name);
+  $msg .= "<groupname>$val_grp_name[0]</groupname>";
   my $user_disabled = $config->exists("$l2tp_user_path disable");
   $msg .= "<enable>no</enable>" if defined $user_disabled;
   $msg .= "<enable>yes</enable>" if !defined $user_disabled;
@@ -362,8 +365,7 @@ sub get_l2tp_user_info {
     $msg .= "<status>disconnected</status>";
   }
 
-  # currently only easy mode supported for l2tp so mode for now is easy
-  $msg .= "<mode>easy</mode>";
+  $msg .= "<mode>$val_grp_name[1]</mode>";
   $msg .= "</remote_user>";
   return $msg;
 }

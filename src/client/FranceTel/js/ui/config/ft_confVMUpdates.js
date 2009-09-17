@@ -33,12 +33,14 @@ function FT_confVMUpdates(name, callback, busLayer)
      */
     this.f_createColumns = function()
     {
+        this.f_enableTableIndex(true);
         var cols = [];
 
-        cols[0] = this.f_createColumn(g_lang.m_uhHdDate, 180, 'text', '6', true);
-        cols[1] = this.f_createColumn(g_lang.m_dbHdApplication, 280, 'text', '6', true);
-        cols[2] = this.f_createColumn(g_lang.m_dbHdStatus, 120, 'text', '6', true);
-        cols[3] = this.f_createColumn(' ', 100, 'button', '25');
+        cols[0] = this.f_createColumn("#", 25, 'text', '6', false);
+        cols[1] = this.f_createColumn(g_lang.m_uhHdDate, 180, 'text', '6', true);
+        cols[2] = this.f_createColumn(g_lang.m_dbHdApplication, 280, 'text', '6', true);
+        cols[3] = this.f_createColumn(g_lang.m_dbHdStatus, 120, 'text', '6', true);
+        cols[4] = this.f_createColumn(' ', 100, 'button', '25');
 
         return cols;
     }

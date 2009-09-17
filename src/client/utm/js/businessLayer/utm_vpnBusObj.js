@@ -85,17 +85,17 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 		this.m_mode = 'easy';
 		this.m_preshareKey = '';
 		this.m_p1_proto = 'esp';
-		this.m_exchangeMode = 'aggressive';
-		this.m_p1_encrypt = 'des';
-		this.m_p1_auth = 'md5';
+		this.m_exchangeMode = 'main';
+		this.m_p1_encrypt = '3des';
+		this.m_p1_auth = 'sha1';
 		this.m_p1_dfsGrp = '2';
 		this.m_p1_lifetime = '';
 		this.m_localNetwork = '';
 		this.m_remoteNetwork = '';
 		this.m_p2_dfsGrp = '2';
 		this.m_p2_lifetime = '';
-		this.m_p2_encrypt = 'des';
-		this.m_p2_auth = 'md5';
+		this.m_p2_encrypt = '3des';
+		this.m_p2_auth = 'sha1';
 		this.m_start = '';
 		this.m_stop = '';
 
@@ -166,18 +166,18 @@ function UTM_vpnRemoteUsrGrpRec(name, vpnsw, users, auth, ipalloc, internetAcces
 		xml = xml + '<presharedkey>' + thisObj.m_preshareKey + '</presharedkey>';
 
 		if (thisObj.m_mode == 'expert') {
-			xml = xml + '<type>' + thisObj.m_p1_proto + '</type>';
-			xml = xml + '<emode>' + thisObj.m_exchangeMode + '</emode>';
-			xml = xml + '<ikeencrypt>' + thisObj.m_p1_encrypt + '</ikeencrypt>';
-			xml = xml + '<ikeauth>' + thisObj.m_p1_auth + '</ikeauth>';
-			xml = xml + '<dhgroup>' + thisObj.m_p1_dfsGrp + '</dhgroup>';
-			xml = xml + '<ikeltime>' + thisObj.m_p1_lifetime + '</ikeltime>';
+			//xml = xml + '<type>' + thisObj.m_p1_proto + '</type>';
+			//xml = xml + '<emode>' + thisObj.m_exchangeMode + '</emode>';
+			//xml = xml + '<ikeencrypt>' + thisObj.m_p1_encrypt + '</ikeencrypt>';
+			//xml = xml + '<ikeauth>' + thisObj.m_p1_auth + '</ikeauth>';
+			//xml = xml + '<dhgroup>' + thisObj.m_p1_dfsGrp + '</dhgroup>';
+			//xml = xml + '<ikeltime>' + thisObj.m_p1_lifetime + '</ikeltime>';
 			xml = xml + '<lnet>' + thisObj.m_localNetwork + '</lnet>';
 		    xml = xml + '<rnet>' + thisObj.m_remoteNetwork + '</rnet>';
-			xml = xml + '<espdhgroup>' + thisObj.m_p2_dfsGrp + '</espdhgroup>';
-			xml = xml + '<espltime>' + thisObj.m_p2_lifetime + '</espltime>';
-			xml = xml + '<espencrypt>' + thisObj.m_p2_encrypt + '</espencrypt>';
-			xml = xml + '<espauth>' + thisObj.m_p2_auth + '</espauth>';
+			//xml = xml + '<espdhgroup>' + thisObj.m_p2_dfsGrp + '</espdhgroup>';
+			//xml = xml + '<espltime>' + thisObj.m_p2_lifetime + '</espltime>';
+			//xml = xml + '<espencrypt>' + thisObj.m_p2_encrypt + '</espencrypt>';
+			//xml = xml + '<espauth>' + thisObj.m_p2_auth + '</espauth>';
 		}
 		xml += '</remote_group>';
 		return xml;
@@ -778,17 +778,17 @@ function UTM_vpnBusObj(busObj)
 			groupList[i].m_internetAccess = (tagValue['iaccess'] == undefined)? 'directly' : tagValue['iaccess'];
 			groupList[i].m_preshareKey = (tagValue['presharedkey'] == undefined)? '' : tagValue['presharedkey'];
 			groupList[i].m_p1_proto = (tagValue['type'] == undefined)? 'esp' : tagValue['type'];
-			groupList[i].m_exchangeMode= (tagValue['emode'] == undefined)? 'aggressive' : tagValue['emode'];
-			groupList[i].m_p1_encrypt= (tagValue['ikeencrypt'] == undefined)? 'des' : tagValue['ikeencrypt'];
-			groupList[i].m_p1_auth = (tagValue['ikeauth'] == undefined)? 'md5' : tagValue['ikeauth'];
-			groupList[i].m_p1_dfsGrp= (tagValue['dhgroup'] == undefined)? '5' : tagValue['dhgroup'];
+			groupList[i].m_exchangeMode= (tagValue['emode'] == undefined)? 'main' : tagValue['emode'];
+			groupList[i].m_p1_encrypt= (tagValue['ikeencrypt'] == undefined)? '3des' : tagValue['ikeencrypt'];
+			groupList[i].m_p1_auth = (tagValue['ikeauth'] == undefined)? 'sha1' : tagValue['ikeauth'];
+			groupList[i].m_p1_dfsGrp= (tagValue['dhgroup'] == undefined)? '2' : tagValue['dhgroup'];
 			groupList[i].m_p1_lifetime= (tagValue['ikeltime'] == undefined)? '' : tagValue['ikeltime'];
 			groupList[i].m_localNetwork = (tagValue['lnet'] == undefined)? '' : tagValue['lnet'];
 			groupList[i].m_remoteNetwork = (tagValue['rnet'] == undefined)? '' : tagValue['rnet'];
 			groupList[i].m_p2_dfsGrp= (tagValue['espdhgroup'] == undefined)? '2' : tagValue['espdhgroup'];
 			groupList[i].m_p2_lifetime= (tagValue['espltime'] == undefined)? '' : tagValue['espltime'];
-			groupList[i].m_p2_encrypt= (tagValue['espencrypt'] == undefined)? 'des' : tagValue['espencrypt'];
-			groupList[i].m_p2_auth = (tagValue['espauth'] == undefined)? 'md5' : tagValue['espauth'];
+			groupList[i].m_p2_encrypt= (tagValue['espencrypt'] == undefined)? '3des' : tagValue['espencrypt'];
+			groupList[i].m_p2_auth = (tagValue['espauth'] == undefined)? 'sha1' : tagValue['espauth'];
 			groupList[i].m_enable= (tagValue['enable'] == undefined)? 'yes' : tagValue['enable'];
 		}
 

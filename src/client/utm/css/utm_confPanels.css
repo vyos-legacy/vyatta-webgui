@@ -56,7 +56,10 @@
 	display: block;
 	text-align: left;
 	margin-right: 0px;
-	padding-right: 5px;
+	padding-right: 5px;	
+	margin-bottom: 7px;
+	margin-top: 7px;
+	padding: 3px;		
 }
 
 .v_label_required {
@@ -69,10 +72,13 @@
 
 .v_label_right {	
 	margin-left: 30px;
+	margin-bottom: 7px;
+	margin-top: 7px;
+	padding: 3px;		
 }	
 			
 .v_form_label {
-	font-size: 11px;
+	font-size: 11px;	
 }
 
 .v_form_input {
@@ -83,6 +89,13 @@
 	margin-bottom: 7px;
 	margin-top: 7px;
 	padding: 3px;	
+}
+
+.v_form_text {
+	color : #444444;
+	margin-bottom: 7px;
+	margin-top: 7px;
+	padding: 3px;		
 }
 
 .v_form_input_no_left_margin {

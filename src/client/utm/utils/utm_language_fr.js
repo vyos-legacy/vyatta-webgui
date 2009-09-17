@@ -288,6 +288,11 @@ var g_lang =
 	m_vpnRUG_ipend: "end range",	
     m_vpnRUG_InternetAccess : "accès internet",
 	m_vpnRUG_range_invalid: "end range must be greater than start range!",
+	m_vpnRUG_from_OA: "from the Open Appliance",
+	m_vpnRUG_transport_natt_esp: "transport with NAT-T/ ESP",
+	m_vpnRUG_main: "main",
+    m_vpnRUG_group_2_5: "group 2/ group 5",	
+    m_vpnRUG_static: "static",	
 
     ///////////////////////////////////////////////////////////////////;;
     // VPN Remote User Add;;
@@ -383,12 +388,12 @@ var g_lang =
 	m_lanitf_mask: "IP subnet mask",
 	m_lanitf_pls_config: "Please configure",	
 	m_lanitf_change: "Changing",	
-	m_lanitf_confirm_overwrite: "Changing LAN IP and subnet mask will reset DHCP paremeters and Reserved IP addresses settings.  Do you want to continue?",
+	m_lanitf_confirm_overwrite: "and subnet mask will reset DHCP parameters and reserved IP address settings.  Do you want to continue?",
 	m_landhcp_title: "DHCP parameters",
 	m_landhcp_enable : "Enable DHCP server",
 	m_landhcp_range_start : "DHCP range start",
 	m_landhcp_range_end : "DHCP range end",
-	m_landhcp_range_invalid: "DHCP Range Stop must be greater than DHCP Range Start!",
+	m_landhcp_range_invalid: "DHCP range stop must be greater than DHCP range start!",
 	m_landhcp_incompatible: "is incompatible with",	
 	m_landhcp_dns_mode : "DNS mode",
 	m_landhcp_dns_pri : "Primary DNS server",

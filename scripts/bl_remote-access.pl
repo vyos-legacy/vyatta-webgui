@@ -271,6 +271,23 @@ sub set_group {
       }
     }
     
+    # DHCP static-mappings should not be in remote IP range
+    my @static_mappings = $config->listNodes("$path static-mapping");
+    if (scalar(@static_mappings) > 0) {
+      foreach my $mapping (@static_mappings) {
+        my $mapping_object = new NetAddr::IP($mapping);
+        if (($start_ip_object <= $mapping_object) &&
+            ($mapping_object <= $stop_ip_object) ) {
+            $msg = "<form name='vpn remote-access set_group' code='4'>";
+            $msg .= "<errmsg>"
+                    . "LAN DHCP reserved IP addresses and Remote Access IP " 
+                    . "range shouldn't overlap" . "</errmsg></form>";
+            print $msg;
+            exit 1;
+        }
+      }
+    }
+    
     # set default l2tp settings
     push @cmds, "set $l2tp_path dns-servers server-1 $wan_ip",
                 "set $l2tp_path outside-address $wan_ip",

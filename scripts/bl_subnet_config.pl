@@ -371,6 +371,10 @@ sub set_dhcp_server_config {
     my @ip_without_mask = split('/', $ip[0]);
     my $path = "service dhcp-server shared-network-name $xml->{interface}";
     my $scnd_dns_exists = 1;
+    my $config = new Vyatta::Config;
+    my $l2tp_range_path = "vpn l2tp remote-access client-ip-pool";
+    my $l2tp_startip = $config->returnValue("$l2tp_range_path start");
+    my $l2tp_stopip =  $config->returnValue("$l2tp_range_path stop");
 
     push @cmds,
 "delete $path subnet $ip[0] start",
@@ -382,6 +386,33 @@ sub set_dhcp_server_config {
 "set $path description \"$xml->{dns_mode}\"";
 
     if ($xml->{start} =~ m/\w/) {
+      if (defined $l2tp_startip && defined $l2tp_stopip) {
+        # make sure that DHCP range doesn't overlap with l2tp range
+        my $l2tp_startip_object = new NetAddr::IP($l2tp_startip);
+        my $l2tp_stopip_object = new NetAddr::IP($l2tp_stopip);
+        my $dhcp_startip_object = new NetAddr::IP($xml->{start});
+        my $dhcp_stopip_object = new NetAddr::IP($xml->{end});
+        if (  ( ($dhcp_startip_object <= $l2tp_startip_object) &&
+              ($l2tp_startip_object <= $dhcp_stopip_object) )
+            ||
+            ( ($dhcp_startip_object <= $l2tp_stopip_object) &&
+              ($l2tp_stopip_object <= $dhcp_stopip_object) )
+            ||
+            ( ($l2tp_startip_object <= $dhcp_startip_object) &&
+              ($dhcp_startip_object <= $l2tp_stopip_object) )
+            ||
+            ( ($l2tp_startip_object <= $dhcp_stopip_object) &&
+              ($dhcp_stopip_object <= $l2tp_stopip_object) )
+          ) {
+          # remote IP range overlaps with DHCP LAN range
+          $msg = "<form name='dhcp-server-config' code='2'>";
+          $msg .= "<errmsg>"
+                . "LAN DHCP range and Remote Access VPN IP range shouldn't overlap"
+                . "</errmsg></form>";
+          print $msg;
+          exit 1;
+        }        
+      }
       push @cmds,
 "set $path subnet $ip[0] start $xml->{start} stop $xml->{end}";
     }
@@ -485,7 +516,29 @@ sub set_dhcp_static_mapping {
     my @ip = get_interface_ip($name_to_domU_intfhash{$xml->{interface}}, '4');
     my @ip_without_mask = split('/', $ip[0]);    
     my $path = "service dhcp-server shared-network-name $xml->{interface} subnet $ip[0]";
+    my $config = new Vyatta::Config;
+    my $l2tp_range_path = "vpn l2tp remote-access client-ip-pool";
+    my $l2tp_startip = $config->returnValue("$l2tp_range_path start");
+    my $l2tp_stopip =  $config->returnValue("$l2tp_range_path stop");
+
     foreach my $mapping (@{$xml->{mapping}}) {
+
+       if (defined $l2tp_startip && defined $l2tp_stopip) {
+          # make sure that DHCP mapping doesn't overlap with l2tp range
+          my $l2tp_startip_object = new NetAddr::IP($l2tp_startip);
+          my $l2tp_stopip_object = new NetAddr::IP($l2tp_stopip);
+          my $mapping_object = new NetAddr::IP($mapping->{ip});
+          if (($l2tp_startip_object <= $mapping_object) &&
+              ($mapping_object <= $l2tp_stopip_object) ) {
+            $msg = "<form name='dhcp-static-mapping' code='1'>";
+            $msg .= "<errmsg>"
+                    . "LAN DHCP reserved IP addresses and Remote Access VPN IP"
+                    . " range shouldn't overlap" . "</errmsg></form>";
+            print $msg;
+            exit 1;
+          }
+       }
+
        switch ($mapping->{action}) {
 
           case 'add'

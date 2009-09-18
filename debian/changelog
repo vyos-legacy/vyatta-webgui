@@ -1,3 +1,17 @@
+vyatta-webgui (0.2.14+fxdU+126) unstable; urgency=low
+
+  [ Loi Vo ]
+  * Fix preshared key + local ip doesn't retain value when switching
+    between easy and expert mode.
+  * Bug 4848:
+
+  [ Mohit Mehta ]
+  * * allowed nat-networks should only be from private space addressing
+  * * checks to ensure that remote-access l2tp IP allocation ranges and
+    dhcp
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Thu, 17 Sep 2009 17:18:33 -0700
+
 vyatta-webgui (0.2.14+fxdU+125) unstable; urgency=low
 
   * Add support for remote vpn user group expert mode.

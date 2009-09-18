@@ -273,6 +273,7 @@ sub backup {
 		    `sudo /opt/vyatta/sbin/openapp-dom0-backup.pl --backup=config=true --filename=$bufile`;
 		    my $resp = `openssl enc -aes-256-cbc -salt -pass file:$MAC_ADDR -in $bufile -out $BACKUP_WORKSPACE_DIR/$key.enc`;
 		    `rm -f $bufile`;  #now remove source file
+		    $domu_archive_names{$key} = $key;
 		    #and remove from poll collection
 		}
 		delete $new_hash_coll{$key};

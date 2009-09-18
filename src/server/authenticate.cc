@@ -292,7 +292,7 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
   pam_conv conv = { conv_fun, const_cast<void*>((const void*)&password) };
   
   pam_handle_t *pam = NULL;
-  int result = pam_start("login", passwd->pw_name, &conv, &pam);
+  int result = pam_start("vyatta", passwd->pw_name, &conv, &pam);
   if (result != PAM_SUCCESS) {
     cerr << "pam_start" << endl;
     return false;

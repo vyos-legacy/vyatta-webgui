@@ -156,11 +156,9 @@ sub backup {
     my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
     my $time = sprintf("%02dh%02dm%02d%s",$hour,$min,$sec,$am_pm);
 
-    my $datamodel = '1';
-
-    my $metafile = $BACKUP_WORKSPACE_DIR."/".$date."_".$time."_".$datamodel;
+    my $metafile = $BACKUP_WORKSPACE_DIR."/".$date."_".$time;
     if (!defined($filename) || $filename eq '') {
-	$filename = $date."_".$time."_".$datamodel;
+	$filename = $date."_".$time;
     }
     if (-e "$ARCHIVE_ROOT_DIR/$filename.tar") {
 	`logger -p notice 'dom0: backup is in progress, exiting...'`;
@@ -880,9 +878,7 @@ sub backup_status {
     my $date = sprintf("%02d%02d%02d",$mday,$mon+1,$year-100);
     my $time = sprintf("%02dh%02dm%02d%s",$hour,$min,$sec,$am_pm);
 
-    my $datamodel = '1';
-
-    $filename = $date."_".$time."_".$datamodel;
+    $filename = $date."_".$time;
     if (-e "$ARCHIVE_ROOT_DIR/$filename.tar") {
 	print "0";
 	exit 0;

@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-9+jenner18) unstable; urgency=low
+
+  * fix for bug 4853. Remove multi chunk file after request. this will
+    prevent gui from browsing back through the chunker
+
+ -- Michael Larson <mike@ft1.vyatta.com>  Fri, 18 Sep 2009 14:19:15 -0700
+
 vyatta-webgui (0.2.13-9+jenner17) unstable; urgency=low
 
   * permissions did not allow chunker pid to be created after move from

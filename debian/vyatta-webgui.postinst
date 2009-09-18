@@ -123,25 +123,25 @@ update-rc.d oa-autostart defaults 91
 mkdir -p /opt/vyatta/etc/oa/params
 echo 7 >/opt/vyatta/etc/oa/params/nightly_limit
 
-# setup pam auth to allow ldap login on webgui
+# setup pam auth to allow ldap login for webgui
 vyattaconf=/etc/pam.d/vyatta
 cat <<EOF >$vyattaconf
-session    required   pam_limits.so
-auth       [success=ok ignore=ignore user_unknown=ignore default=die]  pam_securetty.so
-auth       requisite  pam_nologin.so
-session       required   pam_env.so readenv=1
-session       required   pam_env.so readenv=1 envfile=/etc/default/locale
+session		required   pam_limits.so
+auth		[success=ok ignore=ignore user_unknown=ignore default=die]  pam_securetty.so
+auth		requisite  pam_nologin.so
+session		required   pam_env.so readenv=1
+session		required   pam_env.so readenv=1 envfile=/etc/default/locale
 auth sufficient pam_ldap.so
-auth required   pam_unix.so nullok_secure try_first_pass
+auth required	pam_unix.so nullok_secure try_first_pass
 account sufficient pam_ldap.so
 account required   pam_unix.so
-session	required	pam_unix.so
+session	required   pam_unix.so
 password sufficient pam_ldap.so
 password required   pam_unix.so nullok obscure md5
 EOF
 
-# remove pam from all other services
-sed -i 's/\(.*ldap\)/#\1/' /etc/pam.d/common-auth
+# remove ldap from all other pam auth services
+sed -i 's/\(^auth .*ldap\)/#\1/' /etc/pam.d/common-auth
 
 exit 0
 

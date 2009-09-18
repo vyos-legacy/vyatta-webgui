@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.14+fxdU+127) unstable; urgency=low
+
+  * Add "business logic" gui backend support for IDS enable/disable.
+
+ -- Stig Thormodsrud <stig@vyatta.com>  Thu, 17 Sep 2009 18:09:10 -0700
+
 vyatta-webgui (0.2.14+fxdU+126) unstable; urgency=low
 
   [ Loi Vo ]

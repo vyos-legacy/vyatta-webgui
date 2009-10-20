@@ -1,3 +1,31 @@
+vyatta-webgui (0.2.13-12) unstable; urgency=low
+
+  [ Stephen Hemminger ]
+  * Better way to add www-data to additional groups
+
+  [ slioch ]
+  * fix for bug 4440 and 4193. copy of cli subsystem out of sync with
+    webgui. future sync problems will be resolved when cli subsystem is
+    set up as a library project.
+  * fix for bug 4487
+  * fix for bug 4193.
+  * fix for bug 4193. Remove support for error location in configuration
+    tree.
+  * fix for bug 4645. redirect stderr to stdout for load cmd.
+  * also apply to merge operation. will have same bug and requires same
+    fix.
+  * ping target is optional for wlb. update mandatory file for webgui.
+
+  [ Michael Larson ]
+  * permissions did not allow chunker pid to be created after move from
+    cgi-lib parent dir. fixed.
+
+  [ slioch ]
+  * merge of jenner changes and exclude file.
+  * added priority to project node.
+
+ -- slioch <slioch@eng-140.vyatta.com>  Tue, 20 Oct 2009 16:19:56 -0700
+
 vyatta-webgui (0.2.13-11) unstable; urgency=low
 
   [ slioch ]

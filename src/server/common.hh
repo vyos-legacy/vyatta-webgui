@@ -70,7 +70,8 @@ public:
 
   enum Attributes {NOATTR = 0,
 		   OP,
-		   CONF};
+		   CONF,
+                   PROC};
 
   enum NodeType {NONE,
 			 TEXT,

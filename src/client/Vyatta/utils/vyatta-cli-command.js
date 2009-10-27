@@ -881,6 +881,7 @@ function f_parseServerCallback(xmlRoot, treeMode /* conf, operator */)
             default:
             case "6": // input error
                 success = false;
+                f_parseCommitErrors(msg);
                 msg = f_replace(msg, "\r\n", "<br>");
                 break;
             case "0":
@@ -902,7 +903,7 @@ function f_parseServerCallback(xmlRoot, treeMode /* conf, operator */)
             case "9":
                 success = false;
                 f_parseCommitErrors(msg);
-                msg = "Additional configuration information is required.";
+                msg = "Additional configuration information is required:\r\n" + msg;
 
         }
 

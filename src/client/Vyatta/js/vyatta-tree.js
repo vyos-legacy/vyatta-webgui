@@ -542,13 +542,33 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_onConfigTreeNodeClick: function(node, e)
     {
-        m_thisObj.f_HandleNodeConfigClick(node, e, false);
+        if(m_thisObj.m_parent.m_editorPanel.m_isDirty)
+        {
+            var discardCb = function(btn)
+            {
+                if(btn == 'yes')
+                {
+                    m_thisObj.f_HandleNodeConfigClick(node, e, false);
+                    m_thisObj.m_parent.m_editorPanel.m_isDirty = false;
+                }
+                else
+                    m_thisObj.m_tree.getSelectionModel().select(m_thisObj.m_selNode);
+            }
+
+            f_yesNoMessageBox('Configuration',
+                  'Configuration on this page has been modified and not yet set. Do you want to continue?',
+                  discardCb);
+        }
+        else
+            m_thisObj.f_HandleNodeConfigClick(node, e, false);
     },
 
     ////////////////////////////////////////////////////////////////////////////
     // node click handler for configuration tree
     f_HandleNodeConfigClick: function(node, e, dontClear)
     {
+        m_thisObj.m_selNode = node;
+
         /////////////////////////////////////////////
         // we want to stop segment runs in background
         g_cliCmdObj.m_segmentId = undefined;

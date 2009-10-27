@@ -263,6 +263,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             ,collapsible: false
         });
         this.m_editorPanel.m_treeObj = this.m_treeObj;
+        this.m_editorPanel.m_isDirty = false;
     },
 
     f_cleanEditorPanel: function()
@@ -430,6 +431,7 @@ function f_createNumberField(treeObj, value, node, help, width, callback, mode)
     {
         var keyupPressHandler = function(field, e)
         {
+            treeObj.m_parent.m_editorPanel.m_isDirty = true;
             if(e.getKey() == 9)
                 f_handleFieldTab(field);
 
@@ -512,6 +514,7 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
     {
         var keyupPressHandler = function(field, e)
         {
+            treeObj.m_parent.m_editorPanel.m_isDirty = true;
             if(e.getKey() == 9)
                 f_handleFieldTab(field);
 
@@ -570,6 +573,7 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
 
     var onCollapseHandler = function()
     {
+        treeObj.m_parent.m_editorPanel.m_isDirty = true;
         callback(field);
     }
     var onKeyHandler = function(f, e)
@@ -630,6 +634,7 @@ function f_createCheckbox(value, node, helpStr, width, callback)
     var onClickHandler = function()
     {
         field.setValue(!field.getValue());
+        treeObj.m_parent.m_editorPanel.m_isDirty = true;
         callback(field);
     }
     var field = new Ext.form.Checkbox(
@@ -865,21 +870,20 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
                 if(cmdName == 'view')
                     sendCmd = 'show session';
 
-                /*/
-                var discardCb = function(btn)
-                {
-                    if(btn == 'yes')
-                        f_sendCLICommand(button, ['discard'], treeObj);
-                }
                 if(cmdName == 'discard')
                 {
+                    var button = this;
+                    var discardCb = function(btn)
+                    {
+                        if(btn == 'yes')
+                            f_sendCLICommand(button, [sendCmd], treeObj);
+                    }
                     f_yesNoMessageBox('Discard',
                       'Are you sure you wish to discard all the new configuration?',
                       discardCb);
-                    return;
-                }*/
-
-                f_sendCLICommand(this, [sendCmd], treeObj);
+                }
+                else
+                    f_sendCLICommand(this, [sendCmd], treeObj);
             }
         }
     });
@@ -1276,6 +1280,7 @@ function f_createEditGrid(values, gridStore, record, node,
             {
                 tId = window.setTimeout(setField, 100);
             }
+            treeObj.m_parent.m_editorPanel.m_isDirty = true;
         }
     }
     var tf = new Ext.form.TextField(
@@ -1405,6 +1410,7 @@ function f_createConfSubButton(treeObj)
         ,minWidth: 60
         ,handler: function()
         {
+            treeObj.m_parent.m_editorPanel.m_isDirty = false;
             f_prepareConfFormCommandSend(treeObj);
         }
     });

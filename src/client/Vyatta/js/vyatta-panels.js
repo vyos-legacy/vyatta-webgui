@@ -1464,8 +1464,33 @@ function f_createConfButton(treeObj, node, btnText, title)
         ,tooltip: btnText + ' configuration node'
         ,handler: function()
         {
-            f_sendConfigCLICommand([cmd + treeObj.f_getNodePathStr(node) ],
+            if(node.text == 'https')
+            {
+                var cb = function send(btn)
+                {
+                    if(btn == 'yes')
+                        f_sendConfigCLICommand([cmd + treeObj.f_getNodePathStr(node) ],
                                     treeObj, node, isDelete);
+                };
+
+                f_yesNoMessageBox('Delete',
+                    'Delete this node will disable the Web GUI. Are you sure you wish continue?', cb);
+            }
+            else
+                f_sendConfigCLICommand([cmd + treeObj.f_getNodePathStr(node) ],
+                                    treeObj, node, isDelete);
+
+
+
+        if(node.text == 'reboot')
+        {
+            if(node.parentNode != undefined &&
+                    node.parentNode.text != 'show')
+            {
+
+                return;
+            }
+        }
         }
     });
     buttons[0].on('mouseover', function(){});

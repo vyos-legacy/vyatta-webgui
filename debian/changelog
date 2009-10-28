@@ -1,3 +1,15 @@
+vyatta-webgui (0.2.13-13) unstable; urgency=low
+
+  [ slioch ]
+  * new proc mode added to webgui.
+
+  [ Kevin Choi ]
+  * * added registration trademark onto vyatta main logo
+  * * fixed bug 4185: prompt a confirm warning message if user tried to
+    navigate away from
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Wed, 28 Oct 2009 00:28:04 +0000
+
 vyatta-webgui (0.2.13-12) unstable; urgency=low
 
   [ Stephen Hemminger ]

@@ -783,7 +783,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(values.length == 2 && (values[0] == 'enable' || values[0] == 'disable'))
         {
             isCheckbox = true;
-            field1 = f_createCheckbox(ival, node, helpStr, 243, callback);
+            field1 = f_createCheckbox(ival, node, helpStr, 243, callback, m_thisObj);
         }
         else
         {

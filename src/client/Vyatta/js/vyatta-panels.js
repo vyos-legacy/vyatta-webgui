@@ -625,7 +625,7 @@ function f_getValueForCheckbox(value)
     return (value != undefined && (value == 'enable' || value == 'true')) ?
                 true : false;
 }
-function f_createCheckbox(value, node, helpStr, width, callback)
+function f_createCheckbox(value, node, helpStr, width, callback, treeObj)
 {
     var cliVal = value != undefined ? value : node.attributes.defaultVal;
     var labelStr = node.text;

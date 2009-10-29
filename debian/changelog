@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-14) unstable; urgency=low
+
+  * fixed bug 1234 - added a confirmation msg before delete 'https' node
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Thu, 29 Oct 2009 18:18:51 +0000
+
 vyatta-webgui (0.2.13-13) unstable; urgency=low
 
   [ slioch ]

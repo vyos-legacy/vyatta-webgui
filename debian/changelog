@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-16) unstable; urgency=low
+
+  * * fixed bug 4231: sort tree node in data type instead of text
+
+ -- Kevin Choi <kevin.choi@vyatta.com>  Fri, 30 Oct 2009 17:35:05 +0000
+
 vyatta-webgui (0.2.13-15) unstable; urgency=low
 
   * additional check in to fixed bug 4185.

@@ -386,7 +386,14 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             ,defaults: {autoScroll:true, bodyBorder:false}
             ,loader: this.m_treeLoader
         });
-        new Ext.tree.TreeSorter(this.m_tree, {folderSort: true});
+        new Ext.tree.TreeSorter(this.m_tree, 
+        {
+            folderSort: true,
+            sortType: function(node)
+            {
+                return parseInt(node.attributes.text, 10);
+            }
+        });
         this.m_tree.m_parent = this;
 
         /////////////////////////////////////////////
@@ -433,7 +440,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
                     treeObj.f_HandleNodeConfigClick(node, null, undefined);
                 }
-
                 narg.un('expand', handler);
             }
 

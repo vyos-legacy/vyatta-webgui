@@ -1732,7 +1732,8 @@ function f_handleFormIndicators(node, parentNode)
 
     /////////////////////////
     // handle field indicator
-    var panelFlag = V_DIRTY_FLAG;
+    var panelFlag = f_getNodeIndicatorFlag(node, true);
+    panelFlag = panelFlag == V_EMPTY_FLAG ? V_DIRTY_FLAG : panelFlag;
     switch(type)
     {
         case 'textfield':

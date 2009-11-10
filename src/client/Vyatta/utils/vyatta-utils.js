@@ -330,6 +330,7 @@ function f_onResize(parentPanel, childPanel, adjW, adjH)
     }
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 function f_createToolTip(targetId, htmlText)
@@ -495,6 +496,37 @@ function f_commitSingleStoreField(store, record, dataIndex, iindex)
             record.set(modifiedNames[i], saveVal);
         }
     }
+}
+
+function f_getNodeIndicatorFlag(node, isSet)
+{
+    if(node != undefined && node.attributes != undefined)
+    {
+        switch(node.attributes.configured)
+        {
+            case undefined:
+                return isSet ? V_DIRTY_FLAG_ADD : V_EMPTY_FLAG;
+            case 'set':
+                if(node.attributes.configured_ == 'active_plus' ||
+                    node.attributes.configured_ == 'active')
+                    return V_DIRTY_FLAG;
+                return V_DIRTY_FLAG_ADD;
+            case 'delete':
+                return V_DIRTY_FLAG_DEL;
+            case 'active_plus':
+                return V_DIRTY_FLAG;
+            case 'active':
+                if(node.attributes.configured_ == 'active_plus')
+                    return V_DIRTY_FLAG;
+                return V_EMPTY_FLAG;
+            default:
+                if(node.attributes.defaultVal != undefined)
+                    return V_DIRTY_FLAG;
+                return V_EMPTY_FLAG;
+        }
+    }
+
+    return V_EMPTY_FLAG;
 }
 
 function f_hideSendWaitMessage()

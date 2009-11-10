@@ -1418,24 +1418,5 @@ function getNodeStyleImage(node, forTreeView)
     if(node.attributes.multi && !forTreeView)
         if(node.childNodes.length != 0)  return "";
 
-    switch(node.attributes.configured)
-    {
-        case 'set':
-            if(node.attributes.configured_ == 'active_plus' ||
-                node.attributes.configured_ == 'active')
-                return V_DIRTY_FLAG;
-            return V_DIRTY_FLAG_ADD;
-        case 'delete':
-            return V_DIRTY_FLAG_DEL;
-        case 'active_plus':
-            return V_DIRTY_FLAG;
-        case 'active':
-            if(node.attributes.configured_ == 'active_plus')
-                return V_DIRTY_FLAG;
-            return '';
-        default:
-            if(node.attributes.defaultVal != undefined)
-                return V_DIRTY_FLAG;
-            return '';
-    }
+    return f_getNodeIndicatorFlag(node, false);
 }

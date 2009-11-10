@@ -1,3 +1,13 @@
+vyatta-webgui (0.2.13-18) unstable; urgency=low
+
+  [ slioch ]
+  * fix for bug 3899
+
+  [ Kevin Choi ]
+  * Fixed modified and added indicator when created/modified leaf node
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Tue, 10 Nov 2009 10:49:24 -0800
+
 vyatta-webgui (0.2.13-17) unstable; urgency=low
 
   * fix for bug 4635

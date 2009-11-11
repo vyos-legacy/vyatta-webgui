@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-19) unstable; urgency=low
+
+  * * fixed bug#1223 - notify user of system reboot
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Wed, 11 Nov 2009 12:02:06 -0800
+
 vyatta-webgui (0.2.13-18) unstable; urgency=low
 
   [ slioch ]

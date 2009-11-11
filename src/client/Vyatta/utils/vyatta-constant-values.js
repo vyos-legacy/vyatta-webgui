@@ -8,7 +8,7 @@
 V_NOT_FOUND = 'NOTFOUND';
 V_COOKIES_USER_NAME = 'userName';
 V_COOKIES_USER_ID = 'id';
-V_COOKIES_ISLOGIN = 'isLogin'
+V_COOKIES_ISLOGIN = 'isLogin';      // yes/no/reboot/
 
 //////////////////////////////////////////////
 // cookies value

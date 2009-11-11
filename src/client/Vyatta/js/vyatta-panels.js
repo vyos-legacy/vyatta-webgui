@@ -1516,9 +1516,13 @@ function f_handleOperBtnClick(button, node, treeObj)
         var cb = function send(btn)
         {
             if(btn == 'yes')
+            {
+                g_cookie.f_set(V_COOKIES_ISLOGIN, 'reboot', g_cookie.m_userNameExpire);
                 f_sendOperationCliCommand(node, treeObj, false,
                                           undefined, true, undefined,
                                           treeObj, undefined);
+                window.location.reload(false);
+            }
         };
 
         if(node.text == 'reboot')

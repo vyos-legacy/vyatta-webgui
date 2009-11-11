@@ -22,7 +22,7 @@ function f_isUserLogined()
 {
     var login = g_cookie.f_get(V_COOKIES_ISLOGIN);
 
-    return (login == V_NOT_FOUND || login == 'no') ? false : true;
+    return (login == V_NOT_FOUND || login == 'no' || login == 'reboot') ? false : true;
 }
 
 function f_saveUserLoginName(name)

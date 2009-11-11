@@ -43,6 +43,17 @@ function f_startLogin()
     loginObj.f_initLoginPanel();
 }
 
+function f_startRebooting()
+{
+    g_cookie.f_remove(V_COOKIES_USER_ID);
+    g_cookie.f_set(V_COOKIES_ISLOGIN, 'no', g_cookie.m_userNameExpire);
+    
+    var reObj = new VYATTA_RebootObject(g_baseSystem.m_bodyPanel,
+                                          V_TREE_ID_login);
+    reObj.f_initDataType();
+    reObj.f_initRebootPanel();
+}
+
 function f_showTab(tabIndex)
 {
     if(g_baseSystem.m_hostname == undefined)
@@ -372,6 +383,9 @@ function f_isLogined(updateLoginTimer, promptMsg)
         return true;
     }
 
+    if(g_cookie.f_get(V_COOKIES_ISLOGIN) == 'reboot')
+        return true;
+    
     return false;
 }
 
@@ -415,6 +429,10 @@ Ext.onReady(function()
             f_startLogin();
     }
     else
-        f_showTab(g_baseSystem.m_iConf);
-
+    {
+        if(g_cookie.f_get(V_COOKIES_ISLOGIN) == 'reboot')
+            f_startRebooting();
+        else
+            f_showTab(g_baseSystem.m_iConf);
+    }
 });

@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-20) unstable; urgency=low
+
+  * * fixed bug# 4177 - to support of loading remote config file as like
+    in CLI.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Thu, 12 Nov 2009 13:48:15 -0800
+
 vyatta-webgui (0.2.13-19) unstable; urgency=low
 
   * * fixed bug#1223 - notify user of system reboot

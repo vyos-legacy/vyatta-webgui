@@ -23,7 +23,8 @@ VYATTA_RebootObject = Ext.extend(VYATTA_panels,
 
         var message = 'System is now rebooting and the web-GUI service is no ' +
                       'longer applicable. Please contact system administrator ' +
-                      'to enable the web-GUI service again.';
+                      'to enable the web-GUI service again. Then refresh the ' +
+                      'browser to log in again.';
 
         var panel = new Ext.Panel(
         {

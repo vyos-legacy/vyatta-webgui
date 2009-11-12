@@ -526,8 +526,9 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
         field.on('keydown', keyupPressHandler);
     }
 
-    helpStr = node.attributes.type != undefined ? helpStr+
-                  " ("+node.attributes.type+")" : helpStr;
+    if(node != null)
+        helpStr = node.attributes.type != undefined ? helpStr+
+        " ("+node.attributes.type+")" : helpStr;
 
     var p = new Ext.Panel(
     {
@@ -540,9 +541,13 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
                     f_createFieldDirtyIndicatorPanel(node),
                     f_createLabel(helpStr, V_LABEL_HELP) ]
     });
-    p.m_node = node;
-    p.m_parentNode = node.parentNode;
-    node.m_inputPanel = p;
+
+    if(node != null)
+    {
+        p.m_node = node;
+        p.m_parentNode = node.parentNode;
+        node.m_inputPanel = p;
+    }
 
     return p;
 }
@@ -907,30 +912,41 @@ function f_showConfigurationViewDialog(configData)
     dialog.show();
 }
 
+function f_getFileChooserDialogInput(comb, tf)
+{
+    var selVal = comb.lastQuery == undefined || comb.lastQuery == "" ?
+                  comb.getValue() : comb.lastQuery;
+
+    if(selVal != 'select filename')
+        return " '" + V_CONFIG_DIR + selVal + "' ";
+    else if(tf.getValue().length > 0)
+        return " '" + tf.getValue() + "'";
+    else
+        return "";
+}
+
 function f_showFileChooserDialog(command, values, treeObj)
 {
     ///////////////////////////////////
     // parse values
-    var val = [];
+    var val = ['select filename'];
     if(values != undefined)
     {
         var l = values.split("\n");
-        var j=0;
         for(var i=0; i<l.length; i++)
         {
             if(l[i].indexOf('-r') >= 0)
             {
                 var w = l[i].split(' ');
-                val[j++] = w[w.length-1];
+                val.push(w[w.length-1]);
             }
         }
     }
 
     var cb = function(btn)
     {
-        var selVal = comb.lastQuery == undefined || comb.lastQuery == "" ?
-                      comb.getValue() : comb.lastQuery;
-        var cmd = command + " '" + V_CONFIG_DIR + selVal + "'";
+        var cmd = f_getFileChooserDialogInput(comb, txtField);
+        cmd = command + cmd;
 
         if(btn == undefined || btn == 'yes')
         {
@@ -945,12 +961,22 @@ function f_showFileChooserDialog(command, values, treeObj)
         ,minWidth: 70
         ,handler: function()
         {
-            if(command == 'load')
-                f_yesNoMessageBox('Re-load Configuration',
-                      'Are you sure you wish to load the selected ' +
-                      'configuration file: ' + comb.getValue() + '?', cb);
+            var cmd = f_getFileChooserDialogInput(comb, txtField);
+            if(cmd != "")
+            {
+                if(command == 'load')
+                    f_yesNoMessageBox('Re-load Configuration',
+                          'Are you sure you wish to load the selected ' +
+                          'configuration file: ' + cmd + '?', cb);
+                else
+                    cb.call(null, null, ['save'], true);
+            }
             else
-                cb.call(null, null, ['save'], true);
+            {
+                f_promptErrorMessage(command + " configuration",
+                        "Please select or enter a configuration filename.",
+                        Ext.MessageBox.ERROR);
+            }
         }
     });
 
@@ -961,16 +987,57 @@ function f_showFileChooserDialog(command, values, treeObj)
         ,handler: function() { dialog.hide(); }
     })
 
-    var editable = false;
-    var title = 'Select a configuraton filename to be loaded';
-    var dlgTitle = 'Load Configuration File';
-    if(command == 'save')
-    {
-        editable = true;
-        title = 'Select or enter a new configuration filename'
-        dlgTitle = 'Save Configuration File';
-    }
+    var editable = true;
+    var title = 'Select or enter a new configuration filename';
+    var dlgTitle= 'Save Configuration File';
     var comb = f_createComboBox(val, 0, editable, 'Filename');
+    var items = [comb];
+    var height = 150;
+    var txtField = undefined;
+    if(command == 'load')
+    {
+        editable = false;
+        title = 'Select or enter a configuraton filename to be loaded';
+        dlgTitle = 'Load Configuration File';
+
+        var sLabel = new Ext.form.Label(
+        {
+            html: 'Select configure filename to be loaded from a Vyatta default directory' +
+                '<br>(/opt/vyatta/etc/config/).<br>&nbsp;'
+            ,cls: 'vlabel_left2'
+            ,position: 'fixed'
+        });
+        txtField = new Ext.form.TextField(
+        {
+          fieldLabel: 'Remote filename:'
+          ,labelAlign: 'left'
+          ,name: 'remote'
+          ,labelSeparator: ''
+          ,width: 250
+          ,inputType: 'text'
+          ,enableKeyEvents: true
+          ,allowBlank:true
+        });
+
+        var line = new Ext.form.Label(
+        {
+            html: '<br><hr>'
+            ,cls: 'vlabel_left2'
+            ,position: 'fixed'
+        });
+        var rLabel = new Ext.form.Label(
+        {
+            html: 'Or enter a remote configure filename for loading via http, scp, ftp, tftp, etc..' +
+            '<br>(i.e. tftp://172.16.117.1/dut1-config.boot<br>'+
+            'i.e. /any-dir/home/etc/config/config.boot).<br>&nbsp;'
+            ,cls: 'vlabel_left2'
+            ,position: 'fixed'
+        });
+        comb = f_createComboBox(val, 0, editable, 'Filename');
+        items = [sLabel, comb, line, rLabel, txtField];
+        height = 280;
+    }
+    
     var loginFormPanel = new Ext.form.FormPanel(
     {
         labelWidth: 100
@@ -978,9 +1045,9 @@ function f_showFileChooserDialog(command, values, treeObj)
         ,border: false
         ,title: title
         ,bodyStyle:'padding:10px 10px 5px 10px'
-        ,width: 390
+        ,width: 401
         ,monitorValid: true
-        ,items: [comb]
+        ,items: items
         ,buttons: [okButton, cancelButton]
     });
 
@@ -988,8 +1055,8 @@ function f_showFileChooserDialog(command, values, treeObj)
     {
         title: dlgTitle
         ,reset_on_hide: true
-        ,height: 150
-        ,width: 405
+        ,height: height
+        ,width: 415
         ,autoScroll: true
         ,items: [loginFormPanel]
     });

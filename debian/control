@@ -15,7 +15,7 @@ Depends: libexpat1 (>= 1.95.8-4),
  lighttpd,
  libc6,
  adduser,
- vyatta-cfg,
+ vyatta-cfg (>= 0.15.33),
  vyatta-op
 Description: Vyatta WebGUI
  This package provides the Vyatta WebGUI.

@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-21) unstable; urgency=low
+
+  * dependency update
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Fri, 13 Nov 2009 14:07:50 -0800
+
 vyatta-webgui (0.2.13-20) unstable; urgency=low
 
   * * fixed bug# 4177 - to support of loading remote config file as like

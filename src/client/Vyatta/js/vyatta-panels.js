@@ -988,55 +988,67 @@ function f_showFileChooserDialog(command, values, treeObj)
     })
 
     var editable = true;
-    var title = 'Select or enter a new configuration filename';
-    var dlgTitle= 'Save Configuration File';
-    var comb = f_createComboBox(val, 0, editable, 'Filename');
-    var items = [comb];
-    var height = 150;
+    var title = 'Select or enter a new configuration filename to be ';
+    var dlgTitle= ' Configuration File';
+    var items = [];
+    var height = 280;
     var txtField = undefined;
+    var sLabelTxt = 'Select a configure filename to be ';
+    var rLabelTxt = 'Or enter a remote configure filename ';
     if(command == 'load')
     {
         editable = false;
-        title = 'Select or enter a configuraton filename to be loaded';
-        dlgTitle = 'Load Configuration File';
-
-        var sLabel = new Ext.form.Label(
-        {
-            html: 'Select configure filename to be loaded from a Vyatta default directory' +
-                '<br>(/opt/vyatta/etc/config/).<br>&nbsp;'
-            ,cls: 'vlabel_left2'
-            ,position: 'fixed'
-        });
-        txtField = new Ext.form.TextField(
-        {
-          fieldLabel: 'Remote filename:'
-          ,labelAlign: 'left'
-          ,name: 'remote'
-          ,labelSeparator: ''
-          ,width: 250
-          ,inputType: 'text'
-          ,enableKeyEvents: true
-          ,allowBlank:true
-        });
-
-        var line = new Ext.form.Label(
-        {
-            html: '<br><hr>'
-            ,cls: 'vlabel_left2'
-            ,position: 'fixed'
-        });
-        var rLabel = new Ext.form.Label(
-        {
-            html: 'Or enter a remote configure filename for loading via http, scp, ftp, tftp, etc..' +
-            '<br>(i.e. tftp://172.16.117.1/dut1-config.boot<br>'+
-            'i.e. /any-dir/home/etc/config/config.boot).<br>&nbsp;'
-            ,cls: 'vlabel_left2'
-            ,position: 'fixed'
-        });
-        comb = f_createComboBox(val, 0, editable, 'Filename');
-        items = [sLabel, comb, line, rLabel, txtField];
-        height = 280;
+        title += 'loaded';
+        dlgTitle = 'Load' + dlgTitle;
+        sLabelTxt += 'loaded from a Vyatta default directory' +
+            '<br>(/opt/vyatta/etc/config/).<br>&nbsp;'
+        rLabelTxt += 'for loading via http, scp, ftp, tftp, etc..' +
+                    '<br>(i.e. tftp://172.16.117.1/dut1-config.boot<br>'+
+                    'i.e. /any-dir/home/etc/config/config.boot).<br>&nbsp;'
     }
+    else
+    {
+        dlgTitle = 'Save' + dlgTitle;
+        title += 'saved';
+        sLabelTxt += 'to saved to a Vyatta default directory' +
+            '<br>(/opt/vyatta/etc/config/).<br>&nbsp;'
+        rLabelTxt += 'save via http, scp, ftp, tftp, etc..' +
+                    '<br>(i.e. tftp://172.16.117.1/dut1-config.boot<br>'+
+                    'i.e. /any-dir/home/etc/config/config.boot).<br>&nbsp;'
+    }
+
+    var sLabel = new Ext.form.Label(
+    {
+        html: sLabelTxt
+        ,cls: 'vlabel_left2'
+        ,position: 'fixed'
+    });
+    txtField = new Ext.form.TextField(
+    {
+      fieldLabel: 'Remote filename:'
+      ,labelAlign: 'left'
+      ,name: 'remote'
+      ,labelSeparator: ''
+      ,width: 280
+      ,inputType: 'text'
+      ,enableKeyEvents: true
+      ,allowBlank:true
+    });
+
+    var line = new Ext.form.Label(
+    {
+        html: '<br><hr>'
+        ,cls: 'vlabel_left2'
+        ,position: 'fixed'
+    });
+    var rLabel = new Ext.form.Label(
+    {
+        html: rLabelTxt
+        ,cls: 'vlabel_left2'
+        ,position: 'fixed'
+    });
+    var comb = f_createComboBox(val, 0, editable, 'Filename');
+    items = [sLabel, comb, line, rLabel, txtField];
     
     var loginFormPanel = new Ext.form.FormPanel(
     {
@@ -1045,7 +1057,7 @@ function f_showFileChooserDialog(command, values, treeObj)
         ,border: false
         ,title: title
         ,bodyStyle:'padding:10px 10px 5px 10px'
-        ,width: 401
+        ,width: 418
         ,monitorValid: true
         ,items: items
         ,buttons: [okButton, cancelButton]
@@ -1056,7 +1068,7 @@ function f_showFileChooserDialog(command, values, treeObj)
         title: dlgTitle
         ,reset_on_hide: true
         ,height: height
-        ,width: 415
+        ,width: 432
         ,autoScroll: true
         ,items: [loginFormPanel]
     });

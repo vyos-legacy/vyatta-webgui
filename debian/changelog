@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-22) unstable; urgency=low
+
+  * supported save configure to remote system or other directory other
+    than vyatta default location.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Fri, 13 Nov 2009 17:28:12 -0800
+
 vyatta-webgui (0.2.13-21) unstable; urgency=low
 
   * dependency update

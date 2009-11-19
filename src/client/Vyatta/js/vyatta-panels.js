@@ -912,17 +912,52 @@ function f_showConfigurationViewDialog(configData)
     dialog.show();
 }
 
-function f_getFileChooserDialogInput(comb, tf)
+function f_getFileChooserDialogInput(sRadio, comb, tf)
 {
     var selVal = comb.lastQuery == undefined || comb.lastQuery == "" ?
                   comb.getValue() : comb.lastQuery;
+    var radio = sRadio.items.items[0];
 
-    if(selVal != 'select filename')
+    if(radio.getValue() && selVal != 'select filename')
         return " '" + V_CONFIG_DIR + selVal + "' ";
-    else if(tf.getValue().length > 0)
+    else if(!radio.getValue() && tf.getValue().length > 0)
         return " '" + tf.getValue() + "'";
     else
         return "";
+}
+
+function f_createFileChooserRadio(labelTxt, checked, height, cb)
+{
+    var sRadio =
+    {
+        xtype: 'radio',
+        name: 'mode',
+        checked: checked,
+        boxLabel: ' ',
+        hideLabel: true,
+        labelSeparator: ''
+        ,listeners: { check: cb }
+    };
+    var sLabel = new Ext.form.Label(
+    {
+        html: labelTxt
+        ,cls: 'vlabel_left2'
+        ,position: 'fixed'
+        ,width: 380
+        ,height: height
+    });
+
+    var p =  new Ext.Panel(
+    {
+        border: false
+        ,layout: 'column'
+        ,cls: 'v-bg-white'
+        ,bodyStyle: 'padding:0px 2px 2px 3px'
+        ,items:[sRadio, sLabel]
+    });
+
+    p.m_radio = sRadio;
+    return p;
 }
 
 function f_showFileChooserDialog(command, values, treeObj)
@@ -945,7 +980,7 @@ function f_showFileChooserDialog(command, values, treeObj)
 
     var cb = function(btn)
     {
-        var cmd = f_getFileChooserDialogInput(comb, txtField);
+        var cmd = f_getFileChooserDialogInput(sRadio, comb, txtField);
         cmd = command + cmd;
 
         if(btn == undefined || btn == 'yes')
@@ -961,7 +996,7 @@ function f_showFileChooserDialog(command, values, treeObj)
         ,minWidth: 70
         ,handler: function()
         {
-            var cmd = f_getFileChooserDialogInput(comb, txtField);
+            var cmd = f_getFileChooserDialogInput(sRadio, comb, txtField);
             if(cmd != "")
             {
                 if(command == 'load')
@@ -988,13 +1023,13 @@ function f_showFileChooserDialog(command, values, treeObj)
     })
 
     var editable = true;
-    var title = 'Select or enter a new configuration filename to be ';
+    var title = 'Select or enter a configuration filename to be ';
     var dlgTitle= ' Configuration File';
     var items = [];
-    var height = 280;
     var txtField = undefined;
     var sLabelTxt = 'Select a configure filename to be ';
-    var rLabelTxt = 'Or enter a remote configure filename ';
+    var rLabelTxt = 'Enter a remote configure filename ';
+    var spaces = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
     if(command == 'load')
     {
         editable = false;
@@ -1002,7 +1037,7 @@ function f_showFileChooserDialog(command, values, treeObj)
         dlgTitle = 'Load' + dlgTitle;
         sLabelTxt += 'loaded from a Vyatta default directory' +
             '<br>(/opt/vyatta/etc/config/).<br>&nbsp;'
-        rLabelTxt += 'for loading via http, scp, ftp, tftp, etc..' +
+        rLabelTxt += '&nbsp;for loading via http, scp, ftp, tftp, etc..' +
                     '<br>(i.e. tftp://172.16.117.1/dut1-config.boot<br>'+
                     'i.e. /any-dir/home/etc/config/config.boot).<br>&nbsp;'
     }
@@ -1012,43 +1047,57 @@ function f_showFileChooserDialog(command, values, treeObj)
         title += 'saved';
         sLabelTxt += 'to saved to a Vyatta default directory' +
             '<br>(/opt/vyatta/etc/config/).<br>&nbsp;'
-        rLabelTxt += 'save via http, scp, ftp, tftp, etc..' +
+        rLabelTxt += '&nbsp;save via http, scp, ftp, tftp, etc..' +
                     '<br>(i.e. tftp://172.16.117.1/dut1-config.boot<br>'+
                     'i.e. /any-dir/home/etc/config/config.boot).<br>&nbsp;'
     }
 
-    var sLabel = new Ext.form.Label(
+    var sRadioCb = function(sThis, isChecked)
     {
-        html: sLabelTxt
-        ,cls: 'vlabel_left2'
-        ,position: 'fixed'
-    });
-    txtField = new Ext.form.TextField(
-    {
-      fieldLabel: 'Remote filename:'
-      ,labelAlign: 'left'
-      ,name: 'remote'
-      ,labelSeparator: ''
-      ,width: 280
-      ,inputType: 'text'
-      ,enableKeyEvents: true
-      ,allowBlank:true
-    });
+        if(isChecked)
+        {
+            comb.enable();
+            comb.focus(false);
+        }
+        else
+            comb.disable();
+    }
 
+    var sRadio = f_createFileChooserRadio(sLabelTxt, true, 45, sRadioCb);
+    var comb = f_createComboBox(val, 0, editable, spaces + 'Filename');
     var line = new Ext.form.Label(
     {
         html: '<br><hr>'
         ,cls: 'vlabel_left2'
         ,position: 'fixed'
     });
-    var rLabel = new Ext.form.Label(
+
+    var rRadioCb = function(rThis, isCheck)
     {
-        html: rLabelTxt
-        ,cls: 'vlabel_left2'
-        ,position: 'fixed'
+        if(isCheck)
+        {
+            txtField.enable();
+            txtField.focus(true);
+        }
+        else
+            txtField.disable()
+    }
+    var rRadio = f_createFileChooserRadio(rLabelTxt, false, 55, rRadioCb);
+    txtField = new Ext.form.TextField(
+    {
+      fieldLabel: spaces + 'Filename'
+      //,labelStyle: 'width:125px;'
+      ,labelAlign: 'left'
+      ,name: 'remote'
+      ,labelSeparator: ':'
+      ,width: 285
+      ,inputType: 'text'
+      ,enableKeyEvents: true
+      ,allowBlank:true
+      ,disabled: true
     });
-    var comb = f_createComboBox(val, 0, editable, 'Filename');
-    items = [sLabel, comb, line, rLabel, txtField];
+    
+    items = [sRadio, comb, line, rRadio, txtField];
     
     var loginFormPanel = new Ext.form.FormPanel(
     {
@@ -1057,7 +1106,7 @@ function f_showFileChooserDialog(command, values, treeObj)
         ,border: false
         ,title: title
         ,bodyStyle:'padding:10px 10px 5px 10px'
-        ,width: 418
+        ,width: 440
         ,monitorValid: true
         ,items: items
         ,buttons: [okButton, cancelButton]
@@ -1067,13 +1116,14 @@ function f_showFileChooserDialog(command, values, treeObj)
     {
         title: dlgTitle
         ,reset_on_hide: true
-        ,height: height
-        ,width: 432
+        ,height: 308
+        ,width: 455
         ,autoScroll: true
         ,items: [loginFormPanel]
     });
 
     dialog.show();
+    sRadioCb(null, true);
 }
 
 function f_updateToolbarButtons(tree)

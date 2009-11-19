@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-23) unstable; urgency=low
+
+  * * fixed bug# 4214 - shutdown issues
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Thu, 19 Nov 2009 10:31:16 -0800
+
 vyatta-webgui (0.2.13-22) unstable; urgency=low
 
   * supported save configure to remote system or other directory other

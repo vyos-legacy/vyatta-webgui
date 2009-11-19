@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-24) unstable; urgency=low
+
+  * * additional fixed to bug 4177 - anabled user to load/save config
+    to/from remote system.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Thu, 19 Nov 2009 14:39:22 -0800
+
 vyatta-webgui (0.2.13-23) unstable; urgency=low
 
   * * fixed bug# 4214 - shutdown issues

@@ -205,7 +205,8 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                     continue;
                 else if(tc != undefined && tc.indexOf('Clear screen') >= 0)
                     continue;
-                else if(an == 'at' && tc.indexOf('Reboot at') >= 0)
+                else if(an == 'at' && (tc.indexOf('Reboot at') >= 0 ||
+                        tc.indexOf('Shutdown at') >= 0))
                     continue;
                 else if(an == 'set' && tc.indexOf('Set system or') >= 0)
                     continue;

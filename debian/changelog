@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-25) unstable; urgency=low
+
+  * * fixed bug#4162 - display renew interface result message.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Fri, 20 Nov 2009 11:03:54 -0800
+
 vyatta-webgui (0.2.13-24) unstable; urgency=low
 
   * * additional fixed to bug 4177 - anabled user to load/save config

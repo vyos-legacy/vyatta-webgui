@@ -1210,6 +1210,13 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                         // if segment is not end
                         else if(sid.indexOf('_end') < 0)
                         {
+                            ////////////////////////////////////////////
+                            // handle special case
+                            if(values.indexOf("Renewing DHCP lease on ") >= 0)
+                            {
+                                values = values.replace("...", "completed.");
+                            }
+
                             ///////////////////////////////////////////
                             // add the \n if not found
                             if(segCount > 1 && values != undefined &&
@@ -1223,6 +1230,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                             var el = document.getElementById(ePanel.m_opTextArea.m_outputId);
                             el.scrollIntoView(false);
                             ePanel.m_opTextArea = f;
+                            ePanel.doLayout();
                         }
                     }
                     break;

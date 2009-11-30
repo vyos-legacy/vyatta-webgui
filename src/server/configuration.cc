@@ -429,6 +429,11 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  help = line;
 	}
 	mode = "help:";
+
+	if (help.find("[REQUIRED]") != string::npos) {
+	  params._mandatory = true;
+	}
+
 	help = WebGUI::mass_replace(help, "&", "&#38;");
 	help = WebGUI::mass_replace(help, "<", "&#60;");
 	help = WebGUI::mass_replace(help, ">", "&#62;");

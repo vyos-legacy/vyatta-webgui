@@ -7,14 +7,6 @@
 #include "systembase.hh"
 #include "processor.hh"
 
-class MandatoryData
-{
-public:
-  std::map< std::string,std::set<std::string> >  *_mandatory_node_coll;
-  std::string _err;
-  std::string _session_id;
-};
-
 class Command : public SystemBase
 {
 public:

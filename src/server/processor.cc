@@ -117,8 +117,17 @@ TemplateParams::get_xml(const string &value)
     out += "</help>";
   }
 
+  if (_mandatory == true) {
+    out += "<mandatory/>";
+  }
+
   if (_comp_help.empty() == false) {
     out += "<comp_help>";
+    _comp_help = WebGUI::mass_replace(_comp_help, "&", "&amp;");
+    _comp_help = WebGUI::mass_replace(_comp_help, "\"", "&quot;");
+    _comp_help = WebGUI::mass_replace(_comp_help, "'", "&apos;");
+    _comp_help = WebGUI::mass_replace(_comp_help, "<", "&lt;");
+    _comp_help = WebGUI::mass_replace(_comp_help, ">", "&gt;");
     out += _comp_help;
     out += "</comp_help>";
   }

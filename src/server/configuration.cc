@@ -604,9 +604,8 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
 
   //get map of each file and compare contents
   map<string,WebGUI::NodeState> state_coll;
-  map<int,string> order_coll;
+  vector<string> order_coll;
 
-  int index = 0;
   FILE *fp = fopen(active_path.c_str(), "r");
   if (fp) {
     char buf[1025];
@@ -615,7 +614,7 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
       string tmp(buf);
       tmp = tmp.substr(0,tmp.length()-1);
       state_coll.insert(pair<string,WebGUI::NodeState>(tmp,WebGUI::DELETE));
-      order_coll.insert(pair<int,string>(index++,tmp));
+      order_coll.push_back(tmp);
     }
     fclose(fp);
   }
@@ -634,16 +633,16 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
       }
       else {
 	state_coll.insert(pair<string,WebGUI::NodeState>(tmp,WebGUI::SET));
-	order_coll.insert(pair<int,string>(index++,tmp));
+	order_coll.push_back(tmp);
       }   
     }
     fclose(fp);
   }
 
 
-  map<int,string>::iterator o_iter = order_coll.begin();
+  vector<string>::iterator o_iter = order_coll.begin();
   while (o_iter != order_coll.end()) {
-    map<string,WebGUI::NodeState>::iterator s_iter = state_coll.find(o_iter->second);
+    map<string,WebGUI::NodeState>::iterator s_iter = state_coll.find(*o_iter);
     if (s_iter == state_coll.end()) {
       ++o_iter;
       continue; //should never happen

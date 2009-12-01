@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-30) unstable; urgency=low
+
+  * fixed bug-4224
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Tue, 01 Dec 2009 13:18:25 -0800
+
 vyatta-webgui (0.2.13-29) unstable; urgency=low
 
   * * fixed bug4166 - added feature to collapse all tree nodes.

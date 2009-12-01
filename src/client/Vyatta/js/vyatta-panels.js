@@ -556,13 +556,17 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
                             isEditable, callback, node, treeObj)
 {
     var oldiVal = ival != undefined ? ival : node.attributes.defaultVal;
+
+    if(labelStr == 'inbound-interface' || labelStr == 'outbound-interface')
+        isEditable = true;
+
     var field = new Ext.form.ComboBox(
     {
         id: this.m_tabName,
         mode: 'local',
         store: values,
         displayField: 'value',
-        emptyText: '',//emptyText,
+        emptyText: '',
         labelSeparator: '',
         editable: isEditable,
         triggerAction: 'all',

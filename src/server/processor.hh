@@ -38,7 +38,8 @@ public:
     _end(false), 
     _action(false),
     _type(WebGUI::NONE), 
-    _conf_mode(WebGUI::NOATTR) {}
+    _conf_mode(WebGUI::NOATTR),
+    _mandatory(false) {}
   bool _multi;
   bool _end;
   bool _action;
@@ -46,6 +47,7 @@ public:
   WebGUI::Attributes _conf_mode;
   std::string _help;
   std::string _comp_help;
+  bool        _mandatory;
   std::string _default;
   std::vector<std::string> _enum;
   std::string _allowed; //matches the allowed in node.def
@@ -83,6 +85,7 @@ public:
   std::string _custom_error_msg;
   std::string _custom_response;
   std::string _token;
+
 
 private:
   std::string _id;

@@ -429,6 +429,11 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  help = line;
 	}
 	mode = "help:";
+
+	if (help.find("[REQUIRED]") != string::npos) {
+	  params._mandatory = true;
+	}
+
 	help = WebGUI::mass_replace(help, "&", "&#38;");
 	help = WebGUI::mass_replace(help, "<", "&#60;");
 	help = WebGUI::mass_replace(help, ">", "&#62;");
@@ -598,8 +603,10 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
   string local_path = WebGUI::LOCAL_CONFIG_DIR + _proc->get_msg().id() + "/" + rel_path;
 
   //get map of each file and compare contents
-  map<string,WebGUI::NodeState> coll;
+  map<string,WebGUI::NodeState> state_coll;
+  map<int,string> order_coll;
 
+  int index = 0;
   FILE *fp = fopen(active_path.c_str(), "r");
   if (fp) {
     char buf[1025];
@@ -607,7 +614,8 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
     while (fgets(buf, 1024, fp) != 0) {
       string tmp(buf);
       tmp = tmp.substr(0,tmp.length()-1);
-      coll.insert(pair<string,WebGUI::NodeState>(tmp,WebGUI::DELETE));
+      state_coll.insert(pair<string,WebGUI::NodeState>(tmp,WebGUI::DELETE));
+      order_coll.insert(pair<int,string>(index++,tmp));
     }
     fclose(fp);
   }
@@ -620,22 +628,29 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
     while (fgets(buf, 1024, fp) != 0) {
       string tmp(buf);
       tmp = tmp.substr(0,tmp.length()-1);
-      map<string,WebGUI::NodeState>::iterator iter = coll.find(tmp);
-      if (iter != coll.end()) {
+      map<string,WebGUI::NodeState>::iterator iter = state_coll.find(tmp);
+      if (iter != state_coll.end()) {
 	iter->second = WebGUI::ACTIVE;
       }
       else {
-	coll.insert(pair<string,WebGUI::NodeState>(tmp,WebGUI::SET));
-      }
+	state_coll.insert(pair<string,WebGUI::NodeState>(tmp,WebGUI::SET));
+	order_coll.insert(pair<int,string>(index++,tmp));
+      }   
     }
     fclose(fp);
   }
 
 
-  map<string,WebGUI::NodeState>::iterator iter = coll.begin();
-  while (iter != coll.end()) {
-    out += "<"+node+" name='" + iter->first + "'>";
-    switch (iter->second) {
+  map<int,string>::iterator o_iter = order_coll.begin();
+  while (o_iter != order_coll.end()) {
+    map<string,WebGUI::NodeState>::iterator s_iter = state_coll.find(o_iter->second);
+    if (s_iter == state_coll.end()) {
+      ++o_iter;
+      continue; //should never happen
+    }
+
+    out += "<"+node+" name='" + s_iter->first + "'>";
+    switch (s_iter->second) {
     case WebGUI::ACTIVE:
       out += "<configured>active</configured>";
       break;
@@ -650,7 +665,7 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
       break;
     }
     out += "</"+node+">";
-    ++iter;
+    ++o_iter;
   }
   return;
 }

@@ -19,10 +19,6 @@ extern "C" {
 
 using namespace std;
 
-gboolean
-mandatory_func(GNode *node, gpointer data);
-
-
 Command::Command() : SystemBase()
 {
 }
@@ -121,8 +117,6 @@ export vyatta_localedir=/opt/vyatta/share/locale";
 
   bool validate_commit = false;
   if (_proc->get_msg()._conf_mode == WebGUI::CONF) { //configuration mode command
-    //HACK,HACK,HACK
-    //pre-process commit for mandatory nodes
     if (strncmp(tmp.c_str(),"commit",6) == 0) {
       validate_commit = true;
     }
@@ -224,24 +218,6 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   command += ";" + tmp;
 
   string stdout;
-  /*
-  if (WebGUI::execute(command,stdout,true) == 0) {
-    err = WebGUI::SUCCESS;
-  }
-  else {
-    err = WebGUI::COMMAND_ERROR;
-    //now evaluate mandatory nodes
-    if (validate_commit == true) {
-      resp += "\n"; 
-      resp += validate_commit_nodes();
-      if (resp.empty() == false) {
-	resp = WebGUI::mass_replace(resp, "\n", "&#xD;&#xA;");
-	err = WebGUI::MANDATORY_NODE_ERROR;
-	return;
-      }
-    }
-  }
-  */
   //NOTE error codes are not currently being returned via the popen call--temp fix until later investigation
   if (WebGUI::execute(command,stdout,true) == 0) {
     err = WebGUI::SUCCESS;
@@ -252,19 +228,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
   if (stdout.empty() == true) {
     err = WebGUI::SUCCESS;
   }
-  else {
-    //    err = WebGUI::COMMAND_ERROR;
-    //now evaluate mandatory nodes
-    if (validate_commit == true) {
-      string mandatory = validate_commit_nodes();
-      if (mandatory.empty() == false) {
-	resp = stdout + "\n" + mandatory;
-	resp = WebGUI::mass_replace(resp, "\n", "&#xD;&#xA;");
-	err = WebGUI::MANDATORY_NODE_ERROR;
-	return;
-      }
-    }
-  }
+
   stdout = WebGUI::mass_replace(stdout, "&", "&amp;");
   stdout = WebGUI::mass_replace(stdout, "\"", "&quot;");
   stdout = WebGUI::mass_replace(stdout, "'", "&apos;");
@@ -320,156 +284,6 @@ Command::multi_part_op_cmd(std::string &cmd)
   string msg = "<?xml version='1.0' encoding='utf-8'?><vyatta><token>"+_proc->_msg._token+"</token><error><code>0</code><msg segment='"+token+"'>"+resp+"</msg></error></vyatta>";  
   _proc->set_response(msg);
   return true;
-}
-
-
-/**
- * Hack--reads in mandatory nodes and compares merged directory to see if nodes are set.
- **/
-string
-Command::validate_commit_nodes()
-{
-  map< string,set<string> > mandatory_node_coll;
-
-  //let's bring in the new cli code and call 
-  string value = "/opt/vyatta/config/tmp/tmp_" + _proc->get_msg().id();
-  setenv("VYATTA_CONFIG_TMP",value.c_str(),1);
-  value = "/tmp/changes_only_" + _proc->get_msg().id();
-  setenv("VYATTA_CHANGES_ONLY_DIR",value.c_str(),1);
-  value = "/opt/vyatta/config/tmp/new_config_" + _proc->get_msg().id();
-  setenv("VYATTA_TEMP_CONFIG_DIR",value.c_str(),1);
-  setenv("vyatta_cfg_templates","/opt/vyatta/share/vyatta-cfg/templates",1);
-  setenv("VYATTA_CONFIG_TEMPLATE","/opt/vyatta/share/vyatta-cfg/templates",1);
-
-  //VYATTA_TEMP_CONFIG_DIR
-
-  //read in file into map.
-  //read in conf file and stuff values into set
-  FILE *fp = fopen(WebGUI::MANDATORY_NODE_FILE.c_str(),"r"); 
-  //  string hack = "echo \"validate_commit_nodes:B"+WebGUI::MANDATORY_NODE_FILE+"\" >> /tmp/foo";system(hack.c_str());
-  if (fp) {
-    //  hack = "echo \"validate_commit_nodes:C\" >> /tmp/foo";system(hack.c_str());
-    char buf[1025];
-    while (fgets(buf,1024,fp) != 0) {
-      string tmp(buf);
-      int pos = tmp.find('#');
-      if (pos > 0) {
-	tmp = tmp.substr(0,pos);
-      }
-      pos = tmp.find('\n');
-      if (pos > 0) {
-	tmp = tmp.substr(0,pos);
-      }
-      //now if empty skip and make sure to drop '/n'
-      if (tmp.empty() == false) {
-	size_t pos = tmp.rfind("/");
-	string parent = tmp.substr(0,pos);
-	string child = tmp.substr(pos+1,tmp.length());
-	map< string,set<string> >::iterator iter = mandatory_node_coll.find(parent);
-	if (iter == mandatory_node_coll.end()) {
-	  mandatory_node_coll.insert(pair< string,set<string> >(parent,set<string>()));
-	  iter = mandatory_node_coll.find(parent);
-	}
-	iter->second.insert(child);
-      }
-    }
-    fclose(fp);
-  }
-  /*
-  //let's bring in the new cli code and call 
-  unsetenv("VYATTA_CONFIG_TMP");
-  unsetenv("VYATTA_CHANGES_ONLY_DIR");
-  unsetenv("VYATTA_TEMP_CONFIG_DIR");
-  unsetenv("vyatta_cfg_templates");
-  unsetenv("VYATTA_CONFIG_TEMPLATE");
-
-  //VYATTA_TEMP_CONFIG_DIR
-  */
-
-  char buf2[30];
-  sprintf(buf2,"%d",mandatory_node_coll.size());
-  //  hack = "echo \"validate_commit_nodes:D: "+string(buf2)+"\" >> /tmp/foo";system(hack.c_str());
-  
-  if (mandatory_node_coll.empty()) {
-    return string("");
-  }
-  //  hack = "echo \"validate_commit_nodes:E\" >> /tmp/foo";system(hack.c_str());
-
-  MandatoryData data;
-  GNode *config_root_node = common_get_local_session_data();
-  //  hack = "echo \"validate_commit_nodes:F\" >> /tmp/foo";system(hack.c_str());
-  if (config_root_node != NULL) {
-    
-    int ct = g_node_n_nodes(config_root_node,G_TRAVERSE_ALL);
-    char buf[30];
-    sprintf(buf,"%d",ct);
-    //    hack = "echo \"validate_commit_nodes:"+string(buf)+"G\" >> /tmp/foo";system(hack.c_str());
-    //iterate over config_data and dump...
-    data._mandatory_node_coll = &mandatory_node_coll;
-    data._err = "";
-    data._session_id = _proc->get_msg().id();
-    g_node_traverse(config_root_node,
-		    G_PRE_ORDER,
-		    G_TRAVERSE_ALL,
-		    -1,
-		    (GNodeTraverseFunc)mandatory_func,
-		    (gpointer)&data);
-  }
-  //  hack = "echo \"validate_commit_nodes:"+data._err+"\" >> /tmp/foo";system(hack.c_str());
-  return data._err;
-}
-
-/**
- *
- **/
-gboolean
-mandatory_func(GNode *node, gpointer data)
-{
-  struct MandatoryData *md = (struct MandatoryData*)data;
-  gpointer gp = ((GNode*)node)->data;
-
-  if (((struct VyattaNode*)gp) == NULL) {
-    return false;
-  }
-  if (((struct VyattaNode*)gp)->_config._path == NULL || 
-      ((struct VyattaNode*)gp)->_data._path == NULL) {
-    return false;
-  }
-
-  if (IS_DELETE(((struct VyattaNode*)gp)->_data._operation)) {
-    return false;
-  }
-
-  //strip off trailing slashes
-  string config_path = ((struct VyattaNode*)gp)->_config._path;
-  string data_path = ((struct VyattaNode*)gp)->_data._path;
-  size_t pos = 1;
-  while (config_path.rfind("/") == config_path.length()-pos && pos <= config_path.length()) {
-    ++pos;
-  }
-  if (pos > 1) {
-    config_path = config_path.substr(0,config_path.length()-pos);
-  }
-  map< string,set<string> >::iterator iter = md->_mandatory_node_coll->find(config_path);
-
-  //  string hack = "echo \"mandatory_func ENTERED ON PATH:"+config_path+"\" >> /tmp/foot";system(hack.c_str());
-
-  //match on root, now let's perform explicit checks on nodes in merged local directory
-  if (iter != md->_mandatory_node_coll->end()) {
-    set<string> children = iter->second;
-    set<string>::iterator c_iter = children.begin();
-    while (c_iter != children.end()) {
-      struct stat s;
-      string child_data_path = WebGUI::VYATTA_TEMP_CONFIG_DIR + md->_session_id + data_path + *c_iter;
-      //      string hack = "echo \"mandatory_func TESTING PATH:"+child_data_path+"\" >> /tmp/foot";system(hack.c_str());
-      if (lstat(child_data_path.c_str(),&s) != 0) {
-	md->_err += data_path + *c_iter + "\n";
-      }
-      ++c_iter;
-    }
-    ++iter;
-  }
-  return false;
 }
 
 /**

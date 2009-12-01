@@ -763,18 +763,21 @@ function f_createComboBox(values, selVal, editable, label)
 }
 function f_createTopPanelViewPanel(thisObj)
 {
-    var onCollapseHandler = function(f)
-    {
-        thisObj.f_showLeftPanel(f);
-    }
+    //var onCollapseHandler = function(f)
+    //{
+      //  thisObj.f_showLeftPanel(f);
+    //}
 
-    var field = f_createComboBox(thisObj.m_viewerValues, 1, false, "View");
-    field.on('collapse', onCollapseHandler);
+    thisObj.m_collapseBtn = f_createToolbarButton('v_collapse_button',
+                'collapse', thisObj.m_treeObj, 'Collapose all tree nodes');
+
+    //var field = f_createComboBox(thisObj.m_viewerValues, 1, false, "View");
+    //field.on('collapse', onCollapseHandler);
     var toolbar = new Ext.Toolbar(
     {
         border: false
         ,cls: 'v-border-less'
-        //,items: [ 'View: ', field]
+        ,items: [ thisObj.m_collapseBtn ] //'View: ', field]
     });
 
     return new Ext.Panel(
@@ -870,6 +873,8 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
                 f_sendOperationCliCommand(null, null, false, sendCmd,
                                           true, undefined, treeObj, supportCmd);
             }
+            else if(cmdName == 'collapse')
+                treeObj.m_tree.collapseAll();
             else
             {
                 if(cmdName == 'view')

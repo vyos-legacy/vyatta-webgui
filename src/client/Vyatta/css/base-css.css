@@ -151,6 +151,16 @@
     left: 3px !important;
     padding-left: 3px !important;
 }
+
+.v_collapse_button
+{
+    background:  url('../images/collapse_all.gif') no-repeat left !important;
+    height: 19px !important;
+    width: 110px !important;
+    cursor:pointer;
+    white-space: nowrap;
+}
+
 .v_help_button_show /*.x-btn-center .x-btn-text*/
 {
     background: url('../images/show_tips_available.gif') no-repeat left !important;
@@ -581,6 +591,18 @@ pre.code
     margin-bottom:0px;
     height:18px;
     line-height:20px;
+}
+
+.vyatta-form-item label
+{
+    display:block;
+    float:left;
+    width:150px;
+    padding:3px;
+    padding-left:0;
+    clear:left;
+    z-index:2;
+    position:relative;
 }
 
 /*

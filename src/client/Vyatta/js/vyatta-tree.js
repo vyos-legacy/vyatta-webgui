@@ -383,6 +383,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             ,animate: true
             ,cls: 'vborder_less'
             ,pathSeparator: ' '
+            ,collapsible: true
             ,rootVisible: false
             ,defaults: {autoScroll:true, bodyBorder:false}
             ,loader: this.m_treeLoader

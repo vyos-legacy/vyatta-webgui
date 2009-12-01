@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-28) unstable; urgency=low
+
+  * fix for bug 4087. added additional collection to maintain node.val
+    order on term multinodes.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Tue, 01 Dec 2009 10:54:40 -0800
+
 vyatta-webgui (0.2.13-27) unstable; urgency=low
 
   * add new mandatory support to gui. also removed old mandatory

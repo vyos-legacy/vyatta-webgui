@@ -477,7 +477,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	      if (tmp[0] == '"') {
 		tmp = tmp.substr(1,tmp.length()-2);
 	      }
-	      params._enum.push_back(tmp);
+	      params._enum.insert(tmp);
 	    }
 	    if (end) {
 	      break;
@@ -580,7 +580,7 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	  }
 	  
 	  if (tmp.empty() == false) {
-	    params._enum.push_back(tmp);
+	    params._enum.insert(tmp);
 	  }
 	}
 	++iter;

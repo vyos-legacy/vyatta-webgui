@@ -634,6 +634,23 @@ function f_getValueForCheckbox(value)
     return (value != undefined && (value == 'enable' || value == 'true')) ?
                 true : false;
 }
+
+function f_createGridCheckColumn(callback)
+{
+    var cl = new Vyatta_grid_CheckColumn(
+    {
+        header: " "
+        ,dataIndex: 'checker'
+        ,width: 20
+        ,fixed: true
+        ,sortable: false
+        ,menuDisabled: true
+        ,callback: callback
+    });
+
+    return cl;
+}
+
 function f_createCheckbox(value, node, helpStr, width, callback, treeObj)
 {
     var cliVal = value != undefined ? value : node.attributes.defaultVal;
@@ -1365,7 +1382,10 @@ function f_linkFormField(form)
 
 function f_isEditGridDirty(gridStore)
 {
-    for (var i = 0; i < gridStore.getCount(); i++)
+    if(gridStore.m_isChecker)
+        return gridStore.m_checkerDirty;
+    
+    for(var i = 0; i < gridStore.getCount(); i++)
     {
         var rec = gridStore.getAt(i);
         if(rec.dirty)
@@ -1377,32 +1397,73 @@ function f_isEditGridDirty(gridStore)
 function f_getEditGridValues(gridStore)
 {
     var ret = [ ];
-    var jj = 0;
     for (var i = 0; i < gridStore.getCount(); i++)
     {
         var rec = gridStore.getAt(i);
         var val = gridStore.getAt(i).get('value');
-        if(val.length > 0 && rec.error != true)
-            ret[jj++] = val;
+        if(val.length > 0 && !rec.error)
+            ret.push(val);
+    }
+
+    return ret;
+}
+function f_getEditGridCheckerValues(gridStore)
+{
+    var ret = [ ];
+    for (var i = 0; i < gridStore.getCount(); i++)
+    {
+        var rec = gridStore.getAt(i);
+        var val = gridStore.getAt(i).get('value');
+        var checker = gridStore.getAt(i).get('checker');
+        if(val.length > 0 && !rec.error && checker)
+            ret.push(val);
     }
 
     return ret;
 }
 
-function f_createEditGrid(values, gridStore, record, node, 
+function f_isEditGridValueCheck(val, values)
+{
+    for(var i=0; i<values.length; i++)
+    {
+        if(values[i] == val) return true;
+    }
+    
+    return false;
+}
+function f_createEditGrid(values, enumValues, gridStore, record, node,
                           helpLabel, width, callback, treeObj)
 {
     var label = node.text;
+    gridStore.m_isChecker = enumValues.length == 0 ? false : true;
+    gridStore.m_checkerDirty = false;
 
-    for(var i=0; i < values.length; i++)
+    if(enumValues.length > 0)
     {
-        var v = new record({ value: values[i] });
-        gridStore.add(v);
+        for(var i=0; i < enumValues.length; i++)
+        {
+            var chk = f_isEditGridValueCheck(enumValues[i], values)
+            var v = new record({ value: enumValues[i],  checker: chk });
+            gridStore.add(v);
+        }
+    }
+    else
+    {
+        for(var i=0; i < values.length; i++)
+        {
+            var v = new record({ value: values[i], checker: false });
+            gridStore.add(v);
+        }
+        
+        var count = gridStore.getCount();
+        for(var i=0; i<50-count; i++) gridStore.loadData([ '' ], true);
     }
 
-    var count = gridStore.getCount();
-    for(var i=0; i<50-count; i++)
-        gridStore.loadData([ '' ], true);
+    var CheckColumnOnMousePress = function()
+    {
+        gridStore.m_checkerDirty = true;
+    }
+    var checkColumn = f_createGridCheckColumn(CheckColumnOnMousePress);
 
     var tId = null;
     var setField = function()
@@ -1423,6 +1484,7 @@ function f_createEditGrid(values, gridStore, record, node,
     }
     var tf = new Ext.form.TextField(
     {
+        disabled : gridStore.m_isChecker,
         listeners:
         {
             render: function(c)
@@ -1435,6 +1497,19 @@ function f_createEditGrid(values, gridStore, record, node,
         }
     });
     tf.on('blur', function(f) { f_handleGridLostFocus(f, true); });
+    var ctf =
+    {
+        id: 'value',
+        header: 'Value',
+        width: width-20,
+        sortable: false,
+        dataIndex: 'value',
+        editor: tf
+    };
+    var columns = [];
+    if(gridStore.m_isChecker) columns.push(checkColumn);
+    columns.push(ctf);
+    
     var gv = new VYATTA_gridview();
     var sm = new Ext.grid.RowSelectionModel({ singleSelect: true });
     var grid = new Ext.grid.EditorGridPanel(
@@ -1450,16 +1525,8 @@ function f_createEditGrid(values, gridStore, record, node,
         sm: sm,
         stripeRows: true,
         view: gv,
-        columns:
-        [
-          { id: 'value',
-            header: 'Value',
-            width: width-20,
-            sortable: false,
-            dataIndex: 'value',
-            editor: tf
-          }
-        ]
+        plugins: checkColumn,
+        columns:columns
     });
     //grid.on('afteredit', callback);
     grid.m_textField = tf;
@@ -1536,7 +1603,7 @@ function f_createOperEditorTitle(title)
 
 function f_createConfSubButton(treeObj)
 {
-    var buttons = [ ];
+    var buttons = [];
     var btn_id = Ext.id();
 
     buttons[0] = new Ext.Button(
@@ -1578,7 +1645,7 @@ function f_createConfSubButton(treeObj)
 
 function f_createConfButton(treeObj, node, btnText, title)
 {
-    var buttons = [ ];
+    var button;
     var btn_id = Ext.id();
     var cmd = '';
     var isDelete = false;
@@ -1593,7 +1660,7 @@ function f_createConfButton(treeObj, node, btnText, title)
         iconCls = 'v-create-button';
     }
 
-    buttons[0] = new Ext.Button(
+    button = new Ext.Button(
     {
         id: btn_id
         ,overCls: 'v-tb-btn-over'
@@ -1618,25 +1685,19 @@ function f_createConfButton(treeObj, node, btnText, title)
                 f_sendConfigCLICommand([cmd + treeObj.f_getNodePathStr(node) ],
                                     treeObj, node, isDelete);
 
-
-
-        if(node.text == 'reboot')
-        {
-            if(node.parentNode != undefined &&
-                    node.parentNode.text != 'show')
+            if(node.text == 'reboot')
             {
-
-                return;
+                if(node.parentNode != undefined && node.parentNode.text != 'show')
+                    return;
             }
         }
-        }
     });
-    buttons[0].on('mouseover', function(){});
-    buttons[0].on('mouseout', function(){alert('out')});
-    buttons.m_buttons = buttons;
-    buttons[0].indexTab = 0;
+    button.on('mouseover', function(){});
+    button.on('mouseout', function(){alert('out')});
+    button.m_buttons = [ button ];
+    button.indexTab = 0;
 
-    return buttons;
+    return [button];
 }
 
 function f_handleOperBtnClick(button, node, treeObj)
@@ -1853,7 +1914,6 @@ function f_handleConfFieldOffFocus(field)
             cn = f_replace(cn, 'v-bg-yellow', 'v-bg-white');
         field.m_wp.el.dom.className = cn;
     }
-
 }
 
 function f_handleFormIndicators(node, parentNode)
@@ -1901,7 +1961,6 @@ function f_handleFormIndicators(node, parentNode)
             cn = f_replace(cn, 'v-bg-yellow', 'v-bg-white');
             fd.m_wp.el.dom.className = cn;
             fd.setOriginalValue(fd.getValue());
-            break;
     }
 
     //////////////////////////

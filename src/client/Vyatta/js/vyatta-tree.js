@@ -831,21 +831,25 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     f_leafMultiEnumHandler: function(node, values, hlabel, callback)
     {
         var vala = [ ];
+        var enumVala = [];
         var gridStore = new Ext.data.SimpleStore(
         {
-            fields: [{ name: 'value' }]
+            fields: [{ name: 'value' }, { name:'checker', type:'bool'}]
         });
 
         gridStore.loadData(vala);
         if(node.attributes.values != undefined)
             vala = node.attributes.values;
+        if(node.attributes.enums != undefined)
+            enumVala = node.attributes.enums;
 
-        var GridT = Ext.data.Record.create([{ name: 'value' }]);
+        var GridT = Ext.data.Record.create([{ name: 'value' }, 
+                    { name:'checker', type:'bool'}]);
         var narr = filterWildcard(values);
         if(narr != undefined)
             values = narr;
 
-        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 
+        var grid = f_createEditGrid(vala, enumVala, gridStore, GridT, node, hlabel,
                   243, callback, m_thisObj);
         grid.m_store = gridStore;
         node.getValFieldFunc = function()
@@ -865,17 +869,22 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     f_leafMultiU32Handler:  function(node, hlabel, callback)
     {
         var vala = [ ];
+        var enumVala = [];
         var gridStore = new Ext.data.SimpleStore(
         {
-            fields: [ { name: 'value' } ]
+            fields: [ { name: 'value'},
+                      { name: 'checker', type:'bool'} ]
         });
 
         gridStore.loadData(vala);
-        if (node.attributes.values != undefined)
+        if(node.attributes.values != undefined)
             vala = node.attributes.values;
+        if(node.attributes.enums != undefined)
+            enumVala = node.attributes.enums;
 
-        var GridT = Ext.data.Record.create([{ name: 'value' }]);
-        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel,
+        var GridT = Ext.data.Record.create([{ name: 'value' }, 
+                        { name:'checker', type:'bool'}]);
+        var grid = f_createEditGrid(vala, enumVala, gridStore, GridT, node, hlabel,
                     243, callback, m_thisObj);
         grid.m_store = gridStore;
         node.getValFieldFunc = function()
@@ -895,23 +904,27 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     f_leafMultiTxtHandler: function(node, hlabel, callback)
     {
         var vala = [ ];
+        var enumVala = [];
         var gridStore = new Ext.data.SimpleStore(
         {
-            fields: [ { name: 'value' } ]
+            fields: [ { name: 'value' }, { name:'checker', type:'bool'} ]
         });
 
         gridStore.loadData(vala);
         if(node.attributes.values != undefined)
             vala = node.attributes.values;
+        if(node.attributes.enums != undefined)
+            enumVala = node.attributes.enums;
 
         node.valuesCount = vala.length;
 
         var GridT = Ext.data.Record.create(
         [
             { name: 'value' }
+            , { name:'checker', type:'bool'}
         ]);
 
-        var grid = f_createEditGrid(vala, gridStore, GridT, node, hlabel, 
+        var grid = f_createEditGrid(vala, enumVala, gridStore, GridT, node, hlabel,
                     243, callback, m_thisObj);
         grid.m_store = gridStore;
         node.getValFieldFunc = function()
@@ -1048,13 +1061,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         labelStr = '';
         var header = '';
         var lArray = [];
-        var lIndex = 0;
         while(labelArray.length > 0)
         {
             var c = labelArray.pop();
 
             if(c == '&lt;value&gt;')
-                lArray[lIndex++] = labelStr;
+                lArray.push(labelStr);
 
             if(labelStr.length > 1)
             {

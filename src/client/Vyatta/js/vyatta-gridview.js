@@ -38,6 +38,8 @@ function f_setGridViewClear(field)
     {
         var row = gv.getRow(i);
         //var rec = field.getStore().getAt(i);
+        if(row == undefined) continue;
+        
         var html = row.innerHTML;
         //fd.getView().addRowClass(i, "v-textfield-submit");
 

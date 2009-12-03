@@ -55,8 +55,6 @@ ssbin_SCRIPTS += scripts/chunker_cmd
 
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 
-cfgroot_DATA = scripts/mandatory
-
 # library
 AM_CFLAGS = -I src/lib -Wall -I /usr/include/glib-2.0 \
             -I /usr/lib/glib-2.0/include

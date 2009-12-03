@@ -74,7 +74,7 @@ TemplateParams::get_xml(const string &value)
 
   if (_enum.empty() == false) {
     out += "<enum>";
-    vector<string>::iterator iter = _enum.begin();
+    set<string>::iterator iter = _enum.begin();
     while (iter != _enum.end()) {
       out += "<match>" + *iter + "</match>";
       ++iter;

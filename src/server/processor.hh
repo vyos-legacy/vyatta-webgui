@@ -10,6 +10,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <set>
 #include <utility>
 #include <expat.h>
 #include "common.hh"
@@ -49,7 +50,7 @@ public:
   std::string _comp_help;
   bool        _mandatory;
   std::string _default;
-  std::vector<std::string> _enum;
+  std::set<std::string> _enum;
   std::string _allowed; //matches the allowed in node.def
   //enumeration goes here
 

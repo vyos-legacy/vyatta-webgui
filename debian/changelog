@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-32) unstable; urgency=low
+
+  * * fixed bug# 4215 - to handle multi-leaf-enum-node that allow
+    multiple selection.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Thu, 03 Dec 2009 11:21:23 -0800
+
 vyatta-webgui (0.2.13-31) unstable; urgency=low
 
   * remove mandatory file. change collection from map to vector--that is

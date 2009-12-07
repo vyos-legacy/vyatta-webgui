@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-33) unstable; urgency=low
+
+  * * fixed bug# 4104 - added additional help for tag help_comp.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Mon, 07 Dec 2009 12:03:00 -0800
+
 vyatta-webgui (0.2.13-32) unstable; urgency=low
 
   * * fixed bug# 4215 - to handle multi-leaf-enum-node that allow

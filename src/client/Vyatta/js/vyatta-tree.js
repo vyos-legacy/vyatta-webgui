@@ -295,6 +295,17 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         if (tHelp != undefined)
         {
             tHelp = tHelp.replace(/'/g, "\\'", 'g');
+
+            var cHelp = q.selectValue('comp_help', node);
+            if(cHelp != undefined)
+            {
+                //cHelp = f_replace(cHelp, "  ", " -");
+                cHelp = cHelp.replace(
+                        /(\x20\x20\x20)|(\t)|(\n)|(')|(<)|(>)|(&lt;)|(&gt;)|(&apos;)|(&#xD;)|(&#xA;)|(&#62;)/g,
+                        function(m){return f_replaceChar(m)}, 'g');
+                tHelp = tHelp + ". " + cHelp;
+            }
+
             str += ",help:'" + tHelp + "'";
         }
 
@@ -325,6 +336,28 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         return str;
     }
 });
+
+function f_replaceChar(match)
+{
+    if(match == '&apos;')
+        return "\"";
+    else if(match == '\'')
+        return "\"";
+    else if(match == '&lt;' || match == '<')
+        return "(";
+    else if(match == '&#62;' || match == '&gt;' || match == '>')
+        return ")";
+    else if(match == '&#xD;')
+        return ".";
+    else if(match == '&#xA;')
+        return " ";
+    else if(match == '\n')
+        return "";
+    else if(match == '\x20\x20\x20')
+        return " -";
+
+    return "";
+}
 
 /*******************************************************************************
  ///////////////////////////////////////////////////////////////////////////////

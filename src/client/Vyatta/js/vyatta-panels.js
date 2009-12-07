@@ -432,8 +432,8 @@ function f_createNumberField(treeObj, value, node, help, width, callback, mode)
         var keyupPressHandler = function(field, e)
         {
             treeObj.m_parent.m_editorPanel.m_isDirty = true;
-            if(e.getKey() == 9)
-                f_handleFieldTab(field);
+            //if(e.getKey() == 9)
+              //  f_handleFieldTab(field);
 
             if(e.getKey() == 13)
                 f_prepareConfFormCommandSend(treeObj);
@@ -1476,9 +1476,13 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
         var keypressHandler = function(e)
         {
             if(e.getKey() == 13)
-            {
                 tId = window.setTimeout(setField, 100);
+            if(e.getKey() == 9)
+            {
+                grid.m_textField.m_nextFd.focus(false, 10);
+                return false;
             }
+            
             treeObj.m_parent.m_editorPanel.m_isDirty = true;
         }
     }
@@ -1679,7 +1683,7 @@ function f_createConfButton(treeObj, node, btnText, title)
                 };
 
                 f_yesNoMessageBox('Delete',
-                    'Delete this node will disable the Web GUI. Are you sure you wish continue?', cb);
+                    'Delete this node will disable the Web-GUI. Are you sure you wish continue?', cb);
             }
             else
                 f_sendConfigCLICommand([cmd + treeObj.f_getNodePathStr(node) ],
@@ -1693,7 +1697,6 @@ function f_createConfButton(treeObj, node, btnText, title)
         }
     });
     button.on('mouseover', function(){});
-    button.on('mouseout', function(){alert('out')});
     button.m_buttons = [ button ];
     button.indexTab = 0;
 
@@ -1849,7 +1852,6 @@ function f_createLabel(value, labelFor)
             value = f_replace(value, '>', '&#62;');
             lAlign = 'vlabel_left';
             width = 250;
-            value = value + '.';
         }
     }
     else if(labelFor == V_LABEL_LABEL)

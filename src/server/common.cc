@@ -39,14 +39,11 @@ const string WebGUI::VYATTA_MODIFY_FILE = WebGUI::VYATTA_MODIFY_DIR + ".vyattamo
 
 const string WebGUI::CHUNKER_RESP_TOK_DIR = "/opt/vyatta/tmp/webgui/";
 const string WebGUI::CHUNKER_RESP_TOK_BASE = "multi_";
-const string WebGUI::CHUNKER_RESP_CMDS = "/opt/vyatta/webgui.conf";
 const string WebGUI::CHUNKER_RESP_PID = "/tmp"; //"/opt/vyatta/var/run";
 const string WebGUI::CHUNKER_SOCKET = "/tmp/browser_pager";
 const unsigned long WebGUI::CHUNKER_MAX_WAIT_TIME = 2; //seconds
 const string WebGUI::CHUNKER_MSG_FORMAT = "<vyatta><chunker_command><token>%s</token><statement>%s</statement></chunker_command></vyatta>\0\0";
 const string WebGUI::CHUNKER_UPDATE_FORMAT = "<vyatta><chunker_command><token>%s</token><statement></statement></chunker_command></vyatta>\0\0";
-
-const string WebGUI::MANDATORY_NODE_FILE = "/opt/vyatta/share/vyatta-cfg/mandatory";
 
 char const* WebGUI::ErrorDesc[10] = {" ",
 				    "request cannot be parsed",

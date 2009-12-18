@@ -20,7 +20,6 @@ using namespace std;
 MultiResponseCommand::MultiResponseCommand(string session_id, string &cmd) : _session_id(session_id), _cmd(cmd)
 {
   //read in valid cmd list
-  //load_valid_multi_cmds();
 }
 
 /**
@@ -158,35 +157,6 @@ MultiResponseCommand::get_resp(string &token, string &output)
 
   token = _next_token;
   output = _resp;
-}
-
-/**
- *
- **/
-void
-MultiResponseCommand::load_valid_multi_cmds()
-{
-  //read in conf file and stuff values into set
-  FILE *fp = fopen(WebGUI::CHUNKER_RESP_CMDS.c_str(),"r"); 
-  if (fp) {
-    char buf[1025];
-    while (fgets(buf,1024,fp) != 0) {
-      string tmp(buf);
-      int pos = tmp.find('#');
-      if (pos > 0) {
-	tmp = tmp.substr(0,pos);
-      }
-      pos = tmp.find('\n');
-      if (pos > 0) {
-	tmp = tmp.substr(0,pos);
-      }
-      //now if empty skip and make sure to drop '/n'
-      if (tmp.empty() == false) {
-	_cmd_coll.insert(tmp);
-      }
-    }
-    fclose(fp);
-  }
 }
 
 /**

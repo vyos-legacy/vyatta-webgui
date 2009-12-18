@@ -159,7 +159,7 @@ export vyatta_localedir=/opt/vyatta/share/locale";
       tmp = "/opt/vyatta/sbin/vyatta-output-config.pl -all";
     }
   }
-  else if (_proc->get_msg()._conf_mode == WebGUI::PROC) { //gui mode command
+  else if (_proc->get_msg()._conf_mode == WebGUI::APP) { //gui mode command
     Message msg = _proc->get_msg();
     GUICmdHandler gui_hand(msg);
     err = gui_hand.process();

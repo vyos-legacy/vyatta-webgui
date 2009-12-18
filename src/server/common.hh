@@ -71,7 +71,7 @@ public:
   enum Attributes {NOATTR = 0,
 		   OP,
 		   CONF,
-                   PROC};
+                   APP};
 
   enum NodeType {NONE,
 			 TEXT,

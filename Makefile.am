@@ -6,6 +6,8 @@ initddir = /etc/init.d
 cfgdir = $(datadir)/vyatta-cfg/templates
 cfgrootdir = $(datadir)/vyatta-cfg
 opdir = $(datadir)/vyatta-op/templates
+appdir = $(datadir)/vyatta-app/templates
+appperldir = $(datadir)/perl5/App
 ssbindir = /usr/sbin
 
 AM_CPPFLAGS = -I src/server -I src/lib -Wall -DDEBUG -g \
@@ -54,6 +56,9 @@ ssbin_SCRIPTS = scripts/vtysh
 ssbin_SCRIPTS += scripts/chunker_cmd
 
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
+
+appperl_DATA = src/server/lib/perl5/App/Conf.pm
+
 
 # library
 AM_CFLAGS = -I src/lib -Wall -I /usr/include/glib-2.0 \

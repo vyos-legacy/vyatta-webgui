@@ -81,6 +81,9 @@ install-exec-hook:
 	mkdir -p $(DESTDIR)$(tmpdir)/
 	touch $(DESTDIR)$(tmpdir)/dummy
 	
+	mkdir -p $(DESTDIR)/$(cgidir)/
+	cp scripts/vyatta-proc $(DESTDIR)/$(cgidir)/
+	
 	@mkdir -p $(DESTDIR)/var/www
 	@for v in 2.1 2.2; do \
 		rm -f /tmp/ext-$$v.zip; \

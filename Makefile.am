@@ -82,7 +82,7 @@ install-exec-hook:
 	touch $(DESTDIR)$(tmpdir)/dummy
 	
 	mkdir -p $(DESTDIR)/$(cgidir)/
-	cp scripts/vyatta-proc $(DESTDIR)/$(cgidir)/
+	cp scripts/vyatta-app $(DESTDIR)/$(cgidir)/
 	
 	@mkdir -p $(DESTDIR)/var/www
 	@for v in 2.1 2.2; do \
@@ -103,4 +103,6 @@ install-exec-hook:
 	cd templates-cfg; $(cpiop) $(DESTDIR)$(cfgdir)
 	@mkdir -p $(DESTDIR)$(opdir); \
 	cd templates-op; $(cpiop) $(DESTDIR)$(opdir)
+	@mkdir -p $(DESTDIR)$(appdir); \
+	cd templates-app; $(cpiop) $(DESTDIR)$(appdir)
 

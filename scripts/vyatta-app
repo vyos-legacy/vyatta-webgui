@@ -20,21 +20,21 @@ export VYATTA_CFG_GROUP_NAME=vyattacfg
 export VYATTA_EDIT_LEVEL=/
 export VYATTA_TEMPLATE_LEVEL=/
 
-# proc variables
-declare vyatta_proc_templates='/opt/vyatta/share/vyatta-proc/templates/'
-declare -r _vyatta_proc_last_comp_init='>>>>>>LASTCOMP<<<<<<'
-declare _vyatta_proc_last_comp=${_vyatta_proc_last_comp_init}
+# app variables
+declare vyatta_app_templates='/opt/vyatta/share/vyatta-app/templates/'
+declare -r _vyatta_app_last_comp_init='>>>>>>LASTCOMP<<<<<<'
+declare _vyatta_app_last_comp=${_vyatta_app_last_comp_init}
 
 #sets the alias hooks for the cmds
-_vyatta_proc_init ()
+_vyatta_app_init ()
 {
-    complete -F _vyatta_proc_expand ''
+    complete -F _vyatta_app_expand ''
 
-    for xd in $vyatta_proc_templates/* ; do
+    for xd in $vyatta_app_templates/* ; do
         if [ -d $xd ] ; then
             cmd=${xd##*/}
-            complete -F _vyatta_proc_expand $cmd
-            eval alias $cmd=\'_vyatta_proc_run $cmd\'
+            complete -F _vyatta_app_expand $cmd
+            eval alias $cmd=\'_vyatta_app_run $cmd\'
         fi
     done
 
@@ -44,7 +44,7 @@ _vyatta_proc_init ()
 
 
 #parsing the node.def cmd
-_vyatta_proc_get_node_def_field ()
+_vyatta_app_get_node_def_field ()
 {
     local file=$1 field=$2
 
@@ -66,14 +66,14 @@ _vyatta_proc_get_node_def_field ()
 }
 
 #main run
-_vyatta_proc_run ()
+_vyatta_app_run ()
 {
     local -i estat
-    local tpath=$vyatta_proc_templates
+    local tpath=$vyatta_app_templates
     local restore_shopts=$( shopt -p extglob nullglob | tr \\n \; )
     shopt -s extglob nullglob
 
-    _vyatta_proc_last_comp=${_vyatta_proc_last_comp_init}
+    _vyatta_app_last_comp=${_vyatta_app_last_comp_init}
     false; estat=$?
     for arg ; do
         if [ -f "$tpath/$arg/node.def" ] ; then
@@ -86,7 +86,7 @@ _vyatta_proc_run ()
             return 1
         fi
     done
-    local run_cmd=$(_vyatta_proc_get_node_def_field $tpath/node.def run)
+    local run_cmd=$(_vyatta_app_get_node_def_field $tpath/node.def run)
     local ret=0
     if [ -n "$run_cmd" ]; then
         eval "$run_cmd"
@@ -98,4 +98,4 @@ _vyatta_proc_run ()
     return $ret
 }
 
-_vyatta_proc_init $@
+_vyatta_app_init $@

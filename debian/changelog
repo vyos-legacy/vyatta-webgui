@@ -1,3 +1,11 @@
+vyatta-webgui (0.2.13-34) unstable; urgency=low
+
+  * remove unused webgui code.
+  * APP mode is the new PROC mode. conf.pm added as support module.
+  * app mode environment script was not being installed.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Wed, 13 Jan 2010 14:53:42 -0800
+
 vyatta-webgui (0.2.13-33) unstable; urgency=low
 
   * * fixed bug# 4104 - added additional help for tag help_comp.

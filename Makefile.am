@@ -57,9 +57,6 @@ ssbin_SCRIPTS += scripts/chunker_cmd
 
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 
-appperl_DATA = src/server/lib/perl5/App/Conf.pm
-
-
 # library
 AM_CFLAGS = -I src/lib -Wall -I /usr/include/glib-2.0 \
             -I /usr/lib/glib-2.0/include

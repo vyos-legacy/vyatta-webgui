@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-37) unstable; urgency=low
+
+  * aux chunker hook
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Tue, 09 Feb 2010 17:38:48 -0800
+
 vyatta-webgui (0.2.13-36) unstable; urgency=low
 
   * module is not used. removing.

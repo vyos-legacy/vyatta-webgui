@@ -52,8 +52,7 @@ cgi_SCRIPTS = src/server/webgui-wrap
 
 ssbin_PROGRAMS = src/server/chunker
 
-ssbin_SCRIPTS = scripts/vtysh
-ssbin_SCRIPTS += scripts/chunker_cmd
+ssbin_SCRIPTS = scripts/chunker_cmd
 
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 

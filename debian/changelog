@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-40) unstable; urgency=low
+
+  * Force depencency after quagga name change
+  * Don't build old vtysh
+
+ -- Stephen Hemminger <stephen.hemminger@vyatta.com>  Mon, 08 Mar 2010 16:51:36 -0800
+
 vyatta-webgui (0.2.13-39) unstable; urgency=low
 
   * Remove vtysh kludge

@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-41) unstable; urgency=low
+
+  * * fixed multi leaf nodes to allow user adds new values
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Fri, 19 Mar 2010 13:32:32 -0700
+
 vyatta-webgui (0.2.13-40) unstable; urgency=low
 
   * Force depencency after quagga name change

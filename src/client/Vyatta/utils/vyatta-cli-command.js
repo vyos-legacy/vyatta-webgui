@@ -400,16 +400,30 @@ function f_sendConfFormCommand(treeObj)
                 return;
             }
             if(fp.m_store.m_isChecker)
-                value = f_getEditGridCheckerValues(fp.m_store);
+            {
+                value = f_getEditGridCheckerValues(fp);
+
+                for(var i=0; i<value.length; i++)
+                {
+                    var innerVal = value[i];
+
+                    if(innerVal[1])
+                        cmds.push('set ' + selPath + " " + label + innerVal[0]);
+                    else
+                        cmds.push(['delete ' + selPath + ' ' + label + innerVal[0]])
+                }
+            }
             else
+            {
                 value = f_getEditGridValues(fp.m_store);
 
-            ////////////////////////////////////////////
-            // make sure delete prev node before set
-            cmds = [ 'delete ' + selPath + ' ' + label];
+                ////////////////////////////////////////////
+                // make sure delete prev node before set
+                cmds = [ 'delete ' + selPath + ' ' + label];
 
-            for(var i=0; i<value.length; i++)
-                cmds.push('set ' + selPath + " " + label + value[i]);
+                for(var i=0; i<value.length; i++)
+                    cmds.push('set ' + selPath + " " + label + value[i]);
+            }
             break;
         case 'checkbox':
             value =  fd.getValue();

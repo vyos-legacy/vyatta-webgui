@@ -1407,16 +1407,50 @@ function f_getEditGridValues(gridStore)
 
     return ret;
 }
-function f_getEditGridCheckerValues(gridStore)
+function f_getEditGridCheckerValues(fp)
 {
+    var gridStore = fp.m_store;
+    var node = fp.m_node;
+
     var ret = [ ];
     for (var i = 0; i < gridStore.getCount(); i++)
     {
         var rec = gridStore.getAt(i);
         var val = gridStore.getAt(i).get('value');
         var checker = gridStore.getAt(i).get('checker');
-        if(val.length > 0 && !rec.error && checker)
-            ret.push(val);
+        if(val.length > 0 && !rec.error)
+        {
+            var attrs = node.attributes;
+            var add = true;
+
+            /////////////////////////////
+            // get modified values only
+            if(attrs.values != undefined)
+            {
+                for(var j=0; j<attrs.values.length; j++)
+                {
+                    //////////////////////////////////
+                    // value to be deleted
+                    if(val == attrs.values[j] && !checker)
+                    {
+                        ret.push([val, checker]);
+                        break;
+                    }
+                    /////////////////////////
+                    // value not changed
+                    else if(val == attrs.values[j] && checker)
+                    {
+                        add = false;
+                        break;
+                    }
+                }
+            }
+
+            //////////////////////////
+            // new values
+            if(checker && add)
+                ret.push([val, checker]);
+        }
     }
 
     return ret;
@@ -1434,6 +1468,8 @@ function f_isEditGridValueCheck(val, values)
 function f_createEditGrid(values, enumValues, gridStore, record, node,
                           helpLabel, width, callback, treeObj)
 {
+    //////////////////////////////////////////////////////
+    // remove the enum values from user.
     var label = node.text;
     gridStore.m_isChecker = enumValues.length == 0 ? false : true;
     gridStore.m_checkerDirty = false;
@@ -1446,12 +1482,15 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
             var v = new record({ value: enumValues[i],  checker: chk });
             gridStore.add(v);
         }
+
+        var count = gridStore.getCount();
+        for(var i=0; i<50-count; i++) gridStore.loadData([ '' ], true);
     }
     else
     {
         for(var i=0; i < values.length; i++)
         {
-            var v = new record({ value: values[i], checker: false });
+            var v = new record({ value: values[i], checker: false});
             gridStore.add(v);
         }
         
@@ -1488,7 +1527,7 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
     }
     var tf = new Ext.form.TextField(
     {
-        disabled : gridStore.m_isChecker,
+        //disabled : gridStore.m_isChecker,
         listeners:
         {
             render: function(c)

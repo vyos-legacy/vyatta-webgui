@@ -283,6 +283,10 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         if(action != undefined)
             str += ",action:'true'";
 
+        var man = q.selectNode('mandatory', node);
+        if(man != undefined)
+            str += ",mandatory:'true'";
+
         var nType = q.selectNode('type', node);
         if (nType != undefined)
             str += ",type:'" + nType.getAttribute('name') + "'";

@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-43) unstable; urgency=low
+
+  * * make show help is on by default.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Fri, 26 Mar 2010 09:54:42 -0700
+
 vyatta-webgui (0.2.13-42) unstable; urgency=low
 
   * * add mandatory node indicators since server is no longer enforced

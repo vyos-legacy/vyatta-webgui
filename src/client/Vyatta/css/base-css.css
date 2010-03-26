@@ -368,6 +368,11 @@ body
     color: #666;
 }
 
+.vlabel_dirtyField
+{
+    padding-left: 3px;
+    padding-top: 4px;
+}
 .vlabel_left2
 {
     text-align: left;

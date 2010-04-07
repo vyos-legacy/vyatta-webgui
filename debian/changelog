@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-44) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fixed bug 5481 - to display un-committed values for multi-nodes
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 07 Apr 2010 15:53:54 -0700
+
 vyatta-webgui (0.2.13-43) unstable; urgency=low
 
   * * make show help is on by default.

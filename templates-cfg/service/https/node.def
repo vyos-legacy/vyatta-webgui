@@ -10,12 +10,9 @@ update: if [ ! -f /etc/lighttpd/server.pem ]; then
         fi
         sudo /usr/sbin/invoke-rc.d lighttpd restart
 
-        result=1;
         if [ -x /etc/init.d/vyatta-webgui-chunker-aux ]; then
 	  sudo /etc/init.d/vyatta-webgui-chunker-aux restart
-          result=$?
         fi
-        if [ $result = 1 ]; then
-          sudo /etc/init.d/vyatta-webgui-chunker restart
-        fi;
+
+	sudo /etc/init.d/vyatta-webgui-chunker restart
 

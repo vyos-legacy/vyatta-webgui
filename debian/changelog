@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-37+kenwood2) unstable; urgency=low
+
+  * fixed merged conflicts.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Wed, 14 Apr 2010 15:47:46 -0700
+
 vyatta-webgui (0.2.13-37+kenwood1) unstable; urgency=low
 
   * UNRELEASED

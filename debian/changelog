@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-45) unstable; urgency=low
+
+  * fix for bug 5535.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Wed, 14 Apr 2010 09:28:59 -0700
+
 vyatta-webgui (0.2.13-44) unstable; urgency=low
 
   [ Kevin Choi ]

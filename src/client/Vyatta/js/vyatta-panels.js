@@ -1415,8 +1415,43 @@ function f_getEditGridCheckerValues(gridStore)
         var rec = gridStore.getAt(i);
         var val = gridStore.getAt(i).get('value');
         var checker = gridStore.getAt(i).get('checker');
-        if(val.length > 0 && !rec.error && checker)
-            ret.push(val);
+
+        if(val.length > 0 && !rec.error)
+        {
+            var attrs = node.attributes;
+            var add = true;
+
+            /////////////////////////////
+            // get modified values only
+            if(attrs.values != undefined)
+            {
+                for(var j=0; j<attrs.values.length; j++)
+                {
+                    //////////////////////////////////
+                    // value to be deleted
+                    if(val == attrs.values[j] && !checker)
+                    {
+                        //if(!f_isEditGridValueNewAdded(node.attributes.enums, attrs.values[i]))
+                        {
+                            ret.push([val, checker]);
+                            break;
+                        }
+                    }
+                    /////////////////////////
+                    // value not changed
+                    else if(val == attrs.values[j] && checker)
+                    {
+                        add = false;
+                        break;
+                    }
+                }
+            }
+
+            //////////////////////////
+            // new values
+            if(checker && add)
+                ret.push([val, checker]);
+        }
     }
 
     return ret;
@@ -1431,6 +1466,23 @@ function f_isEditGridValueCheck(val, values)
     
     return false;
 }
+function f_isEditGridValueNewAdded(enumVal, val)
+{
+    var isNew = true;
+
+    /////////////////////////////////////////
+    // is enum is empty val is new added
+    if(enumVal == null || enumVal.length == 0)
+        return isNew;
+
+    for(var i=0; i<enumVal.length; i++)
+    {
+        if(enumVal[i] == val)
+            isNew = false;
+    }
+
+    return isNew;
+}
 function f_createEditGrid(values, enumValues, gridStore, record, node,
                           helpLabel, width, callback, treeObj)
 {
@@ -1439,7 +1491,7 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
     gridStore.m_checkerDirty = false;
 
     if(enumValues.length > 0)
-    {
+    {   // check values
         for(var i=0; i < enumValues.length; i++)
         {
             var chk = f_isEditGridValueCheck(enumValues[i], values)
@@ -1447,17 +1499,27 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
             gridStore.add(v);
         }
     }
-    else
+    else    // none check values
     {
         for(var i=0; i < values.length; i++)
         {
             var v = new record({ value: values[i], checker: false });
             gridStore.add(v);
         }
-        
-        var count = gridStore.getCount();
-        for(var i=0; i<50-count; i++) gridStore.loadData([ '' ], true);
     }
+
+    // values checked but have not commit
+    for(var i=0; i < values.length; i++)
+    {
+        if(f_isEditGridValueNewAdded(enumValues, values[i]))
+        {
+            var v = new record({ value: values[i], checker: true});
+            gridStore.add(v);
+        }
+    }
+
+    var count = gridStore.getCount();
+    for(var i=0; i<50-count; i++) gridStore.loadData([ '' ], true);
 
     var CheckColumnOnMousePress = function()
     {

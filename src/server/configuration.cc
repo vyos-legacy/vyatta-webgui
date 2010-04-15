@@ -349,11 +349,19 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       if ((strncmp(line.c_str(),"tag:",4) == 0)) {
 	mode = "tag:";
 	params._multi = true;
+	StrProc str_proc(line,":");
+	if (str_proc.get(1).empty() == false) {
+	  params._multi_limit = strtoul(str_proc.get(1).c_str(),NULL,10);
+	}
       }
       else if ((strncmp(line.c_str(),"multi:",6) == 0)) {
 	mode = "tag:";
 	params._multi = true;
 	params._end = true;
+	StrProc str_proc(line,":");
+	if (str_proc.get(1).empty() == false) {
+	  params._multi_limit = strtoul(str_proc.get(1).c_str(),NULL,10);
+	}
       }
       else if (strncmp(line.c_str(),"default:",8) == 0 || mode == "default:") {
 	string def;

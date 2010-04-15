@@ -36,6 +36,7 @@ class TemplateParams
 public:
   TemplateParams() : 
     _multi(false), 
+    _multi_limit(0),
     _end(false), 
     _action(false),
     _type(WebGUI::NONE), 
@@ -43,6 +44,7 @@ public:
     _conf_mode(WebGUI::NOATTR),
     _mandatory(false) {}
   bool _multi;
+  unsigned long _multi_limit;
   bool _end;
   bool _action;
   WebGUI::NodeType _type;

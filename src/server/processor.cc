@@ -55,8 +55,11 @@ TemplateParams::get_xml(const string &value)
 {
   string out;
   if (_multi) {
-    out += "<multi/>";
+    char buf[512];
+    sprintf(buf,"%d",_multi_limit);
+    out += "<multi>" +string(buf)+ "</multi>";
   }
+
 
   //currently only enabled for op mode, but can be used in a configuration context to denote an "active" node
   if (_action) {

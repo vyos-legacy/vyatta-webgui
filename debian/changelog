@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-37+kenwood3) unstable; urgency=low
+
+  * fix for bug 5535.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Wed, 14 Apr 2010 16:04:25 -0700
+
 vyatta-webgui (0.2.13-37+kenwood2) unstable; urgency=low
 
   * fixed merged conflicts.

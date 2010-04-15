@@ -16,7 +16,6 @@ Depends: libexpat1 (>= 1.95.8-4),
  libc6,
  adduser,
  vyatta-cfg (>= 0.15.33),
- vyatta-quagga (>= 0.99.15-26),
  vyatta-op
 Description: Vyatta WebGUI
  This package provides the Vyatta WebGUI.

@@ -39,12 +39,14 @@ public:
     _end(false), 
     _action(false),
     _type(WebGUI::NONE), 
+    _type2(WebGUI::NONE), 
     _conf_mode(WebGUI::NOATTR),
     _mandatory(false) {}
   bool _multi;
   bool _end;
   bool _action;
   WebGUI::NodeType _type;
+  WebGUI::NodeType _type2;
   WebGUI::Attributes _conf_mode;
   std::string _help;
   std::string _comp_help;

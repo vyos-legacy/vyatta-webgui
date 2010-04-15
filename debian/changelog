@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-37+kenwood4) unstable; urgency=low
+
+  * * merge fixed bug 5481 - for multi leaf node editing
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Thu, 15 Apr 2010 14:25:47 -0700
+
 vyatta-webgui (0.2.13-37+kenwood3) unstable; urgency=low
 
   * fix for bug 5535.

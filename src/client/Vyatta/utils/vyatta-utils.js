@@ -282,7 +282,7 @@ function f_getHelpTipsState()
 {
     var help = g_cookie.f_get(V_COOKIES_HELP_TIP_STATE);
 
-    return (help == V_NOT_FOUND) ? V_HELP_ON : help;
+    return (help == V_NOT_FOUND) ? V_HELP_OFF : help;
 }
 
 function f_needToggleHelpButton(hButton)

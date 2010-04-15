@@ -362,11 +362,13 @@ function f_createFieldDirtyIndicatorPanel(node)
 
     var p = new Ext.Panel(
     {
+        id: "id_dirty_" + node.text,
         border: false
         ,bodyBorder: true
         ,width: 18
         ,height: 22
         ,html: html
+        ,cls: 'vLabel_dirtyField'
     });
 
     p.f_show = function(isError)
@@ -450,7 +452,7 @@ function f_createNumberField(treeObj, value, node, help, width, callback, mode)
         ,border: false
         ,style: 'padding:5px'
         ,width: 800
-        ,items: [ f_createLabel(label, V_LABEL_LABEL),
+        ,items: [ f_createLabel(label, V_LABEL_LABEL, node.attributes.mandatory),
                   field,
                   f_createFieldDirtyIndicatorPanel(node), f_createLabel(help
                   , V_LABEL_HELP) ]
@@ -536,7 +538,7 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
         ,border: false
         ,style: 'padding:5px'
         ,width: 800
-        ,items: [ f_createLabel(labelStr, V_LABEL_LABEL),
+        ,items: [ f_createLabel(labelStr, V_LABEL_LABEL, node.attributes.mandatory),
                     field,
                     f_createFieldDirtyIndicatorPanel(node),
                     f_createLabel(helpStr, V_LABEL_HELP) ]
@@ -618,7 +620,7 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
         ,border: false
         ,style: 'padding:5px'
         ,width: 800
-        ,items: [ f_createLabel(labelStr, V_LABEL_LABEL),
+        ,items: [ f_createLabel(labelStr, V_LABEL_LABEL, node.attributes.mandatory),
                   fPanel, f_createFieldDirtyIndicatorPanel(node),
                   f_createLabel(helpStr, V_LABEL_HELP) ]
     });
@@ -703,7 +705,7 @@ function f_createCheckbox(value, node, helpStr, width, callback, treeObj)
         ,border: false
         ,style: 'padding:5px'
         ,width: 830
-        ,items: [ f_createLabel(labelStr, V_LABEL_LABEL), fPanel,
+        ,items: [ f_createLabel(labelStr, V_LABEL_LABEL, node.attributes.mandatory), fPanel,
                   f_createFieldDirtyIndicatorPanel(node),
                   f_createLabel(helpStr, V_LABEL_HELP) ]
     });
@@ -1407,15 +1409,17 @@ function f_getEditGridValues(gridStore)
 
     return ret;
 }
-function f_getEditGridCheckerValues(gridStore)
+function f_getEditGridCheckerValues(fp)
 {
+    var gridStore = fp.m_store;
+    var node = fp.m_node;
+
     var ret = [ ];
     for (var i = 0; i < gridStore.getCount(); i++)
     {
         var rec = gridStore.getAt(i);
         var val = gridStore.getAt(i).get('value');
         var checker = gridStore.getAt(i).get('checker');
-
         if(val.length > 0 && !rec.error)
         {
             var attrs = node.attributes;
@@ -1486,6 +1490,8 @@ function f_isEditGridValueNewAdded(enumVal, val)
 function f_createEditGrid(values, enumValues, gridStore, record, node,
                           helpLabel, width, callback, treeObj)
 {
+    //////////////////////////////////////////////////////
+    // remove the enum values from user.
     var label = node.text;
     gridStore.m_isChecker = enumValues.length == 0 ? false : true;
     gridStore.m_checkerDirty = false;
@@ -1503,7 +1509,7 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
     {
         for(var i=0; i < values.length; i++)
         {
-            var v = new record({ value: values[i], checker: false });
+            var v = new record({ value: values[i], checker: false});
             gridStore.add(v);
         }
     }
@@ -1550,7 +1556,7 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
     }
     var tf = new Ext.form.TextField(
     {
-        disabled : gridStore.m_isChecker,
+        //disabled : gridStore.m_isChecker,
         listeners:
         {
             render: function(c)
@@ -1606,7 +1612,7 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
         ,border: false
         ,style: 'padding:5px'
         ,width: 800
-        ,items: [ f_createLabel(label, V_LABEL_LABEL), grid,
+        ,items: [ f_createLabel(label, V_LABEL_LABEL, node.attributes.mandatory), grid,
                 f_createFieldDirtyIndicatorPanel(node),
                 f_createLabel(helpLabel, V_LABEL_HELP) ]
     });
@@ -1899,7 +1905,7 @@ function f_createOperButton(treeObj, node, btnText, title)
     return panel;
 }
 
-function f_createLabel(value, labelFor)
+function f_createLabel(value, labelFor, isMandatory)
 {
     var lAlign = 'label_center';
     var width = 200;
@@ -1918,9 +1924,12 @@ function f_createLabel(value, labelFor)
     }
     else if(labelFor == V_LABEL_LABEL)
     {
+        var val = isMandatory != null && isMandatory == 'true' ?
+                    value + ': <img title="required field" src="images/ico_required.PNG"/> '
+                    : value + ': ';
         lAlign = 'vlabel_right';
         width = 200;
-        value = value + ': ';
+        value = val;
     }
 
     return new Ext.form.Label(

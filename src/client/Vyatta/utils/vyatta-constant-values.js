@@ -50,12 +50,12 @@ V_IMG_DIRTY_DEL = "images/statusMinus.gif";
 V_IMG_DIRTY_ADD = "images/statusPlus.gif";
 V_IMG_EMPTY = "images/empty.gif";
 
-V_DIRTY_FLAG = '<img src="images/statusUnknown.gif" />';
-V_DIRTY_FLAG_DEL = '<img src="images/statusMinus.gif" />';
-V_DIRTY_FLAG_ADD = '<img src="images/statusPlus.gif" />';
+V_DIRTY_FLAG = '<img title="node has been modified" src="images/statusUnknown.gif" />';
+V_DIRTY_FLAG_DEL = '<img title="node has been deleted" src="images/statusMinus.gif" />';
+V_DIRTY_FLAG_ADD = '<img title="node has been created" src="images/statusPlus.gif" />';
 V_EMPTY_FLAG = '<img src="images/empty.gif" width="13"/>';
 V_HIDE_DIRTY_FLAG = '<img src="images/empty.gif" />';
-V_ERROR_FLAG = '<img src="images/statusDown.gif" />'
+V_ERROR_FLAG = '<img title="error node" src="images/statusDown.gif" />'
 
 //////////////////////////////////////////
 // editor inner field index

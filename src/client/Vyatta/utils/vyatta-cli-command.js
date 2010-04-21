@@ -905,11 +905,18 @@ function f_parseServerCallback(xmlRoot, treeMode /* conf, operator */)
                     f_promptInfoMessage("Warning", msg);
                 break;
             case "3":
-                f_promptUserNotLoginMessage();
                 if(f_isAutoLogin())
                     f_autoLogin();
                 else
-                    f_userLogout(true, g_baseSystem.m_homePage);
+                {
+                    // if user had logined, prompt them a session timeout msg
+                    // then log them out.
+                    if(f_isUserLogined())
+                    {
+                        f_promptUserNotLoginMessage();
+                        f_userLogout(true, g_baseSystem.m_homePage);
+                    }
+                }
                 break;
             case "4":  //permission level is not valid
                 msg = 'operator permission';

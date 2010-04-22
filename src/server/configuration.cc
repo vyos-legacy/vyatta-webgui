@@ -349,11 +349,19 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
       if ((strncmp(line.c_str(),"tag:",4) == 0)) {
 	mode = "tag:";
 	params._multi = true;
+	StrProc str_proc(line,":");
+	if (str_proc.get(1).empty() == false) {
+	  params._multi_limit = strtoul(str_proc.get(1).c_str(),NULL,10);
+	}
       }
       else if ((strncmp(line.c_str(),"multi:",6) == 0)) {
 	mode = "tag:";
 	params._multi = true;
 	params._end = true;
+	StrProc str_proc(line,":");
+	if (str_proc.get(1).empty() == false) {
+	  params._multi_limit = strtoul(str_proc.get(1).c_str(),NULL,10);
+	}
       }
       else if (strncmp(line.c_str(),"default:",8) == 0 || mode == "default:") {
 	string def;
@@ -376,30 +384,63 @@ Configuration::get_template_node(const string &path, TemplateParams &params)
 	}
       }
       else if (strncmp(line.c_str(),"type:",5) == 0 || mode == "type:") {
+	//upgrade to handle two types.
 	mode = "type:";
-	if (line.find("txt") != string::npos) {
+
+	StrProc str_proc(line, ",");
+	string e1 = str_proc.get(0);
+
+	if (e1.find("txt") != string::npos) {
 	  params._type = WebGUI::TEXT;
 	}
-	else if (line.find("ipv4net") != string::npos) {
+	else if (e1.find("ipv4net") != string::npos) {
 	  params._type = WebGUI::IPV4NET;
 	}
-	else if (line.find("ipv4") != string::npos) {
+	else if (e1.find("ipv4") != string::npos) {
 	  params._type = WebGUI::IPV4;
 	}
-	else if (line.find("ipv6net") != string::npos) {
+	else if (e1.find("ipv6net") != string::npos) {
 	  params._type = WebGUI::IPV6NET;
 	}
-	else if (line.find("ipv6") != string::npos) {
+	else if (e1.find("ipv6") != string::npos) {
 	  params._type = WebGUI::IPV6;
 	}
-	else if (line.find("u32") != string::npos) {
+	else if (e1.find("u32") != string::npos) {
 	  params._type = WebGUI::U32;
 	}
-	else if (line.find("bool") != string::npos) {
+	else if (e1.find("bool") != string::npos) {
 	  params._type = WebGUI::BOOL;
 	}
-	else if (line.find("macaddr") != string::npos) {
+	else if (e1.find("macaddr") != string::npos) {
 	  params._type = WebGUI::MACADDR;
+	}
+
+	string e2 = str_proc.get(1);
+	if (e2.empty() == false) {
+	  if (e2.find("txt") != string::npos) {
+	    params._type2 = WebGUI::TEXT;
+	  }
+	  else if (e2.find("ipv4net") != string::npos) {
+	    params._type2 = WebGUI::IPV4NET;
+	  }
+	  else if (e2.find("ipv4") != string::npos) {
+	    params._type2 = WebGUI::IPV4;
+	  }
+	  else if (e2.find("ipv6net") != string::npos) {
+	    params._type2 = WebGUI::IPV6NET;
+	  }
+	  else if (e2.find("ipv6") != string::npos) {
+	    params._type2 = WebGUI::IPV6;
+	  }
+	  else if (e2.find("u32") != string::npos) {
+	    params._type2 = WebGUI::U32;
+	  }
+	  else if (e2.find("bool") != string::npos) {
+	    params._type2 = WebGUI::BOOL;
+	  }
+	  else if (e2.find("macaddr") != string::npos) {
+	    params._type2 = WebGUI::MACADDR;
+	  }
 	}
       }
       else if (strncmp(line.c_str(),"comp_help:",10) == 0 || mode == "comp_help:") {

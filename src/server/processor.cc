@@ -55,8 +55,11 @@ TemplateParams::get_xml(const string &value)
 {
   string out;
   if (_multi) {
-    out += "<multi/>";
+    char buf[512];
+    sprintf(buf,"%d",_multi_limit);
+    out += "<multi>" +string(buf)+ "</multi>";
   }
+
 
   //currently only enabled for op mode, but can be used in a configuration context to denote an "active" node
   if (_action) {
@@ -83,6 +86,34 @@ TemplateParams::get_xml(const string &value)
   }
 
   switch (_type) {
+  case WebGUI::TEXT:
+    out += "<type name='text'/>";
+    break;
+  case WebGUI::IPV4:
+    out += "<type name='ivp4'/>";    
+    break;
+  case WebGUI::IPV4NET:
+    out += "<type name='ivp4net'/>";    
+    break;
+  case WebGUI::IPV6:
+    out += "<type name='ivp6'/>";    
+    break;
+  case WebGUI::IPV6NET:
+    out += "<type name='ivp6net'/>";    
+    break;
+  case WebGUI::U32:
+    out += "<type name='u32'/>";    
+    break;
+  case WebGUI::BOOL:
+    out += "<type name='bool'/>";    
+    break;
+  case WebGUI::MACADDR:
+    out += "<type name='macaddr'/>";    
+    break;
+  case WebGUI::NONE:
+    break;
+  }
+  switch (_type2) {
   case WebGUI::TEXT:
     out += "<type name='text'/>";
     break;

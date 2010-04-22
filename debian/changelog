@@ -1,3 +1,11 @@
+vyatta-webgui (0.2.13-46) unstable; urgency=low
+
+  * server side support added for multiple type definitions on
+    configuration get.
+  * multi limit now supported on server.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Thu, 15 Apr 2010 16:49:28 -0700
+
 vyatta-webgui (0.2.13-45) unstable; urgency=low
 
   * fix for bug 5535.

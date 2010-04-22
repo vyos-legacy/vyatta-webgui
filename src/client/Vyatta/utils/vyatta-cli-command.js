@@ -160,43 +160,52 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
             isSuccess[1] = 'System is rebooting. Please wait for reboot to complete\n'+
                             'then refresh the browser to log in again.';
 
-        if(wildCard != undefined && wildCard[0] != undefined &&
-            wildCard[0].indexOf('show files ') >= 0)
+        if(sId != undefined)
         {
-            g_cliCmdObj.m_wildCard = wildCard;
-            g_cliCmdObj.m_node = null;
-            g_cliCmdObj.m_treeObj = treeObj;
-
-            if(sId.indexOf('_end') >= 0)
+            if(wildCard != undefined && wildCard[0] != undefined &&
+                wildCard[0].indexOf('show files ') >= 0)
             {
-                f_hideSendWaitMessage();
-                f_showFileChooserDialog(wildCard[1], g_cliCmdObj.m_wildCard[2], treeObj);
-            }
-            else if(g_cliCmdObj.m_wildCard[2] == undefined)
-                g_cliCmdObj.m_wildCard[2] = isSuccess[1];
-            else
-                g_cliCmdObj.m_wildCard[2] += isSuccess[1] + "\n";
+                g_cliCmdObj.m_wildCard = wildCard;
+                g_cliCmdObj.m_node = null;
+                g_cliCmdObj.m_treeObj = treeObj;
 
-            return;
-        }
-        else if(isSuccess[0] && sId != undefined && sId.indexOf('_end') < 0)
-        {
-            if(!g_cliCmdObj.m_segPause)
+                if(sId.indexOf('_end') >= 0)
+                {
+                    f_hideSendWaitMessage();
+                    f_showFileChooserDialog(wildCard[1], g_cliCmdObj.m_wildCard[2], treeObj);
+                }
+                else if(g_cliCmdObj.m_wildCard[2] == undefined)
+                    g_cliCmdObj.m_wildCard[2] = isSuccess[1];
+                else
+                    g_cliCmdObj.m_wildCard[2] += isSuccess[1] + "\n";
+
+                return;
+            }
+            else if(isSuccess[0] && sId.indexOf('_end') < 0)
+            {
+                if(!g_cliCmdObj.m_segPause)
+                {
+                    if(wildCard != undefined && typeof wildCard.setText == 'function')
+                    {
+                        wildCard.el.dom.className = V_WAIT_CSS;
+                        wildCard.setText('Stop');
+                    }
+                }
+                g_cliCmdObj.m_wildCard = wildCard;
+            }
+            else if(sId.indexOf('_end') >= 0 &&
+                g_cliCmdObj.m_wildCard != undefined &&
+                g_cliCmdObj.m_wildCard.text != undefined)
             {
                 if(wildCard != undefined && typeof wildCard.setText == 'function')
-                {
-                    wildCard.el.dom.className = V_WAIT_CSS;
-                    wildCard.setText('Stop');
-                }
+                    f_resetOperButton(g_cliCmdObj.m_wildCard);
             }
-            g_cliCmdObj.m_wildCard = wildCard;
         }
-        else if(sId != undefined && sId.indexOf('_end') >= 0 &&
-            g_cliCmdObj.m_wildCard != undefined &&
-            g_cliCmdObj.m_wildCard.text != undefined)
-        {
-            if(wildCard != undefined && typeof wildCard.setText == 'function')
-                f_resetOperButton(g_cliCmdObj.m_wildCard);
+        else
+        {   // login session maybe timeout
+            f_promptUserNotLoginMessage();
+            f_userLogout(true, g_baseSystem.m_homePage);
+            return;
         }
 
 

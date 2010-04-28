@@ -1,3 +1,14 @@
+vyatta-webgui (0.2.13-47) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * fixed null pointer exception for acase session timeout when user
+    sent oper cmd.
+
+  [ Michael Larson ]
+  * fix for bug 5563.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Wed, 28 Apr 2010 16:28:47 -0700
+
 vyatta-webgui (0.2.13-46) unstable; urgency=low
 
   * server side support added for multiple type definitions on

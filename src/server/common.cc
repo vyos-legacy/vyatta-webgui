@@ -111,7 +111,9 @@ WebGUI::mass_replace(const std::string &source, const std::string &victim, const
   std::string::size_type jump = replacement.length();
   std::string answer = source;
   std::string::size_type j = 0;
-  while ((j = answer.find(victim, j+jump)) != std::string::npos ) {
+  std::string::size_type offset= 0;
+  while ((j = answer.find(victim, j+offset)) != std::string::npos ) {
+    offset = jump;
     answer.replace(j, victim.length(), replacement);
   }
   return answer;

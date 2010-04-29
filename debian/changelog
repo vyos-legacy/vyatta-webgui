@@ -1,3 +1,19 @@
+vyatta-webgui (0.2.13-37+kenwood5) unstable; urgency=low
+
+  [ Kevin Choi ]
+  * * avoid session timeout prompt twice for case user refresh from the
+    browser
+  * * fixed null pointer exception for case session timeout when user
+    sent oper cmd.
+  * Revert "* fixed null pointer exception for case session timeout when
+    user sent oper cmd."
+  * * fixed bug 5566 - client fails to send commit.
+
+  [ Michael Larson ]
+  * fix for bug 5563.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Thu, 29 Apr 2010 15:12:49 -0700
+
 vyatta-webgui (0.2.13-37+kenwood4) unstable; urgency=low
 
   * * merge fixed bug 5481 - for multi leaf node editing

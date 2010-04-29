@@ -1504,22 +1504,22 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
             var v = new record({ value: enumValues[i],  checker: chk });
             gridStore.add(v);
         }
+
+        // values checked but have not commit
+        for(var i=0; i < values.length; i++)
+        {
+            if(f_isEditGridValueNewAdded(enumValues, values[i]))
+            {
+                var v = new record({ value: values[i], checker: true});
+                gridStore.add(v);
+            }
+        }
     }
     else    // none check values
     {
         for(var i=0; i < values.length; i++)
         {
             var v = new record({ value: values[i], checker: false});
-            gridStore.add(v);
-        }
-    }
-
-    // values checked but have not commit
-    for(var i=0; i < values.length; i++)
-    {
-        if(f_isEditGridValueNewAdded(enumValues, values[i]))
-        {
-            var v = new record({ value: values[i], checker: true});
             gridStore.add(v);
         }
     }

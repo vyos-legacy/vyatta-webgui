@@ -356,6 +356,8 @@ function f_sendConfFormCommand(treeObj)
     else
       label = label.html.replace(":", " ");
 
+    label = label.replace(' <img title="required field" src="images/ico_required.PNG"/>', "");
+    
     ///////////////////////////////////////
     // get field values
     var cmds = [ ];
@@ -419,7 +421,7 @@ function f_sendConfFormCommand(treeObj)
                     if(innerVal[1])
                         cmds.push('set ' + selPath + " " + label + innerVal[0]);
                     else
-                        cmds.push(['delete ' + selPath + ' ' + label + innerVal[0]])
+                        cmds.push('delete ' + selPath + ' ' + label + innerVal[0])
                 }
             }
             else

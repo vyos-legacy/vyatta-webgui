@@ -648,6 +648,24 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
       continue; //should never happen
     }
 
+    //right now we'll just set both
+    bool disable = false;
+    struct stat s;
+    string tmp = active_path + "/.disable";
+    lstat(tmp.c_str(), &s);
+    if ((lstat(tmp.c_str(),&s) == 0)) {
+      disable = true;
+    }
+
+    if (disable == false) {
+      tmp = local_path + "/.disable";
+      lstat(tmp.c_str(), &s);
+      if ((lstat(tmp.c_str(),&s) == 0)) {
+	disable = true;
+      }
+    }
+
+
     out += "<"+node+" name='" + s_iter->first + "'>";
     switch (s_iter->second) {
     case WebGUI::ACTIVE:
@@ -662,6 +680,9 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
     case WebGUI::DELETE:
       out += "<configured>delete</configured>";
       break;
+    }
+    if (disable == true) {
+      out += "<disable/>";
     }
     out += "</"+node+">";
     ++o_iter;

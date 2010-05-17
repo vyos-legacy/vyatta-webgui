@@ -1,3 +1,12 @@
+vyatta-webgui (0.2.13-50) unstable; urgency=low
+
+  * support for disable node in webgui1. limited support--only shows
+    node where disable mode starts and doesn't distinguish between
+    pending and commited disable node
+  * added help to clear https
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Mon, 17 May 2010 10:23:49 -0700
+
 vyatta-webgui (0.2.13-49) unstable; urgency=low
 
   * * fixed bug 5566 - client fails to send commit.

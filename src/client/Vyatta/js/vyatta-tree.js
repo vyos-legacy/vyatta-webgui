@@ -290,7 +290,14 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         var nType = q.selectNode('type', node);
         if (nType != undefined)
             str += ",type:'" + nType.getAttribute('name') + "'";
-
+/*
+        var nMulti = q.selectValue('multi', node);
+        if (nMulti != undefined)
+        {
+            str += ",multi:true";
+            str += ",multiCounter:" + nMulti;
+        }
+  */
         var nMulti = q.selectNode('multi', node);
         if (nMulti != undefined)
             str += ",multi:true";
@@ -632,12 +639,24 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             // do not clear editor if in the same node
             if(m_thisObj.m_parent.f_getEditorTitle() != titlePanel.m_title)
             {
-                m_thisObj.m_parent.f_cleanEditorPanel();
-                f_addField2Panel(m_thisObj.m_parent.m_editorPanel, titlePanel,
+                var cb = function()
+                {
+                    m_thisObj.m_parent.f_cleanEditorPanel();
+                    f_addField2Panel(m_thisObj.m_parent.m_editorPanel, titlePanel,
                           node, V_TREE_ID_config);
+                    m_thisObj.f_confNodeHandler(node);
+                    return;
+                }
+                window.setTimeout(cb, 12);
+                return;
             }
         }
 
+        m_thisObj.f_confNodeHandler(node);
+    },
+
+    f_confNodeHandler: function(node)
+    {
         if(node.leaf)
         {
             if(node.attributes.multi == undefined || !node.attributes.multi)
@@ -657,7 +676,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 if (n.attributes.multi == undefined || !n.attributes.multi)
                 {
                     if(m_thisObj.m_parent.f_getEditorItemCount() < 0)
-                        f_addField2Panel(ePanel, titlePanel, node, V_TREE_ID_config);
+                        f_addField2Panel(m_thisObj.m_parent.m_editorPanel, titlePanel, node, V_TREE_ID_config);
 
                     m_thisObj.f_interHandler(n);
                 }

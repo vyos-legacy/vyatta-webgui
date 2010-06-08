@@ -7,9 +7,9 @@ if [ -d .git ] ; then
     rm -f ChangeLog
 
     if which git2cl >/dev/null ; then
-	git-log --pretty --numstat --summary | git2cl >> ChangeLog
+	git log --pretty --numstat --summary | git2cl >> ChangeLog
     else
-	git-log --pretty=short >> ChangeLog
+	git log --pretty=short >> ChangeLog
     fi
 
 # append repository reference
@@ -17,7 +17,7 @@ if [ -d .git ] ; then
     url=` git repo-config --get remote.origin.url`
     test "x$url" = "x" && url=`pwd`
 
-    branch=`git-branch --no-color | sed '/^\* /!d; s/^\* //'`
+    branch=`git branch --no-color | sed '/^\* /!d; s/^\* //'`
     test "x$branch" = "x" && branch=master
 
     sha=`git log --pretty=oneline --no-color -n 1 | cut -c-8`

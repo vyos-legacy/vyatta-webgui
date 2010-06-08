@@ -1,3 +1,14 @@
+vyatta-webgui (0.2.13-51) unstable; urgency=low
+
+  [ Stephen Hemminger ]
+  * Remove 'git-' commands
+
+  [ Kevin Choi ]
+  * fixed bug #5633 - cross browser issue on apply platform that failed
+    to fresh multi-node form panel.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Tue, 08 Jun 2010 16:15:11 -0700
+
 vyatta-webgui (0.2.13-50) unstable; urgency=low
 
   * support for disable node in webgui1. limited support--only shows

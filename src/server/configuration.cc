@@ -724,6 +724,7 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
     case k_ENABLE:
       out += "enable";
     }
+    out += "</disable>";
     out += "</"+node+">";
     ++o_iter;
   }

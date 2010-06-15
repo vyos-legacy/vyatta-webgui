@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-52) unstable; urgency=low
+
+  * provided hierarchy support for deactivate check after talking with
+    Kevin.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Mon, 14 Jun 2010 17:33:54 -0700
+
 vyatta-webgui (0.2.13-51) unstable; urgency=low
 
   [ Stephen Hemminger ]

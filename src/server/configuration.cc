@@ -690,21 +690,6 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
     }
 
     //right now we'll just set both                                                                                                                                        
-    bool disable = false;
-    struct stat s;
-    string tmp = active_path + "/.disable";
-    lstat(tmp.c_str(), &s);
-    if ((lstat(tmp.c_str(),&s) == 0)) {
-      disable = true;
-    }
-
-    if (disable == false) {
-      tmp = local_path + "/.disable";
-      lstat(tmp.c_str(), &s);
-      if ((lstat(tmp.c_str(),&s) == 0)) {
-        disable = true;
-      }
-    }
 
 
     out += "<"+node+" name='" + s_iter->first + "'>";
@@ -722,8 +707,22 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
       out += "<configured>delete</configured>";
       break;
     }
-    if (disable == true) {
-      out += "<disable/>";
+    
+    DISABLE_STATE state = is_disabled(rel_path, _proc->get_msg().id(), true);
+    out += "<disable>";
+    switch (state) {
+    case k_DISABLE_LOCAL:
+      out += "disable_local";
+      break;
+    case k_ENABLE_LOCAL:
+      out += "enable_local";
+      break;
+    case k_DISABLE:
+      out += "disable";
+      break;
+    default:
+    case k_ENABLE:
+      out += "enable";
     }
     out += "</"+node+">";
     ++o_iter;
@@ -811,3 +810,50 @@ Configuration::get_conf_dir(const std::string &rel_config_path)
   closedir(dp);
   return coll;
 }
+
+/**
+ *
+ *
+ **/
+Configuration::DISABLE_STATE
+Configuration::is_disabled(const std::string &rel_data_path, const std::string &conf_id, bool check_ancestors)
+{
+  string active_path = WebGUI::ACTIVE_CONFIG_DIR + "/" + rel_data_path;
+  string merged_path = WebGUI::LOCAL_CONFIG_DIR + conf_id + "/" + rel_data_path;
+  string changes_only_path = WebGUI::LOCAL_CHANGES_ONLY + conf_id + "/" + rel_data_path;
+  DISABLE_STATE state = k_ENABLE;
+                                                                                                                                                            
+  struct stat s;
+  string tmp = active_path + "/.disable";
+
+  lstat(tmp.c_str(), &s);
+  if ((lstat(tmp.c_str(),&s) == 0)) {
+    state = k_DISABLE;
+  }
+
+  if (state == k_ENABLE) {
+    tmp = changes_only_path + "/.disable";
+    if ((lstat(tmp.c_str(),&s) == 0)) {
+      state = k_DISABLE_LOCAL;
+    }
+  }
+  else if (state == k_DISABLE) {
+    //is this k_ENABLE_LOCAL
+    tmp = merged_path + "/.disable";
+    if ((lstat(tmp.c_str(),&s) != 0)) {
+      state = k_ENABLE_LOCAL;
+    }
+  }
+
+  if (check_ancestors && state == k_ENABLE) {
+    string tmp = rel_data_path;
+    size_t pos = tmp.rfind("/",tmp.length()-1);
+    if (pos == string::npos) {
+      return state;
+    }
+    tmp = tmp.substr(0,pos);
+    state = is_disabled(tmp,conf_id,check_ancestors);
+  }
+  return state;
+}
+

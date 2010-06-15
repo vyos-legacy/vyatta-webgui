@@ -9,6 +9,9 @@
 class Configuration : public SystemBase
 {
 public:
+  typedef enum {k_ENABLE,k_ENABLE_LOCAL,k_DISABLE,k_DISABLE_LOCAL} DISABLE_STATE;
+
+public:
   Configuration();
   ~Configuration();
 
@@ -16,6 +19,9 @@ public:
   get_config();
 
 private:
+  DISABLE_STATE
+  is_disabled(const std::string &rel_data_path, const std::string &conf_id, bool check_ancestors);
+
   std::string
   get_template();
 

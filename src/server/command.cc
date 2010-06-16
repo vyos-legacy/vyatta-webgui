@@ -125,6 +125,9 @@ export vyatta_localedir=/opt/vyatta/share/locale";
     if (strncmp(tmp.c_str(),"set",3) == 0 || strncmp(tmp.c_str(),"delete",6) == 0) {
       tmp = "/opt/vyatta/sbin/my_" + cmd;
     }
+    else if (strncmp(cmd.c_str(),"activate",8) == 0 || strncmp(cmd.c_str(),"deactivate",10) == 0) {
+      tmp = "/opt/vyatta/sbin/vyatta-activate-config.pl " + cmd;
+    }
     else if (strncmp(tmp.c_str(),"commit",6) == 0) {
       tmp = "/opt/vyatta/sbin/my_" + cmd;// + " -e"; //add error location flag
     }

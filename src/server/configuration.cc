@@ -226,6 +226,36 @@ Configuration::get_full_level(const std::string &root_node, std::string &out, bo
 	  out += "<configured>delete</configured>";
 	  break;
 	}
+
+	string rel_path = rel_config_path + "/" + string(dirp->d_name);
+	DISABLE_STATE state = is_disabled(rel_path, _proc->get_msg().id(), true);
+
+	if (is_disabled(rel_path, _proc->get_msg().id(), false) != k_ENABLE) {
+	  out += "<disable root='true'>";
+	}
+	else {
+	  out += "<disable>";
+	}
+
+	switch (state) {
+	case k_DISABLE_LOCAL:
+	  out += "disable_local";
+	  break;
+	case k_ENABLE_LOCAL:
+	  out += "enable_local";
+	  break;
+	case k_DISABLE:
+	  out += "disable";
+	  break;
+	default:
+	case k_ENABLE:
+	  out += "enable";
+	}
+	out += "</disable>";
+
+
+
+
 	dir_coll.erase(iter);
       }	
       //now add template parameters
@@ -284,6 +314,34 @@ Configuration::get_full_level(const std::string &root_node, std::string &out, bo
       out += "<configured>delete</configured>";
       break;
     }
+
+    string rel_path = rel_config_path + "/" + str;
+    DISABLE_STATE state = is_disabled(rel_path, _proc->get_msg().id(), true);
+    if (is_disabled(rel_path, _proc->get_msg().id(), false) != k_ENABLE) {
+      out += "<disable root='true'>";
+    }
+    else {
+      out += "<disable>";
+    }
+
+    switch (state) {
+    case k_DISABLE_LOCAL:
+      out += "disable_local";
+      break;
+    case k_ENABLE_LOCAL:
+      out += "enable_local";
+      break;
+    case k_DISABLE:
+      out += "disable";
+      break;
+    default:
+    case k_ENABLE:
+      out += "enable";
+    }
+    out += "</disable>";
+
+
+
     if (recursive == false) {
       out += multi_params.get_xml();
     }
@@ -709,7 +767,12 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
     }
     
     DISABLE_STATE state = is_disabled(rel_path, _proc->get_msg().id(), true);
-    out += "<disable>";
+    if (is_disabled(rel_path, _proc->get_msg().id(), false) != k_ENABLE) {
+      out += "<disable root='true'>";
+    }
+    else {
+      out += "<disable>";
+    }
     switch (state) {
     case k_DISABLE_LOCAL:
       out += "disable_local";

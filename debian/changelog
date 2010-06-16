@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-54) unstable; urgency=low
+
+  * extensions to support deactivate/activate behavior in client.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Wed, 16 Jun 2010 13:22:46 -0700
+
 vyatta-webgui (0.2.13-53) unstable; urgency=low
 
   * need closing disable tag.

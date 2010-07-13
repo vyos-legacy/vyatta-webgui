@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-55) unstable; urgency=low
+
+  * fixed bug #5669, to remove '*' value from Ethernet interface address
+    enum node.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Tue, 13 Jul 2010 16:14:22 -0700
+
 vyatta-webgui (0.2.13-54) unstable; urgency=low
 
   * extensions to support deactivate/activate behavior in client.

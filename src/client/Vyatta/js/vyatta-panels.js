@@ -1500,6 +1500,8 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
     {   // check values
         for(var i=0; i < enumValues.length; i++)
         {
+            if(enumValues[i] == '*' && node.text == 'address') continue;
+
             var chk = f_isEditGridValueCheck(enumValues[i], values)
             var v = new record({ value: enumValues[i],  checker: chk });
             gridStore.add(v);

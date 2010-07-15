@@ -54,6 +54,8 @@ ssbin_PROGRAMS = src/server/chunker
 
 ssbin_SCRIPTS = scripts/chunker_cmd
 
+sbin_SCRIPTS = scripts/vyatta-update-webgui-listen-addr.pl
+
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 
 # library

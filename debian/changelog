@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-56) unstable; urgency=low
+
+  [ Michael Larson ]
+  * add listen-address as hidden command
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 22 Jul 2010 17:26:28 -0700
+
 vyatta-webgui (0.2.13-55) unstable; urgency=low
 
   * fixed bug #5669, to remove '*' value from Ethernet interface address

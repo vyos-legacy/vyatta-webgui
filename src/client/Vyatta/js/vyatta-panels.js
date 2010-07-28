@@ -1827,6 +1827,8 @@ function f_resetOperButton(btn)
 
 function f_createOperButton(treeObj, node, btnText, title)
 {
+    g_cliCmdObj.m_segPause = false;
+    
     var buttons = [ ];
     var btn_id = Ext.id();
 

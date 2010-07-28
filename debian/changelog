@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-55+larkspur2) unstable; urgency=low
+
+  * fixed bug 5938 - show tech-support does not resume after pause.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Wed, 28 Jul 2010 16:04:24 -0700
+
 vyatta-webgui (0.2.13-55+larkspur1) unstable; urgency=low
 
   [ Michael Larson ]

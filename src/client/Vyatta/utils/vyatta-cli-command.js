@@ -576,7 +576,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         }
         else  // other things else
         {
-            if(node.parentNode != undefined || selNode.parentNode != undefined)
+            if(node != null && node.parentNode != null && selNode.parentNode != null)
                 f_handleParentNodeExpansion(tObj, node, selNode, selPath, cmds, isCreate);
         }
     } // end of callback

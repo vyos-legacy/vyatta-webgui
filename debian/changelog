@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-55+larkspur3) unstable; urgency=low
+
+  * fixed bug 5940 - null pointer exception on IE 8.0
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Thu, 29 Jul 2010 15:48:04 -0700
+
 vyatta-webgui (0.2.13-55+larkspur2) unstable; urgency=low
 
   * fixed bug 5938 - show tech-support does not resume after pause.

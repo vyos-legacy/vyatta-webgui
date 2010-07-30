@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-55+larkspur4) unstable; urgency=low
+
+  * * fixed bug5943 - null pointer exception after session timeout on IE
+    8.0
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Fri, 30 Jul 2010 10:40:18 -0700
+
 vyatta-webgui (0.2.13-55+larkspur3) unstable; urgency=low
 
   * fixed bug 5940 - null pointer exception on IE 8.0

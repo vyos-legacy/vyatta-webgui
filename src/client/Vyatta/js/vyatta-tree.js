@@ -596,6 +596,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
     {
         if(m_thisObj.m_parent.m_editorPanel.m_isDirty)
         {
+            var sNode = m_thisObj.m_selNode;
+
             var discardCb = function(btn)
             {
                 if(btn == 'yes')
@@ -604,7 +606,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                     m_thisObj.m_parent.m_editorPanel.m_isDirty = false;
                 }
                 else
-                    m_thisObj.m_tree.getSelectionModel().select(m_thisObj.m_selNode);
+                {
+                    if(sNode.attributes.leaf != null && sNode.attributes.leaf)
+                        sNode = sNode.parentNode;
+
+                    m_thisObj.m_tree.getSelectionModel().select(sNode);
+                }
             }
 
             f_yesNoMessageBox('Configuration',

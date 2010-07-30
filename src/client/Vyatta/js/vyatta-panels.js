@@ -1740,7 +1740,7 @@ function f_createConfButton(treeObj, node, btnText, title)
         ,overCls: 'v-tb-btn-over'
         ,text: ''
         ,iconCls: iconCls
-        ,tooltip: btnText + ' configuration node'
+        ,tooltip: btnText + ' <b>"' + node.text + '"</b> configuration node'
         ,handler: function()
         {
             if(node.text == 'https')

@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-55+larkspur5) unstable; urgency=low
+
+  * fix bug5947 - after 'set' node, form display different node.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Fri, 30 Jul 2010 14:23:40 -0700
+
 vyatta-webgui (0.2.13-55+larkspur4) unstable; urgency=low
 
   * * fixed bug5943 - null pointer exception after session timeout on IE

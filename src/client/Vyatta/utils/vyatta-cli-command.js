@@ -19,7 +19,7 @@ function f_sendSpecialCliCommand(cmd, segmentId, cb)
         var localSegmentId = (isSuccess[2] != undefined)?isSuccess[2]:null;
 
         // segment is not end, continue to send
-        if(localSegmentId.indexOf('_end') < 0)
+        if(localSegmentId != null && localSegmentId.indexOf('_end') < 0)
         {
             if(cmd.indexOf('host name') > 0 && isSuccess[1].length > 1)
             {

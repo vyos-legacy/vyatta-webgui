@@ -433,7 +433,7 @@ function f_createNumberField(treeObj, value, node, help, width, callback, mode)
     {
         var keyupPressHandler = function(field, e)
         {
-            treeObj.m_parent.m_editorPanel.m_isDirty = true;
+            f_setFormDirty(treeObj, true);
             //if(e.getKey() == 9)
               //  f_handleFieldTab(field);
 
@@ -516,7 +516,8 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
     {
         var keyupPressHandler = function(field, e)
         {
-            treeObj.m_parent.m_editorPanel.m_isDirty = true;
+            f_setFormDirty(treeObj, true);
+
             if(e.getKey() == 9)
                 f_handleFieldTab(field);
 
@@ -584,7 +585,7 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
 
     var onCollapseHandler = function()
     {
-        treeObj.m_parent.m_editorPanel.m_isDirty = true;
+        f_setFormDirty(treeObj, true);
         callback(field);
     }
     var onKeyHandler = function(f, e)
@@ -662,7 +663,7 @@ function f_createCheckbox(value, node, helpStr, width, callback, treeObj)
     var onClickHandler = function()
     {
         field.setValue(!field.getValue());
-        treeObj.m_parent.m_editorPanel.m_isDirty = true;
+        f_setFormDirty(treeObj, true);
         callback(field);
     }
     var field = new Ext.form.Checkbox(
@@ -1532,6 +1533,7 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
     var CheckColumnOnMousePress = function()
     {
         gridStore.m_checkerDirty = true;
+        f_setFormDirty(treeObj, true);
     }
     var checkColumn = f_createGridCheckColumn(CheckColumnOnMousePress);
 
@@ -1553,7 +1555,7 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
                 return false;
             }
             
-            treeObj.m_parent.m_editorPanel.m_isDirty = true;
+            f_setFormDirty(treeObj, true);
         }
     }
     var tf = new Ext.form.TextField(
@@ -1675,6 +1677,20 @@ function f_createOperEditorTitle(title)
     return panel;
 }
 
+function f_setFormDirty(treeObj, isDirty)
+{
+    treeObj.m_parent.m_editorPanel.m_isDirty = isDirty;
+
+    var btn = treeObj.m_parent.m_editorPanel.m_formPanel.m_subBtn[0];
+    if(btn != null && btn.enable != null)
+    {
+        if(isDirty)
+            btn.enable();
+        else
+            btn.disable();
+    }
+}
+
 function f_createConfSubButton(treeObj)
 {
     var buttons = [];
@@ -1683,6 +1699,7 @@ function f_createConfSubButton(treeObj)
     buttons[0] = new Ext.Button(
     {
         id: btn_id
+        ,disabled: true
         ,text: 'Set'
         ,tooltip: 'Set configuration'
         ,height: 20

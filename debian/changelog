@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-55+larkspur6) unstable; urgency=low
+
+  * fix for bug 5894
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Tue, 03 Aug 2010 11:36:35 -0700
+
 vyatta-webgui (0.2.13-55+larkspur5) unstable; urgency=low
 
   * fix bug5947 - after 'set' node, form display different node.

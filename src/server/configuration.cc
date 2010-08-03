@@ -110,7 +110,11 @@ Configuration::get_full_op_level()
 	strcmp(dirp->d_name,"node.def") != 0 &&
 	strcmp(dirp->d_name,"node.tag") != 0) {
       //now build out response...
-      out += string("<node name='") + string(dirp->d_name) + string("'>");
+      string name = string(dirp->d_name);
+      name = WebGUI::mass_replace(name, "&", "&#38;");
+      name = WebGUI::mass_replace(name, "<", "&#60;");
+      name = WebGUI::mass_replace(name, ">", "&#62;");
+      out += string("<node name='") + name + string("'>");
 
       //now add template parameters
       TemplateParams tmpl_params;
@@ -208,7 +212,11 @@ Configuration::get_full_level(const std::string &root_node, std::string &out, bo
 	strcmp(dirp->d_name,"node.tag") != 0) {
       //now build out response...
 
-      out += string("<node name='") + string(dirp->d_name) + string("'>");
+      string name = string(dirp->d_name);
+      name = WebGUI::mass_replace(name, "&", "&#38;");
+      name = WebGUI::mass_replace(name, "<", "&#60;");
+      name = WebGUI::mass_replace(name, ">", "&#62;");
+      out += string("<node name='") + name + string("'>");
       map<string,WebGUI::NodeState>::iterator iter = dir_coll.find(dirp->d_name);
       if (iter != dir_coll.end()) {
 	//check if node is deleted
@@ -298,6 +306,9 @@ Configuration::get_full_level(const std::string &root_node, std::string &out, bo
     string str = string(m_iter->first);
     str = WebGUI::mass_replace(str, "%2F", "/");
     
+    str = WebGUI::mass_replace(str, "&", "&#38;");
+    str = WebGUI::mass_replace(str, "<", "&#60;");
+    str = WebGUI::mass_replace(str, ">", "&#62;");
     out += string("<node name='") + str + string("'>");
     
     switch (m_iter->second) {
@@ -748,9 +759,11 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
     }
 
     //right now we'll just set both                                                                                                                                        
-
-
-    out += "<"+node+" name='" + s_iter->first + "'>";
+    string name = s_iter->first;
+    name = WebGUI::mass_replace(name, "&", "&#38;");
+    name = WebGUI::mass_replace(name, "<", "&#60;");
+    name = WebGUI::mass_replace(name, ">", "&#62;");
+    out += "<"+node+" name='" + name + "'>";
     switch (s_iter->second) {
     case WebGUI::ACTIVE:
       out += "<configured>active</configured>";

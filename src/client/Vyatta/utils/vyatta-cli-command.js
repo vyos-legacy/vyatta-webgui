@@ -275,7 +275,13 @@ function f_handleConfFormCommandDone(treeObj, node)
             //////////////////////////////////////////////
             // load it's childnode if is multi node is set
             if(node.attributes.multi != undefined)
-                f_loadChildNode(treeObj, node);
+            {
+                var onLoadChildNode = function()
+                {
+                    f_loadChildNode(treeObj, node);
+                }
+                window.setTimeout(onLoadChildNode, 100);
+            }
 
             f_handlePropagateParentNodes(node);
             treeObj.m_isCommitAvailable = true;

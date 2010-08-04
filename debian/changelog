@@ -1,3 +1,19 @@
+vyatta-webgui (0.2.13-57) unstable; urgency=low
+
+  [ Michael Larson ]
+  * fix for bug 4454.
+
+  [ Kevin Choi ]
+  * fixed bug 5938 - show tech-support does not resume after pause.
+  * fixed bug 5940 - null pointer exception on IE 8.0
+  * * fixed bug5943 - null pointer exception after session timeout on IE
+    8.0
+  * fix bug5947 - after 'set' node, form display different node.
+  * disable 'set' button if there no change to any input fields
+  * fixed bug 5955 +/- sign next to the tree node disappered.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Tue, 03 Aug 2010 17:02:16 -0700
+
 vyatta-webgui (0.2.13-56) unstable; urgency=low
 
   [ Michael Larson ]

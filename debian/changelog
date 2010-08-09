@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-58) unstable; urgency=low
+
+  * * added activate/deactivate feature... but not visiable to user yet.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Mon, 09 Aug 2010 11:22:30 -0700
+
 vyatta-webgui (0.2.13-57) unstable; urgency=low
 
   [ Michael Larson ]

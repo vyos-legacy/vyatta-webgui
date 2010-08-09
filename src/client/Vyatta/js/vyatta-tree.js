@@ -9,17 +9,42 @@ VyattaNodeUI = Ext.extend(Ext.tree.TreeNodeUI,
 {
     getNodeStyle: function(node)
     {
-        if(node.attributes.configured == undefined)
-            return ' class="v-node-nocfg" style="color:black;"';
-        else if(node.attributes.configured == 'active')
-            return ' class="v-node-active" style="color:black;"';
-        else if(node.attributes.configured == 'set'  ||
-                node.attributes.configured == 'active_plus')
-            return ' class="v-node-set" style="color:black;"';
-        else if(node.attributes.configured == 'delete')
-            return ' class="v-node-delete" style="color:black;"';
+        var nColor = this.f_isNodeDisable(node) ? "grey;" : "black;";
+        var conf = node.attributes.configured;
+
+        if(conf == undefined)
+            return ' class="v-node-nocfg" style="color:' + nColor + '"';
+        else if(conf == 'active' || conf == 'active_plus' || conf == 'error')
+            return ' class="v-node-active" style="color:' + nColor + '"';
+        else if(conf == 'set')
+            return ' class="v-node-set" style="color:' + nColor + '"';
+        else if(conf == 'delete')
+            return ' class="v-node-delete" style="color:' + nColor + '"';
 
         return '';
+    },
+
+    /////////////////////////////////////////
+    // is node deactivated
+    f_isNodeDisable: function(node)
+    {
+        var n = node;
+
+        while(n != undefined)
+        {
+            if(n.attributes != undefined)
+            {
+                var act = n.attributes.disable;
+                if(act == 'disable' || act == 'enable_local')
+                {
+                    node.attributes.disable = act;
+                    return true;
+                }
+            }
+            n = n.parentNode;
+        }
+
+        return false;
     },
 
     getNodeStyleImage: function(node)
@@ -270,14 +295,15 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
         }
         var tConfig_ = q.selectValue('configured', node);
         if(tConfig_ != undefined)
+        {
             str += ",configured:'" + tConfig_ + "'";
-        else if(tConfig != undefined)
-            str += ",configured:'" + tConfig + "'";
-
-        if(tConfig_ != undefined)
             str += ",configured_:'" + tConfig_ + "'";
+        }
         else if(tConfig != undefined)
+        {
+            str += ",configured:'" + tConfig + "'";
             str += ",configured_:'" + tConfig + "'";
+        }
 
         var action = q.selectNode('action', node);
         if(action != undefined)
@@ -310,7 +336,6 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             var cHelp = q.selectValue('comp_help', node);
             if(cHelp != undefined)
             {
-                //cHelp = f_replace(cHelp, "  ", " -");
                 cHelp = cHelp.replace(
                         /(\x20\x20\x20)|(\t)|(\n)|(')|(<)|(>)|(&lt;)|(&gt;)|(&apos;)|(&#xD;)|(&#xA;)|(&#62;)/g,
                         function(m){return f_replaceChar(m)}, 'g');
@@ -327,6 +352,17 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
             str += ",defaultVal:'" + tDefault + "'";
         }
 
+        // activate/deactivate node
+        var disable = q.selectValue('disable', node);
+        if(disable != undefined)
+        {
+            str += ",disable:'" + disable + "'";
+            disable = q.selectNode('disable', node);
+            var root = disable.getAttribute('root');
+            if(root != null)
+                str += ",disableRoot:'" + true + "'";
+        }
+        
         var nenums = q.selectNode('enum', node);
         if (nenums != undefined)
         {
@@ -348,27 +384,6 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
     }
 });
 
-function f_replaceChar(match)
-{
-    if(match == '&apos;')
-        return "\"";
-    else if(match == '\'')
-        return "\"";
-    else if(match == '&lt;' || match == '<')
-        return "(";
-    else if(match == '&#62;' || match == '&gt;' || match == '>')
-        return ")";
-    else if(match == '&#xD;')
-        return ".";
-    else if(match == '&#xA;')
-        return " ";
-    else if(match == '\n')
-        return "";
-    else if(match == '\x20\x20\x20')
-        return " -";
-
-    return "";
-}
 
 /*******************************************************************************
  ///////////////////////////////////////////////////////////////////////////////
@@ -553,6 +568,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                 this.m_isCommitAvailable = true;
                 break;
             }
+            else if(child.attributes.disable != undefined &&
+                child.attributes.disable.indexOf('_local') > 0)
+            {
+                this.m_isCommitAvailable = true;
+                break;
+            }
             child = child.nextSibling;
         }
 
@@ -594,37 +615,56 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_onConfigTreeNodeClick: function(node, e)
     {
-        if(m_thisObj.m_parent.m_editorPanel.m_isDirty)
+        var ePanel = m_thisObj.m_parent.m_editorPanel;
+        
+        if(ePanel.m_formPanel != null && ePanel.m_formPanel.m_formError != null &&
+            ePanel.m_formPanel.m_formError)
         {
-            var sNode = m_thisObj.m_selNode;
-
-            var discardCb = function(btn)
-            {
-                if(btn == 'yes')
-                {
-                    m_thisObj.f_HandleNodeConfigClick(node, e, false);
-                    m_thisObj.m_parent.m_editorPanel.m_isDirty = false;
-                }
-                else
-                {
-                    if(sNode.attributes.leaf != null && sNode.attributes.leaf)
-                        sNode = sNode.parentNode;
-
-                    m_thisObj.m_tree.getSelectionModel().select(sNode);
-                }
-            }
-
-            f_yesNoMessageBox('Configuration',
-                  'Configuration on this page has been modified and not yet set. Do you want to continue?',
-                  discardCb);
+            m_thisObj.f_handleNodeConfigClickMsg(node, e, ePanel, true,
+                'Error has occured in current form. If you choose to continue, all errors on this form will be removed from configuration. Do you want to continue?');
+        }
+        else if(ePanel.m_isDirty)
+        {
+            m_thisObj.f_handleNodeConfigClickMsg(node, e, ePanel, false,
+                'This form has been modified and has not yet been set. Do you want to continue?');
         }
         else
             m_thisObj.f_HandleNodeConfigClick(node, e, false);
     },
 
+    f_handleNodeConfigClickMsg: function(node, e, ePanel, isError, msg)
+    {
+        var cb = function(btn)
+        {
+            var sNode = m_thisObj.m_selNode;
+
+            if(btn == 'yes')
+            {
+                if(isError)
+                {
+                    sNode = sNode.parentNode;
+                    sNode.attributes.configured = sNode.attributes.configured_;
+                    f_handlePropagateParentNodes(sNode, false);
+                }
+
+                m_thisObj.f_HandleNodeConfigClick(node, e, false);
+                ePanel.m_isDirty = false;
+            }
+            else
+            {
+                if(sNode.attributes.leaf != null && sNode.attributes.leaf)
+                    sNode = sNode.parentNode;
+                
+                m_thisObj.m_tree.getSelectionModel().select(sNode);
+            }
+        }
+
+        f_yesNoMessageBox('Configuration', msg, cb);
+    },
+
     ////////////////////////////////////////////////////////////////////////////
     // node click handler for configuration tree
-    f_HandleNodeConfigClick: function(node, e, dontClear)
+    f_HandleNodeConfigClick: function(node, e, dontClear, forceClear)
     {
         m_thisObj.m_selNode = node;
 
@@ -640,11 +680,12 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
         if(dontClear == undefined || !dontClear)
         {
             m_thisObj.m_btnPanel = m_thisObj.f_handleConfButton(node);
-            titlePanel = f_createConfEditorTitle(node, m_thisObj.m_btnPanel);
+            titlePanel = f_createConfEditorTitle(m_thisObj, node, m_thisObj.m_btnPanel);
 
             ////////////////////////////////////////////////////
             // do not clear editor if in the same node
-            if(m_thisObj.m_parent.f_getEditorTitle() != titlePanel.m_title)
+            if((forceClear != undefined && forceClear) ||
+                m_thisObj.m_parent.f_getEditorTitle() != titlePanel.m_title)
             {
                 var cb = function()
                 {
@@ -713,15 +754,6 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             var cnode = cnodes[i];
             if(cnode.leaf)
                 m_thisObj.f_HandleNodeConfigClick(cnode, null, true);
-        }
-
-        // help string
-        if (node.attributes.help != undefined)
-        {
-            var label = new Ext.form.Label(
-            {
-                text: node.attributes.help
-            });
         }
     },
 
@@ -1331,7 +1363,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
 
     f_addOpTextAreaField: function(ePanel, values)
     {
-        var eForm = ePanel.items.itemAt(0);
+        var eForm = ePanel.items != null ? ePanel.items.itemAt(0):null;
 
         if(eForm != undefined)
         {
@@ -1353,7 +1385,8 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
             (node.attributes.configured == 'add' ||
             node.attributes.configured == 'active' ||
             node.attributes.configured == 'active_plus' ||
-            node.attributes.configured == 'set'))
+            node.attributes.configured == 'set' ||
+            node.attributes.configured == 'error'))
         {
             btnPanel = f_createConfButton(m_thisObj, node, 'Delete', title)
         }
@@ -1438,7 +1471,7 @@ function f_handleNodeFlags(treeObj)
         var f_eachChild = function(node)
         {
             if(f_isCommitError(node))
-                f_setNodeFlag(node, V_IMG_ERR);
+                f_setNodeFlag(node, V_IMG_ERR, V_ERROR_TITLE);
 
             node.eachChild(f_eachChild);
         }
@@ -1449,7 +1482,7 @@ function f_handleNodeFlags(treeObj)
 /*
  * match the str to fFlags (from flags). if match found, replace to tFlag (to flag)
  */
-function f_setFlag(str, fFlags, tFlag)
+function f_setFlag(str, fFlags, fTitles, tFlag, tTitle)
 {
     var retStr=str;
 
@@ -1458,6 +1491,7 @@ function f_setFlag(str, fFlags, tFlag)
         if(str.indexOf(fFlags[i]) >= 0)
         {
             retStr = str.replace(fFlags[i], tFlag);
+            retStr = retStr.replace(fTitles[i], tTitle);
             break;
         }
     }
@@ -1465,9 +1499,8 @@ function f_setFlag(str, fFlags, tFlag)
     return retStr;
 }
 
-function f_setNodeFlag(node, flag)
+function f_setNodeFlag(node, flag, title)
 {
-
     if(node != undefined)
     {
         /////////////////////////////////////////////
@@ -1476,7 +1509,12 @@ function f_setNodeFlag(node, flag)
         {
             var inner = node.ui.elNode.innerHTML;
             inner = f_setFlag(inner, [V_IMG_ERR, V_IMG_DIRTY, V_IMG_DIRTY_DEL,
-                        V_IMG_DIRTY_ADD, V_IMG_EMPTY], flag);
+                        V_IMG_DIRTY_ADD, V_IMG_DIRTY_ACT, V_IMG_DIRTY_DEACT,
+                        V_IMG_DIRTY_ADD_ACT, V_IMG_DIRTY_ADD_DEACT,
+                        V_IMG_EMPTY], [V_ERROR_TITLE, V_DF_TITLE, V_DF_TITLE_DEL,
+                        V_DF_TITLE_ADD, V_DF_TITLE_ACT, V_DF_TITLE_DEACT,
+                        V_DF_TITLE_ADD_ACT, V_DF_TITLE_ADD_DEACT,
+                        V_EMPTY_TITLE], flag, title);
             inner = inner.replace('="v-node-nocfg"', '="v-node-set"');
             node.ui.elNode.innerHTML = inner;
         }

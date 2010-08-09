@@ -9,7 +9,7 @@
 
 function f_sendSpecialCliCommand(cmd, segmentId, cb)
 {
-    var opCmdCb = function(options, success, response)
+    var spcCmdCb = function(options, success, response)
     {
         if(!f_isResponseOK(response))
             return;
@@ -33,22 +33,10 @@ function f_sendSpecialCliCommand(cmd, segmentId, cb)
     }
 
     /* send request */
-    var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-               + "<vyatta><command><id>" + f_getUserLoginedID()
-               + "</id>\n"
-               + "<statement mode='op'>"
-               + (segmentId == undefined? cmd : segmentId)
-               + "</statement>\n"
-               + "</command></vyatta>\n";
+    var xmlstr = "<statement mode='op'>" + (segmentId == undefined? cmd : segmentId)
+               + "</statement></command></vyatta>\n";
 
-    var conn = new Ext.data.Connection({});
-    conn.request(
-    {
-        url: '/cgi-bin/webgui-wrap',
-        method: 'POST',
-        xmlData: xmlstr,
-        callback: opCmdCb
-    });
+    F_sentRequest(xmlstr, spcCmdCb);
 }
 
 /**
@@ -203,8 +191,6 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         }
         else
         {   // login session maybe timeout
-            f_promptUserNotLoginMessage();
-            f_userLogout(true, g_baseSystem.m_homePage);
             return;
         }
 
@@ -217,14 +203,8 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
         f_hideSendWaitMessage();
     }
 
-    var sid = f_getUserLoginedID();
-    f_saveUserLoginId(sid);
-
     /* send request */
-    var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-               + "<vyatta><command><id>" + sid + "</id>\n"
-               + "<statement mode='op'>" + sendStr + "</statement>\n"
-               + "</command></vyatta>\n";
+    var xmlstr = "<statement mode='op'>" + sendStr + "</statement></command></vyatta>\n";
 
 
     //////////////////////////////////////////////////////////////////
@@ -232,15 +212,7 @@ function f_sendOperationCliCommand(node, callbackObj, clear, prevXMLStr,
     if(prevXMLStr != undefined && prevXMLStr == xmlstr)
         return xmlstr;
 
-    var conn = new Ext.data.Connection({});
-    conn.request(
-    {
-        url: '/cgi-bin/webgui-wrap',
-        method: 'POST',
-        xmlData: xmlstr,
-        callback: opCmdCb
-    });
-
+    F_sentRequest(xmlstr, opCmdCb);
     return xmlstr;
 }
 
@@ -265,11 +237,41 @@ function f_handleConfFormCommandDone(treeObj, node)
         f_hideSendWaitMessage();
         treeObj.m_isCommitAvailable = true;
 
-        var tree = treeObj.m_tree;
+        for(var i=0; i<g_cliCmdObj.m_fdSent.length; i++)
+        {
+            var sentNode = g_cliCmdObj.m_fdSent[i].m_node;
+            sentNode.attributes.configured = sentNode.attributes.configured_;
+            f_handleFormIndicators(sentNode, g_cliCmdObj.m_fdSent[i].m_parentNode);
+        }
 
+        ///////////////////////////////////////////
+        // handler errors to display flag indicators & prompt user a err dialog
+        var form = treeObj.m_parent.m_editorPanel.m_formPanel;
+        form.m_formError = false;
+        if(g_cliCmdObj.m_errors.length > 0)
+        {
+            var err="";
+            form.m_formError = true;
+            
+            for(var i=0; i<g_cliCmdObj.m_errors.length; i++)
+            {
+                err += g_cliCmdObj.m_errors[i][0];
+                var fp = form.items.item(g_cliCmdObj.m_errors[i][1]);
+                fp.m_node.attributes.configured = 'error';
+                f_handleFieldError(fp.m_node);
+            }
+            f_promptErrorMessage('Changing configuration...', err);
+        }
+
+        var tree = treeObj.m_tree;
         var onReloadHandler = function()
         {
-            node.attributes.configured = 'set';
+            if(form.m_formError)
+                node.attributes.configured = 'error';
+            else
+                node.attributes.configured = 'set';
+            
+            f_setCreatedParentNodeDisable(node, node.parentNode);
             treeObj.f_HandleNodeConfigClick(node, null, undefined);
 
             //////////////////////////////////////////////
@@ -283,32 +285,13 @@ function f_handleConfFormCommandDone(treeObj, node)
                 window.setTimeout(onLoadChildNode, 100);
             }
 
-            f_handlePropagateParentNodes(node);
+            f_handlePropagateParentNodes(node, true);
             treeObj.m_isCommitAvailable = true;
             treeObj.m_parent.f_onTreeRenderer(treeObj);
             tree.un('load', onReloadHandler);
         }
         tree.on('load', onReloadHandler);
         node.reload();
-
-        for(var i=0; i<g_cliCmdObj.m_fdSent.length; i++)
-            f_handleFormIndicators(g_cliCmdObj.m_fdSent[i].m_node,
-                                    g_cliCmdObj.m_fdSent[i].m_parentNode);
-
-        ///////////////////////////////////////////
-        // handler errors to display flag indicators & prompt user a err dialog
-        if(g_cliCmdObj.m_errors.length > 0)
-        {
-            var err="";
-            var form = treeObj.m_parent.m_editorPanel.m_formPanel;
-            for(var i=0; i<g_cliCmdObj.m_errors.length; i++)
-            {
-                err += g_cliCmdObj.m_errors[i][0];
-                var fp = form.items.item(g_cliCmdObj.m_errors[i][1]);
-                f_handleFieldError(fp.m_node);
-            }
-            f_promptErrorMessage('Changing configuration...', err);
-        }
     }
 }
 
@@ -319,7 +302,73 @@ function f_prepareConfFormCommandSend(treeObj)
     g_cliCmdObj.m_errors = [];
     g_cliCmdObj.m_fdSent = [];
 
-    f_sendConfFormCommand(treeObj);
+    if(f_validateInput(treeObj))
+    {
+        f_sendConfFormCommand(treeObj);
+        return true;
+    }
+
+    return false;
+}
+
+function f_validateInput(treeObj)
+{
+    var form = treeObj.m_parent.m_editorPanel.m_formPanel;
+
+    for(var i=1; i<form.items.length; i++)
+    {
+        var fp = form.items.item(i);
+        if(fp.items == null) continue;
+
+        var reqFd = false;
+        var fd = fp.items.item(V_IF_INDEX_INPUT);
+        var label = fp.items.item(V_IF_INDEX_LABEL);
+        if(label != null && label.html != null)
+        {
+            label = label.html;
+            reqFd = label.indexOf('title="required field') > 0 ? true:false;
+            label = label.replace(' <img title="required field" src="images/ico_required.PNG"/>', "");
+            label = label.replace(":", " ");
+        }
+        var type = fd.getXType();
+        if(type == 'panel')
+        {
+            fd = fd.m_fd;
+            type = fd.getXType();
+        }
+
+        var value = "";
+        switch(type)
+        {
+            case 'textfield':
+            case 'numberfield':
+                value = fd.getValue();
+            break;
+            case 'combo':
+                value = fd.getValue();
+            break;
+            case 'editorgrid':
+                if(!fp.m_store.m_isChecker)
+                    value = f_getEditGridValues(fp.m_store);
+                else
+                    value = f_getEditGridCheckerValues(fp);
+
+                value = value.length == 0 ? '':'dummy';
+            break;
+            case 'checkbox':
+                value =  fd.getValue();
+                value = value == undefined ? '':'dummy';
+        }
+
+        if((value == undefined || value.length == 0) && reqFd)
+        {
+            f_promptErrorMessage("Set configuration",
+                label + " is not specified. This field is required. Please enter or select a value.", Ext.MessageBox.ERROR);
+            return false;
+        }
+    }
+
+    return true;
 }
 
 // DO NOT call this function before call f_prepareConfFormCommandSend()
@@ -359,10 +408,11 @@ function f_sendConfFormCommand(treeObj)
     var value = '';
     if(selNode.attributes.multi != undefined)
         label = '';
-    else
+    else if(label != undefined && label.html != undefined)
       label = label.html.replace(":", " ");
 
-    label = label.replace(' <img title="required field" src="images/ico_required.PNG"/>', "");
+    if(label != undefined)
+        label = label.replace(' <img title="required field" src="images/ico_required.PNG"/>', "");
     
     ///////////////////////////////////////
     // get field values
@@ -372,12 +422,12 @@ function f_sendConfFormCommand(treeObj)
         case 'textfield':
             value = fd.getValue();
             value = (value != undefined && value.indexOf != null &&
-                        value.indexOf(" ") > 0) ? "'"+value+"'" : value;
+                        value.indexOf(" ") >= 0) ? "'"+value+"'" : value;
             treeObj.m_fdSentVal = value;
 
             /////////////////////////////////////
             // skip this node
-            if(fd.getOriginalValue() == value)
+            if(fd.getOriginalValue() == value && fp.m_node.attributes.configured != 'error')
             {
                 f_sendConfFormCommand(treeObj);
                 return;
@@ -397,7 +447,7 @@ function f_sendConfFormCommand(treeObj)
 
             /////////////////////////////////////
             // skip this node
-            if(fd.getOriginalValue() == value)
+            if(fd.getOriginalValue() == value && fp.m_node.attributes.configured != 'error')
             {
                 f_sendConfFormCommand(treeObj);
                 return;
@@ -458,15 +508,10 @@ function f_sendConfFormCommand(treeObj)
             break;
     }
 
-    var sid = f_getUserLoginedID();
-    f_saveUserLoginId(sid);
-
     ///////////////////////////////////
     // construction cmd xml string
-    var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                   + "<vyatta><command><id>" + sid + "</id>\n";
-
-    for(var i = 0; i < cmds.length; i++)
+    var xmlstr = "";
+    for(var i=0; i<cmds.length; i++)
         xmlstr += "<statement mode='conf'>" + cmds[i] + "</statement>\n";
     xmlstr += "</command></vyatta>\n";
 
@@ -479,14 +524,7 @@ function f_sendConfFormCommand(treeObj)
     g_cliCmdObj.m_segmentId = undefined;
     treeObj.m_numSent++;
 
-    var conn = new Ext.data.Connection({});
-    conn.request(
-    {
-        url: '/cgi-bin/webgui-wrap',
-        method: 'POST',
-        xmlData: xmlstr,
-        callback: confCmdCb
-    });
+    F_sentRequest(xmlstr, confCmdCb);
 }
 
 function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
@@ -530,10 +568,8 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
 
         var tree = tObj.m_tree;
         var selNode = tree.getSelectionModel().getSelectedNode();
-        if(selNode == undefined)
-            selNode = tree.getRootNode();
+        if(selNode == undefined) selNode = tree.getRootNode();
         var selPath = selNode.getPath('text');
-
 
         /////////////////////////////////////
         if(cmds[0].indexOf('load') == 0)
@@ -557,7 +593,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
             }
             tree.on('load', onReloadHandler);
             tree.root.reload();
-            f_handlePropagateParentNodes(selNode);
+            f_handlePropagateParentNodes(selNode, true);
         }
         else if(cmds[0].indexOf('commit') >= 0)
         {
@@ -566,7 +602,7 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
                 tObj.m_parent.f_cleanEditorPanel();
                 f_handleNodeExpansion(tObj, selNode, selPath, cmds[0]);
                 tree.un('load', onReloadHandler);
-                f_handlePropagateParentNodes(selNode);
+                f_handlePropagateParentNodes(selNode, true);
             }
             tObj.m_parent.f_resetEditorPanel();
             tObj.m_selNodePath = selPath;//node.parentNode;
@@ -578,7 +614,6 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         else if(cmds[0] == 'show session')
         {
             f_handleToolbarViewCmdResponse(isSuccess[1]);
-            return;
         }
         else  // other things else
         {
@@ -587,26 +622,16 @@ function f_sendConfigCLICommand(cmds, treeObj, node, isCreate)
         }
     } // end of callback
 
-    var sid = f_getUserLoginedID();
-    f_saveUserLoginId(sid);
     if(node != undefined)
         f_updateCommitErrors(node, node.parentNode);
-    var xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                   + "<vyatta><command><id>" + sid + "</id>\n";
 
+    var xmlstr = "";
     for(var i = 0; i < cmds.length; i++)
         xmlstr += "<statement mode='conf'>" + cmds[i] + "</statement>\n";
     xmlstr += "</command></vyatta>\n";
 
     g_cliCmdObj.m_segmentId = undefined;
-    var conn = new Ext.data.Connection({});
-    conn.request(
-    {
-        url: '/cgi-bin/webgui-wrap',
-        method: 'POST',
-        xmlData: xmlstr,
-        callback: sendCommandCliCb
-    });
+    F_sentRequest(xmlstr, sendCommandCliCb);
 }
 
 function f_isResponseOK(response)
@@ -648,7 +673,7 @@ function f_handleNodeExpansion2(treeObj, selPath, node, doNotClear)
         tree.selectPath(selPath, 'text', function(success, sel)
         {
             var nnode = tree.getSelectionModel().getSelectedNode();
-            treeObj.f_HandleNodeConfigClick(nnode, null, false);
+            treeObj.f_HandleNodeConfigClick(nnode, null, false, true);
         });
 
         narg.un('expand', handler);
@@ -747,6 +772,16 @@ function f_handleNodeExpansion(treeObj, selNode, selPath, cmds)
     p.expand();
 }
 
+// set the new created node's parentNode disable attributes
+function f_setCreatedParentNodeDisable(node, pNode)
+{
+    if(pNode != null && pNode.attributes.disable == null)
+        f_setCreatedParentNodeDisable(pNode, pNode.parentNode);
+
+    if(pNode != null && node.attributes.disableRoot != 'true')
+        node.attributes.disable = pNode.attributes.disable;
+}
+
 function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCreate)
 {
     if(node.parentNode == undefined)
@@ -765,13 +800,14 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
         // it as 'set' here to sync with server
         //if(node.attributes.configured == undefined)
         node.attributes.configured = 'set'
+        f_setCreatedParentNodeDisable(node, p);
 
         /*
          * new we need to walk up the tree to flag the yellow cir.
          * Anything below the parent node automatically took care
          * by the server.
          */
-        f_handlePropagateParentNodes(node);
+        f_handlePropagateParentNodes(node, true);
         if(selNode != undefined && typeof selNode.reload == 'function')
             selNode.reload();
 
@@ -814,59 +850,145 @@ function f_handleParentNodeExpansion(treeObj, node, selNode, selPath, cmds, isCr
 
         selPath = nnode.getPath('text');
         nnode.reload();
-        f_handlePropagateParentNodes(nnode);
+        f_handlePropagateParentNodes(nnode, true);
         treeObj.m_parent.f_onTreeRenderer(treeObj);
+    }
+    else if(cmds[0].indexOf("deactivate", 0) >= 0 )
+    {
+        node.reload();
+        f_setNodeActDeact(node, 'disable_local');
+        f_handlePropagateParentNodes(node, true);
+        treeObj.m_parent.f_onTreeRenderer(treeObj);
+
+        if(node.parentNode.text == 'Configuration')
+            treeObj.f_HandleNodeConfigClick(node, null, false, true);
+    }
+    else if(cmds[0].indexOf("activate", 0) >= 0 )
+    {
+        node.reload();
+        f_setNodeActDeact(node, 'enable_local');
+        f_handlePropagateParentNodes(node, true);
+        treeObj.m_parent.f_onTreeRenderer(treeObj);
+
+        if(node.parentNode.text == 'Configuration')
+            treeObj.f_HandleNodeConfigClick(node, null, false, true);
     }
 
     f_handleNodeExpansion2(treeObj, selPath, p, doNotClear);
 }
 
-function f_handlePropagateParentNodes(node)
+function f_setNodeActDeact(node, val)
+{
+    var attr = node.attributes;
+    if(attr.prevDisableState == null)
+    {
+        node.attributes.prevDisableState = attr.disable;
+        node.attributes.disable = val;
+    }
+    else
+    {
+        node.attributes.disable = attr.prevDisableState;
+        node.attributes.prevDisableState = null;
+    }
+    node.attributes.disableRoot = 'true';
+}
+
+function f_handlePropagateParentNodes(node, isSetting)
 {
     var n = node;
+    var i= 0;
 
     while(n != undefined)
     {
         /////////////////////////////////////////////
         // mark node as dirty.
-        if(n.ui.elNode != undefined)
+        if(n.ui != null && n.ui.elNode != null)
         {
             var inner = n.ui.elNode.innerHTML;
 
             if(inner.indexOf(V_DIRTY_FLAG) < 0)
             {
                 var flag = V_IMG_EMPTY;
+                var title= V_EMPTY_TITLE;
                 switch(getNodeStyleImage(n, true))
                 {
                     case V_DIRTY_FLAG_ADD:
                         flag = V_IMG_DIRTY_ADD;
+                        title = V_DF_TITLE_ADD;
                         break;
                     case V_DIRTY_FLAG_DEL:
                         flag = V_IMG_DIRTY_DEL;
+                        title = V_DF_TITLE_DEL;
                         break;
                     case V_DIRTY_FLAG:
                         flag = V_IMG_DIRTY;
+                        title = V_DF_TITLE;
                         break;
                     case V_ERROR_FLAG:
                         flag = V_IMG_ERR;
+                        title = V_ERROR_TITLE;
+                        break;
+                    case V_DIRTY_FLAG_ACT:
+                        flag = V_IMG_DIRTY_ACT;
+                        title = V_DF_TITLE_ACT;
+                        break;
+                    case V_DIRTY_FLAG_DEACT:
+                        flag = V_IMG_DIRTY_DEACT;
+                        title = V_DF_TITLE_DEACT;
+                        break;
+                    case V_DIRTY_FLAG_ADD_ACT:
+                        flag = V_IMG_DIRTY_ADD_ACT;
+                        title = V_DF_TITLE_ADD_ACT;
+                        break;
+                    case V_DIRTY_FLAG_ADD_DEACT:
+                        flag = V_IMG_DIRTY_ADD_DEACT;
+                        title = V_DF_TITLE_ADD_DEACT;
                         break;
                 }
-                f_setNodeFlag(n, flag);
+                f_setNodeFlag(n, flag, title);
             }
         }
 
-        var prev = n;
-        n.attributes.configured = 'set';
+        if(i == 0 && isSetting && node.attributes.configured != 'error')
+            f_setNodeAttrConfigured(node, isSetting);
+
         n = n.parentNode;
+        i++;
 
         ////////////////////////////////////////////////
-        // if child is dirty, flag parent as dirty as well.
-        if(n != undefined && n.attributes.configured != undefined &&
-            n.attributes.configured == 'active')
-            n.attributes.configured = 'active_plus';
-        else if(n != undefined && n.attributes.configured == undefined)
-            n.attributes.configured = 'set';
+        // if child is dirty, flag parent dirty as well.
+        if(n != undefined)
+        {
+            if(node.attributes.configured == 'error')
+            {
+                if(n.attributes.configured != 'error')
+                {
+                    n.attributes.configured_ = n.attributes.configured;
+                    n.attributes.configured = 'error';
+                }
+            }
+            else
+                f_setNodeAttrConfigured(n, isSetting);
+        }
     }
+}
+
+function f_setNodeAttrConfigured(node, isSetting)
+{
+    var attr = node.attributes;
+    var nConf = attr.configured_;
+
+    if(isSetting)
+    {
+        if((nConf != undefined && nConf == 'active') || nConf == 'active_plus')
+            attr.configured = 'active_plus';
+        else if(nConf == undefined || nConf == 'set')
+            attr.configured = 'set';
+
+        attr.configured_ = attr.configured;
+    }
+    else
+        attr.configured = nConf;
 }
 
 function f_parseServerCallback(xmlRoot, treeMode /* conf, operator */)
@@ -914,7 +1036,7 @@ function f_parseServerCallback(xmlRoot, treeMode /* conf, operator */)
             case "6": // input error
                 success = false;
                 f_parseCommitErrors(msg);
-                msg = f_replace(msg, "\r\n", "<br>");
+                msg = "<b>Error:</b><br><br>" + f_replace(msg, "\r\n", "<br>");
                 break;
             case "0":
                 success = true;
@@ -946,11 +1068,10 @@ function f_parseServerCallback(xmlRoot, treeMode /* conf, operator */)
 
         }
 
-        if(msg == 'UNKNOWN')
-            msg = '';
+        if(msg == 'UNKNOWN') msg = '';
     }
 
-    return [ success, msg, segment];
+    return [success, msg, segment];
 }
 
 function f_parseCommitErrors(err)

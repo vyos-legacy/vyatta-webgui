@@ -25,7 +25,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
     f_initPanelDataType: function(parentContainer, tabName)
     {
         this.m_helpIndex = 3;
-        this.m_viewerValues = [ 'Key Components', 'Completed Hierarchical']
+        //this.m_viewerValues = ['Key Components', 'Completed Hierarchical']
 
         if(parentContainer != undefined)
             this.m_container = parentContainer;
@@ -94,6 +94,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             this.m_parentPanel.hide();
     },
 
+/*
     f_showLeftPanel: function(f)
     {
         if(f.getValue() == 'Completed Hierarchical')
@@ -113,7 +114,7 @@ VYATTA_panels = Ext.extend(Ext.util.Observable,
             this.m_compTreeObj.m_tree.show();
             this.f_resizePanels();
         }
-    },
+    },*/
 
     f_updatePanels: function()
     {
@@ -396,6 +397,20 @@ function f_createFieldDirtyIndicatorPanel(node)
     return p;
 }
 
+function f_setFormDirty(treeObj, isDirty)
+{
+    treeObj.m_parent.m_editorPanel.m_isDirty = isDirty;
+
+    var btn = treeObj.m_parent.m_editorPanel.m_formPanel.m_subBtn[0];
+    if(btn != null && btn.enable != null)
+    {
+        if(isDirty)
+            btn.enable();
+        else
+            btn.disable();
+    }
+}
+
 function f_handleFieldTab(field)
 {
     if(field.m_nextFd != undefined && field.m_nextFd.getXType() == 'editorgrid')
@@ -490,11 +505,7 @@ function f_handleGridLostFocus(focus, isFromGrid)
 function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, node, mode)
 {
     var oldVal = value != undefined ? value : node.attributes.defaultVal;
-
-    var onBlurHandler = function()
-    {
-        callback(field);
-    }
+    var onBlurHandler = function() { callback(field); }
 
     var field = new Ext.form.TextField(
     {
@@ -507,17 +518,15 @@ function f_createTextField(treeObj, value, labelStr, helpStr, width, callback, n
     });
     field.on('focus', function(f){ f_handleGridLostFocus(f, false); });
     field.m_mode = mode;
-    field.getOriginalValue = function()
-    { return oldVal == undefined ? "" : oldVal; };
-    field.setOriginalValue = function(val)
-    { oldVal = val; }
+    field.getOriginalValue = function(){ return oldVal == undefined ? "" : oldVal; };
+    field.setOriginalValue = function(val){ oldVal = val; }
 
     if(callback != undefined)
     {
         var keyupPressHandler = function(field, e)
         {
             f_setFormDirty(treeObj, true);
-
+            
             if(e.getKey() == 9)
                 f_handleFieldTab(field);
 
@@ -578,10 +587,8 @@ function f_createCombobox(values, ival, emptyText, labelStr, width, helpStr,
         value: oldiVal,
         hideParent: true
     });
-    field.getOriginalValue = function()
-    { return oldiVal == undefined ? "" : oldiVal; };
-    field.setOriginalValue = function(val)
-    { oldiVal = val; }
+    field.getOriginalValue = function() { return oldiVal == undefined ? "" : oldiVal; };
+    field.setOriginalValue = function(val) { oldiVal = val; }
 
     var onCollapseHandler = function()
     {
@@ -673,10 +680,8 @@ function f_createCheckbox(value, node, helpStr, width, callback, treeObj)
         ,onClick: onClickHandler
         ,bodyStyle: 'padding:0px 0px 3px 0px'
     });
-    field.getOriginalValue = function()
-    { return chkOrigVal };
-    field.setOriginalValue = function(val)
-    { chkOrigVal = val; }
+    field.getOriginalValue = function() { return chkOrigVal };
+    field.setOriginalValue = function(val) { chkOrigVal = val; }
     
     var wrapPanel = new Ext.Panel(
     {
@@ -831,21 +836,18 @@ function f_createToolbar(panelObj)
           helpTipButton,
           '-',
           panelObj.m_viewBtn = f_createToolbarButton('v_view_button',
-                'view', panelObj.m_treeObj, 'Show configuration file'),
+                'view', panelObj.m_treeObj, 'Display the current system configuration file.'),
           panelObj.m_loadBtn = f_createToolbarButton('v_load_button',
-                'load', panelObj.m_treeObj, 'Load configuration file'),
+                'load', panelObj.m_treeObj, 'Load a saved configuration file.'),
           panelObj.m_saveBtn = f_createToolbarButton('v_save_button',
-                'save', panelObj.m_treeObj, 'Save configuration to file'),
+                'save', panelObj.m_treeObj, 'Save current configuration to file.'),
           '-',
-          //panelObj.m_undoBtn = f_createToolbarButton('v_undo_button', 'undo', panelObj.m_treeObj),
-          //panelObj.m_redoBtn = f_createToolbarButton('v_redo_button', 'redo', panelObj.m_treeObj),
-          //'-',
           panelObj.m_discardBtn = f_createToolbarButton('v_discard_button',
                               'discard', panelObj.m_treeObj,
-                              'Discard configuration changes'),
+                              'Discard configuration changes that were made since the last load or commit.'),
           panelObj.m_commitBtn = f_createToolbarButton('v_commit_button',
                                 'commit', panelObj.m_treeObj,
-                                'Commit configuration changes')
+                                'Commit (makes active) configuration changes that were made since the last load or commit.')
         ] :
         [ '->',
           helpTipButton
@@ -1115,7 +1117,6 @@ function f_showFileChooserDialog(command, values, treeObj)
     txtField = new Ext.form.TextField(
     {
       fieldLabel: spaces + 'Filename'
-      //,labelStyle: 'width:125px;'
       ,labelAlign: 'left'
       ,name: 'remote'
       ,labelSeparator: ':'
@@ -1502,7 +1503,7 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
         for(var i=0; i < enumValues.length; i++)
         {
             if(enumValues[i] == '*' && node.text == 'address') continue;
-
+            
             var chk = f_isEditGridValueCheck(enumValues[i], values)
             var v = new record({ value: enumValues[i],  checker: chk });
             gridStore.add(v);
@@ -1627,7 +1628,7 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
     return p;
 }
 
-function f_createConfEditorTitle(node, btnPanel)
+function f_createConfEditorTitle(treeObj, node, btnPanel)
 {
     var titleName = '';
 
@@ -1650,6 +1651,14 @@ function f_createConfEditorTitle(node, btnPanel)
         }
     }
 
+    var btns = [];
+    //if(f_okToAddActivateBtn(treeObj, node))
+    //    btns.push(f_createConfButton(treeObj, node, 'Activate'));
+    //if(f_okToAddDeactivateBtn(treeObj, node))
+    //    btns.push(f_createConfButton(treeObj, node, 'Deactivate'));
+    if(btnPanel != undefined) btns.push(btnPanel[0]);
+    if(btns.length == 0) btns = undefined;
+    
     var title  = new Ext.Panel(
     {
         html: '<div valian="center" id="v-header-font"><b>' +
@@ -1659,10 +1668,86 @@ function f_createConfEditorTitle(node, btnPanel)
         ,border: false
         ,bodyStyle: 'padding: 10px 5px 5px 5px'
     });
-    var items = btnPanel != null ? [title, "->", btnPanel] : [title];
+    var items = btnPanel != null ? [title, "->", btns] : [title];
     items.m_title = titleName;
 
     return items;
+}
+
+function f_okToAddActivateBtn(treeObj, node)
+{
+    var ok = false;
+
+    switch(node.attributes.configured)
+    {
+        case 'set':
+        case 'active':
+        case 'active_plus':
+        case 'error':
+            ok = true;
+
+            var dis = node.attributes.disable;
+            if(dis == undefined || dis.indexOf('enable') >= 0)// || dis.indexOf("_local") > 0)
+                ok = false;
+            else
+            {
+                ///////////////////////////////////////
+                // if its ancestor initiated the deactivation,
+                // it shouldn't allow to activate itself
+                var n = node.parentNode;
+                while(n != undefined)
+                {
+                    if(n.attributes != undefined && n.attributes.disable != null &&
+                        (n.attributes.disable == 'disable' ||
+                        n.attributes.disable.indexOf('_local') > 0))
+                    {
+                        ok = false;
+                        break;
+                    }
+                    n = n.parentNode;
+                }
+            }
+    }
+
+    return ok;
+}
+
+function f_okToAddDeactivateBtn(treeObj, node)
+{
+    var ok = false;
+
+    switch(node.attributes.configured)
+    {
+        case 'set':
+        case 'active':
+        case 'active_plus':
+        case 'error':
+            ok = true;
+
+            var dis = node.attributes.disable;
+            if(dis != undefined && dis.indexOf('disable') >= 0)// ||
+                //(dis != undefined && dis.indexOf("_local") > 0))
+                ok = false;
+            else
+            {
+                ///////////////////////////////////////
+                // if its ancestor initiated the activation,
+                // it shouldn't allow to deactivate itself
+                var n = node.parentNode;
+                while(n != undefined)
+                {
+                    if(n.attributes.disable != undefined &&
+                        (n.attributes.disable.indexOf("_local") > 0))
+                    {
+                        ok = false;
+                        break;
+                    }
+                    n = n.parentNode;
+                }
+            }
+    }
+
+    return ok;
 }
 
 function f_createOperEditorTitle(title)
@@ -1677,20 +1762,6 @@ function f_createOperEditorTitle(title)
     return panel;
 }
 
-function f_setFormDirty(treeObj, isDirty)
-{
-    treeObj.m_parent.m_editorPanel.m_isDirty = isDirty;
-
-    var btn = treeObj.m_parent.m_editorPanel.m_formPanel.m_subBtn[0];
-    if(btn != null && btn.enable != null)
-    {
-        if(isDirty)
-            btn.enable();
-        else
-            btn.disable();
-    }
-}
-
 function f_createConfSubButton(treeObj)
 {
     var buttons = [];
@@ -1701,13 +1772,13 @@ function f_createConfSubButton(treeObj)
         id: btn_id
         ,disabled: true
         ,text: 'Set'
-        ,tooltip: 'Set configuration'
+        ,tooltip: 'Set modified fields'
         ,height: 20
         ,minWidth: 60
         ,handler: function()
         {
-            treeObj.m_parent.m_editorPanel.m_isDirty = false;
-            f_prepareConfFormCommandSend(treeObj);
+            if(f_prepareConfFormCommandSend(treeObj))
+                f_setFormDirty(treeObj, false);
         }
     });
 
@@ -1717,7 +1788,8 @@ function f_createConfSubButton(treeObj)
         ,bodyStyle: 'padding: 0px'
         ,border: false
         ,height: 0
-        ,buttonAlign: 'right'
+        ,buttonAlign: 'right',
+        width: 70
     });
 
     var panel = new Ext.Panel(
@@ -1726,7 +1798,7 @@ function f_createConfSubButton(treeObj)
         ,border: false
         ,bodyStyle: 'padding: 0px'
         ,height: 0
-        ,width: 550
+        ,width: 480
     });
     panel.m_buttons = buttons;
     panel.m_isSubmitBtn = true;
@@ -1750,6 +1822,16 @@ function f_createConfButton(treeObj, node, btnText, title)
         isDelete = true;
         iconCls = 'v-create-button';
     }
+    else if(btnText == 'Activate')
+    {
+        cmd = 'activate ';
+        iconCls = 'v-activate-button';
+    }
+    else if(btnText == 'Deactivate')
+    {
+        cmd = 'deactivate ';
+        iconCls = 'v-deactivate-button';
+    }
 
     button = new Ext.Button(
     {
@@ -1760,7 +1842,7 @@ function f_createConfButton(treeObj, node, btnText, title)
         ,tooltip: btnText + ' <b>"' + node.text + '"</b> configuration node'
         ,handler: function()
         {
-            if(node.text == 'https')
+            if(node.text == 'https' && cmd == 'delete ')
             {
                 var cb = function send(btn)
                 {
@@ -1770,7 +1852,7 @@ function f_createConfButton(treeObj, node, btnText, title)
                 };
 
                 f_yesNoMessageBox('Delete',
-                    'Delete this node will disable the Web-GUI. Are you sure you wish continue?', cb);
+                    'Delete this node will disable the Web-GUI. Are you sure you wish to continue?', cb);
             }
             else
                 f_sendConfigCLICommand([cmd + treeObj.f_getNodePathStr(node) ],
@@ -2028,7 +2110,7 @@ function f_handleFormIndicators(node, parentNode)
 
     /////////////////////////
     // handle field indicator
-    var panelFlag = f_getNodeIndicatorFlag(node, true);
+    var panelFlag = f_getNodeIndicatorFlag(node, true, parentNode);
     panelFlag = panelFlag == V_EMPTY_FLAG ? V_DIRTY_FLAG : panelFlag;
     switch(type)
     {
@@ -2079,55 +2161,66 @@ function f_handleFieldError(node)
 
 function f_updateDirtyIndicatorPanel(field, errType)
 {
-    var err = V_ERROR_FLAG;
-    if(errType.indexOf('statusDown') > 0)
-        err = 'error';
-    else if(errType.indexOf('statusUnknown') > 0)
-        err = 'mod';
-    else if(errType.indexOf('statusPlus') > 0)
-        err = 'add';
-    else if(errType.indexOf('statusMinus') > 0)
-        err = 'del';
-    else if(errType.indexOf('empty') > 0)
-        err = 'empty';
-
     if(field.el != undefined)
     {
         var html = field.el.dom.innerHTML;
-        switch(err)
-        {
-            case 'error':
-                html = f_createFlagIndicator(html, 'statusDown');
-                break;
-            case 'mod':
-                html = f_createFlagIndicator(html, 'statusUnknown');
-                break;
-            case 'add':
-                html = f_createFlagIndicator(html, 'statusPlus');
-                break;
-            case 'del':
-                html = f_createFlagIndicator(html, 'statusMinus');
-                break;
-            case 'empty':
-                html = f_createFlagIndicator(html, 'empty');
-        }
 
+        if(errType.indexOf('statusDown') > 0)
+            html = f_createFlagIndicator(html, 'statusDown', V_ERROR_TITLE);
+        else if(errType.indexOf('statusUnknown') > 0)
+            html = f_createFlagIndicator(html, 'statusUnknown', V_DF_TITLE);
+        else if(errType.indexOf('statusPlus') > 0)
+            html = f_createFlagIndicator(html, 'statusPlus', V_DF_TITLE_ADD);
+        else if(errType.indexOf('statusMinus') > 0)
+            html = f_createFlagIndicator(html, 'statusMinus', V_DF_TITLE_DEL);
+        else if(errType.indexOf('statusAddDeact') > 0)
+            html = f_createFlagIndicator(html, 'statusAddDeact', V_DF_TITLE_ADD_DEACT);
+        else if(errType.indexOf('statusAddAct') > 0)
+            html = f_createFlagIndicator(html, 'statusAddAct', V_DF_TITLE_ADD_ACT);
+        else
+            html = f_createFlagIndicator(html, 'empty', V_EMPTY_TITLE);
+        
         field.el.dom.innerHTML = html;
     }
 }
 
-function f_createFlagIndicator(html, flag)
+function f_createFlagIndicator(html, flag, title)
 {
     if(html.indexOf('empty') > 0 && flag != 'empty')
+    {
         html = f_replace(html, 'empty', flag);
+        html = html.replace(V_EMPTY_TITLE, title);
+    }
     else if(html.indexOf('statusUnknown') > 0 && flag != 'statusUnknown')
+    {
         html = f_replace(html, 'statusUnknown', flag);
+        html = html.replace(V_DF_TITLE, title);
+    }
     else if(html.indexOf('statusPlus') > 0 && flag != 'statusPlus')
+    {
         html = f_replace(html, 'statusPlus', flag);
+        html = html.replace(V_DF_TITLE_ADD, title);
+    }
     else if(html.indexOf('statusMinus') > 0 && flag != 'statusMinus')
+    {
         html = f_replace(html, 'statusMinus', flag);
+        html = html.replace(V_DF_TITLE_DEL, title);
+    }
     else if(html.indexOf('statusDown') > 0 && flag != 'statusDown')
+    {
         html = f_replace(html, 'statusDown', flag);
+        html = html.replace(V_ERROR_TITLE, title);
+    }
+    else if(html.indexOf('statusAddDeact') > 0 && flag != 'statusAddDeact')
+    {
+        html = f_replace(html, 'statusAddDeact', flag);
+        html = html.replace(V_DF_TITLE_ADD_DEACT, title);
+    }
+    else if(html.indexOf('statusAddAct') > 0 && flag != 'statusAddAct')
+    {
+        html = f_replace(html, 'statusAddAct');
+        html = html.replace(V_DF_TITLE_ADD_ACT, title);
+    }
 
     return html;
 }

@@ -73,11 +73,10 @@ function f_showTab(tabIndex)
                                   g_baseSystem.m_tabNames[tabIndex]);
         g_baseSystem.m_tabObjects[tabIndex].f_initPanelDataType();
         g_baseSystem.m_tabObjects[tabIndex].f_initLayout();
+        f_handleOnBodyPanelResize(tabIndex);
     }
     else
         g_baseSystem.m_tabObjects[tabIndex].f_showPanel(true);
-
-    f_handleOnBodyPanelResize(tabIndex);
 }
 
 /////////////////////////////////////////////////////
@@ -139,7 +138,7 @@ function f_startViewPort()
                 function() {f_handleMainFramePanelResize()}}});
 
     f_handleMainFramePanelResize();
-    f_clockTicking();
+    //f_clockTicking();
    //m_clock.render(document.getElementById('v_footer_clock'));
 }
 

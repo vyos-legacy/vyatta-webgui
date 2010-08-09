@@ -14,6 +14,27 @@ MyLabel = Ext.extend(Ext.form.Label,
     }
 });
 
+function F_sentRequest(data, cb)
+{
+    var sid = f_getUserLoginedID();
+    f_saveUserLoginId(sid);
+
+    ///////////////////////////////////
+    // construction cmd xml string
+    var xmlstr = data.indexOf("<vyatta><auth><user>") > 0 ? data :
+                    "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                    + "<vyatta><command><id>" + sid + "</id>\n" + data;
+
+    var conn = new Ext.data.Connection({});
+
+    conn.request(
+    {
+        url: '/cgi-bin/webgui-wrap',
+        method: 'POST',
+        xmlData: xmlstr,
+        callback: cb
+    });
+}
 /*******************************************************************************
  * set new login expire time
  *******************************************************************************/
@@ -27,8 +48,7 @@ function f_isUserLogined()
 
 function f_saveUserLoginName(name)
 {
-    g_cookie.f_set(V_COOKIES_USER_NAME, name,
-                                g_cookie.m_userNameExpire);
+    g_cookie.f_set(V_COOKIES_USER_NAME, name, g_cookie.m_userNameExpire);
 }
 
 function f_getUserLoginName()
@@ -118,14 +138,7 @@ function f_loginHandler(urlLocation, urlPost, uField, pField)
                    + pwField.getValue()
                    + "]]></pswd></auth></vyatta>\n";
 
-      var conn = new Ext.data.Connection({});
-      conn.request(
-      {
-          url: urlPost,       //'/cgi-bin/webgui-wrap',
-          method: 'POST',
-          xmlData: xmlstr,
-          callback: f_authCb
-      });
+      F_sentRequest(xmlstr, f_authCb);
 }
 
 var f_isLoginFieldsDirty = function(uField, pField)
@@ -157,7 +170,7 @@ function f_createHelpTipsButton(callback)
     {
         handler: callback
         ,text: ' '
-        ,tooltip: 'Show/hide help'
+        ,tooltip: 'Shows or hides embedded help text'
     });
 
     f_updateHelpButtonIcon(helpButton);
@@ -306,8 +319,8 @@ function f_clockTicking()
     {
         run: function()
         {
-            Ext.fly(m_clock.getEl()).update(new
-                        Date().format('j-n-y g:i:s A'));
+            //Ext.fly(m_clock.getEl()).update(new
+              //          Date().format('j-n-y g:i:s A'));
         }
         ,interval: 1000
     });
@@ -426,13 +439,32 @@ function f_yesNoMessageBox(title, msgText, callback)
 
 function f_replace(str, expOld, expNew)
 {
-    if(str != undefined && str.search != undefined)
-    {
-        while(str.search(expOld) > -1)
-            str = str.replace(expOld, expNew);
-    }
+    if(str != undefined && str.replace != undefined)
+        str = str.replace(expOld, expNew, 'g');
 
     return str;
+}
+
+function f_replaceChar(match)
+{
+    if(match == '&apos;')
+        return "\"";
+    else if(match == '\'')
+        return "\"";
+    else if(match == '&lt;' || match == '<')
+        return "(";
+    else if(match == '&#62;' || match == '&gt;' || match == '>')
+        return ")";
+    else if(match == '&#xD;')
+        return ".";
+    else if(match == '&#xA;')
+        return " ";
+    else if(match == '\n')
+        return "";
+    else if(match == '\x20\x20\x20')
+        return " -";
+
+    return "";
 }
 
 function f_getUploadDialog()
@@ -450,12 +482,6 @@ function f_getUploadDialog()
             permitted_extensions: ['xml']
         }
     );
-
-      //dialog.on('uploadsuccess', onUploadSuccess);
-      //dialog.on('uploadsuccess', onUploadSuccess);
-      //dialog.on('filetest', checkFileCount);
-      //dialog.on('resetqueue', function(){fileCount=0;});
-      //dialog.on('fileremove', function(){fileCount--} )
 
     return dialog;
 }
@@ -498,35 +524,101 @@ function f_commitSingleStoreField(store, record, dataIndex, iindex)
     }
 }
 
-function f_getNodeIndicatorFlag(node, isSet)
+function f_getNodeIndicatorFlag(node, isSet, parentNode)
 {
+    var flag = V_EMPTY_FLAG;
+
     if(node != undefined && node.attributes != undefined)
     {
+        var dis = node.attributes.disable;
+        var conf_ = node.attributes.configured_;
+
         switch(node.attributes.configured)
         {
             case undefined:
-                return isSet ? V_DIRTY_FLAG_ADD : V_EMPTY_FLAG;
+                flag = isSet ? V_DIRTY_FLAG_ADD : V_EMPTY_FLAG;
+                break;
             case 'set':
                 if(node.attributes.configured_ == 'active_plus' ||
                     node.attributes.configured_ == 'active')
-                    return V_DIRTY_FLAG;
-                return V_DIRTY_FLAG_ADD;
+                    flag = V_DIRTY_FLAG;
+                else
+                    flag = V_DIRTY_FLAG_ADD;
+                break;
             case 'delete':
-                return V_DIRTY_FLAG_DEL;
+                flag = V_DIRTY_FLAG_DEL;
+                break;
             case 'active_plus':
-                return V_DIRTY_FLAG;
+                flag = V_DIRTY_FLAG;
+                break;
             case 'active':
                 if(node.attributes.configured_ == 'active_plus')
-                    return V_DIRTY_FLAG;
-                return V_EMPTY_FLAG;
+                    flag = V_DIRTY_FLAG;
+                else
+                    flag = V_EMPTY_FLAG;
+                break;
+            case 'error':
+                flag = V_ERROR_FLAG;
+                break;
             default:
                 if(node.attributes.defaultVal != undefined)
-                    return V_DIRTY_FLAG;
-                return V_EMPTY_FLAG;
+                    flag = V_DIRTY_FLAG;
+                else
+                    flag = V_EMPTY_FLAG;
+        }
+
+        /////////////////////////////////
+        // activate/deactive flag
+        if(flag != V_ERROR_FLAG)
+        {
+            var pNode = node.parentNode == null? parentNode:node.parentNode;
+            if(dis != undefined)
+            {
+                if(dis == 'enable_local' && flag == V_DIRTY_FLAG_ADD)
+                    flag = V_DIRTY_FLAG_ADD_ACT;
+                else if(dis == 'disable_local' && flag == V_DIRTY_FLAG_ADD)
+                    flag = V_DIRTY_FLAG_ADD_DEACT;
+                else if(dis == 'enable_local' &&  (conf_ == 'active' || conf_ == 'active_plus'))
+                    flag = V_DIRTY_FLAG_ACT;
+                else if(dis == 'disable_local')
+                    flag = V_DIRTY_FLAG_DEACT;
+                else if(dis == 'enable_local' && flag == V_DIRTY_FLAG_DEL)
+                    flag = V_DIRTY_FLAG_DEL_ACT;
+                else if(dis == 'disable_local' && flag == V_DIRTY_FLAG_DEL)
+                    flag = V_DIRTY_FALG_DEL_DEACT;
+            }
+
+            // handle cases that child nodes in cache and did not got refresh from server
+            if((flag == V_DIRTY_FLAG_ADD_ACT || flag == V_DIRTY_FLAG_ACT ||
+                flag == V_DIRTY_FLAG_ADD_DEACT || flag == V_DIRTY_FLAG_DEACT) &&
+                (node.attributes.disableRoot == null || node.attributes.disableRoot != 'true'))
+            {
+                dis = pNode.attributes.disable;
+                if(pNode != null && (dis == 'disable' || dis == 'enable' || dis == null))
+                {
+                    if(flag == V_DIRTY_FLAG_ADD_ACT || flag == V_DIRTY_FLAG_ADD_DEACT)
+                        flag = V_DIRTY_FLAG_ADD;
+                    else
+                        flag = V_EMPTY_FLAG;
+                }
+            }
+
+            // handle leaf node
+            if((node.attributes.leaf != null || !node.attributes.leaf) && flag == V_DIRTY_FLAG_ADD)
+            {
+                dis = pNode.attributes.disable;
+                if(pNode != null && (dis != null && dis.indexOf('_local') > 0))
+                {
+                    if(dis.indexOf('disable') >= 0)
+                        flag = V_DIRTY_FLAG_ADD_DEACT;
+                    else
+                        flag = V_DIRTY_FLAG_ADD_ACT;
+                }
+            }
         }
     }
 
-    return V_EMPTY_FLAG;
+    return flag;
 }
 
 function f_hideSendWaitMessage()

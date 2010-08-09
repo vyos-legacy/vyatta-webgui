@@ -294,6 +294,22 @@
     cursor:pointer;
     white-space: nowrap;
 }
+.v-activate-button
+{
+    background:  transparent url('../images/activate.gif') no-repeat left !important;
+    height: 22px !important;
+    width: 60px !important;
+    cursor:pointer;
+    white-space: nowrap;
+}
+.v-deactivate-button
+{
+    background:  transparent url('../images/deactivate.gif') no-repeat left !important;
+    height: 22px !important;
+    width: 60px !important;
+    cursor:pointer;
+    white-space: nowrap;
+}
 .v-tb-btn-over
 {
     background:  transparent url('../images/create.png') no-repeat left !important;
@@ -514,15 +530,15 @@ body
 }
 .v-node-active {
   font-size: 13px;
-  font-weight: 900;
+  font-weight: bold;
 }
 .v-node-set {
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 500;
 }
 .v-node-delete {
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 800;
 }
 root
 {

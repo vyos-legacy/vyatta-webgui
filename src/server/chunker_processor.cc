@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <pwd.h>
+#include <grp.h>
 #include <signal.h>
 #include <syslog.h>
 #include <errno.h>
@@ -93,7 +94,17 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
     return;
   }
 
-  //move this up the timeline in the future, but this is where we will initially set the uid/gid
+  /* Retrieve group list */
+  int ngroups = 10;
+  gid_t groups[10];
+  if (getgrouplist(name_buf, pw->pw_gid, groups, &ngroups) == -1) {
+    return;
+  }
+
+  if (setgroups(ngroups,groups) != 0) {
+    syslog(LOG_DEBUG,"grouperror: %d",errno);
+    return;
+  }
   //retreive username, then use getpwnam() from here to populate below
   if (setgid(pw->pw_gid) != 0) {
     return;
@@ -103,6 +114,9 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   }
 
   //now we are ready to do some real work....
+
+
+
 
 
   //use child pid to allow cleanup of parent
@@ -118,9 +132,6 @@ ChunkerProcessor::writer(string token, const string &cmd,int (&cp)[2])
   close( cp[0]);
 
   string opmodecmd;
-  opmodecmd = WebGUI::mass_replace(cmd,"'","'\\''");
-  opmodecmd = "/bin/bash -c '" + opmodecmd + "'";
-
   opmodecmd = WebGUI::mass_replace(cmd,"'","");
 
   syslog(LOG_DEBUG,"command: %s",opmodecmd.c_str());

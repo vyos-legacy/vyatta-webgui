@@ -1,3 +1,15 @@
+vyatta-webgui (0.2.13-60) unstable; urgency=low
+
+  * update group membership code for background processor.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Mon, 23 Aug 2010 10:30:15 -0700
+
+vyatta-webgui (0.2.13-59) unstable; urgency=low
+
+  * remove low-level config dir usage
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 17 Aug 2010 18:24:45 -0700
+
 vyatta-webgui (0.2.13-58) unstable; urgency=low
 
   * * added activate/deactivate feature... but not visiable to user yet.

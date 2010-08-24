@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-61) unstable; urgency=low
+
+  * * fixed bug 6104. blocked install-image node from op command tree
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Tue, 24 Aug 2010 10:56:36 -0700
+
 vyatta-webgui (0.2.13-60) unstable; urgency=low
 
   * update group membership code for background processor.

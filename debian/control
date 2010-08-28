@@ -3,7 +3,7 @@ Section: contrib/net
 Priority: extra
 Maintainer: Vyatta Package Maintainers <maintainers@vyatta.com>
 Build-Depends: debhelper (>= 5), autotools-dev, autoconf, automake, libtool,
- wget, unzip, fakeroot,
+ wget, unzip,
  libexpat1-dev (>= 1.95.8-4),
  libglib2.0-dev,
  libpam0g-dev
@@ -11,9 +11,8 @@ Standards-Version: 3.7.2
 
 Package: vyatta-webgui
 Architecture: any
-Depends: libexpat1 (>= 1.95.8-4),
+Depends: ${shlibs:Depends},
  lighttpd,
- libc6,
  adduser,
  vyatta-cfg (>= 0.15.33),
  vyatta-op

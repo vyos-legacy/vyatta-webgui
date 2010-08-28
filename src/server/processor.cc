@@ -4,6 +4,7 @@
  * Author: Michael Larson
  * Date: 2008
  */
+#include <stdio.h>
 #include <string>
 #include <iostream>
 #include <ctype.h>

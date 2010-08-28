@@ -13,6 +13,7 @@
 #include <set>
 #include <utility>
 #include <expat.h>
+#include <stdint.h>
 #include "common.hh"
 
 class ConfigData

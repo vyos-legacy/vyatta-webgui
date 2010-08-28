@@ -1,7 +1,15 @@
 #ifndef __UNIONFS_HH__
 #define __UNIONFS_HH__
 
+/* XXX the code defines "boolean" as "int" (!), but "boolean" conflicts
+ *     with the glib headers. work around it for now. all this code
+ *     should be removed eventually, and the new config background
+ *     library should be used instead.
+ */
+#undef boolean
 #include <glib-2.0/glib.h>
+#define boolean int
+
 #include <stdio.h>
 #include "defs.h"
 #include "../cli_val.h"

@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-63) unstable; urgency=low
+
+  * fix squeeze build issues
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 27 Aug 2010 18:10:26 -0700
+
 vyatta-webgui (0.2.13-62) unstable; urgency=low
 
   [ Michael Larson ]

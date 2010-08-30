@@ -1,3 +1,16 @@
+vyatta-webgui (0.2.13-63) unstable; urgency=low
+
+  * fix squeeze build issues
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Fri, 27 Aug 2010 18:10:26 -0700
+
+vyatta-webgui (0.2.13-62) unstable; urgency=low
+
+  [ Michael Larson ]
+  * fix for bug 5894
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Fri, 27 Aug 2010 11:46:29 -0700
+
 vyatta-webgui (0.2.13-61) unstable; urgency=low
 
   * * fixed bug 6104. blocked install-image node from op command tree

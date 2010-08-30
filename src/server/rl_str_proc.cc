@@ -49,7 +49,7 @@ StrProc::StrProc(const string &in_str, const string &token)
 string
 StrProc::get(int i)
 {
-  if (uint32_t(i) >= _str_coll.size()) {
+  if (size_t(i) >= _str_coll.size()) {
     return string("");
   }
   return _str_coll[i];
@@ -61,12 +61,13 @@ StrProc::get(int i)
 string
 StrProc::get(int start, int end)
 {
-  if (uint32_t(start) >= _str_coll.size()) {
+  if (size_t(start) >= _str_coll.size()) {
     return string("");
   }
 
   string tmp;
-  for (int i = start; (i < end) && (uint32_t(i) < _str_coll.size()); ++i) {
+  for (size_t i = start;
+       (i < (size_t) end) && (i < _str_coll.size()); ++i) {
     tmp += _str_coll[i] + " ";
   }
   return tmp.substr(0,tmp.length()-1);

@@ -89,6 +89,7 @@ binary-indep: build install
 	dh_compress
 	dh_fixperms
 	dh_installdeb
+	dh_shlibdeps
 	if [ -f "../.VYATTA_DEV_BUILD" ]; then \
 		dh_gencontrol -- -v999.dev; \
 	else \

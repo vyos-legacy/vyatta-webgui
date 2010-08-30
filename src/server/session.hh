@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <stdint.h>
 #include "authenticate.hh"
 #include "configuration.hh"
 #include "command.hh"

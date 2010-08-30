@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-64) unstable; urgency=low
+
+  * fixed bug 6118 to block op cmd shutdown from user
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Mon, 30 Aug 2010 14:09:22 -0700
+
 vyatta-webgui (0.2.13-63) unstable; urgency=low
 
   * fix squeeze build issues

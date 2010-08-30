@@ -219,7 +219,7 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                 var an = n.getAttribute('name');
                 var tc = n.text == undefined ? n.textContent : n.text;
                 if(an == "configure" || an == 'telnet' || an == 'terminal' ||
-                    an == "install-system" || an == "install-image")
+                    an == "install-system" || an == "install-image" || an == "shutdown")
                     continue;
                 else if(tc != undefined &&
                         (tc.indexOf('Update webproxy') >= 0 ||

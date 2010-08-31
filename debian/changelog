@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-65) unstable; urgency=low
+
+  * fix bug 6124 - added warning message for configuration node.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Tue, 31 Aug 2010 12:34:48 -0700
+
 vyatta-webgui (0.2.13-64) unstable; urgency=low
 
   * fixed bug 6118 to block op cmd shutdown from user

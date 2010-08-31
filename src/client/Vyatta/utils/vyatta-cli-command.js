@@ -228,6 +228,10 @@ function f_saveConfFormCommandSentError(treeObj, response)
         var err = [f_replace(isSuccess[1], "\r\n", "")+"<br>", treeObj.m_fdIndexSent-1];
         g_cliCmdObj.m_errors[g_cliCmdObj.m_errors.length] = err;
     }
+    else if(isSuccess[3] == 'w')
+    {
+        g_cliCmdObj.m_warnings += isSuccess[1] + "\r\n";
+    }
 }
 
 function f_handleConfFormCommandDone(treeObj, node)
@@ -261,6 +265,10 @@ function f_handleConfFormCommandDone(treeObj, node)
                 f_handleFieldError(fp.m_node);
             }
             f_promptErrorMessage('Changing configuration...', err);
+        }
+        else if(g_cliCmdObj.m_warnings != "")
+        {
+            f_promptInfoMessage("Warning", g_cliCmdObj.m_warnings);
         }
 
         var tree = treeObj.m_tree;
@@ -301,6 +309,7 @@ function f_prepareConfFormCommandSend(treeObj)
     treeObj.m_numSent = 0;
     g_cliCmdObj.m_errors = [];
     g_cliCmdObj.m_fdSent = [];
+    g_cliCmdObj.m_warnings = "";
 
     if(f_validateInput(treeObj))
     {
@@ -1041,7 +1050,10 @@ function f_parseServerCallback(xmlRoot, treeMode /* conf, operator */)
             case "0":
                 success = true;
                 if(msg.length > 7 && treeMode == V_TREE_ID_config)
+                {
                     f_promptInfoMessage("Warning", msg);
+                    code = 'w';
+                }
                 break;
             case "3":
                 if(f_isAutoLogin())
@@ -1071,7 +1083,7 @@ function f_parseServerCallback(xmlRoot, treeMode /* conf, operator */)
         if(msg == 'UNKNOWN') msg = '';
     }
 
-    return [success, msg, segment];
+    return [success, msg, segment, code];
 }
 
 function f_parseCommitErrors(err)

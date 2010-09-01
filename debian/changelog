@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-66) unstable; urgency=low
+
+  * fixed bug # 6130: to support multi node types.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Wed, 01 Sep 2010 11:40:37 -0700
+
 vyatta-webgui (0.2.13-65) unstable; urgency=low
 
   * fix bug 6124 - added warning message for configuration node.

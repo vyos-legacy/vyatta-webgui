@@ -315,7 +315,18 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
 
         var nType = q.selectNode('type', node);
         if (nType != undefined)
-            str += ",type:'" + nType.getAttribute('name') + "'";
+        {
+            var tmpStr = ",type:'" + nType.getAttribute('name');
+            
+            var ns = nType.nextSibling;
+            while(ns != null && ns.nodeName == 'type')
+            {
+                tmpStr += ", " + ns.getAttribute('name');
+                ns = ns.nextSibling;
+            }
+
+            str += tmpStr + "'";
+        }
 /*
         var nMulti = q.selectValue('multi', node);
         if (nMulti != undefined)

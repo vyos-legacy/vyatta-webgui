@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-67) unstable; urgency=low
+
+  * * changed collapse all image as transparency background
+  * supported merge command
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Wed, 01 Sep 2010 18:14:26 -0700
+
 vyatta-webgui (0.2.13-66) unstable; urgency=low
 
   * fixed bug # 6130: to support multi node types.

@@ -216,6 +216,15 @@
     white-space: nowrap;
 }
 
+.v_merge_button
+{
+    background:  url('../images/merge_available.gif') no-repeat left !important;
+    height: 18px !important;
+    width: 88px !important;
+    cursor:pointer;
+    white-space: nowrap;
+}
+
 .v_save_button
 {
     background:  url('../images/save_available.gif') no-repeat left !important;

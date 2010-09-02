@@ -839,6 +839,8 @@ function f_createToolbar(panelObj)
                 'view', panelObj.m_treeObj, 'Display the current system configuration file.'),
           panelObj.m_loadBtn = f_createToolbarButton('v_load_button',
                 'load', panelObj.m_treeObj, 'Load a saved configuration file.'),
+          panelObj.m_mergeBtn = f_createToolbarButton('v_merge_button',
+                'merge', panelObj.m_treeObj, 'Merge configuration file.'),
           panelObj.m_saveBtn = f_createToolbarButton('v_save_button',
                 'save', panelObj.m_treeObj, 'Save current configuration to file.'),
           '-',
@@ -878,7 +880,7 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
         ,tooltip: tooltip
         ,handler: function()
         {
-            if(cmdName == 'save' || cmdName == 'load')
+            if(cmdName == 'save' || cmdName == 'load' || cmdName == 'merge')
             {
                 supportCmd[0] = "show files '";
                 supportCmd[1] = cmdName;
@@ -893,8 +895,11 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
                     supportCmd[1] = cmdName;
                     sendCmd = supportCmd[0] + V_CONFIG_DIR + "'";
                 }
-                else if(cmdName == 'view')
-                    sendCmd = 'show configuration';
+                else if(cmdName == 'merge')
+                {
+                    supportCmd[1] = cmdName;
+                    sendCmd = supportCmd[0] + V_CONFIG_DIR + "'"
+                }
 
                 f_sendOperationCliCommand(null, null, false, sendCmd,
                                           true, undefined, treeObj, supportCmd);
@@ -908,15 +913,18 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
 
                 if(cmdName == 'discard')
                 {
-                    var button = this;
-                    var discardCb = function(btn)
+                    if(treeObj.m_isCommitAvailable)
                     {
-                        if(btn == 'yes')
-                            f_sendCLICommand(button, [sendCmd], treeObj);
+                        var button = this;
+                        var discardCb = function(btn)
+                        {
+                            if(btn == 'yes')
+                                f_sendCLICommand(button, [sendCmd], treeObj);
+                        }
+                        f_yesNoMessageBox('Discard',
+                          'Are you sure you wish to discard all the new configuration?',
+                          discardCb);
                     }
-                    f_yesNoMessageBox('Discard',
-                      'Are you sure you wish to discard all the new configuration?',
-                      discardCb);
                 }
                 else
                     f_sendCLICommand(this, [sendCmd], treeObj);
@@ -1069,6 +1077,17 @@ function f_showFileChooserDialog(command, values, treeObj)
         sLabelTxt += 'loaded from a Vyatta default directory' +
             '<br>(/opt/vyatta/etc/config/).<br>&nbsp;'
         rLabelTxt += '&nbsp;for loading via http, scp, ftp, tftp, etc..' +
+                    '<br>(i.e. tftp://172.16.117.1/dut1-config.boot<br>'+
+                    'i.e. /any-dir/home/etc/config/config.boot).<br>&nbsp;'
+    }
+    else if(command == 'merge')
+    {
+        editable = false;
+        title += 'merged';
+        dlgTitle = 'Merge' + dlgTitle;
+        sLabelTxt += 'merged from system config file' +
+            '<br>(/opt/vyatta/etc/config/).<br>&nbsp;'
+        rLabelTxt += '&nbsp;for merging from local machine or rmote machine via http, scp, ftp, tftp, etc..' +
                     '<br>(i.e. tftp://172.16.117.1/dut1-config.boot<br>'+
                     'i.e. /any-dir/home/etc/config/config.boot).<br>&nbsp;'
     }

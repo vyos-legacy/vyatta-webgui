@@ -91,16 +91,16 @@ TemplateParams::get_xml(const string &value)
     out += "<type name='text'/>";
     break;
   case WebGUI::IPV4:
-    out += "<type name='ivp4'/>";    
+    out += "<type name='ipv4'/>";    
     break;
   case WebGUI::IPV4NET:
-    out += "<type name='ivp4net'/>";    
+    out += "<type name='ipv4net'/>";    
     break;
   case WebGUI::IPV6:
-    out += "<type name='ivp6'/>";    
+    out += "<type name='ipv6'/>";    
     break;
   case WebGUI::IPV6NET:
-    out += "<type name='ivp6net'/>";    
+    out += "<type name='ipv6net'/>";    
     break;
   case WebGUI::U32:
     out += "<type name='u32'/>";    
@@ -119,16 +119,16 @@ TemplateParams::get_xml(const string &value)
     out += "<type name='text'/>";
     break;
   case WebGUI::IPV4:
-    out += "<type name='ivp4'/>";    
+    out += "<type name='ipv4'/>";    
     break;
   case WebGUI::IPV4NET:
-    out += "<type name='ivp4net'/>";    
+    out += "<type name='ipv4net'/>";    
     break;
   case WebGUI::IPV6:
-    out += "<type name='ivp6'/>";    
+    out += "<type name='ipv6'/>";    
     break;
   case WebGUI::IPV6NET:
-    out += "<type name='ivp6net'/>";    
+    out += "<type name='ipv6net'/>";    
     break;
   case WebGUI::U32:
     out += "<type name='u32'/>";    

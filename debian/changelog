@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-70) unstable; urgency=low
+
+  * remove VPL license from repo.  replace with GPLv2.
+
+ -- Robert Bays <robert@vyatta.com>  Thu, 09 Sep 2010 13:58:53 -0700
+
 vyatta-webgui (0.2.13-69) unstable; urgency=low
 
   * typo fix for bug 6146.

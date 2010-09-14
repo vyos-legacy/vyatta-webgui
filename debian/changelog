@@ -1,3 +1,21 @@
+vyatta-webgui (0.2.13-70) unstable; urgency=low
+
+  * remove VPL license from repo.  replace with GPLv2.
+
+ -- Robert Bays <robert@vyatta.com>  Thu, 09 Sep 2010 13:58:53 -0700
+
+vyatta-webgui (0.2.13-69) unstable; urgency=low
+
+  * typo fix for bug 6146.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Tue, 07 Sep 2010 16:32:36 -0700
+
+vyatta-webgui (0.2.13-68) unstable; urgency=low
+
+  * UNRELEASED
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 02 Sep 2010 18:31:02 -0700
+
 vyatta-webgui (0.2.13-67) unstable; urgency=low
 
   * * changed collapse all image as transparency background

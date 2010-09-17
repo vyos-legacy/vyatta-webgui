@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-72) unstable; urgency=low
+
+  * fix for bug 6133.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Fri, 17 Sep 2010 11:26:02 -0700
+
 vyatta-webgui (0.2.13-71) unstable; urgency=low
 
   * fixed bug 5222, icons are fetched from extjs.com

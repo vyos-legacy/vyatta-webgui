@@ -723,7 +723,7 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
     //read value in her....
     while (fgets(buf, 1024, fp) != 0) {
       string tmp(buf);
-      tmp = tmp.substr(0,tmp.length()-1);
+      tmp = tmp.substr(0,tmp.length());
       state_coll.insert(pair<string,WebGUI::NodeState>(tmp,WebGUI::DELETE));
       order_coll.push_back(tmp);
     }
@@ -737,7 +737,7 @@ Configuration::parse_value(string &rel_path, string &node, string &out)
     //read value in her....
     while (fgets(buf, 1024, fp) != 0) {
       string tmp(buf);
-      tmp = tmp.substr(0,tmp.length()-1);
+      tmp = tmp.substr(0,tmp.length());
       map<string,WebGUI::NodeState>::iterator iter = state_coll.find(tmp);
       if (iter != state_coll.end()) {
 	iter->second = WebGUI::ACTIVE;

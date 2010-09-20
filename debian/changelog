@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-55+larkspur9) unstable; urgency=low
+
+  * fixed bug 5222, icons are fetched from extjs.com
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Mon, 20 Sep 2010 10:35:08 -0700
+
 vyatta-webgui (0.2.13-55+larkspur8) unstable; urgency=low
 
   * update group membership code for background processor.

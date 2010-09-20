@@ -1,3 +1,15 @@
+vyatta-webgui (0.2.13-55+larkspur8) unstable; urgency=low
+
+  * update group membership code for background processor.
+
+ -- Michael Larson <slioch@slioch.vyatta.com>  Thu, 16 Sep 2010 16:13:50 -0700
+
+vyatta-webgui (0.2.13-55+larkspur7) unstable; urgency=low
+
+  * remove VPL license from repo.  replace with GPLv2.
+
+ -- Robert Bays <robert@vyatta.com>  Tue, 14 Sep 2010 12:23:33 -0700
+
 vyatta-webgui (0.2.13-55+larkspur6) unstable; urgency=low
 
   * fix for bug 5894

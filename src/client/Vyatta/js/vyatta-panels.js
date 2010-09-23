@@ -935,7 +935,7 @@ function f_createToolbarButton(iconCls, cmdName, treeObj, tooltip)
 
 function f_showConfigurationViewDialog(configData)
 {
-    var val = f_replace(configData, "\n", "<br>");
+    var val = f_replace(configData, "\n", "<br/>");
     val = f_replace(val, ' ', "&nbsp;");
 
     var dialog = new Ext.Window(

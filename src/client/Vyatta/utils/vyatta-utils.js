@@ -439,8 +439,12 @@ function f_yesNoMessageBox(title, msgText, callback)
 
 function f_replace(str, expOld, expNew)
 {
-    if(str != undefined && str.replace != undefined)
-        str = str.replace(expOld, expNew, 'g');
+    if(str != undefined && str.search != undefined)
+    {
+        while(str.search(expOld) > -1)
+            str = str.replace(expOld, expNew);
+    }
+        //str = str.replace(expOld, expNew, 'g');
 
     return str;
 }

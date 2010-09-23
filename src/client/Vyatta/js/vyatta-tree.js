@@ -609,7 +609,7 @@ VYATTA_tree = Ext.extend(Ext.util.Observable,
                   break;
                 case V_TREE_ID_oper:
                   path = str.replace(/^ Operation/, '');
-                  path = path.replace('&lt;value&gt;', 'node.tag', 'g');
+                  path = f_replace(path, '&lt;value&gt;', 'node.tag');
                   loader.baseParams.nodepath = path;
                   break;
             }

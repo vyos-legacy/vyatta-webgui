@@ -90,6 +90,7 @@ _vyatta_app_run ()
     local ret=0
     if [ -n "$run_cmd" ]; then
         eval "$run_cmd"
+	ret=$?
     else
         echo "Incomplete command" >&2
         ret=1

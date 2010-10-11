@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-76) unstable; urgency=low
+
+  * add environment setting to retrieve additional error details.
+
+ -- root <root@vyatta-build2>  Mon, 11 Oct 2010 14:30:42 -0700
+
 vyatta-webgui (0.2.13-75) unstable; urgency=low
 
   * Add LSB comment to init script

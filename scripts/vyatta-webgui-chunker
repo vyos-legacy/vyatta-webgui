@@ -1,6 +1,12 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
+# Provides:          Vyatta WebGUI chunker
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:
+# Default-Stop:
+# Short-Description: Start/stop chunker service
 ### END INIT INFO
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin

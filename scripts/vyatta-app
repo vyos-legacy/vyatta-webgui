@@ -19,6 +19,7 @@ export VYATTA_MOD_NAME=.modified
 export VYATTA_CFG_GROUP_NAME=vyattacfg
 export VYATTA_EDIT_LEVEL=/
 export VYATTA_TEMPLATE_LEVEL=/
+export VYATTA_OUTPUT_ERROR_LOCATION=TRUE
 
 # app variables
 declare vyatta_app_templates='/opt/vyatta/share/vyatta-app/templates/'

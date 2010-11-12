@@ -2,7 +2,7 @@ vyatta-webgui (0.2.13-76) unstable; urgency=low
 
   * add environment setting to retrieve additional error details.
 
- -- root <root@vyatta-build2>  Mon, 11 Oct 2010 14:30:42 -0700
+ -- root <root@vyatta-build2.com>  Mon, 11 Oct 2010 14:30:42 -0700
 
 vyatta-webgui (0.2.13-75) unstable; urgency=low
 
@@ -14,7 +14,7 @@ vyatta-webgui (0.2.13-74) unstable; urgency=low
 
   * return exit code to framework from app helper.
 
- -- root <root@vyatta-build>  Thu, 07 Oct 2010 15:14:52 -0700
+ -- root <root@vyatta-build.com>  Thu, 07 Oct 2010 15:14:52 -0700
 
 vyatta-webgui (0.2.13-73) unstable; urgency=low
 

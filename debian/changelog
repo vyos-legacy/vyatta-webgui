@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-77) unstable; urgency=low
+
+  * remove deprecated linda override
+  * Fix warnings about bad email address in changelog
+
+ -- Stephen Hemminger <stephen.hemminger@vyatta.com>  Fri, 12 Nov 2010 14:31:06 -0800
+
 vyatta-webgui (0.2.13-76) unstable; urgency=low
 
   * add environment setting to retrieve additional error details.

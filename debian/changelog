@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-78) unstable; urgency=low
+
+  * final fix for bug 6467
+
+ -- Michael Larson <mike@vyatta.com>  Tue, 23 Nov 2010 18:08:42 -0800
+
 vyatta-webgui (0.2.13-77) unstable; urgency=low
 
   * remove deprecated linda override

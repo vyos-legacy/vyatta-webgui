@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-79) unstable; urgency=low
+
+  * change 10vyatta-op to vyatta-op
+
+ -- Michael <mike@vyatta.com>  Sun, 28 Nov 2010 13:18:04 -0800
+
 vyatta-webgui (0.2.13-78) unstable; urgency=low
 
   * final fix for bug 6467

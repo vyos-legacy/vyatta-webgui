@@ -16,6 +16,6 @@ export vyatta_infodir=/opt/vyatta/share/info
 
 export HOME=/root
 
-source /etc/bash_completion.d/vyatta-op
+source /usr/lib/cgi-bin/vyatta-webgui-op
 
 _vyatta_op_run show $* 

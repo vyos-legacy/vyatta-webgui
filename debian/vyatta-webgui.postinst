@@ -45,8 +45,7 @@ if ! grep -q '^# redirect all http to https$' /etc/lighttpd/lighttpd.conf; then
 $HTTP["scheme"] == "http" {
   $HTTP["host"] =~ "^(.*)$" {
     url.redirect = (
-      "^(/Vyatta/.*)$" => "https://%1$1",
-      "^(/ext-2.2/.*)$" => "https://%1$1"
+      "^(/.*)$" => "https://%1$1",
     )
   }
 }

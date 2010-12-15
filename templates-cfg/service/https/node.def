@@ -1,5 +1,10 @@
 priority: 913
 help: Enable/disable the Web server
+commit:expression: exec \
+        "if [ -x /opt/vyatta/sbin/vyatta-webgui-commit-aux ]; then
+           /opt/vyatta/sbin/vyatta-webgui-commit-aux
+         fi"
+
 update: if [ ! -f /etc/lighttpd/server.pem ]; then
           sudo openssl req -new -x509 -keyout /etc/lighttpd/server.pem \
                 -out /etc/lighttpd/server.pem \

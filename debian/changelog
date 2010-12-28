@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-82) unstable; urgency=low
+
+  * new branch
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 28 Dec 2010 13:52:46 -0800
+
 vyatta-webgui (0.2.13-81) unstable; urgency=low
 
   * redirect all http to https

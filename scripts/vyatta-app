@@ -29,17 +29,17 @@ declare _vyatta_app_last_comp=${_vyatta_app_last_comp_init}
 #sets the alias hooks for the cmds
 _vyatta_app_init ()
 {
-    complete -F _vyatta_app_expand ''
+#    complete -F _vyatta_app_expand ''
 
     for xd in $vyatta_app_templates/* ; do
         if [ -d $xd ] ; then
             cmd=${xd##*/}
-            complete -F _vyatta_app_expand $cmd
+#            complete -F _vyatta_app_expand $cmd
             eval alias $cmd=\'_vyatta_app_run $cmd\'
         fi
     done
 
-    bind 'set show-all-if-ambiguous on'
+#    bind 'set show-all-if-ambiguous on'
     shopt -s histverify
 }
 

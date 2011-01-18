@@ -81,7 +81,6 @@ install-exec-hook:
 	
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	cp scripts/vyatta-app $(DESTDIR)/$(cgidir)/
-	cp scripts/vyatta-webgui-op $(DESTDIR)/$(cgidir)/
 	
 	@mkdir -p $(DESTDIR)/var/www
 	@for v in 2.1 2.2; do \

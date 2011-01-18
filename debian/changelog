@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-83) unstable; urgency=low
+
+  * fix for 6476.
+
+ -- Michael Larson <mike@vyatta.com>  Mon, 17 Jan 2011 16:28:41 -0800
+
 vyatta-webgui (0.2.13-82) unstable; urgency=low
 
   * new branch

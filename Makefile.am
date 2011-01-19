@@ -6,7 +6,6 @@ initddir = /etc/init.d
 cfgdir = $(datadir)/vyatta-cfg/templates
 cfgrootdir = $(datadir)/vyatta-cfg
 opdir = $(datadir)/vyatta-op/templates
-appdir = $(datadir)/vyatta-app/templates
 appperldir = $(datadir)/perl5/App
 ssbindir = /usr/sbin
 
@@ -80,7 +79,6 @@ install-exec-hook:
 	touch $(DESTDIR)$(tmpdir)/dummy
 	
 	mkdir -p $(DESTDIR)/$(cgidir)/
-	cp scripts/vyatta-app $(DESTDIR)/$(cgidir)/
 	
 	@mkdir -p $(DESTDIR)/var/www
 	@for v in 2.1 2.2; do \
@@ -101,6 +99,4 @@ install-exec-hook:
 	cd templates-cfg; $(cpiop) $(DESTDIR)$(cfgdir)
 	@mkdir -p $(DESTDIR)$(opdir); \
 	cd templates-op; $(cpiop) $(DESTDIR)$(opdir)
-	@mkdir -p $(DESTDIR)$(appdir); \
-	cd templates-app; $(cpiop) $(DESTDIR)$(appdir)
 

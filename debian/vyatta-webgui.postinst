@@ -37,6 +37,11 @@ if ! grep -q '^server.event-handler =' /etc/lighttpd/lighttpd.conf; then
   echo 'server.event-handler = "linux-sysepoll"' >> /etc/lighttpd/lighttpd.conf
 fi
 
+#remove tilde access-deny
+if grep -q '^url.access-deny' /etc/lighttpd/lighttpd.conf; then
+  sed -i 's/^\(.*url.access-deny.*\)/# \1/' /etc/lighttpd/lighttpd.conf
+fi
+
 # redirect http to https
 if ! grep -q '^# redirect all http to https$' /etc/lighttpd/lighttpd.conf; then
   cat <<'EOF' >>/etc/lighttpd/lighttpd.conf

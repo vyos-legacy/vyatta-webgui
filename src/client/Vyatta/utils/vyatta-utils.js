@@ -25,7 +25,7 @@ function F_sentRequest(data, cb)
                     "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                     + "<vyatta><command><id>" + sid + "</id>\n" + data;
 
-    var conn = new Ext.data.Connection({});
+    var conn = new Ext.data.Connection({timeout:85000});
 
     conn.request(
     {

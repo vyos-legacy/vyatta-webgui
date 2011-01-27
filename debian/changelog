@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-81+mendocino3) unstable; urgency=low
+
+  * fixed bug# 6331 - increased server request timeout to 1 1/2 minute
+    from the default 1/2 minutes.
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Thu, 27 Jan 2011 02:54:57 -0800
+
 vyatta-webgui (0.2.13-81+mendocino2) unstable; urgency=low
 
   * comment out unneeded lines.

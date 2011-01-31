@@ -3,6 +3,7 @@
 #include <sys/sysinfo.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <strings.h>
 #include <pwd.h>
 #include <grp.h>
 #include <signal.h>
@@ -162,11 +163,14 @@ ChunkerProcessor::reader(string token,int (&cp)[2])
     last_time = info.uptime;
   }
   close(cp[1]);
-  while ((read(cp[0], &buf, 1) == 1)) {
+  int ct = 0;
+  while ((ct = read(cp[0], &buf, _chunk_size)) > 0) {
     tmp += string(buf);
     tmp = process_chunk(tmp, token, chunk_ct, last_time);
+    bzero(buf,_chunk_size+1);
   }
   process_chunk_end(tmp,token,chunk_ct);
+  close(cp[0]);
 }
 
 
@@ -174,20 +178,8 @@ ChunkerProcessor::reader(string token,int (&cp)[2])
  * write out remainder and create bumper
  **/
 void
-ChunkerProcessor::process_chunk_end(string &str, string &token, long &chunk_ct)
+ChunkerProcessor::process_chunk_end(string &chunk, string &token, long &chunk_ct)
 {
-  //OK, let's find a natural break and start processing
-  size_t pos = str.rfind('\n');
-  string chunk;
-  if (pos != string::npos) {
-    chunk = str.substr(0,pos);
-    str = str.substr(pos+1,str.length());
-  }
-  else {
-    chunk = str;
-    str = string("");
-  }
-  
   char buf[80];
   sprintf(buf,"%lu",chunk_ct);
   string file = WebGUI::CHUNKER_RESP_TOK_DIR + WebGUI::CHUNKER_RESP_TOK_BASE + token + "_" + string(buf);
@@ -200,6 +192,7 @@ ChunkerProcessor::process_chunk_end(string &str, string &token, long &chunk_ct)
     syslog(LOG_ERR,"webgui: Failed to write out response chunk");
   }
   
+
 
   //if we naturally end write out bumper file to common directory...
   file = WebGUI::CHUNKER_RESP_TOK_DIR + WebGUI::CHUNKER_RESP_TOK_BASE + token + "_end";

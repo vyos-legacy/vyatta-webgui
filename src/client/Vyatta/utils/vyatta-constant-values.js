@@ -37,6 +37,7 @@ V_LABEL_LABEL = 'label';
 
 /////////////////////////////////////////////////
 //
+V_PAYLOAD_SIZE = 1120;
 V_STATUS_UP = 'up';
 V_STATUS_DOWN = 'down';
 V_STATUS_UNKNOWN = 'unknown';

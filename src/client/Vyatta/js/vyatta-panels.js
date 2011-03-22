@@ -1417,10 +1417,11 @@ function f_isEditGridDirty(gridStore)
 
     return false;
 }
-function f_getEditGridValues(gridStore)
+function f_getEditGridValues(gridStore, getFrom)
 {
     var ret = [ ];
-    for (var i = 0; i < gridStore.getCount(); i++)
+    getFrom = getFrom == undefined ? 0 : getFrom;
+    for(var i=getFrom; i<gridStore.getCount(); i++)
     {
         var rec = gridStore.getAt(i);
         var val = gridStore.getAt(i).get('value');

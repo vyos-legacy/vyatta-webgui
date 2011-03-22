@@ -491,14 +491,43 @@ function f_sendConfFormCommand(treeObj)
             }
             else
             {
-                value = f_getEditGridValues(fp.m_store);
+                if(fp.m_multiSent == undefined)
+                {    
+                    fp.m_multiSent = true;
+                    
+                    ////////////////////////////////////////////
+                    // make sure delete prev node before set
+                    cmds = [ 'delete ' + selPath + ' ' + label];
+                }
+                
 
-                ////////////////////////////////////////////
-                // make sure delete prev node before set
-                cmds = [ 'delete ' + selPath + ' ' + label];
-
+                var bufSize = 0;
+                value = f_getEditGridValues(fp.m_store, fp.m_fromRec);
                 for(var i=0; i<value.length; i++)
-                    cmds.push('set ' + selPath + " " + label + value[i]);
+                {
+                    var str = 'set ' + selPath + " " + label + value[i];
+                    bufSize += str.length;
+                    
+                    /*
+                     * a quick fix for bug6971 to send multi-set for one node
+                     * due to the limitation of buffer size.
+                     */
+                    if(bufSize > V_PAYLOAD_SIZE)
+                    {
+                        treeObj.m_fdIndexSent--;
+                        fp.m_fromRec = fp.m_fromRec == undefined?i:fp.m_fromRec+i;
+                        break;
+                    }
+                    
+                    cmds.push(str);
+                }
+                
+                // reset to normal condidtion
+                if(bufSize < V_PAYLOAD_SIZE)
+                {    
+                    fp.m_multiSent = undefined;
+                    fp.m_fromRec = undefined;
+                }
             }
             break;
         case 'checkbox':

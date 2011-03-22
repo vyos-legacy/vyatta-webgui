@@ -327,14 +327,14 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
 
             str += tmpStr + "'";
         }
-/*
+
         var nMulti = q.selectValue('multi', node);
         if (nMulti != undefined)
         {
             str += ",multi:true";
             str += ",multiCounter:" + nMulti;
         }
-  */
+  
         var nMulti = q.selectNode('multi', node);
         if (nMulti != undefined)
             str += ",multi:true";
@@ -384,7 +384,11 @@ VYATTA_hierTreeLoader = Ext.extend(Ext.tree.TreeLoader,
                 if (vstr != '')
                     vstr += ',';
 
-                vstr += "'" + q.selectValue('match:nth(' + i + ')', nenums) + "'";
+                var enumVal = q.selectValue('match:nth(' + i + ')', nenums);
+                if(enumVal[0] != undefined && enumVal[0] == "'")
+                    vstr += enumVal;
+                else
+                    vstr += "'" + enumVal + "'";
             }
 
             str += ",enums:[ " + vstr + " ]";

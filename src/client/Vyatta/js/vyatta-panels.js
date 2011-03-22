@@ -1570,7 +1570,7 @@ function f_createEditGrid(values, enumValues, gridStore, record, node,
         {
             if(e.getKey() == 13)
                 tId = window.setTimeout(setField, 100);
-            if(e.getKey() == 9)
+            if(e.getKey() == 9 && grid.m_textField.m_nextFd != undefined)
             {
                 grid.m_textField.m_nextFd.focus(false, 10);
                 return false;

@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-87) unstable; urgency=low
+
+  * fixed bug 6971 - Parsing error is generated when attempting to
+    config large data on one node
+
+ -- Kevin Choi <kchoi@debian.localdomain>  Tue, 22 Mar 2011 08:15:41 -0700
+
 vyatta-webgui (0.2.13-86) unstable; urgency=low
 
   * fix for bug 6157. Some data was being dropped from the last chunk

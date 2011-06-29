@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-89) unstable; urgency=low
+
+  * fix for bug 7246. update clear command to also call aux hook.
+
+ -- Michael Larson <mike@vyatta.com>  Wed, 29 Jun 2011 16:20:43 -0700
+
 vyatta-webgui (0.2.13-88) unstable; urgency=low
 
   * fixed null pointer exception on tab to next focus field

@@ -1,7 +1,10 @@
 help: Reset https server
 run:   if cli-shell-api existsActive service https; then
-	sudo /usr/sbin/invoke-rc.d lighttpd restart
-        sudo /etc/init.d/vyatta-webgui-chunker restart
+	 sudo /usr/sbin/invoke-rc.d lighttpd restart
+         sudo /etc/init.d/vyatta-webgui-chunker restart
+         if [ -x /etc/init.d/vyatta-webgui-chunker-aux ]; then
+	   sudo /etc/init.d/vyatta-webgui-chunker-aux restart
+         fi
        else
 	echo "https server is not running"
        fi

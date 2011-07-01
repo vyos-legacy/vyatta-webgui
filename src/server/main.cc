@@ -61,6 +61,10 @@ int main(int argc, char* argv[])
   string file; 
   unsigned long port = 0;
 
+
+  //DISABLE OLD API
+  exit(0);
+
   //grab inputs
   while ((ch = getopt(argc, argv, "p:vi:df:hs")) != -1) {
     switch (ch) {

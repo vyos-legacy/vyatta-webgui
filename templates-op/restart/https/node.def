@@ -1,4 +1,4 @@
-help: Reset https server
+help: Restart https server
 run:   if cli-shell-api existsActive service https; then
 	 sudo /usr/sbin/invoke-rc.d lighttpd restart
          sudo /etc/init.d/vyatta-webgui-chunker restart

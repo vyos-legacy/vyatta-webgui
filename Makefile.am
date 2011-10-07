@@ -81,19 +81,7 @@ install-exec-hook:
 	mkdir -p $(DESTDIR)/$(cgidir)/
 	
 	@mkdir -p $(DESTDIR)/var/www
-	@for v in 2.1 2.2; do \
-		rm -f /tmp/ext-$$v.zip; \
-		wget -q -O /tmp/ext-$$v.zip \
-			http://packages.vyatta.com/vyatta-dev/tmp/ext-$$v.zip; \
-		( \
-			cd $(DESTDIR)/var/www; \
-			unzip -qq /tmp/ext-$$v.zip; \
-			cd ext-$$v; \
-			rm -rf air build docs examples ext-all-debug.js \
-				ext-core-debug.js source; \
-		); \
-		rm -f /tmp/ext-$$v.zip; \
-	done
+
 	@cd src/client ; $(cpiop) $(DESTDIR)$(wwwdir)
 	@mkdir -p $(DESTDIR)$(cfgdir); \
 	cd templates-cfg; $(cpiop) $(DESTDIR)$(cfgdir)

@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-94) unstable; urgency=low
+
+  * Move 'clear https process' to 'restart https'
+
+ -- John Southworth <john.southworth@vyatta.com>  Thu, 27 Oct 2011 17:50:29 -0500
+
 vyatta-webgui (0.2.13-93) unstable; urgency=low
 
   * fix for bug 7523--remove old ext libraries from vyatta-webgui

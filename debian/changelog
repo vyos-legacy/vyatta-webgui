@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-97) unstable; urgency=low
+
+  * Force rebuild
+
+ -- James Davidson <james.davidson@vyatta.com>  Mon, 27 Aug 2012 16:01:22 -0700
+
 vyatta-webgui (0.2.13-96) unstable; urgency=low
 
   * Add entitlement check

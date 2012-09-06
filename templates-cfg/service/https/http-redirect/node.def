@@ -1,0 +1,11 @@
+type: txt
+
+help: Control HTTP redirection
+
+val_help: disable; Disable HTTP redirection 
+val_help: enable; Enable HTTP redirection
+
+default: "enable"
+
+syntax:expression: $VAR(@) in "enable", "disable"; "http-redirect must be enable or disable"
+

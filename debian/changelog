@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-100+pacifica2) unstable; urgency=low
+
+  * new branch
+
+ -- John Southworth <john.southworth@vyatta.com>  Fri, 12 Oct 2012 18:51:11 -0700
+
 vyatta-webgui (0.2.13-100+pacifica1) unstable; urgency=low
 
   * new branch

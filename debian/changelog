@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-101+daisy1) unstable; urgency=low
+
+  * create daisy branch
+
+ -- John Southworth <john.southworth@vyatta.com>  Sat, 13 Oct 2012 13:31:50 -0700
+
 vyatta-webgui (0.2.13-101) unstable; urgency=low
 
   * new branch

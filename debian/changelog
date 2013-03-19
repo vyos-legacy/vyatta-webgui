@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-101+daisy2) unstable; urgency=low
+
+  * Add favicon to GUI1.
+
+ -- Loi Pan <loi.vo@vyatta.com>  Tue, 19 Mar 2013 11:54:20 -0700
+
 vyatta-webgui (0.2.13-101+daisy1) unstable; urgency=low
 
   * create daisy branch

@@ -1,3 +1,10 @@
+vyatta-webgui (0.2.13-101+daisy3) unstable; urgency=low
+
+  * Remove the remains of the GUI (because trademarks)
+  * Add new GUI placeholder.
+
+ -- Daniil Baturin <daniil@baturin.org>  Thu, 31 Oct 2013 22:19:42 +0100
+
 vyatta-webgui (0.2.13-101+daisy2) unstable; urgency=low
 
   * Add favicon to GUI1.

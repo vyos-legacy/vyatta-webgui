@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-101+hydrogen1) unstable; urgency=low
+
+  * New branch
+
+ -- Daniil Baturin <daniil@baturin.org>  Sun, 17 Nov 2013 01:27:12 +0100
+
 vyatta-webgui (0.2.13-101+daisy3) unstable; urgency=low
 
   * Remove the remains of the GUI (because trademarks)

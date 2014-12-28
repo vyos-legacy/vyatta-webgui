@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-101+vyos2+lithium2) unstable; urgency=low
+
+  * Update maintainer address
+
+ -- Alex Harpin <development@landsofshadow.co.uk>  Sun, 28 Dec 2014 09:02:18 +0000
+ 
 vyatta-webgui (0.2.13-101+vyos2+lithium1) unstable; urgency=low
 
   * New branch

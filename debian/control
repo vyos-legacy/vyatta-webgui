@@ -1,7 +1,7 @@
 Source: vyatta-webgui
 Section: contrib/net
 Priority: extra
-Maintainer: Vyatta Package Maintainers <maintainers@vyatta.com>
+Maintainer: VyOS Package Maintainers <maintainers@vyos.net>
 Build-Depends: debhelper (>= 5), autotools-dev, autoconf, automake, libtool,
  wget, unzip,
  libexpat1-dev (>= 1.95.8-4),
@@ -16,5 +16,5 @@ Depends: ${shlibs:Depends},
  adduser,
  vyatta-cfg (>= 0.15.33),
  vyatta-op
-Description: Vyatta WebGUI
- This package provides the Vyatta WebGUI.
+Description: VyOS WebGUI
+ This package provides the VyOS WebGUI.

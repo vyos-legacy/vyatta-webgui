@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-101+vyos2+lithium3) unstable; urgency=low
+
+  * vyatta-webgui: update dh_gencontrol with new development build flag
+
+ -- Alex Harpin <development@landsofshadow.co.uk>  Mon, 22 Jun 2015 07:50:40 +0100
+ 
 vyatta-webgui (0.2.13-101+vyos2+lithium2) unstable; urgency=low
 
   * Update maintainer address

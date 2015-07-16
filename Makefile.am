@@ -8,9 +8,10 @@ cfgrootdir = $(datadir)/vyatta-cfg
 opdir = $(datadir)/vyatta-op/templates
 appperldir = $(datadir)/perl5/App
 ssbindir = /usr/sbin
+glib20lib = `pkg-config --cflags glib-2.0`
+glib20libfl = `pkg-config --libs glib-2.0`
 
-AM_CPPFLAGS = -I src/server -I src/lib -Wall -DDEBUG -g \
-              -I /usr/include/glib-2.0 -I /usr/lib/glib-2.0/include
+AM_CPPFLAGS = -I src/server -I src/lib -Wall -DDEBUG -g $(glib20lib)
 
 CLEANFILES = src/server/main.o src/server/manager.o src/server/session.o src/server/processor.o src/server/sessionexchange.o src/server/sessionexchangefile.o src/server/sessionexchangesocket.o src/server/sessionexchangestdio.o src/server/test.o src/server/authenticate.o src/server/common.o src/server/command.o src/server/configuration.o src/server/rl_str_proc.o src/server/multirespcmd.o src/server/guicmdhandler.o
 
@@ -42,9 +43,9 @@ src_server_webgui_SOURCES += src/server/guicmdhandler.cc
 
 src_server_webgui_LDADD = -lexpat
 src_server_webgui_LDADD += -lpam
-src_server_webgui_LDADD += /usr/lib/libglib-2.0.la
 src_server_webgui_LDADD += src/lib/libclibe.a
 
+src_server_webgui_LDFLAGS = $(glib20libfl)
 
 cgi_PROGRAMS = src/server/webgui
 cgi_SCRIPTS = src/server/webgui-wrap
@@ -58,8 +59,7 @@ sbin_SCRIPTS = scripts/vyatta-update-webgui-listen-addr.pl
 initd_SCRIPTS = scripts/vyatta-webgui-chunker
 
 # library
-AM_CFLAGS = -I src/lib -Wall -I /usr/include/glib-2.0 \
-            -I /usr/lib/glib-2.0/include
+AM_CFLAGS = -I src/lib -Wall -I /usr/include/glib-2.0 $(glib20lib)
 AM_YFLAGS = -d --name-prefix=yy_`basename $* .y`_
 AM_LFLAGS = --prefix=yy_`basename $* .l`_ -olex.yy.c
 noinst_LIBRARIES = src/lib/libclibe.a

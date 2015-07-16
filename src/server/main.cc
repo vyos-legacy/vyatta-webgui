@@ -12,6 +12,7 @@
 #include <syslog.h>
 #include <stdio.h>
 #include <iostream>
+#include <unistd.h>
 #include "sessionexchange.hh"
 #include "sessionexchangefile.hh"
 #include "sessionexchangesocket.hh"

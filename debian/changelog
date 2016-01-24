@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-101+vyos2+current1) unstable; urgency=medium
+
+  * Make it compile in debian jessie
+
+ -- Kim Hagen <kim.sidney@gmail.com>  Sun, 24 Jan 2016 15:29:11 -0500
+
 vyatta-webgui (0.2.13-101+vyos2+lithium3) unstable; urgency=low
 
   * vyatta-webgui: update dh_gencontrol with new development build flag

@@ -73,7 +73,8 @@ install: build
 	$(MAKE) DESTDIR=$(PKGDIR) install
 
 	install -D --mode=0644 debian/lintian $(PKGDIR)/usr/share/lintian/overrides/$(PACKAGE)
-
+	(cd debian/vyatta-webgui; if [ ! -d var/www/ext-2.2 ]; then svn co http://extjs-public.googlecode.com/svn/tags/ext-2.2/include var/www/ext-2.2; find -name '.svn' | xargs rm -rf; fi)
+	
 # Build architecture-independent files here.
 binary-indep: build install
 	rm -f debian/files

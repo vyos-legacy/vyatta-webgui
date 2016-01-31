@@ -17,7 +17,8 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 PACKAGE=vyatta-webgui
 PKGDIR=$(CURDIR)/debian/$(PACKAGE)
 
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -DUSE_UNIONFSFUSE=1
+CXXFLAGS = -DUSE_UNIONFSFUSE=1
 
 configure	 = ./configure
 configure	+= --host=$(DEB_HOST_GNU_TYPE)
@@ -25,7 +26,7 @@ configure	+= --build=$(DEB_BUILD_GNU_TYPE)
 configure	+= --prefix=/opt/vyatta
 configure	+= --mandir=\$${prefix}/share/man
 configure	+= --infodir=\$${prefix}/share/info
-configure	+= CFLAGS="$(CFLAGS)"
+configure	+= CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)"
 #configure	+= LDFLAGS="-Wl,-z,defs"
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))

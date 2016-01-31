@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include <fstream>
 #include <string.h>
 #include <sys/stat.h>
 #include <errno.h>
@@ -32,7 +33,7 @@ const string WebGUI::LOCAL_CHANGES_ONLY = "/tmp/changes_only_";
 const string WebGUI::LOCAL_CONFIG_DIR = "/opt/vyatta/config/tmp/new_config_";
 const string WebGUI::CFG_TEMPLATE_DIR = "/opt/vyatta/share/vyatta-cfg/templates";
 const string WebGUI::OP_TEMPLATE_DIR = "/opt/vyatta/share/vyatta-op/templates";
-const string WebGUI::COMMIT_LOCK_FILE = "/opt/vyatta/config/.lock";
+const string WebGUI::COMMIT_LOCK_FILE = "/opt/vyatta/config/.lock.webgui";
 const string WebGUI::VYATTA_MODIFY_DIR = "/opt/vyatta/config/tmp/";
 const string WebGUI::VYATTA_MODIFY_FILE = WebGUI::VYATTA_MODIFY_DIR + ".vyattamodify_";
 
@@ -79,9 +80,12 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
   if (read == true) {
     dir = "r";
   }
+  std::fstream log;
+  log.open("/var/log/vyatta/webgui.exec.log",std::fstream::out | std::fstream::app);
   //  cout << "WebGUI::execute(A): '" << cmd << "'" << endl;
   FILE *f = popen(cmd.c_str(), dir.c_str());
   if (f) {
+    log << "WebGUI::execute(): popen("<<cmd<<","<<dir<<") ok" << endl;
     if (read == true) {
       fflush(f);
       char *buf = NULL;
@@ -90,6 +94,7 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
       while ((read_len = getline(&buf, &len, f)) != -1) {
 	//	cout << "WebGUI::execute(): " << string(buf) << ", " << len << ", " << read_len << endl;
 	stdout += string(buf) + " ";
+        log << "WebGUI::execute(): returned: " << string(buf) << endl;
       }
 
       if (buf) {
@@ -97,7 +102,10 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
       }
     }
     err = pclose(f);
-  }
+    log << "WebGUI::execute(): closed with status: "<<err<< endl;
+  } else {
+    log << "WebGUI::execute(): can't popen("<<cmd<<","<<dir<<")" << endl;
+  };
   return err;
 }
 
@@ -159,14 +167,20 @@ WebGUI::discard_session(string &id)
   cmd += ";mkdir -p " + WebGUI::LOCAL_CHANGES_ONLY + id;
   execute(cmd,stdout);
   */
-
+#ifdef USE_UNIONFSFUSE
+  cmd = "/usr/bin/fusermount -u " +  WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+#else
   cmd = "sudo umount " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+#endif
   //  cmd += ";sudo rm -fr " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "/ " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id + "/";
   cmd += ";sudo rm -fr " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "/{.*,*} >&/dev/null ; /bin/true";
   cmd += ";mkdir -p " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "/";
   cmd += ";mkdir -p " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id + "/";
+#ifdef USE_UNIONFSFUSE
+  cmd += ";/usr/bin/unionfs-fuse -o cow -o allow_other " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "=RW:" + WebGUI::VYATTA_ACTIVE_CONFIGURATION_DIR + "=RO " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+#else
   cmd += ";sudo mount -t "+WebGUI::unionfs()+" -o dirs=" + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "=rw:" + WebGUI::VYATTA_ACTIVE_CONFIGURATION_DIR + "=ro "+WebGUI::unionfs()+" " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
-
+#endif
   execute(cmd,stdout);
   /*
   cmd = "echo '" + cmd + "' > /tmp/foo";

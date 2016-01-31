@@ -1,3 +1,9 @@
+vyatta-webgui (0.2.13-101+vyos2+lithium3+mickvav) unstable; urgency=high
+
+  * vyatta-webgui: Added fusermount unionfs option.
+
+ -- Mihail Vasiliev <mick@corp.linkintel.ru>  Sun, 31 Jan 2016 16:16:00 +0300
+
 vyatta-webgui (0.2.13-101+vyos2+lithium3) unstable; urgency=low
 
   * vyatta-webgui: update dh_gencontrol with new development build flag

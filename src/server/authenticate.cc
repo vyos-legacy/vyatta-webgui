@@ -78,8 +78,11 @@ Authenticate::create_new_session()
       WebGUI::mkdir_p((WebGUI::LOCAL_CONFIG_DIR + id).c_str());
       
       string unionfs = WebGUI::unionfs();
-      
+#ifdef USE_UNIONFSFUSE
+      cmd = "/usr/bin/unionfs-fuse -o cow -o allow_other " + WebGUI::LOCAL_CHANGES_ONLY + id + "=RW:" + WebGUI::ACTIVE_CONFIG_DIR + "=RO " + WebGUI::LOCAL_CONFIG_DIR + id;
+#else 
       cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+id+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ id;
+#endif
       if (WebGUI::execute(cmd, stdout) != 0) {
 	//syslog here
 	_proc->set_response(WebGUI::AUTHENTICATION_FAILURE);

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <unistd.h>
 #include "common.hh"
 
 using namespace std;
@@ -84,10 +85,16 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
   log.open("/var/log/vyatta/webgui.exec.log",std::fstream::out | std::fstream::app);
   //  cout << "WebGUI::execute(A): '" << cmd << "'" << endl;
   FILE *f = popen(cmd.c_str(), dir.c_str());
+  
   if (f) {
+    log << "WebGUI::execute(): my uid is " << getuid() << endl;
+    log << "WebGUI::execute(): my euid is " << geteuid() << endl;
+    log << "WebGUI::execute(): my gid is " << getgid() << endl;
+    log << "WebGUI::execute(): my egid is " << getegid() << endl;
+  
     log << "WebGUI::execute(): popen("<<cmd<<","<<dir<<") ok" << endl;
-    if (read == true) {
-      fflush(f);
+//    if (read == true) {
+//      fflush(f);
       char *buf = NULL;
       size_t len = 0;
       ssize_t read_len = 0;
@@ -100,9 +107,12 @@ WebGUI::execute(std::string &cmd, std::string &stdout, bool read)
       if (buf) {
 	free(buf);
       }
-    }
+/*    } else {
+      log << "WebGUI::execute(): called with read = " << read << endl;
+    };*/
     err = pclose(f);
     log << "WebGUI::execute(): closed with status: "<<err<< endl;
+    log << "errno: " << errno << strerror(errno) << endl;
   } else {
     log << "WebGUI::execute(): can't popen("<<cmd<<","<<dir<<")" << endl;
   };

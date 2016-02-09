@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <unistd.h>
 #include "systembase.hh"
 #include "processor.hh"
 
@@ -27,7 +28,7 @@ private:
 
   std::string
   create_new_id();
- 
+  uid_t uid; 
   // is the user a member of the "group struct"?
   bool is_grp_member(struct group *g, const std::string &username);
   

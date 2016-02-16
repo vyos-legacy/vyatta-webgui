@@ -81,7 +81,8 @@ Authenticate::create_new_session()
 #ifdef USE_UNIONFSFUSE
 //      setuid(uid);
       ostringstream scmd;
-      scmd <<  "/usr/bin/unionfs-fuse -o cow -o allow_other -o uid=" <<uid <<" "  << WebGUI::LOCAL_CHANGES_ONLY << id << "=RW:" << WebGUI::ACTIVE_CONFIG_DIR << "=RO " << WebGUI::LOCAL_CONFIG_DIR << id;
+      scmd <<  "sudo /usr/bin/unionfs-fuse -o cow -o allow_other "  << WebGUI::LOCAL_CHANGES_ONLY << id << "=RW:" << WebGUI::ACTIVE_CONFIG_DIR << "=RO " << WebGUI::LOCAL_CONFIG_DIR << id;
+      //scmd <<  "/usr/bin/unionfs-fuse -o cow -o allow_other -o uid=" <<uid <<" "  << WebGUI::LOCAL_CHANGES_ONLY << id << "=RW:" << WebGUI::ACTIVE_CONFIG_DIR << "=RO " << WebGUI::LOCAL_CONFIG_DIR << id;
 
       cmd = scmd.str();
       //cmd = "/usr/bin/unionfs-fuse -o cow -o uid="+itoa(uid)+" "  + WebGUI::LOCAL_CHANGES_ONLY + id + "=RW:" + WebGUI::ACTIVE_CONFIG_DIR + "=RO " + WebGUI::LOCAL_CONFIG_DIR + id;

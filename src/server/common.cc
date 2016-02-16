@@ -178,7 +178,7 @@ WebGUI::discard_session(string &id)
   execute(cmd,stdout);
   */
 #ifdef USE_UNIONFSFUSE
-  cmd = "/usr/bin/fusermount -u " +  WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+  cmd = "sudo /usr/bin/fusermount -u " +  WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
 #else
   cmd = "sudo umount " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
 #endif
@@ -187,7 +187,7 @@ WebGUI::discard_session(string &id)
   cmd += ";mkdir -p " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "/";
   cmd += ";mkdir -p " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id + "/";
 #ifdef USE_UNIONFSFUSE
-  cmd += ";/usr/bin/unionfs-fuse -o cow -o allow_other " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "=RW:" + WebGUI::VYATTA_ACTIVE_CONFIGURATION_DIR + "=RO " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
+  cmd += ";sudo /usr/bin/unionfs-fuse -o cow -o allow_other " + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "=RW:" + WebGUI::VYATTA_ACTIVE_CONFIGURATION_DIR + "=RO " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
 #else
   cmd += ";sudo mount -t "+WebGUI::unionfs()+" -o dirs=" + WebGUI::VYATTA_CHANGES_ONLY_DIR + id + "=rw:" + WebGUI::VYATTA_ACTIVE_CONFIGURATION_DIR + "=ro "+WebGUI::unionfs()+" " + WebGUI::VYATTA_TEMP_CONFIG_DIR + id;
 #endif

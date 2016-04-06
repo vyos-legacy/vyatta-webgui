@@ -5,6 +5,7 @@ Maintainer: VyOS Package Maintainers <maintainers@vyos.net>
 Build-Depends: debhelper (>= 5), autotools-dev, autoconf, automake, libtool,
  wget, unzip,
  flex,
+ subversion,
  libexpat1-dev (>= 1.95.8-4),
  libglib2.0-dev,
  libpam0g-dev

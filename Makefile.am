@@ -1,6 +1,6 @@
 tmpdir = $(prefix)/tmp/webgui
 chunkerpiddir = $(prefix)/var/run
-wwwdir = /var/www
+wwwdir = /var/www/html
 cgidir = /usr/lib/cgi-bin
 initddir = /etc/init.d
 cfgdir = $(datadir)/vyatta-cfg/templates

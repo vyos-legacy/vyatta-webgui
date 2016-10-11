@@ -409,7 +409,7 @@ Processor::set_request(vector<uint8_t> &buf)
   }
 
   memcpy(_msg._request, &buf[0], size);
-  *(_msg._request + size + 1) = '\0';
+  *(_msg._request + size) = '\0';
   if (_debug) {
     cout << "Processor::set_request(): ";
     for (int i = 0; i < size; ++i) {

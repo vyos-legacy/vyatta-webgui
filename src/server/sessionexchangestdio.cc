@@ -60,7 +60,8 @@ SessionExchangeStdIO::read(Session &session)
   char buf[1025];
   while (fgets(buf, 1024, stdin) != 0) {
     string tmp(buf);
-    req += tmp.substr(0,tmp.length()-1);
+    //req += tmp.substr(0,tmp.length()-1);
+    req += tmp.substr(0,tmp.length());
   }
   if (req.length() > _request_limit) {
     return false;

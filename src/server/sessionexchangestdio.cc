@@ -68,7 +68,7 @@ SessionExchangeStdIO::read(Session &session)
   }
 
 
-  string hack = "echo \"" + req + "\" >> /tmp/foo";system(hack.c_str());
+  //string hack = "echo \"" + req + "\" >> /tmp/foo";system(hack.c_str());
 
   session.set_message(req);
   return true;

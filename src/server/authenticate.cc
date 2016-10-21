@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
 #include <pwd.h>
@@ -77,9 +78,20 @@ Authenticate::create_new_session()
       WebGUI::mkdir_p((WebGUI::LOCAL_CHANGES_ONLY + id).c_str());
       WebGUI::mkdir_p((WebGUI::LOCAL_CONFIG_DIR + id).c_str());
       
+#ifdef USE_UNIONFSFUSE
+//      setuid(uid);
+      ostringstream scmd;
+      scmd <<  "sudo chown "<<uid <<" " << WebGUI::LOCAL_CHANGES_ONLY  << id << ";";
+      scmd <<  "sudo /usr/bin/unionfs-fuse -o cow -o uid="<< uid <<" -o allow_other "  << WebGUI::LOCAL_CHANGES_ONLY << id << "=RW:" << WebGUI::ACTIVE_CONFIG_DIR << "=RO " << WebGUI::LOCAL_CONFIG_DIR << id;
+      //scmd <<  "/usr/bin/unionfs-fuse -o cow -o allow_other -o uid=" <<uid <<" "  << WebGUI::LOCAL_CHANGES_ONLY << id << "=RW:" << WebGUI::ACTIVE_CONFIG_DIR << "=RO " << WebGUI::LOCAL_CONFIG_DIR << id;
+
+      cmd = scmd.str();
+      //cmd = "/usr/bin/unionfs-fuse -o cow -o uid="+itoa(uid)+" "  + WebGUI::LOCAL_CHANGES_ONLY + id + "=RW:" + WebGUI::ACTIVE_CONFIG_DIR + "=RO " + WebGUI::LOCAL_CONFIG_DIR + id;
+      //cmd = "/usr/bin/unionfs-fuse -o cow -o allow_other " + WebGUI::LOCAL_CHANGES_ONLY + id + "=RW:" + WebGUI::ACTIVE_CONFIG_DIR + "=RO " + WebGUI::LOCAL_CONFIG_DIR + id;
+#else 
       string unionfs = WebGUI::unionfs();
-      
       cmd = "sudo mount -t "+unionfs+" -o dirs="+WebGUI::LOCAL_CHANGES_ONLY+id+"=rw:"+WebGUI::ACTIVE_CONFIG_DIR+"=ro "+unionfs+" " +WebGUI::LOCAL_CONFIG_DIR+ id;
+#endif
       if (WebGUI::execute(cmd, stdout) != 0) {
 	//syslog here
 	_proc->set_response(WebGUI::AUTHENTICATION_FAILURE);
@@ -215,7 +227,8 @@ Authenticate::test_auth(const std::string & username, const std::string & passwo
   if (result != PAM_SUCCESS) {
     cerr << "pam_end" << endl;
     return false;
-  }
+  };
+  uid=passwd->pw_uid;
   return true;
 }
 

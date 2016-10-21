@@ -1,6 +1,6 @@
 tmpdir = $(prefix)/tmp/webgui
 chunkerpiddir = $(prefix)/var/run
-wwwdir = /var/www
+wwwdir = /var/www/html
 cgidir = /usr/lib/cgi-bin
 initddir = /etc/init.d
 cfgdir = $(datadir)/vyatta-cfg/templates
@@ -12,7 +12,6 @@ glib20lib = `pkg-config --cflags glib-2.0`
 glib20libfl = `pkg-config --libs glib-2.0`
 
 AM_CPPFLAGS = -I src/server -I src/lib -Wall -DDEBUG -g $(glib20lib)
-
 CLEANFILES = src/server/main.o src/server/manager.o src/server/session.o src/server/processor.o src/server/sessionexchange.o src/server/sessionexchangefile.o src/server/sessionexchangesocket.o src/server/sessionexchangestdio.o src/server/test.o src/server/authenticate.o src/server/common.o src/server/command.o src/server/configuration.o src/server/rl_str_proc.o src/server/multirespcmd.o src/server/guicmdhandler.o
 
 src_server_chunker_SOURCES = src/server/chunker_main.cc

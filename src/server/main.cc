@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 
 
   //DISABLE OLD API
-  exit(0);
+  //exit(0);
 
   //grab inputs
   while ((ch = getopt(argc, argv, "p:vi:df:hs")) != -1) {

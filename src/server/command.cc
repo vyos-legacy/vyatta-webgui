@@ -105,7 +105,8 @@ export vyatta_infodir=/opt/vyatta/share/info; \
 export VYATTA_TEMP_CONFIG_DIR="+WebGUI::LOCAL_CONFIG_DIR+_proc->get_msg().id()+"; \
 export UNIONFS="+WebGUI::unionfs()+";					\
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; \
-export COMMIT_VIA=gui1; \   
+export COMMIT_VIA=gui1; \
+export COMMIT_COMMENT=comment; \
 export vyatta_localedir=/opt/vyatta/share/locale";
 
   string tmp = cmd;

@@ -2,6 +2,7 @@
 #include <sys/time.h>
 #include <sys/sysinfo.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <strings.h>
 #include <pwd.h>
@@ -61,7 +62,7 @@ ChunkerProcessor::start_new(string token, const string &cmd)
     reader(token,cp);
 
     //now wait on child to kick the bucket
-    wait();
+    wait(&cp[2]);
     exit(0);
   }
 }

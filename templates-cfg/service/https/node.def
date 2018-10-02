@@ -9,7 +9,7 @@ update: if [ ! -f /etc/lighttpd/server.pem ]; then
           sudo openssl req -new -x509 -keyout /etc/lighttpd/server.pem \
                 -out /etc/lighttpd/server.pem \
                 -days 3650 -nodes -passout pass:'' \
-                -subj '/C=US/CN=Vyatta Web GUI/O=Vyatta Inc./ST=CA/L=Belmont'
+                -subj '/C=US/CN=VyOS Web GUI/O=VyOS/ST=CA/L=Belmont'
         fi
 
 

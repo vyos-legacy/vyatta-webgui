@@ -13,6 +13,7 @@ glib20libfl = `pkg-config --libs glib-2.0`
 
 AM_CPPFLAGS = -I src/server -I src/lib -Wall -DDEBUG -g $(glib20lib)
 CLEANFILES = src/server/main.o src/server/manager.o src/server/session.o src/server/processor.o src/server/sessionexchange.o src/server/sessionexchangefile.o src/server/sessionexchangesocket.o src/server/sessionexchangestdio.o src/server/test.o src/server/authenticate.o src/server/common.o src/server/command.o src/server/configuration.o src/server/rl_str_proc.o src/server/multirespcmd.o src/server/guicmdhandler.o
+BUILT_SOURCES =  src/lib/cli_parse.h src/lib/cli_def.c src/lib/cli_val.c
 
 src_server_chunker_SOURCES = src/server/chunker_main.cc
 src_server_chunker_SOURCES += src/server/chunker_manager.cc
